@@ -8,18 +8,17 @@ export const APP_CONFIG = {
 
 // Navigation items
 export const NAV_ITEMS = [
-    { name: 'Home', href: '#hero', icon: 'fa-house-chimney' },
-    { name: 'About Us', href: '#about-us', icon: 'fa-circle-info' },
-    { name: 'Institutions', href: '#', icon: 'fa-building-columns', hasDropdown: true },
-    { name: 'Milestone', href: '#', icon: 'fa-flag', hasDropdown: true },
-    { name: 'Gallery', href: '#', icon: 'fa-folder-open' },
-    { name: 'Contact Us', href: '#', icon: 'fa-phone', hasDropdown: true },
-    { name: 'Login', href: 'https://swagatodisha.com/app/login.php', icon: 'fa-user' }
+    { name: 'Home', href: '#hero', icon: '' },
+    { name: 'About Us', href: '#about-us', icon: '' },
+    { name: 'Milestone', href: '#milestone', icon: '' },
+    { name: 'Admissions', href: '#admissions', icon: '' },
+    { name: 'Gallery', href: '#gallery', icon: '' },
+    { name: 'Contact Us', href: '#contact', icon: '' }
 ]
 
 // Social links
 export const SOCIAL_LINKS = {
-    phone: '+91 6670356176',
+    phone: '+91 7684060809',
     email: 'contact@swagatodisha.com',
     facebook: 'https://www.facebook.com/Swagat-Group-of-Institutions-108863395171576',
     twitter: 'https://twitter.com/SwagatOdisha',
@@ -93,28 +92,28 @@ export const QUICK_LINKS = [
     {
         id: 1,
         name: 'Time Tables',
-        icon: '/img/2072763.png',
+        icon: '/src/assets/images/2072763.png',
         color: 'rgb(253 237 50)',
         href: '#'
     },
     {
         id: 2,
         name: 'Careers',
-        icon: '/img/scholarship.png',
+        icon: '/src/assets/images/scholarship.png',
         color: 'rgb(255, 202, 79)',
         href: '#'
     },
     {
         id: 3,
         name: 'News Letters',
-        icon: '/img/information.png',
+        icon: '/src/assets/images/information.png',
         color: 'rgb(109, 197, 74)',
         href: '#'
     },
     {
         id: 4,
         name: 'Results',
-        icon: '/img/results.png',
+        icon: '/src/assets/images/results.png',
         color: 'rgb(52 48 146)',
         href: '#'
     }
@@ -126,69 +125,61 @@ export const MANAGEMENT_TEAM = [
         id: 1,
         name: 'Mr. R.K. Meher',
         position: 'Chairman',
-        image: '/img/chairman.jpg'
+        image: '/src/assets/images/chairman.jpg'
     },
     {
         id: 2,
         name: 'Mr. Gangadhar Meher',
         position: 'Trustee',
-        image: '/img/mnt 005.jpg'
+        image: '/src/assets/images/mnt 005.jpg'
     },
     {
         id: 3,
         name: 'Mr. Sameer Meher',
         position: 'Trustee',
-        image: '/img/mnt 006.jpg'
+        image: '/src/assets/images/mnt 006.jpg'
     },
     {
         id: 4,
         name: 'Mrs. Manjula Meher',
         position: 'Principal',
-        image: '/img/mnt 003.jpg'
+        image: '/src/assets/images/mnt 003.jpg'
     },
     {
         id: 5,
         name: 'Mr. Sushanta Bhoi',
         position: 'Managing Director',
-        image: '/img/mnt 002.jpg'
+        image: '/src/assets/images/mnt 002.jpg'
     },
     {
         id: 6,
         name: 'Mr. Lorem ipsum',
         position: 'Marketing Director',
-        image: '/img/mnt 004.jpg'
+        image: '/src/assets/images/mnt 004.jpg'
     }
 ]
 
 // Carousel images
 export const CAROUSEL_IMAGES = [
-    '/img/slider001 SO.jpeg',
-    '/img/slider002 SO.jpeg',
-    '/img/slider003 SO.jpeg',
-    '/img/slider004 SO.jpeg'
+    '/src/assets/images/slider001 SO.jpg',
+    '/src/assets/images/slider002 SO.jpg',
+    '/src/assets/images/slider003 SO.jpg',
+    '/src/assets/images/slider004 SO.jpg'
 ]
 
 // Chairman message
 export const CHAIRMAN_MESSAGE = {
     name: 'Mr. R.K. Meher',
     position: 'Chairman',
-    image: '/img/chairman.jpg',
+    image: '/src/assets/images/chairman.jpg',
     message: `"There were various obstacles to make the empire of Swagat group of Institutions stand. However the real challenge was in giving shape to it and maintaining quality services. But with the consistent efforts of our team, now it is possible to bring a revolution. The overwhelming response of students, parents and well-wishers is the only way to judge our progress throughout the years. I would like to thank all for your immense love and support".`
-}
-
-// Video section
-export const VIDEO_SECTION = {
-    title: 'A Glance of Swagat',
-    description: 'This is a virtual tour to the Swagat Group of Institutions. It shows the standard of infrastructure and quality atmosphere that we provide to our students. We aim to bring about a revolution in the field of education by encouraging the youth to frame innovative ideas and to be a part of this revolutionary journey.',
-    locations: ['Bhawanipatna', 'Sinapali'],
-    videoUrl: 'https://videos.pond5.com/aerial-drone-shot-elementary-school-footage-079427446_main_xxl.mp4'
 }
 
 // Milestone
 export const MILESTONE = {
     year: '2021',
     title: 'Building from Scratch #1 (Sinapali Public School)',
-    image: '/img/Milestone 001.jpg',
+    image: '/src/assets/images/Milestone 001.jpg',
     description: 'Swagat Group at early phase'
 }
 

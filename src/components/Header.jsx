@@ -1,157 +1,312 @@
-import React, { useState } from 'react'
-import { motion } from 'framer-motion'
+import React, { useState, useEffect, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { scrollToContact } from '../utils/helpers'
 import { NAV_ITEMS } from '../utils/constants'
 
+gsap.registerPlugin(ScrollTrigger)
+
 const Header = ({ isNavOpen, setIsNavOpen }) => {
-    const [activeDropdown, setActiveDropdown] = useState(null)
+    const [scrolled, setScrolled] = useState(false)
+    const [activeHover, setActiveHover] = useState(null)
+    const headerRef = useRef(null)
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50)
+        }
+
+        window.addEventListener('scroll', handleScroll)
+        return () => window.removeEventListener('scroll', handleScroll)
+    }, [])
+
+    useEffect(() => {
+        if (scrolled) {
+            gsap.to(headerRef.current, {
+                backdropFilter: 'blur(20px)',
+                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                duration: 0.3
+            })
+        } else {
+            gsap.to(headerRef.current, {
+                backdropFilter: 'blur(0px)',
+                backgroundColor: 'rgba(255, 255, 255, 1)',
+                duration: 0.3
+            })
+        }
+    }, [scrolled])
+
+    // Removed logo rotation animation - keeping it clean and professional
 
     const toggleNav = () => {
         setIsNavOpen(!isNavOpen)
     }
 
-    const toggleDropdown = (index) => {
-        setActiveDropdown(activeDropdown === index ? null : index)
+    const navItemVariants = {
+        hidden: { opacity: 0, y: -20 },
+        visible: (i) => ({
+            opacity: 1,
+            y: 0,
+            transition: {
+                delay: i * 0.1,
+                duration: 0.5,
+                ease: "easeOut"
+            }
+        })
+    }
+
+    const sidebarVariants = {
+        closed: {
+            x: '-100%',
+            transition: {
+                duration: 0.4,
+                ease: "easeInOut"
+            }
+        },
+        open: {
+            x: 0,
+            transition: {
+                duration: 0.4,
+                ease: "easeInOut"
+            }
+        }
+    }
+
+    const overlayVariants = {
+        closed: {
+            opacity: 0,
+            transition: {
+                duration: 0.3
+            }
+        },
+        open: {
+            opacity: 1,
+            transition: {
+                duration: 0.3
+            }
+        }
+    }
+
+    const hamburgerLineVariants = {
+        closed: {
+            rotate: 0,
+            y: 0,
+            opacity: 1
+        },
+        open: (i) => ({
+            rotate: i === 0 ? 45 : i === 2 ? -45 : 0,
+            y: i === 0 ? 8 : i === 2 ? -8 : 0,
+            opacity: i === 1 ? 0 : 1,
+            transition: {
+                duration: 0.3,
+                ease: "easeInOut"
+            }
+        })
     }
 
     return (
-        <header className="flex justify-between items-center bg-gradient-to-b from-[#4747e9] via-[#4444e5] to-[#4c4cc8] text-white sticky top-0 z-50 w-full">
-            {/* Navigation */}
-            <nav className="flex">
-                {/* Hamburger Menu */}
-                <div
-                    className={`hidden md:hidden flex-col w-full m-4 cursor-pointer ${isNavOpen ? 'nav-open' : ''}`}
-                    onClick={toggleNav}
-                >
-                    <div className="w-7 h-1 m-0.5 bg-white rounded-lg transition-all duration-300 ease-in-out"></div>
-                    <div className="w-7 h-1 m-0.5 bg-white rounded-lg transition-all duration-300 ease-in-out"></div>
-                    <div className="w-7 h-1 m-0.5 bg-white rounded-lg transition-all duration-300 ease-in-out"></div>
-                </div>
+        <>
+            <motion.header
+                ref={headerRef}
+                initial={{ y: -100 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'shadow-2xl' : 'shadow-sm'
+                    }`}
+                style={{
+                    backdropFilter: scrolled ? 'blur(20px)' : 'blur(0px)',
+                    backgroundColor: scrolled ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 1)'
+                }}
+            >
+                <div className="container mx-auto px-6">
+                    <div className="flex justify-between items-center py-4">
+                        {/* Logo/Brand Section */}
+                        <div className="flex items-center">
+                            {/* Logo Icon */}
+                            <div className="relative w-36 h-auto flex items-center justify-center">
+                                <img
+                                    src="/public/Swagat Logo.png"
+                                    alt="Swagat Group of Institutions"
+                                    className="w-full h-full object-contain"
+                                />
+                            </div>
+                        </div>
 
-                {/* Navigation Menu */}
-                <ul className={`flex md:flex ${isNavOpen ? 'fixed top-16 left-0 w-full pt-6 h-full z-40 flex-col bg-[#4c4cc8] transition-all duration-500 ease-in-out left-0' : 'hidden md:flex'}`}>
-                    {NAV_ITEMS.map((item, index) => (
-                        <li key={index} className="m-1.5 list-none">
-                            {item.hasDropdown ? (
-                                <div className="relative">
-                                    <button
-                                        className="text-white p-0 text-base border-none mb-0 ml-6 flex items-center justify-center flex-col"
-                                        onClick={() => toggleDropdown(index)}
-                                    >
-                                        <i className={`fa-solid ${item.icon} text-white font-medium transition-colors duration-700 ease-in-out`}></i>
-                                        <br />
-                                        {item.name}
-                                    </button>
-
-                                    {/* Dropdown Content */}
-                                    {activeDropdown === index && (
-                                        <div className="absolute left-[-3.7rem] top-12 bg-[#f1f1f1] min-w-40 shadow-lg z-10 rounded">
-                                            {item.name === 'Institutions' && (
-                                                <>
-                                                    <a href="#" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        Swagat Public School Sinapali
-                                                    </a>
-                                                    <a href="https://www.bbose.org/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        BBOSE
-                                                    </a>
-                                                    <a href="https://www.nios.ac.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        NIOS
-                                                    </a>
-                                                    <a href="http://www.sanskrit.nic.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        Central Sanskrit University
-                                                    </a>
-                                                    <a href="https://capitaluniversity.edu.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        Capital University
-                                                    </a>
-                                                    <a href="http://www.ybnuniversity.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        YBN University
-                                                    </a>
-                                                    <a href="https://matsuniversity.ac.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        MATS University
-                                                    </a>
-                                                    <a href="https://jsu.edu.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        J.S. University
-                                                    </a>
-                                                    <a href="https://www.nagarjunauniversity.ac.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        Acharya Nagarjuna University
-                                                    </a>
-                                                    <a href="https://www.andhrauniversity.edu.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        Andhra University
-                                                    </a>
-                                                    <a href="https://www.rayalaseemauniversity.ac.in/" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        Rayalaseema University
-                                                    </a>
-                                                    <a href="https://rcti.netlify.app" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        RCTI
-                                                    </a>
-                                                    <a href="#" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-book-open mr-2"></i>
-                                                        NCTI
-                                                    </a>
-                                                </>
-                                            )}
-                                            {item.name === 'Milestone' && (
-                                                <div className="p-4">
-                                                    <h3 className="text-[#4c4cc8] text-lg">2021</h3>
-                                                    <h6 className="text-[#4c4cc8] text-sm">Building from Scratch #1 (Sinapali Public School)</h6>
-                                                    <img src="/img/Milestone 001.jpg" alt="Swagat Group at early phase" className="w-96 m-4 rounded" />
-                                                </div>
-                                            )}
-                                            {item.name === 'Contact Us' && (
-                                                <>
-                                                    <a href="tel:+916670356176" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-phone-flip mr-2"></i>
-                                                        +91 6670356176
-                                                    </a>
-                                                    <a href="mailto:contact@swagatodisha.com" target="_blank" className="font-['Nunito'] text-black p-2.5 mt-2 rounded text-decoration-none block hover:bg-[#ddd]">
-                                                        <i className="fa-solid fa-envelope mr-2"></i>
-                                                        contact@swagatodisha.com
-                                                    </a>
-                                                </>
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            ) : (
-                                <a
-                                    href={item.href}
-                                    className="font-['Nunito'] flex text-white text-decoration-none items-center flex-col leading-tight m-0 mx-2 transition-colors duration-500 ease-in-out hover:text-[#caf705]"
+                        {/* Desktop Navigation */}
+                        <nav className="hidden lg:flex items-center space-x-8">
+                            {NAV_ITEMS.map((item, index) => (
+                                <motion.div
+                                    key={index}
+                                    custom={index}
+                                    variants={navItemVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    onHoverStart={() => setActiveHover(index)}
+                                    onHoverEnd={() => setActiveHover(null)}
+                                    className="relative"
                                 >
-                                    <i className={`fa-solid ${item.icon} text-white font-medium transition-colors duration-700 ease-in-out`}></i>
-                                    <br />
-                                    {item.name}
-                                </a>
-                            )}
-                        </li>
-                    ))}
-                </ul>
-            </nav>
+                                    <motion.a
+                                        href={item.href}
+                                        className="relative px-4 py-2 text-gray-800 font-medium transition-colors duration-300 group"
+                                        whileHover={{ y: -2 }}
+                                    >
+                                        {item.name}
 
-            {/* Logo */}
-            <a href="/" className="relative flex flex-col justify-center items-center bg-white text-white overflow-y-clip text-decoration-none">
-                <div className="flex flex-row h-10">
-                    <img src="/img/open-book.png" alt="Swagat Odisha" className="relative w-12 max-w-[200%] p-0.5" />
-                    <h1 className="text-[#4c4cc8] text-3xl z-10 font-bold m-0 mx-1.5 mb-1.5">Swagat</h1>
+                                        {/* Hover Underline Effect */}
+                                        <motion.div
+                                            className="absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
+                                            initial={{ width: 0 }}
+                                            animate={{ width: activeHover === index ? "100%" : 0 }}
+                                            transition={{ duration: 0.3 }}
+                                        />
+                                    </motion.a>
+                                </motion.div>
+                            ))}
+                        </nav>
+
+                        {/* Apply Now Button */}
+                        <motion.div
+                            className="hidden lg:block"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                        >
+                            <motion.button
+                                onClick={scrollToContact}
+                                className="relative px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-semibold shadow-lg overflow-hidden group cursor-pointer"
+                                whileHover={{
+                                    boxShadow: "0 20px 40px -12px rgba(147, 51, 234, 0.5)",
+                                    y: -2
+                                }}
+                            >
+                                <span className="relative z-10">Apply Now</span>
+
+                                {/* Button Shine Effect */}
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                                    initial={{ x: "-100%" }}
+                                    whileHover={{ x: "100%" }}
+                                    transition={{ duration: 0.6 }}
+                                />
+                            </motion.button>
+                        </motion.div>
+
+                        {/* Mobile Menu Button */}
+                        <motion.button
+                            onClick={toggleNav}
+                            className="lg:hidden w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white shadow-lg relative"
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {/* Animated Hamburger Lines */}
+                            <div className="flex flex-col items-center justify-center w-6 h-6">
+                                {[0, 1, 2].map((i) => (
+                                    <motion.div
+                                        key={i}
+                                        custom={i}
+                                        variants={hamburgerLineVariants}
+                                        animate={isNavOpen ? "open" : "closed"}
+                                        className="w-6 h-0.5 bg-white rounded-full mb-1 last:mb-0 origin-center"
+                                    />
+                                ))}
+                            </div>
+                        </motion.button>
+                    </div>
                 </div>
-                <div className="z-5 text-center">
-                    <h4 className="text-[#4c4cc8] text-sm text-center tracking-wider m-0 pb-0.5">Group of Institutions</h4>
-                    <h6 className="text-[#4c4cc8] text-xs text-center tracking-wider m-0 mx-1 mb-1">Education • Innovation • Revolution</h6>
-                </div>
-                {/* Logo background shape */}
-                <div className="absolute w-[75px] right-[140px] h-[145px] bg-white transform rotate-[35deg]"></div>
-            </a>
-        </header>
+            </motion.header>
+
+            {/* Mobile Sidebar Navigation */}
+            <AnimatePresence>
+                {isNavOpen && (
+                    <>
+                        {/* Blurred Background Overlay */}
+                        <motion.div
+                            variants={overlayVariants}
+                            initial="closed"
+                            animate="open"
+                            exit="closed"
+                            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 lg:hidden"
+                            onClick={toggleNav}
+                        />
+
+                        {/* Left Sidebar */}
+                        <motion.div
+                            variants={sidebarVariants}
+                            initial="closed"
+                            animate="open"
+                            exit="closed"
+                            className="fixed top-0 left-0 h-full w-[70vw] max-w-sm bg-white/95 backdrop-blur-xl border-r border-gray-200/50 z-50 lg:hidden shadow-2xl"
+                        >
+                            {/* Sidebar Header */}
+                            <div className="flex items-center justify-between p-6 border-b border-gray-200/50">
+                                <div className="flex items-center">
+                                    <img
+                                        src="/public/Swagat Logo.png"
+                                        alt="Swagat Group of Institutions"
+                                        className="w-12 h-auto object-contain"
+                                    />
+                                    <span className="ml-3 text-lg font-bold text-gray-800">Swagat</span>
+                                </div>
+                                <button
+                                    onClick={toggleNav}
+                                    className="w-8 h-8 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-300"
+                                >
+                                    <i className="fa-solid fa-times text-gray-600"></i>
+                                </button>
+                            </div>
+
+                            {/* Sidebar Content */}
+                            <div className="p-6">
+                                <div className="space-y-4">
+                                    {NAV_ITEMS.map((item, index) => (
+                                        <motion.a
+                                            key={index}
+                                            href={item.href}
+                                            className="block py-4 px-4 text-gray-800 font-medium rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 transition-all duration-300 text-lg"
+                                            whileHover={{ x: 10 }}
+                                            onClick={() => setIsNavOpen(false)}
+                                        >
+                                            {item.name}
+                                        </motion.a>
+                                    ))}
+
+                                    <motion.button
+                                        onClick={() => {
+                                            scrollToContact()
+                                            setIsNavOpen(false)
+                                        }}
+                                        className="w-full mt-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg cursor-pointer text-lg"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        Apply Now
+                                    </motion.button>
+                                </div>
+
+                                {/* Sidebar Footer */}
+                                <div className="mt-12 pt-6 border-t border-gray-200/50">
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-500 mb-4">Connect with us</p>
+                                        <div className="flex justify-center space-x-3">
+                                            <a href="#" className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
+                                                <i className="fa-brands fa-facebook-f text-sm"></i>
+                                            </a>
+                                            <a href="#" className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
+                                                <i className="fa-brands fa-twitter text-sm"></i>
+                                            </a>
+                                            <a href="#" className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
+                                                <i className="fa-brands fa-instagram text-sm"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+        </>
     )
 }
 

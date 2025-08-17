@@ -95,3 +95,86 @@ export const isMobile = () => {
 export const isTouch = () => {
     return 'ontouchstart' in window || navigator.maxTouchPoints > 0
 }
+
+// Helper functions for the application
+
+/**
+ * Scroll to a specific section by ID
+ * @param {string} sectionId - The ID of the section to scroll to
+ */
+export const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        })
+    }
+}
+
+/**
+ * Scroll to contact form
+ */
+export const scrollToContact = () => {
+    scrollToSection('contact')
+}
+
+/**
+ * Scroll to admissions section
+ */
+export const scrollToAdmissions = () => {
+    scrollToSection('admissions')
+}
+
+/**
+ * Format phone number for display
+ * @param {string} phone - Raw phone number
+ * @returns {string} Formatted phone number
+ */
+export const formatPhoneNumber = (phone) => {
+    if (!phone) return ''
+    return phone.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')
+}
+
+/**
+ * Validate email format
+ * @param {string} email - Email to validate
+ * @returns {boolean} True if valid email
+ */
+export const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+}
+
+/**
+ * Show success message using SweetAlert
+ * @param {string} title - Success title
+ * @param {string} message - Success message
+ */
+export const showSuccessMessage = (title, message) => {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'success',
+            title: title,
+            text: message,
+            confirmButtonColor: '#8B5CF6',
+            confirmButtonText: 'Great!'
+        })
+    }
+}
+
+/**
+ * Show error message using SweetAlert
+ * @param {string} title - Error title
+ * @param {string} message - Error message
+ */
+export const showErrorMessage = (title, message) => {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'error',
+            title: title,
+            text: message,
+            confirmButtonColor: '#8B5CF6'
+        })
+    }
+}

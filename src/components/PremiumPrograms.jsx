@@ -8,7 +8,7 @@ const PremiumPrograms = () => {
         {
             title: "Swagat Public School",
             subtitle: "Primary & Secondary Education",
-            description: "Excellence in foundational learning with modern curriculum and holistic development approach.",
+            description: "Excellence in foundational learning and holistic development approach.",
             features: ["CBSE Curriculum", "Smart Classrooms"],
             duration: "12 Years",
             students: "1000+",
