@@ -131,7 +131,7 @@ export const MANAGEMENT_TEAM = [
         id: 2,
         name: 'Mr. Gangadhar Meher',
         position: 'Trustee',
-        image: '/mnt 005.jpg'
+        image: '/mnt 006.jpg'
     },
     {
         id: 3,

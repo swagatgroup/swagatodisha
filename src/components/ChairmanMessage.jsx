@@ -11,7 +11,7 @@ const ChairmanMessage = () => {
             "100+ Industry Partnerships",
             "Award-Winning Teaching Methods"
         ],
-        image: "/public/Swagat Logo.png",
+        image: "/Swagat Logo.png",
         icon: "fa-solid fa-crown"
     }
 

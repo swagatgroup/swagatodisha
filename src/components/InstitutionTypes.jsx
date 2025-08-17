@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 
 const InstitutionTypes = () => {
     const [selectedInstitution, setSelectedInstitution] = useState(null)
@@ -113,15 +113,15 @@ const InstitutionTypes = () => {
         }
     ]
 
-    const openModal = (institution) => {
+    const openModal = useCallback((institution) => {
         setSelectedInstitution(institution)
         setIsModalOpen(true)
-    }
+    }, [])
 
-    const closeModal = () => {
+    const closeModal = useCallback(() => {
         setIsModalOpen(false)
         setSelectedInstitution(null)
-    }
+    }, [])
 
     return (
         <section className="relative py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
@@ -150,9 +150,9 @@ const InstitutionTypes = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {institutions.map((institution, index) => (
                         <div
-                            key={index}
+                            key={institution.name}
                             onClick={() => openModal(institution)}
-                            className="group cursor-pointer bg-white rounded-3xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                            className="group cursor-pointer bg-white rounded-3xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
                         >
                             {/* Icon Container */}
                             <div className={`w-16 h-16 bg-gradient-to-r ${institution.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
@@ -179,10 +179,16 @@ const InstitutionTypes = () => {
                 </div>
             </div>
 
-            {/* Modal */}
+            {/* Optimized Modal */}
             {isModalOpen && selectedInstitution && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+                <div
+                    className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
+                    onClick={closeModal}
+                >
+                    <div
+                        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl transform transition-all duration-200 scale-100 animate-in zoom-in-95 duration-200"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         {/* Modal Header */}
                         <div className="p-6 border-b border-gray-100">
                             <div className="flex items-center justify-between mb-4">
@@ -197,7 +203,7 @@ const InstitutionTypes = () => {
                                 </div>
                                 <button
                                     onClick={closeModal}
-                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-300"
+                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-200 hover:bg-gray-300"
                                 >
                                     <i className="fa-solid fa-times text-gray-600"></i>
                                 </button>
@@ -210,7 +216,7 @@ const InstitutionTypes = () => {
                             <h4 className="text-lg font-semibold text-gray-800 mb-4">Available Programs</h4>
                             <div className="space-y-3">
                                 {selectedInstitution.programs.map((program, index) => (
-                                    <div key={index} className="flex items-center p-3 bg-gray-50 rounded-xl">
+                                    <div key={index} className="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200">
                                         <div className={`w-3 h-3 bg-gradient-to-r ${selectedInstitution.iconBg} rounded-full mr-3`}></div>
                                         <span className="text-gray-700 font-medium">{program}</span>
                                     </div>
@@ -223,11 +229,11 @@ const InstitutionTypes = () => {
                             <div className="flex justify-end space-x-3">
                                 <button
                                     onClick={closeModal}
-                                    className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-300"
+                                    className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-200"
                                 >
                                     Close
                                 </button>
-                                <button className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-300">
+                                <button className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200">
                                     Learn More
                                 </button>
                             </div>

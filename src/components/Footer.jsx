@@ -132,7 +132,7 @@ const Footer = () => {
                             <div className="text-center lg:text-left">
                                 <div className="inline-flex items-center justify-center mb-4">
                                     <img
-                                        src="/public/Swagat Logo.png"
+                                        src="/Swagat Logo.png"
                                         alt="Swagat Group of Institutions"
                                         className="w-48 h-auto object-contain filter brightness-0 invert"
                                     />
