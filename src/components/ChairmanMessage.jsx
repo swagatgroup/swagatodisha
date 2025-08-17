@@ -41,7 +41,7 @@ const ChairmanMessage = () => {
                             {/* Logo/Image */}
                             <div className="mb-6">
                                 <img
-                                    src={"/src/assets/images/chairman.jpg"}
+                                    src={"/chairman.jpg"}
                                     alt="Chairman"
                                     className="w-48 md:w-60 rounded-full h-full object-contain mx-auto lg:mx-0"
                                 />

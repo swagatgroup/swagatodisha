@@ -92,28 +92,28 @@ export const QUICK_LINKS = [
     {
         id: 1,
         name: 'Time Tables',
-        icon: '/src/assets/images/2072763.png',
+        icon: '/2072763.png',
         color: 'rgb(253 237 50)',
         href: '#'
     },
     {
         id: 2,
         name: 'Careers',
-        icon: '/src/assets/images/scholarship.png',
+        icon: '/scholarship.png',
         color: 'rgb(255, 202, 79)',
         href: '#'
     },
     {
         id: 3,
         name: 'News Letters',
-        icon: '/src/assets/images/information.png',
+        icon: '/information.png',
         color: 'rgb(109, 197, 74)',
         href: '#'
     },
     {
         id: 4,
         name: 'Results',
-        icon: '/src/assets/images/results.png',
+        icon: '/results.png',
         color: 'rgb(52 48 146)',
         href: '#'
     }
@@ -125,53 +125,53 @@ export const MANAGEMENT_TEAM = [
         id: 1,
         name: 'Mr. R.K. Meher',
         position: 'Chairman',
-        image: '/src/assets/images/chairman.jpg'
+        image: '/chairman.jpg'
     },
     {
         id: 2,
         name: 'Mr. Gangadhar Meher',
         position: 'Trustee',
-        image: '/src/assets/images/mnt 005.jpg'
+        image: '/mnt 005.jpg'
     },
     {
         id: 3,
         name: 'Mr. Sameer Meher',
         position: 'Trustee',
-        image: '/src/assets/images/mnt 006.jpg'
+        image: '/mnt 006.jpg'
     },
     {
         id: 4,
         name: 'Mrs. Manjula Meher',
         position: 'Principal',
-        image: '/src/assets/images/mnt 003.jpg'
+        image: '/mnt 003.jpg'
     },
     {
         id: 5,
         name: 'Mr. Sushanta Bhoi',
         position: 'Managing Director',
-        image: '/src/assets/images/mnt 002.jpg'
+        image: '/mnt 002.jpg'
     },
     {
         id: 6,
         name: 'Mr. Lorem ipsum',
         position: 'Marketing Director',
-        image: '/src/assets/images/mnt 004.jpg'
+        image: '/mnt 004.jpg'
     }
 ]
 
 // Carousel images
 export const CAROUSEL_IMAGES = [
-    '/src/assets/images/slider001 SO.jpg',
-    '/src/assets/images/slider002 SO.jpg',
-    '/src/assets/images/slider003 SO.jpg',
-    '/src/assets/images/slider004 SO.jpg'
+    '/slider001 SO.jpg',
+    '/slider002 SO.jpg',
+    '/slider003 SO.jpg',
+    '/slider004 SO.jpg'
 ]
 
 // Chairman message
 export const CHAIRMAN_MESSAGE = {
     name: 'Mr. R.K. Meher',
     position: 'Chairman',
-    image: '/src/assets/images/chairman.jpg',
+    image: '/chairman.jpg',
     message: `"There were various obstacles to make the empire of Swagat group of Institutions stand. However the real challenge was in giving shape to it and maintaining quality services. But with the consistent efforts of our team, now it is possible to bring a revolution. The overwhelming response of students, parents and well-wishers is the only way to judge our progress throughout the years. I would like to thank all for your immense love and support".`
 }
 
@@ -179,7 +179,7 @@ export const CHAIRMAN_MESSAGE = {
 export const MILESTONE = {
     year: '2021',
     title: 'Building from Scratch #1 (Sinapali Public School)',
-    image: '/src/assets/images/Milestone 001.jpg',
+    image: '/Milestone 001.jpg',
     description: 'Swagat Group at early phase'
 }
 

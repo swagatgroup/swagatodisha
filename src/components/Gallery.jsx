@@ -12,18 +12,18 @@ const Gallery = () => {
     const imagesRef = useRef([])
 
     const galleryImages = [
-        '/src/assets/images/slider001 SO.jpg',
-        '/src/assets/images/slider002 SO.jpg',
-        '/src/assets/images/slider003 SO.jpg',
-        '/src/assets/images/slider004 SO.jpg',
-        '/src/assets/images/Milestone 001.jpg',
-        '/src/assets/images/chairman.jpg',
-        '/src/assets/images/mnt 002.jpg',
-        '/src/assets/images/mnt 003.jpg',
-        '/src/assets/images/mnt 004.jpg',
-        '/src/assets/images/chairman-rk.jpg',
-        '/src/assets/images/mnt 006.jpg',
-        '/src/assets/images/cmsg img 01.jpg'
+        '/slider001 SO.jpg',
+        '/slider002 SO.jpg',
+        '/slider003 SO.jpg',
+        '/slider004 SO.jpg',
+        '/Milestone 001.jpg',
+        '/chairman.jpg',
+        '/mnt 002.jpg',
+        '/mnt 003.jpg',
+        '/mnt 004.jpg',
+        '/chairman-rk.jpg',
+        '/mnt 006.jpg',
+        '/cmsg img 01.jpg'
     ]
 
     const categories = [
