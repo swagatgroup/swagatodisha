@@ -156,27 +156,27 @@ const Footer = () => {
                             </div>
                         </div>
 
-                        {/* Newsletter Subscription */}
+                        {/* Newsletter Subscription - Positioned at extreme right */}
                         <div className="lg:col-span-2">
-                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-6 border border-white/20 h-full flex flex-col justify-center">
-                                <h4 className="text-lg font-bold text-white mb-3 text-center lg:text-left">
+                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 h-full flex flex-col justify-center max-w-xs mx-auto lg:mx-0 lg:ml-auto">
+                                <h4 className="text-base md:text-lg font-bold text-white mb-2 md:mb-3 text-center lg:text-left">
                                     Stay Updated
                                 </h4>
-                                <p className="text-gray-300 text-center lg:text-left mb-4 text-sm">
+                                <p className="text-gray-300 text-center lg:text-left mb-3 md:mb-4 text-xs md:text-sm">
                                     Subscribe to our newsletter for the latest updates, events, and educational insights.
                                 </p>
-                                <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3">
+                                <form onSubmit={handleNewsletterSubmit} className="flex flex-col gap-2 md:gap-3">
                                     <input
                                         type="email"
                                         value={newsletterEmail}
                                         onChange={(e) => setNewsletterEmail(e.target.value)}
                                         placeholder="Enter your email address"
-                                        className="flex-1 px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm"
+                                        className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm"
                                     />
                                     <button
                                         type="submit"
                                         disabled={isSubscribing}
-                                        className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isSubscribing ? (
                                             <span className="flex items-center justify-center">

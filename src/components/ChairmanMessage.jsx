@@ -34,16 +34,16 @@ const ChairmanMessage = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="max-w-5xl mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+                <div className="max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6 items-center">
                         {/* Chairman Image and Info */}
-                        <div className="text-center lg:text-left">
+                        <div className="text-center lg:text-left order-2 lg:order-1">
                             {/* Logo/Image */}
                             <div className="mb-6">
                                 <img
                                     src={"/src/assets/images/chairman.jpg"}
                                     alt="Chairman"
-                                    className="w-60 rounded-full h-full object-contain"
+                                    className="w-48 md:w-60 rounded-full h-full object-contain mx-auto lg:mx-0"
                                 />
                             </div>
 
@@ -59,7 +59,7 @@ const ChairmanMessage = () => {
                         </div>
 
                         {/* Message Content */}
-                        <div className="space-y-4">
+                        <div className="space-y-4 order-1 lg:order-2">
                             {/* Main Message */}
                             <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-100">
                                 <div className="flex items-start mb-4">

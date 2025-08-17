@@ -5,12 +5,12 @@ import { resolve } from 'path'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  
+
   // Build optimization
   build: {
     // Enable source maps for debugging (disable in production for smaller bundle)
     sourcemap: false,
-    
+
     // Optimize chunk size
     rollupOptions: {
       output: {
@@ -22,16 +22,14 @@ export default defineConfig({
           'react-icons': ['react-icons'],
           'sweetalert': ['sweetalert2'],
           'emailjs': ['@emailjs/browser'],
-          
+
           // Separate utilities
           'utils': [
-            './src/utils/emailService.js',
-            './src/utils/modalUtils.js',
-            './src/utils/sectionLinks.js',
-            './src/utils/viewportFix.js'
+            './src/utils/helpers.js',
+            './src/utils/constants.js'
           ]
         },
-        
+
         // Optimize chunk naming
         chunkFileNames: (chunkInfo) => {
           const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop().replace('.jsx', '').replace('.js', '') : 'chunk';
@@ -51,7 +49,7 @@ export default defineConfig({
         }
       }
     },
-    
+
     // Optimize bundle size
     minify: 'terser',
     terserOptions: {
@@ -61,24 +59,24 @@ export default defineConfig({
         pure_funcs: ['console.log', 'console.info', 'console.debug', 'console.warn']
       }
     },
-    
+
     // Target modern browsers for smaller bundles
     target: 'es2015',
-    
+
     // Chunk size warning limit
     chunkSizeWarningLimit: 1000
   },
-  
+
   // Development server optimization
   server: {
     // Enable HMR
     hmr: true,
-    
+
     // Optimize for development
     host: true,
     port: 3000
   },
-  
+
   // Resolve aliases for cleaner imports
   resolve: {
     alias: {
@@ -89,7 +87,7 @@ export default defineConfig({
       '@images': resolve(__dirname, 'src/assets/images')
     }
   },
-  
+
   // Optimize dependencies
   optimizeDeps: {
     include: [
@@ -104,7 +102,7 @@ export default defineConfig({
     ],
     exclude: ['@emailjs/browser'] // Exclude from pre-bundling as it's used conditionally
   },
-  
+
   // Define global constants
   define: {
     __DEV__: JSON.stringify(process.env.NODE_ENV === 'development'),
