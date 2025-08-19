@@ -29,9 +29,9 @@ const Footer = () => {
             { name: "FAQs", url: "#" }
         ],
         contact: {
-            address: "Rrr, Naktiguda, Bhawanipatna, Odisha 766001",
+            address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039",
             phone: "+91 7684060809",
-            email: "info@swagatodisha.com"
+            email: "contact@swagatodisha.com"
         },
         socialLinks: [
             { name: "Facebook", icon: "fa-brands fa-facebook-f", url: "#" },

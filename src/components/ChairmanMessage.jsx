@@ -2,7 +2,7 @@ import React from 'react'
 
 const ChairmanMessage = () => {
     const chairmanData = {
-        name: "Mr. RK Meher",
+        name: "Mr. Gangadhar Meher",
         position: "Chairman & Founder",
         message: "At Swagat Group of Institutions, we believe in nurturing not just academic excellence, but the complete development of every student. Our commitment to quality education, innovative teaching methods, and holistic growth has made us a trusted name in education for over two decades.",
         achievements: [

@@ -190,7 +190,7 @@ const ContactUs = () => {
                                     </div>
                                     <div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-1">Address</h4>
-                                        <p className="text-gray-600">Rrr, Naktiguda, Bhawanipatna, Odisha 766001</p>
+                                        <p className="text-gray-600">Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039</p>
                                         <p className="text-sm text-gray-500">Visit our campus anytime</p>
                                     </div>
                                 </div>

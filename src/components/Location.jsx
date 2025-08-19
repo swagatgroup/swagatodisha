@@ -5,12 +5,12 @@ const Location = () => {
 
     const locationData = {
         name: "Swagat Group of Institutions",
-        address: "Naktiguda, Bhawanipatna, Odisha 766001",
+        address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039",
         phone: "+91 7684060809",
-        email: "info@swagatodisha.com",
+        email: "contact@swagatodisha.com",
         coordinates: {
-            lat: 19.9075,
-            lng: 83.1667
+            lat: 20.099885,
+            lng: 82.677498
         }
     }
 
@@ -23,10 +23,6 @@ const Location = () => {
         switch (type) {
             case 'satellite':
                 return `${baseUrl}/view?key=${key}&center=${location}&zoom=16&maptype=satellite`
-            case 'hybrid':
-                return `${baseUrl}/view?key=${key}&center=${location}&zoom=16&maptype=hybrid`
-            case 'terrain':
-                return `${baseUrl}/view?key=${key}&center=${location}&zoom=16&maptype=terrain`
             default:
                 return `${baseUrl}/view?key=${key}&center=${location}&zoom=16&maptype=roadmap`
         }
@@ -34,9 +30,7 @@ const Location = () => {
 
     const mapTypes = [
         { id: 'roadmap', name: 'Road', icon: 'fa-solid fa-road' },
-        { id: 'satellite', name: 'Satellite', icon: 'fa-solid fa-satellite' },
-        { id: 'hybrid', name: 'Hybrid', icon: 'fa-solid fa-layer-group' },
-        { id: 'terrain', name: 'Terrain', icon: 'fa-solid fa-mountain' }
+        { id: 'satellite', name: 'Satellite', icon: 'fa-solid fa-satellite' }
     ]
 
     return (

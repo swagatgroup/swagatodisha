@@ -5,8 +5,8 @@ import HeroCarousel from './components/HeroCarousel'
 import AboutUs from './components/AboutUs'
 import InstitutionTypes from './components/InstitutionTypes'
 import Admissions from './components/Admissions'
-import Milestone from './components/Milestone'
-import Gallery from './components/Gallery'
+// import Milestone from './components/Milestone'
+// import Gallery from './components/Gallery'
 import QuickLinks from './components/QuickLinks'
 import ChairmanMessage from './components/ChairmanMessage'
 import Management from './components/Management'
@@ -22,17 +22,17 @@ function App() {
             <Header isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
             <HeroCarousel />
             <AboutUs />
-            <QuickLinks />
             <InstitutionTypes />
+            <QuickLinks />
 
             {/* Admissions Section */}
             <Admissions />
 
             {/* Milestone Section */}
-            <Milestone />
+            {/* <Milestone /> */}
 
             {/* Gallery Section */}
-            <Gallery />
+            {/* <Gallery /> */}
 
             {/* Chairman Message Section */}
             <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
