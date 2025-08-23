@@ -13,20 +13,38 @@ import Management from './components/Management'
 import Location from './components/Location'
 import ContactUs from './components/ContactUs'
 import Footer from './components/Footer'
+import PremiumFloatingElements from './components/PremiumFloatingElements'
 
 function App() {
     const [isNavOpen, setIsNavOpen] = useState(false)
 
     return (
         <div className="App relative">
+            {/* Premium Floating Elements - Global Animation Layer */}
+            <PremiumFloatingElements />
+
             <Header isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
             <HeroCarousel />
-            <AboutUs />
-            <InstitutionTypes />
-            <QuickLinks />
 
-            {/* Admissions Section */}
-            <Admissions />
+            {/* About Us with Clean Background */}
+            <section className="section-bg">
+                <AboutUs />
+            </section>
+
+            {/* Institution Types with Clean Background */}
+            <section className="bg-subtle-gradient">
+                <InstitutionTypes />
+            </section>
+
+            {/* Quick Links with Clean Background */}
+            <section className="bg-warm-gradient">
+                <QuickLinks />
+            </section>
+
+            {/* Admissions Section with Clean Background */}
+            <section className="bg-cool-gradient">
+                <Admissions />
+            </section>
 
             {/* Milestone Section */}
             {/* <Milestone /> */}
@@ -34,40 +52,37 @@ function App() {
             {/* Gallery Section */}
             {/* <Gallery /> */}
 
-            {/* Chairman Message Section */}
-            <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
-                <div className="container mx-auto px-6">
+            {/* Chairman Message Section with Clean Background */}
+            <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600 relative overflow-hidden">
+                {/* Clean Background Overlay */}
+                <div className="absolute inset-0 bg-white/5"></div>
+
+                <div className="container mx-auto px-6 relative z-10">
                     <ChairmanMessage />
                 </div>
             </section>
 
-            {/* Management Team Section */}
-            <section className="py-20 bg-gray-50">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                            Our <span className="text-purple-600">Leadership</span>
-                        </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Meet the dedicated team driving innovation and excellence in education
-                        </p>
-                    </div>
-                    <Management />
-                </div>
+            {/* Management Team Section with Clean Background */}
+            <section className="bg-purple-gradient">
+                <Management />
             </section>
 
-            {/* Location Section */}
-            <section className="py-20 bg-gray-50">
+            {/* Location Section with Clean Background */}
+            <section className="py-20 bg-clean-white">
                 <div className="container mx-auto px-6">
                     <Location />
                 </div>
             </section>
 
-            {/* Contact Us Section */}
-            <ContactUs />
+            {/* Contact Us Section with Clean Background */}
+            <section className="bg-subtle-gradient">
+                <ContactUs />
+            </section>
 
-            {/* Footer */}
-            <Footer />
+            {/* Footer with Clean Background */}
+            <section className="bg-warm-gradient">
+                <Footer />
+            </section>
         </div>
     )
 }

@@ -244,9 +244,8 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                                     <img
                                         src="/Swagat Logo.png"
                                         alt="Swagat Group of Institutions"
-                                        className="w-12 h-auto object-contain"
+                                        className="w-32 h-auto object-contain"
                                     />
-                                    <span className="ml-3 text-lg font-bold text-gray-800">Swagat</span>
                                 </div>
                                 <button
                                     onClick={toggleNav}

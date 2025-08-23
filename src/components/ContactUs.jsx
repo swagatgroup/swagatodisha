@@ -5,6 +5,7 @@ const ContactUs = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         subject: '',
         message: ''
     })
@@ -84,6 +85,7 @@ const ContactUs = () => {
                     access_key: '9ec47c5e-26a9-46b3-8845-210426d38985', // Replace with your actual access key
                     name: formData.name,
                     email: formData.email,
+                    phone: formData.phone,
                     subject: formData.subject,
                     message: formData.message,
                     from_name: formData.name,
@@ -104,6 +106,7 @@ const ContactUs = () => {
                 setFormData({
                     name: '',
                     email: '',
+                    phone: '',
                     subject: '',
                     message: ''
                 })
@@ -257,6 +260,21 @@ const ContactUs = () => {
                                                 placeholder="Enter your email address"
                                             />
                                         </div>
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Phone Number
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            id="phone"
+                                            name="phone"
+                                            value={formData.phone}
+                                            onChange={handleInputChange}
+                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                                            placeholder="Enter your phone number (optional)"
+                                        />
                                     </div>
 
                                     <div>

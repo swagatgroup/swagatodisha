@@ -6,10 +6,9 @@ const Management = () => {
     const leadershipTeam = [
         {
             id: 1,
-            name: "Mr. RK Meher",
+            name: "Mr. G. Meher",
             position: "Chairman & Founder",
             department: "Executive Leadership",
-            image: "/chairman.jpg",
             experience: "25+ Years",
             expertise: "Educational Leadership, Strategic Planning",
             vision: "To create a world-class educational ecosystem that nurtures innovation and excellence",
@@ -18,10 +17,9 @@ const Management = () => {
         },
         {
             id: 2,
-            name: "Dr. Priya Sharma",
+            name: "Mr. R.K. Meher",
             position: "Director of Academics",
             department: "Academic Excellence",
-            image: "/chairman-rk.jpg",
             experience: "18+ Years",
             expertise: "Curriculum Development, Quality Assurance",
             vision: "Empowering students with knowledge that transforms lives and shapes futures",
@@ -30,10 +28,9 @@ const Management = () => {
         },
         {
             id: 3,
-            name: "Mr. Amit Patel",
+            name: "Mr. S.K. Meher",
             position: "Chief Operations Officer",
             department: "Operations & Management",
-            image: "/mnt 002.jpg",
             experience: "20+ Years",
             expertise: "Strategic Operations, Resource Management",
             vision: "Building operational excellence that supports educational innovation and growth",
@@ -42,10 +39,9 @@ const Management = () => {
         },
         {
             id: 4,
-            name: "Ms. Kavita Singh",
+            name: "Mr. S. Patel",
             position: "Head of Student Affairs",
             department: "Student Development",
-            image: "/mnt 003.jpg",
             experience: "15+ Years",
             expertise: "Student Counseling, Career Guidance",
             vision: "Nurturing holistic development and ensuring every student reaches their potential",
@@ -88,12 +84,17 @@ const Management = () => {
                             onClick={() => setSelectedLeader(leader)}
                         >
                             {/* Leadership Card */}
-                            <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 overflow-hidden hover:bg-white/20 transition-all duration-500">
+                            <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 overflow-hidden transition-all duration-500 hover:scale-105 hover:bg-white/20 hover:shadow-2xl hover:shadow-purple-500/25">
                                 {/* Background Pattern */}
                                 <div className="absolute inset-0 opacity-10">
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400 to-blue-400 rounded-full blur-2xl"></div>
                                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full blur-2xl"></div>
                                 </div>
+
+                                {/* Enhanced Hover Effects */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-3xl"></div>
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                                <div className="absolute bottom-0 right-0 w-1 h-full bg-gradient-to-b from-purple-400 to-blue-400 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-bottom"></div>
 
                                 {/* Content */}
                                 <div className="relative z-10">
@@ -103,30 +104,30 @@ const Management = () => {
                                             <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors duration-300">
                                                 {leader.name}
                                             </h3>
-                                            <p className="text-purple-300 font-medium mb-1">
+                                            <p className="text-purple-300 font-medium mb-1 group-hover:text-purple-200 transition-colors duration-300">
                                                 {leader.position}
                                             </p>
-                                            <p className="text-gray-400 text-sm">
+                                            <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-300">
                                                 {leader.department}
                                             </p>
                                         </div>
 
                                         {/* Experience Badge */}
-                                        <div className={`px-4 py-2 bg-gradient-to-r ${leader.color} rounded-full text-white text-sm font-semibold shadow-lg`}>
+                                        <div className={`px-4 py-2 bg-gradient-to-r ${leader.color} rounded-full text-white text-sm font-semibold shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                                             {leader.experience}
                                         </div>
                                     </div>
 
                                     {/* Expertise */}
                                     <div className="mb-6">
-                                        <p className="text-gray-300 text-sm leading-relaxed">
+                                        <p className="text-gray-300 text-sm leading-relaxed group-hover:text-gray-200 transition-colors duration-300">
                                             <span className="text-purple-300 font-medium">Expertise:</span> {leader.expertise}
                                         </p>
                                     </div>
 
                                     {/* Vision */}
-                                    <div className="mb-6 p-4 bg-white/5 rounded-2xl border border-white/10">
-                                        <p className="text-gray-300 text-sm italic leading-relaxed">
+                                    <div className="mb-6 p-4 bg-white/5 rounded-2xl border border-white/10 group-hover:bg-white/10 group-hover:border-purple-400/30 transition-all duration-300">
+                                        <p className="text-gray-300 text-sm italic leading-relaxed group-hover:text-gray-200 transition-colors duration-300">
                                             "{leader.vision}"
                                         </p>
                                     </div>
@@ -134,15 +135,12 @@ const Management = () => {
                                     {/* Key Achievements */}
                                     <div className="space-y-2">
                                         {leader.achievements.slice(0, 2).map((achievement, idx) => (
-                                            <div key={idx} className="flex items-center">
-                                                <div className="w-2 h-2 bg-purple-400 rounded-full mr-3"></div>
-                                                <span className="text-gray-300 text-sm">{achievement}</span>
+                                            <div key={idx} className="flex items-center group-hover:translate-x-2 transition-transform duration-300">
+                                                <div className="w-2 h-2 bg-purple-400 rounded-full mr-3 group-hover:bg-purple-300 transition-colors duration-300"></div>
+                                                <span className="text-gray-300 text-sm group-hover:text-gray-200 transition-colors duration-300">{achievement}</span>
                                             </div>
                                         ))}
                                     </div>
-
-                                    {/* Hover Effect */}
-                                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
                                 </div>
                             </div>
                         </div>
@@ -163,15 +161,9 @@ const Management = () => {
                     <div className="relative max-w-4xl w-full bg-gradient-to-br from-gray-900 to-purple-900 rounded-3xl shadow-2xl overflow-hidden border border-white/20">
                         {/* Modal Header */}
                         <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-8 text-center">
-                            <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-white/20">
-                                <img
-                                    src={selectedLeader.image}
-                                    alt={selectedLeader.name}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
                             <h3 className="text-3xl font-bold text-white mb-2">{selectedLeader.name}</h3>
                             <p className="text-purple-100 text-lg">{selectedLeader.position}</p>
+                            <p className="text-purple-200 text-base">{selectedLeader.department}</p>
                         </div>
 
                         {/* Modal Content */}

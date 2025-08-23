@@ -123,19 +123,19 @@ export const QUICK_LINKS = [
 export const MANAGEMENT_TEAM = [
     {
         id: 1,
-        name: 'Mr. R.K. Meher',
+        name: 'Mr. G. Meher',
         position: 'Chairman',
         image: '/chairman.jpg'
     },
     {
         id: 2,
-        name: 'Mr. Gangadhar Meher',
+        name: 'Mr. R.K. Meher',
         position: 'Trustee',
         image: '/mnt 006.jpg'
     },
     {
         id: 3,
-        name: 'Mr. Sameer Meher',
+        name: 'Mr. S.K. Meher',
         position: 'Trustee',
         image: '/mnt 006.jpg'
     },
@@ -153,7 +153,7 @@ export const MANAGEMENT_TEAM = [
     },
     {
         id: 6,
-        name: 'Mr. Lorem ipsum',
+        name: 'Mr. S. Patel',
         position: 'Marketing Director',
         image: '/mnt 004.jpg'
     }
@@ -169,7 +169,7 @@ export const CAROUSEL_IMAGES = [
 
 // Chairman message
 export const CHAIRMAN_MESSAGE = {
-    name: 'Mr. R.K. Meher',
+    name: 'Mr. G. Meher',
     position: 'Chairman',
     image: '/chairman.jpg',
     message: `"There were various obstacles to make the empire of Swagat group of Institutions stand. However the real challenge was in giving shape to it and maintaining quality services. But with the consistent efforts of our team, now it is possible to bring a revolution. The overwhelming response of students, parents and well-wishers is the only way to judge our progress throughout the years. I would like to thank all for your immense love and support".`
@@ -186,5 +186,5 @@ export const MILESTONE = {
 // Location
 export const LOCATION = {
     address: 'Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039',
-mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.430049734715!2d83.151755749193!3d19.906274586551355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a24e934ac5f21a3%3A0x163989ed75231f8d!2sswagat%20institute!5e0!3m2!1sen!2sin!4v1653113592392!5m2!1sen!2sin'
+    mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3751.430049734715!2d83.151755749193!3d19.906274586551355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3a24e934ac5f21a3%3A0x163989ed75231f8d!2sswagat%20institute!5e0!3m2!1sen!2sin!4v1653113592392!5m2!1sen!2sin'
 }

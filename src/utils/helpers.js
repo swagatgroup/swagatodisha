@@ -1,19 +1,224 @@
-// Format number with commas
-export const formatNumber = (num) => {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+// Utility functions for the application
+
+// Smooth scroll to a specific section
+export const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId)
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth' })
+    }
 }
 
-// Capitalize first letter
-export const capitalize = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1)
+// Scroll to contact section
+export const scrollToContact = () => {
+    scrollToSection('contact')
 }
 
-// Generate random ID
-export const generateId = () => {
-    return Math.random().toString(36).substr(2, 9)
+// Intersection Observer utility for scroll animations
+export const createScrollObserver = (callback, options = {}) => {
+    const defaultOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+        ...options
+    }
+
+    return new IntersectionObserver(callback, defaultOptions)
 }
 
-// Debounce function
+// Parallax effect utility
+export const createParallaxEffect = (element, speed = 0.5) => {
+    if (!element) return
+
+    const handleScroll = () => {
+        const scrolled = window.pageYOffset
+        const rate = scrolled * speed
+        element.style.transform = `translateY(${rate}px)`
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    
+    // Cleanup function
+    return () => window.removeEventListener('scroll', handleScroll)
+}
+
+// Stagger animation utility
+export const createStaggerAnimation = (elements, animationClass, staggerDelay = 100) => {
+    if (!elements || elements.length === 0) return
+
+    elements.forEach((element, index) => {
+        setTimeout(() => {
+            element.classList.add(animationClass)
+        }, index * staggerDelay)
+    })
+}
+
+// Typing effect utility
+export const createTypingEffect = (element, text, speed = 100) => {
+    if (!element) return
+
+    let index = 0
+    element.textContent = ''
+
+    const type = () => {
+        if (index < text.length) {
+            element.textContent += text.charAt(index)
+            index++
+            setTimeout(type, speed)
+        }
+    }
+
+    type()
+}
+
+// Counter animation utility
+export const createCounterAnimation = (element, target, duration = 2000) => {
+    if (!element) return
+
+    let start = 0
+    const increment = target / (duration / 16) // 60fps
+
+    const updateCounter = () => {
+        start += increment
+        if (start < target) {
+            element.textContent = Math.floor(start)
+            requestAnimationFrame(updateCounter)
+        } else {
+            element.textContent = target
+        }
+    }
+
+    updateCounter()
+}
+
+// Mouse parallax effect
+export const createMouseParallax = (element, intensity = 0.1) => {
+    if (!element) return
+
+    const handleMouseMove = (e) => {
+        const { clientX, clientY } = e
+        const { innerWidth, innerHeight } = window
+        
+        const x = (clientX - innerWidth / 2) * intensity
+        const y = (clientY - innerHeight / 2) * intensity
+        
+        element.style.transform = `translate(${x}px, ${y}px)`
+    }
+
+    element.addEventListener('mousemove', handleMouseMove)
+    
+    return () => element.removeEventListener('mousemove', handleMouseMove)
+}
+
+// Smooth reveal animation
+export const createRevealAnimation = (elements, options = {}) => {
+    const defaultOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+        animationClass: 'animate-fade-in-up',
+        ...options
+    }
+
+    const observer = createScrollObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add(defaultOptions.animationClass)
+                observer.unobserve(entry.target)
+            }
+        })
+    }, defaultOptions)
+
+    if (Array.isArray(elements)) {
+        elements.forEach(el => observer.observe(el))
+    } else {
+        observer.observe(elements)
+    }
+
+    return observer
+}
+
+// Floating animation utility
+export const createFloatingAnimation = (element, options = {}) => {
+    const defaultOptions = {
+        duration: 3000,
+        delay: 0,
+        ease: 'easeInOut',
+        ...options
+    }
+
+    if (!element) return
+
+    const keyframes = [
+        { transform: 'translateY(0px) rotate(0deg)' },
+        { transform: 'translateY(-20px) rotate(2deg)' },
+        { transform: 'translateY(-10px) rotate(-1deg)' },
+        { transform: 'translateY(-15px) rotate(1deg)' },
+        { transform: 'translateY(0px) rotate(0deg)' }
+    ]
+
+    const animation = element.animate(keyframes, {
+        duration: defaultOptions.duration,
+        delay: defaultOptions.delay,
+        easing: defaultOptions.ease,
+        iterations: Infinity
+    })
+
+    return animation
+}
+
+// Shimmer effect utility
+export const createShimmerEffect = (element) => {
+    if (!element) return
+
+    const shimmer = document.createElement('div')
+    shimmer.className = 'absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent'
+    shimmer.style.transition = 'transform 1s ease-in-out'
+    
+    element.style.position = 'relative'
+    element.style.overflow = 'hidden'
+    element.appendChild(shimmer)
+
+    const triggerShimmer = () => {
+        shimmer.style.transform = 'translateX(100%)'
+        setTimeout(() => {
+            shimmer.style.transform = 'translateX(-100%)'
+        }, 100)
+    }
+
+    element.addEventListener('mouseenter', triggerShimmer)
+    
+    return () => {
+        element.removeEventListener('mouseenter', triggerShimmer)
+        element.removeChild(shimmer)
+    }
+}
+
+// Magnetic effect utility
+export const createMagneticEffect = (element, intensity = 0.3) => {
+    if (!element) return
+
+    const handleMouseMove = (e) => {
+        const { clientX, clientY } = e
+        const { left, top, width, height } = element.getBoundingClientRect()
+        
+        const x = (clientX - left - width / 2) * intensity
+        const y = (clientY - top - height / 2) * intensity
+        
+        element.style.transform = `translate(${x}px, ${y}px)`
+    }
+
+    const handleMouseLeave = () => {
+        element.style.transform = 'translate(0px, 0px)'
+    }
+
+    element.addEventListener('mousemove', handleMouseMove)
+    element.addEventListener('mouseleave', handleMouseLeave)
+    
+    return () => {
+        element.removeEventListener('mousemove', handleMouseMove)
+        element.removeEventListener('mouseleave', handleMouseLeave)
+    }
+}
+
+// Debounce utility for performance
 export const debounce = (func, wait) => {
     let timeout
     return function executedFunction(...args) {
@@ -26,10 +231,10 @@ export const debounce = (func, wait) => {
     }
 }
 
-// Throttle function
+// Throttle utility for performance
 export const throttle = (func, limit) => {
     let inThrottle
-    return function () {
+    return function() {
         const args = arguments
         const context = this
         if (!inThrottle) {
@@ -38,6 +243,16 @@ export const throttle = (func, limit) => {
             setTimeout(() => inThrottle = false, limit)
         }
     }
+}
+
+// Format number with commas
+export const formatNumber = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+}
+
+// Generate random ID
+export const generateId = () => {
+    return Math.random().toString(36).substr(2, 9)
 }
 
 // Check if element is in viewport
@@ -51,130 +266,10 @@ export const isInViewport = (element) => {
     )
 }
 
-// Smooth scroll to element
-export const scrollToElement = (elementId, offset = 0) => {
-    const element = document.getElementById(elementId)
-    if (element) {
-        const elementPosition = element.getBoundingClientRect().top
-        const offsetPosition = elementPosition + window.pageYOffset - offset
-
-        window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-        })
-    }
-}
-
-// Get CSS variable value
-export const getCSSVariable = (variableName) => {
-    return getComputedStyle(document.documentElement).getPropertyValue(variableName)
-}
-
-// Set CSS variable value
-export const setCSSVariable = (variableName, value) => {
-    document.documentElement.style.setProperty(variableName, value)
-}
-
-// Format date
-export const formatDate = (date, options = {}) => {
-    const defaultOptions = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        ...options
-    }
-    return new Date(date).toLocaleDateString('en-US', defaultOptions)
-}
-
-// Check if device is mobile
-export const isMobile = () => {
-    return window.innerWidth <= 768
-}
-
-// Check if device is touch
-export const isTouch = () => {
-    return 'ontouchstart' in window || navigator.maxTouchPoints > 0
-}
-
-// Helper functions for the application
-
-/**
- * Scroll to a specific section by ID
- * @param {string} sectionId - The ID of the section to scroll to
- */
-export const scrollToSection = (sectionId) => {
-    const element = document.getElementById(sectionId)
-    if (element) {
-        element.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-        })
-    }
-}
-
-/**
- * Scroll to contact form
- */
-export const scrollToContact = () => {
-    scrollToSection('contact')
-}
-
-/**
- * Scroll to admissions section
- */
-export const scrollToAdmissions = () => {
-    scrollToSection('admissions')
-}
-
-/**
- * Format phone number for display
- * @param {string} phone - Raw phone number
- * @returns {string} Formatted phone number
- */
-export const formatPhoneNumber = (phone) => {
-    if (!phone) return ''
-    return phone.replace(/(\d{2})(\d{4})(\d{4})/, '$1 $2 $3')
-}
-
-/**
- * Validate email format
- * @param {string} email - Email to validate
- * @returns {boolean} True if valid email
- */
-export const validateEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
-}
-
-/**
- * Show success message using SweetAlert
- * @param {string} title - Success title
- * @param {string} message - Success message
- */
-export const showSuccessMessage = (title, message) => {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            icon: 'success',
-            title: title,
-            text: message,
-            confirmButtonColor: '#8B5CF6',
-            confirmButtonText: 'Great!'
-        })
-    }
-}
-
-/**
- * Show error message using SweetAlert
- * @param {string} title - Error title
- * @param {string} message - Error message
- */
-export const showErrorMessage = (title, message) => {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            icon: 'error',
-            title: title,
-            text: message,
-            confirmButtonColor: '#8B5CF6'
-        })
-    }
+// Smooth scroll to top
+export const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    })
 }
