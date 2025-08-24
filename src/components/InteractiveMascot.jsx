@@ -237,7 +237,7 @@ const InteractiveMascot = ({ isVisible = true }) => {
 
             {/* Interactive Hints */}
             <motion.div
-                className="absolute bottom-8 left-8 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 text-white text-sm"
+                className="z-1000 absolute bottom-8 left-8 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 text-white text-sm"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 2, duration: 0.8 }}

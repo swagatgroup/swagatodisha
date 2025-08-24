@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
 /* Clean, Modern Backgrounds */
 @layer base {
 
@@ -131,7 +136,7 @@
 
 /* Premium Selection */
 ::selection {
-  background: linear-gradient(45deg, #8b5cf6, #3b82f6);
+  background: linear-gradient(45deg, #f59e0b, #d97706);
   color: white;
 }
 

@@ -28,7 +28,7 @@ const QuickLinks = () => {
         },
         {
             id: 3,
-            title: "News Letters",
+            title: "Important Notifications",
             description: "Stay updated with latest news and updates",
             icon: "fa-solid fa-newspaper",
             color: "#10B981",

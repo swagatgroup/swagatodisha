@@ -24,15 +24,17 @@ function App() {
             <PremiumFloatingElements />
 
             <Header isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
-            <HeroCarousel />
+            <section id="home">
+                <HeroCarousel />
+            </section>
 
             {/* About Us with Clean Background */}
-            <section className="section-bg">
+            <section id="about" className="section-bg">
                 <AboutUs />
             </section>
 
             {/* Institution Types with Clean Background */}
-            <section className="bg-subtle-gradient">
+            <section id="programs" className="bg-subtle-gradient">
                 <InstitutionTypes />
             </section>
 
@@ -42,7 +44,7 @@ function App() {
             </section>
 
             {/* Admissions Section with Clean Background */}
-            <section className="bg-cool-gradient">
+            <section id="admissions" className="bg-cool-gradient">
                 <Admissions />
             </section>
 
@@ -68,7 +70,7 @@ function App() {
             </section>
 
             {/* Location Section with Clean Background */}
-            <section className="py-20 bg-clean-white">
+            <section id="contact" className="py-20 bg-clean-white">
                 <div className="container mx-auto px-6">
                     <Location />
                 </div>

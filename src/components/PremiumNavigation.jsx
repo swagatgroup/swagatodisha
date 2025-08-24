@@ -17,9 +17,20 @@ const PremiumNavigation = () => {
         { name: 'Home', href: '#home' },
         { name: 'Programs', href: '#programs' },
         { name: 'About', href: '#about' },
+        { name: 'Institutions', href: '#institutions' },
         { name: 'Admissions', href: '#admissions' },
         { name: 'Contact', href: '#contact' }
     ]
+
+    const smoothScrollTo = (href) => {
+        const element = document.querySelector(href)
+        if (element) {
+            element.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            })
+        }
+    }
 
     return (
         <nav className={`fixed top-0 left-0 right-0 z-50 bg-white shadow-lg transition-all duration-300`}>
@@ -44,9 +55,9 @@ const PremiumNavigation = () => {
                     {/* Desktop Navigation */}
                     <div className="hidden lg:flex items-center space-x-8">
                         {navItems.map((item, index) => (
-                            <motion.a
+                            <motion.button
                                 key={item.name}
-                                href={item.href}
+                                onClick={() => smoothScrollTo(item.href)}
                                 className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-300 relative group"
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -54,7 +65,7 @@ const PremiumNavigation = () => {
                             >
                                 {item.name}
                                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-600 transition-all duration-300 group-hover:w-full"></span>
-                            </motion.a>
+                            </motion.button>
                         ))}
 
                         {/* CTA Button */}
@@ -99,17 +110,19 @@ const PremiumNavigation = () => {
                     >
                         <div className="px-6 py-4 space-y-4">
                             {navItems.map((item, index) => (
-                                <motion.a
+                                <motion.button
                                     key={item.name}
-                                    href={item.href}
-                                    className="block text-gray-700 hover:text-purple-600 font-medium py-2 transition-colors duration-300"
+                                    onClick={() => {
+                                        smoothScrollTo(item.href)
+                                        setIsOpen(false)
+                                    }}
+                                    className="block text-gray-700 hover:text-purple-600 font-medium py-2 transition-colors duration-300 w-full text-left"
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                                    onClick={() => setIsOpen(false)}
                                 >
                                     {item.name}
-                                </motion.a>
+                                </motion.button>
                             ))}
 
                             {/* Mobile CTA Button */}

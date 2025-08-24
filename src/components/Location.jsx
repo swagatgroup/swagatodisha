@@ -3,22 +3,34 @@ import React, { useState } from 'react'
 const Location = () => {
     const [mapType, setMapType] = useState('roadmap') // 'roadmap', 'satellite', 'hybrid', 'terrain'
 
-    const locationData = {
-        name: "Swagat Group of Institutions",
-        address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039",
-        phone: "+91 7684060809",
-        email: "contact@swagatodisha.com",
-        coordinates: {
-            lat: 20.099885,
-            lng: 82.677498
+    const locationData = [
+        {
+            name: "Swagat Group of Institutions - Sargiguda",
+            address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039",
+            phone: "+91 7684060809",
+            email: "contact@swagatodisha.com",
+            coordinates: {
+                lat: 20.099885,
+                lng: 82.677498
+            }
+        },
+        {
+            name: "Swagat Group of Institutions - Ghantiguda",
+            address: "Ghantiguda, PO - Chalna, PS - Sinapali, Nuapada, Odisha, Pin-766108",
+            phone: "+91 7684060809",
+            email: "contact@swagatodisha.com",
+            coordinates: {
+                lat: 20.099885,
+                lng: 82.677498
+            }
         }
-    }
+    ]
 
     // Generate proper Google Maps URL with different view options
     const getMapUrl = (type) => {
         const baseUrl = "https://www.google.com/maps/embed/v1"
         const key = "AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" // Google Maps API key
-        const location = `${locationData.coordinates.lat},${locationData.coordinates.lng}`
+        const location = `${locationData[0].coordinates.lat},${locationData[0].coordinates.lng}`
 
         switch (type) {
             case 'satellite':
@@ -54,34 +66,51 @@ const Location = () => {
                     </h2>
 
                     <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
-                        Visit us at our state-of-the-art campus in the heart of Bhawanipatna, Odisha
+                        Visit us at our state-of-the-art campuses in Sargiguda, Kantabanji, Balangir and Ghantiguda, Sinapali, Nuapada, Odisha
                     </p>
 
-                    {/* Location Info Cards */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12">
-                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-                            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-map-marker-alt text-white text-xl"></i>
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">Address</h3>
-                            <p className="text-gray-600 text-sm leading-relaxed">{locationData.address}</p>
-                        </div>
+                    {/* Location Info Cards - Two Columns */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto mb-12">
+                        {locationData.map((location, index) => (
+                            <div key={index} className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                                <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                                    <i className="fa-solid fa-map-marker-alt text-white text-2xl"></i>
+                                </div>
+                                <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">{location.name}</h3>
 
-                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-                            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-phone text-white text-xl"></i>
-                            </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">Phone</h3>
-                            <p className="text-gray-600 text-sm">{locationData.phone}</p>
-                        </div>
+                                <div className="space-y-4">
+                                    <div className="flex items-start">
+                                        <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                            <i className="fa-solid fa-map-marker-alt text-purple-600 text-lg"></i>
+                                        </div>
+                                        <div className='text-left'>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-1">Address</h4>
+                                            <p className="text-gray-600 leading-relaxed">{location.address}</p>
+                                        </div>
+                                    </div>
 
-                        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
-                            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-envelope text-white text-xl"></i>
+                                    <div className="flex items-start">
+                                        <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                            <i className="fa-solid fa-phone text-purple-600 text-lg"></i>
+                                        </div>
+                                        <div className='text-left'>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-1">Phone</h4>
+                                            <p className="text-gray-600">{location.phone}</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-start">
+                                        <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                            <i className="fa-solid fa-envelope text-purple-600 text-lg"></i>
+                                        </div>
+                                        <div className='text-left'>
+                                            <h4 className="text-lg font-semibold text-gray-800 mb-1">Email</h4>
+                                            <p className="text-gray-600">{location.email}</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <h3 className="text-lg font-bold text-gray-800 mb-2">Email</h3>
-                            <p className="text-gray-600 text-sm">{locationData.email}</p>
-                        </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -133,9 +162,9 @@ const Location = () => {
                                 </div>
                                 <h3 className="text-base md:text-lg font-bold text-gray-800">Our Campus</h3>
                             </div>
-                            <p className="text-gray-600 text-xs md:text-sm mb-2">{locationData.address}</p>
+                            <p className="text-gray-600 text-xs md:text-sm mb-2">{locationData[0].address}</p>
                             <a
-                                href={`https://www.google.com/maps/dir/?api=1&destination=${locationData.coordinates.lat},${locationData.coordinates.lng}`}
+                                href={`https://www.google.com/maps/dir/?api=1&destination=${locationData[0].coordinates.lat},${locationData[0].coordinates.lng}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="block w-full px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 text-center"
@@ -193,8 +222,8 @@ const Location = () => {
                                         <i className="fa-solid fa-check text-white text-sm"></i>
                                     </div>
                                     <div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Strategic Location</h4>
-                                        <p className="text-gray-600 text-sm">Centrally located in Bhawanipatna with easy access to major transportation hubs</p>
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Strategic Locations</h4>
+                                        <p className="text-gray-600 text-sm">Located in Sargiguda, Kantabanji and Ghantiguda, Sinapali with easy access to major transportation routes</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start">
@@ -220,26 +249,27 @@ const Location = () => {
 
                         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
                             <h4 className="text-2xl font-bold text-gray-800 mb-6 text-center">Plan Your Visit</h4>
+
                             <div className="space-y-4">
                                 <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
                                     <i className="fa-solid fa-bus text-purple-600 text-xl mr-4"></i>
                                     <div>
                                         <h5 className="font-semibold text-gray-800">By Bus</h5>
-                                        <p className="text-gray-600 text-sm">Bhawanipatna Bus Stand - 2 minutes walk</p>
+                                        <p className="text-gray-600 text-sm">Kantabanji Bus Stand - 15 minutes drive</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
                                     <i className="fa-solid fa-car text-blue-600 text-xl mr-4"></i>
                                     <div>
                                         <h5 className="font-semibold text-gray-800">By Car</h5>
-                                        <p className="text-gray-600 text-sm">NH 26 - Easy access from all directions</p>
+                                        <p className="text-gray-600 text-sm">NH 26 via Kantabanji - Easy access from Balangir</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
                                     <i className="fa-solid fa-train text-green-600 text-xl mr-4"></i>
                                     <div>
                                         <h5 className="font-semibold text-gray-800">By Train</h5>
-                                        <p className="text-gray-600 text-sm">Bhawanipatna Railway Station - 5 minutes drive</p>
+                                        <p className="text-gray-600 text-sm">Kantabanji Railway Station - 20 minutes drive</p>
                                     </div>
                                 </div>
                             </div>

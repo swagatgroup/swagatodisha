@@ -1,37 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion'
-import { gsap } from 'gsap'
-import { CAROUSEL_IMAGES } from '../utils/constants'
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 
-
-// Import images directly to ensure they're loaded
-// Note: In Vite, we need to use the public folder path
-// Try different approaches for image loading
-const slider1 = '/slider001 SO.jpg'
-const slider2 = '/slider002 SO.jpg'
-const slider3 = '/slider003 SO.jpg'
-const slider4 = '/slider004 SO.jpg'
-
-// Alternative paths in case the above don't work
-const altSlider1 = './slider001 SO.jpg'
-const altSlider2 = './slider002 SO.jpg'
-const altSlider3 = './slider003 SO.jpg'
-const altSlider4 = './slider004 SO.jpg'
-
-
-
-const HeroCarousel = ({ images = CAROUSEL_IMAGES }) => {
-    // Use imported images as fallback if constants don't work
-    const fallbackImages = [slider1, slider2, slider3, slider4]
-    const altFallbackImages = [altSlider1, altSlider2, altSlider3, altSlider4]
-    const displayImages = images && images.length > 0 ? images : fallbackImages
-    const [currentSlide, setCurrentSlide] = useState(0)
-    const [isAnimating, setIsAnimating] = useState(false)
+const HeroCarousel = () => {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
     const containerRef = useRef(null)
-    const textRef = useRef(null)
+    const robotRef = useRef(null)
 
-    // Advanced motion values for premium effects
+    // Advanced motion values for premium 3D effect
     const mouseX = useMotionValue(0)
     const mouseY = useMotionValue(0)
     const rotateX = useTransform(mouseY, [-300, 300], [15, -15])
@@ -40,313 +15,475 @@ const HeroCarousel = ({ images = CAROUSEL_IMAGES }) => {
     const springRotateX = useSpring(rotateX, springConfig)
     const springRotateY = useSpring(rotateY, springConfig)
 
-    // Premium GSAP animations on mount
-    useEffect(() => {
-        const tl = gsap.timeline()
+    // Robot-specific motion values for realistic interaction
+    const robotHeadRotateX = useTransform(mouseY, [-300, 300], [25, -25])
+    const robotHeadRotateY = useTransform(mouseX, [-300, 300], [-25, 25])
+    const robotEyeRotateX = useTransform(mouseY, [-300, 300], [35, -35])
+    const robotEyeRotateY = useTransform(mouseX, [-300, 300], [-35, 35])
+    const robotNeckRotateX = useTransform(mouseY, [-300, 300], [15, -15])
+    const robotNeckRotateY = useTransform(mouseX, [-300, 300], [-15, 15])
 
-        // Sophisticated text reveal with staggered characters
-        const text = textRef.current
-        if (text) {
-            const chars = text.textContent.split('')
-            text.innerHTML = chars.map(char => `<span class="char">${char}</span>`).join('')
-
-            gsap.set('.char', { y: 100, opacity: 0, rotateX: -90 })
-
-            tl.to('.char', {
-                y: 0,
-                opacity: 1,
-                rotateX: 0,
-                duration: 1.2,
-                ease: "back.out(1.7)",
-                stagger: 0.05
-            })
-        }
-
-        // Premium subtitle animations
-        tl.fromTo('.hero-subtitle',
-            { y: 80, opacity: 0, scale: 0.8 },
-            { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power4.out" }, "-=0.8"
-        )
-            .fromTo('.hero-cta',
-                { y: 60, opacity: 0, scale: 0.6 },
-                { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "elastic.out(1, 0.3)" }, "-=0.6"
-            )
-
-
-
-
-    }, [])
+    // Spring animations for smooth robot movement
+    const springHeadRotateX = useSpring(robotHeadRotateX, { damping: 30, stiffness: 600 })
+    const springHeadRotateY = useSpring(robotHeadRotateY, { damping: 30, stiffness: 600 })
+    const springEyeRotateX = useSpring(robotEyeRotateX, { damping: 20, stiffness: 800 })
+    const springEyeRotateY = useSpring(robotEyeRotateY, { damping: 20, stiffness: 800 })
+    const springNeckRotateX = useSpring(robotNeckRotateX, { damping: 35, stiffness: 500 })
+    const springNeckRotateY = useSpring(robotNeckRotateY, { damping: 35, stiffness: 500 })
 
     // Mouse tracking for premium 3D effect
     const handleMouseMove = (e) => {
-        const rect = containerRef.current.getBoundingClientRect()
-        const x = e.clientX - rect.left - rect.width / 2
-        const y = e.clientY - rect.top - rect.height / 2
-        setMousePosition({ x, y })
-        mouseX.set(x)
-        mouseY.set(y)
+        const rect = containerRef.current?.getBoundingClientRect()
+        if (rect) {
+            const x = e.clientX - rect.left - rect.width / 2
+            const y = e.clientY - rect.top - rect.height / 2
+            setMousePosition({ x, y })
+            mouseX.set(x)
+            mouseY.set(y)
+        }
     }
 
-    // Auto-advance carousel with faster timing (2/5th of original)
+    // Robot breathing animation
+    const breathingScale = useSpring(1, {
+        damping: 20,
+        stiffness: 100,
+        mass: 0.5
+    })
+
     useEffect(() => {
-        const timer = setInterval(() => {
-            if (!isAnimating) {
-                setCurrentSlide((prev) => (prev + 1) % displayImages.length)
-            }
-        }, 3200)
-
-        return () => clearInterval(timer)
-    }, [displayImages, isAnimating])
-
-
-
-    const goToSlide = (index) => {
-        if (isAnimating || index === currentSlide) return
-        setIsAnimating(true)
-        setCurrentSlide(index)
-        setTimeout(() => setIsAnimating(false), 1200)
-    }
-
-    const goToPrevious = () => {
-        if (isAnimating) return
-        setIsAnimating(true)
-        setCurrentSlide((prev) => (prev - 1 + images.length) % images.length)
-        setTimeout(() => setIsAnimating(false), 1200)
-    }
-
-    const goToNext = () => {
-        if (isAnimating) return
-        setIsAnimating(true)
-        setCurrentSlide((prev) => (prev + 1) % images.length)
-        setTimeout(() => setIsAnimating(false), 1200)
-    }
-
-    // Premium slide variants with 3D transforms
-    const slideVariants = {
-        enter: (direction) => ({
-            x: direction > 0 ? 1200 : -1200,
-            opacity: 0,
-            scale: 0.7,
-            rotateY: direction > 0 ? 60 : -60,
-            rotateX: 20,
-            z: -200
-        }),
-        center: {
-            zIndex: 1,
-            x: 0,
-            opacity: 1,
-            scale: 1,
-            rotateY: 0,
-            rotateX: 0,
-            z: 0
-        },
-        exit: (direction) => ({
-            zIndex: 0,
-            x: direction < 0 ? 1200 : -1200,
-            opacity: 0,
-            scale: 0.7,
-            rotateY: direction < 0 ? 60 : -60,
-            rotateX: -20,
-            z: -200
-        })
-    }
+        const interval = setInterval(() => {
+            breathingScale.set(1.02)
+            setTimeout(() => breathingScale.set(1), 1000)
+        }, 2000)
+        return () => clearInterval(interval)
+    }, [breathingScale])
 
     return (
         <section
             id="hero"
             ref={containerRef}
-            className="relative h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+            className="relative h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900"
             onMouseMove={handleMouseMove}
         >
             {/* Premium Animated Background */}
             <div className="absolute inset-0">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(139,92,246,0.15),transparent_50%)]"></div>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.1),transparent_50%)]"></div>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(236,72,153,0.08),transparent_70%)]"></div>
+                {/* Sophisticated gradient layers */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(59,130,246,0.15),transparent_50%)]"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(139,92,246,0.12),transparent_50%)]"></div>
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.08),transparent_70%)]"></div>
+
+                {/* Subtle mesh pattern */}
+                <div className="absolute inset-0 opacity-20">
+                    <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.02)_25%,rgba(255,255,255,0.02)_50%,transparent_50%,transparent_75%,rgba(255,255,255,0.02)_75%)] bg-[length:20px_20px]"></div>
+                </div>
             </div>
 
-
-
-            {/* Carousel Container with 3D Mouse Effect */}
-            <motion.div
-                className="relative h-full"
-                style={{
-                    rotateX: springRotateX,
-                    rotateY: springRotateY,
-                    transformStyle: "preserve-3d"
-                }}
-            >
-                <AnimatePresence mode="wait" custom={currentSlide}>
+            {/* Subtle Particle Effects */}
+            <div className="absolute inset-0 pointer-events-none">
+                {[...Array(15)].map((_, i) => (
                     <motion.div
-                        key={currentSlide}
-                        custom={currentSlide}
-                        variants={slideVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        transition={{
-                            x: { type: "spring", stiffness: 200, damping: 40 },
-                            opacity: { duration: 1.2 },
-                            scale: { duration: 1.2 },
-                            rotateY: { duration: 1.2 },
-                            rotateX: { duration: 1.2 }
+                        key={i}
+                        className="absolute w-1 h-1 bg-orange-400/40 rounded-full"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
                         }}
-                        className="absolute inset-0"
-                    >
-                        <div className="relative h-full w-full">
-                            {/* Background Image */}
-                            <img
-                                src={displayImages[currentSlide]}
-                                alt={`Swagat Hero Slide ${currentSlide + 1}`}
-                                className="absolute inset-0 w-full h-full object-cover z-0"
-                                style={{ minHeight: '100vh' }}
-                                onError={(e) => {
-                                    console.error('Failed to load image:', displayImages[currentSlide])
-                                    e.target.style.display = 'none'
+                        animate={{
+                            y: [0, -50],
+                            opacity: [0, 0.6, 0],
+                            scale: [0, 1, 0]
+                        }}
+                        transition={{
+                            duration: 4 + Math.random() * 3,
+                            repeat: Infinity,
+                            delay: Math.random() * 2,
+                            ease: "easeOut"
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Main Content Container */}
+            <div className="relative z-20 flex items-center justify-center h-full px-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center max-w-7xl w-full">
+
+                    {/* Left Side - Text and Information */}
+                    <div className="lg:col-span-2 text-left">
+                        {/* Premium Main Title */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 60, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 1.2, ease: "easeOut" }}
+                            className="mb-8"
+                        >
+                            <motion.h1
+                                className="text-5xl md:text-6xl lg:text-7xl font-black leading-tight tracking-tight mb-4"
+                                style={{
+                                    filter: 'drop-shadow(0 8px 25px rgba(0,0,0,0.5))'
                                 }}
-                            />
+                            >
+                                <span className="text-white">Welcome to </span>
+                                <span
+                                    className="bg-gradient-to-r from-yellow-400 via-orange-500 to-orange-600 bg-clip-text text-transparent"
+                                    style={{
+                                        filter: 'drop-shadow(0 4px 15px rgba(251, 191, 36, 0.3))'
+                                    }}
+                                >
+                                    Swagat
+                                </span>
+                            </motion.h1>
+                        </motion.div>
 
+                        {/* Premium Subtitle */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                            className="mb-6"
+                        >
+                            <motion.p
+                                className="text-2xl md:text-3xl lg:text-4xl text-white font-bold leading-relaxed"
+                                style={{
+                                    textShadow: '0 4px 20px rgba(0,0,0,0.8)',
+                                    filter: 'drop-shadow(0 2px 10px rgba(59, 130, 246, 0.2))'
+                                }}
+                            >
+                                Group of Institutions
+                            </motion.p>
+                        </motion.div>
 
+                        {/* Premium Description */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 1, delay: 0.4, ease: "easeOut" }}
+                            className="mb-12"
+                        >
+                            <motion.p
+                                className="text-lg md:text-xl lg:text-2xl text-gray-200 font-light leading-relaxed max-w-3xl"
+                                style={{
+                                    textShadow: '0 4px 20px rgba(0,0,0,0.8)',
+                                    filter: 'drop-shadow(0 2px 10px rgba(16, 185, 129, 0.2))'
+                                }}
+                            >
+                                Empowering minds, shaping futures. Join thousands of students who have transformed their lives through excellence in education, innovation, and revolutionary learning approaches.
+                            </motion.p>
+                        </motion.div>
 
-                            {/* Fallback background in case image fails to load */}
-                            <div className="absolute inset-0 z-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 opacity-30" />
+                        {/* Premium Statistics */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 40 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 1, delay: 0.6, ease: "easeOut" }}
+                            className="grid grid-cols-3 gap-8 mb-12 max-w-2xl"
+                        >
+                            {[
+                                { number: "5000+", label: "Students", color: "text-white", dot: "bg-orange-400" },
+                                { number: "50+", label: "Faculty", color: "text-white", dot: "bg-white" },
+                                { number: "95%", label: "Success Rate", color: "text-green-400", dot: "bg-green-400" }
+                            ].map((stat, index) => (
+                                <motion.div
+                                    key={index}
+                                    className="text-center group"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <div className="flex items-center justify-center mb-2">
+                                        <div className={`w-2 h-2 ${stat.dot} rounded-full mr-2`}></div>
+                                        <div className={`text-3xl md:text-4xl font-bold ${stat.color} group-hover:text-blue-300 transition-colors duration-300`}>
+                                            {stat.number}
+                                        </div>
+                                    </div>
+                                    <div className="text-gray-300 text-sm font-medium group-hover:text-gray-200 transition-colors duration-300">
+                                        {stat.label}
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
 
+                        {/* Premium CTA Buttons */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
+                            className="flex flex-col sm:flex-row gap-6"
+                        >
+                            <motion.button
+                                whileHover={{
+                                    scale: 1.05,
+                                    y: -3,
+                                    boxShadow: "0 25px 50px rgba(251, 191, 36, 0.3)"
+                                }}
+                                whileTap={{ scale: 0.95 }}
+                                className="group relative px-10 py-5 bg-gradient-to-r from-yellow-400 via-orange-500 to-orange-600 text-white rounded-xl font-bold text-lg shadow-2xl hover:shadow-orange-500/40 transition-all duration-500 overflow-hidden"
+                            >
+                                {/* Button shine effect */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                                <span className="relative z-10">Explore Programs</span>
+                            </motion.button>
 
+                            <motion.button
+                                whileHover={{
+                                    scale: 1.05,
+                                    y: -3,
+                                    backgroundColor: "rgba(59, 130, 246, 0.1)"
+                                }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-10 py-5 border-2 border-blue-600 text-white rounded-xl font-bold text-lg backdrop-blur-xl hover:bg-blue-600/10 transition-all duration-500 hover:border-blue-500"
+                            >
+                                Contact Us
+                            </motion.button>
+                        </motion.div>
+                    </div>
 
-                            {/* Premium AI-Generated Style Background Overlay */}
-                            <div className="absolute inset-0 z-10 bg-gradient-to-br from-purple-600/10 via-blue-600/10 to-indigo-600/10"></div>
+                    {/* Right Side - 3D Hyperrealistic Robot */}
+                    <motion.div
+                        initial={{ opacity: 0, x: 60, scale: 0.8 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+                        className="lg:col-span-1 flex justify-center lg:justify-end"
+                    >
+                        <div className="relative" ref={robotRef}>
+                            {/* 3D Robot Container */}
+                            <motion.div
+                                className="relative w-80 h-80"
+                                style={{
+                                    transformStyle: "preserve-3d",
+                                    perspective: "1000px"
+                                }}
+                                whileHover={{ scale: 1.02 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                {/* Robot Body - Main Structure */}
+                                <motion.div
+                                    className="absolute inset-0 bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 rounded-3xl shadow-2xl"
+                                    style={{
+                                        transform: `rotateX(${springRotateX}deg) rotateY(${springRotateY}deg) scale(${breathingScale})`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    {/* Metallic texture overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-slate-400/20 via-transparent to-slate-900/40 rounded-3xl"></div>
+                                    <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_30%,rgba(255,255,255,0.1)_50%,transparent_70%)] bg-[length:20px_20px] rounded-3xl"></div>
+                                </motion.div>
 
+                                {/* Robot Neck - Connects body to head */}
+                                <motion.div
+                                    className="absolute top-16 left-1/2 transform -translate-x-1/2 w-16 h-8 bg-gradient-to-b from-slate-600 to-slate-700 rounded-full shadow-lg"
+                                    style={{
+                                        transform: `rotateX(${springNeckRotateX}deg) rotateY(${springNeckRotateY}deg) translateZ(20px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    {/* Neck metallic texture */}
+                                    <div className="absolute inset-0 bg-gradient-to-b from-slate-500/30 to-slate-800/30 rounded-full"></div>
+                                </motion.div>
 
+                                {/* Robot Head - Main interactive element */}
+                                <motion.div
+                                    className="absolute top-8 left-1/2 transform -translate-x-1/2 w-32 h-32 bg-gradient-to-br from-slate-600 via-slate-500 to-slate-700 rounded-2xl shadow-2xl"
+                                    style={{
+                                        transform: `rotateX(${springHeadRotateX}deg) rotateY(${springHeadRotateY}deg) translateZ(40px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    {/* Head metallic texture */}
+                                    <div className="absolute inset-0 bg-gradient-to-br from-slate-400/30 via-transparent to-slate-800/40 rounded-2xl"></div>
 
-                            {/* Overlay Gradient */}
-                            <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                                    {/* Robot Eyes - Highly interactive */}
+                                    <div className="absolute top-8 left-1/2 transform -translate-x-1/2 flex gap-8">
+                                        {/* Left Eye */}
+                                        <motion.div
+                                            className="relative w-8 h-8 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-full shadow-lg"
+                                            style={{
+                                                transform: `rotateX(${springEyeRotateX}deg) rotateY(${springEyeRotateY}deg)`,
+                                                transformStyle: "preserve-3d"
+                                            }}
+                                        >
+                                            {/* Eye shine */}
+                                            <div className="absolute top-1 left-1 w-2 h-2 bg-white/80 rounded-full"></div>
+                                            {/* Eye pupil */}
+                                            <div className="absolute top-2 left-2 w-4 h-4 bg-black rounded-full"></div>
+                                            {/* Eye glow */}
+                                            <div className="absolute inset-0 bg-blue-400/20 rounded-full animate-pulse"></div>
+                                        </motion.div>
 
-                            {/* Premium Content Overlay */}
-                            <div className="absolute inset-0 flex items-center justify-center z-20">
-                                <div className="text-center text-white px-6 max-w-6xl">
-                                    <motion.h1
-                                        ref={textRef}
-                                        className="text-6xl md:text-8xl lg:text-9xl font-bold mb-6 leading-tight tracking-tight"
-                                        style={{
-                                            background: 'linear-gradient(135deg, #ffffff 0%, #a855f7 30%, #3b82f6 70%, #06b6d4 100%)',
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
-                                            backgroundClip: 'text'
+                                        {/* Right Eye */}
+                                        <motion.div
+                                            className="relative w-8 h-8 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600 rounded-full shadow-lg"
+                                            style={{
+                                                transform: `rotateX(${springEyeRotateX}deg) rotateY(${springEyeRotateY}deg)`,
+                                                transformStyle: "preserve-3d"
+                                            }}
+                                        >
+                                            {/* Eye shine */}
+                                            <div className="absolute top-1 left-1 w-2 h-2 bg-white/80 rounded-full"></div>
+                                            {/* Eye pupil */}
+                                            <div className="absolute top-2 left-2 w-4 h-4 bg-black rounded-full"></div>
+                                            {/* Eye glow */}
+                                            <div className="absolute inset-0 bg-blue-400/20 rounded-full animate-pulse"></div>
+                                        </motion.div>
+                                    </div>
+
+                                    {/* Robot Mouth - Subtle expression */}
+                                    <motion.div
+                                        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-12 h-2 bg-gradient-to-r from-slate-400 to-slate-600 rounded-full"
+                                        animate={{
+                                            scaleX: [1, 1.1, 1],
+                                            opacity: [0.7, 1, 0.7]
                                         }}
-                                    >
-                                        SWAGAT
-                                    </motion.h1>
+                                        transition={{
+                                            duration: 3,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }}
+                                    />
+                                </motion.div>
 
-                                    <motion.p
-                                        className="hero-subtitle text-xl md:text-2xl lg:text-3xl text-gray-200 mb-4 max-w-3xl mx-auto leading-relaxed font-light"
-                                        style={{ textShadow: '0 4px 20px rgba(0,0,0,0.8)' }}
-                                    >
-                                        Group of Institutions
-                                    </motion.p>
+                                {/* Robot Shoulders */}
+                                <motion.div
+                                    className="absolute top-20 left-8 w-12 h-6 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full shadow-lg"
+                                    style={{
+                                        transform: `rotateX(${springRotateX * 0.5}deg) rotateY(${springRotateY * 0.5}deg) translateZ(15px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-slate-500/30 to-slate-800/30 rounded-full"></div>
+                                </motion.div>
 
-                                    <motion.p
-                                        className="hero-subtitle text-lg md:text-xl lg:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed font-light"
-                                        style={{ textShadow: '0 4px 20px rgba(0,0,0,0.8)' }}
-                                    >
-                                        Education • Innovation • Revolution
-                                    </motion.p>
+                                <motion.div
+                                    className="absolute top-20 right-8 w-12 h-6 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full shadow-lg"
+                                    style={{
+                                        transform: `rotateX(${springRotateX * 0.5}deg) rotateY(${springRotateY * 0.5}deg) translateZ(15px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-slate-500/30 to-slate-800/30 rounded-full"></div>
+                                </motion.div>
 
-                                    <motion.div className="hero-cta flex flex-col sm:flex-row gap-6 justify-center items-center">
-                                        <motion.button
-                                            whileHover={{
-                                                scale: 1.05,
-                                                y: -3,
-                                                boxShadow: "0 20px 40px rgba(139, 92, 246, 0.4)"
-                                            }}
-                                            whileTap={{ scale: 0.95 }}
-                                            className="px-10 py-5 bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 text-white rounded-full font-semibold text-lg shadow-2xl hover:shadow-purple-500/40 transition-all duration-500 backdrop-blur-sm border border-white/20"
-                                        >
-                                            Explore Programs
-                                        </motion.button>
-                                        <motion.button
-                                            whileHover={{
-                                                scale: 1.05,
-                                                y: -3,
-                                                backgroundColor: "rgba(255, 255, 255, 0.15)"
-                                            }}
-                                            whileTap={{ scale: 0.95 }}
-                                            className="px-10 py-5 border-2 border-white/40 text-white rounded-full font-semibold text-lg backdrop-blur-md hover:bg-white/15 transition-all duration-500"
-                                        >
-                                            Watch Video
-                                        </motion.button>
-                                    </motion.div>
-                                </div>
-                            </div>
+                                {/* Robot Arms */}
+                                <motion.div
+                                    className="absolute top-24 left-4 w-4 h-16 bg-gradient-to-b from-slate-600 to-slate-700 rounded-full shadow-lg"
+                                    style={{
+                                        transform: `rotateX(${springRotateX * 0.3}deg) rotateY(${springRotateY * 0.3}deg) translateZ(10px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-slate-500/30 to-slate-800/30 rounded-full"></div>
+                                </motion.div>
+
+                                <motion.div
+                                    className="absolute top-24 right-4 w-4 h-16 bg-gradient-to-b from-slate-600 to-slate-700 rounded-full shadow-lg"
+                                    style={{
+                                        transform: `rotateX(${springRotateX * 0.3}deg) rotateY(${springRotateY * 0.3}deg) translateZ(10px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-slate-500/30 to-slate-800/30 rounded-full"></div>
+                                </motion.div>
+
+                                {/* Robot Chest Panel */}
+                                <motion.div
+                                    className="absolute top-32 left-1/2 transform -translate-x-1/2 w-24 h-16 bg-gradient-to-br from-blue-600/20 via-blue-500/30 to-blue-600/20 rounded-xl border border-blue-400/30"
+                                    style={{
+                                        transform: `rotateX(${springRotateX * 0.2}deg) rotateY(${springRotateY * 0.2}deg) translateZ(25px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                >
+                                    {/* Circuit pattern */}
+                                    <div className="absolute inset-2 bg-[linear-gradient(90deg,transparent_30%,rgba(59,130,246,0.3)_50%,transparent_70%)] bg-[length:8px_8px] rounded-lg"></div>
+                                    {/* Status indicator */}
+                                    <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                </motion.div>
+
+                                {/* Energy Core Glow */}
+                                <motion.div
+                                    className="absolute top-36 left-1/2 transform -translate-x-1/2 w-8 h-8 bg-gradient-to-br from-blue-400 to-cyan-400 rounded-full shadow-lg"
+                                    style={{
+                                        transform: `rotateX(${springRotateX * 0.1}deg) rotateY(${springRotateY * 0.1}deg) translateZ(30px)`,
+                                        transformStyle: "preserve-3d"
+                                    }}
+                                    animate={{
+                                        scale: [1, 1.2, 1],
+                                        opacity: [0.6, 1, 0.6]
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-blue-400/20 rounded-full animate-ping"></div>
+                                </motion.div>
+                            </motion.div>
+
+                            {/* Robot Status Text */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 1, delay: 1, ease: "easeOut" }}
+                                className="text-center mt-6"
+                            >
+                                <p className="text-white text-lg font-medium">AI Assistant Active</p>
+                                <p className="text-blue-300 text-sm font-light">Tracking cursor movement</p>
+                            </motion.div>
                         </div>
                     </motion.div>
-                </AnimatePresence>
-
-                {/* Premium Navigation Dots */}
-                <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-30">
-                    <div className="flex space-x-4">
-                        {images.map((_, index) => (
-                            <motion.button
-                                key={index}
-                                onClick={() => goToSlide(index)}
-                                className={`w-4 h-4 rounded-full transition-all duration-500 ${index === currentSlide
-                                    ? 'bg-gradient-to-r from-purple-500 to-blue-500 scale-125 shadow-lg shadow-purple-500/50'
-                                    : 'bg-white/30 hover:bg-white/60'
-                                    }`}
-                                whileHover={{ scale: 1.3 }}
-                                whileTap={{ scale: 0.9 }}
-                            />
-                        ))}
-                    </div>
                 </div>
+            </div>
 
-                {/* Premium Navigation Arrows */}
-                <motion.button
-                    onClick={goToPrevious}
-                    className="absolute left-8 top-1/2 transform -translate-y-1/2 z-30 w-14 h-14 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all duration-500 border border-white/20"
-                    whileHover={{
-                        scale: 1.15,
-                        x: -8,
-                        backgroundColor: "rgba(255, 255, 255, 0.2)"
+            {/* Bottom Wave/Cloud Structure */}
+            <div className="absolute bottom-0 left-0 w-full h-32 z-10">
+                <motion.div
+                    className="absolute bottom-0 left-0 w-full h-32 bg-white/10 backdrop-blur-xl"
+                    style={{
+                        clipPath: "polygon(0 100%, 20% 60%, 40% 80%, 60% 40%, 80% 70%, 100% 50%, 100% 100%)"
                     }}
-                    whileTap={{ scale: 0.9 }}
-                >
-                    <i className="fa-solid fa-chevron-left text-2xl"></i>
-                </motion.button>
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1.5, delay: 1, ease: "easeOut" }}
+                />
 
-                <motion.button
-                    onClick={goToNext}
-                    className="absolute right-8 top-1/2 transform -translate-y-1/2 z-30 w-14 h-14 bg-white/10 backdrop-blur-xl rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-all duration-500 border border-white/20"
-                    whileHover={{
-                        scale: 1.15,
-                        x: 8,
-                        backgroundColor: "rgba(255, 255, 255, 0.2)"
-                    }}
-                    whileTap={{ scale: 0.9 }}
+                {/* Purple Icon on Wave */}
+                <motion.div
+                    className="absolute bottom-8 left-1/2 transform -translate-x-1/2 w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center shadow-lg"
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1, delay: 1.5, ease: "easeOut" }}
                 >
-                    <i className="fa-solid fa-chevron-right text-2xl"></i>
-                </motion.button>
+                    <span className="text-white font-bold text-lg">S</span>
+                </motion.div>
+            </div>
 
-                {/* Premium Progress Bar */}
-                <div className="absolute bottom-0 left-0 w-full h-1.5 bg-white/10 z-30 backdrop-blur-sm">
-                    <motion.div
-                        className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-indigo-500 rounded-r-full"
-                        initial={{ width: "0%" }}
-                        animate={{ width: "100%" }}
-                        transition={{ duration: 8, ease: "linear" }}
-                        key={currentSlide}
-                    />
-                </div>
+            {/* Mouse Control Hint */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 1.8, ease: "easeOut" }}
+                className="absolute bottom-6 right-6 bg-blue-900/80 backdrop-blur-xl rounded-xl px-4 py-3 border border-blue-600/40"
+            >
+                <p className="text-white text-sm font-medium">Move your mouse to control the robot</p>
             </motion.div>
 
-
-
-
-
-
-
-
-
-
+            {/* Premium Scroll Indicator */}
+            <motion.div
+                className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 2, ease: "easeOut" }}
+            >
+                <motion.div
+                    className="w-6 h-10 border-2 border-white/40 rounded-full flex justify-center"
+                    animate={{ opacity: [0.4, 1, 0.4] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                >
+                    <motion.div
+                        className="w-1 h-3 bg-white/60 rounded-full mt-2"
+                        animate={{ y: [0, 12, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    />
+                </motion.div>
+            </motion.div>
         </section>
     )
 }

@@ -10,9 +10,8 @@ export const APP_CONFIG = {
 export const NAV_ITEMS = [
     { name: 'Home', href: '#hero', icon: '' },
     { name: 'About Us', href: '#about-us', icon: '' },
-    { name: 'Milestone', href: '#milestone', icon: '' },
+    { name: 'Institutions', href: '#institutions', icon: '' },
     { name: 'Admissions', href: '#admissions', icon: '' },
-    { name: 'Gallery', href: '#gallery', icon: '' },
     { name: 'Contact Us', href: '#contact', icon: '' }
 ]
 
@@ -105,7 +104,7 @@ export const QUICK_LINKS = [
     },
     {
         id: 3,
-        name: 'News Letters',
+        name: 'Important Notifications',
         icon: '/information.png',
         color: 'rgb(109, 197, 74)',
         href: '#'
