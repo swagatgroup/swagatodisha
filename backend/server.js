@@ -93,25 +93,52 @@ app.use((err, req, res, next) => {
 // Database connection
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/swagat_odisha', {
+        // Check if MONGODB_URI is set
+        if (!process.env.MONGODB_URI) {
+            throw new Error('MONGODB_URI environment variable is required. Please set it in your deployment environment.');
+        }
+
+        const conn = await mongoose.connect(process.env.MONGODB_URI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error('Database connection error:', error);
+        console.error('Please ensure MONGODB_URI environment variable is set correctly.');
         process.exit(1);
     }
+};
+
+// Environment variable validation
+const validateEnvironment = () => {
+    const required = ['MONGODB_URI', 'JWT_SECRET'];
+    const missing = required.filter(key => !process.env[key]);
+    
+    if (missing.length > 0) {
+        console.error('❌ Missing required environment variables:', missing.join(', '));
+        console.error('Please set these variables in your deployment environment.');
+        process.exit(1);
+    }
+    
+    console.log('✅ All required environment variables are set');
 };
 
 // Start server
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
-    await connectDB();
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-        console.log(`Environment: ${process.env.NODE_ENV}`);
-    });
+    try {
+        validateEnvironment();
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
+            console.log(`📊 Health check: http://localhost:${PORT}/health`);
+        });
+    } catch (error) {
+        console.error('❌ Failed to start server:', error.message);
+        process.exit(1);
+    }
 };
 
 startServer();
