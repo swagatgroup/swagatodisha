@@ -11,13 +11,7 @@ const app = express();
 
 // Import routes
 const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
 const studentRoutes = require('./routes/students');
-const agentRoutes = require('./routes/agents');
-const staffRoutes = require('./routes/staff');
-const adminRoutes = require('./routes/admin');
-const admissionRoutes = require('./routes/admissions');
-const contentRoutes = require('./routes/content');
 
 // Middleware
 app.use(helmet());
@@ -54,13 +48,7 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/students', studentRoutes);
-app.use('/api/agents', agentRoutes);
-app.use('/api/staff', staffRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/admissions', admissionRoutes);
-app.use('/api/content', contentRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -105,8 +93,7 @@ app.use((err, req, res, next) => {
 // Database connection
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.mongodb + srv://swagatgroup:SGClusterDB%4099%23
-            @cluster0.m0ymyqa.mongodb.net /? retryWrites = true & w=majority & appName=Cluster0 || 'mongodb://localhost:27017/swagat_odisha', {
+        const conn = await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/swagat_odisha', {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
