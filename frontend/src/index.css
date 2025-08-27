@@ -1,0 +1,163 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Smooth Scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Clean, Modern Backgrounds */
+@layer base {
+
+  /* Clean white background with subtle shadow */
+  .bg-clean-white {
+    @apply bg-white shadow-sm;
+  }
+
+  /* Subtle gradient backgrounds */
+  .bg-subtle-gradient {
+    @apply bg-gradient-to-br from-gray-50 to-white;
+  }
+
+  .bg-warm-gradient {
+    @apply bg-gradient-to-br from-gray-50 via-white to-gray-50;
+  }
+
+  .bg-cool-gradient {
+    @apply bg-gradient-to-br from-blue-50 via-white to-indigo-50;
+  }
+
+  .bg-purple-gradient {
+    @apply bg-gradient-to-br from-purple-50 via-white to-blue-50;
+  }
+
+  /* Enhanced button styles */
+  .btn-premium {
+    @apply relative overflow-hidden transition-all duration-500;
+  }
+
+  .btn-premium::before {
+    content: '';
+    @apply absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 transition-opacity duration-300;
+  }
+
+  .btn-premium:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Premium card styles */
+  .card-premium {
+    @apply relative overflow-hidden bg-white/80 backdrop-blur-md border border-white/20 shadow-xl;
+  }
+
+  /* Section backgrounds */
+  .section-bg {
+    @apply bg-gradient-to-br from-gray-50 via-white to-gray-50;
+  }
+
+  /* Form backgrounds */
+  .form-bg {
+    @apply bg-white/90 backdrop-blur-sm border border-gray-200/50;
+  }
+}
+
+/* Premium Animation Classes */
+@layer components {
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-shimmer {
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.4),
+        transparent);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+/* Custom Animations */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+  }
+
+  to {
+    box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Premium Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #8b5cf6, #3b82f6);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7c3aed, #2563eb);
+}
+
+/* Premium Selection */
+::selection {
+  background: #ffd700;
+  color: #000;
+}
+
+::-moz-selection {
+  background: #ffd700;
+  color: #000;
+}
+
+/* Premium Focus States */
+.focus-premium:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+}
+
+/* Premium Text Shadows */
+.text-shadow-premium {
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Premium Borders */
+.border-premium {
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  background: linear-gradient(45deg, rgba(139, 92, 246, 0.05), rgba(59, 130, 246, 0.05));
+}
