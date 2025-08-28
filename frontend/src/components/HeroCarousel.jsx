@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { CAROUSEL_IMAGES } from '../utils/constants'
 
 const HeroCarousel = () => {
     const [currentSlide, setCurrentSlide] = useState(0)
 
-    // Array of slider images - only the two new ones
-    const slides = [
-        '/slider1.jpg',
-        '/slider2.jpg',
-    ]
+    // Use images from constants for consistency
+    const slides = CAROUSEL_IMAGES
 
     // Auto-advance slides every 4000ms
     useEffect(() => {

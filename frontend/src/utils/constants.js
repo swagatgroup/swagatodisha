@@ -17,7 +17,7 @@ export const NAV_ITEMS = [
 
 // Social links
 export const SOCIAL_LINKS = {
-    phone: '+91 7684060809',
+    phone: '+91 7684060809', // Sargiguda main number
     email: 'contact@swagatodisha.com',
     facebook: 'https://www.facebook.com/Swagat-Group-of-Institutions-108863395171576',
     twitter: 'https://twitter.com/SwagatOdisha',
@@ -158,12 +158,10 @@ export const MANAGEMENT_TEAM = [
     }
 ]
 
-// Carousel images
+// Carousel images - All available slider images
 export const CAROUSEL_IMAGES = [
-    '/slider001 SO.jpg',
-    '/slider002 SO.jpg',
-    '/slider003 SO.jpg',
-    '/slider004 SO.jpg'
+    '/slider1.jpg',
+    '/slider2.jpg'
 ]
 
 // Chairman message

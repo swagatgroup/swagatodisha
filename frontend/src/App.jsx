@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Header from './components/Header'
 import HeroCarousel from './components/HeroCarousel'
 import AboutUs from './components/AboutUs'
@@ -14,8 +16,38 @@ import Location from './components/Location'
 import ContactUs from './components/ContactUs'
 import Footer from './components/Footer'
 import PremiumFloatingElements from './components/PremiumFloatingElements'
+import Login from './components/auth/Login'
+import Register from './components/auth/Register'
+import StudentDashboard from './components/dashboard/StudentDashboard'
+import AgentDashboard from './components/dashboard/AgentDashboard'
+import StaffDashboard from './components/dashboard/StaffDashboard'
+import SuperAdminDashboard from './components/dashboard/SuperAdminDashboard'
 
-function App() {
+// Protected Route Component
+const ProtectedRoute = ({ children, allowedRoles = [] }) => {
+    const { user, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+};
+
+// Main App Component
+const AppContent = () => {
     const [isNavOpen, setIsNavOpen] = useState(false)
 
     return (
@@ -86,6 +118,57 @@ function App() {
                 <Footer />
             </section>
         </div>
+    )
+}
+
+function App() {
+    return (
+        <AuthProvider>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<AppContent />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+
+                    {/* Dashboard Routes */}
+                    <Route
+                        path="/dashboard/student"
+                        element={
+                            <ProtectedRoute allowedRoles={['student']}>
+                                <StudentDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/agent"
+                        element={
+                            <ProtectedRoute allowedRoles={['agent']}>
+                                <AgentDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/staff"
+                        element={
+                            <ProtectedRoute allowedRoles={['staff']}>
+                                <StaffDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/dashboard/admin"
+                        element={
+                            <ProtectedRoute allowedRoles={['super_admin']}>
+                                <SuperAdminDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Catch all route */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+            </Router>
+        </AuthProvider>
     )
 }
 

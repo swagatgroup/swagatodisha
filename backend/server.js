@@ -114,13 +114,13 @@ const connectDB = async () => {
 const validateEnvironment = () => {
     const required = ['MONGODB_URI', 'JWT_SECRET'];
     const missing = required.filter(key => !process.env[key]);
-    
+
     if (missing.length > 0) {
         console.error('❌ Missing required environment variables:', missing.join(', '));
         console.error('Please set these variables in your deployment environment.');
         process.exit(1);
     }
-    
+
     console.log('✅ All required environment variables are set');
 };
 

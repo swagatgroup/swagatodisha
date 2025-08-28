@@ -17,6 +17,8 @@
     "@react-three/postprocessing": "^2.8.1",
     "@splinetool/react-spline": "^4.1.0",
     "@types/three": "^0.179.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "axios": "^1.11.0",
     "framer-motion": "^12.23.12",
     "gsap": "^3.13.0",
     "react": "^18.2.0",
@@ -26,8 +28,7 @@
     "sharp": "^0.34.2",
     "sweetalert2": "^11.22.4",
     "three": "^0.179.1",
-    "vite": "^6.3.5",
-    "@vitejs/plugin-react": "^4.2.1"
+    "vite": "^6.3.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.55",

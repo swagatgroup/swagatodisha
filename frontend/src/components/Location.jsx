@@ -17,7 +17,7 @@ const Location = () => {
         {
             name: "Swagat Group of Institutions - Ghantiguda",
             address: "Ghantiguda, PO - Chalna, PS - Sinapali, Nuapada, Odisha, Pin-766108",
-            phone: "+91 7684060809",
+            phone: "+91 9403891555",
             email: "contact@swagatodisha.com",
             coordinates: {
                 lat: 20.099885,

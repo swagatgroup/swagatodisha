@@ -13,7 +13,7 @@ NODE_ENV=production
 PORT=10000
 mongodb+srv://swagatgroup:SGClusterDB%4099%23
 @cluster0.m0ymyqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0=mongodb+srv://swagatgroup:SGClusterDB@99#@cluster0.m0ymyqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-JWT_SECRET=your_very_secure_jwt_secret_here
+56e1a1fcf2aaab953f41c314592102e6f62e9aa540d36906dc7a90dd814a4910538858e126364378ecb0d60922fbed=your_very_secure_56e1a1fcf2aaab953f41c314592102e6f62e9aa540d36906dc7a90dd814a4910538858e126364378ecb0d60922fbed_here
 JWT_EXPIRE=7d
 ```
 

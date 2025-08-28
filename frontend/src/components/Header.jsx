@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Link } from 'react-router-dom'
 import { scrollToContact } from '../utils/helpers'
 import { NAV_ITEMS } from '../utils/constants'
 
@@ -165,29 +166,27 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                             ))}
                         </nav>
 
-                        {/* Apply Now Button */}
+                        {/* Auth Buttons */}
                         <motion.div
-                            className="hidden lg:block"
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
+                            className="hidden lg:flex items-center space-x-4"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.5, delay: 0.6 }}
                         >
                             <motion.button
-                                onClick={scrollToContact}
-                                className="relative px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-semibold shadow-lg overflow-hidden group cursor-pointer"
-                                whileHover={{
-                                    boxShadow: "0 20px 40px -12px rgba(147, 51, 234, 0.5)",
-                                    y: -2
-                                }}
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-6 py-2 text-purple-600 border-2 border-purple-600 rounded-full font-semibold hover:bg-purple-600 hover:text-white transition-all duration-300"
                             >
-                                <span className="relative z-10">Apply Now</span>
+                                <Link to="/login">Login</Link>
+                            </motion.button>
 
-                                {/* Button Shine Effect */}
-                                <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                                    initial={{ x: "-100%" }}
-                                    whileHover={{ x: "100%" }}
-                                    transition={{ duration: 0.6 }}
-                                />
+                            <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                            >
+                                <Link to="/register">Register</Link>
                             </motion.button>
                         </motion.div>
 
@@ -270,17 +269,25 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                                         </motion.a>
                                     ))}
 
-                                    <motion.button
-                                        onClick={() => {
-                                            scrollToContact()
-                                            setIsNavOpen(false)
-                                        }}
-                                        className="w-full mt-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg cursor-pointer text-lg"
-                                        whileHover={{ scale: 1.02 }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        Apply Now
-                                    </motion.button>
+                                    <div className="space-y-3 mt-8">
+                                        <motion.button
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className="w-full py-3 border-2 border-purple-600 text-purple-600 rounded-xl font-semibold cursor-pointer text-lg hover:bg-purple-600 hover:text-white transition-all duration-300"
+                                            onClick={() => setIsNavOpen(false)}
+                                        >
+                                            <Link to="/login">Login</Link>
+                                        </motion.button>
+
+                                        <motion.button
+                                            whileHover={{ scale: 1.02 }}
+                                            whileTap={{ scale: 0.98 }}
+                                            className="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg cursor-pointer text-lg"
+                                            onClick={() => setIsNavOpen(false)}
+                                        >
+                                            <Link to="/register">Register</Link>
+                                        </motion.button>
+                                    </div>
                                 </div>
 
                                 {/* Sidebar Footer */}

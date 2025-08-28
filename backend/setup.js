@@ -8,8 +8,8 @@ const setupDatabase = async () => {
         console.log('🔌 Connecting to MongoDB...');
 
         // Connect to MongoDB
-        await mongoose.connect(process.env.mongodb + srv://swagatgroup:SGClusterDB%4099%23
-            @cluster0.m0ymyqa.mongodb.net /? retryWrites = true & w=majority & appName=Cluster0 || 'mongodb://localhost:27017/swagat_odisha', {
+        const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/swagat_odisha';
+        await mongoose.connect(mongoURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });

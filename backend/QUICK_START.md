@@ -15,7 +15,7 @@ npm install
 cp env.example .env
 
 # Edit .env file with your settings
-# At minimum, set a strong JWT_SECRET
+# At minimum, set a strong 56e1a1fcf2aaab953f41c314592102e6f62e9aa540d36906dc7a90dd814a4910538858e126364378ecb0d60922fbed
 ```
 
 ### 3. Database Setup

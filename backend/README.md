@@ -95,7 +95,7 @@ A comprehensive backend system for Swagat Group of Institutions with role-based 
 @cluster0.m0ymyqa.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0=mongodb://localhost:27017/swagat_odisha
    
    # JWT Configuration
-   JWT_SECRET=your_super_secret_jwt_key_here
+   56e1a1fcf2aaab953f41c314592102e6f62e9aa540d36906dc7a90dd814a4910538858e126364378ecb0d60922fbed=your_super_secret_jwt_key_here
    JWT_EXPIRE=7d
    
    # Cloudinary Configuration (optional)
