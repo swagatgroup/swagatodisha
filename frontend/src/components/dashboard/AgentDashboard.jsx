@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const AgentDashboard = () => {
     const { user } = useAuth();
@@ -58,7 +58,7 @@ const AgentDashboard = () => {
         const fetchAgentData = async () => {
             try {
                 // Fetch referred students data
-                const response = await axios.get('http://localhost:5000/api/auth/me');
+                const response = await api.get('/api/auth/me');
                 if (response.data.success) {
                     // Mock data for now - replace with actual API call
                     const mockReferrals = [
@@ -268,9 +268,9 @@ const AgentDashboard = () => {
                                     </div>
                                     <div className="text-right">
                                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${referral.status === 'enrolled' ? 'bg-green-100 text-green-800' :
-                                                referral.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                    referral.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                                        'bg-gray-100 text-gray-800'
+                                            referral.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                referral.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                    'bg-gray-100 text-gray-800'
                                             }`}>
                                             {referral.status.charAt(0).toUpperCase() + referral.status.slice(1)}
                                         </span>

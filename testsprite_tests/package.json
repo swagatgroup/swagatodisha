@@ -1,0 +1,25 @@
+{
+  "name": "swagat-odisha-tests",
+  "version": "1.0.0",
+  "description": "Test suite for Swagat Odisha fullstack application",
+  "main": "fullstack_connection_tests.js",
+  "scripts": {
+    "test": "node fullstack_connection_tests.js",
+    "test:health": "node -e \"require('./fullstack_connection_tests.js').testBackendHealth()\"",
+    "test:config": "node -e \"require('./fullstack_connection_tests.js').testFrontendConfig()\"",
+    "test:deps": "node -e \"require('./fullstack_connection_tests.js').testDependencies()\""
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "mongoose": "^7.5.0"
+  },
+  "keywords": [
+    "testing",
+    "fullstack",
+    "api",
+    "mongodb",
+    "axios"
+  ],
+  "author": "Swagat Odisha",
+  "license": "MIT"
+}

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import axios from 'axios';
+import PasswordInput from '../auth/PasswordInput';
 
 const SuperAdminDashboard = () => {
     const { user } = useAuth();
@@ -200,7 +201,11 @@ const SuperAdminDashboard = () => {
                     <h4 className="font-medium text-gray-900 mb-4">Students</h4>
                     <div className="space-y-3">
                         <input type="email" placeholder="Student Email" className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                        <input type="password" placeholder="New Password" className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                        <PasswordInput
+                            placeholder="New Password"
+                            showLabel={false}
+                            className="px-3 py-2"
+                        />
                         <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
                             Reset Password
                         </button>
@@ -211,7 +216,11 @@ const SuperAdminDashboard = () => {
                     <h4 className="font-medium text-gray-900 mb-4">Agents</h4>
                     <div className="space-y-3">
                         <input type="email" placeholder="Agent Email" className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                        <input type="password" placeholder="New Password" className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                        <PasswordInput
+                            placeholder="New Password"
+                            showLabel={false}
+                            className="px-3 py-2"
+                        />
                         <button className="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
                             Reset Password
                         </button>
@@ -222,7 +231,11 @@ const SuperAdminDashboard = () => {
                     <h4 className="font-medium text-gray-900 mb-4">Staff</h4>
                     <div className="space-y-3">
                         <input type="email" placeholder="Staff Email" className="w-full px-3 py-2 border border-gray-300 rounded-md" />
-                        <input type="password" placeholder="New Password" className="w-full px-3 py-2 border border-gray-300 rounded-md" />
+                        <PasswordInput
+                            placeholder="New Password"
+                            showLabel={false}
+                            className="px-3 py-2"
+                        />
                         <button className="w-full px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
                             Reset Password
                         </button>
@@ -408,8 +421,8 @@ const SuperAdminDashboard = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
-                                        ? 'border-purple-500 text-purple-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    ? 'border-purple-500 text-purple-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                             >
                                 {tab.name}

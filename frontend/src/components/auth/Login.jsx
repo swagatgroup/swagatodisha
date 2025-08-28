@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import PasswordInput from './PasswordInput';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -27,32 +28,51 @@ const Login = () => {
         setError('');
 
         try {
+            console.log('Attempting login with email:', formData.email); // Debug log
             const result = await login(formData.email, formData.password);
+            console.log('Login result:', result); // Debug log
 
             if (result.success) {
                 // Redirect based on user role
-                const userRole = result.data.user.role;
-                switch (userRole) {
-                    case 'student':
-                        navigate('/dashboard/student');
-                        break;
-                    case 'agent':
-                        navigate('/dashboard/agent');
-                        break;
-                    case 'staff':
-                        navigate('/dashboard/staff');
-                        break;
-                    case 'super_admin':
-                        navigate('/dashboard/admin');
-                        break;
-                    default:
-                        navigate('/dashboard/student');
-                }
+                const userRole = result.user.role;
+                console.log('Login successful, user role:', userRole); // Debug log
+
+                // Add a small delay to ensure state is updated
+                setTimeout(() => {
+                    switch (userRole) {
+                        case 'student':
+                            console.log('Navigating to student dashboard...'); // Debug log
+                            navigate('/dashboard/student');
+                            break;
+                        case 'agent':
+                            console.log('Navigating to agent dashboard...'); // Debug log
+                            navigate('/dashboard/agent');
+                            break;
+                        case 'staff':
+                            console.log('Navigating to staff dashboard...'); // Debug log
+                            navigate('/dashboard/staff');
+                            break;
+                        case 'super_admin':
+                            console.log('Navigating to admin dashboard...'); // Debug log
+                            navigate('/dashboard/admin');
+                            break;
+                        default:
+                            console.log('Unknown role, defaulting to student dashboard...'); // Debug log
+                            navigate('/dashboard/student');
+                    }
+                }, 100);
             } else {
-                setError(result.message);
+                setError(result.message || 'Login failed');
             }
         } catch (err) {
-            setError('An unexpected error occurred. Please try again.');
+            console.error('Login error:', err); // Debug log
+            if (err.response?.data?.message) {
+                setError(err.response.data.message);
+            } else if (err.message) {
+                setError(err.message);
+            } else {
+                setError('An unexpected error occurred. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
@@ -137,22 +157,16 @@ const Login = () => {
                         </div>
 
                         {/* Password Field */}
-                        <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                                Password
-                            </label>
-                            <input
-                                id="password"
-                                name="password"
-                                type="password"
-                                autoComplete="current-password"
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
-                                placeholder="Enter your password"
-                            />
-                        </div>
+                        <PasswordInput
+                            id="password"
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Enter your password"
+                            required
+                            autoComplete="current-password"
+                            label="Password"
+                        />
                     </div>
 
                     {/* Submit Button */}

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
-import axios from 'axios';
+import api from '../../utils/api';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -64,21 +64,18 @@ const StudentDashboard = () => {
         }
     ];
 
+    // Fetch user data
     useEffect(() => {
-        const fetchStudentData = async () => {
+        const fetchUserData = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/auth/me');
-                if (response.data.success) {
-                    setStudentData(response.data.data.student);
-                }
+                const response = await api.get('/api/auth/me');
+                setUserData(response.data.user);
             } catch (error) {
-                console.error('Error fetching student data:', error);
-            } finally {
-                setLoading(false);
+                console.error('Error fetching user data:', error);
             }
         };
 
-        fetchStudentData();
+        fetchUserData();
     }, []);
 
     if (loading) {
@@ -239,9 +236,9 @@ const StudentDashboard = () => {
                                         <p className="text-xs text-gray-400">Applied on {new Date(admission.applicationDate).toLocaleDateString()}</p>
                                     </div>
                                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-green-100 text-green-800' :
-                                            admission.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                                                admission.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                                    'bg-gray-100 text-gray-800'
+                                        admission.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                            admission.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                                                'bg-gray-100 text-gray-800'
                                         }`}>
                                         {admission.status.charAt(0).toUpperCase() + admission.status.slice(1)}
                                     </span>

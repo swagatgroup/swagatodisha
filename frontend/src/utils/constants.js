@@ -161,7 +161,11 @@ export const MANAGEMENT_TEAM = [
 // Carousel images - All available slider images
 export const CAROUSEL_IMAGES = [
     '/slider1.jpg',
-    '/slider2.jpg'
+    '/slider2.jpg',
+    '/slider3.jpg',
+    '/slider4.jpg',
+    '/slider5.jpg',
+    '/slider6.jpg',
 ]
 
 // Chairman message

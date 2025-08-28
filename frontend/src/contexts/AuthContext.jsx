@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 const AuthContext = createContext();
 
@@ -16,27 +16,26 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [token, setToken] = useState(localStorage.getItem('token'));
 
-    // Configure axios defaults
+    // Set default headers when token changes
     useEffect(() => {
         if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } else {
-            delete axios.defaults.headers.common['Authorization'];
+            delete api.defaults.headers.common['Authorization'];
         }
     }, [token]);
 
-    // Check if user is authenticated on app load
+    // Check authentication status on load
     useEffect(() => {
         const checkAuth = async () => {
             if (token) {
                 try {
-                    const response = await axios.get('http://localhost:5000/api/auth/me');
-                    setUser(response.data.data.user);
+                    const response = await api.get('/api/auth/me');
+                    setUser(response.data.user);
                 } catch (error) {
                     console.error('Auth check failed:', error);
                     localStorage.removeItem('token');
                     setToken(null);
-                    setUser(null);
                 }
             }
             setLoading(false);
@@ -47,42 +46,37 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/login', {
+            console.log('AuthContext - login attempt for:', email); // Debug log
+            const response = await api.post('/api/auth/login', {
                 email,
-                password
+                password,
             });
 
-            const { token: newToken, user: userData } = response.data.data;
+            console.log('AuthContext - login response:', response.data); // Debug log
+
+            const { token: newToken, user: userData } = response.data;
+
+            console.log('AuthContext - setting token and user:', { token: newToken, user: userData }); // Debug log
 
             localStorage.setItem('token', newToken);
             setToken(newToken);
             setUser(userData);
 
-            return { success: true, data: response.data.data };
+            console.log('AuthContext - login successful, returning result'); // Debug log
+            return { success: true, user: userData };
         } catch (error) {
-            return {
-                success: false,
-                message: error.response?.data?.message || 'Login failed'
-            };
+            console.error('AuthContext - login failed:', error);
+            throw error;
         }
     };
 
     const register = async (userData) => {
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/register', userData);
-
-            const { token: newToken, user: newUser } = response.data.data;
-
-            localStorage.setItem('token', newToken);
-            setToken(newToken);
-            setUser(newUser);
-
-            return { success: true, data: response.data.data };
+            const response = await api.post('/api/auth/register', userData);
+            return response.data;
         } catch (error) {
-            return {
-                success: false,
-                message: error.response?.data?.message || 'Registration failed'
-            };
+            console.error('Registration failed:', error);
+            throw error;
         }
     };
 
@@ -90,7 +84,6 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         setToken(null);
         setUser(null);
-        delete axios.defaults.headers.common['Authorization'];
     };
 
     const updateUser = (updatedUser) => {
@@ -104,7 +97,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updateUser,
-        isAuthenticated: !!user
+        isAuthenticated: !!user,
     };
 
     return (
