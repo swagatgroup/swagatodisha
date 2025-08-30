@@ -34,7 +34,7 @@
 - **Configuration**: `frontend/src/utils/constants.js`
 
 ### **2. Phone Number Updated** ✅
-- **Before**: Ghantiguda: `+91 7684060809`
+- **Before**: Ghantiguda: `+91 9403891555`
 - **After**: Ghantiguda: `+91 9403891555`
 - **Location**: `frontend/src/components/Location.jsx`
 

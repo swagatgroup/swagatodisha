@@ -1754,7 +1754,7 @@ const InstitutionTypes = () => {
     }, [])
 
     return (
-        <section className="relative py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+        <section className="relative py-20 overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>

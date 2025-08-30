@@ -17,7 +17,7 @@ export const NAV_ITEMS = [
 
 // Social links
 export const SOCIAL_LINKS = {
-    phone: '+91 7684060809', // Sargiguda main number
+    phone: '+91 9403891555', // Sargiguda main number
     email: 'contact@swagatodisha.com',
     facebook: 'https://www.facebook.com/Swagat-Group-of-Institutions-108863395171576',
     twitter: 'https://twitter.com/SwagatOdisha',

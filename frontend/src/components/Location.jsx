@@ -7,7 +7,7 @@ const Location = () => {
         {
             name: "Swagat Group of Institutions - Sargiguda",
             address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039",
-            phone: "+91 7684060809",
+            phone: "+91 9403891555",
             email: "contact@swagatodisha.com",
             coordinates: {
                 lat: 20.099885,
@@ -46,7 +46,7 @@ const Location = () => {
     ]
 
     return (
-        <section className="relative w-full min-h-screen bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+        <section className="relative w-full min-h-screen overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>

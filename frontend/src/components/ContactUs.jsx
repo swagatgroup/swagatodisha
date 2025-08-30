@@ -126,7 +126,7 @@ const ContactUs = () => {
     }
 
     return (
-        <section id="contact" className="relative py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+        <section id="contact" className="relative py-20 overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>
@@ -171,7 +171,7 @@ const ContactUs = () => {
                                     </div>
                                     <div>
                                         <h4 className="text-lg font-semibold text-gray-800 mb-1">Phone</h4>
-                                        <p className="text-gray-600">+91 7684060809</p>
+                                        <p className="text-gray-600">+91 9403891555</p>
                                         <p className="text-sm text-gray-500">Monday - Friday, 8:00 AM - 6:00 PM</p>
                                     </div>
                                 </div>

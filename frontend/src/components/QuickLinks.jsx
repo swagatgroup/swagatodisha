@@ -72,7 +72,7 @@ const QuickLinks = () => {
     }, [])
 
     return (
-        <section className="relative py-20 bg-gradient-to-br from-gray-50 to-white overflow-hidden">
+        <section className="relative py-20 overflow-hidden">
             {/* Subtle background elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-64 h-64 bg-purple-100/30 rounded-full blur-3xl"></div>

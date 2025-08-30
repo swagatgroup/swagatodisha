@@ -1,9 +1,10 @@
 import React from 'react'
+import { CHAIRMAN_MESSAGE } from '../utils/constants'
 
 const ChairmanMessage = () => {
     const chairmanData = {
-        name: "Mr. G. Meher",
-        position: "Chairman & Founder",
+        name: CHAIRMAN_MESSAGE.name,
+        position: CHAIRMAN_MESSAGE.position,
         message: "At Swagat Group of Institutions, we believe in nurturing not just academic excellence, but the complete development of every student. Our commitment to quality education, innovative teaching methods, and holistic growth has made us a trusted name in education for over two decades.",
         achievements: [
             "25+ Years of Educational Excellence",
@@ -11,12 +12,12 @@ const ChairmanMessage = () => {
             "100+ Industry Partnerships",
             "Award-Winning Teaching Methods"
         ],
-        image: "/Swagat Logo.png",
+        image: CHAIRMAN_MESSAGE.image,
         icon: "fa-solid fa-crown"
     }
 
     return (
-        <section className="py-16 bg-gradient-to-br from-white to-gray-50">
+        <section className="py-16">
             <div className="container mx-auto px-6">
                 {/* Section Header */}
                 <div className="text-center mb-12">
@@ -41,7 +42,7 @@ const ChairmanMessage = () => {
                             {/* Logo/Image */}
                             <div className="mb-6">
                                 <img
-                                    src={"/chairman.jpg"}
+                                    src={chairmanData.image}
                                     alt="Chairman"
                                     className="w-48 md:w-60 rounded-full h-full object-contain mx-auto lg:mx-0"
                                 />

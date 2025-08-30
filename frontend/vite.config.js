@@ -6,6 +6,9 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [react()],
 
+  // Base path for production builds
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
+
   // Build optimization
   build: {
     // Enable source maps for debugging (disable in production for smaller bundle)
@@ -40,7 +43,8 @@ export default defineConfig({
           const info = assetInfo.name.split('.');
           const ext = info[info.length - 1];
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
-            return `images/[name]-[hash][extname]`;
+            // Keep images at root level for easier referencing
+            return `[name][extname]`;
           }
           if (/css/i.test(ext)) {
             return `css/[name]-[hash][extname]`;

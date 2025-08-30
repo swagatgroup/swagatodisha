@@ -67,23 +67,23 @@ const AppContent = () => {
                 <HeroCarousel />
             </section>
 
-            {/* About Us with Clean Background */}
-            <section id="about" className="section-bg">
+            {/* About Us with Criss-Cross Pattern Background */}
+            <section id="about" className="bg-criss-cross">
                 <AboutUs />
             </section>
 
-            {/* Institution Types with Clean Background */}
-            <section id="programs" className="bg-subtle-gradient">
+            {/* Institution Types with Criss-Cross Pattern Background */}
+            <section id="programs" className="bg-criss-cross">
                 <InstitutionTypes />
             </section>
 
-            {/* Quick Links with Clean Background */}
-            <section className="bg-warm-gradient">
+            {/* Quick Links with Criss-Cross Pattern Background */}
+            <section className="bg-criss-cross">
                 <QuickLinks />
             </section>
 
-            {/* Admissions Section with Clean Background */}
-            <section id="admissions" className="bg-cool-gradient">
+            {/* Admissions Section with Criss-Cross Pattern Background */}
+            <section id="admissions" className="bg-criss-cross">
                 <Admissions />
             </section>
 
@@ -93,10 +93,10 @@ const AppContent = () => {
             {/* Gallery Section */}
             {/* <Gallery /> */}
 
-            {/* Chairman Message Section with Clean Background */}
-            <section className="py-20 bg-gradient-to-br from-purple-600 to-blue-600 relative overflow-hidden">
-                {/* Clean Background Overlay */}
-                <div className="absolute inset-0 bg-white/5"></div>
+            {/* Chairman Message Section with Criss-Cross Pattern Background */}
+            <section className="py-20 bg-criss-cross relative overflow-hidden">
+                {/* Background Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10"></div>
 
                 <div className="container mx-auto px-6 relative z-10">
                     <ChairmanMessage />
@@ -108,20 +108,20 @@ const AppContent = () => {
                 <Management />
             </section>
 
-            {/* Location Section with Clean Background */}
-            <section id="contact" className="py-20 bg-clean-white">
+            {/* Location Section with Criss-Cross Pattern Background */}
+            <section id="contact" className="py-20 bg-criss-cross">
                 <div className="container mx-auto px-6">
                     <Location />
                 </div>
             </section>
 
-            {/* Contact Us Section with Clean Background */}
-            <section className="bg-subtle-gradient">
+            {/* Contact Us Section with Criss-Cross Pattern Background */}
+            <section className="bg-criss-cross">
                 <ContactUs />
             </section>
 
-            {/* Footer with Clean Background */}
-            <section className="bg-warm-gradient">
+            {/* Footer with Criss-Cross Pattern Background */}
+            <section className="bg-criss-cross">
                 <Footer />
             </section>
         </div>

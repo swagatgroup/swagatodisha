@@ -30,7 +30,7 @@ const Footer = () => {
         ],
         contact: {
             address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039",
-            phone: "+91 7684060809", // Sargiguda main number
+            phone: "+91 9403891555", // Sargiguda main number
             email: "contact@swagatodisha.com"
         },
         socialLinks: [

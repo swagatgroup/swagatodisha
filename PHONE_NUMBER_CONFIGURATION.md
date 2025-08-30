@@ -3,7 +3,7 @@
 ## 🎯 **PHONE NUMBER ASSIGNMENT**
 
 ### **📍 Sargiguda Campus (Main)**
-- **Phone Number**: `+91 7684060809`
+- **Phone Number**: `+91 9403891555`
 - **Location**: Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039
 - **Usage**: Main contact number, primary campus
 
@@ -16,7 +16,7 @@
 
 ## 🔧 **IMPLEMENTATION DETAILS**
 
-### **Components Using Sargiguda Number (+91 7684060809):**
+### **Components Using Sargiguda Number (+91 9403891555):**
 - ✅ **Constants.js** - Main social links phone number
 - ✅ **Location.jsx** - Sargiguda campus contact
 - ✅ **Admissions.jsx** - Main admissions contact
@@ -35,7 +35,7 @@
 // Sargiguda Campus
 {
     name: "Swagat Group of Institutions - Sargiguda",
-    phone: "+91 7684060809",  // ✅ Sargiguda number
+    phone: "+91 9403891555",  // ✅ Sargiguda number
     // ... other details
 }
 
@@ -50,7 +50,7 @@
 ### **2. `frontend/src/utils/constants.js`**
 ```javascript
 export const SOCIAL_LINKS = {
-    phone: '+91 7684060809', // ✅ Sargiguda main number
+    phone: '+91 9403891555', // ✅ Sargiguda main number
     // ... other social links
 }
 ```
@@ -59,7 +59,7 @@ export const SOCIAL_LINKS = {
 ```javascript
 <p className="text-gray-600 mt-4">
     For more information, call us at 
-    <span className="font-semibold">+91 7684060809</span>  // ✅ Sargiguda number
+    <span className="font-semibold">+91 9403891555</span>  // ✅ Sargiguda number
 </p>
 ```
 
@@ -67,7 +67,7 @@ export const SOCIAL_LINKS = {
 ```javascript
 contact: {
     address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039",
-    phone: "+91 7684060809", // ✅ Sargiguda main number
+    phone: "+91 9403891555", // ✅ Sargiguda main number
     email: "contact@swagatodisha.com"
 }
 ```
@@ -76,7 +76,7 @@ contact: {
 ```javascript
 <div>
     <h4 className="text-lg font-semibold text-gray-800 mb-1">Phone</h4>
-    <p className="text-gray-600">+91 7684060809</p>  // ✅ Sargiguda number
+    <p className="text-gray-600">+91 9403891555</p>  // ✅ Sargiguda number
     <p className="text-sm text-gray-500">Monday - Friday, 8:00 AM - 6:00 PM</p>
 </div>
 ```
@@ -85,7 +85,7 @@ contact: {
 
 ## 🎯 **LOGIC BEHIND THE ASSIGNMENT**
 
-### **Why Sargiguda (+91 7684060809) is Main:**
+### **Why Sargiguda (+91 9403891555) is Main:**
 1. **Primary Campus**: Sargiguda is the main campus location
 2. **Central Contact**: Used for general inquiries, admissions, footer
 3. **Social Links**: Main contact number for social media and general contact
@@ -101,7 +101,7 @@ contact: {
 ## 📱 **CALL FLOW RECOMMENDATION**
 
 ### **For General Inquiries:**
-- **Call**: `+91 7684060809` (Sargiguda main)
+- **Call**: `+91 9403891555` (Sargiguda main)
 - **Purpose**: Admissions, general information, main office
 
 ### **For Ghantiguda Specific:**
@@ -115,7 +115,7 @@ contact: {
 
 ## ✅ **VERIFICATION CHECKLIST**
 
-### **Sargiguda Number (+91 7684060809) Appears In:**
+### **Sargiguda Number (+91 9403891555) Appears In:**
 - [x] **Constants.js** - Social links
 - [x] **Location.jsx** - Sargiguda campus
 - [x] **Admissions.jsx** - Contact information
@@ -156,4 +156,4 @@ contact: {
 
 ---
 
-**🎯 RESULT**: Your phone numbers are now correctly configured with Sargiguda using `+91 7684060809` as the main contact and Ghantiguda using `+91 9403891555` as the campus-specific contact. All components have been updated accordingly!
+**🎯 RESULT**: Your phone numbers are now correctly configured with Sargiguda using `+91 9403891555` as the main contact and Ghantiguda using `+91 9403891555` as the campus-specific contact. All components have been updated accordingly!

@@ -63,7 +63,7 @@ const AboutUs = () => {
         <section
             ref={aboutRef}
             id="about-us"
-            className="relative py-20 bg-gradient-to-br from-white to-gray-50"
+            className="relative py-20"
         >
             {/* Parallax Background Elements */}
             <div className="absolute inset-0">
