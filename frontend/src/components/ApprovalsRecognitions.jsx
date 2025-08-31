@@ -173,21 +173,7 @@ const ApprovalsRecognitions = () => {
                     <div className="text-green-200 text-9xl font-bold transform -rotate-12">SAU</div>
                 </div>
 
-                {/* Top Arrow */}
-                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 text-white text-2xl">
-                    ↓
-                </div>
-
                 <div className="container mx-auto px-6 py-20">
-                    {/* Header Section */}
-                    <div className="text-center mb-16">
-                        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-                            SIKKIM ALPINE UNIVERSITY
-                        </h1>
-                        <h2 className="text-3xl md:text-5xl font-bold text-white">
-                            Approvals and Recognitions
-                        </h2>
-                    </div>
 
                     {/* Slider Section */}
                     <div className="relative max-w-6xl mx-auto">
