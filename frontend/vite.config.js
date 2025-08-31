@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
 
   // Base path for production builds
-  base: process.env.NODE_ENV === 'production' ? '/' : '/',
+  base: '/',
 
   // Build optimization
   build: {
@@ -68,7 +68,10 @@ export default defineConfig({
     target: 'es2015',
 
     // Chunk size warning limit
-    chunkSizeWarningLimit: 1000
+    chunkSizeWarningLimit: 1000,
+
+    // Ensure assets are copied correctly
+    assetsInlineLimit: 0
   },
 
   // Development server optimization
