@@ -127,7 +127,7 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                             {/* Logo Icon */}
                             <div className="relative w-36 h-auto flex items-center justify-center">
                                 <img
-                                    src="/Swagat Logo.png"
+                                    src="/Swagat_Logo.png"
                                     alt="Swagat Group of Institutions"
                                     className="w-full h-full object-contain"
                                 />

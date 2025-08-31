@@ -130,31 +130,31 @@ export const MANAGEMENT_TEAM = [
         id: 2,
         name: 'Mr. R.K. Meher',
         position: 'Trustee',
-        image: '/mnt 006.jpg'
+        image: '/mnt_006.jpg'
     },
     {
         id: 3,
         name: 'Mr. S.K. Meher',
         position: 'Trustee',
-        image: '/mnt 006.jpg'
+        image: '/mnt_006.jpg'
     },
     {
         id: 4,
         name: 'Mrs. Manjula Meher',
         position: 'Principal',
-        image: '/mnt 003.jpg'
+        image: '/mnt_003.jpg'
     },
     {
         id: 5,
         name: 'Mr. Sushanta Bhoi',
         position: 'Managing Director',
-        image: '/mnt 002.jpg'
+        image: '/mnt_002.jpg'
     },
     {
         id: 6,
         name: 'Mr. S. Patel',
         position: 'Marketing Director',
-        image: '/mnt 004.jpg'
+        image: '/mnt_004.jpg'
     }
 ]
 
@@ -180,7 +180,7 @@ export const CHAIRMAN_MESSAGE = {
 export const MILESTONE = {
     year: '2021',
     title: 'Building from Scratch #1 (Sinapali Public School)',
-    image: '/Milestone 001.jpg',
+    image: '/Milestone_001.jpg',
     description: 'Swagat Group at early phase'
 }
 
