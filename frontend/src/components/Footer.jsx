@@ -125,73 +125,6 @@ const Footer = () => {
             {/* Main Footer Content */}
             <div className="relative z-10 pt-12 pb-8">
                 <div className="container mx-auto px-6">
-                    {/* Top Section - Logo, Description & Newsletter */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
-                        {/* Logo & Company Info */}
-                        <div className="lg:col-span-1">
-                            <div className="text-center lg:text-left">
-                                <div className="inline-flex items-center justify-center mb-4">
-                                    <img
-                                        src="/Swagat_Logo.png"
-                                        alt="Swagat Group of Institutions"
-                                        className="w-48 h-auto object-contain filter brightness-0 invert"
-                                    />
-                                </div>
-                                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                                    Empowering students with quality education, innovative learning methods, and holistic development.
-                                </p>
-                                {/* Social Media */}
-                                <div className="flex justify-center lg:justify-start space-x-3">
-                                    {footerData.socialLinks.map((social, index) => (
-                                        <a
-                                            key={index}
-                                            href={social.url}
-                                            className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110"
-                                            title={social.name}
-                                        >
-                                            <i className={`${social.icon} text-xs`}></i>
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Newsletter Subscription - Positioned at extreme right */}
-                        <div className="lg:col-span-2">
-                            <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 md:p-6 border border-white/20 h-full flex flex-col justify-center max-w-xs mx-auto lg:mx-0 lg:ml-auto">
-                                <h4 className="text-base md:text-lg font-bold text-white mb-2 md:mb-3 text-center lg:text-left">
-                                    Stay Updated
-                                </h4>
-                                <p className="text-gray-300 text-center lg:text-left mb-3 md:mb-4 text-xs md:text-sm">
-                                    Subscribe to our newsletter for the latest updates, events, and educational insights.
-                                </p>
-                                <form onSubmit={handleNewsletterSubmit} className="flex flex-col gap-2 md:gap-3">
-                                    <input
-                                        type="email"
-                                        value={newsletterEmail}
-                                        onChange={(e) => setNewsletterEmail(e.target.value)}
-                                        placeholder="Enter your email address"
-                                        className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm"
-                                    />
-                                    <button
-                                        type="submit"
-                                        disabled={isSubscribing}
-                                        className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isSubscribing ? (
-                                            <span className="flex items-center justify-center">
-                                                <i className="fa-solid fa-spinner fa-spin mr-2"></i>
-                                                Subscribing...
-                                            </span>
-                                        ) : (
-                                            'Subscribe'
-                                        )}
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Links Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         {/* Quick Links */}
@@ -263,41 +196,43 @@ const Footer = () => {
                             </ul>
                         </div>
 
-                        {/* Contact Info */}
+                        {/* Subscribe */}
                         <div>
                             <h4 className="text-base font-bold text-white mb-4 flex items-center">
                                 <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2">
                                     <i className="fa-solid fa-envelope text-white text-xs"></i>
                                 </div>
-                                Contact Info
+                                Stay Updated
                             </h4>
-                            <div className="space-y-3">
-                                <div className="flex items-start">
-                                    <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2 flex-shrink-0 mt-0.5">
-                                        <i className="fa-solid fa-map-marker-alt text-white text-xs"></i>
-                                    </div>
-                                    <p className="text-gray-300 text-xs leading-relaxed">
-                                        {footerData.contact.address}
-                                    </p>
-                                </div>
-                                <div className="flex items-center">
-                                    <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2">
-                                        <i className="fa-solid fa-phone text-white text-xs"></i>
-                                    </div>
-                                    <a href={`tel:${footerData.contact.phone}`} className="text-gray-300 hover:text-purple-300 transition-colors duration-300 text-xs">
-                                        {footerData.contact.phone}
-                                    </a>
-                                </div>
-                                <div className="flex items-center">
-                                    <div className="w-5 h-5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2">
-                                        <i className="fa-solid fa-envelope text-white text-xs"></i>
-                                    </div>
-                                    <a href={`mailto:${footerData.contact.email}`} className="text-gray-300 hover:text-purple-300 transition-colors duration-300 text-xs">
-                                        {footerData.contact.email}
-                                    </a>
-                                </div>
-                            </div>
+                            <p className="text-gray-300 mb-4 text-sm">
+                                Subscribe to our newsletter for the latest updates, events, and educational insights.
+                            </p>
+                            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+                                <input
+                                    type="email"
+                                    value={newsletterEmail}
+                                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                                    placeholder="Enter your email"
+                                    className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm"
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={isSubscribing}
+                                    className="w-full px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {isSubscribing ? (
+                                        <span className="flex items-center justify-center">
+                                            <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                                            Subscribing...
+                                        </span>
+                                    ) : (
+                                        'Subscribe'
+                                    )}
+                                </button>
+                            </form>
                         </div>
+
+
                     </div>
 
                     {/* Bottom Bar */}
@@ -310,9 +245,6 @@ const Footer = () => {
                                 <a href="#" className="hover:text-purple-300 transition-colors duration-300">Privacy Policy</a>
                                 <a href="#" className="hover:text-purple-300 transition-colors duration-300">Terms of Service</a>
                                 <a href="#" className="hover:text-purple-300 transition-colors duration-300">Cookie Policy</a>
-                            </div>
-                            <div className="text-gray-400 text-xs text-center md:text-right">
-                                Designed & Developed by <a href="https://www.chanchalpradhan.com/" target="_blank" rel="noopener noreferrer" className="text-purple-300 font-semibold">Chanchal Pradhan</a>
                             </div>
                         </div>
                     </div>

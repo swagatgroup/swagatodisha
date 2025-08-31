@@ -115,97 +115,55 @@ const Location = () => {
                 </div>
             </div>
 
-            {/* Full-Width Map Section */}
-            <div className="relative w-full h-[600px] md:h-[700px]">
-                {/* Map Type Selector - Responsive positioning */}
-                <div className="absolute top-2 left-2 z-20">
-                    <div className="bg-white/95 backdrop-blur-md rounded-xl p-2 md:p-3 shadow-2xl border border-white/20">
-                        <div className="flex flex-wrap gap-1 md:gap-2">
-                            {mapTypes.map((type) => (
-                                <button
-                                    key={type.id}
-                                    onClick={() => setMapType(type.id)}
-                                    className={`px-1.5 py-1 md:px-2 md:py-1.5 lg:px-3 lg:py-2 rounded-lg text-xs font-semibold transition-all duration-300 flex items-center space-x-1 md:space-x-2 ${mapType === type.id
-                                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                        }`}
-                                >
-                                    <i className={`${type.icon} text-xs md:text-sm`}></i>
-                                    <span className="hidden sm:inline">{type.name}</span>
-                                </button>
-                            ))}
+            {/* Small Maps Section - Two Columns */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                {locationData.map((location, index) => (
+                    <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">{location.name}</h3>
+
+                        {/* Small Map */}
+                        <div className="relative w-full h-64 mb-4 rounded-xl overflow-hidden">
+                            <iframe
+                                src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${location.coordinates.lat},${location.coordinates.lng}&zoom=15&maptype=roadmap`}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen=""
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                                title={`${location.name} Location`}
+                            ></iframe>
                         </div>
-                    </div>
-                </div>
 
-                {/* Map Container with Enhanced Styling */}
-                <div className="relative w-full h-full">
-                    {/* Google Maps Embed */}
-                    <iframe
-                        src={getMapUrl(mapType)}
-                        width="100%"
-                        height="100%"
-                        style={{ border: 0 }}
-                        allowFullScreen=""
-                        loading="lazy"
-                        referrerPolicy="no-referrer-when-downgrade"
-                        className="rounded-none"
-                        title="Swagat Group of Institutions Location"
-                    ></iframe>
-
-                    {/* Map Overlay Elements - Responsive positioning */}
-                    <div className="absolute left-2 bottom-36 sm:bottom-16 z-20">
-                        <div className="bg-white/95 backdrop-blur-md rounded-xl p-3 md:p-4 shadow-2xl border border-white/20 max-w-[280px] sm:max-w-none">
-                            <div className="flex items-center mb-3">
-                                <div className="w-6 h-6 md:w-8 md:h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2 md:mr-3">
-                                    <i className="fa-solid fa-map-pin text-white text-xs md:text-sm"></i>
-                                </div>
-                                <h3 className="text-base md:text-lg font-bold text-gray-800">Our Campus</h3>
+                        {/* Location Info */}
+                        <div className="space-y-3">
+                            <div className="flex items-center">
+                                <i className="fa-solid fa-map-marker-alt text-purple-600 mr-3"></i>
+                                <span className="text-gray-700">{location.address}</span>
                             </div>
-                            <p className="text-gray-600 text-xs md:text-sm mb-2">{locationData[0].address}</p>
+                            <div className="flex items-center">
+                                <i className="fa-solid fa-phone text-purple-600 mr-3"></i>
+                                <span className="text-gray-700">{location.phone}</span>
+                            </div>
+                            <div className="flex items-center">
+                                <i className="fa-solid fa-envelope text-purple-600 mr-3"></i>
+                                <span className="text-gray-700">{location.email}</span>
+                            </div>
+                        </div>
+
+                        {/* Get Directions Button */}
+                        <div className="mt-4 text-center">
                             <a
-                                href={`https://www.google.com/maps/dir/?api=1&destination=${locationData[0].coordinates.lat},${locationData[0].coordinates.lng}`}
+                                href={`https://www.google.com/maps/dir/?api=1&destination=${location.coordinates.lat},${location.coordinates.lng}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block w-full px-3 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg text-xs md:text-sm font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 text-center"
+                                className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                             >
                                 Get Directions
                             </a>
                         </div>
                     </div>
-
-                    {/* Floating Location Pin */}
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                        <div className="relative">
-                            <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-2xl animate-pulse">
-                                <i className="fa-solid fa-map-marker-alt text-white text-2xl"></i>
-                            </div>
-                            <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-4 h-4 bg-gradient-to-r from-purple-500 to-blue-500 rotate-45"></div>
-                        </div>
-                    </div>
-
-                    {/* Bottom Info Bar */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-r from-purple-600/95 to-blue-600/95 backdrop-blur-md p-4 z-20">
-                        <div className="container mx-auto px-6">
-                            <div className="flex flex-col md:flex-row items-center justify-between text-white">
-                                <div className="flex items-center mb-4 md:mb-0">
-                                    <i className="fa-solid fa-clock text-purple-200 mr-3"></i>
-                                    <span className="text-sm">Open: Monday - Friday, 8:00 AM - 6:00 PM</span>
-                                </div>
-                                <div className="flex items-center space-x-6">
-                                    <div className="flex items-center">
-                                        <i className="fa-solid fa-car text-purple-200 mr-2"></i>
-                                        <span className="text-sm">Free Parking Available</span>
-                                    </div>
-                                    <div className="flex items-center">
-                                        <i className="fa-solid fa-wheelchair text-purple-200 mr-2"></i>
-                                        <span className="text-sm">Wheelchair Accessible</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                ))}
             </div>
 
             {/* Additional Information Section */}

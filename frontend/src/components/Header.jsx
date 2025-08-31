@@ -147,12 +147,13 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                                     onHoverEnd={() => setActiveHover(null)}
                                     className="relative"
                                 >
-                                    <motion.a
-                                        href={item.href}
+                                    <motion.div
                                         className="relative px-4 py-2 text-gray-800 font-medium transition-colors duration-300 group"
                                         whileHover={{ y: -2 }}
                                     >
-                                        {item.name}
+                                        <Link to={item.href}>
+                                            {item.name}
+                                        </Link>
 
                                         {/* Hover Underline Effect */}
                                         <motion.div
@@ -161,7 +162,7 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                                             animate={{ width: activeHover === index ? "100%" : 0 }}
                                             transition={{ duration: 0.3 }}
                                         />
-                                    </motion.a>
+                                    </motion.div>
                                 </motion.div>
                             ))}
                         </nav>
@@ -258,15 +259,16 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                             <div className="p-6">
                                 <div className="space-y-4">
                                     {NAV_ITEMS.map((item, index) => (
-                                        <motion.a
+                                        <motion.div
                                             key={index}
-                                            href={item.href}
                                             className="block py-4 px-4 text-gray-800 font-medium rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 transition-all duration-300 text-lg"
                                             whileHover={{ x: 10 }}
                                             onClick={() => setIsNavOpen(false)}
                                         >
-                                            {item.name}
-                                        </motion.a>
+                                            <Link to={item.href}>
+                                                {item.name}
+                                            </Link>
+                                        </motion.div>
                                     ))}
 
                                     <div className="space-y-3 mt-8">

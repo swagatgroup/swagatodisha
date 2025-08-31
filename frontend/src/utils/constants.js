@@ -8,15 +8,16 @@ export const APP_CONFIG = {
 
 // Navigation items
 export const NAV_ITEMS = [
-    { name: 'Home', href: '#hero', icon: '' },
-    { name: 'About Us', href: '#about-us', icon: '' },
-    { name: 'Institutions', href: '#institutions', icon: '' },
-    { name: 'Gallery', href: '#', icon: '' },
-    { name: 'Contact Us', href: '#contact', icon: '' }
+    { name: 'Home', href: '/', icon: '' },
+    { name: 'About Us', href: '/about', icon: '' },
+    { name: 'Institutions', href: '/institutions', icon: '' },
+    { name: 'Approvals', href: '/approvals', icon: '' },
+    { name: 'Gallery', href: '/gallery', icon: '' },
+    { name: 'Contact Us', href: '/contact', icon: '' }
 ]
 
-// Social links
-export const SOCIAL_LINKS = {
+// Contact information
+export const CONTACT_INFO = {
     phone: '+91 9403891555', // Sargiguda main number
     email: 'contact@swagatodisha.com',
     facebook: 'https://www.facebook.com/Swagat-Group-of-Institutions-108863395171576',
@@ -116,6 +117,15 @@ export const QUICK_LINKS = [
         color: 'rgb(52 48 146)',
         href: '#'
     }
+]
+
+// Social links for contact form
+export const SOCIAL_LINKS = [
+    { name: 'Facebook', icon: 'fa-brands fa-facebook-f', url: 'https://www.facebook.com/Swagat-Group-of-Institutions-108863395171576' },
+    { name: 'Twitter', icon: 'fa-brands fa-twitter', url: 'https://twitter.com/SwagatOdisha' },
+    { name: 'Instagram', icon: 'fa-brands fa-instagram', url: 'https://instagram.com/Swagat_Odisha' },
+    { name: 'YouTube', icon: 'fa-brands fa-youtube', url: 'https://youtube.com/channel/UCQ5GY_dOSPmyhOeUkq61R1w' },
+    { name: 'LinkedIn', icon: 'fa-brands fa-linkedin-in', url: 'https://Linkedin.com/in/SwagatOdisha' }
 ]
 
 // Management team

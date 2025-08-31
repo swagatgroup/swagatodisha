@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Swal from 'sweetalert2'
+import { SOCIAL_LINKS } from '../utils/constants'
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -163,30 +164,36 @@ const ContactUs = () => {
                                 Whether you have questions about our programs, want to schedule a campus visit, or need assistance with the application process, don't hesitate to reach out. We believe in building lasting relationships with our students and their families.
                             </p>
 
-                            {/* Contact Details */}
-                            <div className="space-y-6 mb-8">
-                                <div className="flex items-start">
-                                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                        <i className="fa-solid fa-phone text-white text-xl"></i>
+                            {/* Logo & Company Info */}
+                            <div className="lg:col-span-1">
+                                <div className="text-center lg:text-left">
+                                    <div className="inline-flex items-center justify-center mb-4">
+                                        <img
+                                            src="/Swagat_Logo.png"
+                                            alt="Swagat Group of Institutions"
+                                            className="w-48 h-auto object-contain"
+                                        />
                                     </div>
-                                    <div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Phone</h4>
-                                        <p className="text-gray-600">+91 9403891555</p>
-                                        <p className="text-sm text-gray-500">Monday - Friday, 8:00 AM - 6:00 PM</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start">
-                                    <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                        <i className="fa-solid fa-envelope text-white text-xl"></i>
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Email</h4>
-                                        <p className="text-gray-600">contact@swagatodisha.com</p>
-                                        <p className="text-sm text-gray-500">We'll respond within 24 hours</p>
+                                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                                        Empowering students with quality education, innovative learning methods, and holistic development.
+                                    </p>
+                                    {/* Social Media */}
+                                    <div className="flex justify-center lg:justify-start space-x-3">
+                                        {SOCIAL_LINKS.map((social, index) => (
+                                            <a
+                                                key={index}
+                                                href={social.url}
+                                                className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110"
+                                                title={social.name}
+                                            >
+                                                <i className={`${social.icon} text-xs`}></i>
+                                            </a>
+                                        ))}
                                     </div>
                                 </div>
                             </div>
+
+
 
                             {/* Social Media */}
                             <div>
