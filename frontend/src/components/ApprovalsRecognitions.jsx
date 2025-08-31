@@ -1,272 +1,289 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 const ApprovalsRecognitions = () => {
-    const approvals = [
+    const [currentSlide, setCurrentSlide] = useState(0)
+
+    // University data with their respective approvals
+    const universities = [
         {
             id: 1,
-            title: "AICTE Approval",
-            description: "All India Council for Technical Education approval for our technical programs",
-            icon: "fa-solid fa-certificate",
-            color: "from-purple-500 to-blue-500"
+            name: "Kalinga University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "nursing", name: "Nursing Council", logo: "/src/assets/approvals/sikkim-nursing-council.png", pdf: "/src/assets/documents/Nursing-Approval-Letter.jpeg" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" },
+                { id: "govt", name: "Govt Approval", logo: "/src/assets/approvals/Govt-of-Sikkim.png", pdf: "/src/assets/documents/SAU-Gazette-Notification-Copy.pdf" }
+            ]
         },
         {
             id: 2,
-            title: "UGC Recognition",
-            description: "University Grants Commission recognition for our degree programs",
-            icon: "fa-solid fa-award",
-            color: "from-green-500 to-teal-500"
+            name: "Utkal University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" },
+                { id: "govt", name: "Govt Approval", logo: "/src/assets/approvals/Govt-of-Sikkim.png", pdf: "/src/assets/documents/SAU-Gazette-Notification-Copy.pdf" }
+            ]
         },
         {
             id: 3,
-            title: "State Government Approval",
-            description: "Approved by Government of Odisha for all educational programs",
-            icon: "fa-solid fa-government",
-            color: "from-orange-500 to-red-500"
+            name: "Sikkim Alpine University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "nursing", name: "Nursing Council", logo: "/src/assets/approvals/sikkim-nursing-council.png", pdf: "/src/assets/documents/Nursing-Approval-Letter.jpeg" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" },
+                { id: "govt", name: "Govt Approval", logo: "/src/assets/approvals/Govt-of-Sikkim.png", pdf: "/src/assets/documents/SAU-Gazette-Notification-Copy.pdf" }
+            ]
         },
         {
             id: 4,
-            title: "ISO Certification",
-            description: "ISO 9001:2015 certified for quality management systems",
-            icon: "fa-solid fa-shield-check",
-            color: "from-blue-500 to-indigo-500"
+            name: "Sikkim Professional University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "nursing", name: "Nursing Council", logo: "/src/assets/approvals/sikkim-nursing-council.png", pdf: "/src/assets/documents/Nursing-Approval-Letter.jpeg" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" },
+                { id: "govt", name: "Govt Approval", logo: "/src/assets/approvals/Govt-of-Sikkim.png", pdf: "/src/assets/documents/SAU-Gazette-Notification-Copy.pdf" }
+            ]
         },
         {
             id: 5,
-            title: "NAAC Accreditation",
-            description: "National Assessment and Accreditation Council accreditation",
-            icon: "fa-solid fa-star",
-            color: "from-yellow-500 to-orange-500"
+            name: "Sikkim Skill University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" }
+            ]
         },
         {
             id: 6,
-            title: "NIRF Ranking",
-            description: "National Institutional Ranking Framework ranking",
-            icon: "fa-solid fa-trophy",
-            color: "from-pink-500 to-purple-500"
+            name: "Asian International University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "nursing", name: "Nursing Council", logo: "/src/assets/approvals/sikkim-nursing-council.png", pdf: "/src/assets/documents/Nursing-Approval-Letter.jpeg" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" },
+                { id: "govt", name: "Govt Approval", logo: "/src/assets/approvals/Govt-of-Sikkim.png", pdf: "/src/assets/documents/SAU-Gazette-Notification-Copy.pdf" }
+            ]
+        },
+        {
+            id: 7,
+            name: "MATS University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" },
+                { id: "govt", name: "Govt Approval", logo: "/src/assets/approvals/Govt-of-Sikkim.png", pdf: "/src/assets/documents/SAU-Gazette-Notification-Copy.pdf" }
+            ]
+        },
+        {
+            id: 8,
+            name: "Capital University",
+            approvals: [
+                { id: "ugc", name: "UGC", logo: "/src/assets/approvals/UGC.png", pdf: "/src/assets/documents/UGC-Letter-Copy-to-SAU.pdf" },
+                { id: "aicte", name: "AICTE", logo: "/src/assets/approvals/AICTE.png", pdf: "/src/assets/documents/Common-AICTE-Approval-Letter-for-All-Universities.pdf" },
+                { id: "bar", name: "Bar Council", logo: "/src/assets/approvals/bar-council-of-india.png", pdf: "/src/assets/documents/BCI_Approval_2024-25-1.pdf" },
+                { id: "pharmacy", name: "Pharmacy Council", logo: "/src/assets/approvals/Pharmacy-Council-of-India.jpg", pdf: "/src/assets/documents/School-of-Pharmacy_Approval-Letter_2023-24.pdf" },
+                { id: "rci", name: "RCI", logo: "/src/assets/approvals/RCI.png", pdf: "/src/assets/documents/RCI-Approval-SAU.pdf" },
+                { id: "nursing", name: "Nursing Council", logo: "/src/assets/approvals/sikkim-nursing-council.png", pdf: "/src/assets/documents/Nursing-Approval-Letter.jpeg" },
+                { id: "aiu", name: "AIU", logo: "/src/assets/approvals/association-of-indian-universities.png", pdf: "/src/assets/documents/AIU-Membership-Letter-SAU.pdf" },
+                { id: "govt", name: "Govt Approval", logo: "/src/assets/approvals/Govt-of-Sikkim.png", pdf: "/src/assets/documents/SAU-Gazette-Notification-Copy.pdf" }
+            ]
         }
     ]
 
-    const recognitions = [
-        {
-            id: 1,
-            title: "Best Emerging Institution",
-            year: "2023",
-            organization: "Education Excellence Awards",
-            description: "Recognized for innovative teaching methods and student development"
-        },
-        {
-            id: 2,
-            title: "Excellence in Technical Education",
-            year: "2022",
-            organization: "Technical Education Council",
-            description: "Awarded for outstanding contribution to technical education"
-        },
-        {
-            id: 3,
-            title: "Student Achievement Award",
-            year: "2023",
-            organization: "State Education Department",
-            description: "Recognized for exceptional student performance and achievements"
-        },
-        {
-            id: 4,
-            title: "Innovation in Education",
-            year: "2022",
-            organization: "National Education Forum",
-            description: "Awarded for implementing cutting-edge educational technologies"
-        }
-    ]
+    // Function to handle PDF download
+    const handleApprovalClick = (approval) => {
+        // Create a temporary link element to trigger download
+        const link = document.createElement('a')
+        link.href = approval.pdf
+        link.download = `${approval.name}-approval.pdf`
+        link.target = '_blank'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    }
+
+    // Auto-advance slides
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % universities.length)
+        }, 5000) // Change slide every 5 seconds
+
+        return () => clearInterval(interval)
+    }, [universities.length])
+
+    // Go to next slide
+    const nextSlide = () => {
+        setCurrentSlide((prev) => (prev + 1) % universities.length)
+    }
+
+    // Go to previous slide
+    const prevSlide = () => {
+        setCurrentSlide((prev) => (prev - 1 + universities.length) % universities.length)
+    }
+
+    // Go to specific slide
+    const goToSlide = (index) => {
+        setCurrentSlide(index)
+    }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-            {/* Hero Section */}
-            <section className="relative py-20 overflow-hidden">
-                <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
+        <>
+            <style>
+                {`
+                    @keyframes slideInFromLeft {
+                        from {
+                            opacity: 0;
+                            transform: translateX(-100px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(0);
+                        }
+                    }
+                `}
+            </style>
+            <div className="min-h-screen bg-gradient-to-br from-green-400 to-orange-500 relative overflow-hidden">
+                {/* Background SAU Logo */}
+                <div className="absolute top-0 left-0 w-96 h-96 opacity-10">
+                    <div className="text-green-200 text-9xl font-bold transform -rotate-12">SAU</div>
                 </div>
 
-                <div className="relative z-10 container mx-auto px-6 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
-                        <i className="fa-solid fa-medal text-white text-3xl"></i>
-                    </div>
-
-                    <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
-                        Approvals & <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Recognitions</span>
-                    </h1>
-
-                    <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-                        Swagat Group of Institutions is proud to be recognized and approved by various national and state-level authorities,
-                        ensuring the highest standards of education and quality assurance.
-                    </p>
+                {/* Top Arrow */}
+                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 text-white text-2xl">
+                    ↓
                 </div>
-            </section>
 
-            {/* Approvals Section */}
-            <section className="py-20 bg-white">
-                <div className="container mx-auto px-6">
+                <div className="container mx-auto px-6 py-20">
+                    {/* Header Section */}
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                            Official <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Approvals</span>
+                        <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
+                            SIKKIM ALPINE UNIVERSITY
+                        </h1>
+                        <h2 className="text-3xl md:text-5xl font-bold text-white">
+                            Approvals and Recognitions
                         </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Our institution operates with full regulatory compliance and holds all necessary approvals from recognized authorities.
-                        </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-                        {approvals.map((approval) => (
-                            <div key={approval.id} className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
-                                <div className={`w-16 h-16 bg-gradient-to-r ${approval.color} rounded-2xl flex items-center justify-center mx-auto mb-6`}>
-                                    <i className={`${approval.icon} text-white text-2xl`}></i>
-                                </div>
+                    {/* Slider Section */}
+                    <div className="relative max-w-6xl mx-auto">
+                        {/* Main Slider */}
+                        <div className="relative overflow-hidden rounded-3xl bg-white/10 backdrop-blur-sm border border-white/20">
+                            <div className="p-12 text-center">
+                                {/* University Name */}
+                                <h3 className="text-4xl md:text-5xl font-bold text-white mb-6 transition-all duration-500 transform">
+                                    {universities[currentSlide].name}
+                                </h3>
 
-                                <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">{approval.title}</h3>
-                                <p className="text-gray-600 text-center leading-relaxed">{approval.description}</p>
+                                {/* Section Title */}
+                                <h4 className="text-2xl md:text-3xl font-semibold text-white mb-8 transition-all duration-500 transform">
+                                    Approvals and Recognitions
+                                </h4>
 
-                                <div className="mt-6 text-center">
-                                    <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
-                                        <i className="fa-solid fa-check-circle mr-2"></i>
-                                        Approved
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Recognitions Section */}
-            <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                            Awards & <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Recognition</span>
-                        </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-                            Our commitment to excellence has been recognized through various prestigious awards and accolades.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-                        {recognitions.map((recognition) => (
-                            <div key={recognition.id} className="bg-white rounded-2xl p-8 shadow-xl border border-gray-100 hover:shadow-2xl transition-all duration-300">
-                                <div className="flex items-start justify-between mb-4">
-                                    <h3 className="text-2xl font-bold text-gray-800">{recognition.title}</h3>
-                                    <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-full text-sm font-bold">
-                                        {recognition.year}
-                                    </div>
-                                </div>
-
-                                <div className="mb-4">
-                                    <p className="text-purple-600 font-semibold text-lg">{recognition.organization}</p>
-                                </div>
-
-                                <p className="text-gray-600 leading-relaxed">{recognition.description}</p>
-
-                                <div className="mt-6 flex items-center">
-                                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-3">
-                                        <i className="fa-solid fa-trophy text-white text-sm"></i>
-                                    </div>
-                                    <span className="text-sm text-gray-500">Prestigious Recognition</span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-
-            {/* Quality Assurance Section */}
-            <section className="py-20 bg-white">
-                <div className="container mx-auto px-6">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                            <div>
-                                <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                                    Quality <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Assurance</span>
-                                </h2>
-
-                                <div className="space-y-6">
-                                    <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                            <i className="fa-solid fa-shield-check text-white text-xl"></i>
+                                {/* Approvals Grid - Single Line with Slide Animation */}
+                                <div className="flex justify-center items-center space-x-8 overflow-hidden">
+                                    {universities[currentSlide].approvals.map((approval, index) => (
+                                        <div
+                                            key={approval.id}
+                                            className="group cursor-pointer transform hover:scale-110 transition-all duration-700 flex-shrink-0"
+                                            style={{
+                                                animationDelay: `${index * 150}ms`,
+                                                animation: 'slideInFromLeft 0.8s ease-out forwards'
+                                            }}
+                                            onClick={() => handleApprovalClick(approval)}
+                                            title={`Click to download ${approval.name} approval PDF`}
+                                        >
+                                            <div className="bg-white rounded-full p-4 shadow-lg hover:shadow-2xl transition-all duration-300 w-20 h-20 flex items-center justify-center">
+                                                <img
+                                                    src={approval.logo}
+                                                    alt={approval.name}
+                                                    className="w-12 h-12 object-contain"
+                                                />
+                                            </div>
+                                            <p className="text-white text-sm font-medium mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
+                                                {approval.name}
+                                            </p>
                                         </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-800 mb-2">Regular Audits</h3>
-                                            <p className="text-gray-600">We undergo regular quality audits to maintain our high standards and compliance.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                            <i className="fa-solid fa-chart-line text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-800 mb-2">Continuous Improvement</h3>
-                                            <p className="text-gray-600">We continuously improve our processes based on feedback and best practices.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                            <i className="fa-solid fa-users text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-800 mb-2">Expert Faculty</h3>
-                                            <p className="text-gray-600">Our faculty members are qualified experts with industry experience.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Our Commitment</h3>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-check-circle text-green-600 text-xl mr-4"></i>
-                                        <span className="font-semibold text-gray-800">100% Regulatory Compliance</span>
-                                    </div>
-                                    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-check-circle text-green-600 text-xl mr-4"></i>
-                                        <span className="font-semibold text-gray-800">Quality Education Standards</span>
-                                    </div>
-                                    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-check-circle text-green-600 text-xl mr-4"></i>
-                                        <span className="font-semibold text-gray-800">Student Success Focus</span>
-                                    </div>
-                                    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-check-circle text-green-600 text-xl mr-4"></i>
-                                        <span className="font-semibold text-gray-800">Industry Partnerships</span>
-                                    </div>
+                                    ))}
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            {/* CTA Section */}
-            <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
-                <div className="container mx-auto px-6 text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                        Join Our <span className="text-yellow-300">Recognized</span> Institution
-                    </h2>
-                    <p className="text-xl text-purple-100 max-w-3xl mx-auto mb-8">
-                        Choose an institution that's officially recognized and approved by all relevant authorities.
-                        Your future is secure with us.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl">
-                            Apply Now
+                        {/* Navigation Arrows */}
+                        <button
+                            onClick={prevSlide}
+                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
                         </button>
-                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-purple-600 transition-all duration-300">
-                            Learn More
+
+                        <button
+                            onClick={nextSlide}
+                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
                         </button>
+
+                        {/* Slide Indicators */}
+                        <div className="flex justify-center mt-8 space-x-3">
+                            {universities.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => goToSlide(index)}
+                                    className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                                        ? 'bg-white scale-125'
+                                        : 'bg-white/50 hover:bg-white/75'
+                                        }`}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Slide Counter */}
+                        <div className="text-center mt-4 text-white/80">
+                            <span className="text-lg font-medium">
+                                {currentSlide + 1} of {universities.length}
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Info Section */}
+                    <div className="text-center mt-16 text-white/90">
+                        <p className="text-lg max-w-3xl mx-auto">
+                            Click on any approval logo to download the respective approval document.
+                            All our universities maintain the highest standards of quality and compliance.
+                        </p>
                     </div>
                 </div>
-            </section>
-        </div>
+            </div>
+        </>
     )
 }
 

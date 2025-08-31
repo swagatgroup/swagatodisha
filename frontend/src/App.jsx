@@ -75,45 +75,7 @@ const AppContent = () => {
             </section>
 
             {/* 2. Approval and Recognitions */}
-            <section className="bg-criss-cross">
-                <div className="container mx-auto px-6 py-20">
-                    <div className="text-center mb-16">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
-                            <i className="fa-solid fa-medal text-white text-3xl"></i>
-                        </div>
-                        <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                            Approvals & <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Recognitions</span>
-                        </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            Our institution operates with full regulatory compliance and holds all necessary approvals from recognized authorities.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {[
-                            { title: "AICTE Approval", icon: "fa-solid fa-certificate", color: "from-purple-500 to-blue-500" },
-                            { title: "UGC Recognition", icon: "fa-solid fa-award", color: "from-green-500 to-teal-500" },
-                            { title: "State Government Approval", icon: "fa-solid fa-government", color: "from-orange-500 to-red-500" },
-                            { title: "ISO Certification", icon: "fa-solid fa-shield-check", color: "from-blue-500 to-indigo-500" },
-                            { title: "NAAC Accreditation", icon: "fa-solid fa-star", color: "from-yellow-500 to-orange-500" },
-                            { title: "NIRF Ranking", icon: "fa-solid fa-trophy", color: "from-pink-500 to-purple-500" }
-                        ].map((approval, index) => (
-                            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                                <div className={`w-16 h-16 bg-gradient-to-r ${approval.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
-                                    <i className={`${approval.icon} text-white text-2xl`}></i>
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-800 mb-3 text-center">{approval.title}</h3>
-                                <div className="text-center">
-                                    <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-semibold">
-                                        <i className="fa-solid fa-check-circle mr-2"></i>
-                                        Approved
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <ApprovalsRecognitions />
 
             {/* 3. Quick Access */}
             <section className="bg-white">
