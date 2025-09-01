@@ -174,8 +174,6 @@ export const CAROUSEL_IMAGES = [
     '/slider2.jpg',
     '/slider3.jpg',
     '/slider4.jpg',
-    '/slider5.jpg',
-    '/slider6.jpg',
 ]
 
 // Chairman message

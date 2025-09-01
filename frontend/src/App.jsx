@@ -63,14 +63,14 @@ const AppContent = () => {
     const [isNavOpen, setIsNavOpen] = useState(false)
 
     return (
-        <div className="App relative">
+        <div className="App relative m-0 p-0">
             {/* Premium Floating Elements - Global Animation Layer */}
             <PremiumFloatingElements />
 
             <Header isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
 
             {/* 1. Slider */}
-            <section id="home">
+            <section id="home" className="m-0 p-0">
                 <HeroCarousel />
             </section>
 
