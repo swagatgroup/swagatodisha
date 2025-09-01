@@ -153,8 +153,8 @@ const ApprovalsRecognitions = () => {
     }
 
     return (
-        <div className="bg-gradient-to-br from-purple-600 to-blue-600 py-8">
-            <div className="container mx-auto px-6 relative z-10">
+        <div className="bg-gradient-to-br from-purple-600 to-blue-600 py-4 md:py-8">
+            <div className="container mx-auto px-4 md:px-6 relative z-10">
                 {/* Card Slider */}
                 <div className="relative max-w-6xl mx-auto">
                     <AnimatePresence mode="wait">
@@ -167,21 +167,21 @@ const ApprovalsRecognitions = () => {
                                 duration: 0.8,
                                 ease: "easeInOut"
                             }}
-                            className="backdrop-blur-sm rounded-3xl shadow-2xl p-6 md:p-8 bg-gradient-to-br from-purple-600 to-blue-600"
+                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-gradient-to-br from-purple-600 to-blue-600"
                         >
                             {/* University Name */}
-                            <div className="text-center mb-6">
-                                <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                            <div className="text-center mb-3 md:mb-6">
+                                <h3 className="text-lg md:text-3xl font-bold text-white mb-1 md:mb-2">
                                     {universities[currentSlide].name}
                                 </h3>
-                                <h2 className="text-lg font-bold text-white mb-3">
+                                <h2 className="text-sm md:text-lg font-bold text-white mb-2 md:mb-3">
                                     Approvals & Recognitions
                                 </h2>
-                                <div className="w-32 h-1 bg-white/50 border border-white/10 mx-auto rounded-full"></div>
+                                <div className="w-20 md:w-32 h-0.5 md:h-1 bg-white/50 border border-white/10 mx-auto rounded-full"></div>
                             </div>
 
                             {/* Approvals Grid */}
-                            <div className="flex flex-wrap justify-center gap-3 md:gap-4">
+                            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
                                 {universities[currentSlide].approvals.map((approval, index) => (
                                     <motion.div
                                         key={approval.id}
@@ -192,14 +192,14 @@ const ApprovalsRecognitions = () => {
                                         onClick={() => handleApprovalClick(approval)}
                                         title={`Click to download ${approval.name} approval PDF`}
                                     >
-                                        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-purple-100 w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                                        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-full p-2 md:p-3 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-purple-100 w-12 h-12 md:w-20 md:h-20 flex items-center justify-center">
                                             <img
                                                 src={approval.logo}
                                                 alt={approval.name}
-                                                className="w-10 h-10 md:w-12 md:h-12 object-contain rounded-full"
+                                                className="w-8 h-8 md:w-12 md:h-12 object-contain rounded-full"
                                             />
                                         </div>
-                                        <p className="text-xs font-semibold text-white text-center mt-1 group-hover:text-purple-300 transition-colors duration-300">
+                                        <p className="text-[10px] md:text-xs font-semibold text-white text-center mt-1 group-hover:text-purple-300 transition-colors duration-300">
                                             {approval.name}
                                         </p>
                                     </motion.div>
@@ -211,29 +211,29 @@ const ApprovalsRecognitions = () => {
                     {/* Navigation Arrows */}
                     <button
                         onClick={prevSlide}
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
+                        className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
                     >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                         </svg>
                     </button>
 
                     <button
                         onClick={nextSlide}
-                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
+                        className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
                     >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
 
                     {/* Slide Indicators */}
-                    <div className="flex justify-center mt-6 space-x-3">
+                    <div className="flex justify-center mt-3 md:mt-6 space-x-2 md:space-x-3">
                         {universities.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => goToSlide(index)}
-                                className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                                className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${index === currentSlide
                                     ? 'bg-white scale-125'
                                     : 'bg-white/50 hover:bg-white/75'
                                     }`}
@@ -242,8 +242,8 @@ const ApprovalsRecognitions = () => {
                     </div>
 
                     {/* Slide Counter */}
-                    <div className="text-center mt-3 text-white/80">
-                        <span className="text-lg font-medium">
+                    <div className="text-center mt-2 md:mt-3 text-white/80">
+                        <span className="text-sm md:text-lg font-medium">
                             {currentSlide + 1} of {universities.length}
                         </span>
                     </div>
