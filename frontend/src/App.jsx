@@ -74,13 +74,15 @@ const AppContent = () => {
                 <HeroCarousel />
             </section>
 
-            {/* 2. Approval and Recognitions */}
-            <ApprovalsRecognitions />
 
-            {/* 3. Quick Access */}
+            {/* 2. Quick Access */}
             <section className="bg-white">
                 <QuickLinks />
             </section>
+
+            {/* 3. Approval and Recognitions */}
+            <ApprovalsRecognitions />
+
 
             {/* 4. Our Institutions */}
             <section className="bg-criss-cross">

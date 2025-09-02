@@ -19,8 +19,8 @@ const Gallery = () => {
         { id: 2, src: '/slider2.jpg', alt: 'Library', category: 'campus', title: 'Modern Library' },
         { id: 3, src: '/slider3.jpg', alt: 'Laboratory', category: 'campus', title: 'Well-equipped Laboratory' },
         { id: 4, src: '/slider4.jpg', alt: 'Classroom', category: 'campus', title: 'Smart Classroom' },
-        { id: 5, src: '/slider5.jpg', alt: 'Sports Ground', category: 'campus', title: 'Sports Ground' },
-        { id: 6, src: '/slider6.jpg', alt: 'Auditorium', category: 'campus', title: 'State-of-the-art Auditorium' },
+        { id: 5, src: '/slider1.jpg', alt: 'Sports Ground', category: 'campus', title: 'Sports Ground' },
+        { id: 6, src: '/slider2.jpg', alt: 'Auditorium', category: 'campus', title: 'State-of-the-art Auditorium' },
 
         // Events
         { id: 7, src: '/chairman.jpg', alt: 'Annual Day', category: 'events', title: 'Annual Day Celebration' },
@@ -91,8 +91,8 @@ const Gallery = () => {
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.id)}
                                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${selectedCategory === category.id
-                                        ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
                                 <i className={category.icon}></i>

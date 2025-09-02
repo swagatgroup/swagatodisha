@@ -40,7 +40,7 @@ const InstitutionsPage = () => {
             type: "Management",
             location: "Sargiguda, Balangir, Odisha",
             description: "Business and management education for future leaders",
-            image: "/slider5.jpg",
+            image: "/slider1.jpg",
             features: ["MBA Programs", "BBA Programs", "Industry Projects", "Placement Support"]
         },
         {
@@ -48,7 +48,7 @@ const InstitutionsPage = () => {
             type: "Polytechnic",
             location: "Sargiguda, Balangir, Odisha",
             description: "Diploma programs in technical fields",
-            image: "/slider6.jpg",
+            image: "/slider2.jpg",
             features: ["Diploma Programs", "Practical Training", "Workshop Facilities", "Industry Connect"]
         }
     ]

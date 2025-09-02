@@ -181,14 +181,14 @@ const ApprovalsRecognitions = () => {
                             </div>
 
                             {/* Approvals Grid */}
-                            <div className="flex flex-wrap justify-center gap-2 md:gap-4">
+                            <div className="flex flex-wrap justify-center gap-3 md:gap-6">
                                 {universities[currentSlide].approvals.map((approval, index) => (
                                     <motion.div
                                         key={approval.id}
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.1, duration: 0.5 }}
-                                        className="group cursor-pointer"
+                                        className="group cursor-pointer flex flex-col items-center"
                                         onClick={() => handleApprovalClick(approval)}
                                         title={`Click to download ${approval.name} approval PDF`}
                                     >
@@ -199,9 +199,17 @@ const ApprovalsRecognitions = () => {
                                                 className="w-8 h-8 md:w-12 md:h-12 object-contain rounded-full"
                                             />
                                         </div>
-                                        <p className="text-[10px] md:text-xs font-semibold text-white text-center mt-1 group-hover:text-purple-300 transition-colors duration-300">
-                                            {approval.name}
-                                        </p>
+                                        {/* Fixed height container for consistent vertical spacing */}
+                                        <div className="h-10 md:h-12 flex items-center justify-center mt-2 w-20 md:w-24">
+                                            <p className="text-[8px] md:text-[10px] font-semibold text-white text-center leading-tight group-hover:text-purple-300 transition-colors duration-300">
+                                                {approval.name.split(' ').map((word, wordIndex) => (
+                                                    <span key={wordIndex}>
+                                                        {word}
+                                                        {wordIndex < approval.name.split(' ').length - 1 && <br />}
+                                                    </span>
+                                                ))}
+                                            </p>
+                                        </div>
                                     </motion.div>
                                 ))}
                             </div>
