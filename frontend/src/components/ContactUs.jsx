@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import Swal from 'sweetalert2'
-import { SOCIAL_LINKS } from '../utils/constants'
+import { motion } from 'framer-motion'
+import { SOCIAL_LINKS, CONTACT_INFO } from '../utils/constants'
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -8,7 +9,8 @@ const ContactUs = () => {
         email: '',
         phone: '',
         subject: '',
-        message: ''
+        message: '',
+        documents: null
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -17,6 +19,14 @@ const ContactUs = () => {
         setFormData(prev => ({
             ...prev,
             [name]: value
+        }))
+    }
+
+    const handleFileChange = (e) => {
+        const files = e.target.files
+        setFormData(prev => ({
+            ...prev,
+            documents: files
         }))
     }
 
@@ -44,6 +54,15 @@ const ContactUs = () => {
                 icon: 'error',
                 title: 'Invalid Email',
                 text: 'Please enter a valid email address',
+                confirmButtonColor: '#8B5CF6'
+            })
+            return false
+        }
+        if (!formData.phone.trim()) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Phone Number Required',
+                text: 'Please enter your phone number',
                 confirmButtonColor: '#8B5CF6'
             })
             return false
@@ -77,21 +96,27 @@ const ContactUs = () => {
         setIsSubmitting(true)
 
         try {
+            // Create FormData for file uploads
+            const formDataToSend = new FormData()
+            formDataToSend.append('access_key', '9ec47c5e-26a9-46b3-8845-210426d38985')
+            formDataToSend.append('name', formData.name)
+            formDataToSend.append('email', formData.email)
+            formDataToSend.append('phone', formData.phone)
+            formDataToSend.append('subject', formData.subject)
+            formDataToSend.append('message', formData.message)
+            formDataToSend.append('from_name', formData.name)
+            formDataToSend.append('replyto', formData.email)
+
+            // Add documents if any
+            if (formData.documents && formData.documents.length > 0) {
+                for (let i = 0; i < formData.documents.length; i++) {
+                    formDataToSend.append('documents', formData.documents[i])
+                }
+            }
+
             const response = await fetch('https://api.web3forms.com/submit', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    access_key: '9ec47c5e-26a9-46b3-8845-210426d38985', // Replace with your actual access key
-                    name: formData.name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    subject: formData.subject,
-                    message: formData.message,
-                    from_name: formData.name,
-                    replyto: formData.email
-                })
+                body: formDataToSend
             })
 
             if (response.ok) {
@@ -109,7 +134,8 @@ const ContactUs = () => {
                     email: '',
                     phone: '',
                     subject: '',
-                    message: ''
+                    message: '',
+                    documents: null
                 })
             } else {
                 throw new Error('Failed to send message')
@@ -182,25 +208,57 @@ const ContactUs = () => {
 
 
 
+                            {/* Direct Contact Information */}
+                            <div className="mb-8">
+                                <h4 className="text-lg font-semibold text-gray-800 mb-4">Get In Touch Directly</h4>
+                                <div className="space-y-3">
+                                    {/* Phone Contact */}
+                                    <div className="flex items-center">
+                                        <i className="fa-solid fa-phone text-purple-600 mr-3 text-lg"></i>
+                                        <div>
+                                            <p className="text-sm text-gray-600">Call Us</p>
+                                            <a
+                                                href={`tel:${CONTACT_INFO.phone}`}
+                                                className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                                            >
+                                                {CONTACT_INFO.phone}
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    {/* Email Contact */}
+                                    <div className="flex items-center">
+                                        <i className="fa-solid fa-envelope text-purple-600 mr-3 text-lg"></i>
+                                        <div>
+                                            <p className="text-sm text-gray-600">Email Us</p>
+                                            <a
+                                                href={`mailto:${CONTACT_INFO.email}`}
+                                                className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                                            >
+                                                {CONTACT_INFO.email}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             {/* Social Media */}
                             <div>
                                 <h4 className="text-lg font-semibold text-gray-800 mb-4">Connect With Us</h4>
                                 <div className="flex space-x-4">
-                                    <a href="#" className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
-                                        <i className="fa-brands fa-facebook-f text-lg"></i>
-                                    </a>
-                                    <a href="#" className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
-                                        <i className="fa-brands fa-twitter text-lg"></i>
-                                    </a>
-                                    <a href="#" className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
-                                        <i className="fa-brands fa-linkedin-in text-lg"></i>
-                                    </a>
-                                    <a href="#" className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
-                                        <i className="fa-brands fa-instagram text-lg"></i>
-                                    </a>
-                                    <a href="#" className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-110">
-                                        <i className="fa-brands fa-youtube text-lg"></i>
-                                    </a>
+                                    {SOCIAL_LINKS.map((social, index) => (
+                                        <motion.a
+                                            key={index}
+                                            href={social.url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            whileHover={{ scale: 1.1 }}
+                                            whileTap={{ scale: 0.95 }}
+                                            className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                        >
+                                            <i className={`${social.icon} text-lg`}></i>
+                                        </motion.a>
+                                    ))}
                                 </div>
                             </div>
                         </div>
@@ -247,7 +305,7 @@ const ContactUs = () => {
 
                                     <div>
                                         <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
-                                            Phone Number
+                                            Phone Number *
                                         </label>
                                         <input
                                             type="tel"
@@ -256,7 +314,8 @@ const ContactUs = () => {
                                             value={formData.phone}
                                             onChange={handleInputChange}
                                             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
-                                            placeholder="Enter your phone number (optional)"
+                                            placeholder="Enter your phone number"
+                                            required
                                         />
                                     </div>
 
@@ -288,6 +347,39 @@ const ContactUs = () => {
                                             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none"
                                             placeholder="Tell us more about your inquiry..."
                                         ></textarea>
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="documents" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Upload Documents (Optional)
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                type="file"
+                                                id="documents"
+                                                name="documents"
+                                                onChange={handleFileChange}
+                                                multiple
+                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                            />
+                                            <div className="mt-2 text-xs text-gray-500">
+                                                Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file)
+                                            </div>
+                                            {formData.documents && formData.documents.length > 0 && (
+                                                <div className="mt-2">
+                                                    <p className="text-sm text-gray-600 mb-1">Selected files:</p>
+                                                    <ul className="text-xs text-gray-500 space-y-1">
+                                                        {Array.from(formData.documents).map((file, index) => (
+                                                            <li key={index} className="flex items-center">
+                                                                <i className="fa-solid fa-file mr-2 text-purple-600"></i>
+                                                                {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <button
