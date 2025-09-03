@@ -85,6 +85,7 @@ export default {
         'fade-in': 'fadeIn 0.8s ease-out',
         'slide-up': 'slideUp 0.6s ease-out',
         'scale-in': 'scaleIn 0.5s ease-out',
+        'scroll-up': 'scrollUp 20s linear infinite',
       },
       keyframes: {
         glow: {

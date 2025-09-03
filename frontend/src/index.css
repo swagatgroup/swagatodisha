@@ -139,6 +139,32 @@ html {
   }
 }
 
+/* Auto-scroll animation for notifications */
+@keyframes scrollUp {
+  0% {
+    transform: translateY(0%);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+/* Pause animation on hover */
+.pause-animation:hover {
+  animation-play-state: paused;
+}
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Premium Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

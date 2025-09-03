@@ -11,6 +11,8 @@ const QuickLinks = () => {
     const [activeOverlay, setActiveOverlay] = useState(null)
     const [blinkingLinks, setBlinkingLinks] = useState(new Set())
     const [pdfViewer, setPdfViewer] = useState({ isOpen: false, file: null, name: null })
+    const [isUserScrolling, setIsUserScrolling] = useState(false)
+    const scrollContainerRef = useRef(null)
 
     // Document categories with multiple links for each category
     const documentSections = {
@@ -119,6 +121,25 @@ const QuickLinks = () => {
 
     const handleDocumentHover = (documentName) => {
         startBlinking(documentName)
+    }
+
+    // Handle mouse enter/leave for scroll control
+    const handleMouseEnter = () => {
+        setIsUserScrolling(true)
+    }
+
+    const handleMouseLeave = () => {
+        setIsUserScrolling(false)
+    }
+
+    // Handle wheel scroll
+    const handleWheelScroll = (e) => {
+        if (scrollContainerRef.current) {
+            e.preventDefault()
+            const container = scrollContainerRef.current
+            const scrollAmount = e.deltaY * 0.5 // Adjust scroll sensitivity
+            container.scrollTop += scrollAmount
+        }
     }
 
     const quickLinks = [
@@ -280,16 +301,28 @@ const QuickLinks = () => {
                                             </p>
                                         </div>
 
-                                        {/* Scrollable Content - Negative Y scroll */}
+                                        {/* Auto-scrolling Content - Negative Y scroll in loop */}
                                         <div
-                                            className="p-4 overflow-y-auto h-full"
+                                            ref={scrollContainerRef}
+                                            className="p-4 overflow-y-auto h-full relative scrollbar-hide"
                                             style={{
                                                 height: 'calc(100% - 80px)',
-                                                transform: 'translateY(-10px)',
-                                                scrollBehavior: 'smooth'
+                                                scrollbarWidth: 'none',
+                                                msOverflowStyle: 'none'
                                             }}
+                                            onMouseEnter={handleMouseEnter}
+                                            onMouseLeave={handleMouseLeave}
+                                            onWheel={handleWheelScroll}
                                         >
-                                            <div className="space-y-3">
+                                            {/* Auto-scrolling container */}
+                                            <div
+                                                className={`space-y-2 ${!isUserScrolling ? 'animate-scroll-up' : ''}`}
+                                                style={{
+                                                    animationDuration: '15s',
+                                                    animationPlayState: isUserScrolling ? 'paused' : 'running'
+                                                }}
+                                            >
+                                                {/* First set of documents */}
                                                 {documentSections[link.category].documents.map((doc, docIndex) => (
                                                     <motion.div
                                                         key={doc.name}
@@ -301,31 +334,76 @@ const QuickLinks = () => {
                                                         <motion.button
                                                             onClick={() => handleDocumentClick(doc.name, doc.file)}
                                                             onMouseEnter={() => handleDocumentHover(doc.name)}
-                                                            className={`w-full p-4 rounded-xl border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
-                                                                    ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
-                                                                    : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+                                                            className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
+                                                                ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
+                                                                : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
                                                                 }`}
                                                             whileHover={{ scale: 1.02 }}
                                                             whileTap={{ scale: 0.98 }}
                                                         >
                                                             <div className="flex items-center">
-                                                                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-3">
-                                                                    <i className={`fa-solid ${doc.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'} text-white text-lg`}></i>
+                                                                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-md flex items-center justify-center mr-2">
+                                                                    <i className={`fa-solid ${doc.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'} text-white text-sm`}></i>
                                                                 </div>
                                                                 <div className="flex-1">
-                                                                    <h5 className={`font-semibold text-sm ${blinkingLinks.has(doc.name)
-                                                                            ? 'text-purple-700 animate-pulse'
-                                                                            : 'text-gray-800'
+                                                                    <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
+                                                                        ? 'text-purple-700 animate-pulse'
+                                                                        : 'text-gray-800'
                                                                         }`}>
                                                                         {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
                                                                     </h5>
-                                                                    <p className="text-xs text-gray-600 mt-1">
+                                                                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
                                                                         {doc.description}
                                                                     </p>
                                                                 </div>
-                                                                <div className={`text-2xl ${blinkingLinks.has(doc.name)
-                                                                        ? 'animate-bounce text-purple-600'
-                                                                        : 'text-gray-400 group-hover:text-purple-500'
+                                                                <div className={`text-lg ${blinkingLinks.has(doc.name)
+                                                                    ? 'animate-bounce text-purple-600'
+                                                                    : 'text-gray-400 group-hover:text-purple-500'
+                                                                    }`}>
+                                                                    <i className="fa-solid fa-download"></i>
+                                                                </div>
+                                                            </div>
+                                                        </motion.button>
+                                                    </motion.div>
+                                                ))}
+
+                                                {/* Duplicate set for seamless loop */}
+                                                {documentSections[link.category].documents.map((doc, docIndex) => (
+                                                    <motion.div
+                                                        key={`${doc.name}-duplicate`}
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        transition={{ delay: docIndex * 0.1 }}
+                                                        className="group"
+                                                    >
+                                                        <motion.button
+                                                            onClick={() => handleDocumentClick(doc.name, doc.file)}
+                                                            onMouseEnter={() => handleDocumentHover(doc.name)}
+                                                            className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
+                                                                ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
+                                                                : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+                                                                }`}
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
+                                                        >
+                                                            <div className="flex items-center">
+                                                                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-md flex items-center justify-center mr-2">
+                                                                    <i className={`fa-solid ${doc.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'} text-white text-sm`}></i>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
+                                                                        ? 'text-purple-700 animate-pulse'
+                                                                        : 'text-gray-800'
+                                                                        }`}>
+                                                                        {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
+                                                                    </h5>
+                                                                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
+                                                                        {doc.description}
+                                                                    </p>
+                                                                </div>
+                                                                <div className={`text-lg ${blinkingLinks.has(doc.name)
+                                                                    ? 'animate-bounce text-purple-600'
+                                                                    : 'text-gray-400 group-hover:text-purple-500'
                                                                     }`}>
                                                                     <i className="fa-solid fa-download"></i>
                                                                 </div>
