@@ -15,9 +15,13 @@ const studentSchema = new mongoose.Schema({
         unique: true,
         required: true
     },
+    course: {
+        type: String,
+        required: [true, 'Course selection is required']
+    },
     currentClass: {
         type: String,
-        required: [true, 'Current class is required']
+        required: false // Will be required during profile completion
     },
     stream: {
         type: String,
@@ -26,7 +30,7 @@ const studentSchema = new mongoose.Schema({
     },
     academicYear: {
         type: String,
-        required: [true, 'Academic year is required']
+        required: false // Will be required during profile completion
     },
     enrollmentDate: {
         type: Date,
@@ -36,8 +40,9 @@ const studentSchema = new mongoose.Schema({
     // Personal Information (Extended)
     aadharNumber: {
         type: String,
-        required: [true, 'Aadhar number is required'],
+        required: false, // Will be required during profile completion
         unique: true,
+        sparse: true, // Allow multiple null values
         match: [/^[0-9]{12}$/, 'Aadhar number must be 12 digits'],
         immutable: true // Cannot be changed by staff
     },
@@ -57,9 +62,13 @@ const studentSchema = new mongoose.Schema({
     },
 
     // Family Information
+    guardianName: {
+        type: String,
+        required: [true, 'Guardian\'s name is required']
+    },
     fatherName: {
         type: String,
-        required: [true, 'Father\'s name is required']
+        required: false // Will be required during profile completion
     },
     fatherOccupation: String,
     fatherPhone: String,
@@ -67,13 +76,11 @@ const studentSchema = new mongoose.Schema({
 
     motherName: {
         type: String,
-        required: [true, 'Mother\'s name is required']
+        required: false // Will be required during profile completion
     },
     motherOccupation: String,
     motherPhone: String,
     motherEmail: String,
-
-    guardianName: String,
     guardianRelation: String,
     guardianPhone: String,
     guardianEmail: String,

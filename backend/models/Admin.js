@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema({
     // Basic Information
     firstName: {
         type: String,
@@ -38,8 +38,7 @@ const userSchema = new mongoose.Schema({
     // Role and Access Control
     role: {
         type: String,
-        enum: ['student', 'agent', 'staff', 'super_admin'],
-        default: 'student',
+        enum: ['super_admin', 'staff'],
         required: true
     },
     isActive: {
@@ -47,10 +46,6 @@ const userSchema = new mongoose.Schema({
         default: true
     },
     isEmailVerified: {
-        type: Boolean,
-        default: false
-    },
-    isPhoneVerified: {
         type: Boolean,
         default: false
     },
@@ -80,37 +75,6 @@ const userSchema = new mongoose.Schema({
         }
     },
 
-    // Agent Specific Fields
-    referralCode: {
-        type: String,
-        unique: true,
-        sparse: true,
-        uppercase: true
-    },
-    referredBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        default: null
-    },
-    referralStats: {
-        totalReferrals: {
-            type: Number,
-            default: 0
-        },
-        successfulReferrals: {
-            type: Number,
-            default: 0
-        },
-        pendingReferrals: {
-            type: Number,
-            default: 0
-        },
-        totalCommission: {
-            type: Number,
-            default: 0
-        }
-    },
-
     // Staff Specific Fields
     department: {
         type: String,
@@ -120,13 +84,20 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: null
     },
+    employeeId: {
+        type: String,
+        unique: true,
+        sparse: true
+    },
+    joiningDate: {
+        type: Date,
+        default: Date.now
+    },
 
     // Security and Timestamps
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
-    emailVerificationToken: String,
-    emailVerificationExpires: Date,
     lastLogin: Date,
     loginAttempts: {
         type: Number,
@@ -137,12 +108,12 @@ const userSchema = new mongoose.Schema({
     // Audit Fields
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Admin',
         default: null
     },
     updatedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Admin',
         default: null
     }
 }, {
@@ -152,23 +123,23 @@ const userSchema = new mongoose.Schema({
 });
 
 // Virtual for full name
-userSchema.virtual('fullName').get(function () {
+adminSchema.virtual('fullName').get(function () {
     return `${this.firstName} ${this.lastName}`;
 });
 
 // Virtual for isLocked
-userSchema.virtual('isLocked').get(function () {
+adminSchema.virtual('isLocked').get(function () {
     return !!(this.lockUntil && this.lockUntil > Date.now());
 });
 
 // Indexes
-userSchema.index({ email: 1 });
-userSchema.index({ referralCode: 1 });
-userSchema.index({ role: 1 });
-userSchema.index({ isActive: 1 });
+adminSchema.index({ email: 1 });
+adminSchema.index({ role: 1 });
+adminSchema.index({ isActive: 1 });
+adminSchema.index({ employeeId: 1 });
 
 // Pre-save middleware to hash password
-userSchema.pre('save', async function (next) {
+adminSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
 
     try {
@@ -180,26 +151,22 @@ userSchema.pre('save', async function (next) {
     }
 });
 
-// Pre-save middleware to generate referral code for agents
-userSchema.pre('save', function (next) {
-    if (this.role === 'agent' && !this.referralCode) {
-        this.referralCode = this.generateReferralCode();
+// Pre-save middleware to generate employee ID for staff
+adminSchema.pre('save', function (next) {
+    if (this.role === 'staff' && !this.employeeId) {
+        const year = new Date().getFullYear().toString().substr(-2);
+        const random = Math.random().toString().substr(2, 4);
+        this.employeeId = `STF${year}${random}`;
     }
     next();
 });
 
 // Instance methods
-userSchema.methods.generateReferralCode = function () {
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substr(2, 5);
-    return `AG${timestamp}${random}`.toUpperCase();
-};
-
-userSchema.methods.comparePassword = async function (candidatePassword) {
+adminSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
 
-userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+adminSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     if (this.passwordChangedAt) {
         const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
         return JWTTimestamp < changedTimestamp;
@@ -207,7 +174,7 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return false;
 };
 
-userSchema.methods.incrementLoginAttempts = function () {
+adminSchema.methods.incrementLoginAttempts = function () {
     if (this.lockUntil && this.lockUntil > Date.now()) {
         return;
     }
@@ -221,26 +188,18 @@ userSchema.methods.incrementLoginAttempts = function () {
     return this.save();
 };
 
-userSchema.methods.resetLoginAttempts = function () {
+adminSchema.methods.resetLoginAttempts = function () {
     this.loginAttempts = 0;
     this.lockUntil = undefined;
     return this.save();
 };
 
 // Static methods
-userSchema.statics.findByReferralCode = function (referralCode) {
-    return this.findOne({
-        referralCode: referralCode.toUpperCase(),
-        role: 'agent',
-        isActive: true
-    });
-};
-
-userSchema.statics.findByEmail = function (email) {
+adminSchema.statics.findByEmail = function (email) {
     return this.findOne({
         email: email.toLowerCase(),
         isActive: true
     }).select('+password');
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model('Admin', adminSchema);

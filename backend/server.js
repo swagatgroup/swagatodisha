@@ -12,6 +12,9 @@ const app = express();
 // Import routes
 const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/students');
+const adminRoutes = require('./routes/admin');
+const adminAuthRoutes = require('./routes/adminAuth');
+const dashboardRoutes = require('./routes/dashboard');
 
 // Middleware
 app.use(helmet());
@@ -37,6 +40,24 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Static files
 app.use('/uploads', express.static('uploads'));
 
+// Root endpoint
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'Swagat Odisha Backend API is running',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+            health: '/health',
+            auth: '/api/auth',
+            adminAuth: '/api/admin-auth',
+            students: '/api/students',
+            admin: '/api/admin',
+            dashboard: '/api/dashboard'
+        }
+    });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({
@@ -48,7 +69,10 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin-auth', adminAuthRoutes);
 app.use('/api/students', studentRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
