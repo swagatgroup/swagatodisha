@@ -67,7 +67,7 @@ const userSchema = new mongoose.Schema({
     gender: {
         type: String,
         enum: ['male', 'female', 'other'],
-        default: null
+        required: false
     },
     address: {
         street: String,
@@ -218,13 +218,13 @@ userSchema.methods.incrementLoginAttempts = function () {
         this.lockUntil = Date.now() + 2 * 60 * 60 * 1000; // 2 hours
     }
 
-    return this.save();
+    return this.save({ validateBeforeSave: false });
 };
 
 userSchema.methods.resetLoginAttempts = function () {
     this.loginAttempts = 0;
     this.lockUntil = undefined;
-    return this.save();
+    return this.save({ validateBeforeSave: false });
 };
 
 // Static methods

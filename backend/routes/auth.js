@@ -161,7 +161,7 @@ router.post('/register', [
 router.post('/login', [
     body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
     body('password').notEmpty().withMessage('Password is required')
-], rateLimit(5, 15 * 60 * 1000), async (req, res) => {
+], rateLimit(50, 15 * 60 * 1000), async (req, res) => {
     try {
         // Check for validation errors
         const errors = validationResult(req);
@@ -210,8 +210,7 @@ router.post('/login', [
         }
 
         // Update last login
-        user.lastLogin = new Date();
-        await user.save();
+        await User.findByIdAndUpdate(user._id, { lastLogin: new Date() }, { runValidators: false });
 
         // Generate token
         const token = generateToken(user._id);

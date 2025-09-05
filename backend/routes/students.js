@@ -15,6 +15,116 @@ const {
 
 const router = express.Router();
 
+// @desc    Create new student (Admin only)
+// @route   POST /api/students
+// @access  Private - Admin only
+router.post('/', [
+    protect,
+    isSuperAdmin,
+    body('fullName').trim().isLength({ min: 2, max: 100 }).withMessage('Full name is required'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('phone').matches(/^[0-9]{10}$/).withMessage('Valid 10-digit phone number is required'),
+    body('course').trim().notEmpty().withMessage('Course is required'),
+    body('address').optional().trim(),
+    body('class').optional().trim(),
+    body('dob').optional().isISO8601().withMessage('Valid date format required'),
+    body('referralCode').optional().trim()
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation errors',
+                errors: errors.array()
+            });
+        }
+
+        const { fullName, email, phone, course, address, class: studentClass, dob, referralCode } = req.body;
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'User with this email already exists'
+            });
+        }
+
+        // Create user
+        const user = new User({
+            firstName: fullName.split(' ')[0] || fullName,
+            lastName: fullName.split(' ').slice(1).join(' ') || '',
+            email,
+            phone,
+            password: 'temp123', // Temporary password
+            role: 'student',
+            isActive: true
+        });
+
+        await user.save();
+
+        // Create student profile
+        const student = new Student({
+            user: user._id,
+            course,
+            address: address || '',
+            class: studentClass || '',
+            dob: dob || '',
+            status: 'active',
+            enrollmentDate: new Date(),
+            createdBy: req.user._id
+        });
+
+        // Add referral code if provided
+        if (referralCode) {
+            const agent = await User.findOne({ referralCode, role: 'agent' });
+            if (agent) {
+                student.agentReferral = {
+                    agent: agent._id,
+                    referralCode: referralCode,
+                    referralDate: new Date()
+                };
+            }
+        }
+
+        await student.save();
+
+        // Populate the response
+        const populatedStudent = await Student.findById(student._id)
+            .populate('user', 'firstName lastName email phone')
+            .populate('agentReferral.agent', 'firstName lastName referralCode');
+
+        // Transform data for frontend
+        const transformedStudent = {
+            id: populatedStudent._id,
+            fullName: `${populatedStudent.user.firstName} ${populatedStudent.user.lastName}`,
+            email: populatedStudent.user.email,
+            phone: populatedStudent.user.phone,
+            course: populatedStudent.course,
+            address: populatedStudent.address,
+            class: populatedStudent.class,
+            dob: populatedStudent.dob,
+            referralCode: populatedStudent.agentReferral?.referralCode || null,
+            status: populatedStudent.status,
+            enrollmentDate: populatedStudent.enrollmentDate
+        };
+
+        res.status(201).json({
+            success: true,
+            message: 'Student created successfully',
+            data: transformedStudent
+        });
+
+    } catch (error) {
+        console.error('Create student error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while creating student'
+        });
+    }
+});
+
 // @desc    Get all students (Staff/Admin only)
 // @route   GET /api/students
 // @access  Private - Staff/Admin
@@ -70,9 +180,24 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         // Get total count for pagination
         const total = await Student.countDocuments(filter);
 
+        // Transform data for frontend
+        const transformedStudents = students.map(student => ({
+            id: student._id,
+            fullName: `${student.user.firstName} ${student.user.lastName}`,
+            email: student.user.email,
+            phone: student.user.phone,
+            course: student.course,
+            address: student.address,
+            class: student.class,
+            dob: student.dob,
+            referralCode: student.agentReferral?.referralCode || null,
+            status: student.status,
+            enrollmentDate: student.enrollmentDate
+        }));
+
         res.json({
             success: true,
-            data: students,
+            data: transformedStudents,
             pagination: {
                 currentPage: parseInt(page),
                 totalPages: Math.ceil(total / limit),
@@ -129,16 +254,14 @@ router.put('/:id', [
     protect,
     checkOwnership('Student'),
     canModifySensitiveFields,
-    body('firstName').optional().trim().isLength({ min: 2, max: 50 }),
-    body('lastName').optional().trim().isLength({ min: 2, max: 50 }),
+    body('fullName').optional().trim().isLength({ min: 2, max: 100 }),
+    body('email').optional().isEmail(),
     body('phone').optional().matches(/^[0-9]{10}$/),
-    body('currentClass').optional().trim().notEmpty(),
-    body('stream').optional().isIn(['Science', 'Commerce', 'Arts', 'Engineering', 'Medical', 'Other']),
-    body('academicYear').optional().trim().notEmpty(),
-    body('fatherName').optional().trim().notEmpty(),
-    body('motherName').optional().trim().notEmpty(),
-    body('bloodGroup').optional().isIn(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']),
-    body('panNumber').optional().matches(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/)
+    body('course').optional().trim().notEmpty(),
+    body('address').optional().trim(),
+    body('class').optional().trim(),
+    body('dob').optional().isISO8601(),
+    body('referralCode').optional().trim()
 ], async (req, res) => {
     try {
         // Check for validation errors
@@ -155,20 +278,39 @@ router.put('/:id', [
         const updateData = req.body;
 
         // Update student fields
-        Object.keys(updateData).forEach(key => {
-            if (key !== 'aadharNumber' || req.user.role === 'super_admin') {
-                student[key] = updateData[key];
-            }
-        });
+        if (updateData.course) student.course = updateData.course;
+        if (updateData.address) student.address = updateData.address;
+        if (updateData.class) student.class = updateData.class;
+        if (updateData.dob) student.dob = updateData.dob;
 
         // Update user fields if provided
-        if (updateData.firstName || updateData.lastName || updateData.phone) {
+        if (updateData.fullName || updateData.email || updateData.phone) {
             const userUpdate = {};
-            if (updateData.firstName) userUpdate.firstName = updateData.firstName;
-            if (updateData.lastName) userUpdate.lastName = updateData.lastName;
+            if (updateData.fullName) {
+                const nameParts = updateData.fullName.split(' ');
+                userUpdate.firstName = nameParts[0] || updateData.fullName;
+                userUpdate.lastName = nameParts.slice(1).join(' ') || '';
+            }
+            if (updateData.email) userUpdate.email = updateData.email;
             if (updateData.phone) userUpdate.phone = updateData.phone;
 
             await User.findByIdAndUpdate(student.user, userUpdate);
+        }
+
+        // Handle referral code update
+        if (updateData.referralCode !== undefined) {
+            if (updateData.referralCode) {
+                const agent = await User.findOne({ referralCode: updateData.referralCode, role: 'agent' });
+                if (agent) {
+                    student.agentReferral = {
+                        agent: agent._id,
+                        referralCode: updateData.referralCode,
+                        referralDate: new Date()
+                    };
+                }
+            } else {
+                student.agentReferral = undefined;
+            }
         }
 
         student.updatedBy = req.user._id;
@@ -179,10 +321,25 @@ router.put('/:id', [
             .populate('user', 'firstName lastName email phone profilePicture')
             .populate('agentReferral.agent', 'firstName lastName referralCode');
 
+        // Transform data for frontend
+        const transformedStudent = {
+            id: updatedStudent._id,
+            fullName: `${updatedStudent.user.firstName} ${updatedStudent.user.lastName}`,
+            email: updatedStudent.user.email,
+            phone: updatedStudent.user.phone,
+            course: updatedStudent.course,
+            address: updatedStudent.address,
+            class: updatedStudent.class,
+            dob: updatedStudent.dob,
+            referralCode: updatedStudent.agentReferral?.referralCode || null,
+            status: updatedStudent.status,
+            enrollmentDate: updatedStudent.enrollmentDate
+        };
+
         res.json({
             success: true,
             message: 'Student updated successfully',
-            data: updatedStudent
+            data: transformedStudent
         });
 
     } catch (error) {

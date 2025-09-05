@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
             if (token) {
                 try {
                     const response = await api.get('/api/auth/me');
-                    setUser(response.data.user);
+                    setUser(response.data.data.user);
                 } catch (error) {
                     console.error('Auth check failed:', error);
                     localStorage.removeItem('token');
@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }) => {
 
             console.log('AuthContext - login response:', response.data); // Debug log
 
-            const { token: newToken, user: userData } = response.data;
+            const { token: newToken, user: userData } = response.data.data;
 
             console.log('AuthContext - setting token and user:', { token: newToken, user: userData }); // Debug log
 
