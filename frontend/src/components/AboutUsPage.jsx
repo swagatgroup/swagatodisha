@@ -1,4 +1,5 @@
 import React from 'react'
+import BackToMainWebsite from './BackToMainWebsite'
 
 const AboutUsPage = () => {
     const milestones = [
@@ -78,6 +79,8 @@ const AboutUsPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+            <BackToMainWebsite variant="floating" />
+
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">
                 <div className="absolute inset-0">

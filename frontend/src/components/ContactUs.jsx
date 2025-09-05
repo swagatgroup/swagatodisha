@@ -24,6 +24,30 @@ const ContactUs = () => {
 
     const handleFileChange = (e) => {
         const files = e.target.files
+
+        // Validate file sizes (10MB limit per file)
+        const maxSize = 10 * 1024 * 1024 // 10MB in bytes
+        const invalidFiles = []
+
+        if (files && files.length > 0) {
+            for (let i = 0; i < files.length; i++) {
+                if (files[i].size > maxSize) {
+                    invalidFiles.push(files[i].name)
+                }
+            }
+
+            if (invalidFiles.length > 0) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'File Size Too Large',
+                    text: `The following files exceed 10MB limit: ${invalidFiles.join(', ')}`,
+                    confirmButtonColor: '#8B5CF6'
+                })
+                e.target.value = '' // Clear the input
+                return
+            }
+        }
+
         setFormData(prev => ({
             ...prev,
             documents: files
@@ -107,11 +131,17 @@ const ContactUs = () => {
             formDataToSend.append('from_name', formData.name)
             formDataToSend.append('replyto', formData.email)
 
-            // Add documents if any
+            // Add documents if any - try different field names for Web3Forms compatibility
             if (formData.documents && formData.documents.length > 0) {
+                // Try both 'attachments' and 'files' field names
                 for (let i = 0; i < formData.documents.length; i++) {
-                    formDataToSend.append('documents', formData.documents[i])
+                    formDataToSend.append('attachments', formData.documents[i])
+                    formDataToSend.append('files', formData.documents[i])
                 }
+
+                // Also add file information as text for fallback
+                const fileNames = Array.from(formData.documents).map(file => file.name).join(', ')
+                formDataToSend.append('file_names', fileNames)
             }
 
             const response = await fetch('https://api.web3forms.com/submit', {
@@ -119,7 +149,9 @@ const ContactUs = () => {
                 body: formDataToSend
             })
 
-            if (response.ok) {
+            const result = await response.json()
+
+            if (response.ok && result.success) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Message Sent Successfully!',
@@ -137,14 +169,22 @@ const ContactUs = () => {
                     message: '',
                     documents: null
                 })
+
+                // Reset file input
+                const fileInput = document.getElementById('documents')
+                if (fileInput) {
+                    fileInput.value = ''
+                }
             } else {
-                throw new Error('Failed to send message')
+                console.error('Form submission failed:', result)
+                throw new Error(result.message || 'Failed to send message')
             }
         } catch (error) {
+            console.error('Form submission error:', error)
             Swal.fire({
                 icon: 'error',
                 title: 'Oops...',
-                text: 'Something went wrong! Please try again later.',
+                text: error.message || 'Something went wrong! Please try again later.',
                 confirmButtonColor: '#8B5CF6'
             })
         } finally {
@@ -270,7 +310,7 @@ const ContactUs = () => {
                                     Send Us a Message
                                 </h3>
 
-                                <form onSubmit={handleSubmit} className="space-y-6">
+                                <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
                                             <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">

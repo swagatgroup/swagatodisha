@@ -110,3 +110,6 @@ uploads/
 # Backup files
 *.bak
 *.backup
+
+
+backend_reference/

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
+import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Header from './components/Header'
 import HeroCarousel from './components/HeroCarousel'
@@ -24,10 +25,12 @@ import AgentDashboard from './components/dashboard/AgentDashboard'
 import StaffDashboard from './components/dashboard/StaffDashboard'
 import SuperAdminDashboard from './components/dashboard/SuperAdminDashboard'
 import AboutUsPage from './components/AboutUsPage'
-import InstitutionsPage from './components/InstitutionsPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
 import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
+import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoolGhantiguda'
+import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
+import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -81,11 +84,12 @@ const AppContent = () => {
             </section>
 
             {/* 3. Approval and Recognitions */}
-            <ApprovalsRecognitions />
-
+            <section id="approvals">
+                <ApprovalsRecognitions />
+            </section>
 
             {/* 4. Our Institutions */}
-            <section className="bg-criss-cross">
+            <section id="institutions" className="bg-criss-cross">
                 <InstitutionTypes />
             </section>
 
@@ -166,58 +170,63 @@ const AppContent = () => {
 
 function App() {
     return (
-        <AuthProvider>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<AppContent />} />
-                    <Route path="/about" element={<AboutUsPage />} />
-                    <Route path="/institutions" element={<InstitutionsPage />} />
-                    <Route path="/approvals" element={<ApprovalsRecognitions />} />
-                    <Route path="/gallery" element={<Gallery />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/debug" element={<LoginDebug />} />
+        <HelmetProvider>
+            <AuthProvider>
+                <Router>
+                    <Routes>
+                        <Route path="/" element={<AppContent />} />
+                        <Route path="/about" element={<AboutUsPage />} />
+                        <Route path="/gallery" element={<Gallery />} />
+                        <Route path="/contact" element={<ContactPage />} />
 
-                    {/* Dashboard Routes */}
-                    <Route
-                        path="/dashboard/student"
-                        element={
-                            <ProtectedRoute allowedRoles={['student']}>
-                                <StudentDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/dashboard/agent"
-                        element={
-                            <ProtectedRoute allowedRoles={['agent']}>
-                                <AgentDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/dashboard/staff"
-                        element={
-                            <ProtectedRoute allowedRoles={['staff']}>
-                                <StaffDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/dashboard/admin"
-                        element={
-                            <ProtectedRoute allowedRoles={['super_admin']}>
-                                <SuperAdminDashboard />
-                            </ProtectedRoute>
-                        }
-                    />
+                        {/* School Pages */}
+                        <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
+                        <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
+                        <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/debug" element={<LoginDebug />} />
 
-                    {/* Catch all route */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-            </Router>
-        </AuthProvider>
+                        {/* Dashboard Routes */}
+                        <Route
+                            path="/dashboard/student"
+                            element={
+                                <ProtectedRoute allowedRoles={['student']}>
+                                    <StudentDashboard />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/dashboard/agent"
+                            element={
+                                <ProtectedRoute allowedRoles={['agent']}>
+                                    <AgentDashboard />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/dashboard/staff"
+                            element={
+                                <ProtectedRoute allowedRoles={['staff']}>
+                                    <StaffDashboard />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/dashboard/admin"
+                            element={
+                                <ProtectedRoute allowedRoles={['super_admin']}>
+                                    <SuperAdminDashboard />
+                                </ProtectedRoute>
+                            }
+                        />
+
+                        {/* Catch all route */}
+                        <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                </Router>
+            </AuthProvider>
+        </HelmetProvider>
     )
 }
 

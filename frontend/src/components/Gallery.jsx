@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import BackToMainWebsite from './BackToMainWebsite'
 
 const Gallery = () => {
     const [selectedCategory, setSelectedCategory] = useState('all')
@@ -59,6 +60,8 @@ const Gallery = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+            <BackToMainWebsite variant="floating" />
+
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">
                 <div className="absolute inset-0">

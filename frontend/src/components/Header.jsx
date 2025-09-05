@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
-import { scrollToContact } from '../utils/helpers'
+import { scrollToContact, scrollToSection } from '../utils/helpers'
 import { NAV_ITEMS } from '../utils/constants'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -43,6 +43,16 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
 
     const toggleNav = () => {
         setIsNavOpen(!isNavOpen)
+    }
+
+    const handleNavClick = (href) => {
+        if (href.startsWith('#')) {
+            // Smooth scroll to section
+            const sectionId = href.substring(1)
+            scrollToSection(sectionId)
+            setIsNavOpen(false) // Close mobile menu
+        }
+        // For regular links, let the Link component handle navigation
     }
 
     const navItemVariants = {
@@ -148,12 +158,17 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                                     className="relative"
                                 >
                                     <motion.div
-                                        className="relative px-4 py-2 text-gray-800 font-medium transition-colors duration-300 group"
+                                        className="relative px-4 py-2 text-gray-800 font-medium transition-colors duration-300 group cursor-pointer"
                                         whileHover={{ y: -2 }}
+                                        onClick={() => handleNavClick(item.href)}
                                     >
-                                        <Link to={item.href}>
-                                            {item.name}
-                                        </Link>
+                                        {item.href.startsWith('#') ? (
+                                            <span>{item.name}</span>
+                                        ) : (
+                                            <Link to={item.href}>
+                                                {item.name}
+                                            </Link>
+                                        )}
 
                                         {/* Hover Underline Effect */}
                                         <motion.div
@@ -261,13 +276,20 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                                     {NAV_ITEMS.map((item, index) => (
                                         <motion.div
                                             key={index}
-                                            className="block py-4 px-4 text-gray-800 font-medium rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 transition-all duration-300 text-lg"
+                                            className="block py-4 px-4 text-gray-800 font-medium rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 transition-all duration-300 text-lg cursor-pointer"
                                             whileHover={{ x: 10 }}
-                                            onClick={() => setIsNavOpen(false)}
+                                            onClick={() => {
+                                                handleNavClick(item.href)
+                                                setIsNavOpen(false)
+                                            }}
                                         >
-                                            <Link to={item.href}>
-                                                {item.name}
-                                            </Link>
+                                            {item.href.startsWith('#') ? (
+                                                <span>{item.name}</span>
+                                            ) : (
+                                                <Link to={item.href}>
+                                                    {item.name}
+                                                </Link>
+                                            )}
                                         </motion.div>
                                     ))}
 

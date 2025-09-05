@@ -4,7 +4,10 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CONTACT_INFO } from '../utils/constants'
 
-gsap.registerPlugin(ScrollTrigger)
+// Register ScrollTrigger only on client side
+if (typeof window !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger)
+}
 
 const QuickLinks = () => {
     const containerRef = useRef(null)
@@ -18,6 +21,7 @@ const QuickLinks = () => {
     const [expandedPaths, setExpandedPaths] = useState(new Set())
     const [showAllCareers, setShowAllCareers] = useState(new Set())
     const scrollContainerRef = useRef(null)
+    const careerModalTimeoutRef = useRef(null)
 
     // Document categories with multiple links for each category
     const documentSections = {
@@ -114,6 +118,7 @@ const QuickLinks = () => {
     }
 
     const handleDocumentClick = (documentName, fileName) => {
+        console.log('Document clicked:', { documentName, fileName })
         startBlinking(documentName)
 
         // Open PDF viewer
@@ -127,6 +132,35 @@ const QuickLinks = () => {
     const handleDocumentHover = (documentName) => {
         startBlinking(documentName)
     }
+
+    // Career modal hover handlers with delay
+    const handleCareerHover = () => {
+        // Clear any existing timeout
+        if (careerModalTimeoutRef.current) {
+            clearTimeout(careerModalTimeoutRef.current)
+        }
+
+        // Set a short delay before opening modal (300ms)
+        careerModalTimeoutRef.current = setTimeout(() => {
+            setCareerModal({ isOpen: true })
+        }, 300)
+    }
+
+    const handleCareerLeave = () => {
+        // Clear timeout if user leaves before delay completes
+        if (careerModalTimeoutRef.current) {
+            clearTimeout(careerModalTimeoutRef.current)
+        }
+    }
+
+    // Cleanup timeout on unmount
+    useEffect(() => {
+        return () => {
+            if (careerModalTimeoutRef.current) {
+                clearTimeout(careerModalTimeoutRef.current)
+            }
+        }
+    }, [])
 
     // Handle mouse enter/leave for scroll control
     const handleMouseEnter = () => {
@@ -428,32 +462,48 @@ const QuickLinks = () => {
     ]
 
     useEffect(() => {
-        // GSAP animations for cards
-        cardsRef.current.forEach((card, index) => {
-            if (card) {
-                gsap.fromTo(card,
-                    {
-                        y: 60,
-                        opacity: 0,
-                        scale: 0.9
-                    },
-                    {
-                        y: 0,
-                        opacity: 1,
-                        scale: 1,
-                        duration: 0.6,
-                        ease: "back.out(1.7)",
-                        delay: index * 0.1,
-                        scrollTrigger: {
-                            trigger: card,
-                            start: "top 85%",
-                            end: "bottom 15%",
-                            toggleActions: "play none none reverse"
+        // Ensure we're on the client side and DOM is available
+        if (typeof window === 'undefined' || !document) return
+
+        try {
+            // GSAP animations for cards
+            cardsRef.current.forEach((card, index) => {
+                if (card) {
+                    gsap.fromTo(card,
+                        {
+                            y: 60,
+                            opacity: 0,
+                            scale: 0.9
+                        },
+                        {
+                            y: 0,
+                            opacity: 1,
+                            scale: 1,
+                            duration: 0.6,
+                            ease: "back.out(1.7)",
+                            delay: index * 0.1,
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 85%",
+                                end: "bottom 15%",
+                                toggleActions: "play none none reverse"
+                            }
                         }
-                    }
-                )
+                    )
+                }
+            })
+        } catch (error) {
+            console.error('GSAP animation error:', error)
+        }
+
+        // Cleanup function to kill ScrollTrigger instances
+        return () => {
+            try {
+                ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+            } catch (error) {
+                console.error('ScrollTrigger cleanup error:', error)
             }
-        })
+        }
     }, [])
 
     return (
@@ -502,13 +552,15 @@ const QuickLinks = () => {
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             onMouseEnter={() => {
                                 if (link.category === 'career') {
-                                    setCareerModal({ isOpen: true })
+                                    handleCareerHover()
                                 } else if (link.category) {
                                     setActiveOverlay(link.category)
                                 }
                             }}
                             onMouseLeave={() => {
-                                if (link.category !== 'career') {
+                                if (link.category === 'career') {
+                                    handleCareerLeave()
+                                } else {
                                     setActiveOverlay(null)
                                 }
                             }}
@@ -1013,6 +1065,12 @@ const QuickLinks = () => {
                                         src={`/${pdfViewer.file}#toolbar=1&navpanes=1&scrollbar=1`}
                                         className="w-full h-full border-0"
                                         title={pdfViewer.name}
+                                        onError={(e) => {
+                                            console.error('PDF loading error:', e)
+                                        }}
+                                        onLoad={() => {
+                                            console.log('PDF loaded successfully:', pdfViewer.file)
+                                        }}
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
@@ -1020,6 +1078,12 @@ const QuickLinks = () => {
                                             src={`/${pdfViewer.file}`}
                                             alt={pdfViewer.name}
                                             className="max-w-full max-h-full object-contain"
+                                            onError={(e) => {
+                                                console.error('Image loading error:', e)
+                                            }}
+                                            onLoad={() => {
+                                                console.log('Image loaded successfully:', pdfViewer.file)
+                                            }}
                                         />
                                     </div>
                                 )}

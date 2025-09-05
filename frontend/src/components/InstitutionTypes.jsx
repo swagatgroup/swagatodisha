@@ -31,35 +31,41 @@ const InstitutionTypes = () => {
                 {
                     name: "Swagat Public School, Ghantiguda, Sinapali",
                     type: "Primary & Secondary",
-                    details: "Complete school education from Class 1 to 10 with CBSE curriculum",
+                    details: "Complete school education from Class 1 to 10 with CBSE curriculum in a modern learning environment",
                     feeStructure: {
                         admissionFee: "₹5,000",
                         monthlyFee: "₹1,500",
                         annualFee: "₹2,000",
                         otherCharges: "₹1,000"
-                    }
+                    },
+                    hasWebsite: true,
+                    websiteUrl: "/SwagatPublicSchool_Ghantiguda"
                 },
                 {
                     name: "Swagat Public School, Sargiguda, Kantabanji",
                     type: "Primary & Secondary",
-                    details: "Complete school education from Class 1 to 10 with CBSE curriculum",
+                    details: "Complete school education from Class 1 to 10 with CBSE curriculum in a nurturing environment",
                     feeStructure: {
                         admissionFee: "₹5,000",
                         monthlyFee: "₹1,500",
                         annualFee: "₹2,000",
                         otherCharges: "₹1,000"
-                    }
+                    },
+                    hasWebsite: true,
+                    websiteUrl: "/SwagatPublicSchool_Sargiguda"
                 },
                 {
                     name: "Swagat Public School, Lakhna, Nuapada",
                     type: "Primary & Secondary",
-                    details: "Complete school education from Class 1 to 10 with CBSE curriculum",
+                    details: "Complete school education from Class 1 to 10 with CBSE curriculum with focus on holistic development",
                     feeStructure: {
                         admissionFee: "₹5,000",
                         monthlyFee: "₹1,500",
                         annualFee: "₹2,000",
                         otherCharges: "₹1,000"
-                    }
+                    },
+                    hasWebsite: true,
+                    websiteUrl: "/SwagatPublicSchool_Lakhna"
                 }
             ]
         },
@@ -1849,24 +1855,38 @@ const InstitutionTypes = () => {
                                     <div
                                         key={index}
                                         className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer border border-gray-200 hover:border-purple-300"
-                                        onClick={(event) => handleProgramCardClick(event, program)}
+                                        onClick={(event) => {
+                                            if (program.hasWebsite) {
+                                                event.preventDefault()
+                                                event.stopPropagation()
+                                                window.open(program.websiteUrl, '_blank')
+                                            } else {
+                                                handleProgramCardClick(event, program)
+                                            }
+                                        }}
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <h5 className="font-semibold text-gray-800 mb-2">{program.name}</h5>
                                                 <p className="text-sm text-gray-600 mb-2">{program.type}</p>
                                                 <p className="text-xs text-gray-500">{program.details}</p>
-                                                {program.hasSubCategories && (
-                                                    <div className="mt-2">
+                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                    {program.hasSubCategories && (
                                                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                                                             <i className="fa-solid fa-layer-group mr-1"></i>
                                                             Has Sub-Categories
                                                         </span>
-                                                    </div>
-                                                )}
+                                                    )}
+                                                    {program.hasWebsite && (
+                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                            <i className="fa-solid fa-globe mr-1"></i>
+                                                            Visit Website
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className="ml-4">
-                                                <i className="fa-solid fa-chevron-right text-purple-500"></i>
+                                                <i className={`fa-solid ${program.hasWebsite ? 'fa-external-link-alt' : 'fa-chevron-right'} text-purple-500`}></i>
                                             </div>
                                         </div>
                                     </div>

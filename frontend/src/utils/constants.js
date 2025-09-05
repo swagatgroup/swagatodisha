@@ -10,8 +10,8 @@ export const APP_CONFIG = {
 export const NAV_ITEMS = [
     { name: 'Home', href: '/', icon: '' },
     { name: 'About Us', href: '/about', icon: '' },
-    { name: 'Institutions', href: '/institutions', icon: '' },
-    { name: 'Approvals', href: '/approvals', icon: '' },
+    { name: 'Institutions', href: '#institutions', icon: '' },
+    { name: 'Approvals', href: '#approvals', icon: '' },
     { name: 'Gallery', href: '/gallery', icon: '' },
     { name: 'Contact Us', href: '/contact', icon: '' }
 ]
