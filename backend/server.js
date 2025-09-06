@@ -69,6 +69,17 @@ app.get('/health', (req, res) => {
     });
 });
 
+// API Health check endpoint (for Render)
+app.get('/api/health', (req, res) => {
+    res.status(200).json({
+        status: 'OK',
+        message: 'Swagat Odisha Backend API is running',
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        environment: process.env.NODE_ENV || 'development'
+    });
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/admin-auth', adminAuthRoutes);
@@ -155,12 +166,21 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
     try {
         validateEnvironment();
-        await connectDB();
-        app.listen(PORT, () => {
+
+        // Start server first, then connect to database
+        const server = app.listen(PORT, () => {
             console.log(`🚀 Server running on port ${PORT}`);
             console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
             console.log(`📊 Health check: http://localhost:${PORT}/health`);
+            console.log(`📊 API Health check: http://localhost:${PORT}/api/health`);
         });
+
+        // Try to connect to database (non-blocking)
+        connectDB().catch(error => {
+            console.error('⚠️ Database connection failed, but server is running:', error.message);
+            console.log('🔄 Will retry database connection...');
+        });
+
     } catch (error) {
         console.error('❌ Failed to start server:', error.message);
         process.exit(1);
