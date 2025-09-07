@@ -23,12 +23,17 @@ const userSchema = new mongoose.Schema({
     },
     guardianName: {
         type: String,
-        required: [true, 'Guardian name is required'],
+        required: function () {
+            // Only required for new users, not existing ones
+            return this.isNew;
+        },
         trim: true,
         minlength: [2, 'Guardian name must be at least 2 characters'],
         maxlength: [100, 'Guardian name cannot exceed 100 characters'],
         validate: {
             validator: function (v) {
+                // Skip validation if empty and not required
+                if (!v && !this.isNew) return true;
                 return /^[a-zA-Z\s]+$/.test(v);
             },
             message: 'Guardian name can only contain alphabets and spaces'
@@ -55,10 +60,16 @@ const userSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        required: [true, 'Phone number is required'],
+        required: function () {
+            // Only required for new users, not existing ones  
+            return this.isNew;
+        },
         unique: true,
+        sparse: true, // Allow multiple null values
         validate: {
             validator: function (v) {
+                // Skip validation if empty and not required
+                if (!v && !this.isNew) return true;
                 return /^[6-9]\d{9}$/.test(v);
             },
             message: 'Phone number must be a valid 10-digit Indian mobile number'

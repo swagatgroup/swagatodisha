@@ -208,22 +208,43 @@ router.post('/login', async (req, res) => {
         // Validate required fields for LOGIN only
         if (!email || !password) {
             return res.status(400).json({
+                success: false,
                 message: 'Email and password are required for login'
             });
         }
 
-        // Find user by email
-        console.log('Looking for user with email:', email.toLowerCase());
-        const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+        // First, try to find user in User model (students, agents, regular users)
+        console.log('Looking for user in User model with email:', email.toLowerCase());
+        let user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+        let userType = 'user';
+
+        // If not found in User model, try Admin model (staff, super_admin)
         if (!user) {
-            console.log('❌ User not found for email:', email);
-            return res.status(401).json({ message: 'Invalid credentials' });
+            console.log('User not found in User model, checking Admin model...');
+            const Admin = require('../models/Admin');
+            const adminUser = await Admin.findOne({ email: email.toLowerCase() }).select('+password');
+
+            if (adminUser) {
+                console.log('✅ Admin user found:', adminUser._id);
+                user = adminUser;
+                userType = 'admin';
+            }
+        } else {
+            console.log('✅ User found in User model:', user._id);
         }
-        console.log('✅ User found:', user._id);
+
+        if (!user) {
+            console.log('❌ User not found in any model for email:', email);
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
+        }
 
         // Check if user is active
         if (!user.isActive) {
             return res.status(401).json({
+                success: false,
                 message: 'Account is disabled. Please contact support.'
             });
         }
@@ -233,13 +254,16 @@ router.post('/login', async (req, res) => {
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
             console.log('❌ Invalid password for user:', user._id);
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid credentials'
+            });
         }
         console.log('✅ Password valid for user:', user._id);
 
-        // Update last login
+        // Update last login WITHOUT validation
         user.lastLogin = new Date();
-        await user.save();
+        await user.save({ validateBeforeSave: false });
 
         // Generate JWT token
         console.log('Generating JWT token...');
@@ -247,7 +271,8 @@ router.post('/login', async (req, res) => {
             {
                 id: user._id,
                 email: user.email,
-                role: user.role || 'user'
+                role: user.role || 'user',
+                userType: userType
             },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
@@ -260,9 +285,9 @@ router.post('/login', async (req, res) => {
             const Student = require('../models/Student');
             const student = await Student.findOne({ user: user._id });
             if (student) {
-                // Update last login in student profile too
+                // Update last login in student profile too (without validation)
                 student.lastLogin = new Date();
-                await student.save();
+                await student.save({ validateBeforeSave: false });
 
                 studentData = {
                     id: student._id,
@@ -274,24 +299,41 @@ router.post('/login', async (req, res) => {
             }
         }
 
+        // Prepare user data for response
+        let userData = {
+            id: user._id,
+            email: user.email,
+            role: user.role || 'user'
+        };
+
+        // Add appropriate name field based on user type
+        if (userType === 'admin') {
+            userData.fullName = user.fullName || `${user.firstName} ${user.lastName}`;
+        } else {
+            userData.fullName = user.fullName;
+        }
+
+        // Add student data if applicable
+        if (studentData) {
+            userData = { ...userData, ...studentData };
+        }
+
         console.log('✅ Login successful for user:', user._id);
         console.log('=== LOGIN REQUEST END ===');
 
         res.json({
+            success: true,
             message: 'Login successful',
             token,
-            user: {
-                id: user._id,
-                email: user.email,
-                fullName: user.fullName,
-                role: user.role || 'user',
-                ...studentData
-            }
+            user: userData
         });
 
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server error during login' });
+        res.status(500).json({
+            success: false,
+            message: 'Server error during login'
+        });
     }
 });
 
@@ -734,34 +776,63 @@ router.get('/me', async (req, res) => {
         const token = req.headers.authorization?.replace('Bearer ', '');
 
         if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
+            return res.status(401).json({
+                success: false,
+                message: 'No token provided'
+            });
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id || decoded.userId;
+        const userType = decoded.userType || 'user';
         console.log('JWT decoded:', decoded);
-        console.log('Extracted userId:', userId);
+        console.log('Extracted userId:', userId, 'userType:', userType);
 
-        const user = await User.findById(userId).select('-password');
-        console.log('Found user:', user ? user._id : 'NOT FOUND');
+        let user;
+
+        // Check appropriate model based on userType
+        if (userType === 'admin') {
+            const Admin = require('../models/Admin');
+            user = await Admin.findById(userId).select('-password');
+            console.log('Found admin user:', user ? user._id : 'NOT FOUND');
+        } else {
+            user = await User.findById(userId).select('-password');
+            console.log('Found user:', user ? user._id : 'NOT FOUND');
+        }
 
         if (!user) {
-            return res.status(401).json({ message: 'User not found' });
+            return res.status(401).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Prepare user data
+        let userData = {
+            id: user._id,
+            email: user.email,
+            role: user.role
+        };
+
+        // Add appropriate name field based on user type
+        if (userType === 'admin') {
+            userData.fullName = user.fullName || `${user.firstName} ${user.lastName}`;
+        } else {
+            userData.fullName = user.fullName;
         }
 
         res.json({
+            success: true,
             data: {
-                user: {
-                    id: user._id,
-                    email: user.email,
-                    fullName: user.fullName,
-                    role: user.role
-                }
+                user: userData
             }
         });
     } catch (error) {
         console.error('Auth check error:', error);
-        res.status(401).json({ message: 'Invalid token' });
+        res.status(401).json({
+            success: false,
+            message: 'Invalid token'
+        });
     }
 });
 

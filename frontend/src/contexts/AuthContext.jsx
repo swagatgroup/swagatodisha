@@ -16,14 +16,16 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
 
     // Set default headers when token changes
     useEffect(() => {
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            setIsAuthenticated(true);
         } else {
             delete api.defaults.headers.common['Authorization'];
+            setIsAuthenticated(false);
         }
     }, [token]);
 
@@ -33,12 +35,23 @@ export const AuthProvider = ({ children }) => {
             if (token) {
                 try {
                     const response = await api.get('/api/auth/me');
-                    setUser(response.data.data.user);
+                    if (response.data.success) {
+                        setUser(response.data.data.user);
+                        setIsAuthenticated(true);
+                    } else {
+                        // Token is invalid
+                        localStorage.removeItem('token');
+                        setToken(null);
+                        setIsAuthenticated(false);
+                    }
                 } catch (error) {
                     console.error('Auth check failed:', error);
                     localStorage.removeItem('token');
                     setToken(null);
+                    setIsAuthenticated(false);
                 }
+            } else {
+                setIsAuthenticated(false);
             }
             setLoading(false);
         };
@@ -46,41 +59,59 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, [token]);
 
-    const login = async (credentials) => {
+    const login = async (email, password) => {
         try {
             setLoading(true);
             setError(null);
 
+            console.log('AuthContext login called with:', { email, password: password ? '[PRESENT]' : '[MISSING]' });
+
             const response = await api.post('/api/auth/login', {
-                email: credentials.email,
-                password: credentials.password
+                email: email,
+                password: password
             });
 
-            const { token, user } = response.data;
+            console.log('Login response received:', response.data);
 
-            // Store token
-            localStorage.setItem('token', token);
-            setToken(token);
+            if (response.data.success) {
+                const { token, user } = response.data;
 
-            // Set authorization header
-            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                // Store token
+                localStorage.setItem('token', token);
+                setToken(token);
 
-            setUser(user);
-            setIsAuthenticated(true);
+                // Set authorization header
+                api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            return { success: true, user };
+                setUser(user);
+                setIsAuthenticated(true);
+
+                return { success: true, user };
+            } else {
+                throw new Error(response.data.message || 'Login failed');
+            }
 
         } catch (error) {
             console.error('Login failed:', error);
-
+            
             let errorMessage = 'Login failed. Please check your credentials.';
 
-            if (error.response?.data?.message) {
+            // Handle different error status codes properly
+            if (error.response?.status === 401) {
+                errorMessage = error.response.data?.message || 'Invalid email or password. Please try again.';
+            } else if (error.response?.status === 400) {
+                errorMessage = error.response.data?.message || 'Please fill in all required fields.';
+            } else if (error.response?.status === 500) {
+                errorMessage = 'Server error during login. Please try again later.';
+            } else if (error.response?.data?.message) {
                 errorMessage = error.response.data.message;
+            } else if (error.message) {
+                errorMessage = error.message;
             }
 
             setError(errorMessage);
-            return { success: false, error: errorMessage };
+            setIsAuthenticated(false);
+            return { success: false, message: errorMessage };
         } finally {
             setLoading(false);
         }
@@ -92,7 +123,10 @@ export const AuthProvider = ({ children }) => {
             setError(null);
 
             console.log('=== FRONTEND REGISTRATION START ===');
-            console.log('Registration data being sent:', userData);
+            console.log('Registration data being sent:', {
+                ...userData,
+                password: '[REDACTED]'
+            });
 
             const response = await api.post('/api/auth/register', {
                 fullName: userData.fullName,
@@ -134,12 +168,19 @@ export const AuthProvider = ({ children }) => {
             } else if (error.response?.status === 409) {
                 errorMessage = 'User already exists with this email or phone number.';
             } else if (error.response?.status === 400) {
-                errorMessage = 'Please fill in all required fields correctly.';
+                // Handle validation errors
+                if (error.response.data?.errors) {
+                    const validationErrors = error.response.data.errors.map(err => err.message).join(', ');
+                    errorMessage = `Please fix the following: ${validationErrors}`;
+                } else {
+                    errorMessage = 'Please fill in all required fields correctly.';
+                }
             } else if (error.message) {
                 errorMessage = error.message;
             }
 
             setError(errorMessage);
+            setIsAuthenticated(false);
             return { success: false, error: errorMessage };
         } finally {
             setLoading(false);
@@ -148,12 +189,19 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        delete api.defaults.headers.common['Authorization'];
         setToken(null);
         setUser(null);
+        setIsAuthenticated(false);
+        setError(null);
     };
 
     const updateUser = (updatedUser) => {
         setUser(updatedUser);
+    };
+
+    const clearError = () => {
+        setError(null);
     };
 
     const value = {
@@ -164,6 +212,7 @@ export const AuthProvider = ({ children }) => {
         register,
         logout,
         updateUser,
+        clearError,
         isAuthenticated,
     };
 
