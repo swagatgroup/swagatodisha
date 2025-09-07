@@ -9,105 +9,56 @@ const studentSchema = new mongoose.Schema({
         unique: true
     },
 
-    // Academic Information
+    // Basic Academic Information
     studentId: {
         type: String,
         unique: true,
-        required: true
+        sparse: true, // Allow multiple null values during creation
+        required: false // Will be auto-generated
     },
     course: {
         type: String,
-        required: [true, 'Course selection is required']
+        required: true,
+        validate: {
+            validator: function (v) {
+                const validCourses = [
+                    "B.Tech Computer Science",
+                    "B.Tech Mechanical Engineering",
+                    "B.Tech Electrical Engineering",
+                    "B.Tech Civil Engineering",
+                    "MBA",
+                    "BCA",
+                    "MCA",
+                    "B.Com",
+                    "M.Com",
+                    "BA",
+                    "MA English",
+                    "BSc Mathematics",
+                    "MSc Physics"
+                ];
+                return validCourses.includes(v);
+            },
+            message: 'Please select a valid course from the dropdown'
+        }
     },
-    currentClass: {
-        type: String,
-        required: false // Will be required during profile completion
+
+    // Profile Status
+    isProfileComplete: {
+        type: Boolean,
+        default: false
     },
-    stream: {
-        type: String,
-        enum: ['Science', 'Commerce', 'Arts', 'Engineering', 'Medical', 'Other'],
-        default: null
-    },
-    academicYear: {
-        type: String,
-        required: false // Will be required during profile completion
-    },
-    enrollmentDate: {
+    registrationDate: {
         type: Date,
         default: Date.now
     },
-
-    // Personal Information (Extended)
-    aadharNumber: {
-        type: String,
-        required: false, // Will be required during profile completion
-        unique: true,
-        sparse: true, // Allow multiple null values
-        match: [/^[0-9]{12}$/, 'Aadhar number must be 12 digits'],
-        immutable: true // Cannot be changed by staff
-    },
-    panNumber: {
-        type: String,
-        match: [/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Please enter a valid PAN number'],
+    lastLogin: {
+        type: Date,
         default: null
     },
-    bloodGroup: {
+    status: {
         type: String,
-        enum: ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'],
-        default: null
-    },
-    nationality: {
-        type: String,
-        default: 'Indian'
-    },
-
-    // Family Information
-    guardianName: {
-        type: String,
-        required: [true, 'Guardian\'s name is required']
-    },
-    fatherName: {
-        type: String,
-        required: false // Will be required during profile completion
-    },
-    fatherOccupation: String,
-    fatherPhone: String,
-    fatherEmail: String,
-
-    motherName: {
-        type: String,
-        required: false // Will be required during profile completion
-    },
-    motherOccupation: String,
-    motherPhone: String,
-    motherEmail: String,
-    guardianRelation: String,
-    guardianPhone: String,
-    guardianEmail: String,
-
-    // Previous Academic Details
-    previousSchool: String,
-    previousClass: String,
-    previousBoard: String,
-    previousPercentage: Number,
-    previousYear: String,
-
-    // Documents
-    documents: {
-        aadharCard: {
-            type: String,
-            required: [true, 'Aadhar card is required']
-        },
-        birthCertificate: String,
-        transferCertificate: String,
-        characterCertificate: String,
-        incomeCertificate: String,
-        casteCertificate: String,
-        domicileCertificate: String,
-        migrationCertificate: String,
-        markSheet: String,
-        passportSizePhoto: String,
-        signature: String
+        enum: ['active', 'inactive', 'suspended'],
+        default: 'active'
     },
 
     // Agent Information (if applicable)
@@ -120,82 +71,15 @@ const studentSchema = new mongoose.Schema({
         commissionPercentage: {
             type: Number,
             default: 0
-        },
-        commissionAmount: {
-            type: Number,
-            default: 0
         }
     },
 
-    // Academic Performance
-    academicPerformance: [{
-        semester: String,
-        subjects: [{
-            name: String,
-            marks: Number,
-            maxMarks: Number,
-            percentage: Number
-        }],
-        totalMarks: Number,
-        maxTotalMarks: Number,
-        percentage: Number,
-        grade: String,
-        remarks: String
-    }],
-
-    // Attendance
-    attendance: [{
-        month: String,
-        year: String,
-        totalDays: Number,
-        presentDays: Number,
-        percentage: Number
-    }],
-
-    // Fees and Payments
-    feeStructure: {
-        tuitionFee: Number,
-        libraryFee: Number,
-        laboratoryFee: Number,
-        examinationFee: Number,
-        otherFees: Number,
-        totalFee: Number
-    },
-    payments: [{
-        amount: Number,
-        paymentDate: Date,
-        paymentMethod: String,
-        transactionId: String,
-        receiptNumber: String,
-        status: {
-            type: String,
-            enum: ['pending', 'completed', 'failed'],
-            default: 'pending'
-        },
-        remarks: String
-    }],
-
-    // Status and Progress
-    status: {
+    // Aadhar Number (optional, for profile completion)
+    aadharNumber: {
         type: String,
-        enum: ['active', 'inactive', 'graduated', 'transferred', 'suspended'],
-        default: 'active'
-    },
-    progress: {
-        type: String,
-        enum: ['excellent', 'good', 'average', 'below_average', 'needs_improvement'],
-        default: 'average'
-    },
-
-    // Additional Information
-    achievements: [String],
-    extracurricularActivities: [String],
-    specialNeeds: String,
-    medicalConditions: String,
-    emergencyContact: {
-        name: String,
-        relation: String,
-        phone: String
+        unique: true,
+        sparse: true, // Allow multiple null values
+        required: false
     },
 
     // Audit Fields
@@ -203,10 +87,6 @@ const studentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    },
-    updatedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
     }
 }, {
     timestamps: true,
@@ -214,101 +94,32 @@ const studentSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
-// Virtual for full name
-studentSchema.virtual('fullName').get(function () {
-    return this.user ? this.user.fullName : '';
-});
-
-// Virtual for current fee status
-studentSchema.virtual('feeStatus').get(function () {
-    if (!this.payments || this.payments.length === 0) return 'unpaid';
-
-    const totalPaid = this.payments
-        .filter(p => p.status === 'completed')
-        .reduce((sum, p) => sum + p.amount, 0);
-
-    const totalFee = this.feeStructure.totalFee || 0;
-
-    if (totalPaid >= totalFee) return 'paid';
-    if (totalPaid > 0) return 'partial';
-    return 'unpaid';
-});
-
-// Virtual for attendance percentage
-studentSchema.virtual('currentAttendancePercentage').get(function () {
-    if (!this.attendance || this.attendance.length === 0) return 0;
-
-    const latest = this.attendance[this.attendance.length - 1];
-    return latest.percentage || 0;
-});
-
 // Pre-save middleware to generate student ID
-studentSchema.pre('save', function (next) {
-    if (!this.studentId) {
-        const year = new Date().getFullYear().toString().substr(-2);
-        const random = Math.random().toString().substr(2, 4);
-        this.studentId = `ST${year}${random}`;
+studentSchema.pre('save', async function (next) {
+    if (this.isNew && !this.studentId) {
+        let studentId;
+        let isUnique = false;
+
+        // Keep generating until we get a unique ID
+        while (!isUnique) {
+            const year = new Date().getFullYear().toString().substr(-2);
+            const random = Math.random().toString().substr(2, 4);
+            studentId = `ST${year}${random}`;
+
+            // Check if this ID already exists
+            const existingStudent = await this.constructor.findOne({ studentId });
+            if (!existingStudent) {
+                isUnique = true;
+            }
+        }
+
+        this.studentId = studentId;
     }
     next();
 });
 
-// Indexes
+// Basic indexes
 studentSchema.index({ studentId: 1 });
-studentSchema.index({ aadharNumber: 1 });
-studentSchema.index({ 'agentReferral.agent': 1 });
 studentSchema.index({ status: 1 });
-studentSchema.index({ currentClass: 1 });
-studentSchema.index({ academicYear: 1 });
-
-// Static methods
-studentSchema.statics.findByAadhar = function (aadharNumber) {
-    return this.findOne({ aadharNumber });
-};
-
-studentSchema.statics.findByStudentId = function (studentId) {
-    return this.findOne({ studentId });
-};
-
-studentSchema.statics.findByAgent = function (agentId) {
-    return this.find({ 'agentReferral.agent': agentId });
-};
-
-// Instance methods
-studentSchema.methods.calculateFeeBalance = function () {
-    const totalPaid = this.payments
-        .filter(p => p.status === 'completed')
-        .reduce((sum, p) => sum + p.amount, 0);
-
-    const totalFee = this.feeStructure.totalFee || 0;
-    return Math.max(0, totalFee - totalPaid);
-};
-
-studentSchema.methods.updateAttendance = function (month, year, presentDays, totalDays) {
-    const percentage = Math.round((presentDays / totalDays) * 100);
-
-    const existingIndex = this.attendance.findIndex(
-        a => a.month === month && a.year === year
-    );
-
-    if (existingIndex >= 0) {
-        this.attendance[existingIndex] = {
-            month,
-            year,
-            totalDays,
-            presentDays,
-            percentage
-        };
-    } else {
-        this.attendance.push({
-            month,
-            year,
-            totalDays,
-            presentDays,
-            percentage
-        });
-    }
-
-    return this.save();
-};
 
 module.exports = mongoose.model('Student', studentSchema);

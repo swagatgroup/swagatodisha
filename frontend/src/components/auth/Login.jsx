@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
+import Swal from 'sweetalert2';
 
 const Login = () => {
     const [formData, setFormData] = useState({
@@ -22,57 +23,132 @@ const Login = () => {
         setError(''); // Clear error when user types
     };
 
+    const validateForm = () => {
+        // Email validation
+        if (!formData.email) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please enter your email address',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please enter a valid email address',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+
+        // Password validation
+        if (!formData.password) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please enter your password',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
+
+        // Validate form using SweetAlert
+        if (!validateForm()) {
+            return;
+        }
+
+        // Show loading alert
+        Swal.fire({
+            title: 'Signing In...',
+            text: 'Please wait while we authenticate you',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
         try {
-            console.log('Attempting login with email:', formData.email); // Debug log
+            setLoading(true);
+            setError('');
+
+            console.log('Attempting login with email:', formData.email);
             const result = await login(formData.email, formData.password);
-            console.log('Login result:', result); // Debug log
+            console.log('Login result:', result);
 
             if (result.success) {
-                // Redirect based on user role
                 const userRole = result.user.role;
-                console.log('Login successful, user role:', userRole); // Debug log
+                const userName = result.user.fullName || result.user.email;
+                console.log('Login successful, user role:', userRole);
 
-                // Add a small delay to ensure state is updated
+                // Show success alert
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Login Successful!',
+                    text: `Welcome back, ${userName}!`,
+                    confirmButtonColor: '#7c3aed',
+                    confirmButtonText: 'Continue',
+                    timer: 2000,
+                    timerProgressBar: true
+                });
+
+                // Redirect based on user role
                 setTimeout(() => {
                     switch (userRole) {
                         case 'student':
-                            console.log('Navigating to student dashboard...'); // Debug log
+                            console.log('Navigating to student dashboard...');
                             navigate('/dashboard/student');
                             break;
                         case 'agent':
-                            console.log('Navigating to agent dashboard...'); // Debug log
+                            console.log('Navigating to agent dashboard...');
                             navigate('/dashboard/agent');
                             break;
                         case 'staff':
-                            console.log('Navigating to staff dashboard...'); // Debug log
+                            console.log('Navigating to staff dashboard...');
                             navigate('/dashboard/staff');
                             break;
                         case 'super_admin':
-                            console.log('Navigating to admin dashboard...'); // Debug log
+                            console.log('Navigating to admin dashboard...');
                             navigate('/dashboard/admin');
                             break;
                         default:
-                            console.log('Unknown role, defaulting to student dashboard...'); // Debug log
+                            console.log('Unknown role, defaulting to student dashboard...');
                             navigate('/dashboard/student');
                     }
                 }, 100);
             } else {
-                setError(result.message || 'Login failed');
+                console.error('❌ Login failed:', result.message);
+
+                // Show error alert
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: result.message || 'Invalid credentials. Please try again.',
+                    confirmButtonColor: '#7c3aed',
+                    confirmButtonText: 'Try Again'
+                });
             }
         } catch (err) {
-            console.error('Login error:', err); // Debug log
-            if (err.response?.data?.message) {
-                setError(err.response.data.message);
-            } else if (err.message) {
-                setError(err.message);
-            } else {
-                setError('An unexpected error occurred. Please try again.');
-            }
+            console.error('Login error:', err);
+
+            // Show error alert
+            await Swal.fire({
+                icon: 'error',
+                title: 'Login Error',
+                text: err.response?.data?.message || err.message || 'An unexpected error occurred. Please try again.',
+                confirmButtonColor: '#7c3aed',
+                confirmButtonText: 'Try Again'
+            });
         } finally {
             setLoading(false);
         }
@@ -126,16 +202,6 @@ const Login = () => {
                     className="mt-8 space-y-6"
                     onSubmit={handleSubmit}
                 >
-                    {/* Error Message */}
-                    {error && (
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
-                        >
-                            {error}
-                        </motion.div>
-                    )}
 
                     <div className="space-y-4">
                         {/* Email Field */}

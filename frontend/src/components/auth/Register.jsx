@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
+import Swal from 'sweetalert2';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -11,7 +12,7 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        phone: '',
+        phoneNumber: '',
         course: '',
         referralCode: ''
     });
@@ -26,109 +27,21 @@ const Register = () => {
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
-    // Comprehensive course list (alphabetically arranged)
+    // Course list as per requirements
     const courseList = [
-        'B.A. (Bachelor of Arts)',
-        'B.A. Economics',
-        'B.A. English',
-        'B.A. History',
-        'B.A. Political Science',
-        'B.A. Psychology',
-        'B.A. Sociology',
-        'B.Arch (Bachelor of Architecture)',
-        'B.B.A. (Bachelor of Business Administration)',
-        'B.C.A. (Bachelor of Computer Applications)',
-        'B.Com (Bachelor of Commerce)',
-        'B.Com (Hons)',
-        'B.D.S. (Bachelor of Dental Surgery)',
-        'B.Ed (Bachelor of Education)',
-        'B.El.Ed (Bachelor of Elementary Education)',
-        'B.F.Sc (Bachelor of Fisheries Science)',
-        'B.H.M.S. (Bachelor of Homeopathic Medicine)',
-        'B.Lib.I.Sc (Bachelor of Library and Information Science)',
-        'B.M.S. (Bachelor of Management Studies)',
-        'B.Pharm (Bachelor of Pharmacy)',
-        'B.P.T. (Bachelor of Physiotherapy)',
-        'B.Sc (Bachelor of Science)',
-        'B.Sc Agriculture',
-        'B.Sc Biotechnology',
-        'B.Sc Chemistry',
-        'B.Sc Computer Science',
-        'B.Sc Electronics',
-        'B.Sc Mathematics',
-        'B.Sc Physics',
-        'B.Sc Zoology',
-        'B.Tech (Bachelor of Technology)',
-        'B.Tech Aerospace Engineering',
-        'B.Tech Agricultural Engineering',
-        'B.Tech Automobile Engineering',
-        'B.Tech Biotechnology',
-        'B.Tech Chemical Engineering',
-        'B.Tech Civil Engineering',
-        'B.Tech Computer Science and Engineering',
-        'B.Tech Electrical Engineering',
-        'B.Tech Electronics and Communication Engineering',
-        'B.Tech Information Technology',
-        'B.Tech Mechanical Engineering',
-        'B.Tech Mining Engineering',
-        'B.Tech Petroleum Engineering',
-        'B.V.Sc (Bachelor of Veterinary Science)',
-        'B.Voc (Bachelor of Vocation)',
-        'Certificate Course in Digital Marketing',
-        'Certificate Course in Web Development',
-        'Certificate Course in Data Science',
-        'Certificate Course in Graphic Design',
-        'Certificate Course in Photography',
-        'Certificate Course in Language',
-        'Diploma in Computer Applications',
-        'Diploma in Engineering',
-        'Diploma in Hotel Management',
-        'Diploma in Pharmacy',
-        'Diploma in Tourism',
-        'LL.B (Bachelor of Laws)',
-        'M.A. (Master of Arts)',
-        'M.A. Economics',
-        'M.A. English',
-        'M.A. History',
-        'M.A. Political Science',
-        'M.A. Psychology',
-        'M.A. Sociology',
-        'M.Arch (Master of Architecture)',
-        'M.B.A. (Master of Business Administration)',
-        'M.B.A. Finance',
-        'M.B.A. Marketing',
-        'M.B.A. Human Resources',
-        'M.B.A. Operations',
-        'M.C.A. (Master of Computer Applications)',
-        'M.Com (Master of Commerce)',
-        'M.D. (Doctor of Medicine)',
-        'M.Ed (Master of Education)',
-        'M.Lib.I.Sc (Master of Library and Information Science)',
-        'M.Pharm (Master of Pharmacy)',
-        'M.Sc (Master of Science)',
-        'M.Sc Agriculture',
-        'M.Sc Biotechnology',
-        'M.Sc Chemistry',
-        'M.Sc Computer Science',
-        'M.Sc Mathematics',
-        'M.Sc Physics',
-        'M.Sc Zoology',
-        'M.Tech (Master of Technology)',
-        'M.Tech Computer Science',
-        'M.Tech Civil Engineering',
-        'M.Tech Mechanical Engineering',
-        'M.Tech Electronics',
-        'M.Tech Information Technology',
-        'M.V.Sc (Master of Veterinary Science)',
-        'M.B.B.S. (Bachelor of Medicine and Bachelor of Surgery)',
-        'M.D.S. (Master of Dental Surgery)',
-        'M.S. (Master of Surgery)',
-        'Ph.D (Doctor of Philosophy)',
-        'Post Graduate Diploma',
-        'PGDM (Post Graduate Diploma in Management)',
-        'PGDCA (Post Graduate Diploma in Computer Applications)',
-        'PGDBA (Post Graduate Diploma in Business Administration)',
-        'Other (Please specify)'
+        "B.Tech Computer Science",
+        "B.Tech Mechanical Engineering",
+        "B.Tech Electrical Engineering",
+        "B.Tech Civil Engineering",
+        "MBA",
+        "BCA",
+        "MCA",
+        "B.Com",
+        "M.Com",
+        "BA",
+        "MA English",
+        "BSc Mathematics",
+        "MSc Physics"
     ];
 
     const handleChange = (e) => {
@@ -146,20 +59,9 @@ const Register = () => {
     };
 
     const handleCourseSelect = (course) => {
-        if (course === 'Other (Please specify)') {
-            setShowCustomCourse(true);
-            setFormData({ ...formData, course: '' });
-        } else {
-            setFormData({ ...formData, course });
-            setShowCustomCourse(false);
-        }
+        setFormData({ ...formData, course });
         setCourseSearch('');
         setShowCourseDropdown(false);
-    };
-
-    const handleCustomCourseChange = (e) => {
-        setCustomCourse(e.target.value);
-        setFormData({ ...formData, course: e.target.value });
     };
 
     const filteredCourses = courseList.filter(course =>
@@ -181,59 +83,181 @@ const Register = () => {
     }, []);
 
     const validateForm = () => {
-        if (formData.password !== formData.confirmPassword) {
-            setError('Passwords do not match');
+        // Full name validation
+        if (!formData.fullName || formData.fullName.length < 2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Full name must be at least 2 characters',
+                confirmButtonColor: '#7c3aed'
+            });
             return false;
         }
-        if (formData.password.length < 6) {
-            setError('Password must be at least 6 characters long');
+        if (!/^[a-zA-Z\s]+$/.test(formData.fullName)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Full name can only contain alphabets and spaces',
+                confirmButtonColor: '#7c3aed'
+            });
             return false;
         }
-        if (!/^[0-9]{10}$/.test(formData.phone)) {
-            setError('Phone number must be 10 digits');
+
+        // Guardian name validation
+        if (!formData.guardianName || formData.guardianName.length < 2) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Guardian name must be at least 2 characters',
+                confirmButtonColor: '#7c3aed'
+            });
             return false;
         }
+        if (!/^[a-zA-Z\s]+$/.test(formData.guardianName)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Guardian name can only contain alphabets and spaces',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+
+        // Phone number validation (Indian mobile numbers)
+        if (!/^[6-9]\d{9}$/.test(formData.phoneNumber)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Phone number must be a valid 10-digit Indian mobile number',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+
+        // Email validation
+        if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please enter a valid email address',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+
+        // Course validation
         if (!formData.course) {
-            setError('Please select a course');
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Please select a course',
+                confirmButtonColor: '#7c3aed'
+            });
             return false;
         }
+
+        // Password validation
+        if (formData.password.length < 8) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Password must be at least 8 characters',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(formData.password)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+
+        // Confirm password validation
+        if (formData.password !== formData.confirmPassword) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Validation Error',
+                text: 'Passwords do not match',
+                confirmButtonColor: '#7c3aed'
+            });
+            return false;
+        }
+
         return true;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
-        setError('');
-        setSuccess('');
 
+        // Validate form using SweetAlert
         if (!validateForm()) {
-            setLoading(false);
             return;
         }
 
-        try {
-            // Remove confirmPassword from the data sent to backend
-            const { confirmPassword, ...registrationData } = formData;
+        // Show loading alert
+        Swal.fire({
+            title: 'Creating Account...',
+            text: 'Please wait while we create your account',
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
 
-            const result = await register(registrationData);
+        try {
+            setLoading(true);
+            setError('');
+
+            console.log('Submitting registration form...');
+            const result = await register(formData);
+
+            console.log('Registration result:', result);
 
             if (result.success) {
-                if (result.requiresProfileCompletion) {
-                    setSuccess('Registration successful! Please complete your profile to continue.');
-                    setTimeout(() => {
-                        navigate('/complete-profile');
-                    }, 2000);
-                } else {
-                    setSuccess('Registration successful! Redirecting to dashboard...');
-                    setTimeout(() => {
-                        navigate('/dashboard/student');
-                    }, 2000);
-                }
+                console.log('✅ Registration successful! Redirecting...');
+
+                // Show success alert
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Registration Successful!',
+                    text: `Welcome ${formData.fullName}! Your account has been created successfully.`,
+                    confirmButtonColor: '#7c3aed',
+                    confirmButtonText: 'Continue to Dashboard',
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+
+                // Redirect to dashboard
+                navigate('/dashboard');
             } else {
-                setError(result.message);
+                console.error('❌ Registration failed:', result.error);
+
+                // Show error alert
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Registration Failed',
+                    text: result.error || 'Registration failed. Please try again.',
+                    confirmButtonColor: '#7c3aed',
+                    confirmButtonText: 'Try Again'
+                });
             }
-        } catch (err) {
-            setError('An unexpected error occurred. Please try again.');
+        } catch (error) {
+            console.error('Registration error:', error);
+
+            // Show error alert
+            await Swal.fire({
+                icon: 'error',
+                title: 'Registration Error',
+                text: 'An unexpected error occurred. Please try again.',
+                confirmButtonColor: '#7c3aed',
+                confirmButtonText: 'Try Again'
+            });
         } finally {
             setLoading(false);
         }
@@ -288,26 +312,6 @@ const Register = () => {
                         className="space-y-6"
                         onSubmit={handleSubmit}
                     >
-                        {/* Messages */}
-                        {error && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm"
-                            >
-                                {error}
-                            </motion.div>
-                        )}
-
-                        {success && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm"
-                            >
-                                {success}
-                            </motion.div>
-                        )}
 
                         {/* Personal Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -363,33 +367,34 @@ const Register = () => {
                             </div>
 
                             <div>
-                                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
                                     Phone Number *
                                 </label>
                                 <input
-                                    id="phone"
-                                    name="phone"
+                                    id="phoneNumber"
+                                    name="phoneNumber"
                                     type="tel"
                                     required
-                                    value={formData.phone}
+                                    value={formData.phoneNumber}
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                                    placeholder="Enter 10-digit phone number"
+                                    placeholder="Enter 10-digit mobile number"
                                 />
                             </div>
                         </div>
 
                         {/* Password Fields */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-6">
                             <PasswordInput
                                 id="password"
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                placeholder="Enter password (min 6 characters)"
+                                placeholder="Enter password (min 8 characters)"
                                 required
                                 autoComplete="new-password"
                                 label="Password *"
+                                showStrengthIndicator={true}
                             />
 
                             <PasswordInput
@@ -446,22 +451,6 @@ const Register = () => {
                                 )}
                             </div>
 
-                            {/* Custom Course Input */}
-                            {showCustomCourse && (
-                                <div className="mt-3">
-                                    <label htmlFor="customCourse" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Enter Course Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="customCourse"
-                                        value={customCourse}
-                                        onChange={handleCustomCourseChange}
-                                        placeholder="Enter your course name"
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
-                                    />
-                                </div>
-                            )}
                         </div>
 
                         {/* Referral Code */}

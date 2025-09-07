@@ -20,12 +20,54 @@ const dashboardRoutes = require('./routes/dashboard');
 app.use(helmet());
 app.use(compression());
 app.use(morgan('combined'));
-app.use(cors({
-    origin: process.env.FRONTEND_URL || ['http://localhost:3000', 'http://localhost:5173', 'https://www.swagatodisha.com', 'https://swagatodisha.com'],
+// CORS configuration
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        const allowedOrigins = [
+            'http://localhost:3000',
+            'http://localhost:5173',
+            'https://www.swagatodisha.com',
+            'https://swagatodisha.com',
+            'https://swagatodisha.vercel.app'
+        ];
+
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            console.log('CORS blocked origin:', origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+    allowedHeaders: [
+        'Origin',
+        'X-Requested-With',
+        'Content-Type',
+        'Accept',
+        'Authorization',
+        'Cache-Control',
+        'Pragma'
+    ],
+    exposedHeaders: ['Authorization'],
+    optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
+
+// CORS debugging middleware
+app.use((req, res, next) => {
+    console.log('Request origin:', req.headers.origin);
+    console.log('Request method:', req.method);
+    console.log('Request path:', req.path);
+    next();
+});
 
 // Rate limiting
 const limiter = rateLimit({
@@ -77,6 +119,15 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString(),
         uptime: process.uptime(),
         environment: process.env.NODE_ENV || 'development'
+    });
+});
+
+// Test endpoint for CORS
+app.get('/api/test', (req, res) => {
+    res.status(200).json({
+        message: 'CORS test successful',
+        origin: req.headers.origin,
+        timestamp: new Date().toISOString()
     });
 });
 
@@ -132,7 +183,8 @@ const connectDB = async () => {
     try {
         // Check if MONGODB_URI is set
         if (!process.env.MONGODB_URI) {
-            throw new Error('MONGODB_URI environment variable is required. Please set it in your deployment environment.');
+            console.warn('⚠️ MONGODB_URI environment variable is not set. Using default local MongoDB.');
+            process.env.MONGODB_URI = 'mongodb://localhost:27017/swagat_odisha';
         }
 
         const conn = await mongoose.connect(process.env.MONGODB_URI, {
@@ -142,23 +194,26 @@ const connectDB = async () => {
         console.log(`MongoDB Connected: ${conn.connection.host}`);
     } catch (error) {
         console.error('Database connection error:', error);
-        console.error('Please ensure MONGODB_URI environment variable is set correctly.');
-        process.exit(1);
+        console.error('Please ensure MONGODB_URI environment variable is set correctly or MongoDB is running locally.');
+        // Don't exit the process, let the server run without database
+        console.log('⚠️ Server will continue running without database connection.');
     }
 };
 
 // Environment variable validation
 const validateEnvironment = () => {
-    const required = ['MONGODB_URI', 'JWT_SECRET'];
-    const missing = required.filter(key => !process.env[key]);
-
-    if (missing.length > 0) {
-        console.error('❌ Missing required environment variables:', missing.join(', '));
-        console.error('Please set these variables in your deployment environment.');
-        process.exit(1);
+    // Set default values for development
+    if (!process.env.MONGODB_URI) {
+        process.env.MONGODB_URI = 'mongodb://localhost:27017/swagat_odisha';
+        console.warn('⚠️ MONGODB_URI not set, using default:', process.env.MONGODB_URI);
     }
 
-    console.log('✅ All required environment variables are set');
+    if (!process.env.JWT_SECRET) {
+        process.env.JWT_SECRET = 'your_jwt_secret_key_here_development_only_change_in_production';
+        console.warn('⚠️ JWT_SECRET not set, using default (CHANGE IN PRODUCTION!)');
+    }
+
+    console.log('✅ Environment variables configured');
 };
 
 // Start server

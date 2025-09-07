@@ -1,0 +1,22 @@
+{
+    "name": "Swagat Group of Institutions",
+    "short_name": "Swagat Odisha",
+    "description": "Swagat Group of Institutions - Education, Innovation, Revolution",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#7c3aed",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "Swagat_Favicon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "Swagat_Favicon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

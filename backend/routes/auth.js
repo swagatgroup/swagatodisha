@@ -15,288 +15,286 @@ const generateToken = (id) => {
     });
 };
 
-// @desc    Register a new student (simplified registration)
+// @desc    Register a new student
 // @route   POST /api/auth/register
 // @access  Public
-router.post('/register', [
-    body('fullName').trim().isLength({ min: 2, max: 100 }).withMessage('Full name must be between 2 and 100 characters'),
-    body('guardianName').trim().isLength({ min: 2, max: 100 }).withMessage('Guardian\'s name must be between 2 and 100 characters'),
-    body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('confirmPassword').custom((value, { req }) => {
-        if (value !== req.body.password) {
-            throw new Error('Password confirmation does not match password');
-        }
-        return true;
-    }),
-    body('phone').matches(/^[0-9]{10}$/).withMessage('Phone number must be 10 digits'),
-    body('course').trim().notEmpty().withMessage('Course selection is required'),
-    body('referralCode').optional().isString().withMessage('Referral code must be a string')
-], async (req, res) => {
+router.post('/register', async (req, res) => {
+    console.log('=== REGISTRATION REQUEST START ===');
+    console.log('Request body:', req.body);
+    console.log('Request headers:', req.headers);
+
     try {
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
+        const { fullName, email, password, phoneNumber, guardianName } = req.body;
+
+        // Log extracted fields
+        console.log('Extracted fields:', {
+            fullName,
+            email: email ? email.toLowerCase() : undefined,
+            password: password ? '[PRESENT]' : '[MISSING]',
+            phoneNumber,
+            guardianName
+        });
+
+        // Validate required fields
+        const missingFields = [];
+        if (!fullName) missingFields.push('fullName');
+        if (!email) missingFields.push('email');
+        if (!password) missingFields.push('password');
+        if (!phoneNumber) missingFields.push('phoneNumber');
+        if (!guardianName) missingFields.push('guardianName');
+
+        if (missingFields.length > 0) {
+            console.log('Missing fields:', missingFields);
             return res.status(400).json({
-                success: false,
-                message: 'Validation errors',
-                errors: errors.array()
+                message: `Missing required fields: ${missingFields.join(', ')}`,
+                missingFields
             });
         }
-
-        const {
-            fullName,
-            guardianName,
-            email,
-            password,
-            phone,
-            course,
-            referralCode,
-            ...otherFields
-        } = req.body;
-
-        // Split full name into first and last name
-        const nameParts = fullName.trim().split(' ');
-        const firstName = nameParts[0];
-        const lastName = nameParts.slice(1).join(' ') || '';
 
         // Check if user already exists
-        const existingUser = await User.findOne({ email });
+        console.log('Checking for existing user...');
+        const existingUser = await User.findOne({
+            $or: [
+                { email: email.toLowerCase() },
+                { phoneNumber: phoneNumber }
+            ]
+        });
+
         if (existingUser) {
+            console.log('Existing user found:', {
+                email: existingUser.email,
+                phone: existingUser.phoneNumber
+            });
+
+            let conflictMessage = 'User already exists';
+            if (existingUser.email === email.toLowerCase()) {
+                conflictMessage = 'User already exists with this email';
+            } else if (existingUser.phoneNumber === phoneNumber) {
+                conflictMessage = 'User already exists with this phone number';
+            }
+
+            return res.status(409).json({ message: conflictMessage });
+        }
+
+        console.log('No existing user found, proceeding with registration...');
+
+        // Create user data object (password will be hashed by User model pre-save hook)
+        const userData = {
+            fullName: fullName.trim(),
+            email: email.toLowerCase().trim(),
+            password: password, // Will be hashed by User model pre-save hook
+            phoneNumber: phoneNumber.trim(),
+            guardianName: guardianName.trim(),
+            role: 'user'
+        };
+
+        console.log('User data prepared:', {
+            ...userData,
+            password: '[WILL_BE_HASHED_BY_MODEL]'
+        });
+
+        // Create new user
+        console.log('Creating new user...');
+        const newUser = new User(userData);
+
+        console.log('User object created, attempting to save...');
+        const savedUser = await newUser.save();
+        console.log('User saved successfully:', {
+            id: savedUser._id,
+            email: savedUser.email,
+            fullName: savedUser.fullName
+        });
+
+        // Generate JWT token
+        console.log('Generating JWT token...');
+        const jwt = require('jsonwebtoken');
+        const token = jwt.sign(
+            {
+                id: savedUser._id,
+                email: savedUser.email,
+                role: savedUser.role
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+        console.log('JWT token generated successfully');
+
+        const response = {
+            message: 'Registration successful',
+            token,
+            user: {
+                id: savedUser._id,
+                email: savedUser.email,
+                fullName: savedUser.fullName,
+                role: savedUser.role
+            }
+        };
+
+        console.log('Sending success response:', {
+            ...response,
+            token: '[TOKEN_PRESENT]'
+        });
+
+        res.status(201).json(response);
+        console.log('=== REGISTRATION REQUEST SUCCESS ===');
+
+    } catch (error) {
+        console.error('=== REGISTRATION ERROR ===');
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error code:', error.code);
+        console.error('Full error:', error);
+
+        // Mongoose validation error
+        if (error.name === 'ValidationError') {
+            console.log('Mongoose validation error detected');
+            const errors = Object.values(error.errors).map(err => ({
+                field: err.path,
+                message: err.message,
+                value: err.value
+            }));
+            console.log('Validation errors:', errors);
+
             return res.status(400).json({
-                success: false,
-                message: 'User with this email already exists'
+                message: 'Validation failed',
+                errors,
+                type: 'ValidationError'
             });
         }
 
-        // No Aadhar check needed for simplified registration
+        // MongoDB duplicate key error
+        if (error.code === 11000) {
+            console.log('MongoDB duplicate key error detected');
+            console.log('Duplicate key info:', error.keyValue);
 
-        // Validate referral code if provided
-        let agentUser = null;
-        if (referralCode) {
-            agentUser = await User.findByReferralCode(referralCode);
-            if (!agentUser) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Invalid referral code'
-                });
-            }
+            return res.status(409).json({
+                message: 'User already exists with this email or phone number',
+                type: 'DuplicateKey'
+            });
         }
 
-        // Create user
-        const userData = {
-            firstName,
-            lastName,
-            email,
-            password,
-            phone,
-            role: 'student',
-            referredBy: agentUser ? agentUser._id : null
-        };
+        // JWT Secret missing error
+        if (error.message.includes('secretOrPrivateKey')) {
+            console.error('JWT_SECRET is missing or invalid');
+            return res.status(500).json({
+                message: 'Server configuration error',
+                type: 'ConfigError'
+            });
+        }
 
-        const user = await User.create(userData);
-
-        // Create basic student profile (incomplete - needs profile completion)
-        const Student = require('../models/Student');
-        const studentData = {
-            user: user._id,
-            course: course,
-            guardianName: guardianName,
-            status: 'incomplete', // Mark as incomplete profile
-            agentReferral: agentUser ? {
-                agent: agentUser._id,
-                referralCode: agentUser.referralCode,
-                commissionPercentage: 5, // Default 5% commission
-                referralDate: new Date()
-            } : null,
-            createdBy: user._id
-        };
-
-        const student = await Student.create(studentData);
-
-        // Generate token
-        const token = generateToken(user._id);
-
-        // Update user's last login
-        user.lastLogin = new Date();
-        await user.save();
-
-        res.status(201).json({
-            success: true,
-            message: 'Registration successful! Please complete your profile to continue.',
-            data: {
-                user: {
-                    id: user._id,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    role: user.role,
-                    referralCode: user.referredBy ? agentUser.referralCode : null
-                },
-                student: {
-                    id: student._id,
-                    studentId: student.studentId,
-                    course: student.course,
-                    status: student.status
-                },
-                token,
-                requiresProfileCompletion: true,
-                profileCompletionMessage: 'Please complete your student profile with additional details like Aadhar number, academic information, and documents.'
-            }
-        });
-
-    } catch (error) {
-        console.error('Registration error:', error);
+        console.log('Sending generic server error response');
         res.status(500).json({
-            success: false,
             message: 'Server error during registration',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+            type: 'ServerError',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
+        console.log('=== REGISTRATION REQUEST ERROR END ===');
     }
 });
 
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
-router.post('/login', [
-    body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email'),
-    body('password').notEmpty().withMessage('Password is required')
-], rateLimit(50, 15 * 60 * 1000), async (req, res) => {
-    try {
-        // Check for validation errors
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({
-                success: false,
-                message: 'Validation errors',
-                errors: errors.array()
-            });
-        }
+router.post('/login', async (req, res) => {
+    console.log('=== LOGIN REQUEST START ===');
+    console.log('Request body:', req.body);
 
+    try {
         const { email, password } = req.body;
 
-        // Find user by email
-        const user = await User.findByEmail(email);
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid credentials'
+        // Log what we received
+        console.log('Login attempt for:', { email, password: password ? '[PRESENT]' : '[MISSING]' });
+
+        // Validate required fields for LOGIN only
+        if (!email || !password) {
+            return res.status(400).json({
+                message: 'Email and password are required for login'
             });
         }
 
-        // Check if account is locked
-        if (user.isLocked) {
-            return res.status(423).json({
-                success: false,
-                message: 'Account is locked due to multiple failed login attempts. Please try again later.'
+        // Find user by email
+        console.log('Looking for user with email:', email.toLowerCase());
+        const user = await User.findOne({ email: email.toLowerCase() }).select('+password');
+        if (!user) {
+            console.log('❌ User not found for email:', email);
+            return res.status(401).json({ message: 'Invalid credentials' });
+        }
+        console.log('✅ User found:', user._id);
+
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(401).json({
+                message: 'Account is disabled. Please contact support.'
             });
         }
 
         // Check password
+        console.log('Checking password...');
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
-            // Increment failed login attempts
-            await user.incrementLoginAttempts();
-
-            return res.status(401).json({
-                success: false,
-                message: 'Invalid credentials'
-            });
+            console.log('❌ Invalid password for user:', user._id);
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
-
-        // Reset login attempts on successful login
-        if (user.loginAttempts > 0) {
-            await user.resetLoginAttempts();
-        }
+        console.log('✅ Password valid for user:', user._id);
 
         // Update last login
-        await User.findByIdAndUpdate(user._id, { lastLogin: new Date() }, { runValidators: false });
+        user.lastLogin = new Date();
+        await user.save();
 
-        // Generate token
-        const token = generateToken(user._id);
+        // Generate JWT token
+        console.log('Generating JWT token...');
+        const token = jwt.sign(
+            {
+                id: user._id,
+                email: user.email,
+                role: user.role || 'user'
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+        console.log('✅ JWT token generated, length:', token.length);
 
-        // Get additional user data based on role
-        let additionalData = {};
-
+        // Get student data if user is a student
+        let studentData = null;
         if (user.role === 'student') {
             const Student = require('../models/Student');
             const student = await Student.findOne({ user: user._id });
             if (student) {
-                additionalData.student = {
+                // Update last login in student profile too
+                student.lastLogin = new Date();
+                await student.save();
+
+                studentData = {
                     id: student._id,
                     studentId: student.studentId,
-                    currentClass: student.currentClass
+                    course: student.course,
+                    isProfileComplete: student.isProfileComplete,
+                    status: student.status
                 };
             }
-        } else if (user.role === 'agent') {
-            additionalData.referralCode = user.referralCode;
         }
 
+        console.log('✅ Login successful for user:', user._id);
+        console.log('=== LOGIN REQUEST END ===');
+
         res.json({
-            success: true,
             message: 'Login successful',
-            data: {
-                user: {
-                    id: user._id,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    email: user.email,
-                    role: user.role,
-                    profilePicture: user.profilePicture
-                },
-                ...additionalData,
-                token
+            token,
+            user: {
+                id: user._id,
+                email: user.email,
+                fullName: user.fullName,
+                role: user.role || 'user',
+                ...studentData
             }
         });
 
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error during login',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-        });
+        res.status(500).json({ message: 'Server error during login' });
     }
 });
 
-// @desc    Get current user profile
-// @route   GET /api/auth/me
-// @access  Private
-router.get('/me', protect, async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id).select('-password');
-
-        // Get additional data based on role
-        let additionalData = {};
-
-        if (user.role === 'student') {
-            const Student = require('../models/Student');
-            const student = await Student.findOne({ user: user._id });
-            if (student) {
-                additionalData.student = student;
-            }
-        } else if (user.role === 'agent') {
-            const Student = require('../models/Student');
-            const referredStudents = await Student.findByAgent(user._id);
-            additionalData.referredStudents = referredStudents.length;
-        }
-
-        res.json({
-            success: true,
-            data: {
-                user,
-                ...additionalData
-            }
-        });
-
-    } catch (error) {
-        console.error('Get profile error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error while fetching profile'
-        });
-    }
-});
 
 // @desc    Change password
 // @route   PUT /api/auth/change-password
@@ -726,6 +724,63 @@ router.get('/profile-status', protect, async (req, res) => {
             message: 'Server error while checking profile status'
         });
     }
+});
+
+// @desc    Get current user
+// @route   GET /api/auth/me
+// @access  Private
+router.get('/me', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id || decoded.userId;
+        console.log('JWT decoded:', decoded);
+        console.log('Extracted userId:', userId);
+
+        const user = await User.findById(userId).select('-password');
+        console.log('Found user:', user ? user._id : 'NOT FOUND');
+
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+        }
+
+        res.json({
+            data: {
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    fullName: user.fullName,
+                    role: user.role
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Auth check error:', error);
+        res.status(401).json({ message: 'Invalid token' });
+    }
+});
+
+// DEBUG ROUTE - Add this temporarily
+router.get('/debug', (req, res) => {
+    console.log('Environment check:', {
+        NODE_ENV: process.env.NODE_ENV,
+        JWT_SECRET: process.env.JWT_SECRET ? 'PRESENT' : 'MISSING',
+        MONGODB_URI: process.env.MONGODB_URI ? 'PRESENT' : 'MISSING',
+        PORT: process.env.PORT
+    });
+
+    res.json({
+        environment: process.env.NODE_ENV,
+        jwtSecret: process.env.JWT_SECRET ? 'PRESENT' : 'MISSING',
+        mongoUri: process.env.MONGODB_URI ? 'PRESENT' : 'MISSING',
+        port: process.env.PORT || 5000,
+        timestamp: new Date().toISOString()
+    });
 });
 
 module.exports = router;

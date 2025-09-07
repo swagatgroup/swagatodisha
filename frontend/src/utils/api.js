@@ -3,8 +3,8 @@ import { API_BASE_URL, API_TIMEOUT } from '../config/environment';
 
 // API Configuration
 const api = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: API_TIMEOUT,
+    baseURL: API_BASE_URL || 'http://localhost:5000/',
+    timeout: API_TIMEOUT || 10000,
     headers: {
         'Content-Type': 'application/json',
     },

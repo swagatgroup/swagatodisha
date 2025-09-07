@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import PasswordStrengthIndicator from './PasswordStrengthIndicator';
 
 const PasswordInput = ({
     id,
@@ -12,7 +13,8 @@ const PasswordInput = ({
     className = '',
     label,
     error,
-    showLabel = true
+    showLabel = true,
+    showStrengthIndicator = false
 }) => {
     const [showPassword, setShowPassword] = useState(false);
 
@@ -93,6 +95,11 @@ const PasswordInput = ({
                     </motion.div>
                 </button>
             </div>
+
+            {/* Password Strength Indicator */}
+            {showStrengthIndicator && (
+                <PasswordStrengthIndicator password={value} />
+            )}
 
             {error && (
                 <motion.p

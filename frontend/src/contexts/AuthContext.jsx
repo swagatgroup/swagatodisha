@@ -14,7 +14,9 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     // Set default headers when token changes
     useEffect(() => {
@@ -44,39 +46,103 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, [token]);
 
-    const login = async (email, password) => {
+    const login = async (credentials) => {
         try {
-            console.log('AuthContext - login attempt for:', email); // Debug log
+            setLoading(true);
+            setError(null);
+
             const response = await api.post('/api/auth/login', {
-                email,
-                password,
+                email: credentials.email,
+                password: credentials.password
             });
 
-            console.log('AuthContext - login response:', response.data); // Debug log
+            const { token, user } = response.data;
 
-            const { token: newToken, user: userData } = response.data.data;
+            // Store token
+            localStorage.setItem('token', token);
+            setToken(token);
 
-            console.log('AuthContext - setting token and user:', { token: newToken, user: userData }); // Debug log
+            // Set authorization header
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-            localStorage.setItem('token', newToken);
-            setToken(newToken);
-            setUser(userData);
+            setUser(user);
+            setIsAuthenticated(true);
 
-            console.log('AuthContext - login successful, returning result'); // Debug log
-            return { success: true, user: userData };
+            return { success: true, user };
+
         } catch (error) {
-            console.error('AuthContext - login failed:', error);
-            throw error;
+            console.error('Login failed:', error);
+
+            let errorMessage = 'Login failed. Please check your credentials.';
+
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            }
+
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        } finally {
+            setLoading(false);
         }
     };
 
     const register = async (userData) => {
         try {
-            const response = await api.post('/api/auth/register', userData);
-            return response.data;
+            setLoading(true);
+            setError(null);
+
+            console.log('=== FRONTEND REGISTRATION START ===');
+            console.log('Registration data being sent:', userData);
+
+            const response = await api.post('/api/auth/register', {
+                fullName: userData.fullName,
+                email: userData.email,
+                password: userData.password,
+                phoneNumber: userData.phoneNumber,
+                guardianName: userData.guardianName
+            });
+
+            console.log('Registration response received:', response.status);
+            console.log('Response data:', response.data);
+
+            const { token, user, message } = response.data;
+
+            if (!token) {
+                throw new Error('No token received from server');
+            }
+
+            // Store token
+            localStorage.setItem('token', token);
+            setToken(token);
+
+            // Set authorization header for future requests
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+            setUser(user);
+            setIsAuthenticated(true);
+
+            console.log('✅ Registration successful! User logged in:', user);
+            return { success: true, user, message };
+
         } catch (error) {
             console.error('Registration failed:', error);
-            throw error;
+
+            let errorMessage = 'Registration failed. Please try again.';
+
+            if (error.response?.data?.message) {
+                errorMessage = error.response.data.message;
+            } else if (error.response?.status === 409) {
+                errorMessage = 'User already exists with this email or phone number.';
+            } else if (error.response?.status === 400) {
+                errorMessage = 'Please fill in all required fields correctly.';
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+
+            setError(errorMessage);
+            return { success: false, error: errorMessage };
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -93,11 +159,12 @@ export const AuthProvider = ({ children }) => {
     const value = {
         user,
         loading,
+        error,
         login,
         register,
         logout,
         updateUser,
-        isAuthenticated: !!user,
+        isAuthenticated,
     };
 
     return (
