@@ -3,7 +3,18 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import ReferralManagement from '../agents/ReferralManagement';
-import axios from 'axios';
+import DocumentManagement from '../documents/DocumentManagement';
+import {
+    showSuccess,
+    showError,
+    showConfirm,
+    showLoading,
+    closeLoading,
+    handleApiError,
+    showSuccessToast,
+    showErrorToast
+} from '../../utils/sweetAlert';
+import api from '../../utils/api';
 
 const AgentDashboard = () => {
     const { user } = useAuth();
@@ -46,6 +57,15 @@ const AgentDashboard = () => {
             )
         },
         {
+            id: 'documents',
+            name: 'Documents',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            )
+        },
+        {
             id: 'profile',
             name: 'Profile',
             icon: (
@@ -59,15 +79,25 @@ const AgentDashboard = () => {
     useEffect(() => {
         const fetchAgentData = async () => {
             try {
-                // Mock data for now - replace with actual API call
+                showLoading('Loading Dashboard...', 'Please wait while we fetch your data');
+
+                // Fetch agent stats from API
+                const response = await api.get('/api/agents/dashboard');
+                setStats(response.data.data.stats);
+
+                closeLoading();
+            } catch (error) {
+                console.error('Error fetching agent data:', error);
+                closeLoading();
+                await handleApiError(error);
+
+                // Fallback to mock data
                 setStats({
                     totalReferrals: 12,
                     activeReferrals: 8,
                     totalCommission: 15000,
                     thisMonthReferrals: 3
                 });
-            } catch (error) {
-                console.error('Error fetching agent data:', error);
             } finally {
                 setLoading(false);
             }
@@ -235,6 +265,8 @@ const AgentDashboard = () => {
                 );
             case 'referrals':
                 return <ReferralManagement />;
+            case 'documents':
+                return <DocumentManagement />;
             case 'commission':
                 return (
                     <div className="bg-white rounded-lg shadow p-6">

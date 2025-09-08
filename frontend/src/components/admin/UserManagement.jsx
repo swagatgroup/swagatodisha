@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../utils/api';
+import {
+    showSuccess,
+    showError,
+    showConfirm,
+    showLoading,
+    closeLoading,
+    handleApiError
+} from '../../utils/sweetAlert';
 
 const UserManagement = ({ userType = 'students' }) => {
     const [users, setUsers] = useState([]);
@@ -23,12 +31,28 @@ const UserManagement = ({ userType = 'students' }) => {
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            // Mock data for now - replace with actual API call
-            const mockUsers = generateMockUsers(userType);
-            setUsers(mockUsers);
-            setTotalPages(Math.ceil(mockUsers.length / 10));
+            showLoading('Loading users...');
+
+            // Determine the correct API endpoint based on user type
+            let endpoint = '/api/auth/users';
+            if (userType === 'students') {
+                endpoint = '/api/students';
+            } else if (userType === 'agents') {
+                endpoint = '/api/auth/users?role=agent';
+            } else if (userType === 'staff') {
+                endpoint = '/api/admin/staff';
+            }
+
+            const response = await api.get(endpoint);
+            const usersData = response.data.users || response.data || [];
+
+            setUsers(usersData);
+            setTotalPages(Math.ceil(usersData.length / 10));
+            closeLoading();
         } catch (error) {
             console.error('Error fetching users:', error);
+            closeLoading();
+            handleApiError(error, 'Failed to load users');
         } finally {
             setLoading(false);
         }
@@ -119,22 +143,33 @@ const UserManagement = ({ userType = 'students' }) => {
     const handleSave = async () => {
         try {
             setSaving(true);
-            // Mock API call - replace with actual implementation
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            showLoading('Updating user...');
+
+            // Determine the correct API endpoint based on user type
+            let endpoint = `/api/auth/users/${selectedUser._id || selectedUser.id}`;
+            if (userType === 'students') {
+                endpoint = `/api/students/${selectedUser._id || selectedUser.id}`;
+            } else if (userType === 'staff') {
+                endpoint = `/api/admin/staff/${selectedUser._id || selectedUser.id}`;
+            }
+
+            await api.put(endpoint, editData);
 
             // Update local state
             setUsers(prev => prev.map(user =>
-                user.id === selectedUser.id
+                (user._id || user.id) === (selectedUser._id || selectedUser.id)
                     ? { ...user, ...editData }
                     : user
             ));
 
             setShowEditModal(false);
             setSelectedUser(null);
-            alert('User updated successfully!');
+            closeLoading();
+            showSuccess('User updated successfully!');
         } catch (error) {
             console.error('Error updating user:', error);
-            alert('Error updating user. Please try again.');
+            closeLoading();
+            handleApiError(error, 'Failed to update user');
         } finally {
             setSaving(false);
         }
@@ -142,40 +177,68 @@ const UserManagement = ({ userType = 'students' }) => {
 
     const handlePasswordReset = async () => {
         if (!passwordData.newPassword) {
-            alert('Please enter a new password.');
+            showError('Please enter a new password.');
             return;
         }
 
         try {
             setSaving(true);
-            // Mock API call - replace with actual implementation
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            showLoading('Resetting password...');
+
+            // Determine the correct API endpoint based on user type
+            let endpoint = `/api/auth/reset-password/${selectedUser._id || selectedUser.id}`;
+            if (userType === 'students') {
+                endpoint = `/api/students/reset-password/${selectedUser._id || selectedUser.id}`;
+            } else if (userType === 'staff') {
+                endpoint = `/api/admin/reset-password/${selectedUser._id || selectedUser.id}`;
+            }
+
+            await api.post(endpoint, { newPassword: passwordData.newPassword });
 
             setShowPasswordModal(false);
             setPasswordData({ newPassword: '' });
-            alert('Password reset successfully!');
+            closeLoading();
+            showSuccess('Password reset successfully!');
         } catch (error) {
             console.error('Error resetting password:', error);
-            alert('Error resetting password. Please try again.');
+            closeLoading();
+            handleApiError(error, 'Failed to reset password');
         } finally {
             setSaving(false);
         }
     };
 
     const handleDelete = async (userId) => {
-        if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+        const confirmed = await showConfirm(
+            'Delete User',
+            'Are you sure you want to delete this user? This action cannot be undone.',
+            'warning'
+        );
+
+        if (!confirmed) {
             return;
         }
 
         try {
-            // Mock API call - replace with actual implementation
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            showLoading('Deleting user...');
 
-            setUsers(prev => prev.filter(user => user.id !== userId));
-            alert('User deleted successfully!');
+            // Determine the correct API endpoint based on user type
+            let endpoint = `/api/auth/users/${userId}`;
+            if (userType === 'students') {
+                endpoint = `/api/students/${userId}`;
+            } else if (userType === 'staff') {
+                endpoint = `/api/admin/staff/${userId}`;
+            }
+
+            await api.delete(endpoint);
+
+            setUsers(prev => prev.filter(user => (user._id || user.id) !== userId));
+            closeLoading();
+            showSuccess('User deleted successfully!');
         } catch (error) {
             console.error('Error deleting user:', error);
-            alert('Error deleting user. Please try again.');
+            closeLoading();
+            handleApiError(error, 'Failed to delete user');
         }
     };
 
@@ -389,8 +452,8 @@ const UserManagement = ({ userType = 'students' }) => {
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
                                 className={`px-3 py-2 border rounded-md text-sm font-medium ${page === currentPage
-                                        ? 'border-purple-500 bg-purple-50 text-purple-600'
-                                        : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                    ? 'border-purple-500 bg-purple-50 text-purple-600'
+                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                                     }`}
                             >
                                 {page}

@@ -2,6 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../utils/api';
 import { useSocket } from '../../contexts/SocketContext';
+import {
+    showSuccess,
+    showError,
+    showConfirm,
+    showDeleteConfirm,
+    showFileUploadError,
+    showLoading,
+    closeLoading,
+    handleApiError,
+    showSuccessToast,
+    showErrorToast
+} from '../../utils/sweetAlert';
 
 const DocumentManagement = () => {
     const [documents, setDocuments] = useState([]);
@@ -68,6 +80,7 @@ const DocumentManagement = () => {
             setDocuments(response.data.data.documents);
         } catch (error) {
             console.error('Error fetching documents:', error);
+            await handleApiError(error);
         } finally {
             setLoading(false);
         }
@@ -79,13 +92,13 @@ const DocumentManagement = () => {
             // Validate file type
             const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
             if (!allowedTypes.includes(file.type)) {
-                alert('Please select a PDF, JPEG, PNG, or WebP file.');
+                showFileUploadError('Invalid file type. Please select a PDF, JPEG, PNG, or WebP file.');
                 return;
             }
 
             // Validate file size (10MB limit)
             if (file.size > 10 * 1024 * 1024) {
-                alert('File size must be less than 10MB.');
+                showFileUploadError('File size must be less than 10MB.');
                 return;
             }
 
@@ -99,12 +112,14 @@ const DocumentManagement = () => {
 
     const handleUpload = async () => {
         if (!selectedFile || !uploadData.documentType || !uploadData.documentName) {
-            alert('Please fill in all required fields.');
+            await showError('Validation Error', 'Please fill in all required fields.');
             return;
         }
 
         try {
             setUploading(true);
+            showLoading('Uploading Document...', 'Please wait while we upload your document');
+
             const formData = new FormData();
             formData.append('document', selectedFile);
             formData.append('documentType', uploadData.documentType);
@@ -116,6 +131,8 @@ const DocumentManagement = () => {
                 }
             });
 
+            closeLoading();
+
             // Reset form and close modal
             setSelectedFile(null);
             setUploadData({ documentType: '', documentName: '' });
@@ -124,27 +141,38 @@ const DocumentManagement = () => {
             // Refresh documents list
             await fetchDocuments();
 
-            alert('Document uploaded successfully!');
+            await showSuccess('Document Uploaded!', 'Your document has been uploaded successfully and is now under review.');
         } catch (error) {
             console.error('Upload error:', error);
-            alert('Error uploading document. Please try again.');
+            closeLoading();
+            await handleApiError(error);
         } finally {
             setUploading(false);
         }
     };
 
     const handleDelete = async (documentId) => {
-        if (!window.confirm('Are you sure you want to delete this document?')) {
+        const result = await showDeleteConfirm(
+            'Delete Document',
+            'Are you sure you want to delete this document? This action cannot be undone.'
+        );
+
+        if (!result.isConfirmed) {
             return;
         }
 
         try {
+            showLoading('Deleting Document...', 'Please wait while we delete your document');
+
             await api.delete(`/api/documents/${documentId}`);
             await fetchDocuments();
-            alert('Document deleted successfully!');
+
+            closeLoading();
+            await showSuccess('Document Deleted!', 'Your document has been deleted successfully.');
         } catch (error) {
             console.error('Delete error:', error);
-            alert('Error deleting document. Please try again.');
+            closeLoading();
+            await handleApiError(error);
         }
     };
 

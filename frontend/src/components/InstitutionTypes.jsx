@@ -1,6 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const InstitutionTypes = () => {
+    const navigate = useNavigate()
     const [selectedInstitution, setSelectedInstitution] = useState(null)
     const [selectedProgram, setSelectedProgram] = useState(null)
     const [selectedCourse, setSelectedCourse] = useState(null)
@@ -1859,7 +1861,7 @@ const InstitutionTypes = () => {
                                             if (program.hasWebsite) {
                                                 event.preventDefault()
                                                 event.stopPropagation()
-                                                window.open(program.websiteUrl, '_blank')
+                                                navigate(program.websiteUrl)
                                             } else {
                                                 handleProgramCardClick(event, program)
                                             }

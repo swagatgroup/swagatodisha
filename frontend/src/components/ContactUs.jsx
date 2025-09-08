@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
-import Swal from 'sweetalert2'
 import { motion } from 'framer-motion'
 import { SOCIAL_LINKS, CONTACT_INFO } from '../utils/constants'
+import {
+    showSuccess,
+    showError,
+    showLoading,
+    closeLoading,
+    handleApiError
+} from '../utils/sweetAlert'
+import api from '../utils/api'
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -30,6 +37,13 @@ const ContactUs = () => {
         const invalidFiles = []
 
         if (files && files.length > 0) {
+            // Check file count limit
+            if (files.length > 5) {
+                showError('Too Many Files', 'You can upload maximum 5 files at once.');
+                e.target.value = '';
+                return;
+            }
+
             for (let i = 0; i < files.length; i++) {
                 if (files[i].size > maxSize) {
                     invalidFiles.push(files[i].name)
@@ -37,12 +51,7 @@ const ContactUs = () => {
             }
 
             if (invalidFiles.length > 0) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File Size Too Large',
-                    text: `The following files exceed 10MB limit: ${invalidFiles.join(', ')}`,
-                    confirmButtonColor: '#8B5CF6'
-                })
+                showError('File Size Too Large', `The following files exceed 10MB limit: ${invalidFiles.join(', ')}`);
                 e.target.value = '' // Clear the input
                 return
             }
@@ -56,57 +65,27 @@ const ContactUs = () => {
 
     const validateForm = () => {
         if (!formData.name.trim()) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Name Required',
-                text: 'Please enter your name',
-                confirmButtonColor: '#8B5CF6'
-            })
+            showError('Name Required', 'Please enter your name');
             return false
         }
         if (!formData.email.trim()) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Email Required',
-                text: 'Please enter your email address',
-                confirmButtonColor: '#8B5CF6'
-            })
+            showError('Email Required', 'Please enter your email address');
             return false
         }
         if (!formData.email.includes('@')) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Invalid Email',
-                text: 'Please enter a valid email address',
-                confirmButtonColor: '#8B5CF6'
-            })
+            showError('Invalid Email', 'Please enter a valid email address');
             return false
         }
         if (!formData.phone.trim()) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Phone Number Required',
-                text: 'Please enter your phone number',
-                confirmButtonColor: '#8B5CF6'
-            })
+            showError('Phone Number Required', 'Please enter your phone number');
             return false
         }
         if (!formData.subject.trim()) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Subject Required',
-                text: 'Please enter a subject for your message',
-                confirmButtonColor: '#8B5CF6'
-            })
+            showError('Subject Required', 'Please enter a subject for your message');
             return false
         }
         if (!formData.message.trim()) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Message Required',
-                text: 'Please enter your message',
-                confirmButtonColor: '#8B5CF6'
-            })
+            showError('Message Required', 'Please enter your message');
             return false
         }
         return true
@@ -118,47 +97,34 @@ const ContactUs = () => {
         if (!validateForm()) return
 
         setIsSubmitting(true)
+        showLoading('Sending Message...', 'Please wait while we send your message');
 
         try {
             // Create FormData for file uploads
             const formDataToSend = new FormData()
-            formDataToSend.append('access_key', '9ec47c5e-26a9-46b3-8845-210426d38985')
             formDataToSend.append('name', formData.name)
             formDataToSend.append('email', formData.email)
             formDataToSend.append('phone', formData.phone)
             formDataToSend.append('subject', formData.subject)
             formDataToSend.append('message', formData.message)
-            formDataToSend.append('from_name', formData.name)
-            formDataToSend.append('replyto', formData.email)
 
-            // Add documents if any - try different field names for Web3Forms compatibility
+            // Add documents if any
             if (formData.documents && formData.documents.length > 0) {
-                // Try both 'attachments' and 'files' field names
                 for (let i = 0; i < formData.documents.length; i++) {
-                    formDataToSend.append('attachments', formData.documents[i])
-                    formDataToSend.append('files', formData.documents[i])
+                    formDataToSend.append('documents', formData.documents[i])
                 }
-
-                // Also add file information as text for fallback
-                const fileNames = Array.from(formData.documents).map(file => file.name).join(', ')
-                formDataToSend.append('file_names', fileNames)
             }
 
-            const response = await fetch('https://api.web3forms.com/submit', {
-                method: 'POST',
-                body: formDataToSend
+            const response = await api.post('/api/contact/submit', formDataToSend, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
             })
 
-            const result = await response.json()
+            closeLoading();
 
-            if (response.ok && result.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Message Sent Successfully!',
-                    text: 'Thank you for contacting us. We will get back to you soon!',
-                    confirmButtonColor: '#8B5CF6',
-                    confirmButtonText: 'Great!'
-                })
+            if (response.data.success) {
+                showSuccess('Message Sent Successfully!', 'Thank you for contacting us. We will get back to you soon!');
 
                 // Reset form
                 setFormData({
@@ -176,17 +142,12 @@ const ContactUs = () => {
                     fileInput.value = ''
                 }
             } else {
-                console.error('Form submission failed:', result)
-                throw new Error(result.message || 'Failed to send message')
+                throw new Error(response.data.message || 'Failed to send message')
             }
         } catch (error) {
             console.error('Form submission error:', error)
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: error.message || 'Something went wrong! Please try again later.',
-                confirmButtonColor: '#8B5CF6'
-            })
+            closeLoading();
+            handleApiError(error, 'Failed to send message. Please try again later.');
         } finally {
             setIsSubmitting(false)
         }

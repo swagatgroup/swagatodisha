@@ -1,4 +1,12 @@
 import React, { useState } from 'react';
+import {
+    showSuccess,
+    showError,
+    showLoading,
+    closeLoading,
+    handleApiError
+} from '../../../utils/sweetAlert';
+import api from '../../../utils/api';
 
 const ContentTab = () => {
     const [activeSection, setActiveSection] = useState('hero');
@@ -76,9 +84,20 @@ const ContentTab = () => {
         }));
     };
 
-    const handleSave = () => {
-        // Here you would typically make an API call to save the content
-        alert('Content saved successfully!');
+    const handleSave = async () => {
+        try {
+            showLoading('Saving content...');
+
+            // Save content to backend
+            await api.post('/api/admin/content', formData);
+
+            closeLoading();
+            showSuccess('Content saved successfully!');
+        } catch (error) {
+            console.error('Error saving content:', error);
+            closeLoading();
+            handleApiError(error, 'Failed to save content');
+        }
     };
 
     const renderHeroSection = () => (
@@ -335,8 +354,8 @@ const ContentTab = () => {
                 <button
                     onClick={() => setActiveSection('hero')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeSection === 'hero'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Hero Section
@@ -344,8 +363,8 @@ const ContentTab = () => {
                 <button
                     onClick={() => setActiveSection('about')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeSection === 'about'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     About Us
@@ -353,8 +372,8 @@ const ContentTab = () => {
                 <button
                     onClick={() => setActiveSection('courses')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeSection === 'courses'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Courses
@@ -362,8 +381,8 @@ const ContentTab = () => {
                 <button
                     onClick={() => setActiveSection('contact')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeSection === 'contact'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Contact

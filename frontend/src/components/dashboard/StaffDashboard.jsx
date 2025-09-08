@@ -3,7 +3,18 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import DocumentReview from '../documents/DocumentReview';
-import axios from 'axios';
+import DocumentManagement from '../documents/DocumentManagement';
+import {
+    showSuccess,
+    showError,
+    showConfirm,
+    showLoading,
+    closeLoading,
+    handleApiError,
+    showSuccessToast,
+    showErrorToast
+} from '../../utils/sweetAlert';
+import api from '../../utils/api';
 
 const StaffDashboard = () => {
     const { user } = useAuth();
@@ -78,7 +89,19 @@ const StaffDashboard = () => {
     useEffect(() => {
         const fetchStaffData = async () => {
             try {
-                // Mock data for now - replace with actual API call
+                showLoading('Loading Dashboard...', 'Please wait while we fetch your data');
+
+                // Fetch staff stats from API
+                const response = await api.get('/api/staff/dashboard');
+                setStats(response.data.data.stats);
+
+                closeLoading();
+            } catch (error) {
+                console.error('Error fetching staff data:', error);
+                closeLoading();
+                await handleApiError(error);
+
+                // Fallback to mock data
                 setStats({
                     totalApplications: 45,
                     pendingApplications: 12,
@@ -86,8 +109,6 @@ const StaffDashboard = () => {
                     referralBased: 15,
                     directEnrollments: 30
                 });
-            } catch (error) {
-                console.error('Error fetching staff data:', error);
             } finally {
                 setLoading(false);
             }

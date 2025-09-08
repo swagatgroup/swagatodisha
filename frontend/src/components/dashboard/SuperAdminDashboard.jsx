@@ -9,7 +9,18 @@ import AgentsTab from './tabs/AgentsTab';
 import StaffTab from './tabs/StaffTab';
 import PasswordsTab from './tabs/PasswordsTab';
 import ContentTab from './tabs/ContentTab';
-import axios from 'axios';
+import DocumentManagement from '../documents/DocumentManagement';
+import {
+    showSuccess,
+    showError,
+    showConfirm,
+    showLoading,
+    closeLoading,
+    handleApiError,
+    showSuccessToast,
+    showErrorToast
+} from '../../utils/sweetAlert';
+import api from '../../utils/api';
 
 const SuperAdminDashboard = () => {
     const { user } = useAuth();
@@ -102,7 +113,7 @@ const SuperAdminDashboard = () => {
         const fetchAdminData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get('/api/auth/me');
+                const response = await api.get('/api/auth/me');
                 setStats({
                     totalStudents: 150,
                     totalAgents: 25,

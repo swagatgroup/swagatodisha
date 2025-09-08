@@ -1,4 +1,13 @@
 import React, { useState } from 'react';
+import {
+    showSuccess,
+    showError,
+    showConfirm,
+    showLoading,
+    closeLoading,
+    handleApiError
+} from '../../../utils/sweetAlert';
+import api from '../../../utils/api';
 
 const PasswordsTab = () => {
     const [activeSubTab, setActiveSubTab] = useState('students');
@@ -42,12 +51,33 @@ const PasswordsTab = () => {
         setNewPassword('');
     };
 
-    const confirmPasswordReset = () => {
-        if (newPassword && selectedUser) {
-            // Here you would typically make an API call to reset the password
-            alert(`Password reset for ${selectedUser.name} to: ${newPassword}`);
+    const confirmPasswordReset = async () => {
+        if (!newPassword || !selectedUser) {
+            showError('Please enter a new password.');
+            return;
+        }
+
+        try {
+            showLoading('Resetting password...');
+
+            // Determine the correct API endpoint based on user type
+            let endpoint = `/api/auth/reset-password/${selectedUser._id || selectedUser.id}`;
+            if (activeSubTab === 'students') {
+                endpoint = `/api/students/reset-password/${selectedUser._id || selectedUser.id}`;
+            } else if (activeSubTab === 'staff') {
+                endpoint = `/api/admin/reset-password/${selectedUser._id || selectedUser.id}`;
+            }
+
+            await api.post(endpoint, { newPassword });
+
             setSelectedUser(null);
             setNewPassword('');
+            closeLoading();
+            showSuccess(`Password reset successfully for ${selectedUser.name}!`);
+        } catch (error) {
+            console.error('Error resetting password:', error);
+            closeLoading();
+            handleApiError(error, 'Failed to reset password');
         }
     };
 
@@ -110,8 +140,8 @@ const PasswordsTab = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{user.lastPasswordChange}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.status === 'Active'
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-red-100 text-red-800'
                                         }`}>
                                         {user.status}
                                     </span>
@@ -147,8 +177,8 @@ const PasswordsTab = () => {
                 <button
                     onClick={() => setActiveSubTab('students')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeSubTab === 'students'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Students
@@ -156,8 +186,8 @@ const PasswordsTab = () => {
                 <button
                     onClick={() => setActiveSubTab('agents')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeSubTab === 'agents'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Agents
@@ -165,8 +195,8 @@ const PasswordsTab = () => {
                 <button
                     onClick={() => setActiveSubTab('staff')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${activeSubTab === 'staff'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Staff

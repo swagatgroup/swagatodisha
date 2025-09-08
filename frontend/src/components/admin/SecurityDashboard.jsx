@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../utils/api';
-import Swal from 'sweetalert2';
+import {
+    showSuccess,
+    showError,
+    showLoading,
+    closeLoading,
+    handleApiError
+} from '../../utils/sweetAlert';
 
 const SecurityDashboard = () => {
     const [securityReport, setSecurityReport] = useState(null);
@@ -16,15 +22,14 @@ const SecurityDashboard = () => {
     const fetchSecurityReport = async () => {
         try {
             setLoading(true);
+            showLoading('Loading security report...');
             const response = await api.get('/api/security/audit');
             setSecurityReport(response.data.data);
+            closeLoading();
         } catch (error) {
             console.error('Error fetching security report:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to fetch security report'
-            });
+            closeLoading();
+            handleApiError(error, 'Failed to fetch security report');
         } finally {
             setLoading(false);
         }
@@ -33,23 +38,18 @@ const SecurityDashboard = () => {
     const handleFixPasswords = async () => {
         try {
             setFixingPasswords(true);
+            showLoading('Fixing password issues...');
             const response = await api.post('/api/security/fix-passwords');
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Success',
-                text: response.data.message
-            });
+            closeLoading();
+            showSuccess(response.data.message);
 
             // Refresh the security report
             await fetchSecurityReport();
         } catch (error) {
             console.error('Error fixing passwords:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to fix weak passwords'
-            });
+            closeLoading();
+            handleApiError(error, 'Failed to fix weak passwords');
         } finally {
             setFixingPasswords(false);
         }
@@ -131,7 +131,7 @@ const SecurityDashboard = () => {
                 <div className="w-full bg-gray-200 rounded-full h-3">
                     <div
                         className={`h-3 rounded-full transition-all duration-500 ${securityReport.securityScore >= 90 ? 'bg-green-500' :
-                                securityReport.securityScore >= 70 ? 'bg-yellow-500' : 'bg-red-500'
+                            securityReport.securityScore >= 70 ? 'bg-yellow-500' : 'bg-red-500'
                             }`}
                         style={{ width: `${securityReport.securityScore}%` }}
                     ></div>
@@ -154,8 +154,8 @@ const SecurityDashboard = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
-                                        ? 'border-purple-500 text-purple-600'
-                                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                    ? 'border-purple-500 text-purple-600'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                             >
                                 {tab.label}

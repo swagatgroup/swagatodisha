@@ -81,7 +81,18 @@ export default defineConfig({
 
     // Optimize for development
     host: true,
-    port: 3000
+    port: 3000,
+    cors: true,
+
+    // Add proxy for API calls to avoid CORS issues
+    proxy: {
+      '/api': {
+        target: 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+        ws: true
+      }
+    }
   },
 
   // Resolve aliases for cleaner imports

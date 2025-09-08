@@ -21,6 +21,7 @@ const dashboardRoutes = require('./routes/dashboard');
 const documentRoutes = require('./routes/documents');
 const securityRoutes = require('./routes/security');
 const performanceRoutes = require('./routes/performance');
+const contactRoutes = require('./routes/contact');
 
 // Import security middleware
 const {
@@ -167,6 +168,7 @@ app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/documents', uploadRateLimit, documentRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
+app.use('/api/contact', apiRateLimit, contactRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
