@@ -283,16 +283,17 @@ class PerformanceOptimizer {
     }
 
     // Performance monitoring
-    startPerformanceMonitoring() {
+    async startPerformanceMonitoring() {
         // Monitor Core Web Vitals
-        if ('web-vitals' in window) {
-            import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-                getCLS(console.log);
-                getFID(console.log);
-                getFCP(console.log);
-                getLCP(console.log);
-                getTTFB(console.log);
-            });
+        try {
+            const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
+            getCLS(console.log);
+            getFID(console.log);
+            getFCP(console.log);
+            getLCP(console.log);
+            getTTFB(console.log);
+        } catch (error) {
+            console.warn('Web Vitals not available:', error);
         }
 
         // Monitor long tasks

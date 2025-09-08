@@ -105,7 +105,8 @@ export default defineConfig({
       'react-icons/fa6',
       'react-icons/si',
       'sweetalert2',
-      '@emailjs/browser'
+      '@emailjs/browser',
+      'web-vitals'
     ],
     exclude: ['@emailjs/browser'] // Exclude from pre-bundling as it's used conditionally
   },
