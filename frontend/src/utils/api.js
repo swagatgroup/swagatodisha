@@ -28,10 +28,29 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        // Handle 401 Unauthorized errors
         if (error.response?.status === 401) {
+            // Only redirect if we're not already on login/register pages to avoid infinite loops
+            const currentPath = window.location.pathname;
+            const isAuthPage = currentPath === '/login' || currentPath === '/register';
+
+            // Clear invalid token
             localStorage.removeItem('token');
-            window.location.href = '/login';
+
+            // Only redirect if not already on an auth page
+            if (!isAuthPage) {
+                console.log('Token expired or invalid, redirecting to login');
+                window.location.href = '/login';
+            }
         }
+
+        // Handle other error types
+        if (error.response?.status === 403) {
+            console.error('Access forbidden - insufficient permissions');
+        } else if (error.response?.status >= 500) {
+            console.error('Server error occurred');
+        }
+
         return Promise.reject(error);
     }
 );

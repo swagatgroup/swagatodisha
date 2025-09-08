@@ -5,9 +5,12 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const http = require('http');
+const SocketManager = require('./utils/socket');
 require('dotenv').config();
 
 const app = express();
+const server = http.createServer(app);
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -15,11 +18,35 @@ const studentRoutes = require('./routes/students');
 const adminRoutes = require('./routes/admin');
 const adminAuthRoutes = require('./routes/adminAuth');
 const dashboardRoutes = require('./routes/dashboard');
+const documentRoutes = require('./routes/documents');
+const securityRoutes = require('./routes/security');
+const performanceRoutes = require('./routes/performance');
+
+// Import security middleware
+const {
+    securityHeaders,
+    sanitizeInput,
+    preventSQLInjection,
+    preventXSS,
+    securityLogger,
+    authRateLimit,
+    uploadRateLimit,
+    apiRateLimit,
+    passwordResetRateLimit
+} = require('./middleware/security');
+
+// Import performance monitoring
+const performanceMonitor = require('./utils/performance');
 
 // Middleware
-app.use(helmet());
+app.use(securityHeaders);
 app.use(compression());
 app.use(morgan('combined'));
+app.use(securityLogger);
+app.use(performanceMonitor.performanceMiddleware());
+app.use(sanitizeInput);
+app.use(preventSQLInjection);
+app.use(preventXSS);
 // CORS configuration
 const corsOptions = {
     origin: function (origin, callback) {
@@ -132,11 +159,14 @@ app.get('/api/test', (req, res) => {
 });
 
 // API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/admin-auth', adminAuthRoutes);
-app.use('/api/students', studentRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/auth', authRateLimit, authRoutes);
+app.use('/api/admin-auth', authRateLimit, adminAuthRoutes);
+app.use('/api/students', apiRateLimit, studentRoutes);
+app.use('/api/admin', apiRateLimit, adminRoutes);
+app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
+app.use('/api/documents', uploadRateLimit, documentRoutes);
+app.use('/api/security', apiRateLimit, securityRoutes);
+app.use('/api/performance', apiRateLimit, performanceRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {
@@ -216,6 +246,9 @@ const validateEnvironment = () => {
     console.log('✅ Environment variables configured');
 };
 
+// Initialize Socket.IO
+const socketManager = new SocketManager(server);
+
 // Start server
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
@@ -223,11 +256,12 @@ const startServer = async () => {
         validateEnvironment();
 
         // Start server first, then connect to database
-        const server = app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log(`🚀 Server running on port ${PORT}`);
             console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
             console.log(`📊 Health check: http://localhost:${PORT}/health`);
             console.log(`📊 API Health check: http://localhost:${PORT}/api/health`);
+            console.log(`🔌 Socket.IO server initialized`);
         });
 
         // Try to connect to database (non-blocking)
@@ -244,4 +278,4 @@ const startServer = async () => {
 
 startServer();
 
-module.exports = app;
+module.exports = { app, server, socketManager };

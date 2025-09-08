@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
+import ForgotPassword from './ForgotPassword';
 import Swal from 'sweetalert2';
 
 const Login = () => {
@@ -12,6 +13,7 @@ const Login = () => {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
@@ -260,12 +262,12 @@ const Login = () => {
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5, delay: 0.6 }}
                         >
-                            <Link
-                                to="/forgot-password"
+                            <button
+                                onClick={() => setShowForgotPassword(true)}
                                 className="text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200"
                             >
                                 Forgot your password?
-                            </Link>
+                            </button>
                         </motion.div>
 
                         <motion.div
@@ -303,6 +305,15 @@ const Login = () => {
                     </Link>
                 </motion.div>
             </motion.div>
+
+            {/* Forgot Password Modal */}
+            {showForgotPassword && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                    <div className="relative p-5 w-full max-w-md">
+                        <ForgotPassword onBackToLogin={() => setShowForgotPassword(false)} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

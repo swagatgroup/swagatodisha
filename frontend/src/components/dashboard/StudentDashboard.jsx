@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
+import DocumentManagement from '../documents/DocumentManagement';
 import api from '../../utils/api';
 
 const StudentDashboard = () => {
@@ -303,26 +304,7 @@ const StudentDashboard = () => {
                     </div>
                 );
             case 'documents':
-                return (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">My Documents</h3>
-                        <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Document Management</h3>
-                            <p className="text-gray-500 mb-4">This feature is coming soon! You'll be able to upload and manage your documents here.</p>
-                            <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-lg">
-                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Coming Soon
-                            </div>
-                        </div>
-                    </div>
-                );
+                return <DocumentManagement />;
             case 'payments':
                 return (
                     <div className="bg-white rounded-lg shadow p-6">

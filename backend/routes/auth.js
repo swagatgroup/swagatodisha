@@ -8,14 +8,21 @@ const { protect, rateLimit } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Generate JWT Token
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRE || '7d'
+// Generate JWT Token with 7-day expiration
+const generateToken = (id, role = 'user') => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+        expiresIn: '7d' // 7-day auto-login
     });
 };
 
-// @desc    Register a new student
+// Generate Refresh Token
+const generateRefreshToken = (id) => {
+    return jwt.sign({ id, type: 'refresh' }, process.env.JWT_SECRET, {
+        expiresIn: '30d' // 30-day refresh token
+    });
+};
+
+// @desc    Register a new user (Student, Agent, Staff, Super Admin)
 // @route   POST /api/auth/register
 // @access  Public
 router.post('/register', async (req, res) => {
@@ -24,7 +31,7 @@ router.post('/register', async (req, res) => {
     console.log('Request headers:', req.headers);
 
     try {
-        const { fullName, email, password, phoneNumber, guardianName } = req.body;
+        const { fullName, email, password, phoneNumber, guardianName, role = 'student' } = req.body;
 
         // Log extracted fields
         console.log('Extracted fields:', {
@@ -78,6 +85,15 @@ router.post('/register', async (req, res) => {
 
         console.log('No existing user found, proceeding with registration...');
 
+        // Validate role
+        const validRoles = ['student', 'agent', 'staff', 'super_admin'];
+        if (!validRoles.includes(role)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid role. Must be one of: student, agent, staff, super_admin'
+            });
+        }
+
         // Create user data object (password will be hashed by User model pre-save hook)
         const userData = {
             fullName: fullName.trim(),
@@ -85,7 +101,7 @@ router.post('/register', async (req, res) => {
             password: password, // Will be hashed by User model pre-save hook
             phoneNumber: phoneNumber.trim(),
             guardianName: guardianName.trim(),
-            role: 'user'
+            role: role
         };
 
         console.log('User data prepared:', {
@@ -105,28 +121,25 @@ router.post('/register', async (req, res) => {
             fullName: savedUser.fullName
         });
 
-        // Generate JWT token
+        // Generate JWT token with 7-day expiration
         console.log('Generating JWT token...');
-        const jwt = require('jsonwebtoken');
-        const token = jwt.sign(
-            {
-                id: savedUser._id,
-                email: savedUser.email,
-                role: savedUser.role
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        const token = generateToken(savedUser._id, savedUser.role);
+        const refreshToken = generateRefreshToken(savedUser._id);
         console.log('JWT token generated successfully');
 
         const response = {
+            success: true,
             message: 'Registration successful',
-            token,
-            user: {
-                id: savedUser._id,
-                email: savedUser.email,
-                fullName: savedUser.fullName,
-                role: savedUser.role
+            data: {
+                token,
+                refreshToken,
+                user: {
+                    id: savedUser._id,
+                    email: savedUser.email,
+                    fullName: savedUser.fullName,
+                    role: savedUser.role
+                },
+                sessionExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
             }
         };
 
@@ -265,18 +278,10 @@ router.post('/login', async (req, res) => {
         user.lastLogin = new Date();
         await user.save({ validateBeforeSave: false });
 
-        // Generate JWT token
+        // Generate JWT token with 7-day expiration
         console.log('Generating JWT token...');
-        const token = jwt.sign(
-            {
-                id: user._id,
-                email: user.email,
-                role: user.role || 'user',
-                userType: userType
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        const token = generateToken(user._id, user.role || 'user');
+        const refreshToken = generateRefreshToken(user._id);
         console.log('✅ JWT token generated, length:', token.length);
 
         // Get student data if user is a student
@@ -325,7 +330,9 @@ router.post('/login', async (req, res) => {
             success: true,
             message: 'Login successful',
             token,
-            user: userData
+            refreshToken,
+            user: userData,
+            sessionExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now
         });
 
     } catch (error) {
@@ -390,7 +397,7 @@ router.put('/change-password', [
     }
 });
 
-// @desc    Forgot password
+// @desc    Forgot password - Admin call functionality
 // @route   POST /api/auth/forgot-password
 // @access  Public
 router.post('/forgot-password', [
@@ -408,7 +415,16 @@ router.post('/forgot-password', [
 
         const { email } = req.body;
 
-        const user = await User.findOne({ email });
+        // Check both User and Admin models
+        let user = await User.findOne({ email });
+        let userType = 'user';
+
+        if (!user) {
+            const Admin = require('../models/Admin');
+            user = await Admin.findOne({ email });
+            userType = 'admin';
+        }
+
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -416,23 +432,32 @@ router.post('/forgot-password', [
             });
         }
 
-        // Generate reset token
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        user.passwordResetToken = crypto
-            .createHash('sha256')
-            .update(resetToken)
-            .digest('hex');
-        user.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+        // Set default passwords based on role
+        const defaultPasswords = {
+            'student': 'SG@99student',
+            'agent': 'SG@99agent',
+            'staff': 'SG@99staff',
+            'super_admin': 'SG@99admin'
+        };
 
+        const defaultPassword = defaultPasswords[user.role] || 'SG@99user';
+
+        // Update password to default
+        user.password = defaultPassword;
+        user.passwordChangedAt = new Date();
         await user.save();
 
-        // TODO: Send email with reset token
-        // For now, just return the token (in production, send via email)
+        // Return admin contact information for password reset
         res.json({
             success: true,
-            message: 'Password reset token sent to email',
+            message: 'Password reset to default. Please contact admin to change your password.',
             data: {
-                resetToken: process.env.NODE_ENV === 'development' ? resetToken : undefined
+                adminContact: {
+                    phone: '+91-9876543210', // Placeholder - should be from environment
+                    email: 'admin@swagatodisha.com',
+                    message: 'Your password has been reset to default. Please contact admin to change it.'
+                },
+                defaultPassword: process.env.NODE_ENV === 'development' ? defaultPassword : undefined
             }
         });
 
@@ -498,6 +523,139 @@ router.put('/reset-password/:resetToken', [
 
     } catch (error) {
         console.error('Reset password error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while resetting password'
+        });
+    }
+});
+
+// @desc    Refresh token
+// @route   POST /api/auth/refresh
+// @access  Public
+router.post('/refresh', async (req, res) => {
+    try {
+        const { refreshToken } = req.body;
+
+        if (!refreshToken) {
+            return res.status(401).json({
+                success: false,
+                message: 'Refresh token is required'
+            });
+        }
+
+        // Verify refresh token
+        const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+
+        if (decoded.type !== 'refresh') {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid refresh token'
+            });
+        }
+
+        // Get user
+        let user;
+        const userType = decoded.userType || 'user';
+
+        if (userType === 'admin') {
+            const Admin = require('../models/Admin');
+            user = await Admin.findById(decoded.id).select('-password');
+        } else {
+            user = await User.findById(decoded.id).select('-password');
+        }
+
+        if (!user || !user.isActive) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not found or inactive'
+            });
+        }
+
+        // Generate new tokens
+        const newToken = generateToken(user._id, user.role);
+        const newRefreshToken = generateRefreshToken(user._id);
+
+        res.json({
+            success: true,
+            message: 'Token refreshed successfully',
+            token: newToken,
+            refreshToken: newRefreshToken,
+            sessionExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        });
+
+    } catch (error) {
+        console.error('Token refresh error:', error);
+        res.status(401).json({
+            success: false,
+            message: 'Invalid refresh token'
+        });
+    }
+});
+
+// @desc    Admin reset user password
+// @route   POST /api/auth/admin-reset-password
+// @access  Private (Super Admin only)
+router.post('/admin-reset-password', [
+    protect,
+    body('userId').notEmpty().withMessage('User ID is required'),
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
+], async (req, res) => {
+    try {
+        // Check if user is super admin
+        if (req.user.role !== 'super_admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied. Super Admin only.'
+            });
+        }
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Validation errors',
+                errors: errors.array()
+            });
+        }
+
+        const { userId, newPassword } = req.body;
+
+        // Find user in both models
+        let user = await User.findById(userId);
+        let userType = 'user';
+
+        if (!user) {
+            const Admin = require('../models/Admin');
+            user = await Admin.findById(userId);
+            userType = 'admin';
+        }
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        // Update password
+        user.password = newPassword;
+        user.passwordChangedAt = new Date();
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Password reset successfully',
+            data: {
+                userId: user._id,
+                userType,
+                resetBy: req.user._id,
+                resetAt: new Date()
+            }
+        });
+
+    } catch (error) {
+        console.error('Admin password reset error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while resetting password'

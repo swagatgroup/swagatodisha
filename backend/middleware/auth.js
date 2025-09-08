@@ -14,8 +14,16 @@ const protect = async (req, res, next) => {
             // Verify token
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-            // Get user from token
-            const user = await User.findById(decoded.id).select('-password');
+            // Get user from token - check both User and Admin models
+            let user = await User.findById(decoded.id).select('-password');
+            let userType = 'user';
+
+            if (!user) {
+                // Try Admin model
+                const Admin = require('../models/Admin');
+                user = await Admin.findById(decoded.id).select('-password');
+                userType = 'admin';
+            }
 
             if (!user) {
                 return res.status(401).json({
@@ -47,6 +55,7 @@ const protect = async (req, res, next) => {
             }
 
             req.user = user;
+            req.userType = userType;
             next();
         } catch (error) {
             console.error('Token verification error:', error);

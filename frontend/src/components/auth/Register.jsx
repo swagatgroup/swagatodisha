@@ -220,21 +220,26 @@ const Register = () => {
             console.log('Registration result:', result);
 
             if (result.success) {
-                console.log('✅ Registration successful! Redirecting...');
+                console.log('✅ Registration successful! Redirecting to login...');
 
-                // Show success alert
+                // Show success alert and redirect to login
                 await Swal.fire({
                     icon: 'success',
                     title: 'Registration Successful!',
-                    text: `Welcome ${formData.fullName}! Your account has been created successfully.`,
+                    text: `Welcome ${formData.fullName}! Your account has been created successfully. Please log in to continue.`,
                     confirmButtonColor: '#7c3aed',
-                    confirmButtonText: 'Continue to Dashboard',
-                    timer: 3000,
+                    confirmButtonText: 'Go to Login',
+                    timer: 5000,
                     timerProgressBar: true
                 });
 
-                // Redirect to dashboard
-                navigate('/dashboard');
+                // Redirect to login page with success message
+                navigate('/login', { 
+                    state: { 
+                        message: 'Registration successful! Please log in with your credentials.',
+                        email: formData.email 
+                    } 
+                });
             } else {
                 console.error('❌ Registration failed:', result.error);
 

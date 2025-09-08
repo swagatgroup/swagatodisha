@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import NotificationCenter from '../shared/NotificationCenter';
+import RealTimeStatus from '../shared/RealTimeStatus';
 
 const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -94,7 +96,11 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
 
                         {/* Right side - User Menu */}
                         <div className="flex items-center space-x-4">
+                            {/* Real-time Status */}
+                            <RealTimeStatus />
+
                             {/* Notifications */}
+                            <NotificationCenter />
 
                             {/* User Menu */}
                             <div className="relative" ref={userMenuRef}>

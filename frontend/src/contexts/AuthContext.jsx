@@ -139,24 +139,16 @@ export const AuthProvider = ({ children }) => {
             console.log('Registration response received:', response.status);
             console.log('Response data:', response.data);
 
-            const { token, user, message } = response.data;
+            const { user, message } = response.data;
 
-            if (!token) {
-                throw new Error('No token received from server');
-            }
-
-            // Store token
-            localStorage.setItem('token', token);
-            setToken(token);
-
-            // Set authorization header for future requests
-            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-            setUser(user);
-            setIsAuthenticated(true);
-
-            console.log('✅ Registration successful! User logged in:', user);
-            return { success: true, user, message };
+            // ✅ FIXED: Do NOT store the token or auto-login after registration
+            // The user should manually log in after registration
+            console.log('✅ Registration successful! User created but not logged in:', user);
+            return { 
+                success: true, 
+                user, 
+                message: message || 'Registration successful! Please log in with your credentials.' 
+            };
 
         } catch (error) {
             console.error('Registration failed:', error);
