@@ -59,13 +59,18 @@ const corsOptions = {
             'http://localhost:5173',
             'https://www.swagatodisha.com',
             'https://swagatodisha.com',
-            'https://swagatodisha.vercel.app'
+            'https://swagatodisha.vercel.app',
+            'https://swagat-odisha.vercel.app',
+            'https://swagatodisha.netlify.app'
         ];
 
+        // Check if origin is allowed
         if (allowedOrigins.indexOf(origin) !== -1) {
+            console.log('✅ CORS allowed origin:', origin);
             callback(null, true);
         } else {
-            console.log('CORS blocked origin:', origin);
+            console.log('❌ CORS blocked origin:', origin);
+            console.log('📋 Allowed origins:', allowedOrigins);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -78,10 +83,13 @@ const corsOptions = {
         'Accept',
         'Authorization',
         'Cache-Control',
-        'Pragma'
+        'Pragma',
+        'Access-Control-Request-Method',
+        'Access-Control-Request-Headers'
     ],
     exposedHeaders: ['Authorization'],
-    optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+    optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+    preflightContinue: false
 };
 
 app.use(cors(corsOptions));
@@ -89,19 +97,79 @@ app.use(cors(corsOptions));
 // Handle preflight requests
 app.options('*', cors(corsOptions));
 
-// CORS debugging middleware
+// Enhanced CORS middleware for edge cases
 app.use((req, res, next) => {
-    console.log('Request origin:', req.headers.origin);
-    console.log('Request method:', req.method);
-    console.log('Request path:', req.path);
+    // Set CORS headers for all responses
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+        'http://localhost:3000',
+        'http://localhost:5173',
+        'https://www.swagatodisha.com',
+        'https://swagatodisha.com',
+        'https://swagatodisha.vercel.app',
+        'https://swagat-odisha.vercel.app',
+        'https://swagatodisha.netlify.app'
+    ];
+
+    // Set CORS headers
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+        console.log('✅ CORS: Allowed origin:', origin);
+    } else if (origin) {
+        console.log('❌ CORS: Blocked origin:', origin);
+        console.log('📋 Allowed origins:', allowedOrigins);
+    }
+
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma, Access-Control-Request-Method, Access-Control-Request-Headers');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Max-Age', '86400'); // 24 hours
+
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        console.log('🔄 CORS: Handling preflight request for:', req.path);
+        res.status(200).end();
+        return;
+    }
+
     next();
 });
 
-// Rate limiting
+// Enhanced request logging middleware
+app.use((req, res, next) => {
+    const timestamp = new Date().toISOString();
+    const origin = req.headers.origin || 'No Origin';
+    const userAgent = req.get('User-Agent') || 'Unknown';
+
+    console.log(`[${timestamp}] 🌐 ${req.method} ${req.path}`);
+    console.log(`[${timestamp}] 📍 Origin: ${origin}`);
+    console.log(`[${timestamp}] 🤖 User-Agent: ${userAgent.substring(0, 50)}...`);
+
+    // Log rate limiting info
+    if (req.get('X-RateLimit-Limit')) {
+        console.log(`[${timestamp}] ⚡ Rate Limit: ${req.get('X-RateLimit-Remaining')}/${req.get('X-RateLimit-Limit')}`);
+    }
+
+    next();
+});
+
+// Rate limiting - Fixed to allow health checks and Render monitoring
 const limiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
-    message: 'Too many requests from this IP, please try again later.'
+    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // Increased limit
+    message: {
+        error: 'Too many requests, please try again later.',
+        retryAfter: '15 minutes'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    skip: (req) => {
+        // Skip rate limiting for health checks and Render's monitoring
+        if (req.path === '/health' || req.path === '/api/health') return true;
+        if (req.get('User-Agent') && req.get('User-Agent').includes('Render')) return true;
+        if (req.get('User-Agent') && req.get('User-Agent').includes('UptimeRobot')) return true;
+        return false;
+    }
 });
 app.use('/api/', limiter);
 

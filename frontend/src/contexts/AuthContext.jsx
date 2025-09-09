@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/api';
+import { handleAPIError } from '../utils/apiErrorHandler';
 
 const AuthContext = createContext();
 
@@ -111,24 +112,12 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error('Login failed:', error);
 
-            let errorMessage = 'Login failed. Please check your credentials.';
+            // Use enhanced error handling
+            const errorInfo = handleAPIError(error, false);
 
-            // Handle different error status codes properly
-            if (error.response?.status === 401) {
-                errorMessage = error.response.data?.message || 'Invalid email or password. Please try again.';
-            } else if (error.response?.status === 400) {
-                errorMessage = error.response.data?.message || 'Please fill in all required fields.';
-            } else if (error.response?.status === 500) {
-                errorMessage = 'Server error during login. Please try again later.';
-            } else if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else if (error.message) {
-                errorMessage = error.message;
-            }
-
-            setError(errorMessage);
+            setError(errorInfo.message);
             setIsAuthenticated(false);
-            return { success: false, message: errorMessage };
+            return { success: false, message: errorInfo.message };
         } finally {
             setLoading(false);
         }
