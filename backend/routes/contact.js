@@ -75,14 +75,19 @@ router.post('/submit', [
         const { name, email, phone, subject, message } = req.body;
         const documents = req.files || [];
 
-        // Create email transporter
-        const transporter = nodemailer.createTransporter({
-            service: 'gmail',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
-            }
-        });
+        // Create email transporter (with fallback if email not configured)
+        let transporter = null;
+        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+            transporter = nodemailer.createTransporter({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+        } else {
+            console.warn('Email configuration not found. Contact form will be logged but not emailed.');
+        }
 
         // Prepare email content
         let emailContent = `
@@ -115,25 +120,41 @@ router.post('/submit', [
             }))
         };
 
-        // Send email
-        await transporter.sendMail(mailOptions);
+        // Send email (if transporter is configured)
+        if (transporter) {
+            try {
+                await transporter.sendMail(mailOptions);
+                console.log('Contact form email sent successfully');
 
-        // Send confirmation email to user
-        const userMailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Thank you for contacting Swagat Odisha',
-            html: `
-                <h2>Thank you for contacting us!</h2>
-                <p>Dear ${name},</p>
-                <p>We have received your message and will get back to you within 24 hours.</p>
-                <p><strong>Your message:</strong></p>
-                <p>${message.replace(/\n/g, '<br>')}</p>
-                <p>Best regards,<br>Swagat Odisha Team</p>
-            `
-        };
+                // Send confirmation email to user
+                const userMailOptions = {
+                    from: process.env.EMAIL_USER,
+                    to: email,
+                    subject: 'Thank you for contacting Swagat Odisha',
+                    html: `
+                        <h2>Thank you for contacting us!</h2>
+                        <p>Dear ${name},</p>
+                        <p>We have received your message and will get back to you within 24 hours.</p>
+                        <p><strong>Your message:</strong></p>
+                        <p>${message.replace(/\n/g, '<br>')}</p>
+                        <p>Best regards,<br>Swagat Odisha Team</p>
+                    `
+                };
 
-        await transporter.sendMail(userMailOptions);
+                await transporter.sendMail(userMailOptions);
+                console.log('Confirmation email sent successfully');
+            } catch (emailError) {
+                console.error('Email sending failed:', emailError);
+                // Don't fail the request if email fails
+            }
+        } else {
+            // Log the contact form submission if email is not configured
+            console.log('Contact Form Submission (Email not configured):', {
+                name, email, phone, subject, message,
+                documentsCount: documents.length,
+                timestamp: new Date().toISOString()
+            });
+        }
 
         // Clean up uploaded files after successful email sending
         for (const file of documents) {
