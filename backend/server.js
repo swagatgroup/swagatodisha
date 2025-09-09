@@ -180,8 +180,8 @@ app.use((req, res, next) => {
     next();
 });
 
-// Rate limiting - Fixed to allow health checks and Render monitoring
-const limiter = rateLimit({
+// Rate limiting - Only apply to non-auth routes to avoid double limiting
+const generalLimiter = rateLimit({
     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // Increased limit
     message: {
@@ -191,14 +191,15 @@ const limiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     skip: (req) => {
-        // Skip rate limiting for health checks and Render's monitoring
+        // Skip rate limiting for health checks, auth routes, and Render's monitoring
         if (req.path === '/health' || req.path === '/api/health') return true;
+        if (req.path.startsWith('/api/auth')) return true; // Skip auth routes (handled by authRateLimit)
         if (req.get('User-Agent') && req.get('User-Agent').includes('Render')) return true;
         if (req.get('User-Agent') && req.get('User-Agent').includes('UptimeRobot')) return true;
         return false;
     }
 });
-app.use('/api/', limiter);
+app.use('/api/', generalLimiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));

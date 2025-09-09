@@ -4,7 +4,7 @@ const validator = require('validator');
 const { body, validationResult } = require('express-validator');
 
 // Advanced rate limiting configurations
-const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false) => {
+const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false, skipFunction = null) => {
     return rateLimit({
         windowMs,
         max,
@@ -14,6 +14,7 @@ const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false)
             retryAfter: Math.ceil(windowMs / 1000)
         },
         skipSuccessfulRequests,
+        skip: skipFunction,
         standardHeaders: true,
         legacyHeaders: false,
         handler: (req, res) => {
@@ -29,9 +30,16 @@ const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false)
 // Specific rate limits for different endpoints
 const authRateLimit = createRateLimit(
     15 * 60 * 1000, // 15 minutes
-    5, // 5 attempts
+    50, // 50 attempts per 15 minutes (increased from 5)
     'Too many authentication attempts, please try again later',
-    true
+    true,
+    (req) => {
+        // Skip rate limiting for health checks and monitoring
+        if (req.path === '/health' || req.path === '/api/health') return true;
+        if (req.get('User-Agent') && req.get('User-Agent').includes('Render')) return true;
+        if (req.get('User-Agent') && req.get('User-Agent').includes('UptimeRobot')) return true;
+        return false;
+    }
 );
 
 const uploadRateLimit = createRateLimit(
