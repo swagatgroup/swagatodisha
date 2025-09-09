@@ -82,7 +82,7 @@ const AgentDashboard = () => {
                 showLoading('Loading Dashboard...', 'Please wait while we fetch your data');
 
                 // Fetch agent stats from API
-                const response = await api.get('/api/agents/dashboard');
+                const response = await api.get('/api/dashboard/agents/dashboard');
                 setStats(response.data.data.stats);
 
                 closeLoading();

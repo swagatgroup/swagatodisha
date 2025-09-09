@@ -20,4 +20,8 @@ router.get('/staff', protect, getStaffDashboard);
 // Super Admin Dashboard
 router.get('/super-admin', protect, getSuperAdminDashboard);
 
+// Additional routes for frontend compatibility
+router.get('/agents/dashboard', protect, getAgentDashboard);
+router.get('/staff/dashboard', protect, getStaffDashboard);
+
 module.exports = router;

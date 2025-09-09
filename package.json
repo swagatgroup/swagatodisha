@@ -1,5 +1,22 @@
 {
+  "name": "swagat-odisha-production-tests",
+  "version": "1.0.0",
+  "description": "Production testing suite for Swagat Odisha",
+  "main": "production-test.js",
+  "scripts": {
+    "test:production": "node production-test.js",
+    "test:quick": "node quick-production-test.js",
+    "test:all": "npm run test:quick && npm run test:production"
+  },
   "dependencies": {
-    "socket.io-client": "^4.8.1"
-  }
+    "axios": "^1.6.0",
+    "colors": "^1.4.0"
+  },
+  "keywords": [
+    "testing",
+    "production",
+    "swagat-odisha"
+  ],
+  "author": "Swagat Odisha Team",
+  "license": "MIT"
 }

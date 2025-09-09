@@ -47,7 +47,7 @@ export default defineConfig({
             return `[name][extname]`;
           }
           if (/css/i.test(ext)) {
-            return `css/[name]-[hash][extname]`;
+            return `[name]-[hash][extname]`;
           }
           return `assets/[name]-[hash][extname]`;
         }

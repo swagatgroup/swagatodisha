@@ -66,10 +66,27 @@ export const AuthProvider = ({ children }) => {
 
             console.log('AuthContext login called with:', { email, password: password ? '[PRESENT]' : '[MISSING]' });
 
-            const response = await api.post('/api/auth/login', {
-                email: email,
-                password: password
-            });
+            // Add retry logic for network issues
+            let response;
+            let retryCount = 0;
+            const maxRetries = 3;
+
+            while (retryCount < maxRetries) {
+                try {
+                    response = await api.post('/api/auth/login', {
+                        email: email,
+                        password: password
+                    });
+                    break; // Success, exit retry loop
+                } catch (error) {
+                    retryCount++;
+                    if (retryCount >= maxRetries || (error.response && error.response.status !== 500)) {
+                        throw error; // Don't retry for client errors or after max retries
+                    }
+                    console.log(`Login attempt ${retryCount} failed, retrying...`);
+                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Exponential backoff
+                }
+            }
 
             console.log('Login response received:', response.data);
 
@@ -93,7 +110,7 @@ export const AuthProvider = ({ children }) => {
 
         } catch (error) {
             console.error('Login failed:', error);
-            
+
             let errorMessage = 'Login failed. Please check your credentials.';
 
             // Handle different error status codes properly
@@ -144,10 +161,10 @@ export const AuthProvider = ({ children }) => {
             // ✅ FIXED: Do NOT store the token or auto-login after registration
             // The user should manually log in after registration
             console.log('✅ Registration successful! User created but not logged in:', user);
-            return { 
-                success: true, 
-                user, 
-                message: message || 'Registration successful! Please log in with your credentials.' 
+            return {
+                success: true,
+                user,
+                message: message || 'Registration successful! Please log in with your credentials.'
             };
 
         } catch (error) {
