@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "user registration with valid data",
+    "description": "Test the /api/auth/register endpoint to ensure a new user can be registered successfully with valid input data including fullName, email, password, phoneNumber, guardianName, and role."
+  },
+  {
+    "id": "TC002",
+    "title": "user login with correct credentials",
+    "description": "Test the /api/auth/login endpoint to verify that a user can log in successfully with valid email and password, and receives a JWT token."
+  },
+  {
+    "id": "TC003",
+    "title": "get current user with valid token",
+    "description": "Test the /api/auth/me endpoint to ensure it returns the current authenticated user's data when a valid JWT token is provided."
+  },
+  {
+    "id": "TC004",
+    "title": "create new student with valid data",
+    "description": "Test the POST /api/students endpoint to verify that a new student profile can be created successfully with valid input data including fullName, email, phone, course, address, class, dob, and referralCode."
+  },
+  {
+    "id": "TC005",
+    "title": "get all students with authorization",
+    "description": "Test the GET /api/students endpoint to ensure it returns a list of all students when accessed with a valid JWT token and proper authorization."
+  },
+  {
+    "id": "TC006",
+    "title": "get student dashboard data with valid token",
+    "description": "Test the GET /api/dashboard/student endpoint to verify that the student dashboard data is returned correctly for an authenticated student user."
+  },
+  {
+    "id": "TC007",
+    "title": "upload document with valid file and metadata",
+    "description": "Test the POST /api/documents/upload endpoint to ensure a document file can be uploaded successfully with valid file, type, and description, and that PDF processing and cloud storage integration work correctly."
+  },
+  {
+    "id": "TC008",
+    "title": "get admin dashboard statistics with authorization",
+    "description": "Test the GET /api/admin/dashboard/stats endpoint to verify that admin users can retrieve dashboard statistics with proper authentication and authorization."
+  },
+  {
+    "id": "TC009",
+    "title": "get performance metrics with valid token",
+    "description": "Test the GET /api/performance/metrics endpoint to ensure it returns real-time performance metrics data when accessed with a valid JWT token."
+  },
+  {
+    "id": "TC010",
+    "title": "submit contact form with valid data",
+    "description": "Test the POST /api/contact endpoint to verify that the contact form can be submitted successfully with valid name, email, subject, and message, and that email notifications are triggered."
+  }
+]

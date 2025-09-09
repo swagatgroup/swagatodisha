@@ -12,6 +12,33 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 
+// CORS Fix for undefined origin - Add this FIRST
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+        'https://www.swagatodisha.com',
+        'https://swagatodisha.com',
+        'http://localhost:3000',
+        'http://localhost:3001',
+        'http://localhost:5173'
+    ];
+
+    if (allowedOrigins.includes(origin) || !origin) {
+        res.header('Access-Control-Allow-Origin', origin || '*');
+    }
+
+    // Always set CORS headers for all responses
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS,PATCH');
+    res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    next();
+});
+
 // Import routes
 const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/students');
