@@ -5,7 +5,7 @@ const { body, validationResult } = require('express-validator');
 
 // Advanced rate limiting configurations
 const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false, skipFunction = null) => {
-    return rateLimit({
+    const config = {
         windowMs,
         max,
         message: {
@@ -14,7 +14,6 @@ const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false,
             retryAfter: Math.ceil(windowMs / 1000)
         },
         skipSuccessfulRequests,
-        skip: skipFunction,
         standardHeaders: true,
         legacyHeaders: false,
         handler: (req, res) => {
@@ -24,7 +23,14 @@ const createRateLimit = (windowMs, max, message, skipSuccessfulRequests = false,
                 retryAfter: Math.ceil(windowMs / 1000)
             });
         }
-    });
+    };
+
+    // Only add skip function if provided
+    if (skipFunction && typeof skipFunction === 'function') {
+        config.skip = skipFunction;
+    }
+
+    return rateLimit(config);
 };
 
 // Specific rate limits for different endpoints
