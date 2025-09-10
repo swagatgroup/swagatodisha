@@ -1,7 +1,8 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');
+const fsp = fs.promises;
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const router = express.Router();
@@ -9,7 +10,7 @@ const router = express.Router();
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const uploadDir = 'uploads/contact-documents';
+        const uploadDir = process.env.CONTACT_UPLOAD_DIR || 'uploads/contact-documents';
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
@@ -58,7 +59,7 @@ router.post('/submit', [
             if (req.files && req.files.length > 0) {
                 for (const file of req.files) {
                     try {
-                        await fs.unlink(file.path);
+                        await fsp.unlink(file.path);
                     } catch (err) {
                         console.error('Error cleaning up file:', err);
                     }
@@ -78,7 +79,7 @@ router.post('/submit', [
         // Create email transporter (with fallback if email not configured)
         let transporter = null;
         if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            transporter = nodemailer.createTransporter({
+            transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
                     user: process.env.EMAIL_USER,
@@ -119,52 +120,7 @@ router.post('/submit', [
                 path: file.path
             }))
         };
-
-        // Send email (if transporter is configured)
-        if (transporter) {
-            try {
-                await transporter.sendMail(mailOptions);
-                console.log('Contact form email sent successfully');
-
-                // Send confirmation email to user
-                const userMailOptions = {
-                    from: process.env.EMAIL_USER,
-                    to: email,
-                    subject: 'Thank you for contacting Swagat Odisha',
-                    html: `
-                        <h2>Thank you for contacting us!</h2>
-                        <p>Dear ${name},</p>
-                        <p>We have received your message and will get back to you within 24 hours.</p>
-                        <p><strong>Your message:</strong></p>
-                        <p>${message.replace(/\n/g, '<br>')}</p>
-                        <p>Best regards,<br>Swagat Odisha Team</p>
-                    `
-                };
-
-                await transporter.sendMail(userMailOptions);
-                console.log('Confirmation email sent successfully');
-            } catch (emailError) {
-                console.error('Email sending failed:', emailError);
-                // Don't fail the request if email fails
-            }
-        } else {
-            // Log the contact form submission if email is not configured
-            console.log('Contact Form Submission (Email not configured):', {
-                name, email, phone, subject, message,
-                documentsCount: documents.length,
-                timestamp: new Date().toISOString()
-            });
-        }
-
-        // Clean up uploaded files after successful email sending
-        for (const file of documents) {
-            try {
-                await fs.unlink(file.path);
-            } catch (err) {
-                console.error('Error cleaning up file:', err);
-            }
-        }
-
+        // Respond immediately for a fast UX
         res.status(200).json({
             success: true,
             message: 'Contact form submitted successfully. We will get back to you soon!',
@@ -176,6 +132,52 @@ router.post('/submit', [
             }
         });
 
+        // Background job: send emails and then cleanup files
+        setImmediate(async () => {
+            try {
+                if (transporter) {
+                    try {
+                        await transporter.sendMail(mailOptions);
+                        console.log('Contact form email sent successfully');
+
+                        const userMailOptions = {
+                            from: process.env.EMAIL_USER,
+                            to: email,
+                            subject: 'Thank you for contacting Swagat Odisha',
+                            html: `
+                                <h2>Thank you for contacting us!</h2>
+                                <p>Dear ${name},</p>
+                                <p>We have received your message and will get back to you within 24 hours.</p>
+                                <p><strong>Your message:</strong></p>
+                                <p>${message.replace(/\n/g, '<br>')}</p>
+                                <p>Best regards,<br>Swagat Odisha Team</p>
+                            `
+                        };
+
+                        await transporter.sendMail(userMailOptions);
+                        console.log('Confirmation email sent successfully');
+                    } catch (emailError) {
+                        console.error('Email sending failed (background):', emailError);
+                    }
+                } else {
+                    console.log('Contact Form Submission (Email not configured):', {
+                        name, email, phone, subject, message,
+                        documentsCount: documents.length,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            } finally {
+                // Always cleanup files
+                for (const file of documents) {
+                    try {
+                        await fsp.unlink(file.path);
+                    } catch (err) {
+                        console.error('Error cleaning up file (background):', err);
+                    }
+                }
+            }
+        });
+
     } catch (error) {
         console.error('Contact form error:', error);
 
@@ -183,7 +185,7 @@ router.post('/submit', [
         if (req.files && req.files.length > 0) {
             for (const file of req.files) {
                 try {
-                    await fs.unlink(file.path);
+                    await fsp.unlink(file.path);
                 } catch (err) {
                     console.error('Error cleaning up file:', err);
                 }
