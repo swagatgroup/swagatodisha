@@ -7,6 +7,34 @@ const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const router = express.Router();
 
+// Helper: build a robust SMTP transporter from env
+const buildTransporter = () => {
+    const hasCustomSMTP = process.env.SMTP_HOST && process.env.SMTP_PORT;
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+        if (hasCustomSMTP) {
+            const portNum = parseInt(process.env.SMTP_PORT, 10) || 587;
+            const isSecure = portNum === 465;
+            return nodemailer.createTransport({
+                host: process.env.SMTP_HOST,
+                port: portNum,
+                secure: isSecure,
+                auth: {
+                    user: process.env.EMAIL_USER,
+                    pass: process.env.EMAIL_PASS
+                }
+            });
+        }
+        return nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        });
+    }
+    return null;
+};
+
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -46,11 +74,26 @@ const upload = multer({
 // @access  Public
 router.post('/submit', [
     upload.array('documents', 5), // Maximum 5 files
-    body('name').trim().isLength({ min: 2 }).withMessage('Name must be at least 2 characters'),
-    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
-    body('phone').trim().isLength({ min: 10 }).withMessage('Phone number must be at least 10 digits'),
-    body('subject').trim().isLength({ min: 5 }).withMessage('Subject must be at least 5 characters'),
-    body('message').trim().isLength({ min: 10 }).withMessage('Message must be at least 10 characters')
+    body('name')
+        .trim()
+        .isLength({ min: 2 })
+        .withMessage('Name must be at least 2 characters'),
+    body('email')
+        .isEmail()
+        .normalizeEmail()
+        .withMessage('Valid email is required'),
+    body('phone')
+        .customSanitizer((value) => (value || '').replace(/\D/g, ''))
+        .isLength({ min: 10, max: 15 })
+        .withMessage('Phone number must contain at least 10 digits'),
+    body('subject')
+        .trim()
+        .isLength({ min: 3 })
+        .withMessage('Subject must be at least 3 characters'),
+    body('message')
+        .trim()
+        .isLength({ min: 5 })
+        .withMessage('Message must be at least 5 characters')
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -77,16 +120,8 @@ router.post('/submit', [
         const documents = req.files || [];
 
         // Create email transporter (with fallback if email not configured)
-        let transporter = null;
-        if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-            transporter = nodemailer.createTransport({
-                service: 'gmail',
-                auth: {
-                    user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
-                }
-            });
-        } else {
+        let transporter = buildTransporter();
+        if (!transporter) {
             console.warn('Email configuration not found. Contact form will be logged but not emailed.');
         }
 
@@ -113,6 +148,7 @@ router.post('/submit', [
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
+            replyTo: email, // reply directly to the sender
             subject: `Contact Form: ${subject}`,
             html: emailContent,
             attachments: documents.map(file => ({
@@ -143,6 +179,7 @@ router.post('/submit', [
                         const userMailOptions = {
                             from: process.env.EMAIL_USER,
                             to: email,
+                            replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
                             subject: 'Thank you for contacting Swagat Odisha',
                             html: `
                                 <h2>Thank you for contacting us!</h2>
@@ -196,6 +233,42 @@ router.post('/submit', [
             success: false,
             message: 'Failed to submit contact form. Please try again later.'
         });
+    }
+});
+
+// Test email endpoint to validate SMTP configuration from Render
+// @route   POST /api/contact/test-email
+// @access  Private (guarded by a simple token if provided)
+router.post('/test-email', async (req, res) => {
+    try {
+        // Optional lightweight guard
+        const provided = req.body && req.body.token;
+        const expected = process.env.CONTACT_TEST_TOKEN;
+        if (expected && provided !== expected) {
+            return res.status(403).json({ success: false, message: 'Forbidden' });
+        }
+
+        const transporter = buildTransporter();
+        if (!transporter) {
+            return res.status(400).json({ success: false, message: 'Email not configured' });
+        }
+
+        const to = process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
+        if (!to) {
+            return res.status(400).json({ success: false, message: 'CONTACT_EMAIL or EMAIL_USER not set' });
+        }
+
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to,
+            subject: 'Test Email: Swagat Odisha Contact',
+            html: `<p>This is a test email from the Swagat Odisha backend at ${new Date().toISOString()}.</p>`
+        });
+
+        return res.status(200).json({ success: true, message: 'Test email sent' });
+    } catch (err) {
+        console.error('Test email failed:', err);
+        return res.status(500).json({ success: false, message: 'Test email failed', error: err.message });
     }
 });
 
