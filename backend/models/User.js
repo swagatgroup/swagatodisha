@@ -121,12 +121,13 @@ const userSchema = new mongoose.Schema({
         }
     },
 
-    // Agent Specific Fields
+    // Universal Referral System (for all user types)
     referralCode: {
         type: String,
         unique: true,
         sparse: true,
-        uppercase: true
+        uppercase: true,
+        trim: true
     },
     referredBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -138,7 +139,7 @@ const userSchema = new mongoose.Schema({
             type: Number,
             default: 0
         },
-        successfulReferrals: {
+        approvedReferrals: {
             type: Number,
             default: 0
         },
@@ -150,6 +151,10 @@ const userSchema = new mongoose.Schema({
             type: Number,
             default: 0
         }
+    },
+    isReferralActive: {
+        type: Boolean,
+        default: false
     },
 
     // Staff Specific Fields
@@ -221,19 +226,13 @@ userSchema.pre('save', async function (next) {
     }
 });
 
-// Pre-save middleware to generate referral code for agents
-userSchema.pre('save', function (next) {
-    if (this.role === 'agent' && !this.referralCode) {
-        this.referralCode = this.generateReferralCode();
-    }
-    next();
-});
-
 // Instance methods
 userSchema.methods.generateReferralCode = function () {
-    const timestamp = Date.now().toString(36);
-    const random = Math.random().toString(36).substr(2, 5);
-    return `AG${timestamp}${random}`.toUpperCase();
+    const rolePrefix = this.role.substring(0, 2).toUpperCase();
+    const namePrefix = this.fullName ? this.fullName.substring(0, 2).toUpperCase() : 'XX';
+    const timestamp = Date.now().toString(36).substring(-4);
+    const random = Math.random().toString(36).substring(2, 4).toUpperCase();
+    return `${rolePrefix}${namePrefix}${timestamp}${random}`;
 };
 
 userSchema.methods.comparePassword = async function (candidatePassword) {
@@ -272,8 +271,8 @@ userSchema.methods.resetLoginAttempts = function () {
 userSchema.statics.findByReferralCode = function (referralCode) {
     return this.findOne({
         referralCode: referralCode.toUpperCase(),
-        role: 'agent',
-        isActive: true
+        isActive: true,
+        isReferralActive: true
     });
 };
 

@@ -1,11 +1,20 @@
 const mongoose = require('mongoose');
 
 const documentSchema = new mongoose.Schema({
-    // Document Identification
-    student: {
+    // Universal Document Upload (all user types can upload)
+    uploadedBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
+    },
+    uploadedByRole: {
+        type: String,
+        enum: ['student', 'agent', 'staff', 'admin', 'user'],
+        required: true
+    },
+    assignedTo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' // Staff member assigned for verification
     },
 
     // Document Details
@@ -13,23 +22,31 @@ const documentSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: [
+            'academic_certificate',
+            'identity_proof',
+            'address_proof',
+            'income_certificate',
+            'caste_certificate',
+            'photo',
+            'signature',
+            'migration_certificate',
+            'tc',
+            'mark_sheet',
+            'entrance_exam_card',
             'aadhar_card',
             'birth_certificate',
             'marksheet_10th',
             'marksheet_12th',
             'transfer_certificate',
-            'migration_certificate',
             'character_certificate',
             'passport_photo',
             'guardian_id',
-            'income_certificate',
-            'caste_certificate',
             'medical_certificate',
             'other'
         ]
     },
 
-    documentName: {
+    originalName: {
         type: String,
         required: true,
         maxlength: [200, 'Document name cannot exceed 200 characters']
@@ -41,7 +58,7 @@ const documentSchema = new mongoose.Schema({
         required: true
     },
 
-    filePath: {
+    fileUrl: {
         type: String,
         required: true
     },
@@ -56,36 +73,53 @@ const documentSchema = new mongoose.Schema({
         required: true
     },
 
-    // Document Status
+    // Enhanced Document Status
     status: {
         type: String,
-        enum: ['pending', 'under_review', 'approved', 'rejected', 'needs_revision'],
+        enum: ['pending', 'under_review', 'approved', 'rejected', 'resubmission_required'],
         default: 'pending'
     },
 
-    // Review Information
-    reviewedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        default: null
-    },
+    // Enhanced Review System
+    verificationHistory: [{
+        reviewedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        reviewedByName: String,
+        action: {
+            type: String,
+            enum: ['submitted', 'reviewed', 'approved', 'rejected', 'resubmission_requested']
+        },
+        remarks: String,
+        timestamp: { type: Date, default: Date.now }
+    }],
 
-    reviewedAt: {
-        type: Date,
-        default: null
-    },
-
-    staffRemarks: {
+    currentRemarks: {
         type: String,
-        maxlength: [500, 'Staff remarks cannot exceed 500 characters'],
+        maxlength: [1000, 'Current remarks cannot exceed 1000 characters'],
         default: ''
     },
 
-    rejectionReason: {
+    priority: {
         type: String,
-        maxlength: [500, 'Rejection reason cannot exceed 500 characters'],
-        default: ''
+        enum: ['low', 'medium', 'high', 'urgent'],
+        default: 'medium'
     },
+
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+
+    submissionDeadline: Date,
+
+    resubmissionCount: {
+        type: Number,
+        default: 0
+    },
+
+    tags: [String],
 
     // Document Processing
     isProcessed: {
@@ -117,18 +151,12 @@ const documentSchema = new mongoose.Schema({
 
     previousVersions: [{
         fileName: String,
-        filePath: String,
+        fileUrl: String,
         uploadedAt: Date,
         status: String
     }],
 
     // Metadata
-    uploadedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-
     uploadedAt: {
         type: Date,
         default: Date.now
@@ -155,10 +183,12 @@ const documentSchema = new mongoose.Schema({
 });
 
 // Indexes for better performance
-documentSchema.index({ student: 1, documentType: 1 });
+documentSchema.index({ uploadedBy: 1, documentType: 1 });
 documentSchema.index({ status: 1 });
-documentSchema.index({ reviewedBy: 1 });
+documentSchema.index({ assignedTo: 1 });
 documentSchema.index({ uploadedAt: -1 });
+documentSchema.index({ priority: 1 });
+documentSchema.index({ isActive: 1 });
 
 // Virtual for document URL
 documentSchema.virtual('documentUrl').get(function () {
@@ -177,27 +207,43 @@ documentSchema.pre('save', function (next) {
 });
 
 // Instance methods
-documentSchema.methods.approve = function (reviewedBy, remarks = '') {
+documentSchema.methods.approve = function (reviewedBy, reviewedByName, remarks = '') {
     this.status = 'approved';
-    this.reviewedBy = reviewedBy;
-    this.reviewedAt = new Date();
-    this.staffRemarks = remarks;
+    this.currentRemarks = remarks;
+    this.verificationHistory.push({
+        reviewedBy,
+        reviewedByName,
+        action: 'approved',
+        remarks,
+        timestamp: new Date()
+    });
     return this.save();
 };
 
-documentSchema.methods.reject = function (reviewedBy, reason) {
+documentSchema.methods.reject = function (reviewedBy, reviewedByName, reason) {
     this.status = 'rejected';
-    this.reviewedBy = reviewedBy;
-    this.reviewedAt = new Date();
-    this.rejectionReason = reason;
+    this.currentRemarks = reason;
+    this.verificationHistory.push({
+        reviewedBy,
+        reviewedByName,
+        action: 'rejected',
+        remarks: reason,
+        timestamp: new Date()
+    });
     return this.save();
 };
 
-documentSchema.methods.requestRevision = function (reviewedBy, remarks) {
-    this.status = 'needs_revision';
-    this.reviewedBy = reviewedBy;
-    this.reviewedAt = new Date();
-    this.staffRemarks = remarks;
+documentSchema.methods.requestResubmission = function (reviewedBy, reviewedByName, remarks) {
+    this.status = 'resubmission_required';
+    this.currentRemarks = remarks;
+    this.resubmissionCount += 1;
+    this.verificationHistory.push({
+        reviewedBy,
+        reviewedByName,
+        action: 'resubmission_requested',
+        remarks,
+        timestamp: new Date()
+    });
     return this.save();
 };
 
@@ -208,23 +254,31 @@ documentSchema.methods.markAsProcessed = function () {
 };
 
 // Static methods
-documentSchema.statics.getByStudent = function (studentId) {
-    return this.find({ student: studentId }).sort({ uploadedAt: -1 });
+documentSchema.statics.getByUser = function (userId) {
+    return this.find({ uploadedBy: userId, isActive: true }).sort({ uploadedAt: -1 });
 };
 
 documentSchema.statics.getByStatus = function (status) {
-    return this.find({ status }).populate('student', 'fullName email');
+    return this.find({ status, isActive: true }).populate('uploadedBy', 'fullName email');
 };
 
 documentSchema.statics.getPendingDocuments = function () {
-    return this.find({ status: 'pending' }).populate('student', 'fullName email phoneNumber');
+    return this.find({ status: 'pending', isActive: true }).populate('uploadedBy', 'fullName email phoneNumber');
 };
 
-documentSchema.statics.getApprovedDocuments = function (studentId) {
+documentSchema.statics.getApprovedDocuments = function (userId) {
     return this.find({
-        student: studentId,
-        status: 'approved'
+        uploadedBy: userId,
+        status: 'approved',
+        isActive: true
     }).sort({ documentType: 1 });
+};
+
+documentSchema.statics.getAssignedToStaff = function (staffId) {
+    return this.find({
+        assignedTo: staffId,
+        isActive: true
+    }).populate('uploadedBy', 'fullName email role').sort({ createdAt: -1 });
 };
 
 // Ensure virtual fields are serialized
