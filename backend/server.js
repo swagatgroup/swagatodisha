@@ -333,29 +333,16 @@ const connectDB = async () => {
 };
 
 // Environment variable validation
-const validateEnvironment = () => {
-    // Set default values for development
-    if (!process.env.MONGODB_URI) {
-        process.env.MONGODB_URI = 'mongodb://localhost:27017/swagat_odisha';
-        console.warn('⚠️ MONGODB_URI not set, using default:', process.env.MONGODB_URI);
-    }
 
-    if (!process.env.JWT_SECRET) {
-        process.env.JWT_SECRET = 'your_jwt_secret_key_here_development_only_change_in_production';
-        console.warn('⚠️ JWT_SECRET not set, using default (CHANGE IN PRODUCTION!)');
-    }
-
-    console.log('✅ Environment variables configured');
-};
 
 // Initialize Socket.IO
 const socketManager = new SocketManager(server);
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 const startServer = async () => {
     try {
-        validateEnvironment();
+      
 
         // Start server first, then connect to database
         server.listen(PORT, () => {
