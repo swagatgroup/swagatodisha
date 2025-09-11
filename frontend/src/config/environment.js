@@ -5,7 +5,7 @@ const config = {
         timeout: 10000,
     },
     production: {
-        apiBaseURL: 'https://swagat-odisha-backend.onrender.com',
+        apiBaseURL: process.env.API_BASE_URL,
         timeout: 60000, // 60 seconds timeout for production
     },
 };
