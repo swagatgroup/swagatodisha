@@ -95,6 +95,9 @@ const authorize = (...roles) => {
     };
 };
 
+// Alias for restrictTo to maintain compatibility
+const restrictTo = authorize;
+
 // Specific role checks
 const isStudent = (req, res, next) => {
     if (req.user.role !== 'student') {
@@ -250,6 +253,7 @@ const canDelete = (req, res, next) => {
 module.exports = {
     protect,
     authorize,
+    restrictTo,
     isStudent,
     isAgent,
     isStaff,
