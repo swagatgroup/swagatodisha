@@ -165,43 +165,43 @@ app.use((req, res, next) => {
 });
 
 // Enhanced request logging middleware
-app.use((req, res, next) => {
-    const timestamp = new Date().toISOString();
-    const origin = req.headers.origin || 'No Origin';
-    const userAgent = req.get('User-Agent') || 'Unknown';
+// app.use((req, res, next) => {
+//     const timestamp = new Date().toISOString();
+//     const origin = req.headers.origin || 'No Origin';
+//     const userAgent = req.get('User-Agent') || 'Unknown';
 
-    console.log(`[${timestamp}] 🌐 ${req.method} ${req.path}`);
-    console.log(`[${timestamp}] 📍 Origin: ${origin}`);
-    console.log(`[${timestamp}] 🤖 User-Agent: ${userAgent.substring(0, 50)}...`);
+//     console.log(`[${timestamp}] 🌐 ${req.method} ${req.path}`);
+//     console.log(`[${timestamp}] 📍 Origin: ${origin}`);
+//     console.log(`[${timestamp}] 🤖 User-Agent: ${userAgent.substring(0, 50)}...`);
 
-    // Log rate limiting info
-    if (req.get('X-RateLimit-Limit')) {
-        console.log(`[${timestamp}] ⚡ Rate Limit: ${req.get('X-RateLimit-Remaining')}/${req.get('X-RateLimit-Limit')}`);
-    }
+//     // Log rate limiting info
+//     if (req.get('X-RateLimit-Limit')) {
+//         console.log(`[${timestamp}] ⚡ Rate Limit: ${req.get('X-RateLimit-Remaining')}/${req.get('X-RateLimit-Limit')}`);
+//     }
 
-    next();
-});
+//     next();
+// });
 
 // Rate limiting - Only apply to non-auth routes to avoid double limiting
-const generalLimiter = rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-    max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // Increased limit
-    message: {
-        error: 'Too many requests, please try again later.',
-        retryAfter: '15 minutes'
-    },
-    standardHeaders: true,
-    legacyHeaders: false,
-    skip: (req) => {
-        // Skip rate limiting for health checks, auth routes, and Render's monitoring
-        if (req.path === '/health' || req.path === '/api/health') return true;
-        if (req.path.startsWith('/api/auth')) return true; // Skip auth routes (handled by authRateLimit)
-        if (req.get('User-Agent') && req.get('User-Agent').includes('Render')) return true;
-        if (req.get('User-Agent') && req.get('User-Agent').includes('UptimeRobot')) return true;
-        return false;
-    }
-});
-app.use('/api/', generalLimiter);
+// const generalLimiter = rateLimit({
+//     windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
+//     max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 1000, // Increased limit
+//     message: {
+//         error: 'Too many requests, please try again later.',
+//         retryAfter: '15 minutes'
+//     },
+//     standardHeaders: true,
+//     legacyHeaders: false,
+//     skip: (req) => {
+//         // Skip rate limiting for health checks, auth routes, and Render's monitoring
+//         if (req.path === '/health' || req.path === '/api/health') return true;
+//         if (req.path.startsWith('/api/auth')) return true; // Skip auth routes (handled by authRateLimit)
+//         if (req.get('User-Agent') && req.get('User-Agent').includes('Render')) return true;
+//         if (req.get('User-Agent') && req.get('User-Agent').includes('UptimeRobot')) return true;
+//         return false;
+//     }
+// });
+// app.use('/api/', generalLimiter);
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
