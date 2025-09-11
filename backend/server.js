@@ -84,6 +84,7 @@ const corsOptions = {
         if (!origin) return callback(null, true);
 
         const allowedOrigins = [
+            'https://www.swagatodisha.com',
             'http://localhost:3000',
             'http://localhost:5173',
             'https://www.swagatodisha.com',
