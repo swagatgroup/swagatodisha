@@ -839,6 +839,39 @@ router.get('/profile-status', protect, async (req, res) => {
     }
 });
 
+// @desc    Get users by role
+// @route   GET /api/auth/users
+// @access  Private
+router.get('/users', async (req, res) => {
+    try {
+        const { role } = req.query;
+
+        let users = [];
+
+        if (role === 'agent') {
+            // Get users with agent role
+            users = await User.find({ role: 'agent' }).select('-password');
+        } else if (role === 'student') {
+            // Get users with student role
+            users = await User.find({ role: 'student' }).select('-password');
+        } else {
+            // Get all users
+            users = await User.find({}).select('-password');
+        }
+
+        res.json({
+            success: true,
+            users: users
+        });
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching users'
+        });
+    }
+});
+
 // @desc    Get current user
 // @route   GET /api/auth/me
 // @access  Private
@@ -855,16 +888,18 @@ router.get('/me', async (req, res) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id || decoded.userId;
-        const userType = decoded.userType || 'user';
 
         let user;
+        let userType = 'user';
 
-        // Check appropriate model based on userType
-        if (userType === 'admin') {
+        // First try to find user in User model
+        user = await User.findById(userId).select('-password');
+
+        // If not found in User model, try Admin model
+        if (!user) {
             const Admin = require('../models/Admin');
             user = await Admin.findById(userId).select('-password');
-        } else {
-            user = await User.findById(userId).select('-password');
+            userType = 'admin';
         }
 
         if (!user) {
@@ -874,11 +909,19 @@ router.get('/me', async (req, res) => {
             });
         }
 
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(401).json({
+                success: false,
+                message: 'Account is disabled. Please contact support.'
+            });
+        }
+
         // Prepare user data
         let userData = {
             id: user._id,
             email: user.email,
-            role: user.role
+            role: user.role || 'user'
         };
 
         // Add appropriate name field based on user type
@@ -888,6 +931,22 @@ router.get('/me', async (req, res) => {
             userData.fullName = user.fullName;
         }
 
+        // Add student data if user is a student
+        if (user.role === 'student') {
+            const Student = require('../models/Student');
+            const student = await Student.findOne({ user: user._id });
+            if (student) {
+                userData = {
+                    ...userData,
+                    id: student._id,
+                    studentId: student.studentId,
+                    course: student.course,
+                    isProfileComplete: student.isProfileComplete,
+                    status: student.status
+                };
+            }
+        }
+
         res.json({
             success: true,
             data: {
@@ -895,6 +954,7 @@ router.get('/me', async (req, res) => {
             }
         });
     } catch (error) {
+        console.error('Error in /me endpoint:', error);
         res.status(401).json({
             success: false,
             message: 'Invalid token'

@@ -4,11 +4,11 @@ import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
 import SecurityDashboard from '../admin/SecurityDashboard';
 import PerformanceDashboard from '../admin/PerformanceDashboard';
-import StudentsTab from './tabs/StudentsTab';
-import AgentsTab from './tabs/AgentsTab';
-import StaffTab from './tabs/StaffTab';
-import PasswordsTab from './tabs/PasswordsTab';
-import ContentTab from './tabs/ContentTab';
+// import StudentsTab from './tabs/StudentsTab';
+// import AgentsTab from './tabs/AgentsTab';
+// import StaffTab from './tabs/StaffTab';
+// import PasswordsTab from './tabs/PasswordsTab';
+// import ContentTab from './tabs/ContentTab';
 import DocumentManagement from '../documents/DocumentManagement';
 import {
     showSuccess,
@@ -236,9 +236,15 @@ const SuperAdminDashboard = () => {
             case 'staff':
                 return <UserManagement userType="staff" />;
             case 'passwords':
-                return <PasswordsTab />;
+                return <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Password Management</h3>
+                    <p className="text-gray-500">Password management functionality coming soon...</p>
+                </div>;
             case 'content':
-                return <ContentTab />;
+                return <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Website Content Management</h3>
+                    <p className="text-gray-500">Content management functionality coming soon...</p>
+                </div>;
             case 'security':
                 return <SecurityDashboard />;
             case 'performance':

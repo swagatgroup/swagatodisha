@@ -1,7 +1,7 @@
 // Environment Configuration
 const config = {
     development: {
-        apiBaseURL: 'https://swagat-odisha-backend.onrender.com',
+        apiBaseURL: 'http://localhost:5000',
         timeout: 10000,
     },
     production: {
