@@ -39,7 +39,7 @@ const PremiumHero = () => {
     script.type = 'module'
     script.src = 'https://unpkg.com/@splinetool/viewer/build/spline-viewer.js'
     script.onload = () => {
-      console.log('Spline script loaded successfully!')
+      // Spline script loaded successfully
     }
     document.head.appendChild(script)
 

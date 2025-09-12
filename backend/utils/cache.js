@@ -30,7 +30,7 @@ class CacheManager {
                 });
 
                 this.redisClient.on('connect', () => {
-                    console.log('✅ Redis connected successfully');
+                    // Redis connected successfully
                     this.isRedisConnected = true;
                 });
 

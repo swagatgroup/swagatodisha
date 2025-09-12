@@ -6,7 +6,7 @@ const Admin = require('../models/Admin');
 
 class SecurityAudit {
     static async auditUserPasswords() {
-        console.log('🔍 Starting password security audit...');
+        // Starting password security audit
 
         try {
             const users = await User.find({}).select('email role password');
@@ -50,8 +50,7 @@ class SecurityAudit {
                 timestamp: new Date()
             };
 
-            console.log('✅ Password audit completed');
-            console.log(`📊 Results: ${auditResults.weakPasswords} weak passwords, ${auditResults.duplicatePasswords} duplicate passwords`);
+            // Password audit completed
 
             return auditResults;
 
@@ -89,7 +88,7 @@ class SecurityAudit {
     }
 
     static async auditJWTTokens() {
-        console.log('🔍 Starting JWT token security audit...');
+        // Starting JWT token security audit
 
         try {
             const secret = process.env.JWT_SECRET;
@@ -111,8 +110,7 @@ class SecurityAudit {
                 timestamp: new Date()
             };
 
-            console.log('✅ JWT audit completed');
-            console.log(`📊 Results: Secret configured: ${auditResults.secretConfigured}, Strong: ${auditResults.isStrongSecret}`);
+            // JWT audit completed
 
             return auditResults;
 
@@ -123,7 +121,7 @@ class SecurityAudit {
     }
 
     static async auditDatabaseSecurity() {
-        console.log('🔍 Starting database security audit...');
+        // Starting database security audit
 
         try {
             const auditResults = {
@@ -145,8 +143,7 @@ class SecurityAudit {
             const userIndexes = await User.collection.getIndexes();
             auditResults.hasIndexes = Object.keys(userIndexes).length > 1; // More than just _id index
 
-            console.log('✅ Database audit completed');
-            console.log(`📊 Results: Users: ${userCount}, Admins: ${adminCount}, Indexes: ${auditResults.hasIndexes}`);
+            // Database audit completed
 
             return auditResults;
 
@@ -157,7 +154,7 @@ class SecurityAudit {
     }
 
     static async auditFileUploads() {
-        console.log('🔍 Starting file upload security audit...');
+        // Starting file upload security audit
 
         try {
             const auditResults = {
@@ -174,8 +171,7 @@ class SecurityAudit {
                 timestamp: new Date()
             };
 
-            console.log('✅ File upload audit completed');
-            console.log(`📊 Results: MIME types: ${auditResults.allowedMimeTypes.length}, Max size: ${auditResults.maxFileSize}`);
+            // File upload audit completed
 
             return auditResults;
 
@@ -186,7 +182,7 @@ class SecurityAudit {
     }
 
     static async auditRateLimiting() {
-        console.log('🔍 Starting rate limiting audit...');
+        // Starting rate limiting audit
 
         try {
             const auditResults = {
@@ -198,8 +194,7 @@ class SecurityAudit {
                 timestamp: new Date()
             };
 
-            console.log('✅ Rate limiting audit completed');
-            console.log(`📊 Results: All rate limits configured and enabled`);
+            // Rate limiting audit completed
 
             return auditResults;
 
@@ -210,7 +205,7 @@ class SecurityAudit {
     }
 
     static async auditCORSConfiguration() {
-        console.log('🔍 Starting CORS configuration audit...');
+        // Starting CORS configuration audit
 
         try {
             const allowedOrigins = [
@@ -230,8 +225,7 @@ class SecurityAudit {
                 timestamp: new Date()
             };
 
-            console.log('✅ CORS audit completed');
-            console.log(`📊 Results: Origins: ${allowedOrigins.length}, Secure: ${auditResults.secureConfiguration}`);
+            // CORS audit completed
 
             return auditResults;
 
@@ -242,7 +236,7 @@ class SecurityAudit {
     }
 
     static async generateSecurityReport() {
-        console.log('🔍 Generating comprehensive security report...');
+        // Generating comprehensive security report
 
         try {
             const [
@@ -291,8 +285,7 @@ class SecurityAudit {
                 })
             };
 
-            console.log('✅ Security report generated');
-            console.log(`📊 Overall Security Score: ${securityScore}/100`);
+            // Security report generated
 
             return report;
 
@@ -384,7 +377,7 @@ class SecurityAudit {
     }
 
     static async fixWeakPasswords() {
-        console.log('🔧 Fixing weak passwords...');
+        // Fixing weak passwords
 
         try {
             const audit = await this.auditUserPasswords();
@@ -413,14 +406,14 @@ class SecurityAudit {
                     }
 
                     fixedCount++;
-                    console.log(`✅ Fixed password for ${user.email}`);
+                    // Fixed password for user
 
                 } catch (error) {
                     console.error(`❌ Failed to fix password for ${user.email}:`, error);
                 }
             }
 
-            console.log(`✅ Password fix completed: ${fixedCount}/${weakPasswordUsers.length} passwords fixed`);
+            // Password fix completed
             return { fixedCount, totalWeak: weakPasswordUsers.length };
 
         } catch (error) {

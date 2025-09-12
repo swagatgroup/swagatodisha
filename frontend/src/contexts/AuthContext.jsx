@@ -46,7 +46,6 @@ export const AuthProvider = ({ children }) => {
                         setIsAuthenticated(false);
                     }
                 } catch (error) {
-                    console.error('Auth check failed:', error);
                     localStorage.removeItem('token');
                     setToken(null);
                     setIsAuthenticated(false);
@@ -65,7 +64,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            console.log('AuthContext login called with:', { email, password: password ? '[PRESENT]' : '[MISSING]' });
+            // AuthContext login called
 
             // Add retry logic for network issues
             let response;
@@ -84,12 +83,12 @@ export const AuthProvider = ({ children }) => {
                     if (retryCount >= maxRetries || (error.response && error.response.status !== 500)) {
                         throw error; // Don't retry for client errors or after max retries
                     }
-                    console.log(`Login attempt ${retryCount} failed, retrying...`);
+                    // Login attempt failed, retrying
                     await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Exponential backoff
                 }
             }
 
-            console.log('Login response received:', response.data);
+            // Login response received
 
             if (response.data.success) {
                 const { token, user } = response.data;
@@ -128,11 +127,7 @@ export const AuthProvider = ({ children }) => {
             setLoading(true);
             setError(null);
 
-            console.log('=== FRONTEND REGISTRATION START ===');
-            console.log('Registration data being sent:', {
-                ...userData,
-                password: '[REDACTED]'
-            });
+            // Frontend registration start
 
             const response = await api.post('/api/auth/register', {
                 fullName: userData.fullName,
@@ -142,14 +137,13 @@ export const AuthProvider = ({ children }) => {
                 guardianName: userData.guardianName
             });
 
-            console.log('Registration response received:', response.status);
-            console.log('Response data:', response.data);
+            // Registration response received
 
             const { user, message } = response.data;
 
             // ✅ FIXED: Do NOT store the token or auto-login after registration
             // The user should manually log in after registration
-            console.log('✅ Registration successful! User created but not logged in:', user);
+            // Registration successful! User created but not logged in
             return {
                 success: true,
                 user,

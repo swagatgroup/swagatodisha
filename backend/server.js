@@ -96,11 +96,8 @@ const corsOptions = {
 
         // Check if origin is allowed
         if (allowedOrigins.indexOf(origin) !== -1) {
-            console.log('✅ CORS allowed origin:', origin);
             callback(null, true);
         } else {
-            console.log('❌ CORS blocked origin:', origin);
-            console.log('📋 Allowed origins:', allowedOrigins);
             callback(new Error('Not allowed by CORS'));
         }
     },
@@ -144,10 +141,6 @@ app.use((req, res, next) => {
     // Set CORS headers
     if (allowedOrigins.includes(origin)) {
         res.header('Access-Control-Allow-Origin', origin);
-        console.log('✅ CORS: Allowed origin:', origin);
-    } else if (origin) {
-        console.log('❌ CORS: Blocked origin:', origin);
-        console.log('📋 Allowed origins:', allowedOrigins);
     }
 
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
@@ -157,7 +150,6 @@ app.use((req, res, next) => {
 
     // Handle preflight requests
     if (req.method === 'OPTIONS') {
-        console.log('🔄 CORS: Handling preflight request for:', req.path);
         res.status(200).end();
         return;
     }
@@ -324,12 +316,12 @@ const connectDB = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
+        // MongoDB Connected
     } catch (error) {
         console.error('Database connection error:', error);
         console.error('Please ensure MONGODB_URI environment variable is set correctly or MongoDB is running locally.');
         // Don't exit the process, let the server run without database
-        console.log('⚠️ Server will continue running without database connection.');
+        // Server will continue running without database connection
     }
 };
 
@@ -343,7 +335,7 @@ const socketManager = new SocketManager(server);
 const PORT = process.env.PORT || 3000;
 const startServer = async () => {
     try {
-      
+
 
         // Start server first, then connect to database
         server.listen(PORT, () => {
@@ -357,7 +349,7 @@ const startServer = async () => {
         // Try to connect to database (non-blocking)
         connectDB().catch(error => {
             console.error('⚠️ Database connection failed, but server is running:', error.message);
-            console.log('🔄 Will retry database connection...');
+            // Will retry database connection
         });
 
     } catch (error) {

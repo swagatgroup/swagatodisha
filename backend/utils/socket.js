@@ -64,7 +64,7 @@ class SocketManager {
 
     setupEventHandlers() {
         this.io.on('connection', (socket) => {
-            console.log(`User connected: ${socket.userName} (${socket.userRole})`);
+            // User connected
 
             // Store user connection
             this.connectedUsers.set(socket.userId, {
@@ -109,7 +109,7 @@ class SocketManager {
 
             // Handle disconnect
             socket.on('disconnect', () => {
-                console.log(`User disconnected: ${socket.userName}`);
+                // User disconnected
                 this.connectedUsers.delete(socket.userId);
             });
         });

@@ -50,7 +50,7 @@ const DocumentManagement = () => {
     useEffect(() => {
         if (socket && connected) {
             const handleDocumentStatusChange = (data) => {
-                console.log('Document status changed:', data);
+                // Document status changed
                 setDocuments(prevDocs =>
                     prevDocs.map(doc =>
                         doc._id === data.documentId

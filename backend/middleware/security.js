@@ -334,9 +334,8 @@ const securityLogger = (req, res, next) => {
         }
 
         // Log all requests in production
-        if (process.env.NODE_ENV === 'production') {
-            console.log('Request Log:', logData);
-        }
+        // Log request data in production if needed
+        // console.log('Request Log:', logData);
     });
 
     next();

@@ -174,7 +174,7 @@ router.post('/submit', [
                 if (transporter) {
                     try {
                         await transporter.sendMail(mailOptions);
-                        console.log('Contact form email sent successfully');
+                        // Contact form email sent successfully
 
                         const userMailOptions = {
                             from: process.env.EMAIL_USER,
@@ -192,16 +192,13 @@ router.post('/submit', [
                         };
 
                         await transporter.sendMail(userMailOptions);
-                        console.log('Confirmation email sent successfully');
+                        // Confirmation email sent successfully
                     } catch (emailError) {
                         console.error('Email sending failed (background):', emailError);
                     }
                 } else {
-                    console.log('Contact Form Submission (Email not configured):', {
-                        name, email, phone, subject, message,
-                        documentsCount: documents.length,
-                        timestamp: new Date().toISOString()
-                    });
+                    // Contact Form Submission (Email not configured)
+                    // Logging contact form submission when email is not configured
                 }
             } finally {
                 // Always cleanup files

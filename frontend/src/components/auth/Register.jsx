@@ -214,13 +214,9 @@ const Register = () => {
             setLoading(true);
             setError('');
 
-            console.log('Submitting registration form...');
             const result = await register(formData);
 
-            console.log('Registration result:', result);
-
             if (result.success) {
-                console.log('✅ Registration successful! Redirecting to login...');
 
                 // Show success alert and redirect to login
                 await Swal.fire({
@@ -234,11 +230,11 @@ const Register = () => {
                 });
 
                 // Redirect to login page with success message
-                navigate('/login', { 
-                    state: { 
+                navigate('/login', {
+                    state: {
                         message: 'Registration successful! Please log in with your credentials.',
-                        email: formData.email 
-                    } 
+                        email: formData.email
+                    }
                 });
             } else {
                 console.error('❌ Registration failed:', result.error);

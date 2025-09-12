@@ -50,8 +50,7 @@ class ErrorBoundary extends React.Component {
     }
 }
 
-// Add error logging
-console.log('App component mounting...');
+// App component mounting
 
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>

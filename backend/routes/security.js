@@ -210,11 +210,7 @@ router.post('/generate-report', protect, isSuperAdmin, async (req, res) => {
         const report = await SecurityAudit.generateSecurityReport();
 
         // In a real implementation, this would save the report to a file or database
-        console.log('Security Report Generated:', {
-            score: report.securityScore,
-            timestamp: report.timestamp,
-            recommendations: report.recommendations.length
-        });
+        // Security Report Generated
 
         res.json({
             success: true,

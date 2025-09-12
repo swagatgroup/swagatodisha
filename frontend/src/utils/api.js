@@ -39,7 +39,6 @@ api.interceptors.response.use(
 
             // Only redirect if not already on an auth page
             if (!isAuthPage) {
-                console.log('Token expired or invalid, redirecting to login');
                 window.location.href = '/login';
             }
         }

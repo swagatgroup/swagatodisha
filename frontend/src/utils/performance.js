@@ -30,9 +30,7 @@ class PerformanceOptimizer {
         const renderTime = performance.now() - startTime;
         this.metrics.renderTime += renderTime;
 
-        if (process.env.NODE_ENV === 'development') {
-            console.log(`${componentName} render time: ${renderTime.toFixed(2)}ms`);
-        }
+        // Component render time logged in development
     }
 
     // Lazy loading utility
@@ -273,10 +271,10 @@ class PerformanceOptimizer {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then(registration => {
-                        console.log('SW registered: ', registration);
+                        // Service Worker registered
                     })
                     .catch(registrationError => {
-                        console.log('SW registration failed: ', registrationError);
+                        // Service Worker registration failed
                     });
             });
         }
@@ -287,11 +285,12 @@ class PerformanceOptimizer {
         // Monitor Core Web Vitals
         try {
             const { getCLS, getFID, getFCP, getLCP, getTTFB } = await import('web-vitals');
-            getCLS(console.log);
-            getFID(console.log);
-            getFCP(console.log);
-            getLCP(console.log);
-            getTTFB(console.log);
+            // Web Vitals metrics collected
+            getCLS(() => { });
+            getFID(() => { });
+            getFCP(() => { });
+            getLCP(() => { });
+            getTTFB(() => { });
         } catch (error) {
             console.warn('Web Vitals not available:', error);
         }

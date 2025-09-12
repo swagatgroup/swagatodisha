@@ -12,12 +12,7 @@ const InstitutionTypes = () => {
 
     // Debug useEffect to monitor state changes
     useEffect(() => {
-        console.log('🔄 State changed - isModalOpen:', isModalOpen)
-        console.log('🔄 State changed - selectedInstitution:', selectedInstitution?.name)
-        console.log('🔄 State changed - isSubModalOpen:', isSubModalOpen)
-        console.log('🔄 State changed - selectedProgram:', selectedProgram?.name)
-        console.log('🔄 State changed - isCourseModalOpen:', isCourseModalOpen)
-        console.log('🔄 State changed - selectedCourse:', selectedCourse?.name)
+        // State changed
     }, [isModalOpen, selectedInstitution, isSubModalOpen, selectedProgram, isCourseModalOpen, selectedCourse])
 
     const institutions = [
@@ -1638,11 +1633,7 @@ const InstitutionTypes = () => {
         event.preventDefault()
         event.stopPropagation()
 
-        console.log('🎯 Institution card clicked:', institution.name)
-        console.log('📍 Event target:', event.target)
-        console.log('📍 Current target:', event.currentTarget)
-        console.log('🔍 Current modal state - isModalOpen:', isModalOpen)
-        console.log('🔍 Current modal state - selectedInstitution:', selectedInstitution)
+        // Institution card clicked
 
         // Set the selected institution and open modal
         setSelectedInstitution(institution)
@@ -1654,9 +1645,7 @@ const InstitutionTypes = () => {
         setSelectedCourse(null)
         setIsCourseModalOpen(false)
 
-        console.log('✅ Modal should now be open for:', institution.name)
-        console.log('✅ New modal state - isModalOpen: true')
-        console.log('✅ New modal state - selectedInstitution:', institution.name)
+        // Modal opened
     }, [isModalOpen, selectedInstitution])
 
     const handleProgramCardClick = useCallback((event, program) => {
@@ -1664,10 +1653,7 @@ const InstitutionTypes = () => {
         event.preventDefault()
         event.stopPropagation()
 
-        console.log('🎯 Program card clicked:', program.name)
-        console.log('📍 Event target:', event.target)
-        console.log('📍 Current target:', event.currentTarget)
-        console.log('🔍 Program has sub-categories:', program.hasSubCategories)
+        // Program card clicked
 
         // Set the selected program and open sub modal
         setSelectedProgram(program)
@@ -1677,7 +1663,7 @@ const InstitutionTypes = () => {
         setSelectedCourse(null)
         setIsCourseModalOpen(false)
 
-        console.log('✅ Sub modal should now be open for:', program.name)
+        // Sub modal opened
     }, [])
 
     const handleCourseCardClick = useCallback((event, course) => {
@@ -1685,23 +1671,19 @@ const InstitutionTypes = () => {
         event.preventDefault()
         event.stopPropagation()
 
-        console.log('🎯 Course card clicked:', course.name)
-        console.log('📍 Event target:', event.target)
-        console.log('📍 Current target:', event.currentTarget)
+        // Course card clicked
 
         // Set the selected course and open course modal
         setSelectedCourse(course)
         setIsCourseModalOpen(true)
 
-        console.log('✅ Course modal should now be open for:', course.name)
+        // Course modal opened
     }, [])
 
     const handleMainModalClose = useCallback((event) => {
         // Only close if clicking on backdrop, not on modal content
         if (event.target === event.currentTarget) {
-            console.log('🔒 Closing main modal - backdrop clicked')
-            console.log('🔍 Event target:', event.target)
-            console.log('🔍 Event currentTarget:', event.currentTarget)
+            // Closing main modal - backdrop clicked
             setIsModalOpen(false)
             setSelectedInstitution(null)
             setSelectedProgram(null)
@@ -1709,16 +1691,14 @@ const InstitutionTypes = () => {
             setSelectedCourse(null)
             setIsCourseModalOpen(false)
         } else {
-            console.log('🚫 Modal close prevented - clicked on modal content, not backdrop')
-            console.log('🔍 Event target:', event.target)
-            console.log('🔍 Event currentTarget:', event.currentTarget)
+            // Modal close prevented - clicked on modal content
         }
     }, [])
 
     const handleSubModalClose = useCallback((event) => {
         // Only close if clicking on backdrop, not on modal content
         if (event.target === event.currentTarget) {
-            console.log('🔒 Closing sub modal - backdrop clicked')
+            // Closing sub modal - backdrop clicked
             setIsSubModalOpen(false)
             setSelectedProgram(null)
             setSelectedCourse(null)
@@ -1729,7 +1709,7 @@ const InstitutionTypes = () => {
     const handleCourseModalClose = useCallback((event) => {
         // Only close if clicking on backdrop, not on modal content
         if (event.target === event.currentTarget) {
-            console.log('🔒 Closing course modal - backdrop clicked')
+            // Closing course modal - backdrop clicked
             setIsCourseModalOpen(false)
             setSelectedCourse(null)
         }
@@ -1741,7 +1721,7 @@ const InstitutionTypes = () => {
         event.stopPropagation()
 
         if (modalType === 'main') {
-            console.log('🔒 Closing main modal - close button clicked')
+            // Closing main modal - close button clicked
             setIsModalOpen(false)
             setSelectedInstitution(null)
             setSelectedProgram(null)
@@ -1749,13 +1729,13 @@ const InstitutionTypes = () => {
             setSelectedCourse(null)
             setIsCourseModalOpen(false)
         } else if (modalType === 'sub') {
-            console.log('🔒 Closing sub modal - close button clicked')
+            // Closing sub modal - close button clicked
             setIsSubModalOpen(false)
             setSelectedProgram(null)
             setSelectedCourse(null)
             setIsCourseModalOpen(false)
         } else if (modalType === 'course') {
-            console.log('🔒 Closing course modal - close button clicked')
+            // Closing course modal - close button clicked
             setIsCourseModalOpen(false)
             setSelectedCourse(null)
         }

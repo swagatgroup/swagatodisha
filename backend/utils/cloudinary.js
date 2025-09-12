@@ -15,10 +15,7 @@ class CloudinaryService {
      */
     static async testConnection() {
         try {
-            console.log('🔍 Testing Cloudinary connection...');
-            console.log('Cloud name:', process.env.CLOUDINARY_CLOUD_NAME);
-            console.log('API key exists:', !!process.env.CLOUDINARY_API_KEY);
-            console.log('API secret exists:', !!process.env.CLOUDINARY_API_SECRET);
+            // Testing Cloudinary connection
 
             // Try to upload a simple test image
             const testBuffer = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64');
@@ -30,7 +27,7 @@ class CloudinaryService {
                 ]
             });
 
-            console.log('✅ Cloudinary connection successful');
+            // Cloudinary connection successful
             return true;
         } catch (error) {
             console.error('❌ Cloudinary connection failed:', error);
@@ -179,12 +176,12 @@ class CloudinaryService {
         const processedDocuments = {};
         const documentTypes = ['aadharCard', 'birthCertificate', 'transferCertificate', 'characterCertificate', 'incomeCertificate', 'casteCertificate', 'domicileCertificate', 'migrationCertificate', 'markSheet', 'passportSizePhoto', 'signature'];
 
-        console.log('Processing student documents:', Object.keys(documents));
+        // Processing student documents
 
         for (const type of documentTypes) {
             if (documents[type]) {
                 try {
-                    console.log(`Processing ${type} document...`);
+                    // Processing document
                     const result = await this.uploadImage(
                         documents[type].buffer,
                         'swagat-odisha/student-documents',
@@ -203,20 +200,17 @@ class CloudinaryService {
                         thumbnail: this.getThumbnailUrl(result.public_id, 200, 150)
                     };
 
-                    console.log(`${type} document uploaded successfully:`, {
-                        url: result.url,
-                        size: result.size
-                    });
+                    // Document uploaded successfully
                 } catch (error) {
                     console.error(`Error uploading ${type} document:`, error);
                     processedDocuments[type] = null;
                 }
             } else {
-                console.log(`No ${type} document provided`);
+                // No document provided
             }
         }
 
-        console.log('Final processed documents:', Object.keys(processedDocuments));
+        // Final processed documents
         return processedDocuments;
     }
 }

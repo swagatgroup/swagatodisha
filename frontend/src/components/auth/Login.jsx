@@ -84,14 +84,11 @@ const Login = () => {
             setLoading(true);
             setError('');
 
-            console.log('Attempting login with email:', formData.email);
             const result = await login(formData.email, formData.password);
-            console.log('Login result:', result);
 
             if (result.success) {
                 const userRole = result.user.role;
                 const userName = result.user.fullName || result.user.email;
-                console.log('Login successful, user role:', userRole);
 
                 // Show success alert
                 await Swal.fire({
@@ -108,28 +105,22 @@ const Login = () => {
                 setTimeout(() => {
                     switch (userRole) {
                         case 'student':
-                            console.log('Navigating to student dashboard...');
                             navigate('/dashboard/student');
                             break;
                         case 'agent':
-                            console.log('Navigating to agent dashboard...');
                             navigate('/dashboard/agent');
                             break;
                         case 'staff':
-                            console.log('Navigating to staff dashboard...');
                             navigate('/dashboard/staff');
                             break;
                         case 'super_admin':
-                            console.log('Navigating to admin dashboard...');
                             navigate('/dashboard/admin');
                             break;
                         default:
-                            console.log('Unknown role, defaulting to student dashboard...');
                             navigate('/dashboard/student');
                     }
                 }, 100);
             } else {
-                console.error('❌ Login failed:', result.message);
 
                 // Show error alert
                 await Swal.fire({

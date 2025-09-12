@@ -21,7 +21,6 @@ import Footer from './components/Footer'
 import PremiumFloatingElements from './components/PremiumFloatingElements'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
-import LoginDebug from './components/auth/LoginDebug'
 import StudentDashboard from './components/dashboard/StudentDashboard'
 import AgentDashboard from './components/dashboard/AgentDashboard'
 import StaffDashboard from './components/dashboard/StaffDashboard'
@@ -30,7 +29,6 @@ import AboutUsPage from './components/AboutUsPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
 import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
-import SweetAlertTest from './components/SweetAlertTest'
 import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoolGhantiguda'
 import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
 import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
@@ -39,10 +37,7 @@ import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLak
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     const { user, loading } = useAuth();
 
-    console.log('ProtectedRoute - user:', user, 'loading:', loading, 'allowedRoles:', allowedRoles); // Debug log
-
     if (loading) {
-        console.log('ProtectedRoute - showing loading spinner'); // Debug log
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
@@ -51,16 +46,13 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     }
 
     if (!user) {
-        console.log('ProtectedRoute - no user, redirecting to login'); // Debug log
         return <Navigate to="/login" replace />;
     }
 
     if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-        console.log('ProtectedRoute - user role not allowed, redirecting to home'); // Debug log
         return <Navigate to="/" replace />;
     }
 
-    console.log('ProtectedRoute - access granted'); // Debug log
     return children;
 };
 
@@ -92,7 +84,6 @@ const DashboardRouter = () => {
         case 'super_admin':
             return <Navigate to="/dashboard/admin" replace />;
         default:
-            console.error('Unknown user role:', user.role);
             return <Navigate to="/" replace />;
     }
 };
@@ -215,7 +206,6 @@ function App() {
                             <Route path="/about" element={<AboutUsPage />} />
                             <Route path="/gallery" element={<Gallery />} />
                             <Route path="/contact" element={<ContactPage />} />
-                            <Route path="/sweetalert-test" element={<SweetAlertTest />} />
 
                             {/* School Pages */}
                             <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
@@ -223,7 +213,6 @@ function App() {
                             <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/register" element={<Register />} />
-                            <Route path="/debug" element={<LoginDebug />} />
 
                             {/* General Dashboard Route - redirects to role-specific dashboard */}
                             <Route path="/dashboard" element={<DashboardRouter />} />

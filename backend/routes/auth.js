@@ -26,21 +26,8 @@ const generateRefreshToken = (id) => {
 // @route   POST /api/auth/register
 // @access  Public
 router.post('/register', async (req, res) => {
-    console.log('=== REGISTRATION REQUEST START ===');
-    console.log('Request body:', req.body);
-    console.log('Request headers:', req.headers);
-
     try {
         const { fullName, email, password, phoneNumber, guardianName, role = 'student' } = req.body;
-
-        // Log extracted fields
-        console.log('Extracted fields:', {
-            fullName,
-            email: email ? email.toLowerCase() : undefined,
-            password: password ? '[PRESENT]' : '[MISSING]',
-            phoneNumber,
-            guardianName
-        });
 
         // Validate required fields
         const missingFields = [];
@@ -51,7 +38,6 @@ router.post('/register', async (req, res) => {
         if (!guardianName) missingFields.push('guardianName');
 
         if (missingFields.length > 0) {
-            console.log('Missing fields:', missingFields);
             return res.status(400).json({
                 message: `Missing required fields: ${missingFields.join(', ')}`,
                 missingFields
@@ -59,7 +45,6 @@ router.post('/register', async (req, res) => {
         }
 
         // Check if user already exists
-        console.log('Checking for existing user...');
         const existingUser = await User.findOne({
             $or: [
                 { email: email.toLowerCase() },
@@ -68,11 +53,6 @@ router.post('/register', async (req, res) => {
         });
 
         if (existingUser) {
-            console.log('Existing user found:', {
-                email: existingUser.email,
-                phone: existingUser.phoneNumber
-            });
-
             let conflictMessage = 'User already exists';
             if (existingUser.email === email.toLowerCase()) {
                 conflictMessage = 'User already exists with this email';
@@ -82,8 +62,6 @@ router.post('/register', async (req, res) => {
 
             return res.status(409).json({ message: conflictMessage });
         }
-
-        console.log('No existing user found, proceeding with registration...');
 
         // Validate role
         const validRoles = ['student', 'agent', 'staff', 'super_admin'];
@@ -104,28 +82,13 @@ router.post('/register', async (req, res) => {
             role: role
         };
 
-        console.log('User data prepared:', {
-            ...userData,
-            password: '[WILL_BE_HASHED_BY_MODEL]'
-        });
-
         // Create new user
-        console.log('Creating new user...');
         const newUser = new User(userData);
-
-        console.log('User object created, attempting to save...');
         const savedUser = await newUser.save();
-        console.log('User saved successfully:', {
-            id: savedUser._id,
-            email: savedUser.email,
-            fullName: savedUser.fullName
-        });
 
         // Generate JWT token with 7-day expiration
-        console.log('Generating JWT token...');
         const token = generateToken(savedUser._id, savedUser.role);
         const refreshToken = generateRefreshToken(savedUser._id);
-        console.log('JWT token generated successfully');
 
         const response = {
             success: true,
@@ -143,30 +106,16 @@ router.post('/register', async (req, res) => {
             }
         };
 
-        console.log('Sending success response:', {
-            ...response,
-            token: '[TOKEN_PRESENT]'
-        });
-
         res.status(201).json(response);
-        console.log('=== REGISTRATION REQUEST SUCCESS ===');
 
     } catch (error) {
-        console.error('=== REGISTRATION ERROR ===');
-        console.error('Error name:', error.name);
-        console.error('Error message:', error.message);
-        console.error('Error code:', error.code);
-        console.error('Full error:', error);
-
         // Mongoose validation error
         if (error.name === 'ValidationError') {
-            console.log('Mongoose validation error detected');
             const errors = Object.values(error.errors).map(err => ({
                 field: err.path,
                 message: err.message,
                 value: err.value
             }));
-            console.log('Validation errors:', errors);
 
             return res.status(400).json({
                 message: 'Validation failed',
@@ -177,9 +126,6 @@ router.post('/register', async (req, res) => {
 
         // MongoDB duplicate key error
         if (error.code === 11000) {
-            console.log('MongoDB duplicate key error detected');
-            console.log('Duplicate key info:', error.keyValue);
-
             return res.status(409).json({
                 message: 'User already exists with this email or phone number',
                 type: 'DuplicateKey'
@@ -188,20 +134,17 @@ router.post('/register', async (req, res) => {
 
         // JWT Secret missing error
         if (error.message.includes('secretOrPrivateKey')) {
-            console.error('JWT_SECRET is missing or invalid');
             return res.status(500).json({
                 message: 'Server configuration error',
                 type: 'ConfigError'
             });
         }
 
-        console.log('Sending generic server error response');
         res.status(500).json({
             message: 'Server error during registration',
             type: 'ServerError',
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
-        console.log('=== REGISTRATION REQUEST ERROR END ===');
     }
 });
 
@@ -209,14 +152,8 @@ router.post('/register', async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 router.post('/login', async (req, res) => {
-    console.log('=== LOGIN REQUEST START ===');
-    console.log('Request body:', req.body);
-
     try {
         const { email, password } = req.body;
-
-        // Log what we received
-        console.log('Login attempt for:', { email, password: password ? '[PRESENT]' : '[MISSING]' });
 
         // Validate required fields for LOGIN only
         if (!email || !password) {
@@ -227,27 +164,21 @@ router.post('/login', async (req, res) => {
         }
 
         // First, try to find user in User model (students, agents, regular users)
-        console.log('Looking for user in User model with email:', email.toLowerCase());
         let user = await User.findOne({ email: email.toLowerCase() }).select('+password');
         let userType = 'user';
 
         // If not found in User model, try Admin model (staff, super_admin)
         if (!user) {
-            console.log('User not found in User model, checking Admin model...');
             const Admin = require('../models/Admin');
             const adminUser = await Admin.findOne({ email: email.toLowerCase() }).select('+password');
 
             if (adminUser) {
-                console.log('✅ Admin user found:', adminUser._id);
                 user = adminUser;
                 userType = 'admin';
             }
-        } else {
-            console.log('✅ User found in User model:', user._id);
         }
 
         if (!user) {
-            console.log('❌ User not found in any model for email:', email);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
@@ -263,26 +194,21 @@ router.post('/login', async (req, res) => {
         }
 
         // Check password
-        console.log('Checking password...');
         const isPasswordValid = await user.comparePassword(password);
         if (!isPasswordValid) {
-            console.log('❌ Invalid password for user:', user._id);
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
             });
         }
-        console.log('✅ Password valid for user:', user._id);
 
         // Update last login WITHOUT validation
         user.lastLogin = new Date();
         await user.save({ validateBeforeSave: false });
 
         // Generate JWT token with 7-day expiration
-        console.log('Generating JWT token...');
         const token = generateToken(user._id, user.role || 'user');
         const refreshToken = generateRefreshToken(user._id);
-        console.log('✅ JWT token generated, length:', token.length);
 
         // Get student data if user is a student
         let studentData = null;
@@ -323,9 +249,6 @@ router.post('/login', async (req, res) => {
             userData = { ...userData, ...studentData };
         }
 
-        console.log('✅ Login successful for user:', user._id);
-        console.log('=== LOGIN REQUEST END ===');
-
         res.json({
             success: true,
             message: 'Login successful',
@@ -336,14 +259,12 @@ router.post('/login', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Login error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during login'
         });
     }
 });
-
 
 // @desc    Change password
 // @route   PUT /api/auth/change-password
@@ -389,7 +310,6 @@ router.put('/change-password', [
         });
 
     } catch (error) {
-        console.error('Change password error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while changing password'
@@ -462,7 +382,6 @@ router.post('/forgot-password', [
         });
 
     } catch (error) {
-        console.error('Forgot password error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while processing forgot password request'
@@ -522,7 +441,6 @@ router.put('/reset-password/:resetToken', [
         });
 
     } catch (error) {
-        console.error('Reset password error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while resetting password'
@@ -585,7 +503,6 @@ router.post('/refresh', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Token refresh error:', error);
         res.status(401).json({
             success: false,
             message: 'Invalid refresh token'
@@ -655,7 +572,6 @@ router.post('/admin-reset-password', [
         });
 
     } catch (error) {
-        console.error('Admin password reset error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while resetting password'
@@ -750,7 +666,6 @@ router.post('/register-agent', [
         });
 
     } catch (error) {
-        console.error('Agent registration error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during registration',
@@ -866,7 +781,6 @@ router.post('/complete-profile', [
         });
 
     } catch (error) {
-        console.error('Profile completion error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error during profile completion',
@@ -918,7 +832,6 @@ router.get('/profile-status', protect, async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Profile status error:', error);
         res.status(500).json({
             success: false,
             message: 'Server error while checking profile status'
@@ -943,8 +856,6 @@ router.get('/me', async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const userId = decoded.id || decoded.userId;
         const userType = decoded.userType || 'user';
-        console.log('JWT decoded:', decoded);
-        console.log('Extracted userId:', userId, 'userType:', userType);
 
         let user;
 
@@ -952,10 +863,8 @@ router.get('/me', async (req, res) => {
         if (userType === 'admin') {
             const Admin = require('../models/Admin');
             user = await Admin.findById(userId).select('-password');
-            console.log('Found admin user:', user ? user._id : 'NOT FOUND');
         } else {
             user = await User.findById(userId).select('-password');
-            console.log('Found user:', user ? user._id : 'NOT FOUND');
         }
 
         if (!user) {
@@ -986,30 +895,11 @@ router.get('/me', async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Auth check error:', error);
         res.status(401).json({
             success: false,
             message: 'Invalid token'
         });
     }
-});
-
-// DEBUG ROUTE - Add this temporarily
-router.get('/debug', (req, res) => {
-    console.log('Environment check:', {
-        NODE_ENV: process.env.NODE_ENV,
-        JWT_SECRET: process.env.JWT_SECRET ? 'PRESENT' : 'MISSING',
-        MONGODB_URI: process.env.MONGODB_URI ? 'PRESENT' : 'MISSING',
-        PORT: process.env.PORT
-    });
-
-    res.json({
-        environment: process.env.NODE_ENV,
-        jwtSecret: process.env.JWT_SECRET ? 'PRESENT' : 'MISSING',
-        mongoUri: process.env.MONGODB_URI ? 'PRESENT' : 'MISSING',
-        port: process.env.PORT || 5000,
-        timestamp: new Date().toISOString()
-    });
 });
 
 module.exports = router;

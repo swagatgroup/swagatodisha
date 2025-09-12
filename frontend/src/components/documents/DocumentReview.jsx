@@ -41,13 +41,13 @@ const DocumentReview = () => {
     useEffect(() => {
         if (socket && connected) {
             const handleNewDocumentUpload = (data) => {
-                console.log('New document uploaded:', data);
+                // New document uploaded
                 // Refresh documents list to show new upload
                 fetchDocuments();
             };
 
             const handleDocumentReviewed = (data) => {
-                console.log('Document reviewed:', data);
+                // Document reviewed
                 // Update the specific document in the list
                 setDocuments(prevDocs =>
                     prevDocs.map(doc =>

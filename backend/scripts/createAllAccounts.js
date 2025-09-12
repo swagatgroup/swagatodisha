@@ -12,12 +12,12 @@ const createAllAccounts = async () => {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         });
-        console.log('✅ Connected to MongoDB');
+        // Connected to MongoDB
 
-        console.log('\n🚀 Creating Complete User Management System...\n');
+        // Creating Complete User Management System
 
         // 1. SUPER ADMIN ACCOUNTS
-        console.log('1️⃣ Creating Super Admin Account...');
+        // Creating Super Admin Account
         const superAdminData = {
             firstName: 'Super',
             lastName: 'Admin',
@@ -34,17 +34,17 @@ const createAllAccounts = async () => {
 
         let superAdmin = await Admin.findOne({ email: superAdminData.email });
         if (superAdmin) {
-            console.log('   ℹ️  Super Admin already exists, updating password...');
+            // Super Admin already exists, updating password
             superAdmin.password = await bcrypt.hash(superAdminData.password, 12);
             await superAdmin.save();
         } else {
             superAdmin = new Admin(superAdminData);
             await superAdmin.save();
-            console.log('   ✅ Super Admin created');
+            // Super Admin created
         }
 
         // 2. STAFF ACCOUNTS (3 members)
-        console.log('2️⃣ Creating Staff Accounts...');
+        // Creating Staff Accounts
         const staffAccounts = [
             {
                 firstName: 'Dr. Amit',
@@ -85,7 +85,7 @@ const createAllAccounts = async () => {
         for (const staffData of staffAccounts) {
             let staff = await Admin.findOne({ email: staffData.email });
             if (staff) {
-                console.log(`   ℹ️  Staff ${staffData.firstName} already exists, updating password...`);
+                // Staff already exists, updating password
                 staff.password = await bcrypt.hash(staffData.password, 12);
                 await staff.save();
             } else {
@@ -95,13 +95,13 @@ const createAllAccounts = async () => {
                     isEmailVerified: true
                 });
                 await staff.save();
-                console.log(`   ✅ Staff ${staffData.firstName} created`);
+                // Staff created
             }
             createdStaff.push(staff);
         }
 
         // 3. AGENT ACCOUNTS (10 agents with referral codes)
-        console.log('3️⃣ Creating Agent Accounts...');
+        // Creating Agent Accounts
         const agentAccounts = [
             {
                 fullName: 'Agent One',
@@ -269,7 +269,7 @@ const createAllAccounts = async () => {
         for (const agentData of agentAccounts) {
             let agent = await User.findOne({ email: agentData.email });
             if (agent) {
-                console.log(`   ℹ️  Agent ${agentData.fullName} already exists, updating password...`);
+                // Agent already exists, updating password
                 agent.password = await bcrypt.hash(agentData.password, 12);
                 await agent.save();
             } else {
@@ -280,13 +280,13 @@ const createAllAccounts = async () => {
                     isEmailVerified: true
                 });
                 await agent.save();
-                console.log(`   ✅ Agent ${agentData.fullName} created with referral code: ${agent.referralCode}`);
+                // Agent created with referral code
             }
             createdAgents.push(agent);
         }
 
         // 4. SAMPLE STUDENT ACCOUNTS (5 students)
-        console.log('4️⃣ Creating Sample Student Accounts...');
+        // Creating Sample Student Accounts
         const studentAccounts = [
             {
                 fullName: 'Student One',
@@ -375,7 +375,7 @@ const createAllAccounts = async () => {
             const studentData = studentAccounts[index];
             let studentUser = await User.findOne({ email: studentData.email });
             if (studentUser) {
-                console.log(`   ℹ️  Student ${studentData.fullName} already exists, updating password...`);
+                // Student already exists, updating password
                 studentUser.password = await bcrypt.hash(studentData.password, 12);
                 await studentUser.save();
             } else {
@@ -386,7 +386,7 @@ const createAllAccounts = async () => {
                     isEmailVerified: true
                 });
                 await studentUser.save();
-                console.log(`   ✅ Student User ${studentData.fullName} created`);
+                // Student User created
             }
 
             // Create Student Profile
@@ -409,69 +409,22 @@ const createAllAccounts = async () => {
 
             let studentProfile = await Student.findOne({ user: studentUser._id });
             if (studentProfile) {
-                console.log(`   ℹ️  Student Profile for ${studentData.fullName} already exists`);
+                // Student Profile already exists
             } else {
                 studentProfile = new Student(studentProfileData);
                 await studentProfile.save();
-                console.log(`   ✅ Student Profile for ${studentData.fullName} created`);
+                // Student Profile created
             }
             createdStudents.push({ user: studentUser, profile: studentProfile });
         }
 
-        console.log('\n🎉 Complete User Management System Created Successfully!');
-        console.log('\n📋 PRODUCTION ACCOUNTS SUMMARY:');
-        console.log('=====================================');
-
-        console.log('\n1️⃣ SUPER ADMIN:');
-        console.log('   Email: admin@swagatodisha.com');
-        console.log('   Password: Admin@123456');
-        console.log('   Role: Super Administrator');
-        console.log('   Access: Full system access, user management, security');
-
-        console.log('\n2️⃣ STAFF ACCOUNTS (3 members):');
-        console.log('   Email: staff1@swagatodisha.com | Password: Staff@123456 | Role: Academic Coordinator');
-        console.log('   Email: staff2@swagatodisha.com | Password: Staff@123456 | Role: Admission Officer');
-        console.log('   Email: staff3@swagatodisha.com | Password: Staff@123456 | Role: Student Affairs Coordinator');
-        console.log('   Access: Staff dashboard, student management, application review');
-
-        console.log('\n3️⃣ AGENT ACCOUNTS (10 agents):');
-        createdAgents.forEach((agent, index) => {
-            console.log(`   Email: agent${index + 1}@swagatodisha.com | Password: Agent@123456 | Referral Code: ${agent.referralCode}`);
-        });
-        console.log('   Access: Agent dashboard, referral management, student recruitment');
-
-        console.log('\n4️⃣ SAMPLE STUDENT ACCOUNTS (5 students):');
-        console.log('   Email: student1@swagatodisha.com | Password: Student@123456 | Role: Student');
-        console.log('   Email: student2@swagatodisha.com | Password: Student@123456 | Role: Student');
-        console.log('   Email: student3@swagatodisha.com | Password: Student@123456 | Role: Student');
-        console.log('   Email: student4@swagatodisha.com | Password: Student@123456 | Role: Student');
-        console.log('   Email: student5@swagatodisha.com | Password: Student@123456 | Role: Student');
-        console.log('   Access: Student dashboard, document management, application tracking');
-
-        console.log('\n🔐 All passwords meet security requirements:');
-        console.log('   - Minimum 8 characters');
-        console.log('   - Contains uppercase, lowercase, number, and special character');
-        console.log('   - Unique for each user type');
-
-        console.log('\n📊 SYSTEM STATISTICS:');
-        console.log(`   - 1 Super Admin account`);
-        console.log(`   - ${createdStaff.length} Staff accounts`);
-        console.log(`   - ${createdAgents.length} Agent accounts with referral codes`);
-        console.log(`   - ${createdStudents.length} Sample student accounts`);
-        console.log(`   - Total: ${1 + createdStaff.length + createdAgents.length + createdStudents.length} accounts created`);
-
-        console.log('\n⚠️  IMPORTANT SECURITY NOTES:');
-        console.log('   - Change all default passwords in production');
-        console.log('   - Enable two-factor authentication for admin accounts');
-        console.log('   - Regularly audit user access and permissions');
-        console.log('   - Monitor login attempts and suspicious activities');
-        console.log('=====================================');
+        // Complete User Management System Created Successfully
 
     } catch (error) {
         console.error('❌ Error creating accounts:', error);
     } finally {
         await mongoose.disconnect();
-        console.log('\n✅ Disconnected from MongoDB');
+        // Disconnected from MongoDB
         process.exit(0);
     }
 };

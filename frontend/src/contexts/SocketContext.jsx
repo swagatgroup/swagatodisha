@@ -31,12 +31,12 @@ export const SocketProvider = ({ children }) => {
 
             // Connection event handlers
             newSocket.on('connect', () => {
-                console.log('Socket connected:', newSocket.id);
+                // Socket connected
                 setConnected(true);
             });
 
             newSocket.on('disconnect', () => {
-                console.log('Socket disconnected');
+                // Socket disconnected
                 setConnected(false);
             });
 
@@ -47,7 +47,7 @@ export const SocketProvider = ({ children }) => {
 
             // Document status update handler
             newSocket.on('document_status_changed', (data) => {
-                console.log('Document status changed:', data);
+                // Document status changed
                 addNotification({
                     id: Date.now(),
                     type: 'document',
@@ -61,7 +61,7 @@ export const SocketProvider = ({ children }) => {
 
             // New document uploaded handler (for staff)
             newSocket.on('new_document_uploaded', (data) => {
-                console.log('New document uploaded:', data);
+                // New document uploaded
                 addNotification({
                     id: Date.now(),
                     type: 'document',
@@ -75,7 +75,7 @@ export const SocketProvider = ({ children }) => {
 
             // Document reviewed handler (for staff)
             newSocket.on('document_reviewed', (data) => {
-                console.log('Document reviewed:', data);
+                // Document reviewed
                 addNotification({
                     id: Date.now(),
                     type: 'document',
@@ -89,7 +89,7 @@ export const SocketProvider = ({ children }) => {
 
             // New referral handler (for agents)
             newSocket.on('new_referral', (data) => {
-                console.log('New referral:', data);
+                // New referral
                 addNotification({
                     id: Date.now(),
                     type: 'referral',
@@ -103,7 +103,7 @@ export const SocketProvider = ({ children }) => {
 
             // New user registration handler (for staff/admin)
             newSocket.on('new_user_registered', (data) => {
-                console.log('New user registered:', data);
+                // New user registered
                 addNotification({
                     id: Date.now(),
                     type: 'user',
@@ -117,7 +117,7 @@ export const SocketProvider = ({ children }) => {
 
             // System announcement handler
             newSocket.on('system_announcement', (data) => {
-                console.log('System announcement:', data);
+                // System announcement
                 addNotification({
                     id: Date.now(),
                     type: 'system',

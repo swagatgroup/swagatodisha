@@ -118,7 +118,7 @@ const QuickLinks = () => {
     }
 
     const handleDocumentClick = (documentName, fileName) => {
-        console.log('Document clicked:', { documentName, fileName })
+        // Document clicked
         startBlinking(documentName)
 
         // Open PDF viewer
@@ -1069,7 +1069,7 @@ const QuickLinks = () => {
                                             console.error('PDF loading error:', e)
                                         }}
                                         onLoad={() => {
-                                            console.log('PDF loaded successfully:', pdfViewer.file)
+                                            // PDF loaded successfully
                                         }}
                                     />
                                 ) : (
@@ -1082,7 +1082,7 @@ const QuickLinks = () => {
                                                 console.error('Image loading error:', e)
                                             }}
                                             onLoad={() => {
-                                                console.log('Image loaded successfully:', pdfViewer.file)
+                                                // Image loaded successfully
                                             }}
                                         />
                                     </div>

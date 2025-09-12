@@ -16,8 +16,6 @@ class APIError extends Error {
 
 export const apiCall = async (endpoint, options = {}) => {
     try {
-        console.log(`🌐 API Call: ${options.method || 'GET'} ${endpoint}`);
-
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
             ...options,
             headers: {
@@ -25,8 +23,6 @@ export const apiCall = async (endpoint, options = {}) => {
                 ...options.headers,
             },
         });
-
-        console.log(`📊 API Response: ${response.status} ${response.statusText}`);
 
         // Handle different status codes
         if (!response.ok) {

@@ -10,7 +10,7 @@ exports.getDashboardStats = async (req, res) => {
     try {
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-        console.log('🔍 Calculating dashboard stats...');
+        // Calculating dashboard stats
 
         const [
             totalStudents,
