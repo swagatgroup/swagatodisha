@@ -1,16 +1,78 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Copy, Edit, Check, X, Plus, Search, Filter, RefreshCw } from 'lucide-react';
 import { motion } from 'framer-motion';
-import Swal from 'sweetalert2';
+import api from '../../utils/api';
+
+// Icon components
+const UsersIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+    </svg>
+);
+
+const CopyIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+    </svg>
+);
+
+const EditIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>
+);
+
+const CheckIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+    </svg>
+);
+
+const XIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
+);
+
+const PlusIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+    </svg>
+);
+
+const SearchIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+    </svg>
+);
+
+const FilterIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+    </svg>
+);
+
+const RefreshIcon = ({ className }) => (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+    </svg>
+);
+import {
+    showSuccess,
+    showError,
+    showConfirm,
+    showLoading,
+    closeLoading,
+    handleApiError
+} from '../../utils/sweetAlert';
 
 const ReferralManagement = () => {
-    const [users, setUsers] = useState([]);
+    const [users, setUsersIcon] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [editingCode, setEditingCode] = useState(null);
+    const [editingCode, setEditIconingCode] = useState(null);
     const [newCode, setNewCode] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterRole, setFilterRole] = useState('all');
-    const [filterStatus, setFilterStatus] = useState('all');
+    const [searchTerm, setSearchIconTerm] = useState('');
+    const [filterRole, setFilterIconRole] = useState('all');
+    const [filterStatus, setFilterIconStatus] = useState('all');
 
     useEffect(() => {
         fetchUsers();
@@ -19,22 +81,21 @@ const ReferralManagement = () => {
     const fetchUsers = async () => {
         try {
             setLoading(true);
-            const response = await fetch('/api/referrals/all', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
-            const result = await response.json();
-            if (result.success) {
-                setUsers(result.data);
+            showLoading('Loading referral users...');
+
+            const response = await api.get('/api/referrals/all');
+
+            if (response.data.success) {
+                setUsersIcon(response.data.data);
+            } else {
+                throw new Error(response.data.message || 'Failed to load users');
             }
+
+            closeLoading();
         } catch (error) {
             console.error('Fetch users error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Failed to Load',
-                text: 'Failed to load users data.'
-            });
+            closeLoading();
+            handleApiError(error, 'Failed to load referral users');
         } finally {
             setLoading(false);
         }
@@ -42,112 +103,78 @@ const ReferralManagement = () => {
 
     const generateReferralCode = async (userId, customCode = '') => {
         try {
-            const response = await fetch('/api/referrals/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({
-                    userId,
-                    customCode: customCode.trim()
-                })
+            showLoading('Generating referral code...');
+
+            const response = await api.post('/api/referrals/generate', {
+                userId,
+                customCode: customCode.trim()
             });
 
-            const result = await response.json();
-
-            if (result.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: `Referral code ${result.data.referralCode} generated successfully.`
-                });
+            if (response.data.success) {
+                closeLoading();
+                showSuccess(`Referral code ${response.data.data.referralCode} generated successfully!`);
                 fetchUsers(); // Refresh the list
             } else {
-                throw new Error(result.message);
+                throw new Error(response.data.message);
             }
         } catch (error) {
             console.error('Generate referral code error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Failed to Generate',
-                text: error.message || 'Failed to generate referral code.'
-            });
+            closeLoading();
+            handleApiError(error, 'Failed to generate referral code');
         }
     };
 
     const copyToClipboard = (text) => {
         navigator.clipboard.writeText(text).then(() => {
-            Swal.fire({
-                icon: 'success',
-                title: 'Copied!',
-                text: 'Referral code copied to clipboard.',
-                timer: 1500,
-                showConfirmButton: false
-            });
+            showSuccess('Referral code copied to clipboard!');
+        }).catch(() => {
+            showError('Failed to copy to clipboard');
         });
     };
 
-    const handleEditCode = (userId, currentCode) => {
-        setEditingCode(userId);
+    const handleEditIconCode = (userId, currentCode) => {
+        setEditIconingCode(userId);
         setNewCode(currentCode || '');
     };
 
-    const saveEditedCode = async (userId) => {
+    const saveEditIconedCode = async (userId) => {
         if (!newCode.trim()) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Invalid Code',
-                text: 'Please enter a valid referral code.'
-            });
+            showError('Please enter a valid referral code.');
             return;
         }
 
         await generateReferralCode(userId, newCode);
-        setEditingCode(null);
+        setEditIconingCode(null);
         setNewCode('');
     };
 
-    const cancelEdit = () => {
-        setEditingCode(null);
+    const cancelEditIcon = () => {
+        setEditIconingCode(null);
         setNewCode('');
     };
 
     const toggleReferralStatus = async (userId, currentStatus) => {
         try {
-            const response = await fetch(`/api/referrals/${userId}/toggle`, {
-                method: 'PUT',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+            showLoading('Updating referral status...');
 
-            const result = await response.json();
+            const response = await api.put(`/api/referrals/${userId}/toggle`);
 
-            if (result.success) {
+            if (response.data.success) {
+                closeLoading();
+                showSuccess(`Referral status ${currentStatus ? 'deactivated' : 'activated'} successfully!`);
                 fetchUsers(); // Refresh the list
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Updated!',
-                    text: `Referral status ${currentStatus ? 'deactivated' : 'activated'}.`,
-                    timer: 1500,
-                    showConfirmButton: false
-                });
             } else {
-                throw new Error(result.message);
+                throw new Error(response.data.message);
             }
         } catch (error) {
             console.error('Toggle referral status error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Update Failed',
-                text: 'Failed to update referral status.'
-            });
+            closeLoading();
+            handleApiError(error, 'Failed to update referral status');
         }
     };
 
-    const filteredUsers = users.filter(user => {
-        const matchesSearch = user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    const filteredUsersIcon = users.filter(user => {
+        const matchesSearchIcon = user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
             user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (user.referralCode && user.referralCode.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -157,7 +184,7 @@ const ReferralManagement = () => {
             (filterStatus === 'inactive' && !user.isReferralActive) ||
             (filterStatus === 'no_code' && !user.referralCode);
 
-        return matchesSearch && matchesRole && matchesStatus;
+        return matchesSearchIcon && matchesRole && matchesStatus;
     });
 
     if (loading) {
@@ -173,25 +200,25 @@ const ReferralManagement = () => {
             <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                        <Users className="h-6 w-6 text-blue-600" />
+                        <UsersIcon className="h-6 w-6 text-blue-600" />
                         <h2 className="text-xl font-bold text-gray-900">Referral Code Management</h2>
                     </div>
                     <button
                         onClick={fetchUsers}
                         className="flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
                     >
-                        <RefreshCw className="w-4 h-4 mr-2" />
+                        <RefreshIcon className="w-4 h-4 mr-2" />
                         Refresh
                     </button>
                 </div>
                 <p className="text-gray-600 mt-2">Manage referral codes for all users in the system.</p>
             </div>
 
-            {/* Filters */}
+            {/* FilterIcons */}
             <div className="p-6 border-b border-gray-200 bg-gray-50">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="relative">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                         <input
                             type="text"
                             placeholder="Search users or codes..."
@@ -251,7 +278,7 @@ const ReferralManagement = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {filteredUsers.map((user) => (
+                        {filteredUsersIcon.map((user) => (
                             <motion.tr
                                 key={user._id}
                                 initial={{ opacity: 0 }}
@@ -261,7 +288,7 @@ const ReferralManagement = () => {
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div>
                                         <div className="text-sm font-medium text-gray-900">
-                                            {user.fullName}
+                                            {user.fullName || user.name}
                                         </div>
                                         <div className="text-sm text-gray-500">{user.email}</div>
                                     </div>
@@ -287,16 +314,16 @@ const ReferralManagement = () => {
                                                 placeholder="Enter referral code"
                                             />
                                             <button
-                                                onClick={() => saveEditedCode(user._id)}
+                                                onClick={() => saveEditIconedCode(user._id)}
                                                 className="p-1 text-green-600 hover:bg-green-50 rounded"
                                             >
-                                                <Check className="h-4 w-4" />
+                                                <CheckIcon className="h-4 w-4" />
                                             </button>
                                             <button
-                                                onClick={cancelEdit}
+                                                onClick={cancelEditIcon}
                                                 className="p-1 text-red-600 hover:bg-red-50 rounded"
                                             >
-                                                <X className="h-4 w-4" />
+                                                <XIcon className="h-4 w-4" />
                                             </button>
                                         </div>
                                     ) : (
@@ -309,16 +336,16 @@ const ReferralManagement = () => {
                                                     <button
                                                         onClick={() => copyToClipboard(user.referralCode)}
                                                         className="p-1 text-blue-600 hover:bg-blue-50 rounded"
-                                                        title="Copy to clipboard"
+                                                        title="CopyIcon to clipboard"
                                                     >
-                                                        <Copy className="h-4 w-4" />
+                                                        <CopyIcon className="h-4 w-4" />
                                                     </button>
                                                     <button
-                                                        onClick={() => handleEditCode(user._id, user.referralCode)}
+                                                        onClick={() => handleEditIconCode(user._id, user.referralCode)}
                                                         className="p-1 text-gray-600 hover:bg-gray-50 rounded"
-                                                        title="Edit code"
+                                                        title="EditIcon code"
                                                     >
-                                                        <Edit className="h-4 w-4" />
+                                                        <EditIcon className="h-4 w-4" />
                                                     </button>
                                                 </>
                                             ) : (
@@ -346,7 +373,10 @@ const ReferralManagement = () => {
                                         Total: {user.referralStats?.totalReferrals || 0}
                                     </div>
                                     <div>
-                                        Approved: {user.referralStats?.approvedReferrals || 0}
+                                        Successful: {user.referralStats?.successfulReferrals || 0}
+                                    </div>
+                                    <div>
+                                        Commission: ₹{user.referralStats?.totalCommission || 0}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -356,15 +386,15 @@ const ReferralManagement = () => {
                                                 onClick={() => generateReferralCode(user._id)}
                                                 className="inline-flex items-center px-3 py-1 border border-transparent text-xs leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                             >
-                                                <Plus className="h-3 w-3 mr-1" />
+                                                <PlusIcon className="h-3 w-3 mr-1" />
                                                 Generate
                                             </button>
                                         ) : (
                                             <button
-                                                onClick={() => handleEditCode(user._id, '')}
+                                                onClick={() => handleEditIconCode(user._id, '')}
                                                 className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                             >
-                                                <Plus className="h-3 w-3 mr-1" />
+                                                <PlusIcon className="h-3 w-3 mr-1" />
                                                 New Code
                                             </button>
                                         )}
@@ -376,7 +406,7 @@ const ReferralManagement = () => {
                 </table>
             </div>
 
-            {filteredUsers.length === 0 && (
+            {filteredUsersIcon.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                     No users found matching your criteria.
                 </div>

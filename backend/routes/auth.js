@@ -962,4 +962,73 @@ router.get('/me', async (req, res) => {
     }
 });
 
+// @desc    Update user profile
+// @route   PUT /api/auth/profile
+// @access  Private
+router.put('/profile', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.replace('Bearer ', '');
+
+        if (!token) {
+            return res.status(401).json({
+                success: false,
+                message: 'No token provided'
+            });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id || decoded.userId;
+
+        const allowedUpdates = [
+            'fullName', 'phoneNumber', 'dateOfBirth', 'gender', 'address',
+            'guardianName', 'guardianPhone', 'aadharNumber', 'bloodGroup', 'emergencyContact'
+        ];
+
+        const updates = {};
+        Object.keys(req.body).forEach(key => {
+            if (allowedUpdates.includes(key)) {
+                updates[key] = req.body[key];
+            }
+        });
+
+        let user;
+        // First try to find user in User model
+        user = await User.findByIdAndUpdate(
+            userId,
+            { $set: updates },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        // If not found in User model, try Admin model
+        if (!user) {
+            const Admin = require('../models/Admin');
+            user = await Admin.findByIdAndUpdate(
+                userId,
+                { $set: updates },
+                { new: true, runValidators: true }
+            ).select('-password');
+        }
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: 'Profile updated successfully',
+            data: { user }
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update profile',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
 module.exports = router;

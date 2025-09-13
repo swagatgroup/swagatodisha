@@ -1,346 +1,354 @@
-import React, { useState } from 'react';
-import { CheckCircle, XCircle, AlertTriangle, Eye, MessageSquare, Clock, User } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Swal from 'sweetalert2';
+import React, { useState, useEffect } from 'react';
+import api from '../../utils/api';
+import { showSuccess, showError } from '../../utils/sweetAlert';
 
-const DocumentReview = ({ document, onReviewComplete }) => {
-    const [showReviewModal, setShowReviewModal] = useState(false);
-    const [reviewAction, setReviewAction] = useState('');
-    const [selectedRemarks, setSelectedRemarks] = useState('');
-    const [customRemarks, setCustomRemarks] = useState('');
+const DocumentReview = ({ studentId, onClose }) => {
+    const [documents, setDocuments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedDocuments, setSelectedDocuments] = useState([]);
+    const [bulkAction, setBulkAction] = useState('');
+    const [remarks, setRemarks] = useState('');
+    const [remarkType, setRemarkType] = useState('');
     const [isCustomRemarks, setIsCustomRemarks] = useState(false);
-    const [loading, setLoading] = useState(false);
 
-    const predefinedRemarks = {
-        rejected: {
-            'poor_quality': 'Document quality is not clear. Please upload a high-resolution, clearly visible document.',
-            'incomplete_info': 'Required information is missing or incomplete. Please ensure all fields are properly filled.',
-            'wrong_document': 'This appears to be the wrong document type. Please upload the correct document as requested.',
-            'expired_document': 'The document appears to be expired. Please provide a valid, current document.',
-            'illegible_text': 'Text in the document is not readable. Please provide a clearer version with legible text.'
-        },
-        resubmission_required: {
-            'minor_corrections': 'Minor corrections needed. Please address the highlighted issues and resubmit.',
-            'additional_info': 'Additional information required. Please provide the missing details.',
-            'format_issue': 'Document format needs adjustment. Please follow the specified format guidelines.',
-            'signature_missing': 'Signature or official stamp is missing. Please ensure proper authorization.',
-            'date_discrepancy': 'Date discrepancy found. Please verify and correct the dates mentioned.'
+    useEffect(() => {
+        if (studentId) {
+            fetchStudentDocuments();
         }
-    };
+    }, [studentId]);
 
-    const handleReview = async () => {
-        if (!reviewAction) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Action Required',
-                text: 'Please select an action (Approve, Reject, or Request Resubmission).'
-            });
-            return;
-        }
-
-        if (reviewAction !== 'approved' && !selectedRemarks && !customRemarks) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Remarks Required',
-                text: 'Please provide remarks for this action.'
-            });
-            return;
-        }
-
-        setLoading(true);
-
+    const fetchStudentDocuments = async () => {
         try {
-            const response = await fetch(`/api/documents/${document._id}/review`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
-                },
-                body: JSON.stringify({
-                    action: reviewAction,
-                    remarks: isCustomRemarks ? customRemarks : selectedRemarks,
-                    isCustomRemarks,
-                    remarkType: selectedRemarks
-                })
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Review Complete!',
-                    text: `Document has been ${reviewAction} successfully.`
-                });
-                setShowReviewModal(false);
-                onReviewComplete?.(result.data);
-            } else {
-                throw new Error(result.message);
+            setLoading(true);
+            const response = await api.get(`/api/documents/student/${studentId}`);
+            if (response.data.success) {
+                setDocuments(response.data.data.documents);
             }
         } catch (error) {
-            console.error('Review error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Review Failed',
-                text: error.message || 'Failed to submit review. Please try again.'
-            });
+            console.error('Error fetching student documents:', error);
+            showError('Failed to load documents');
         } finally {
             setLoading(false);
         }
     };
 
-    const getStatusBadge = (status) => {
-        const badges = {
-            pending: { color: 'bg-yellow-100 text-yellow-800', icon: AlertTriangle },
-            under_review: { color: 'bg-blue-100 text-blue-800', icon: Eye },
-            approved: { color: 'bg-green-100 text-green-800', icon: CheckCircle },
-            rejected: { color: 'bg-red-100 text-red-800', icon: XCircle },
-            resubmission_required: { color: 'bg-orange-100 text-orange-800', icon: AlertTriangle }
-        };
-
-        const badge = badges[status] || badges.pending;
-        const Icon = badge.icon;
-
-        return (
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${badge.color}`}>
-                <Icon className="w-3 h-3 mr-1" />
-                {status.replace('_', ' ').toUpperCase()}
-            </span>
+    const handleDocumentSelect = (documentId) => {
+        setSelectedDocuments(prev =>
+            prev.includes(documentId)
+                ? prev.filter(id => id !== documentId)
+                : [...prev, documentId]
         );
     };
 
-    const getPriorityBadge = (priority) => {
-        const priorities = {
-            low: 'bg-gray-100 text-gray-800',
-            medium: 'bg-blue-100 text-blue-800',
-            high: 'bg-orange-100 text-orange-800',
-            urgent: 'bg-red-100 text-red-800'
-        };
-
-        return (
-            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${priorities[priority] || priorities.medium}`}>
-                {priority.toUpperCase()}
-            </span>
-        );
+    const handleSelectAll = () => {
+        if (selectedDocuments.length === documents.length) {
+            setSelectedDocuments([]);
+        } else {
+            setSelectedDocuments(documents.map(doc => doc._id));
+        }
     };
+
+    const handleBulkAction = async () => {
+        if (selectedDocuments.length === 0) {
+            showError('Please select at least one document');
+            return;
+        }
+
+        if (!bulkAction) {
+            showError('Please select an action');
+            return;
+        }
+
+        if (bulkAction !== 'approved' && !remarks.trim()) {
+            showError('Please provide remarks for this action');
+            return;
+        }
+
+        try {
+            setLoading(true);
+            const promises = selectedDocuments.map(documentId =>
+                api.put(`/api/documents/${documentId}/review`, {
+                    action: bulkAction,
+                    remarks: remarks.trim(),
+                    isCustomRemarks,
+                    remarkType
+                })
+            );
+
+            await Promise.all(promises);
+            showSuccess(`${bulkAction} ${selectedDocuments.length} document(s) successfully`);
+            setSelectedDocuments([]);
+            setBulkAction('');
+            setRemarks('');
+            fetchStudentDocuments();
+        } catch (error) {
+            console.error('Error performing bulk action:', error);
+            showError('Failed to perform action');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleIndividualAction = async (documentId, action) => {
+        try {
+            setLoading(true);
+            await api.put(`/api/documents/${documentId}/review`, {
+                action,
+                remarks: action === 'approved' ? '' : remarks,
+                isCustomRemarks: action !== 'approved',
+                remarkType
+            });
+            showSuccess(`Document ${action} successfully`);
+            fetchStudentDocuments();
+        } catch (error) {
+            console.error('Error performing action:', error);
+            showError('Failed to perform action');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'approved': return 'bg-green-100 text-green-800';
+            case 'rejected': return 'bg-red-100 text-red-800';
+            case 'pending': return 'bg-yellow-100 text-yellow-800';
+            case 'resubmission_required': return 'bg-orange-100 text-orange-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    const getDocumentTypeLabel = (type) => {
+        const labels = {
+            'aadhar_card': 'Aadhar Card',
+            'academic_certificate': 'Academic Certificate',
+            'identity_proof': 'Identity Proof',
+            'address_proof': 'Address Proof',
+            'income_certificate': 'Income Certificate',
+            'caste_certificate': 'Caste Certificate',
+            'photo': 'Photo',
+            'signature': 'Signature',
+            'migration_certificate': 'Migration Certificate',
+            'tc': 'Transfer Certificate',
+            'mark_sheet': 'Mark Sheet',
+            'entrance_exam_card': 'Entrance Exam Card',
+            'birth_certificate': 'Birth Certificate',
+            'marksheet_10th': '10th Mark Sheet',
+            'marksheet_12th': '12th Mark Sheet',
+            'transfer_certificate': 'Transfer Certificate',
+            'character_certificate': 'Character Certificate',
+            'passport_photo': 'Passport Photo',
+            'guardian_id': 'Guardian ID',
+            'medical_certificate': 'Medical Certificate',
+            'other': 'Other'
+        };
+        return labels[type] || type.replace('_', ' ').toUpperCase();
+    };
+
+    if (loading) {
+        return (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="bg-white rounded-lg p-6">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+                    <p className="mt-2 text-gray-600">Loading documents...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow-md p-6 mb-4"
-            >
-                <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                        <div className="flex items-center space-x-3 mb-3">
-                            <h3 className="text-lg font-semibold">{document.originalName}</h3>
-                            {getStatusBadge(document.status)}
-                            {getPriorityBadge(document.priority)}
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-4">
-                            <div className="flex items-center space-x-2">
-                                <User className="h-4 w-4" />
-                                <span><strong>Uploaded by:</strong> {document.uploadedBy.firstName} {document.uploadedBy.lastName}</span>
-                            </div>
-                            <div>
-                                <span className="font-medium">Document Type:</span> {document.documentType.replace('_', ' ')}
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Clock className="h-4 w-4" />
-                                <span><strong>Upload Date:</strong> {new Date(document.createdAt).toLocaleDateString()}</span>
-                            </div>
-                            <div>
-                                <span className="font-medium">File Size:</span> {(document.fileSize / 1024 / 1024).toFixed(2)} MB
-                            </div>
-                        </div>
-
-                        {document.currentRemarks && (
-                            <div className="bg-gray-50 p-3 rounded-md mb-4">
-                                <span className="font-medium text-gray-700">Current Remarks:</span>
-                                <p className="text-gray-600 mt-1">{document.currentRemarks}</p>
-                            </div>
-                        )}
-
-                        {/* Verification History */}
-                        {document.verificationHistory && document.verificationHistory.length > 0 && (
-                            <div className="bg-blue-50 p-3 rounded-md mb-4">
-                                <span className="font-medium text-blue-700">Verification History:</span>
-                                <div className="mt-2 space-y-2">
-                                    {document.verificationHistory.map((entry, index) => (
-                                        <div key={index} className="text-sm">
-                                            <span className="font-medium">{entry.reviewedByName}:</span> {entry.action} - {entry.remarks}
-                                            <span className="text-gray-500 ml-2">
-                                                ({new Date(entry.timestamp).toLocaleString()})
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-2xl font-bold text-gray-900">Document Review</h2>
+                        <button
+                            onClick={onClose}
+                            className="text-gray-400 hover:text-gray-600"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
-                </div>
 
-                <div className="flex space-x-3">
-                    <a
-                        href={document.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-                    >
-                        <Eye className="w-4 h-4 mr-2" />
-                        View Document
-                    </a>
-
-                    {(document.status === 'pending' || document.status === 'under_review') ? (
-                        <button
-                            onClick={() => setShowReviewModal(true)}
-                            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
-                        >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            Review Document
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => setShowReviewModal(true)}
-                            className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
-                        >
-                            <MessageSquare className="w-4 h-4 mr-2" />
-                            Update Review
-                        </button>
-                    )}
-                </div>
-            </motion.div>
-
-            {/* Review Modal */}
-            {showReviewModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                    >
-                        <div className="p-6">
-                            <h3 className="text-xl font-bold mb-6">Review Document</h3>
-
-                            {/* Document Info */}
-                            <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                                <h4 className="font-semibold mb-2">Document Details</h4>
-                                <p><span className="font-medium">File:</span> {document.originalName}</p>
-                                <p><span className="font-medium">Uploaded by:</span> {document.uploadedBy.firstName} {document.uploadedBy.lastName}</p>
-                                <p><span className="font-medium">Type:</span> {document.documentType.replace('_', ' ')}</p>
-                                <p><span className="font-medium">Priority:</span> {document.priority}</p>
+                    {/* Bulk Actions */}
+                    {documents.length > 0 && (
+                        <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                            <div className="flex items-center space-x-4 mb-4">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedDocuments.length === documents.length}
+                                    onChange={handleSelectAll}
+                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                />
+                                <span className="text-sm font-medium text-gray-700">
+                                    Select All ({selectedDocuments.length}/{documents.length})
+                                </span>
                             </div>
 
-                            {/* Action Selection */}
-                            <div className="mb-6">
-                                <label className="block text-sm font-medium text-gray-700 mb-3">Select Action</label>
-                                <div className="space-y-3">
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="action"
-                                            value="approved"
-                                            checked={reviewAction === 'approved'}
-                                            onChange={(e) => setReviewAction(e.target.value)}
-                                            className="text-green-600 focus:ring-green-500"
-                                        />
-                                        <span className="ml-3 text-green-600 font-medium">Approve Document</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="action"
-                                            value="rejected"
-                                            checked={reviewAction === 'rejected'}
-                                            onChange={(e) => setReviewAction(e.target.value)}
-                                            className="text-red-600 focus:ring-red-500"
-                                        />
-                                        <span className="ml-3 text-red-600 font-medium">Reject Document</span>
-                                    </label>
-                                    <label className="flex items-center">
-                                        <input
-                                            type="radio"
-                                            name="action"
-                                            value="resubmission_required"
-                                            checked={reviewAction === 'resubmission_required'}
-                                            onChange={(e) => setReviewAction(e.target.value)}
-                                            className="text-orange-600 focus:ring-orange-500"
-                                        />
-                                        <span className="ml-3 text-orange-600 font-medium">Request Resubmission</span>
-                                    </label>
-                                </div>
-                            </div>
+                            <div className="flex flex-wrap items-center space-x-4">
+                                <select
+                                    value={bulkAction}
+                                    onChange={(e) => setBulkAction(e.target.value)}
+                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                >
+                                    <option value="">Select Action</option>
+                                    <option value="approved">Approve All</option>
+                                    <option value="rejected">Reject All</option>
+                                    <option value="resubmission_required">Request Resubmission</option>
+                                </select>
 
-                            {/* Remarks Section */}
-                            {reviewAction && reviewAction !== 'approved' && (
-                                <div className="mb-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-3">Remarks</label>
+                                {bulkAction && bulkAction !== 'approved' && (
+                                    <>
+                                        <select
+                                            value={remarkType}
+                                            onChange={(e) => setRemarkType(e.target.value)}
+                                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        >
+                                            <option value="">Select Remark Type</option>
+                                            <option value="poor_quality">Poor Quality</option>
+                                            <option value="incomplete_info">Incomplete Information</option>
+                                            <option value="wrong_document">Wrong Document</option>
+                                            <option value="expired_document">Expired Document</option>
+                                            <option value="illegible_text">Illegible Text</option>
+                                        </select>
 
-                                    {/* Custom Remarks Toggle */}
-                                    <div className="mb-4">
                                         <label className="flex items-center">
                                             <input
                                                 type="checkbox"
                                                 checked={isCustomRemarks}
                                                 onChange={(e) => setIsCustomRemarks(e.target.checked)}
-                                                className="text-blue-600 focus:ring-blue-500"
+                                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                                             />
-                                            <span className="ml-2 text-sm text-gray-600">Write custom remarks</span>
+                                            <span className="ml-2 text-sm text-gray-700">Custom Remarks</span>
                                         </label>
-                                    </div>
 
-                                    {isCustomRemarks ? (
                                         <textarea
-                                            value={customRemarks}
-                                            onChange={(e) => setCustomRemarks(e.target.value)}
-                                            placeholder="Enter your custom remarks..."
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                            rows="4"
+                                            value={remarks}
+                                            onChange={(e) => setRemarks(e.target.value)}
+                                            placeholder="Enter remarks..."
+                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                            rows="2"
                                         />
-                                    ) : (
-                                        <div className="space-y-2">
-                                            {Object.entries(predefinedRemarks[reviewAction] || {}).map(([key, remark]) => (
-                                                <label key={key} className="flex items-start">
-                                                    <input
-                                                        type="radio"
-                                                        name="predefinedRemarks"
-                                                        value={remark}
-                                                        checked={selectedRemarks === remark}
-                                                        onChange={(e) => setSelectedRemarks(e.target.value)}
-                                                        className="mt-1 text-blue-600 focus:ring-blue-500"
-                                                    />
-                                                    <span className="ml-3 text-sm text-gray-700">{remark}</span>
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                    </>
+                                )}
 
-                            {/* Action Buttons */}
-                            <div className="flex justify-end space-x-3">
                                 <button
-                                    onClick={() => setShowReviewModal(false)}
-                                    disabled={loading}
-                                    className="px-4 py-2 text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors disabled:opacity-50"
+                                    onClick={handleBulkAction}
+                                    disabled={!bulkAction || (bulkAction !== 'approved' && !remarks.trim())}
+                                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleReview}
-                                    disabled={loading}
-                                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-                                >
-                                    {loading ? 'Submitting...' : 'Submit Review'}
+                                    Apply to Selected
                                 </button>
                             </div>
                         </div>
-                    </motion.div>
+                    )}
+
+                    {/* Documents List */}
+                    <div className="space-y-4">
+                        {documents.length === 0 ? (
+                            <div className="text-center py-8">
+                                <p className="text-gray-500">No documents found for this student.</p>
+                            </div>
+                        ) : (
+                            documents.map((document) => (
+                                <div key={document._id} className="border border-gray-200 rounded-lg p-4">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex items-start space-x-4">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedDocuments.includes(document._id)}
+                                                onChange={() => handleDocumentSelect(document._id)}
+                                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded mt-1"
+                                            />
+
+                                            <div className="flex-1">
+                                                <div className="flex items-center space-x-2 mb-2">
+                                                    <h3 className="text-lg font-medium text-gray-900">
+                                                        {getDocumentTypeLabel(document.documentType)}
+                                                    </h3>
+                                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
+                                                        {document.status.replace('_', ' ').toUpperCase()}
+                                                    </span>
+                                                </div>
+
+                                                <p className="text-sm text-gray-600 mb-2">
+                                                    Original Name: {document.originalName}
+                                                </p>
+
+                                                <p className="text-sm text-gray-500">
+                                                    Uploaded: {new Date(document.uploadedAt).toLocaleDateString()}
+                                                </p>
+
+                                                {document.currentRemarks && (
+                                                    <div className="mt-2 p-2 bg-gray-50 rounded">
+                                                        <p className="text-sm text-gray-700">
+                                                            <strong>Current Remarks:</strong> {document.currentRemarks}
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                {/* Verification History */}
+                                                {document.verificationHistory && document.verificationHistory.length > 0 && (
+                                                    <div className="mt-3">
+                                                        <h4 className="text-sm font-medium text-gray-700 mb-2">Verification History:</h4>
+                                                        <div className="space-y-1">
+                                                            {document.verificationHistory.map((history, index) => (
+                                                                <div key={index} className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                                                                    <strong>{history.action.replace('_', ' ').toUpperCase()}</strong> by {history.reviewedByName} - {new Date(history.timestamp).toLocaleString()}
+                                                                    {history.remarks && <p className="mt-1">{history.remarks}</p>}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center space-x-2">
+                                            <a
+                                                href={document.fileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
+                                            >
+                                                View
+                                            </a>
+
+                                            {document.status !== 'approved' && (
+                                                <button
+                                                    onClick={() => handleIndividualAction(document._id, 'approved')}
+                                                    className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded hover:bg-green-200"
+                                                >
+                                                    Approve
+                                                </button>
+                                            )}
+
+                                            {document.status !== 'rejected' && (
+                                                <button
+                                                    onClick={() => handleIndividualAction(document._id, 'rejected')}
+                                                    className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded hover:bg-red-200"
+                                                >
+                                                    Reject
+                                                </button>
+                                            )}
+
+                                            <button
+                                                onClick={() => handleIndividualAction(document._id, 'resubmission_required')}
+                                                className="px-3 py-1 text-sm bg-orange-100 text-orange-800 rounded hover:bg-orange-200"
+                                            >
+                                                Resubmit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
                 </div>
-            )}
-        </>
+            </div>
+        </div>
     );
 };
 

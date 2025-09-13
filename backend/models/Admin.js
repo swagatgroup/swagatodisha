@@ -62,7 +62,7 @@ const adminSchema = new mongoose.Schema({
     gender: {
         type: String,
         enum: ['male', 'female', 'other'],
-        default: null
+        required: false
     },
     address: {
         street: String,
@@ -93,6 +93,12 @@ const adminSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+
+    // Agent Assignment
+    assignedAgents: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
 
     // Security and Timestamps
     passwordChangedAt: Date,

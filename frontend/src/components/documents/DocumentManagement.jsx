@@ -76,7 +76,7 @@ const DocumentManagement = () => {
     const fetchDocuments = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/api/documents/student');
+            const response = await api.get('/api/documents/');
             setDocuments(response.data.data.documents);
         } catch (error) {
             console.error('Error fetching documents:', error);
@@ -121,7 +121,7 @@ const DocumentManagement = () => {
             showLoading('Uploading Document...', 'Please wait while we upload your document');
 
             const formData = new FormData();
-            formData.append('document', selectedFile);
+            formData.append('file', selectedFile);
             formData.append('documentType', uploadData.documentType);
             formData.append('documentName', uploadData.documentName);
 

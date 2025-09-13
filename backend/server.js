@@ -250,10 +250,18 @@ app.get('/api/test', (req, res) => {
     });
 });
 
+// Import new student routes
+const studentPaymentRoutes = require('./routes/studentPayments');
+const studentApplicationRoutes = require('./routes/studentApplications');
+const studentAcademicRoutes = require('./routes/studentAcademic');
+
 // API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
 app.use('/api/admin-auth', authRateLimit, adminAuthRoutes);
 app.use('/api/students', apiRateLimit, studentRoutes);
+app.use('/api/students/payments', apiRateLimit, studentPaymentRoutes);
+app.use('/api/students/applications', apiRateLimit, studentApplicationRoutes);
+app.use('/api/students/academic', apiRateLimit, studentAcademicRoutes);
 app.use('/api/admin', apiRateLimit, adminRoutes);
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/documents', uploadRateLimit, documentRoutes);

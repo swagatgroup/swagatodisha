@@ -9,6 +9,8 @@ import {
     closeLoading,
     handleApiError
 } from '../../utils/sweetAlert';
+import CreateAgentModal from './CreateAgentModal';
+import CreateStaffModal from './CreateStaffModal';
 
 const UserManagement = ({ userType = 'students' }) => {
     const [users, setUsers] = useState([]);
@@ -23,6 +25,7 @@ const UserManagement = ({ userType = 'students' }) => {
     const [editData, setEditData] = useState({});
     const [passwordData, setPasswordData] = useState({ newPassword: '' });
     const [saving, setSaving] = useState(false);
+    const [showCreateModal, setShowCreateModal] = useState(false);
 
     useEffect(() => {
         fetchUsers();
@@ -38,7 +41,7 @@ const UserManagement = ({ userType = 'students' }) => {
             if (userType === 'students') {
                 endpoint = '/api/students';
             } else if (userType === 'agents') {
-                endpoint = '/api/auth/users?role=agent';
+                endpoint = '/api/admin/agents';
             } else if (userType === 'staff') {
                 endpoint = '/api/admin/staff';
             }
@@ -53,6 +56,9 @@ const UserManagement = ({ userType = 'students' }) => {
                 usersData = response.data;
             } else if (response.data.data && Array.isArray(response.data.data)) {
                 usersData = response.data.data;
+            } else if (response.data.data && response.data.data[userType] && Array.isArray(response.data.data[userType])) {
+                // Handle the new API format with nested data
+                usersData = response.data.data[userType];
             } else {
                 // Fallback to mock data if API response is unexpected
                 console.warn('Unexpected API response format, using mock data');
@@ -66,7 +72,14 @@ const UserManagement = ({ userType = 'students' }) => {
             }
 
             setUsers(usersData);
-            setTotalPages(Math.ceil(usersData.length / 10));
+
+            // Handle pagination from API response
+            if (response.data.data && response.data.data.pagination) {
+                setTotalPages(response.data.data.pagination.total);
+            } else {
+                setTotalPages(Math.ceil(usersData.length / 10));
+            }
+
             closeLoading();
         } catch (error) {
             console.error('Error fetching users:', error);
@@ -89,9 +102,12 @@ const UserManagement = ({ userType = 'students' }) => {
         const baseUsers = [
             {
                 id: 1,
+                _id: 'mock1',
                 name: 'Rahul Kumar',
+                fullName: 'Rahul Kumar',
                 email: 'rahul@example.com',
                 phone: '9876543210',
+                phoneNumber: '9876543210',
                 status: 'active',
                 role: type === 'students' ? 'student' : type === 'agents' ? 'agent' : 'staff',
                 createdAt: '2024-01-15',
@@ -113,9 +129,12 @@ const UserManagement = ({ userType = 'students' }) => {
             },
             {
                 id: 2,
+                _id: 'mock2',
                 name: 'Priya Sharma',
+                fullName: 'Priya Sharma',
                 email: 'priya@example.com',
                 phone: '9876543211',
+                phoneNumber: '9876543211',
                 status: 'active',
                 role: type === 'students' ? 'student' : type === 'agents' ? 'agent' : 'staff',
                 createdAt: '2024-01-10',
@@ -138,8 +157,8 @@ const UserManagement = ({ userType = 'students' }) => {
         ];
 
         return baseUsers.filter(user => {
-            const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                user.email.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesSearch = (user.name || user.fullName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (user.email || '').toLowerCase().includes(searchTerm.toLowerCase());
             const matchesStatus = filterStatus === 'all' || user.status === filterStatus;
             return matchesSearch && matchesStatus;
         });
@@ -148,9 +167,9 @@ const UserManagement = ({ userType = 'students' }) => {
     const handleEdit = (user) => {
         setSelectedUser(user);
         setEditData({
-            name: user.name,
+            name: user.name || user.fullName,
             email: user.email,
-            phone: user.phone,
+            phone: user.phone || user.phoneNumber,
             status: user.status,
             ...(userType === 'students' && {
                 course: user.course,
@@ -176,6 +195,8 @@ const UserManagement = ({ userType = 'students' }) => {
             let endpoint = `/api/auth/users/${selectedUser._id || selectedUser.id}`;
             if (userType === 'students') {
                 endpoint = `/api/students/${selectedUser._id || selectedUser.id}`;
+            } else if (userType === 'agents') {
+                endpoint = `/api/admin/agents/${selectedUser._id || selectedUser.id}`;
             } else if (userType === 'staff') {
                 endpoint = `/api/admin/staff/${selectedUser._id || selectedUser.id}`;
             }
@@ -212,15 +233,11 @@ const UserManagement = ({ userType = 'students' }) => {
             setSaving(true);
             showLoading('Resetting password...');
 
-            // Determine the correct API endpoint based on user type
-            let endpoint = `/api/auth/reset-password/${selectedUser._id || selectedUser.id}`;
-            if (userType === 'students') {
-                endpoint = `/api/students/reset-password/${selectedUser._id || selectedUser.id}`;
-            } else if (userType === 'staff') {
-                endpoint = `/api/admin/reset-password/${selectedUser._id || selectedUser.id}`;
-            }
-
-            await api.post(endpoint, { newPassword: passwordData.newPassword });
+            // Use the admin reset password endpoint for all user types
+            await api.post('/api/auth/admin-reset-password', {
+                userId: selectedUser._id || selectedUser.id,
+                newPassword: passwordData.newPassword
+            });
 
             setShowPasswordModal(false);
             setPasswordData({ newPassword: '' });
@@ -253,6 +270,8 @@ const UserManagement = ({ userType = 'students' }) => {
             let endpoint = `/api/auth/users/${userId}`;
             if (userType === 'students') {
                 endpoint = `/api/students/${userId}`;
+            } else if (userType === 'agents') {
+                endpoint = `/api/admin/agents/${userId}`;
             } else if (userType === 'staff') {
                 endpoint = `/api/admin/staff/${userId}`;
             }
@@ -306,6 +325,14 @@ const UserManagement = ({ userType = 'students' }) => {
                         userType === 'agents' ? 'Agent Management' : 'Staff Management'}
                 </h3>
                 <div className="flex space-x-2">
+                    {(userType === 'agents' || userType === 'staff') && (
+                        <button
+                            onClick={() => setShowCreateModal(true)}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        >
+                            Add {userType === 'agents' ? 'Agent' : 'Staff'}
+                        </button>
+                    )}
                     <input
                         type="text"
                         placeholder="Search users..."
@@ -383,15 +410,15 @@ const UserManagement = ({ userType = 'students' }) => {
                                         <div className="flex-shrink-0 h-10 w-10">
                                             <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
                                                 <span className="text-sm font-medium text-purple-600">
-                                                    {user.name.split(' ').map(n => n[0]).join('')}
+                                                    {(user.name || user.fullName || 'U').split(' ').map(n => n[0] || 'U').join('')}
                                                 </span>
                                             </div>
                                         </div>
                                         <div className="ml-4">
-                                            <div className="text-sm font-medium text-gray-900">{user.name}</div>
+                                            <div className="text-sm font-medium text-gray-900">{user.name || user.fullName}</div>
                                             <div className="text-sm text-gray-500">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                                                    {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+                                                    {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown'}
                                                 </span>
                                             </div>
                                         </div>
@@ -399,36 +426,36 @@ const UserManagement = ({ userType = 'students' }) => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm text-gray-900">{user.email}</div>
-                                    <div className="text-sm text-gray-500">{user.phone}</div>
+                                    <div className="text-sm text-gray-500">{user.phone || user.phoneNumber}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
-                                        {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                                        {user.status ? user.status.charAt(0).toUpperCase() + user.status.slice(1) : 'Unknown'}
                                     </span>
                                 </td>
                                 {userType === 'students' && (
                                     <>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {user.course}
+                                            {user.course || 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {user.aadharNumber}
+                                            {user.aadharNumber || 'N/A'}
                                         </td>
                                     </>
                                 )}
                                 {userType === 'agents' && (
                                     <>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
-                                            {user.referralCode}
+                                            {user.referralCode || 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                            {user.totalReferrals} (₹{user.totalCommission.toLocaleString()})
+                                            {user.totalReferrals || 0} (₹{user.totalCommission ? user.totalCommission.toLocaleString() : '0'})
                                         </td>
                                     </>
                                 )}
                                 {userType === 'staff' && (
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {user.department}
+                                        {user.department || 'N/A'}
                                     </td>
                                 )}
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -645,7 +672,7 @@ const UserManagement = ({ userType = 'students' }) => {
                     <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                         <div className="mt-3">
                             <h3 className="text-lg font-medium text-gray-900 mb-4">
-                                Reset Password for {selectedUser.name}
+                                Reset Password for {selectedUser.name || selectedUser.fullName}
                             </h3>
 
                             <div className="space-y-4">
@@ -681,6 +708,29 @@ const UserManagement = ({ userType = 'students' }) => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Create Modals */}
+            {showCreateModal && userType === 'agents' && (
+                <CreateAgentModal
+                    isOpen={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                    onSuccess={() => {
+                        setShowCreateModal(false);
+                        fetchUsers(); // Refresh the list
+                    }}
+                />
+            )}
+
+            {showCreateModal && userType === 'staff' && (
+                <CreateStaffModal
+                    isOpen={showCreateModal}
+                    onClose={() => setShowCreateModal(false)}
+                    onSuccess={() => {
+                        setShowCreateModal(false);
+                        fetchUsers(); // Refresh the list
+                    }}
+                />
             )}
         </div>
     );

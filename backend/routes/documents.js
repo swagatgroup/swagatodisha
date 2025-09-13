@@ -7,7 +7,8 @@ const {
     getDocumentById,
     reviewDocument,
     deleteDocument,
-    getStaffDocuments
+    getStaffDocuments,
+    getStudentDocuments
 } = require('../controllers/documentController');
 
 const router = express.Router();
@@ -39,6 +40,9 @@ router.get('/:id', protect, getDocumentById);
 
 // Get staff assigned documents
 router.get('/staff/assigned', protect, restrictTo('staff', 'admin', 'super_admin'), getStaffDocuments);
+
+// Get documents by student ID (for staff review)
+router.get('/student/:studentId', protect, restrictTo('staff', 'admin', 'super_admin'), getStudentDocuments);
 
 // Review document (staff and admin only)
 router.put('/:id/review', protect, restrictTo('staff', 'admin', 'super_admin'), reviewDocument);

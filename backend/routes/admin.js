@@ -8,9 +8,11 @@ const {
     updateStudent,
     deleteStudent,
     getAllAgents,
+    createAgent,
     updateAgent,
     deleteAgent,
     getAllStaff,
+    getStaffForAssignment,
     createStaff,
     updateStaff,
     deleteStaff,
@@ -45,11 +47,13 @@ router.delete('/students/:studentId', protect, authorize('super_admin'), deleteS
 
 // Agent Management
 router.get('/agents', protect, authorize('staff', 'super_admin'), getAllAgents);
+router.post('/agents', protect, authorize('super_admin'), createAgent);
 router.put('/agents/:agentId', protect, authorize('staff', 'super_admin'), updateAgent);
 router.delete('/agents/:agentId', protect, authorize('super_admin'), deleteAgent);
 
 // Staff Management
 router.get('/staff', protect, authorize('super_admin'), getAllStaff);
+router.get('/staff/for-assignment', protect, authorize('staff', 'super_admin'), getStaffForAssignment);
 router.post('/staff', protect, authorize('super_admin'), createStaff);
 router.put('/staff/:staffId', protect, authorize('super_admin'), updateStaff);
 router.delete('/staff/:staffId', protect, authorize('super_admin'), deleteStaff);

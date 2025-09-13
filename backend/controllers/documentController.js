@@ -44,11 +44,22 @@ const uploadDocument = async (req, res) => {
             });
         }
 
-        // Upload to Cloudinary
-        const cloudinaryResult = await uploadToCloudinary(uploadedFile.path, {
-            resource_type: 'auto',
-            folder: 'swagat-odisha/documents'
-        });
+        // Upload to Cloudinary (with fallback to local storage)
+        let cloudinaryResult;
+        try {
+            cloudinaryResult = await uploadToCloudinary(uploadedFile.path, {
+                resource_type: 'auto',
+                folder: 'swagat-odisha/documents'
+            });
+        } catch (cloudinaryError) {
+            console.warn('Cloudinary upload failed, using local storage:', cloudinaryError.message);
+            // Fallback to local storage
+            cloudinaryResult = {
+                public_id: `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                secure_url: `/uploads/documents/${uploadedFile.filename}`,
+                format: uploadedFile.mimetype.split('/')[1]
+            };
+        }
 
         // Assign to staff member (for student uploads)
         let assignedTo = null;
@@ -111,7 +122,8 @@ const uploadDocument = async (req, res) => {
 // Assign document to available staff member
 const assignToAvailableStaff = async () => {
     try {
-        const staff = await User.find({
+        const Admin = require('../models/Admin');
+        const staff = await Admin.find({
             role: 'staff',
             isActive: true
         }).select('_id');
@@ -132,6 +144,8 @@ const assignToAvailableStaff = async () => {
 // Get user's documents
 const getUserDocuments = async (req, res) => {
     try {
+        console.log('Getting documents for user:', req.user._id, 'Role:', req.user.role);
+
         const { status, documentType, page = 1, limit = 20 } = req.query;
         const userId = req.user._id;
 
@@ -145,6 +159,8 @@ const getUserDocuments = async (req, res) => {
             query.documentType = documentType;
         }
 
+        console.log('Query:', query);
+
         const documents = await Document.find(query)
             .populate('assignedTo', 'fullName email')
             .sort({ createdAt: -1 })
@@ -152,6 +168,8 @@ const getUserDocuments = async (req, res) => {
             .skip((page - 1) * limit);
 
         const total = await Document.countDocuments(query);
+
+        console.log('Found documents:', documents.length);
 
         res.status(200).json({
             success: true,
@@ -166,10 +184,15 @@ const getUserDocuments = async (req, res) => {
         });
     } catch (error) {
         console.error('Get user documents error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack
+        });
         res.status(500).json({
             success: false,
             message: 'Failed to get documents',
-            error: error.message
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };
@@ -401,6 +424,7 @@ const getStaffDocuments = async (req, res) => {
 
         const documents = await Document.find(query)
             .populate('uploadedBy', 'fullName email role phoneNumber')
+            .populate('assignedTo', 'fullName email')
             .sort({ createdAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
@@ -428,11 +452,61 @@ const getStaffDocuments = async (req, res) => {
     }
 };
 
+// Get documents by student ID (for staff review)
+const getStudentDocuments = async (req, res) => {
+    try {
+        const { studentId } = req.params;
+        const { status, documentType } = req.query;
+
+        // Check if user has permission to view student documents
+        if (req.user.role !== 'staff' && req.user.role !== 'admin' && req.user.role !== 'super_admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        let query = {
+            uploadedBy: studentId,
+            isActive: true
+        };
+
+        if (status) {
+            query.status = status;
+        }
+
+        if (documentType) {
+            query.documentType = documentType;
+        }
+
+        const documents = await Document.find(query)
+            .populate('uploadedBy', 'fullName email role phoneNumber')
+            .populate('assignedTo', 'fullName email')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                documents,
+                total: documents.length
+            }
+        });
+    } catch (error) {
+        console.error('Get student documents error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get student documents',
+            error: error.message
+        });
+    }
+};
+
 module.exports = {
     uploadDocument,
     getUserDocuments,
     getDocumentById,
     reviewDocument,
     deleteDocument,
-    getStaffDocuments
+    getStaffDocuments,
+    getStudentDocuments
 };
