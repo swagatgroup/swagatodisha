@@ -9,6 +9,10 @@ const http = require('http');
 const SocketManager = require('./utils/socket');
 require('dotenv').config();
 
+// Import database and R2 connections
+const connectDB = require('./config/db');
+const { testR2Connection } = require('./config/r2');
+
 const app = express();
 const server = http.createServer(app);
 
@@ -51,6 +55,7 @@ const notificationRoutes = require('./routes/notifications');
 const securityRoutes = require('./routes/security');
 const performanceRoutes = require('./routes/performance');
 const contactRoutes = require('./routes/contact');
+const fileRoutes = require('./routes/fileRoutes');
 
 // Import security middleware
 const {
@@ -67,6 +72,9 @@ const {
 
 // Import performance monitoring
 const performanceMonitor = require('./utils/performance');
+
+// Import error handling middleware
+const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 // Middleware
 app.use(securityHeaders);
@@ -216,7 +224,8 @@ app.get('/', (req, res) => {
             adminAuth: '/api/admin-auth',
             students: '/api/students',
             admin: '/api/admin',
-            dashboard: '/api/dashboard'
+            dashboard: '/api/dashboard',
+            files: '/api/files'
         }
     });
 });
@@ -270,66 +279,28 @@ app.use('/api/notifications', apiRateLimit, notificationRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
 app.use('/api/contact', apiRateLimit, contactRoutes);
+app.use('/api/files', uploadRateLimit, fileRoutes);
 
 // 404 handler
-app.use('*', (req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Route not found'
-    });
-});
+app.use('*', notFound);
 
 // Global error handler
-app.use((err, req, res, next) => {
-    console.error('Error:', err);
+app.use(errorHandler);
 
-    if (err.name === 'ValidationError') {
-        return res.status(400).json({
-            success: false,
-            message: 'Validation Error',
-            errors: Object.values(err.errors).map(e => e.message)
-        });
-    }
-
-    if (err.name === 'CastError') {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid ID format'
-        });
-    }
-
-    if (err.code === 11000) {
-        return res.status(400).json({
-            success: false,
-            message: 'Duplicate field value entered'
-        });
-    }
-
-    res.status(err.status || 500).json({
-        success: false,
-        message: err.message || 'Internal Server Error'
-    });
-});
-
-// Database connection
-const connectDB = async () => {
+// Database and R2 connection initialization
+const initializeConnections = async () => {
     try {
-        // Check if MONGODB_URI is set
-        if (!process.env.MONGODB_URI) {
-            console.warn('⚠️ MONGODB_URI environment variable is not set. Using default local MongoDB.');
-            process.env.MONGODB_URI = 'mongodb://localhost:27017/swagat_odisha';
-        }
+        // Connect to MongoDB
+        await connectDB();
 
-        const conn = await mongoose.connect(process.env.MONGODB_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        // MongoDB Connected
+        // Test R2 connection
+        const r2Connected = await testR2Connection();
+        if (!r2Connected) {
+            console.warn('⚠️ Cloudflare R2 connection failed. File uploads will not work.');
+        }
     } catch (error) {
-        console.error('Database connection error:', error);
-        console.error('Please ensure MONGODB_URI environment variable is set correctly or MongoDB is running locally.');
-        // Don't exit the process, let the server run without database
-        // Server will continue running without database connection
+        console.error('❌ Connection initialization failed:', error.message);
+        // Don't exit the process, let the server run
     }
 };
 
@@ -354,10 +325,9 @@ const startServer = async () => {
             console.log(`🔌 Socket.IO server initialized`);
         });
 
-        // Try to connect to database (non-blocking)
-        connectDB().catch(error => {
-            console.error('⚠️ Database connection failed, but server is running:', error.message);
-            // Will retry database connection
+        // Initialize connections (non-blocking)
+        initializeConnections().catch(error => {
+            console.error('⚠️ Connection initialization failed, but server is running:', error.message);
         });
 
     } catch (error) {

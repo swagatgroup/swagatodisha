@@ -108,7 +108,7 @@ assignmentSchema.methods.submit = function (submissionData, submittedBy) {
     return this.save();
 };
 
-assignmentSchema.methods.grade = function (grade, feedback, gradedBy) {
+assignmentSchema.methods.gradeAssignment = function (grade, feedback, gradedBy) {
     this.status = 'graded';
     this.grade = grade;
     this.feedback = feedback;

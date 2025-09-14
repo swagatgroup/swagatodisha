@@ -5,6 +5,7 @@ const fs = require('fs');
 const fsp = fs.promises;
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
+const { sendEmail } = require('../utils/sendgrid');
 const router = express.Router();
 
 // Helper: build a robust SMTP transporter from env
@@ -168,37 +169,68 @@ router.post('/submit', [
             }
         });
 
-        // Background job: send emails and then cleanup files
+        // Background job: send emails using SendGrid and then cleanup files
         setImmediate(async () => {
             try {
-                if (transporter) {
-                    try {
-                        await transporter.sendMail(mailOptions);
-                        // Contact form email sent successfully
+                // Prepare data for SendGrid templates
+                const emailData = {
+                    name,
+                    email,
+                    phone,
+                    subject,
+                    message,
+                    documents: documents.map(file => ({
+                        originalname: file.originalname,
+                        size: file.size
+                    }))
+                };
 
-                        const userMailOptions = {
-                            from: process.env.EMAIL_USER,
-                            to: email,
-                            replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
-                            subject: 'Thank you for contacting Swagat Odisha',
-                            html: `
-                                <h2>Thank you for contacting us!</h2>
-                                <p>Dear ${name},</p>
-                                <p>We have received your message and will get back to you within 24 hours.</p>
-                                <p><strong>Your message:</strong></p>
-                                <p>${message.replace(/\n/g, '<br>')}</p>
-                                <p>Best regards,<br>Swagat Odisha Team</p>
-                            `
-                        };
-
-                        await transporter.sendMail(userMailOptions);
-                        // Confirmation email sent successfully
-                    } catch (emailError) {
-                        console.error('Email sending failed (background):', emailError);
-                    }
+                // Send admin notification email
+                const adminResult = await sendEmail('contactFormAdmin', emailData);
+                if (adminResult.success) {
+                    console.log('✅ Contact form admin email sent via SendGrid');
                 } else {
-                    // Contact Form Submission (Email not configured)
-                    // Logging contact form submission when email is not configured
+                    console.error('❌ SendGrid admin email failed, falling back to SMTP');
+                    // Fallback to SMTP if SendGrid fails
+                    if (transporter) {
+                        try {
+                            await transporter.sendMail(mailOptions);
+                            console.log('✅ Contact form admin email sent via SMTP fallback');
+                        } catch (smtpError) {
+                            console.error('❌ SMTP fallback also failed:', smtpError);
+                        }
+                    }
+                }
+
+                // Send user confirmation email
+                const userResult = await sendEmail('contactFormUser', emailData);
+                if (userResult.success) {
+                    console.log('✅ Contact form user confirmation sent via SendGrid');
+                } else {
+                    console.error('❌ SendGrid user email failed, falling back to SMTP');
+                    // Fallback to SMTP if SendGrid fails
+                    if (transporter) {
+                        try {
+                            const userMailOptions = {
+                                from: process.env.EMAIL_USER,
+                                to: email,
+                                replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
+                                subject: 'Thank you for contacting Swagat Odisha',
+                                html: `
+                                    <h2>Thank you for contacting us!</h2>
+                                    <p>Dear ${name},</p>
+                                    <p>We have received your message and will get back to you within 24 hours.</p>
+                                    <p><strong>Your message:</strong></p>
+                                    <p>${message.replace(/\n/g, '<br>')}</p>
+                                    <p>Best regards,<br>Swagat Odisha Team</p>
+                                `
+                            };
+                            await transporter.sendMail(userMailOptions);
+                            console.log('✅ Contact form user confirmation sent via SMTP fallback');
+                        } catch (smtpError) {
+                            console.error('❌ SMTP user email fallback also failed:', smtpError);
+                        }
+                    }
                 }
             } finally {
                 // Always cleanup files
@@ -233,7 +265,7 @@ router.post('/submit', [
     }
 });
 
-// Test email endpoint to validate SMTP configuration from Render
+// Test email endpoint to validate SendGrid configuration
 // @route   POST /api/contact/test-email
 // @access  Private (guarded by a simple token if provided)
 router.post('/test-email', async (req, res) => {
@@ -245,9 +277,28 @@ router.post('/test-email', async (req, res) => {
             return res.status(403).json({ success: false, message: 'Forbidden' });
         }
 
+        // Test SendGrid first
+        const { testEmail } = require('../utils/sendgrid');
+        const sendGridResult = await testEmail();
+
+        if (sendGridResult.success) {
+            return res.status(200).json({
+                success: true,
+                message: 'SendGrid test email sent successfully',
+                provider: 'SendGrid',
+                messageId: sendGridResult.messageId
+            });
+        }
+
+        // Fallback to SMTP if SendGrid fails
+        console.log('SendGrid failed, trying SMTP fallback...');
         const transporter = buildTransporter();
         if (!transporter) {
-            return res.status(400).json({ success: false, message: 'Email not configured' });
+            return res.status(400).json({
+                success: false,
+                message: 'Both SendGrid and SMTP not configured',
+                sendGridError: sendGridResult.error
+            });
         }
 
         const to = process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
@@ -258,11 +309,16 @@ router.post('/test-email', async (req, res) => {
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to,
-            subject: 'Test Email: Swagat Odisha Contact',
+            subject: 'Test Email: Swagat Odisha Contact (SMTP Fallback)',
             html: `<p>This is a test email from the Swagat Odisha backend at ${new Date().toISOString()}.</p>`
         });
 
-        return res.status(200).json({ success: true, message: 'Test email sent' });
+        return res.status(200).json({
+            success: true,
+            message: 'Test email sent via SMTP fallback',
+            provider: 'SMTP',
+            sendGridError: sendGridResult.error
+        });
     } catch (err) {
         console.error('Test email failed:', err);
         return res.status(500).json({ success: false, message: 'Test email failed', error: err.message });

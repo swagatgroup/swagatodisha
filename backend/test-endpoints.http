@@ -1,0 +1,313 @@
+### Swagat Odisha Backend - File Management API Test Endpoints
+### Make sure to set the base URL and file IDs according to your setup
+
+@baseUrl = http://localhost:5000
+@fileId = YOUR_FILE_ID_HERE
+
+### 1. Health Check
+GET {{baseUrl}}/health
+
+### 2. API Health Check
+GET {{baseUrl}}/api/health
+
+### 3. Upload Single File
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test-document.pdf"
+Content-Type: application/pdf
+
+< ./test-document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="tags"
+
+test,document,pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="isPublic"
+
+true
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 4. Upload Multiple Files
+POST {{baseUrl}}/api/files/upload-multiple
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="image1.jpg"
+Content-Type: image/jpeg
+
+< ./test-image1.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="files"; filename="image2.png"
+Content-Type: image/png
+
+< ./test-image2.png
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="tags"
+
+test,images,multiple
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="isPublic"
+
+false
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 5. Get All Files (with pagination)
+GET {{baseUrl}}/api/files?page=1&limit=10
+
+### 6. Get Files with Filters
+GET {{baseUrl}}/api/files?uploadedBy=test-user&isPublic=true&page=1&limit=5
+
+### 7. Search Files
+GET {{baseUrl}}/api/files?search=test&page=1&limit=10
+
+### 8. Get Files by MIME Type
+GET {{baseUrl}}/api/files?mimeType=application/pdf&page=1&limit=10
+
+### 9. Get Files with Sorting
+GET {{baseUrl}}/api/files?sortBy=fileSize&sortOrder=desc&page=1&limit=10
+
+### 10. Get File by ID
+GET {{baseUrl}}/api/files/{{fileId}}
+
+### 11. Download File (increment download count)
+GET {{baseUrl}}/api/files/{{fileId}}/download
+
+### 12. Update File Metadata
+PUT {{baseUrl}}/api/files/{{fileId}}
+Content-Type: application/json
+
+{
+  "tags": ["updated", "test", "modified"],
+  "isPublic": true,
+  "metadata": {
+    "title": "Updated Test Document",
+    "description": "This is an updated test document",
+    "author": "Test User"
+  }
+}
+
+### 13. Get File Statistics
+GET {{baseUrl}}/api/files/stats
+
+### 14. Delete File
+DELETE {{baseUrl}}/api/files/{{fileId}}
+
+### 15. Test Error Handling - Invalid File ID
+GET {{baseUrl}}/api/files/invalid-id
+
+### 16. Test Error Handling - File Not Found
+GET {{baseUrl}}/api/files/507f1f77bcf86cd799439011
+
+### 17. Test Error Handling - Upload without file
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 18. Test Error Handling - Upload file too large
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="large-file.zip"
+Content-Type: application/zip
+
+< ./large-file.zip
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 19. Test Error Handling - Invalid file type
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test.exe"
+Content-Type: application/x-msdownload
+
+< ./test.exe
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 20. Test Rate Limiting (make multiple rapid requests)
+GET {{baseUrl}}/api/files?page=1&limit=1
+
+### 21. Test CORS (from browser console)
+### Run this in browser console on a different domain:
+### fetch('http://localhost:5000/api/files').then(r => r.json()).then(console.log)
+
+### 22. Test File Upload with Different File Types
+
+#### Upload Image
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test-image.jpg"
+Content-Type: image/jpeg
+
+< ./test-image.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="tags"
+
+image,test,jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+#### Upload Video
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test-video.mp4"
+Content-Type: video/mp4
+
+< ./test-video.mp4
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="tags"
+
+video,test,mp4
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+#### Upload Audio
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test-audio.mp3"
+Content-Type: audio/mpeg
+
+< ./test-audio.mp3
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="tags"
+
+audio,test,mp3
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 23. Test File Categories
+GET {{baseUrl}}/api/files?mimeType=image/jpeg
+GET {{baseUrl}}/api/files?mimeType=application/pdf
+GET {{baseUrl}}/api/files?mimeType=video/mp4
+GET {{baseUrl}}/api/files?mimeType=audio/mpeg
+
+### 24. Test Public vs Private Files
+GET {{baseUrl}}/api/files?isPublic=true
+GET {{baseUrl}}/api/files?isPublic=false
+
+### 25. Test File Size Formatting
+GET {{baseUrl}}/api/files?sortBy=fileSize&sortOrder=desc&limit=5
+
+### 26. Test Download Count
+GET {{baseUrl}}/api/files/{{fileId}}/download
+### Run this multiple times to see download count increment
+
+### 27. Test File Metadata Update
+PUT {{baseUrl}}/api/files/{{fileId}}
+Content-Type: application/json
+
+{
+  "tags": ["final", "test", "metadata"],
+  "isPublic": false,
+  "metadata": {
+    "title": "Final Test Document",
+    "description": "This is the final test with updated metadata",
+    "author": "Test User",
+    "pages": 10,
+    "width": 800,
+    "height": 600
+  }
+}
+
+### 28. Test File Search by Tags
+GET {{baseUrl}}/api/files?search=test&page=1&limit=10
+GET {{baseUrl}}/api/files?search=document&page=1&limit=10
+GET {{baseUrl}}/api/files?search=image&page=1&limit=10
+
+### 29. Test Pagination Edge Cases
+GET {{baseUrl}}/api/files?page=0&limit=0
+GET {{baseUrl}}/api/files?page=999&limit=10
+GET {{baseUrl}}/api/files?page=1&limit=1000
+
+### 30. Test Server Root Endpoint
+GET {{baseUrl}}/
+
+### 31. Test CORS Preflight
+OPTIONS {{baseUrl}}/api/files/upload
+Origin: http://localhost:3000
+Access-Control-Request-Method: POST
+Access-Control-Request-Headers: Content-Type
+
+### 32. Test Large File Upload (if you have a large file)
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="large-document.pdf"
+Content-Type: application/pdf
+
+< ./large-document.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 33. Test File Upload with Special Characters in Filename
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="test file with spaces & special chars!.pdf"
+Content-Type: application/pdf
+
+< ./test-file.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 34. Test File Upload with Unicode Filename
+POST {{baseUrl}}/api/files/upload
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="file"; filename="测试文件.pdf"
+Content-Type: application/pdf
+
+< ./test-file.pdf
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="uploadedBy"
+
+test-user
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### 35. Test Performance - Multiple Concurrent Requests
+### Run these simultaneously to test server performance
+GET {{baseUrl}}/api/files?page=1&limit=10
+GET {{baseUrl}}/api/files?page=2&limit=10
+GET {{baseUrl}}/api/files?page=3&limit=10
+GET {{baseUrl}}/api/files?page=4&limit=10
+GET {{baseUrl}}/api/files?page=5&limit=10
