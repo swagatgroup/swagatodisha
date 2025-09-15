@@ -92,7 +92,7 @@ const EnhancedDocumentManagement = () => {
         try {
             setUploading(true);
             const formData = new FormData();
-            formData.append('document', selectedFile);
+            formData.append('file', selectedFile);
             formData.append('category', selectedCategory);
             formData.append('submissionStage', 'DRAFT');
 

@@ -73,7 +73,7 @@ const documentSchema = new mongoose.Schema({
     // Enhanced Document Status
     status: {
         type: String,
-        enum: ['PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'RESUBMITTED'],
+        enum: ['PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'RESUBMISSION_REQUIRED'],
         default: 'PENDING'
     },
 
@@ -216,7 +216,7 @@ documentSchema.pre('save', function (next) {
 
 // Instance methods
 documentSchema.methods.approve = function (reviewedBy, reviewedByName, remarks = '') {
-    this.status = 'approved';
+    this.status = 'APPROVED';
     this.currentRemarks = remarks;
     this.verificationHistory.push({
         reviewedBy,
@@ -229,7 +229,7 @@ documentSchema.methods.approve = function (reviewedBy, reviewedByName, remarks =
 };
 
 documentSchema.methods.reject = function (reviewedBy, reviewedByName, reason) {
-    this.status = 'rejected';
+    this.status = 'REJECTED';
     this.currentRemarks = reason;
     this.verificationHistory.push({
         reviewedBy,
@@ -242,7 +242,7 @@ documentSchema.methods.reject = function (reviewedBy, reviewedByName, reason) {
 };
 
 documentSchema.methods.requestResubmission = function (reviewedBy, reviewedByName, remarks) {
-    this.status = 'resubmission_required';
+    this.status = 'RESUBMISSION_REQUIRED';
     this.currentRemarks = remarks;
     this.resubmissionCount += 1;
     this.verificationHistory.push({
@@ -271,13 +271,13 @@ documentSchema.statics.getByStatus = function (status) {
 };
 
 documentSchema.statics.getPendingDocuments = function () {
-    return this.find({ status: 'pending', isActive: true }).populate('uploadedBy', 'fullName email phoneNumber');
+    return this.find({ status: 'PENDING', isActive: true }).populate('uploadedBy', 'fullName email phoneNumber');
 };
 
 documentSchema.statics.getApprovedDocuments = function (userId) {
     return this.find({
         uploadedBy: userId,
-        status: 'approved',
+        status: 'APPROVED',
         isActive: true
     }).sort({ documentType: 1 });
 };

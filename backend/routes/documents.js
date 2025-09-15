@@ -8,7 +8,8 @@ const {
     reviewDocument,
     deleteDocument,
     getStaffDocuments,
-    getStudentDocuments
+    getStudentDocuments,
+    getDocumentTypes
 } = require('../controllers/documentController');
 
 const router = express.Router();
@@ -32,8 +33,12 @@ const upload = multer({
 // Document upload (universal - all user types can upload)
 router.post('/upload', protect, upload.single('file'), uploadDocument);
 
+// Get master document types
+router.get('/types', protect, getDocumentTypes);
+
 // Get user's documents
 router.get('/', protect, getUserDocuments);
+router.get('/my-documents', protect, getUserDocuments);
 
 // Get specific document
 router.get('/:id', protect, getDocumentById);
@@ -46,6 +51,40 @@ router.get('/student/:studentId', protect, restrictTo('staff', 'admin', 'super_a
 
 // Review document (staff and admin only)
 router.put('/:id/review', protect, restrictTo('staff', 'admin', 'super_admin'), reviewDocument);
+
+// Validation: check expiry by issue_date + validity rules
+router.get('/validation/check-expiry', protect, async (req, res) => {
+    try {
+        const { issueDate, validityPeriod } = req.query;
+        if (!issueDate || !validityPeriod) {
+            return res.status(400).json({ success: false, message: 'issueDate and validityPeriod are required' });
+        }
+
+        const issue = new Date(issueDate);
+        if (isNaN(issue.getTime())) {
+            return res.status(400).json({ success: false, message: 'Invalid issueDate' });
+        }
+
+        const addPeriod = (date, period) => {
+            const d = new Date(date);
+            if (period === '1_YEAR') d.setFullYear(d.getFullYear() + 1);
+            else if (period === '5_YEARS') d.setFullYear(d.getFullYear() + 5);
+            else return null;
+            return d;
+        };
+
+        const expiry = addPeriod(issue, validityPeriod);
+        if (!expiry) {
+            return res.status(400).json({ success: false, message: 'Unsupported validityPeriod' });
+        }
+
+        const now = new Date();
+        const isExpired = now > expiry;
+        res.json({ success: true, data: { expiryDate: expiry.toISOString(), isExpired } });
+    } catch (e) {
+        res.status(500).json({ success: false, message: 'Failed to check expiry' });
+    }
+});
 
 // Delete document
 router.delete('/:id', protect, deleteDocument);

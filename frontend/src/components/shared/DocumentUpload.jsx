@@ -3,6 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Swal from 'sweetalert2';
+import api from '../../api/axiosInstance'; // Added import for api
 
 const DocumentUpload = ({ userRole, onUploadSuccess, maxFiles = 5 }) => {
     const [uploading, setUploading] = useState(false);
@@ -86,17 +87,12 @@ const DocumentUpload = ({ userRole, onUploadSuccess, maxFiles = 5 }) => {
                 formData.append('documentType', file.documentType || 'other');
                 formData.append('priority', file.priority || 'medium');
 
-                const response = await fetch('/api/documents/upload', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: formData
+                const response = await api.post('/api/documents/upload', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
                 });
 
-                const result = await response.json();
                 setUploadProgress(((index + 1) / selectedFiles.length) * 100);
-                return result;
+                return response.data;
             });
 
             const results = await Promise.all(uploadPromises);
@@ -117,8 +113,8 @@ const DocumentUpload = ({ userRole, onUploadSuccess, maxFiles = 5 }) => {
                     text: `${successCount} of ${selectedFiles.length} documents uploaded successfully.`
                 });
             }
-        } catch (error) {
-            console.error('Upload error:', error);
+        } catch (e) {
+            console.error('Upload error:', e);
             Swal.fire({
                 icon: 'error',
                 title: 'Upload Failed',

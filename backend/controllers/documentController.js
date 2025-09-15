@@ -1,4 +1,5 @@
 const Document = require('../models/Document');
+const DocumentType = require('../models/DocumentType');
 const User = require('../models/User');
 const Notification = require('../models/Notification');
 const cloudinary = require('cloudinary').v2;
@@ -18,7 +19,7 @@ const uploadToCloudinary = promisify(cloudinary.uploader.upload);
 const uploadDocument = async (req, res) => {
     try {
         const { documentType, priority = 'medium', tags = [] } = req.body;
-        const uploadedFile = req.file;
+        const uploadedFile = req.file || (Array.isArray(req.files) && req.files.length > 0 ? req.files[0] : null);
 
         if (!uploadedFile) {
             return res.status(400).json({
@@ -104,6 +105,20 @@ const uploadDocument = async (req, res) => {
                 relatedDocument: document._id,
                 priority: priority === 'urgent' ? 'high' : 'medium'
             });
+        }
+
+        // Emit realtime notifications
+        try {
+            const { socketManager } = require('../server');
+            if (socketManager) {
+                socketManager.notifyDocumentUpload(req.user._id.toString(), {
+                    id: document._id.toString(),
+                    type: document.documentType,
+                    status: document.status
+                });
+            }
+        } catch (e) {
+            console.warn('Socket notifyDocumentUpload failed (non-blocking):', e.message);
         }
 
         res.status(201).json({
@@ -243,7 +258,7 @@ const getDocumentById = async (req, res) => {
 // Review document (staff and admin only)
 const reviewDocument = async (req, res) => {
     try {
-        const { documentId } = req.params;
+        const { id: documentId } = req.params;
         const { action, remarks, isCustomRemarks = false, remarkType } = req.body;
 
         // Validate staff permissions
@@ -265,7 +280,7 @@ const reviewDocument = async (req, res) => {
         }
 
         // Validate action
-        const validActions = ['approved', 'rejected', 'resubmission_required'];
+        const validActions = ['APPROVED', 'REJECTED', 'RESUBMISSION_REQUIRED'];
         if (!validActions.includes(action)) {
             return res.status(400).json({
                 success: false,
@@ -276,14 +291,14 @@ const reviewDocument = async (req, res) => {
         let finalRemarks = remarks;
 
         // Use predefined remarks if not custom
-        if (!isCustomRemarks && action !== 'approved') {
+        if (!isCustomRemarks && action !== 'APPROVED') {
             finalRemarks = getPredefinedRemarks(action, remarkType);
-        } else if (action === 'approved') {
+        } else if (action === 'APPROVED') {
             finalRemarks = getApprovalMessage(document.documentType);
         }
 
         // Update document status and add verification history
-        document.status = action === 'resubmission_required' ? 'resubmission_required' : action;
+        document.status = action === 'RESUBMISSION_REQUIRED' ? 'RESUBMISSION_REQUIRED' : action;
         document.currentRemarks = finalRemarks;
         document.verificationHistory.push({
             reviewedBy: req.user._id,
@@ -293,17 +308,17 @@ const reviewDocument = async (req, res) => {
             timestamp: new Date()
         });
 
-        if (action === 'resubmission_required') {
+        if (action === 'RESUBMISSION_REQUIRED') {
             document.resubmissionCount += 1;
         }
 
         await document.save();
 
         // Create notification for student
-        const notificationType = action === 'approved' ? 'document_approved' :
-            action === 'rejected' ? 'document_rejected' : 'document_resubmission_required';
-        const notificationTitle = action === 'approved' ? 'Document Approved' :
-            action === 'rejected' ? 'Document Rejected' : 'Resubmission Required';
+        const notificationType = action === 'APPROVED' ? 'document_approved' :
+            action === 'REJECTED' ? 'document_rejected' : 'document_resubmission_required';
+        const notificationTitle = action === 'APPROVED' ? 'Document Approved' :
+            action === 'REJECTED' ? 'Document Rejected' : 'Resubmission Required';
 
         await Notification.createNotification({
             recipient: document.uploadedBy._id,
@@ -314,6 +329,30 @@ const reviewDocument = async (req, res) => {
             relatedDocument: document._id,
             priority: action === 'rejected' ? 'high' : 'medium'
         });
+
+        // Realtime events for review updates
+        try {
+            const { socketManager } = require('../server');
+            if (socketManager) {
+                socketManager.broadcastToUser(document.uploadedBy._id.toString(), 'document_status_changed', {
+                    documentId: document._id.toString(),
+                    status: document.status,
+                    remarks: finalRemarks
+                });
+                socketManager.broadcastToRole('staff', 'document_reviewed', {
+                    documentId: document._id.toString(),
+                    studentId: document.uploadedBy._id.toString(),
+                    status: document.status
+                });
+                socketManager.broadcastToRole('super_admin', 'document_activity', {
+                    documentId: document._id.toString(),
+                    studentId: document.uploadedBy._id.toString(),
+                    status: document.status
+                });
+            }
+        } catch (e) {
+            console.warn('Socket review broadcast failed (non-blocking):', e.message);
+        }
 
         res.status(200).json({
             success: true,
@@ -519,4 +558,15 @@ module.exports = {
     deleteDocument,
     getStaffDocuments,
     getStudentDocuments
+};
+
+// List document types (master data)
+module.exports.getDocumentTypes = async (req, res) => {
+    try {
+        const types = await DocumentType.find({ isActive: true }).sort({ category: 1, name: 1 });
+        res.status(200).json({ success: true, data: types });
+    } catch (error) {
+        console.error('Get document types error:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch document types' });
+    }
 };
