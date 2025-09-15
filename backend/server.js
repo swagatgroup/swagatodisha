@@ -58,6 +58,8 @@ const performanceRoutes = require('./routes/performance');
 const contactRoutes = require('./routes/contact');
 const fileRoutes = require('./routes/fileRoutes');
 const analyticsRoutes = require('./routes/analytics');
+const agentRoutes = require('./routes/agentRoutes');
+const staffRoutes = require('./routes/staffRoutes');
 
 // Import security middleware
 const {
@@ -289,6 +291,8 @@ app.use('/api/performance', apiRateLimit, performanceRoutes);
 app.use('/api/contact', apiRateLimit, contactRoutes);
 app.use('/api/files', uploadRateLimit, fileRoutes);
 app.use('/api/analytics', apiRateLimit, analyticsRoutes);
+app.use('/api/agents', apiRateLimit, agentRoutes);
+app.use('/api/staff', apiRateLimit, staffRoutes);
 
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {
