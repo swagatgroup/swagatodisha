@@ -37,10 +37,12 @@
         "node-cache": "^5.1.2",
         "nodemailer": "^7.0.6",
         "pdf-lib": "^1.17.1",
+        "qrcode": "^1.5.4",
         "redis": "^4.6.7",
         "sharp": "^0.32.5",
         "socket.io": "^4.8.1",
-        "streamifier": "^0.1.1"
+        "streamifier": "^0.1.1",
+        "twilio": "^5.9.0"
     },
     "devDependencies": {
         "eslint": "^8.47.0",

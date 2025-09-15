@@ -56,7 +56,7 @@ const documentTypeSchema = new mongoose.Schema({
 });
 
 documentTypeSchema.index({ category: 1, isActive: 1 });
-documentTypeSchema.index({ code: 1 }, { unique: true });
+// code index is already defined in schema with unique: true
 
 module.exports = mongoose.model('DocumentType', documentTypeSchema);
 

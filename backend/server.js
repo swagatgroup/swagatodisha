@@ -48,6 +48,7 @@ const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/students');
 const adminRoutes = require('./routes/admin');
 const adminAuthRoutes = require('./routes/adminAuth');
+const enhancedWorkflowRoutes = require('./routes/enhancedWorkflow');
 const dashboardRoutes = require('./routes/dashboard');
 const documentRoutes = require('./routes/documents');
 const referralRoutes = require('./routes/referrals');
@@ -56,6 +57,7 @@ const securityRoutes = require('./routes/security');
 const performanceRoutes = require('./routes/performance');
 const contactRoutes = require('./routes/contact');
 const fileRoutes = require('./routes/fileRoutes');
+const analyticsRoutes = require('./routes/analytics');
 
 // Import security middleware
 const {
@@ -265,6 +267,7 @@ const studentPaymentRoutes = require('./routes/studentPayments');
 const studentApplicationRoutes = require('./routes/studentApplications');
 const studentAcademicRoutes = require('./routes/studentAcademic');
 const workflowRoutes = require('./routes/workflow');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
@@ -274,6 +277,8 @@ app.use('/api/students/payments', apiRateLimit, studentPaymentRoutes);
 app.use('/api/students/applications', apiRateLimit, studentApplicationRoutes);
 app.use('/api/students/academic', apiRateLimit, studentAcademicRoutes);
 app.use('/api/workflow', apiRateLimit, workflowRoutes);
+app.use('/api/enhanced-workflow', apiRateLimit, enhancedWorkflowRoutes);
+app.use('/api/payments', apiRateLimit, paymentRoutes);
 app.use('/api/admin', apiRateLimit, adminRoutes);
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/documents', uploadRateLimit, documentRoutes);
@@ -283,6 +288,7 @@ app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
 app.use('/api/contact', apiRateLimit, contactRoutes);
 app.use('/api/files', uploadRateLimit, fileRoutes);
+app.use('/api/analytics', apiRateLimit, analyticsRoutes);
 
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {

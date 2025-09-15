@@ -85,7 +85,8 @@ const adminSchema = new mongoose.Schema({
     },
     employeeId: {
         type: String,
-        sparse: true
+        sparse: true,
+        unique: true
     },
     joiningDate: {
         type: Date,
@@ -140,7 +141,7 @@ adminSchema.virtual('isLocked').get(function () {
 adminSchema.index({ email: 1 }, { unique: true });
 adminSchema.index({ role: 1 });
 adminSchema.index({ isActive: 1 });
-adminSchema.index({ employeeId: 1 }, { unique: true, sparse: true });
+// employeeId index is already defined in schema with unique: true
 
 // Pre-save middleware to hash password
 adminSchema.pre('save', async function (next) {

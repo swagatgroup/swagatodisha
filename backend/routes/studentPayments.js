@@ -1,10 +1,11 @@
 const express = require('express');
 const { protect } = require('../middleware/auth');
 const {
-    getStudentPayments,
-    createPayment,
-    updatePaymentStatus,
-    getPaymentById
+    getPaymentHistory,
+    generatePaymentQR,
+    checkPaymentStatus,
+    getPaymentInfo,
+    generatePaymentReceipt
 } = require('../controllers/paymentController');
 
 const router = express.Router();
@@ -12,16 +13,19 @@ const router = express.Router();
 // All routes are protected
 router.use(protect);
 
-// Get student payments
-router.get('/', getStudentPayments);
+// Get payment history
+router.get('/', getPaymentHistory);
 
-// Create new payment
-router.post('/', createPayment);
+// Get payment info (amount, course fees, etc.)
+router.get('/info', getPaymentInfo);
 
-// Get payment by ID
-router.get('/:paymentId', getPaymentById);
+// Generate payment QR code
+router.post('/generate-qr', generatePaymentQR);
 
-// Update payment status
-router.put('/:paymentId', updatePaymentStatus);
+// Check payment status
+router.get('/status/:paymentId', checkPaymentStatus);
+
+// Generate payment receipt
+router.get('/receipt/:paymentId', generatePaymentReceipt);
 
 module.exports = router;
