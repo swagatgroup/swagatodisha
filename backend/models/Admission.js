@@ -4,7 +4,6 @@ const admissionSchema = new mongoose.Schema({
     // Application Information
     applicationNumber: {
         type: String,
-        unique: true,
         required: true
     },
     applicationDate: {
@@ -287,7 +286,7 @@ admissionSchema.pre('save', function (next) {
 });
 
 // Indexes
-admissionSchema.index({ applicationNumber: 1 });
+admissionSchema.index({ applicationNumber: 1 }, { unique: true });
 admissionSchema.index({ student: 1 });
 admissionSchema.index({ status: 1 });
 admissionSchema.index({ currentStage: 1 });

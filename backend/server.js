@@ -72,6 +72,7 @@ const {
 
 // Import performance monitoring
 const performanceMonitor = require('./utils/performance');
+const databaseOptimization = require('./utils/databaseOptimization');
 
 // Import error handling middleware
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -79,8 +80,8 @@ const { errorHandler, notFound } = require('./middleware/errorHandler');
 // Middleware
 app.use(securityHeaders);
 app.use(compression());
-app.use(morgan('combined'));
-app.use(securityLogger);
+app.use(morgan('tiny')); // Reduced logging
+// app.use(securityLogger); // Disabled verbose security logging
 app.use(performanceMonitor.performanceMiddleware());
 app.use(sanitizeInput);
 app.use(preventSQLInjection);
@@ -263,6 +264,7 @@ app.get('/api/test', (req, res) => {
 const studentPaymentRoutes = require('./routes/studentPayments');
 const studentApplicationRoutes = require('./routes/studentApplications');
 const studentAcademicRoutes = require('./routes/studentAcademic');
+const workflowRoutes = require('./routes/workflow');
 
 // API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
@@ -271,6 +273,7 @@ app.use('/api/students', apiRateLimit, studentRoutes);
 app.use('/api/students/payments', apiRateLimit, studentPaymentRoutes);
 app.use('/api/students/applications', apiRateLimit, studentApplicationRoutes);
 app.use('/api/students/academic', apiRateLimit, studentAcademicRoutes);
+app.use('/api/workflow', apiRateLimit, workflowRoutes);
 app.use('/api/admin', apiRateLimit, adminRoutes);
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/documents', uploadRateLimit, documentRoutes);
@@ -280,6 +283,37 @@ app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
 app.use('/api/contact', apiRateLimit, contactRoutes);
 app.use('/api/files', uploadRateLimit, fileRoutes);
+
+// Performance monitoring routes
+app.get('/api/health', async (req, res) => {
+    try {
+        const healthStatus = performanceMonitor.getHealthStatus();
+        const dbHealth = await databaseOptimization.getDatabaseHealth();
+
+        res.json({
+            status: 'healthy',
+            timestamp: new Date().toISOString(),
+            performance: healthStatus,
+            database: dbHealth
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: 'unhealthy',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
+});
+
+app.get('/api/performance/metrics', (req, res) => {
+    const metrics = performanceMonitor.getAllMetrics();
+    res.json(metrics);
+});
+
+app.get('/api/performance/recommendations', (req, res) => {
+    const recommendations = performanceMonitor.getRecommendations();
+    res.json(recommendations);
+});
 
 // 404 handler
 app.use('*', notFound);
@@ -310,19 +344,19 @@ const initializeConnections = async () => {
 // Initialize Socket.IO
 const socketManager = new SocketManager(server);
 
+// Initialize database optimization (disabled to avoid duplicate index warnings)
+// databaseOptimization.createOptimizedIndexes();
+
 // Start server
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 const startServer = async () => {
     try {
-
-
         // Start server first, then connect to database
         server.listen(PORT, () => {
             console.log(`🚀 Server running on port ${PORT}`);
-            console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
-            console.log(`📊 Health check: http://localhost:${PORT}/health`);
-            console.log(`📊 API Health check: http://localhost:${PORT}/api/health`);
-            console.log(`🔌 Socket.IO server initialized`);
+            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+            console.log(`📊 Health: http://localhost:${PORT}/health`);
+            console.log(`🔌 Socket.IO initialized`);
         });
 
         // Initialize connections (non-blocking)
@@ -337,5 +371,14 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Handle unhandled promise rejections
+process.on('unhandledRejection', (err, promise) => {
+    console.log('❌ Unhandled Rejection:', err.message);
+    // Close server & exit process
+    server.close(() => {
+        process.exit(1);
+    });
+});
 
 module.exports = { app, server, socketManager };

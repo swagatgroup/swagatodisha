@@ -22,27 +22,18 @@ const documentSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: [
-            'academic_certificate',
-            'identity_proof',
-            'address_proof',
-            'income_certificate',
-            'caste_certificate',
-            'photo',
-            'signature',
-            'migration_certificate',
-            'tc',
-            'mark_sheet',
-            'entrance_exam_card',
-            'aadhar_card',
-            'birth_certificate',
-            'marksheet_10th',
-            'marksheet_12th',
-            'transfer_certificate',
-            'character_certificate',
-            'passport_photo',
-            'guardian_id',
-            'medical_certificate',
-            'other'
+            'Academic Certificates',
+            'Identity Proof (Aadhar Card)',
+            'Address Proof',
+            'Income Certificate',
+            'Caste Certificate',
+            'Medical Certificate',
+            'Transfer Certificate',
+            'Character Certificate',
+            'Passport Size Photos',
+            'Bank Details',
+            'Guardian Documents',
+            'Other Certificates'
         ]
     },
 
@@ -62,6 +53,12 @@ const documentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    storageType: {
+        type: String,
+        enum: ['mongodb', 'r2'],
+        default: 'r2', // Documents are typically heavy, default to R2
+        required: true
+    },
 
     fileSize: {
         type: Number,
@@ -76,8 +73,8 @@ const documentSchema = new mongoose.Schema({
     // Enhanced Document Status
     status: {
         type: String,
-        enum: ['pending', 'under_review', 'approved', 'rejected', 'resubmission_required'],
-        default: 'pending'
+        enum: ['PENDING', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'RESUBMITTED'],
+        default: 'PENDING'
     },
 
     // Enhanced Review System
@@ -99,6 +96,18 @@ const documentSchema = new mongoose.Schema({
         type: String,
         maxlength: [1000, 'Current remarks cannot exceed 1000 characters'],
         default: ''
+    },
+
+    remarks: {
+        message: String,
+        isCustom: { type: Boolean, default: false },
+        reviewerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    },
+
+    submissionStage: {
+        type: String,
+        enum: ['DRAFT', 'SUBMITTED', 'FINAL'],
+        default: 'DRAFT'
     },
 
     priority: {
@@ -183,12 +192,11 @@ const documentSchema = new mongoose.Schema({
 });
 
 // Indexes for better performance
-documentSchema.index({ uploadedBy: 1, documentType: 1 });
-documentSchema.index({ status: 1 });
-documentSchema.index({ assignedTo: 1 });
-documentSchema.index({ uploadedAt: -1 });
-documentSchema.index({ priority: 1 });
-documentSchema.index({ isActive: 1 });
+documentSchema.index({ uploadedBy: 1, status: 1 });
+documentSchema.index({ assignedTo: 1, uploadedAt: -1 });
+documentSchema.index({ documentType: 1, status: 1 });
+documentSchema.index({ submissionStage: 1, status: 1 });
+documentSchema.index({ uploadedBy: 1, submissionStage: 1, status: 1 });
 
 // Virtual for document URL
 documentSchema.virtual('documentUrl').get(function () {
@@ -279,6 +287,35 @@ documentSchema.statics.getAssignedToStaff = function (staffId) {
         assignedTo: staffId,
         isActive: true
     }).populate('uploadedBy', 'fullName email role').sort({ createdAt: -1 });
+};
+
+documentSchema.statics.getHybridStorageStats = function () {
+    return this.aggregate([
+        { $match: { isActive: true } },
+        {
+            $group: {
+                _id: '$storageType',
+                count: { $sum: 1 },
+                totalSize: { $sum: '$fileSize' },
+                averageSize: { $avg: '$fileSize' }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                storageBreakdown: {
+                    $push: {
+                        storageType: '$_id',
+                        count: '$count',
+                        totalSize: '$totalSize',
+                        averageSize: '$averageSize'
+                    }
+                },
+                totalFiles: { $sum: '$count' },
+                totalSize: { $sum: '$totalSize' }
+            }
+        }
+    ]);
 };
 
 // Ensure virtual fields are serialized

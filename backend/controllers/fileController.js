@@ -4,11 +4,12 @@ const { PutObjectCommand, DeleteObjectCommand, GetObjectCommand } = require('@aw
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 const { generateUniqueFileName, getFileCategory } = require('../middleware/upload');
 const { asyncHandler } = require('../middleware/errorHandler');
+const { uploadFile, getDownloadUrl, deleteFile, getStorageStats } = require('../utils/hybridStorage');
 
 // @desc    Upload single file
 // @route   POST /api/files/upload
 // @access  Public
-const uploadFile = asyncHandler(async (req, res) => {
+const uploadSingleFile = asyncHandler(async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({
@@ -21,35 +22,22 @@ const uploadFile = asyncHandler(async (req, res) => {
         const { originalname, mimetype, size, buffer } = req.file;
         const { uploadedBy, tags, isPublic } = req.body;
 
-        // Generate unique filename
-        const fileName = generateUniqueFileName(originalname);
         const fileCategory = getFileCategory(mimetype);
 
-        // Upload to R2
-        const uploadCommand = new PutObjectCommand({
-            Bucket: process.env.R2_BUCKET_NAME,
-            Key: fileName,
-            Body: buffer,
-            ContentType: mimetype,
-            Metadata: {
-                originalName: originalname,
-                uploadedBy: uploadedBy || 'anonymous',
-                category: fileCategory
-            }
+        // Use hybrid storage to upload file
+        const uploadResult = await uploadFile(req.file, {
+            uploadedBy: uploadedBy || 'anonymous',
+            category: fileCategory
         });
-
-        await r2Client.send(uploadCommand);
-
-        // Generate file URL
-        const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET_NAME}/${fileName}`;
 
         // Save to MongoDB
         const fileData = {
-            fileName,
+            fileName: uploadResult.fileName,
             originalName: originalname,
-            fileUrl,
+            fileUrl: uploadResult.fileUrl,
             fileSize: size,
             mimeType: mimetype,
+            storageType: uploadResult.storageType,
             uploadedBy: uploadedBy || 'anonymous',
             tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
             isPublic: isPublic === 'true' || false,
@@ -114,36 +102,22 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
         for (const file of req.files) {
             try {
                 const { originalname, mimetype, size, buffer } = file;
-
-                // Generate unique filename
-                const fileName = generateUniqueFileName(originalname);
                 const fileCategory = getFileCategory(mimetype);
 
-                // Upload to R2
-                const uploadCommand = new PutObjectCommand({
-                    Bucket: process.env.R2_BUCKET_NAME,
-                    Key: fileName,
-                    Body: buffer,
-                    ContentType: mimetype,
-                    Metadata: {
-                        originalName: originalname,
-                        uploadedBy: uploadedBy || 'anonymous',
-                        category: fileCategory
-                    }
+                // Use hybrid storage to upload file
+                const uploadResult = await uploadFile(file, {
+                    uploadedBy: uploadedBy || 'anonymous',
+                    category: fileCategory
                 });
-
-                await r2Client.send(uploadCommand);
-
-                // Generate file URL
-                const fileUrl = `${process.env.R2_ENDPOINT}/${process.env.R2_BUCKET_NAME}/${fileName}`;
 
                 // Save to MongoDB
                 const fileData = {
-                    fileName,
+                    fileName: uploadResult.fileName,
                     originalName: originalname,
-                    fileUrl,
+                    fileUrl: uploadResult.fileUrl,
                     fileSize: size,
                     mimeType: mimetype,
+                    storageType: uploadResult.storageType,
                     uploadedBy: uploadedBy || 'anonymous',
                     tags: tags ? tags.split(',').map(tag => tag.trim()) : [],
                     isPublic: isPublic === 'true' || false,
@@ -214,18 +188,13 @@ const getFile = asyncHandler(async (req, res) => {
             });
         }
 
-        // Generate signed URL for private files
+        // Generate download URL using hybrid storage
         let downloadUrl = file.fileUrl;
         if (!file.isPublic) {
             try {
-                const getObjectCommand = new GetObjectCommand({
-                    Bucket: process.env.R2_BUCKET_NAME,
-                    Key: file.fileName
-                });
-
-                downloadUrl = await getSignedUrl(r2Client, getObjectCommand, { expiresIn: 3600 }); // 1 hour
+                downloadUrl = await getDownloadUrl(file, false);
             } catch (urlError) {
-                console.error('Error generating signed URL:', urlError);
+                console.error('Error generating download URL:', urlError);
                 // Fallback to public URL if signed URL generation fails
             }
         }
@@ -330,6 +299,7 @@ const getFiles = asyncHandler(async (req, res) => {
                     mimeType: file.mimeType,
                     fileCategory: file.fileCategory,
                     fileExtension: file.fileExtension,
+                    storageType: file.storageType,
                     uploadedBy: file.uploadedBy,
                     tags: file.tags,
                     isPublic: file.isPublic,
@@ -430,7 +400,7 @@ const updateFile = asyncHandler(async (req, res) => {
 // @desc    Delete file
 // @route   DELETE /api/files/:id
 // @access  Public
-const deleteFile = asyncHandler(async (req, res) => {
+const deleteFileController = asyncHandler(async (req, res) => {
     try {
         const file = await File.findById(req.params.id);
 
@@ -442,17 +412,12 @@ const deleteFile = asyncHandler(async (req, res) => {
             });
         }
 
-        // Delete from R2
+        // Delete from appropriate storage
         try {
-            const deleteCommand = new DeleteObjectCommand({
-                Bucket: process.env.R2_BUCKET_NAME,
-                Key: file.fileName
-            });
-
-            await r2Client.send(deleteCommand);
-        } catch (r2Error) {
-            console.error('Error deleting from R2:', r2Error);
-            // Continue with database deletion even if R2 deletion fails
+            await deleteFile(file);
+        } catch (deleteError) {
+            console.error('Error deleting file from storage:', deleteError);
+            // Continue with database deletion even if storage deletion fails
         }
 
         // Soft delete from MongoDB
@@ -500,18 +465,13 @@ const downloadFile = asyncHandler(async (req, res) => {
         // Increment download count
         await file.incrementDownloadCount();
 
-        // Generate signed URL for private files
+        // Generate download URL using hybrid storage
         let downloadUrl = file.fileUrl;
         if (!file.isPublic) {
             try {
-                const getObjectCommand = new GetObjectCommand({
-                    Bucket: process.env.R2_BUCKET_NAME,
-                    Key: file.fileName
-                });
-
-                downloadUrl = await getSignedUrl(r2Client, getObjectCommand, { expiresIn: 3600 }); // 1 hour
+                downloadUrl = await getDownloadUrl(file, false);
             } catch (urlError) {
-                console.error('Error generating signed URL:', urlError);
+                console.error('Error generating download URL:', urlError);
                 return res.status(500).json({
                     success: false,
                     message: 'Failed to generate download URL',
@@ -551,6 +511,7 @@ const downloadFile = asyncHandler(async (req, res) => {
 const getFileStats = asyncHandler(async (req, res) => {
     try {
         const stats = await File.getStorageStats();
+        const hybridStats = await File.getHybridStorageStats();
         const totalFiles = await File.countDocuments({ isActive: true });
         const publicFiles = await File.countDocuments({ isActive: true, isPublic: true });
         const privateFiles = totalFiles - publicFiles;
@@ -576,6 +537,7 @@ const getFileStats = asyncHandler(async (req, res) => {
                 privateFiles,
                 totalSize: stats[0]?.totalSize || 0,
                 averageSize: stats[0]?.averageSize || 0,
+                hybridStorage: hybridStats[0] || { storageBreakdown: [], totalFiles: 0, totalSize: 0 },
                 categoryBreakdown: categoryStats.map(cat => ({
                     mimeType: cat._id,
                     count: cat.count,
@@ -597,12 +559,12 @@ const getFileStats = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
-    uploadFile,
+    uploadFile: uploadSingleFile,
     uploadMultipleFiles,
     getFile,
     getFiles,
     updateFile,
-    deleteFile,
+    deleteFile: deleteFileController,
     downloadFile,
     getFileStats
 };

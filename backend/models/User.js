@@ -42,7 +42,6 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Email is required'],
-        unique: true,
         lowercase: true,
         trim: true
     },
@@ -74,8 +73,6 @@ const userSchema = new mongoose.Schema({
             // Required for students and agents, not for other roles
             return this.isNew && (this.role === 'student' || this.role === 'agent');
         },
-        unique: true,
-        sparse: true, // Allow multiple null values
         validate: {
             validator: function (v) {
                 // Skip validation if empty and not required
@@ -134,10 +131,16 @@ const userSchema = new mongoose.Schema({
     // Universal Referral System (for all user types)
     referralCode: {
         type: String,
-        unique: true,
-        sparse: true,
-        uppercase: true,
-        trim: true
+        uppercase: false,
+        trim: true,
+        length: 8,
+        validate: {
+            validator: function (v) {
+                if (!v) return true; // Allow empty for users without referral codes
+                return /^[a-z]{3}\d{2}[aost]\d{2}$/.test(v);
+            },
+            message: 'Invalid referral code format. Must be 8 characters: 3 letters + 2 digits + 1 role letter + 2 year digits'
+        }
     },
     referredBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -149,11 +152,15 @@ const userSchema = new mongoose.Schema({
             type: Number,
             default: 0
         },
+        pendingReferrals: {
+            type: Number,
+            default: 0
+        },
         approvedReferrals: {
             type: Number,
             default: 0
         },
-        pendingReferrals: {
+        rejectedReferrals: {
             type: Number,
             default: 0
         },
@@ -225,10 +232,12 @@ userSchema.virtual('isLocked').get(function () {
 });
 
 // Indexes
-userSchema.index({ email: 1 });
-userSchema.index({ referralCode: 1 });
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ referralCode: 1 }, { unique: true, sparse: true });
+userSchema.index({ phoneNumber: 1 }, { unique: true, sparse: true });
 userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
+userSchema.index({ role: 1, isActive: 1 });
 
 // Pre-save middleware to hash password
 userSchema.pre('save', async function (next) {
@@ -245,11 +254,23 @@ userSchema.pre('save', async function (next) {
 
 // Instance methods
 userSchema.methods.generateReferralCode = function () {
-    const rolePrefix = this.role.substring(0, 2).toUpperCase();
-    const namePrefix = this.fullName ? this.fullName.substring(0, 2).toUpperCase() : 'XX';
-    const timestamp = Date.now().toString(36).substring(-4);
-    const random = Math.random().toString(36).substring(2, 4).toUpperCase();
-    return `${rolePrefix}${namePrefix}${timestamp}${random}`;
+    // Format: [3-letter-name][2-digit-phone][1-role-letter][2-digit-year]
+    // Example: raj69a25 (Rajesh, phone ending 69, agent, year 2025)
+
+    const namePrefix = this.fullName ? this.fullName.substring(0, 3).toLowerCase() : 'xxx';
+    const phoneSuffix = this.phoneNumber ? this.phoneNumber.slice(-2) : '00';
+
+    const roleMap = {
+        'student': 's',
+        'agent': 'a',
+        'staff': 'o',    // office
+        'super_admin': 't' // the admin
+    };
+
+    const roleLetter = roleMap[this.role] || 'u'; // u for user
+    const yearSuffix = new Date().getFullYear().toString().slice(-2);
+
+    return `${namePrefix}${phoneSuffix}${roleLetter}${yearSuffix}`;
 };
 
 userSchema.methods.comparePassword = async function (candidatePassword) {

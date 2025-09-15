@@ -18,7 +18,6 @@ const adminSchema = new mongoose.Schema({
     email: {
         type: String,
         required: [true, 'Email is required'],
-        unique: true,
         lowercase: true,
         trim: true,
         match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid email']
@@ -86,7 +85,6 @@ const adminSchema = new mongoose.Schema({
     },
     employeeId: {
         type: String,
-        unique: true,
         sparse: true
     },
     joiningDate: {
@@ -139,10 +137,10 @@ adminSchema.virtual('isLocked').get(function () {
 });
 
 // Indexes
-adminSchema.index({ email: 1 });
+adminSchema.index({ email: 1 }, { unique: true });
 adminSchema.index({ role: 1 });
 adminSchema.index({ isActive: 1 });
-adminSchema.index({ employeeId: 1 });
+adminSchema.index({ employeeId: 1 }, { unique: true, sparse: true });
 
 // Pre-save middleware to hash password
 adminSchema.pre('save', async function (next) {

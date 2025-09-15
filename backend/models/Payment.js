@@ -37,7 +37,6 @@ const paymentSchema = new mongoose.Schema({
     },
     transactionId: {
         type: String,
-        unique: true,
         required: true
     },
     status: {
@@ -76,7 +75,7 @@ const paymentSchema = new mongoose.Schema({
 
 // Indexes for better performance
 paymentSchema.index({ student: 1, status: 1 });
-paymentSchema.index({ transactionId: 1 });
+paymentSchema.index({ transactionId: 1 }, { unique: true });
 paymentSchema.index({ paymentDate: -1 });
 paymentSchema.index({ dueDate: 1 });
 

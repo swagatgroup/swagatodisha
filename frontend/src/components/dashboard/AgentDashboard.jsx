@@ -3,7 +3,9 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import ReferralManagement from '../agents/ReferralManagement';
-import DocumentManagement from '../documents/DocumentManagement';
+import AgentDraftManager from '../agents/AgentDraftManager';
+import InteractivePieChart from '../analytics/InteractivePieChart';
+import DetailModal from '../analytics/DetailModal';
 import {
     showSuccess,
     showError,
@@ -26,6 +28,11 @@ const AgentDashboard = () => {
         thisMonthReferrals: 0
     });
 
+    // New state for enhanced features
+    const [analyticsData, setAnalyticsData] = useState({});
+    const [selectedChartData, setSelectedChartData] = useState(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
 
     const sidebarItems = [
@@ -35,6 +42,15 @@ const AgentDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                </svg>
+            )
+        },
+        {
+            id: 'drafts',
+            name: 'Draft Manager',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
             )
         },
@@ -53,15 +69,6 @@ const AgentDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-            )
-        },
-        {
-            id: 'documents',
-            name: 'Documents',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
             )
         },
@@ -85,6 +92,9 @@ const AgentDashboard = () => {
                 const response = await api.get('/api/dashboard/agents/dashboard');
                 setStats(response.data.data.stats);
 
+                // Load analytics data
+                await loadAnalyticsData();
+
                 closeLoading();
             } catch (error) {
                 console.error('Error fetching agent data:', error);
@@ -98,6 +108,28 @@ const AgentDashboard = () => {
                     totalCommission: 15000,
                     thisMonthReferrals: 3
                 });
+
+                // Set mock analytics data
+                setAnalyticsData({
+                    studentStatus: [
+                        { name: 'Draft', value: 5, total: 15 },
+                        { name: 'Submitted', value: 7, total: 15 },
+                        { name: 'Approved', value: 3, total: 15 }
+                    ],
+                    commissionStatus: [
+                        { name: 'Pending', value: 2500, total: 15000 },
+                        { name: 'Paid', value: 12500, total: 15000 }
+                    ],
+                    documentVerification: [
+                        { name: 'Approved', value: 8, total: 12 },
+                        { name: 'Pending', value: 3, total: 12 },
+                        { name: 'Rejected', value: 1, total: 12 }
+                    ],
+                    monthlyPerformance: [
+                        { name: 'Current Month', value: 3, total: 10 },
+                        { name: 'Target', value: 7, total: 10 }
+                    ]
+                });
             } finally {
                 setLoading(false);
             }
@@ -105,6 +137,17 @@ const AgentDashboard = () => {
 
         fetchAgentData();
     }, []);
+
+    const loadAnalyticsData = async () => {
+        try {
+            const response = await api.get('/api/analytics/dashboard/agent');
+            if (response.data.success) {
+                setAnalyticsData(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error loading analytics data:', error);
+        }
+    };
 
     const renderSidebarContent = () => {
         switch (activeSidebarItem) {
@@ -236,11 +279,60 @@ const AgentDashboard = () => {
                             </div>
                         </motion.div>
 
-                        {/* Recent Referrals */}
+                        {/* Analytics Charts */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+                        >
+                            <InteractivePieChart
+                                data={analyticsData.studentStatus || []}
+                                title="Student Status"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                            <InteractivePieChart
+                                data={analyticsData.commissionStatus || []}
+                                title="Commission Status"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.7 }}
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+                        >
+                            <InteractivePieChart
+                                data={analyticsData.documentVerification || []}
+                                title="Document Verification"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                            <InteractivePieChart
+                                data={analyticsData.monthlyPerformance || []}
+                                title="Monthly Performance"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                        </motion.div>
+
+                        {/* Recent Referrals */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.8 }}
                             className="bg-white rounded-lg shadow"
                         >
                             <div className="px-6 py-4 border-b border-gray-200">
@@ -267,6 +359,8 @@ const AgentDashboard = () => {
                 return <ReferralManagement />;
             case 'documents':
                 return <DocumentManagement />;
+            case 'drafts':
+                return <DraftManagement />;
             case 'commission':
                 return (
                     <div className="bg-white rounded-lg shadow p-6">
@@ -327,6 +421,57 @@ const AgentDashboard = () => {
     return (
         <DashboardLayout title="Agent Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
             {renderSidebarContent()}
+
+            {/* Detail Modal */}
+            {showDetailModal && selectedChartData && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+                        <div className="px-6 py-4 border-b border-gray-200">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    {selectedChartData.title} Details
+                                </h3>
+                                <button
+                                    onClick={() => setShowDetailModal(false)}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div className="px-6 py-4">
+                            <div className="space-y-4">
+                                {selectedChartData.data.map((item, index) => (
+                                    <div key={index} className="flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <div
+                                                className="w-4 h-4 rounded-full mr-3"
+                                                style={{ backgroundColor: item.color }}
+                                            ></div>
+                                            <span className="text-sm font-medium text-gray-900">
+                                                {item.name}
+                                            </span>
+                                        </div>
+                                        <span className="text-sm text-gray-600">
+                                            {item.value} ({item.percentage}%)
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="px-6 py-4 border-t border-gray-200">
+                            <button
+                                onClick={() => setShowDetailModal(false)}
+                                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 };

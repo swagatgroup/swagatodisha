@@ -40,8 +40,8 @@ const generateReferralCode = async (req, res) => {
 
             referralCode = customCode.toUpperCase();
         } else {
-            // Generate unique code
-            referralCode = await generateUniqueReferralCode(user.fullName, user.role);
+            // Generate unique code using new format
+            referralCode = await generateUniqueReferralCode(user.fullName, user.phoneNumber, user.role);
         }
 
         user.referralCode = referralCode;
@@ -80,17 +80,27 @@ const generateReferralCode = async (req, res) => {
     }
 };
 
-// Generate unique referral code
-const generateUniqueReferralCode = async (fullName, role) => {
+// Generate unique referral code using new format
+const generateUniqueReferralCode = async (fullName, phoneNumber, role) => {
     let attempts = 0;
     const maxAttempts = 10;
 
     while (attempts < maxAttempts) {
-        const rolePrefix = role.substring(0, 2).toUpperCase();
-        const namePrefix = fullName ? fullName.substring(0, 2).toUpperCase() : 'XX';
-        const timestamp = Date.now().toString(36).substring(-4);
-        const random = Math.random().toString(36).substring(2, 4).toUpperCase();
-        const referralCode = `${rolePrefix}${namePrefix}${timestamp}${random}`;
+        // Format: [3-letter-name][2-digit-phone][1-role-letter][2-digit-year]
+        const namePrefix = fullName ? fullName.substring(0, 3).toLowerCase() : 'xxx';
+        const phoneSuffix = phoneNumber ? phoneNumber.slice(-2) : '00';
+
+        const roleMap = {
+            'student': 's',
+            'agent': 'a',
+            'staff': 'o',    // office
+            'super_admin': 't' // the admin
+        };
+
+        const roleLetter = roleMap[role] || 'u'; // u for user
+        const yearSuffix = new Date().getFullYear().toString().slice(-2);
+
+        const referralCode = `${namePrefix}${phoneSuffix}${roleLetter}${yearSuffix}`;
 
         const existingCode = await User.findOne({ referralCode });
         if (!existingCode) {

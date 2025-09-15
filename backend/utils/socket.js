@@ -65,6 +65,7 @@ class SocketManager {
     setupEventHandlers() {
         this.io.on('connection', (socket) => {
             // User connected
+            console.log(`User connected: ${socket.userName} (${socket.userRole})`);
 
             // Store user connection
             this.connectedUsers.set(socket.userId, {
@@ -79,6 +80,17 @@ class SocketManager {
             // Join user to role-based rooms
             socket.join(socket.userRole);
             socket.join(socket.userId);
+
+            // Notify others about user connection
+            socket.to(socket.userRole).emit('user_connected', {
+                userId: socket.userId,
+                userName: socket.userName,
+                userRole: socket.userRole,
+                connectedAt: new Date()
+            });
+
+            // Send current online users to the connected user
+            socket.emit('online_users_update', Array.from(this.connectedUsers.values()));
 
             // Handle document status updates
             socket.on('document_status_update', (data) => {
@@ -95,7 +107,8 @@ class SocketManager {
                 socket.to(data.room).emit('user_typing', {
                     userId: socket.userId,
                     userName: socket.userName,
-                    isTyping: true
+                    isTyping: true,
+                    room: data.room
                 });
             });
 
@@ -103,13 +116,33 @@ class SocketManager {
                 socket.to(data.room).emit('user_typing', {
                     userId: socket.userId,
                     userName: socket.userName,
-                    isTyping: false
+                    isTyping: false,
+                    room: data.room
                 });
+            });
+
+            // Handle online users request
+            socket.on('get_online_users', () => {
+                socket.emit('online_users_update', Array.from(this.connectedUsers.values()));
+            });
+
+            // Handle real-time dashboard updates
+            socket.on('request_dashboard_data', (data) => {
+                this.sendDashboardData(socket, data);
             });
 
             // Handle disconnect
             socket.on('disconnect', () => {
-                // User disconnected
+                console.log(`User disconnected: ${socket.userName} (${socket.userRole})`);
+
+                // Notify others about user disconnection
+                socket.to(socket.userRole).emit('user_disconnected', {
+                    userId: socket.userId,
+                    userName: socket.userName,
+                    userRole: socket.userRole
+                });
+
+                // Remove user from connected users
                 this.connectedUsers.delete(socket.userId);
             });
         });
@@ -247,6 +280,63 @@ class SocketManager {
     // Check if user is online
     isUserOnline(userId) {
         return this.connectedUsers.has(userId);
+    }
+
+    // Send dashboard data
+    sendDashboardData(socket, data) {
+        const { role, userId } = data;
+
+        // Mock dashboard data based on role
+        let dashboardData = {};
+
+        switch (role) {
+            case 'student':
+                dashboardData = {
+                    applications: { total: 3, pending: 1, approved: 2 },
+                    documents: { total: 8, pending: 2, approved: 6 },
+                    payments: { total: 2, pending: 0, completed: 2 }
+                };
+                break;
+            case 'agent':
+                dashboardData = {
+                    referrals: { total: 15, pending: 3, approved: 12 },
+                    commissions: { total: 2500, pending: 500, earned: 2000 },
+                    students: { total: 12, active: 10, inactive: 2 }
+                };
+                break;
+            case 'staff':
+                dashboardData = {
+                    applications: { total: 45, pending: 12, approved: 28, rejected: 5 },
+                    documents: { total: 120, pending: 20, approved: 85, rejected: 15 },
+                    students: { total: 150, active: 120, inactive: 30 }
+                };
+                break;
+            case 'super_admin':
+                dashboardData = {
+                    users: { total: 200, students: 150, agents: 30, staff: 20 },
+                    applications: { total: 500, pending: 50, approved: 400, rejected: 50 },
+                    system: { uptime: '99.9%', storage: '75%', performance: 'Excellent' }
+                };
+                break;
+        }
+
+        socket.emit('dashboard_data_update', dashboardData);
+    }
+
+    // Send real-time statistics update
+    sendStatsUpdate(role, stats) {
+        this.broadcastToRole(role, 'stats_update', {
+            stats,
+            timestamp: new Date()
+        });
+    }
+
+    // Send real-time activity update
+    sendActivityUpdate(activity) {
+        this.broadcastToAll('activity_update', {
+            ...activity,
+            timestamp: new Date()
+        });
     }
 }
 

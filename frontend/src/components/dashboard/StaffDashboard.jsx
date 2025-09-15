@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
-import DocumentReview from '../documents/DocumentReview';
-import DocumentManagement from '../documents/DocumentManagement';
+import DocumentVerificationInterface from '../staff/DocumentVerificationInterface';
+import InteractivePieChart from '../analytics/InteractivePieChart';
+import DetailModal from '../analytics/DetailModal';
 import {
     showSuccess,
     showError,
@@ -26,6 +27,11 @@ const StaffDashboard = () => {
         referralBased: 0,
         directEnrollments: 0
     });
+
+    // New state for enhanced features
+    const [analyticsData, setAnalyticsData] = useState({});
+    const [selectedChartData, setSelectedChartData] = useState(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
 
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
 
@@ -95,6 +101,9 @@ const StaffDashboard = () => {
                 const response = await api.get('/api/dashboard/staff/dashboard');
                 setStats(response.data.data.stats);
 
+                // Load analytics data
+                await loadAnalyticsData();
+
                 closeLoading();
             } catch (error) {
                 console.error('Error fetching staff data:', error);
@@ -109,6 +118,31 @@ const StaffDashboard = () => {
                     referralBased: 15,
                     directEnrollments: 30
                 });
+
+                // Set mock analytics data
+                setAnalyticsData({
+                    verificationQueue: [
+                        { name: 'Pending Review', value: 12, total: 20 },
+                        { name: 'Under Review', value: 5, total: 20 },
+                        { name: 'Completed', value: 3, total: 20 }
+                    ],
+                    documentCategories: [
+                        { name: 'Academic Certificates', value: 8, total: 20 },
+                        { name: 'Identity Proof', value: 6, total: 20 },
+                        { name: 'Address Proof', value: 4, total: 20 },
+                        { name: 'Other Documents', value: 2, total: 20 }
+                    ],
+                    studentApplications: [
+                        { name: 'Approved', value: 28, total: 45 },
+                        { name: 'Pending', value: 12, total: 45 },
+                        { name: 'Rejected', value: 5, total: 45 }
+                    ],
+                    agentPerformance: [
+                        { name: 'Top Performers', value: 8, total: 15 },
+                        { name: 'Average Performers', value: 5, total: 15 },
+                        { name: 'Low Performers', value: 2, total: 15 }
+                    ]
+                });
             } finally {
                 setLoading(false);
             }
@@ -116,6 +150,17 @@ const StaffDashboard = () => {
 
         fetchStaffData();
     }, []);
+
+    const loadAnalyticsData = async () => {
+        try {
+            const response = await api.get('/api/analytics/dashboard/staff');
+            if (response.data.success) {
+                setAnalyticsData(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error loading analytics data:', error);
+        }
+    };
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -257,11 +302,60 @@ const StaffDashboard = () => {
                             </div>
                         </motion.div>
 
-                        {/* Recent Applications */}
+                        {/* Analytics Charts */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+                        >
+                            <InteractivePieChart
+                                data={analyticsData.verificationQueue || []}
+                                title="Verification Queue"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                            <InteractivePieChart
+                                data={analyticsData.documentCategories || []}
+                                title="Document Categories"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                        </motion.div>
+
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.7 }}
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+                        >
+                            <InteractivePieChart
+                                data={analyticsData.studentApplications || []}
+                                title="Student Applications"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                            <InteractivePieChart
+                                data={analyticsData.agentPerformance || []}
+                                title="Agent Performance"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                        </motion.div>
+
+                        {/* Recent Applications */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.8 }}
                             className="bg-white rounded-lg shadow"
                         >
                             <div className="px-6 py-4 border-b border-gray-200">
@@ -343,7 +437,7 @@ const StaffDashboard = () => {
                     </div>
                 );
             case 'documents':
-                return <DocumentReview />;
+                return <DocumentVerificationInterface />;
             case 'reports':
                 return (
                     <div className="bg-white rounded-lg shadow p-6">
@@ -381,9 +475,20 @@ const StaffDashboard = () => {
     }
 
     return (
-        <DashboardLayout title="Staff Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
-            {renderSidebarContent()}
-        </DashboardLayout>
+        <>
+            <DashboardLayout title="Staff Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
+                {renderSidebarContent()}
+            </DashboardLayout>
+
+            {/* Detail Modal for Analytics */}
+            <DetailModal
+                isOpen={showDetailModal}
+                onClose={() => setShowDetailModal(false)}
+                data={selectedChartData?.details || []}
+                title={selectedChartData?.name || 'Details'}
+                type="analytics"
+            />
+        </>
     );
 };
 

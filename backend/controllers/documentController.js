@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Notification = require('../models/Notification');
 const cloudinary = require('cloudinary').v2;
 const { promisify } = require('util');
+const { uploadFile, getDownloadUrl, deleteFile } = require('../utils/hybridStorage');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -44,21 +45,21 @@ const uploadDocument = async (req, res) => {
             });
         }
 
-        // Upload to Cloudinary (with fallback to local storage)
-        let cloudinaryResult;
+        // Use hybrid storage for document upload
+        let uploadResult;
         try {
-            cloudinaryResult = await uploadToCloudinary(uploadedFile.path, {
-                resource_type: 'auto',
-                folder: 'swagat-odisha/documents'
+            uploadResult = await uploadFile(uploadedFile, {
+                uploadedBy: req.user._id,
+                category: 'document',
+                documentType: documentType
             });
-        } catch (cloudinaryError) {
-            console.warn('Cloudinary upload failed, using local storage:', cloudinaryError.message);
-            // Fallback to local storage
-            cloudinaryResult = {
-                public_id: `doc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-                secure_url: `/uploads/documents/${uploadedFile.filename}`,
-                format: uploadedFile.mimetype.split('/')[1]
-            };
+        } catch (uploadError) {
+            console.error('Hybrid storage upload failed:', uploadError);
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to upload document',
+                error: uploadError.message
+            });
         }
 
         // Assign to staff member (for student uploads)
@@ -73,10 +74,11 @@ const uploadDocument = async (req, res) => {
             assignedTo,
             documentType,
             originalName: uploadedFile.originalname,
-            fileName: cloudinaryResult.public_id,
-            fileUrl: cloudinaryResult.secure_url,
+            fileName: uploadResult.fileName,
+            fileUrl: uploadResult.fileUrl,
             fileSize: uploadedFile.size,
             mimeType: uploadedFile.mimetype,
+            storageType: uploadResult.storageType,
             priority,
             tags: Array.isArray(tags) ? tags : [],
             verificationHistory: [{
@@ -386,6 +388,14 @@ const deleteDocument = async (req, res) => {
                 success: false,
                 message: 'Access denied'
             });
+        }
+
+        // Delete from storage
+        try {
+            await deleteFile(document);
+        } catch (deleteError) {
+            console.error('Error deleting document from storage:', deleteError);
+            // Continue with database deletion even if storage deletion fails
         }
 
         // Soft delete

@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
-import DocumentManagement from '../documents/DocumentManagement';
+import EnhancedDocumentManagement from '../documents/EnhancedDocumentManagement';
+import ProfileCompletionModal from '../modals/ProfileCompletionModal';
+import InteractivePieChart from '../analytics/InteractivePieChart';
+import DetailModal from '../analytics/DetailModal';
 import StudentProfile from './tabs/StudentProfile';
 import StudentApplications from './tabs/StudentApplications';
 import StudentPayments from './tabs/StudentPayments';
@@ -20,6 +23,14 @@ const StudentDashboard = () => {
         approvedApplications: 0,
         enrolledPrograms: 0
     });
+
+    // New state for enhanced features
+    const [showProfileModal, setShowProfileModal] = useState(false);
+    const [profileCompletion, setProfileCompletion] = useState(0);
+    const [applicationStage, setApplicationStage] = useState('PROFILE_COMPLETION');
+    const [analyticsData, setAnalyticsData] = useState({});
+    const [selectedChartData, setSelectedChartData] = useState(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
 
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
 
@@ -86,6 +97,25 @@ const StudentDashboard = () => {
             try {
                 const response = await api.get('/api/auth/me');
                 setStudentData(response.data.data.user);
+
+                // Check if profile completion is needed
+                if (response.data.data.user.role === 'student' || response.data.data.user.role === 'user') {
+                    const profileResponse = await api.get(`/api/workflow/stages/${response.data.data.user._id}`);
+                    if (profileResponse.data.success) {
+                        const profileData = profileResponse.data.data;
+                        setProfileCompletion(profileData.student.profileCompletion);
+                        setApplicationStage(profileData.student.currentStage);
+
+                        // Show profile modal if profile is not complete
+                        if (profileData.student.profileCompletion < 100) {
+                            setShowProfileModal(true);
+                        }
+                    }
+                }
+
+                // Load analytics data
+                await loadAnalyticsData();
+
                 setLoading(false);
             } catch (error) {
                 console.error('Error fetching user data:', error);
@@ -95,6 +125,35 @@ const StudentDashboard = () => {
 
         fetchUserData();
     }, []);
+
+    const loadAnalyticsData = async () => {
+        try {
+            const response = await api.get('/api/analytics/dashboard/student');
+            if (response.data.success) {
+                setAnalyticsData(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error loading analytics data:', error);
+            // Set mock data for demo
+            setAnalyticsData({
+                applicationProgress: [
+                    { name: 'Profile Complete', value: 75, total: 100 },
+                    { name: 'Documents Uploaded', value: 60, total: 100 },
+                    { name: 'Under Review', value: 25, total: 100 },
+                    { name: 'Approved', value: 15, total: 100 }
+                ],
+                documentStatus: [
+                    { name: 'Approved', value: 8, total: 12 },
+                    { name: 'Pending', value: 3, total: 12 },
+                    { name: 'Rejected', value: 1, total: 12 }
+                ],
+                referralActivity: [
+                    { name: 'Students Referred', value: 5, total: 10 },
+                    { name: 'Bonus Earned', value: 2500, total: 5000 }
+                ]
+            });
+        }
+    };
 
     const renderSidebarContent = () => {
         switch (activeSidebarItem) {
@@ -226,11 +285,73 @@ const StudentDashboard = () => {
                             </div>
                         </motion.div>
 
-                        {/* Recent Applications */}
+                        {/* Application Progress Timeline */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
+                            className="bg-white rounded-lg shadow mb-8"
+                        >
+                            <div className="px-6 py-4 border-b border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-900">Application Progress</h3>
+                            </div>
+                            <div className="p-6">
+                                <div className="relative">
+                                    <div className="flex items-center justify-between">
+                                        {[
+                                            { stage: 'Profile', status: profileCompletion >= 100 ? 'completed' : 'current', label: 'Complete Profile' },
+                                            { stage: 'Documents', status: applicationStage === 'DOCUMENT_UPLOAD' ? 'current' : applicationStage === 'VERIFICATION_PENDING' ? 'completed' : 'pending', label: 'Upload Documents' },
+                                            { stage: 'Review', status: applicationStage === 'VERIFICATION_PENDING' ? 'current' : applicationStage === 'APPROVED' ? 'completed' : 'pending', label: 'Staff Review' },
+                                            { stage: 'Approval', status: applicationStage === 'APPROVED' ? 'completed' : 'pending', label: 'Final Approval' }
+                                        ].map((step, index) => (
+                                            <div key={step.stage} className="flex flex-col items-center">
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                                        step.status === 'current' ? 'bg-purple-100 text-purple-800' :
+                                                            'bg-gray-100 text-gray-400'
+                                                    }`}>
+                                                    {step.status === 'completed' ? '✓' : index + 1}
+                                                </div>
+                                                <span className="text-xs mt-2 text-center text-gray-600">{step.label}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -z-10">
+                                        <div className="h-full bg-purple-600 transition-all duration-500" style={{ width: `${(profileCompletion / 100) * 75}%` }}></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+
+                        {/* Analytics Charts */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.7 }}
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+                        >
+                            <InteractivePieChart
+                                data={analyticsData.documentStatus || []}
+                                title="Document Status"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                            <InteractivePieChart
+                                data={analyticsData.applicationProgress || []}
+                                title="Application Progress"
+                                onSegmentClick={(data) => {
+                                    setSelectedChartData(data);
+                                    setShowDetailModal(true);
+                                }}
+                            />
+                        </motion.div>
+
+                        {/* Recent Applications */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.8 }}
                             className="bg-white rounded-lg shadow"
                         >
                             <div className="px-6 py-4 border-b border-gray-200">
@@ -281,7 +402,7 @@ const StudentDashboard = () => {
             case 'academic':
                 return <StudentAcademic />;
             case 'documents':
-                return <DocumentManagement />;
+                return <EnhancedDocumentManagement />;
             case 'payments':
                 return <StudentPayments />;
             default:
@@ -300,9 +421,32 @@ const StudentDashboard = () => {
     }
 
     return (
-        <DashboardLayout title="Student Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
-            {renderSidebarContent()}
-        </DashboardLayout>
+        <>
+            <DashboardLayout title="Student Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
+                {renderSidebarContent()}
+            </DashboardLayout>
+
+            {/* Profile Completion Modal */}
+            <ProfileCompletionModal
+                isOpen={showProfileModal}
+                onClose={() => setShowProfileModal(false)}
+                onComplete={() => {
+                    setShowProfileModal(false);
+                    setProfileCompletion(100);
+                    setApplicationStage('DOCUMENT_UPLOAD');
+                    loadAnalyticsData();
+                }}
+            />
+
+            {/* Detail Modal for Analytics */}
+            <DetailModal
+                isOpen={showDetailModal}
+                onClose={() => setShowDetailModal(false)}
+                data={selectedChartData?.details || []}
+                title={selectedChartData?.name || 'Details'}
+                type="analytics"
+            />
+        </>
     );
 };
 

@@ -25,7 +25,6 @@ const applicationSchema = new mongoose.Schema({
     },
     applicationId: {
         type: String,
-        unique: true,
         required: true
     },
     status: {
@@ -61,7 +60,7 @@ const applicationSchema = new mongoose.Schema({
 
 // Indexes for better performance
 applicationSchema.index({ student: 1, status: 1 });
-applicationSchema.index({ applicationId: 1 });
+applicationSchema.index({ applicationId: 1 }, { unique: true });
 applicationSchema.index({ applicationDate: -1 });
 applicationSchema.index({ status: 1 });
 

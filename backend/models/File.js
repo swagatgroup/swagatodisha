@@ -18,6 +18,12 @@ const fileSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    storageType: {
+        type: String,
+        enum: ['mongodb', 'r2'],
+        default: 'mongodb',
+        required: true
+    },
     fileSize: {
         type: Number,
         required: true,
@@ -71,11 +77,13 @@ fileSchema.index({ mimeType: 1 });
 fileSchema.index({ isPublic: 1 });
 fileSchema.index({ isActive: 1 });
 fileSchema.index({ tags: 1 });
+fileSchema.index({ storageType: 1 });
 
 // Compound indexes for common queries
 fileSchema.index({ uploadedBy: 1, isActive: 1 });
 fileSchema.index({ isPublic: 1, isActive: 1 });
 fileSchema.index({ mimeType: 1, isActive: 1 });
+fileSchema.index({ storageType: 1, isActive: 1 });
 
 // Virtual for formatted file size
 fileSchema.virtual('formattedFileSize').get(function () {
@@ -181,6 +189,35 @@ fileSchema.statics.getStorageStats = function () {
                 totalFiles: { $sum: 1 },
                 totalSize: { $sum: '$fileSize' },
                 averageSize: { $avg: '$fileSize' }
+            }
+        }
+    ]);
+};
+
+fileSchema.statics.getHybridStorageStats = function () {
+    return this.aggregate([
+        { $match: { isActive: true } },
+        {
+            $group: {
+                _id: '$storageType',
+                count: { $sum: 1 },
+                totalSize: { $sum: '$fileSize' },
+                averageSize: { $avg: '$fileSize' }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                storageBreakdown: {
+                    $push: {
+                        storageType: '$_id',
+                        count: '$count',
+                        totalSize: '$totalSize',
+                        averageSize: '$averageSize'
+                    }
+                },
+                totalFiles: { $sum: '$count' },
+                totalSize: { $sum: '$totalSize' }
             }
         }
     ]);

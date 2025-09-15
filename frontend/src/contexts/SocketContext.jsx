@@ -17,6 +17,9 @@ export const SocketProvider = ({ children }) => {
     const [connected, setConnected] = useState(false);
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [onlineUsers, setOnlineUsers] = useState([]);
+    const [dashboardData, setDashboardData] = useState(null);
+    const [realtimeStats, setRealtimeStats] = useState(null);
     const { user, token } = useAuth();
 
     useEffect(() => {
@@ -135,8 +138,54 @@ export const SocketProvider = ({ children }) => {
                 setUnreadCount(data.filter(n => !n.read).length);
             });
 
+            // Online users handler
+            newSocket.on('online_users_update', (data) => {
+                setOnlineUsers(data);
+            });
+
+            // User connected/disconnected handlers
+            newSocket.on('user_connected', (data) => {
+                setOnlineUsers(prev => {
+                    const filtered = prev.filter(user => user.userId !== data.userId);
+                    return [...filtered, data];
+                });
+            });
+
+            newSocket.on('user_disconnected', (data) => {
+                setOnlineUsers(prev => prev.filter(user => user.userId !== data.userId));
+            });
+
+            // Dashboard data handler
+            newSocket.on('dashboard_data_update', (data) => {
+                setDashboardData(data);
+            });
+
+            // Real-time stats handler
+            newSocket.on('stats_update', (data) => {
+                setRealtimeStats(data);
+            });
+
+            // Activity update handler
+            newSocket.on('activity_update', (data) => {
+                addNotification({
+                    id: Date.now(),
+                    type: 'activity',
+                    title: 'System Activity',
+                    message: data.message || 'New activity detected',
+                    data: data,
+                    timestamp: new Date(),
+                    read: false
+                });
+            });
+
             // Request notifications on connection
             newSocket.emit('request_notifications');
+
+            // Request dashboard data
+            newSocket.emit('request_dashboard_data', {
+                role: user.role,
+                userId: user.id
+            });
 
             setSocket(newSocket);
 
@@ -197,6 +246,9 @@ export const SocketProvider = ({ children }) => {
         connected,
         notifications,
         unreadCount,
+        onlineUsers,
+        dashboardData,
+        realtimeStats,
         addNotification,
         markNotificationAsRead,
         markAllNotificationsAsRead,

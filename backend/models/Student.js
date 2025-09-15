@@ -5,14 +5,12 @@ const studentSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
-        unique: true
+        required: true
     },
 
     // Basic Academic Information
     studentId: {
         type: String,
-        unique: true,
         sparse: true, // Allow multiple null values during creation
         required: false // Will be auto-generated
     },
@@ -40,6 +38,85 @@ const studentSchema = new mongoose.Schema({
             },
             message: 'Please select a valid course from the dropdown'
         }
+    },
+
+    // Extended Profile Data
+    personalDetails: {
+        fullName: { type: String, required: true },
+        dateOfBirth: { type: Date, required: true },
+        gender: { type: String, enum: ['Male', 'Female', 'Other'], required: true },
+        bloodGroup: String,
+        aadharNumber: {
+            type: String,
+            required: true,
+            validate: {
+                validator: function (v) { return /^\d{12}$/.test(v); },
+                message: 'Aadhar number must be 12 digits'
+            }
+        }
+    },
+
+    contactDetails: {
+        primaryPhone: { type: String, required: true },
+        alternatePhone: String,
+        email: { type: String, required: true },
+        permanentAddress: {
+            street: String,
+            city: String,
+            state: String,
+            pincode: String,
+            country: { type: String, default: 'India' }
+        },
+        currentAddress: {
+            street: String,
+            city: String,
+            state: String,
+            pincode: String,
+            country: { type: String, default: 'India' }
+        }
+    },
+
+    academicDetails: {
+        previousEducation: {
+            qualification: String,
+            institution: String,
+            year: Number,
+            percentage: Number,
+            board: String
+        },
+        desiredCourse: String,
+        campus: { type: String, enum: ['Sargiguda', 'Ghantiguda'] }
+    },
+
+    guardianDetails: {
+        fatherName: { type: String, required: true },
+        motherName: { type: String, required: true },
+        guardianPhone: { type: String, required: true },
+        guardianEmail: String,
+        occupation: String,
+        annualIncome: Number
+    },
+
+    // Profile Completion Status
+    profileCompletionStatus: {
+        isProfileComplete: { type: Boolean, default: false },
+        completedSteps: [String],
+        currentStep: { type: Number, default: 1 },
+        completionPercentage: { type: Number, default: 0 }
+    },
+
+    // Workflow Status
+    applicationStage: {
+        currentStage: {
+            type: String,
+            enum: ['PROFILE_COMPLETION', 'DOCUMENT_UPLOAD', 'VERIFICATION_PENDING', 'APPROVED', 'REJECTED'],
+            default: 'PROFILE_COMPLETION'
+        },
+        stageHistory: [{
+            stage: String,
+            timestamp: Date,
+            remarks: String
+        }]
     },
 
     // Profile Status
@@ -77,7 +154,6 @@ const studentSchema = new mongoose.Schema({
     // Aadhar Number (optional, for profile completion)
     aadharNumber: {
         type: String,
-        unique: true,
         sparse: true, // Allow multiple null values
         required: false
     },
@@ -118,8 +194,12 @@ studentSchema.pre('save', async function (next) {
     next();
 });
 
-// Basic indexes
-studentSchema.index({ studentId: 1 });
+// Indexes
+studentSchema.index({ user: 1 }, { unique: true });
+studentSchema.index({ studentId: 1 }, { unique: true });
+studentSchema.index({ 'personalDetails.aadharNumber': 1 }, { unique: true });
+studentSchema.index({ 'applicationStage.currentStage': 1 });
 studentSchema.index({ status: 1 });
+studentSchema.index({ 'academicDetails.campus': 1 });
 
 module.exports = mongoose.model('Student', studentSchema);
