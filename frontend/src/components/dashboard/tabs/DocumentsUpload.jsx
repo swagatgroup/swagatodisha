@@ -10,58 +10,27 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
     const [students, setStudents] = useState([]);
 
     const documentCategories = [
-        { id: 'educational', name: 'Educational Certificates', required: true, maxFiles: 5 },
-        { id: 'identity', name: 'Identity Proofs', required: true, maxFiles: 3 },
-        { id: 'income', name: 'Income Certificates', required: false, maxFiles: 2 },
-        { id: 'category', name: 'Category Certificates', required: false, maxFiles: 2 },
-        { id: 'medical', name: 'Medical Certificates', required: false, maxFiles: 2 },
-        { id: 'other', name: 'Other Documents', required: false, maxFiles: 3 }
+        { id: 'photo', name: 'Passport Size Photo', required: true, maxFiles: 1 },
+        { id: 'aadhar', name: 'Aadhaar Card', required: true, maxFiles: 1 },
+        { id: 'tenth', name: '10th Marksheet/Cum Certificate', required: true, maxFiles: 2 },
+        { id: 'caste', name: 'Caste Certificate (≤5 years old)', required: true, maxFiles: 1 },
+        { id: 'income', name: 'Income Certificate (≤1 year old)', required: true, maxFiles: 1 },
+        { id: 'resident', name: 'Resident Certificate', required: false, maxFiles: 1 },
+        { id: 'pm_kisan', name: 'PM-Kisan Enrollment (OBC Free Education)', required: false, maxFiles: 1 },
+        { id: 'cm_kisan', name: 'CM-Kisan Enrollment (OBC Free Education)', required: false, maxFiles: 1 },
+        { id: 'custom', name: 'Custom Documents', required: false, maxFiles: 10 }
     ];
 
     const documentTypes = {
-        educational: [
-            '10th Mark Sheet',
-            '10th Certificate',
-            '12th Mark Sheet',
-            '12th Certificate',
-            'Graduation Mark Sheet',
-            'Graduation Certificate',
-            'Post Graduation Mark Sheet',
-            'Post Graduation Certificate',
-            'Other Educational Certificate'
-        ],
-        identity: [
-            'Aadhaar Card',
-            'PAN Card',
-            'Voter ID',
-            'Driving License',
-            'Passport',
-            'Other Identity Proof'
-        ],
-        income: [
-            'Income Certificate',
-            'Salary Certificate',
-            'Bank Statement',
-            'ITR (Income Tax Return)',
-            'Other Income Proof'
-        ],
-        category: [
-            'SC Certificate',
-            'ST Certificate',
-            'OBC Certificate',
-            'EWS Certificate',
-            'Other Category Certificate'
-        ],
-        medical: [
-            'Medical Fitness Certificate',
-            'Blood Group Certificate',
-            'Other Medical Certificate'
-        ],
-        other: [
-            'Passport Size Photo',
-            'Signature',
-            'Other Document'
-        ]
+        photo: ['Passport Size Photo'],
+        aadhar: ['Aadhaar Card'],
+        tenth: ['10th Marksheet-Cum-Certificate', '10th Marksheet', '10th Certificate'],
+        caste: ['Caste Certificate'],
+        income: ['Income Certificate'],
+        resident: ['Resident Certificate'],
+        pm_kisan: ['PM-Kisan Enrollment Proof'],
+        cm_kisan: ['CM-Kisan Enrollment Proof'],
+        custom: ['Custom']
     };
 
     useEffect(() => {
@@ -266,12 +235,55 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                             disabled={!selectedStudent || uploading}
                                         />
 
-                                        <p className="text-xs text-gray-500 mt-2">
-                                            Supported: PDF, JPG, PNG, DOC, DOCX (Max 5MB each)
-                                        </p>
+                                        {category.hint && (
+                                            <p className="text-xs text-gray-500 mt-2">{category.hint}</p>
+                                        )}
+                                        <p className="text-xs text-gray-500 mt-2">Supported: PDF, JPG, PNG, DOC, DOCX (Max 5MB each)</p>
                                     </div>
                                 ))}
                             </div>
+
+                            {category.id === 'custom' && (
+                                <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+                                    <h6 className="font-medium text-gray-900 mb-2">Add Custom Document</h6>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Custom Label</label>
+                                            <input id="custom-doc-label" type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Migration Certificate" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Select File</label>
+                                            <input id="custom-doc-file" type="file" className="w-full text-sm text-gray-500" />
+                                        </div>
+                                        <div>
+                                            <button
+                                                type="button"
+                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                                                onClick={() => {
+                                                    const labelInput = document.getElementById('custom-doc-label');
+                                                    const fileInput = document.getElementById('custom-doc-file');
+                                                    const file = fileInput?.files?.[0];
+                                                    const label = labelInput?.value?.trim();
+                                                    if (!selectedStudent) return alert('Please select a student first');
+                                                    if (!label) return alert('Please enter a custom label');
+                                                    if (!file) return alert('Please choose a file');
+
+                                                    const fd = new FormData();
+                                                    fd.append('files', file);
+                                                    fd.append('studentId', selectedStudent);
+                                                    fd.append('category', 'custom');
+                                                    fd.append('type', label);
+                                                    api.post('/api/documents/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } })
+                                                        .then(() => { alert('Custom document uploaded'); loadDocuments(); })
+                                                        .catch(() => alert('Failed to upload custom document'));
+                                                }}
+                                            >
+                                                Upload
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </motion.div>
                 ))}
