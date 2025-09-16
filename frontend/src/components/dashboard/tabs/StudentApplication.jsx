@@ -18,22 +18,43 @@ const StudentApplication = ({ onStudentUpdate }) => {
         try {
             const response = await api.get('/api/agents/students');
             if (response.data.success) {
-                setStudents(response.data.data);
+                const list = response.data.data?.students ?? response.data.data ?? [];
+                setStudents(Array.isArray(list) ? list : []);
+            } else {
+                setStudents([]);
             }
         } catch (error) {
             console.error('Error loading students:', error);
+            setStudents([]);
         }
     };
 
     const loadApplications = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/api/applications');
-            if (response.data.success) {
-                setApplications(response.data.data);
+            let response;
+            try {
+                response = await api.get('/api/applications');
+            } catch (err) {
+                if (err?.response?.status === 404) {
+                    // fallback to student applications endpoint if exists
+                    response = await api.get('/api/students/applications');
+                } else {
+                    throw err;
+                }
+            }
+
+            if (response?.data?.success) {
+                const list = response.data.data?.applications ?? response.data.data ?? [];
+                setApplications(Array.isArray(list) ? list : []);
+            } else if (Array.isArray(response?.data)) {
+                setApplications(response.data);
+            } else {
+                setApplications([]);
             }
         } catch (error) {
             console.error('Error loading applications:', error);
+            setApplications([]);
         } finally {
             setLoading(false);
         }
@@ -157,7 +178,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Choose a student...</option>
-                            {students.map(student => (
+                            {(Array.isArray(students) ? students : []).map(student => (
                                 <option key={student._id} value={student._id}>
                                     {student.personalDetails?.fullName} - {student.studentId}
                                 </option>
@@ -206,9 +227,9 @@ const StudentApplication = ({ onStudentUpdate }) => {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {applications.map((application, index) => (
+                            {(Array.isArray(applications) ? applications : []).map((application, index) => (
                                 <motion.div
-                                    key={application._id}
+                                    key={application._id || index}
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}

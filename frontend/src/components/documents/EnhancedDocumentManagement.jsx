@@ -417,6 +417,14 @@ const EnhancedDocumentManagement = () => {
                                             <p className="text-xs text-gray-400">
                                                 Uploaded {new Date(document.uploadedAt).toLocaleDateString()}
                                             </p>
+                                            {document.status === 'REJECTED' && document.remarks && (
+                                                <div className="mt-2 p-2 rounded bg-red-50 text-red-800 text-sm">
+                                                    <span className="font-medium">Remarks: </span>{document.remarks}
+                                                </div>
+                                            )}
+                                            {document.status === 'UNDER_REVIEW' && document.reviewer && (
+                                                <p className="text-xs text-blue-700 mt-1">Reviewer: {document.reviewer}</p>
+                                            )}
                                         </div>
                                     </div>
 
@@ -444,6 +452,14 @@ const EnhancedDocumentManagement = () => {
                                                 </button>
                                             )}
 
+                                            <a
+                                                href={document.url || document.fileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="text-purple-600 hover:text-purple-900 text-sm font-medium"
+                                            >
+                                                View
+                                            </a>
                                             <button
                                                 onClick={() => handleDeleteDocument(document._id)}
                                                 className="text-red-600 hover:text-red-900 text-sm font-medium"

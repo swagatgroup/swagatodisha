@@ -83,6 +83,20 @@ const StudentAcademic = () => {
         }
     };
 
+    // Filter helpers to ensure course-wise visibility
+    const matchesStudentCourse = (item) => {
+        if (!academicData.course) return true;
+        const courseId = academicData.course._id || academicData.course.id;
+        return (
+            item.courseId === courseId ||
+            item.course === academicData.course.name ||
+            item.courseName === academicData.course.name
+        );
+    };
+
+    const filteredAssignments = academicData.assignments.filter(matchesStudentCourse);
+    const filteredMaterials = academicData.materials.filter(matchesStudentCourse);
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -110,8 +124,8 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('overview')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'overview'
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Overview
@@ -119,8 +133,8 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('assignments')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'assignments'
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Assignments
@@ -128,8 +142,8 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('grades')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'grades'
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Grades
@@ -137,8 +151,8 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('materials')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'materials'
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
                             Materials
@@ -262,7 +276,7 @@ const StudentAcademic = () => {
                     <div className="bg-white rounded-lg shadow p-6">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Deadlines</h3>
                         <div className="space-y-3">
-                            {academicData.assignments
+                            {filteredAssignments
                                 .filter(a => new Date(a.dueDate) > new Date())
                                 .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
                                 .slice(0, 5)
@@ -298,7 +312,7 @@ const StudentAcademic = () => {
                         <h3 className="text-lg font-semibold text-gray-900">Assignments</h3>
                     </div>
                     <div className="divide-y divide-gray-200">
-                        {academicData.assignments.map((assignment, index) => (
+                        {filteredAssignments.map((assignment, index) => (
                             <motion.div
                                 key={assignment._id}
                                 initial={{ opacity: 0, x: -20 }}
@@ -352,7 +366,7 @@ const StudentAcademic = () => {
                         <h3 className="text-lg font-semibold text-gray-900">Grades</h3>
                     </div>
                     <div className="divide-y divide-gray-200">
-                        {academicData.grades.map((grade, index) => (
+                        {academicData.grades.filter(matchesStudentCourse).map((grade, index) => (
                             <motion.div
                                 key={grade._id}
                                 initial={{ opacity: 0, x: -20 }}
@@ -398,7 +412,7 @@ const StudentAcademic = () => {
                         <h3 className="text-lg font-semibold text-gray-900">Course Materials</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                        {academicData.materials.map((material, index) => (
+                        {filteredMaterials.map((material, index) => (
                             <motion.div
                                 key={material._id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -422,12 +436,15 @@ const StudentAcademic = () => {
                                     <span className="text-xs text-gray-500">
                                         {new Date(material.uploadDate).toLocaleDateString()}
                                     </span>
-                                    <button className="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                                    <a href={material.url || material.fileUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700">
                                         Download
-                                    </button>
+                                    </a>
                                 </div>
                             </motion.div>
                         ))}
+                        {filteredMaterials.length === 0 && (
+                            <div className="col-span-full text-center text-gray-500 py-8">No materials available for your course yet.</div>
+                        )}
                     </div>
                 </motion.div>
             )}

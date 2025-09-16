@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import QRCode from 'qrcode.react';
 import api from '../../../utils/api';
 
 const QRPaymentSystem = () => {
@@ -152,32 +151,23 @@ const QRPaymentSystem = () => {
             >
                 <div className="text-center">
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">Make Payment</h3>
-                    <p className="text-gray-600 mb-6">Scan the QR code with your UPI app to complete payment</p>
+                    <p className="text-gray-600 mb-6">QR code will be available soon. Use the support options below if needed.</p>
 
                     <div className="bg-gray-50 rounded-lg p-8 mb-6">
-                        {paymentData.qrCode ? (
-                            <div className="flex flex-col items-center">
-                                <QRCode
-                                    value={paymentData.qrCode}
-                                    size={200}
-                                    level="H"
-                                    includeMargin={true}
-                                />
+                        <div className="flex flex-col items-center">
+                            <div className="w-56 h-56 border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 rounded-lg">
+                                <div className="text-center">
+                                    <div className="text-4xl mb-2">📱</div>
+                                    <p className="text-gray-600">QR Code will appear here</p>
+                                    <p className="text-sm text-gray-500 mt-2">Feature temporarily disabled</p>
+                                </div>
+                            </div>
+                            {paymentData.amount ? (
                                 <p className="text-lg font-semibold text-gray-900 mt-4">
                                     Amount: {formatAmount(paymentData.amount)}
                                 </p>
-                                <p className="text-sm text-gray-500 mt-2">
-                                    Payment ID: {paymentData.paymentId}
-                                </p>
-                            </div>
-                        ) : (
-                            <div className="text-center py-8">
-                                <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                </svg>
-                                <p className="text-gray-500 mt-2">No payment QR code generated</p>
-                            </div>
-                        )}
+                            ) : null}
+                        </div>
                     </div>
 
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">

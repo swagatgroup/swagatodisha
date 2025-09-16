@@ -28,6 +28,8 @@ const SuperAdminDashboard = () => {
     const { user } = useAuth();
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
     const [loading, setLoading] = useState(true);
+    const [students, setStudents] = useState([]);
+    const [categoryCounts, setCategoryCounts] = useState({ A: 0, B1: 0, B2: 0, B3: 0, B4: 0, C1: 0, C2: 0, C3: 0 });
     const [stats, setStats] = useState({
         totalStudents: 0,
         totalAgents: 0,
@@ -115,14 +117,25 @@ const SuperAdminDashboard = () => {
         const fetchAdminData = async () => {
             try {
                 setLoading(true);
-                const response = await api.get('/api/auth/me');
-                setStats({
-                    totalStudents: 150,
-                    totalAgents: 25,
-                    totalStaff: 12,
-                    totalApplications: 200,
-                    pendingApplications: 45
-                });
+                const [statsRes, studentsRes] = await Promise.all([
+                    api.get('/api/admin/dashboard/stats'),
+                    api.get('/api/admin/students?limit=100')
+                ]);
+
+                if (statsRes.data?.success) {
+                    setStats(statsRes.data.data);
+                }
+
+                if (studentsRes.data?.success) {
+                    const list = studentsRes.data.data.students || studentsRes.data.data || [];
+                    setStudents(list);
+                    const counts = { A: 0, B1: 0, B2: 0, B3: 0, B4: 0, C1: 0, C2: 0, C3: 0 };
+                    list.forEach(s => {
+                        const cat = s.registrationCategory || 'A';
+                        if (counts[cat] !== undefined) counts[cat] += 1;
+                    });
+                    setCategoryCounts(counts);
+                }
             } catch (error) {
                 console.error('Error fetching admin data:', error);
             } finally {
@@ -199,6 +212,66 @@ const SuperAdminDashboard = () => {
                                         <p className="text-2xl font-semibold text-gray-900">{stats.pendingApplications}</p>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Category Breakdown */}
+                        <div className="bg-white p-6 rounded-lg shadow">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Registration Categories</h3>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+                                {[
+                                    { key: 'A', label: 'A - Direct' },
+                                    { key: 'B1', label: 'B1 - Student Ref' },
+                                    { key: 'B2', label: 'B2 - Agent Ref' },
+                                    { key: 'B3', label: 'B3 - Staff Ref' },
+                                    { key: 'B4', label: 'B4 - SA Ref' },
+                                    { key: 'C1', label: 'C1 - Agent Dash' },
+                                    { key: 'C2', label: 'C2 - Staff Dash' },
+                                    { key: 'C3', label: 'C3 - SA Dash' }
+                                ].map(item => (
+                                    <div key={item.key} className="text-center border rounded p-3">
+                                        <div className="text-xs text-gray-500 mb-1">{item.label}</div>
+                                        <div className="text-xl font-semibold">{categoryCounts[item.key] || 0}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Students Current Status */}
+                        <div className="bg-white rounded-lg shadow">
+                            <div className="px-6 py-4 border-b border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-900">Students - Current Status</h3>
+                            </div>
+                            <div className="overflow-x-auto">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Stage</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned Agent</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned Staff</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Updated</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {students.map(s => (
+                                            <tr key={s._id} className="hover:bg-gray-50">
+                                                <td className="px-6 py-4 text-sm">
+                                                    <div className="font-medium text-gray-900">{s.personalDetails?.fullName || s.user?.fullName || 'N/A'}</div>
+                                                    <div className="text-gray-500 text-xs">{s.studentId}</div>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-700">{s.registrationCategory || 'A'}</td>
+                                                <td className="px-6 py-4 text-sm">
+                                                    <span className="inline-flex px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">{s.workflowStatus?.currentStage || 'N/A'}</span>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-700">{s.workflowStatus?.assignedAgent?.fullName || '—'}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-700">{s.workflowStatus?.assignedStaff?.fullName || '—'}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-500">{s.updatedAt ? new Date(s.updatedAt).toLocaleDateString() : '—'}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
 

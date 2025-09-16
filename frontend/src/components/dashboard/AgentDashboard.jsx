@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import ReferralManagement from '../agents/ReferralManagement';
-import AgentDraftManager from '../agents/AgentDraftManager';
 import InteractivePieChart from '../analytics/InteractivePieChart';
 import DetailModal from '../analytics/DetailModal';
 import {
@@ -24,7 +23,6 @@ const AgentDashboard = () => {
     const [stats, setStats] = useState({
         totalReferrals: 0,
         activeReferrals: 0,
-        totalCommission: 0,
         thisMonthReferrals: 0
     });
 
@@ -146,7 +144,7 @@ const AgentDashboard = () => {
                                 Welcome back, {user?.firstName} {user?.lastName}! 🎯
                             </h2>
                             <p className="text-green-100">
-                                Track your referrals, manage commissions, and grow your network.
+                                Track your referrals and student progress.
                             </p>
                         </motion.div>
 
@@ -190,24 +188,7 @@ const AgentDashboard = () => {
                                 </div>
                             </motion.div>
 
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="bg-white rounded-lg shadow p-6"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-3 bg-yellow-100 rounded-full">
-                                        <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Total Commission</p>
-                                        <p className="text-2xl font-semibold text-gray-900">₹{stats.totalCommission}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
+                            {/* Commission card removed */}
 
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
@@ -244,14 +225,7 @@ const AgentDashboard = () => {
                                     setShowDetailModal(true);
                                 }}
                             />
-                            <InteractivePieChart
-                                data={analyticsData.commissionStatus || []}
-                                title="Commission Status"
-                                onSegmentClick={(data) => {
-                                    setSelectedChartData(data);
-                                    setShowDetailModal(true);
-                                }}
-                            />
+                            {/* Commission chart removed */}
                         </motion.div>
 
                         <motion.div
@@ -268,14 +242,7 @@ const AgentDashboard = () => {
                                     setShowDetailModal(true);
                                 }}
                             />
-                            <InteractivePieChart
-                                data={analyticsData.monthlyPerformance || []}
-                                title="Monthly Performance"
-                                onSegmentClick={(data) => {
-                                    setSelectedChartData(data);
-                                    setShowDetailModal(true);
-                                }}
-                            />
+                            {/* Monthly performance chart removed */}
                         </motion.div>
 
                         {/* Recent Referrals */}
@@ -309,29 +276,7 @@ const AgentDashboard = () => {
                 return <ReferralManagement />;
             case 'documents':
                 return <DocumentManagement />;
-            case 'drafts':
-                return <DraftManagement />;
-            case 'commission':
-                return (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Commission</h3>
-                        <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Commission Management</h3>
-                            <p className="text-gray-500 mb-4">This feature is coming soon! You'll be able to track and manage your commissions here.</p>
-                            <div className="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg">
-                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Coming Soon
-                            </div>
-                        </div>
-                    </div>
-                );
+            // drafts and commission views removed
             case 'profile':
                 return (
                     <div className="bg-white rounded-lg shadow p-6">

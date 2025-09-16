@@ -73,10 +73,14 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
         try {
             const response = await api.get('/api/agents/students');
             if (response.data.success) {
-                setStudents(response.data.data);
+                const list = response.data.data?.students ?? response.data.data ?? [];
+                setStudents(Array.isArray(list) ? list : []);
+            } else {
+                setStudents([]);
             }
         } catch (error) {
             console.error('Error loading students:', error);
+            setStudents([]);
         }
     };
 
@@ -85,10 +89,14 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
             setLoading(true);
             const response = await api.get('/api/documents');
             if (response.data.success) {
-                setDocuments(response.data.data);
+                const list = response.data.data?.documents ?? response.data.data ?? [];
+                setDocuments(Array.isArray(list) ? list : []);
+            } else {
+                setDocuments([]);
             }
         } catch (error) {
             console.error('Error loading documents:', error);
+            setDocuments([]);
         } finally {
             setLoading(false);
         }
@@ -207,7 +215,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="">Choose a student...</option>
-                            {students.map(student => (
+                            {(Array.isArray(students) ? students : []).map(student => (
                                 <option key={student._id} value={student._id}>
                                     {student.personalDetails?.fullName} - {student.studentId}
                                 </option>
@@ -276,7 +284,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                 </div>
 
                 <div className="p-6">
-                    {documents.length === 0 ? (
+                    {(!Array.isArray(documents) || documents.length === 0) ? (
                         <div className="text-center py-8">
                             <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -286,7 +294,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                         </div>
                     ) : (
                         <div className="space-y-4">
-                            {documents.map((document, index) => (
+                            {(Array.isArray(documents) ? documents : []).map((document, index) => (
                                 <motion.div
                                     key={document._id}
                                     initial={{ opacity: 0, y: 20 }}

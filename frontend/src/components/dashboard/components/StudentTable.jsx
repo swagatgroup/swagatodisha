@@ -5,6 +5,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [categoryFilter, setCategoryFilter] = useState('all');
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -49,7 +50,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
         }
     };
 
-    const filteredStudents = students.filter(student => {
+    const safeStudents = Array.isArray(students) ? students : [];
+
+    const filteredStudents = safeStudents.filter(student => {
         const matchesSearch =
             student.personalDetails?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             student.contactDetails?.primaryPhone?.includes(searchTerm) ||
@@ -59,7 +62,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
             student.workflowStatus?.currentStage === statusFilter ||
             student.status === statusFilter;
 
-        return matchesSearch && matchesStatus;
+        const matchesCategory = categoryFilter === 'all' || (student.registrationCategory || 'A') === categoryFilter;
+
+        return matchesSearch && matchesStatus && matchesCategory;
     });
 
     const sortedStudents = [...filteredStudents].sort((a, b) => {
@@ -119,6 +124,23 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                         <option value="approved">Approved</option>
                         <option value="completed">Completed</option>
                         <option value="rejected">Rejected</option>
+                    </select>
+                </div>
+                <div className="sm:w-48">
+                    <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="all">All Categories</option>
+                        <option value="A">A - Direct (No Referral)</option>
+                        <option value="B1">B1 - Student Referral</option>
+                        <option value="B2">B2 - Agent Referral</option>
+                        <option value="B3">B3 - Staff Referral</option>
+                        <option value="B4">B4 - Super Admin Referral</option>
+                        <option value="C1">C1 - Agent Dashboard</option>
+                        <option value="C2">C2 - Staff Dashboard</option>
+                        <option value="C3">C3 - Super Admin Dashboard</option>
                     </select>
                 </div>
             </div>
@@ -188,6 +210,17 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                             </th>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                onClick={() => handleSort('registrationCategory')}
+                            >
+                                <div className="flex items-center space-x-1">
+                                    <span>Category</span>
+                                    {sortConfig.key === 'registrationCategory' && (
+                                        <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                    )}
+                                </div>
+                            </th>
+                            <th
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                                 onClick={() => handleSort('createdAt')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -239,6 +272,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(student.workflowStatus?.currentStage || student.status)}`}>
                                         {getStatusText(student.workflowStatus?.currentStage || student.status)}
                                     </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    {student.registrationCategory || 'A'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {new Date(student.createdAt).toLocaleDateString()}

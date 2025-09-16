@@ -7,6 +7,7 @@ import ProfileCompletionModal from '../modals/ProfileCompletionModal';
 import InteractivePieChart from '../analytics/InteractivePieChart';
 import DetailModal from '../analytics/DetailModal';
 import StudentProfile from './tabs/StudentProfile';
+import EnhancedStudentProfile from './tabs/EnhancedStudentProfile';
 import StudentApplications from './tabs/StudentApplications';
 import StudentPayments from './tabs/StudentPayments';
 import StudentAcademic from './tabs/StudentAcademic';
@@ -160,6 +161,37 @@ const StudentDashboard = () => {
             case 'dashboard':
                 return (
                     <>
+                        {profileCompletion < 100 && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mb-6"
+                            >
+                                <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                                    <div className="flex">
+                                        <div className="flex-shrink-0">
+                                            <svg className="h-5 w-5 text-red-600" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-9-3a1 1 0 112 0v4a1 1 0 11-2 0V7zm1 8a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div className="ml-3">
+                                            <h3 className="text-sm font-medium text-red-800">Complete your profile to proceed</h3>
+                                            <div className="mt-2 text-sm text-red-700">
+                                                <p>Your profile is {profileCompletion}% complete. Please complete your personal details to continue with applications and document uploads.</p>
+                                            </div>
+                                            <div className="mt-4">
+                                                <button
+                                                    onClick={() => setActiveSidebarItem('profile')}
+                                                    className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700"
+                                                >
+                                                    Complete Profile Now
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
                         {/* Welcome Section */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -306,8 +338,8 @@ const StudentDashboard = () => {
                                         ].map((step, index) => (
                                             <div key={step.stage} className="flex flex-col items-center">
                                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-green-100 text-green-800' :
-                                                        step.status === 'current' ? 'bg-purple-100 text-purple-800' :
-                                                            'bg-gray-100 text-gray-400'
+                                                    step.status === 'current' ? 'bg-purple-100 text-purple-800' :
+                                                        'bg-gray-100 text-gray-400'
                                                     }`}>
                                                     {step.status === 'completed' ? '✓' : index + 1}
                                                 </div>
@@ -396,7 +428,7 @@ const StudentDashboard = () => {
                     </>
                 );
             case 'profile':
-                return <StudentProfile />;
+                return <EnhancedStudentProfile />;
             case 'applications':
                 return <StudentApplications />;
             case 'academic':

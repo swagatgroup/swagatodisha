@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import StudentRegistration from './tabs/StudentRegistration';
+import StudentManagement from './tabs/StudentManagement';
 import DocumentVerification from './tabs/DocumentVerification';
 import ContentManagement from './tabs/ContentManagement';
 import AgentManagement from './tabs/AgentManagement';
@@ -198,7 +199,7 @@ const EnhancedStaffDashboard = () => {
                     </>
                 );
             case 'students':
-                return <StudentRegistration onStudentUpdate={handleStudentUpdate} />;
+                return <StudentManagement onStudentUpdate={handleStudentUpdate} />;
             case 'verification':
                 return <DocumentVerification onStudentUpdate={handleStudentUpdate} />;
             case 'content':

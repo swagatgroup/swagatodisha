@@ -14,6 +14,8 @@ const StudentApplications = () => {
         notes: ''
     });
     const [submitting, setSubmitting] = useState(false);
+    const [showPdfModal, setShowPdfModal] = useState(false);
+    const [pdfBlobUrl, setPdfBlobUrl] = useState('');
 
     const courses = [
         'DMLT (Diploma in Medical Laboratory Technology)',
@@ -44,13 +46,37 @@ const StudentApplications = () => {
         try {
             setLoading(true);
             const response = await api.get('/api/students/applications');
-            setApplications(response.data.data.applications || []);
+            const list = response.data.data?.applications ?? response.data.data ?? [];
+            setApplications(Array.isArray(list) ? list : []);
         } catch (error) {
             console.error('Error fetching applications:', error);
             showError('Failed to load applications');
         } finally {
             setLoading(false);
         }
+    };
+
+    const openApplicationPdf = async (applicationId) => {
+        try {
+            const response = await api.get(`/api/students/applications/${applicationId}/pdf`, { responseType: 'blob' });
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            setPdfBlobUrl(url);
+            setShowPdfModal(true);
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            showError('Failed to load application PDF');
+        }
+    };
+
+    const downloadApplicationPdf = () => {
+        if (!pdfBlobUrl) return;
+        const link = document.createElement('a');
+        link.href = pdfBlobUrl;
+        link.download = 'application.pdf';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     const handleNewApplication = async () => {
@@ -202,8 +228,8 @@ const StudentApplications = () => {
                                                 Withdraw
                                             </button>
                                         )}
-                                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
-                                            View Details
+                                        <button onClick={() => openApplicationPdf(application._id)} className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
+                                            View PDF
                                         </button>
                                     </div>
                                 </div>
@@ -319,6 +345,27 @@ const StudentApplications = () => {
                                     {submitting ? 'Submitting...' : 'Submit Application'}
                                 </button>
                             </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
+            {showPdfModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+                        <div className="p-4 border-b flex items-center justify-between">
+                            <h3 className="text-lg font-semibold text-gray-900">Application PDF</h3>
+                            <div className="flex items-center gap-2">
+                                <button onClick={downloadApplicationPdf} className="px-3 py-1.5 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700">Download</button>
+                                <button onClick={() => { URL.revokeObjectURL(pdfBlobUrl); setShowPdfModal(false); setPdfBlobUrl(''); }} className="px-3 py-1.5 border border-gray-300 rounded-md text-sm hover:bg-gray-50">Close</button>
+                            </div>
+                        </div>
+                        <div className="flex-1 overflow-auto">
+                            {pdfBlobUrl ? (
+                                <iframe title="Application PDF" src={pdfBlobUrl} className="w-full h-full" />
+                            ) : (
+                                <div className="p-6 text-center text-gray-500">No PDF to display</div>
+                            )}
                         </div>
                     </motion.div>
                 </div>
