@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDarkMode } from '../../contexts/DarkModeContext';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import Swal from 'sweetalert2';
@@ -24,6 +25,7 @@ const Register = () => {
     const [customCourse, setCustomCourse] = useState('');
     const [showCustomCourse, setShowCustomCourse] = useState(false);
     const { register } = useAuth();
+    const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
@@ -265,13 +267,13 @@ const Register = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-2xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="bg-white rounded-2xl shadow-xl p-8"
+                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
                 >
                     {/* Header */}
                     <div className="text-center mb-8">
@@ -290,7 +292,7 @@ const Register = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-3xl font-bold text-gray-900 mb-2"
+                            className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2"
                         >
                             Create Your Account
                         </motion.h2>
@@ -299,7 +301,7 @@ const Register = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5, delay: 0.4 }}
-                            className="text-gray-600"
+                            className="text-gray-600 dark:text-gray-300"
                         >
                             Join Swagat Group of Institutions
                         </motion.p>
@@ -317,7 +319,7 @@ const Register = () => {
                         {/* Personal Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Full Name *
                                 </label>
                                 <input
@@ -327,13 +329,13 @@ const Register = () => {
                                     required
                                     value={formData.fullName}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter your full name"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="guardianName" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="guardianName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Guardian's Name *
                                 </label>
                                 <input
@@ -343,7 +345,7 @@ const Register = () => {
                                     required
                                     value={formData.guardianName}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter guardian's full name"
                                 />
                             </div>
@@ -352,7 +354,7 @@ const Register = () => {
                         {/* Contact Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Email Address *
                                 </label>
                                 <input
@@ -362,13 +364,13 @@ const Register = () => {
                                     required
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter email address"
                                 />
                             </div>
 
                             <div>
-                                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Phone Number *
                                 </label>
                                 <input
@@ -378,7 +380,7 @@ const Register = () => {
                                     required
                                     value={formData.phoneNumber}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter 10-digit mobile number"
                                 />
                             </div>
@@ -412,7 +414,7 @@ const Register = () => {
 
                         {/* Course Selection with Search */}
                         <div className="relative" ref={dropdownRef}>
-                            <label htmlFor="course" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="course" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Course *
                             </label>
                             <div className="relative">
@@ -425,14 +427,14 @@ const Register = () => {
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 pr-10"
                                 />
                                 <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                     </svg>
                                 </div>
 
                                 {/* Dropdown */}
                                 {showCourseDropdown && (
-                                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                         {filteredCourses.length > 0 ? (
                                             filteredCourses.map((course, index) => (
                                                 <div
@@ -444,7 +446,7 @@ const Register = () => {
                                                 </div>
                                             ))
                                         ) : (
-                                            <div className="px-4 py-2 text-gray-500 text-sm">
+                                            <div className="px-4 py-2 text-gray-500 dark:text-gray-400 text-sm">
                                                 No courses found
                                             </div>
                                         )}
@@ -456,7 +458,7 @@ const Register = () => {
 
                         {/* Referral Code */}
                         <div>
-                            <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Referral Code (Optional)
                             </label>
                             <input
@@ -465,10 +467,10 @@ const Register = () => {
                                 type="text"
                                 value={formData.referralCode}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 placeholder="Enter agent referral code if you have one"
                             />
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 If you were referred by an agent, enter their referral code here
                             </p>
                         </div>
@@ -493,11 +495,11 @@ const Register = () => {
 
                         {/* Login Link */}
                         <div className="text-center">
-                            <p className="text-sm text-gray-600">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
                                 Already have an account?{' '}
                                 <Link
                                     to="/login"
-                                    className="text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200"
+                                    className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-200"
                                 >
                                     Sign in here
                                 </Link>
@@ -514,7 +516,7 @@ const Register = () => {
                     >
                         <Link
                             to="/"
-                            className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 flex items-center justify-center"
+                            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 flex items-center justify-center"
                         >
                             <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

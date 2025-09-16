@@ -23,13 +23,13 @@ const defaultConfig = {
     width: 'auto',
     padding: '2rem',
     customClass: {
-        popup: 'rounded-lg shadow-xl',
-        title: 'text-xl font-semibold text-gray-900',
-        content: 'text-gray-700',
-        confirmButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200',
-        cancelButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200',
-        denyButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200',
-        closeButton: 'text-gray-400 hover:text-gray-600 transition-colors duration-200'
+        popup: 'rounded-lg shadow-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700',
+        title: 'text-xl font-semibold text-gray-900 dark:text-gray-100',
+        content: 'text-gray-700 dark:text-gray-300',
+        confirmButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200 bg-purple-600 hover:bg-purple-700 text-white',
+        cancelButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200 bg-gray-500 hover:bg-gray-600 text-white',
+        denyButton: 'px-6 py-2 rounded-md font-medium transition-colors duration-200 bg-gray-500 hover:bg-gray-600 text-white',
+        closeButton: 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200'
     }
 };
 
@@ -292,10 +292,10 @@ export const showProgress = (title, text = '') => {
         showDenyButton: false,
         showCloseButton: false,
         html: `
-            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mb-4">
                 <div id="progress-bar" class="bg-purple-600 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
             </div>
-            <div id="progress-text" class="text-sm text-gray-600">0%</div>
+            <div id="progress-text" class="text-sm text-gray-600 dark:text-gray-300">0%</div>
         `,
         didOpen: () => {
             const progressBar = document.getElementById('progress-bar');

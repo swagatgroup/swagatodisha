@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
+import EnhancedStudentApplicationForm from '../../forms/EnhancedStudentApplicationForm';
 
 const StudentApplications = () => {
     const [applications, setApplications] = useState([]);
@@ -258,96 +259,16 @@ const StudentApplications = () => {
                 )}
             </motion.div>
 
-            {/* New Application Modal */}
+            {/* Enhanced Application Form Modal */}
             {showNewApplicationModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-                    >
-                        <div className="p-6">
-                            <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-semibold text-gray-900">New Application</h3>
-                                <button
-                                    onClick={() => setShowNewApplicationModal(false)}
-                                    className="text-gray-400 hover:text-gray-600"
-                                >
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Course *</label>
-                                    <select
-                                        value={newApplication.course}
-                                        onChange={(e) => setNewApplication(prev => ({ ...prev, course: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    >
-                                        <option value="">Select a course</option>
-                                        {courses.map(course => (
-                                            <option key={course} value={course}>{course}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Institution *</label>
-                                    <select
-                                        value={newApplication.institution}
-                                        onChange={(e) => setNewApplication(prev => ({ ...prev, institution: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    >
-                                        <option value="">Select an institution</option>
-                                        {institutions.map(institution => (
-                                            <option key={institution} value={institution}>{institution}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Start Date</label>
-                                    <input
-                                        type="date"
-                                        value={newApplication.preferredStartDate}
-                                        onChange={(e) => setNewApplication(prev => ({ ...prev, preferredStartDate: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Additional Notes</label>
-                                    <textarea
-                                        value={newApplication.notes}
-                                        onChange={(e) => setNewApplication(prev => ({ ...prev, notes: e.target.value }))}
-                                        rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                                        placeholder="Any additional information or special requests..."
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end space-x-3 mt-6">
-                                <button
-                                    onClick={() => setShowNewApplicationModal(false)}
-                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleNewApplication}
-                                    disabled={submitting || !newApplication.course || !newApplication.institution}
-                                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {submitting ? 'Submitting...' : 'Submit Application'}
-                                </button>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
+                <EnhancedStudentApplicationForm
+                    onClose={() => setShowNewApplicationModal(false)}
+                    onSuccess={(data) => {
+                        setShowNewApplicationModal(false);
+                        fetchApplications();
+                        showSuccess('Application submitted successfully!');
+                    }}
+                />
             )}
 
             {showPdfModal && (

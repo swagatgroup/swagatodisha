@@ -151,13 +151,13 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">Create New Staff</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create New Staff</h2>
                         <button
                             onClick={handleClose}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -169,7 +169,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                         {/* Basic Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     First Name *
                                 </label>
                                 <input
@@ -187,7 +187,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Last Name *
                                 </label>
                                 <input
@@ -207,7 +207,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Email *
                                 </label>
                                 <input
@@ -225,7 +225,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Phone Number *
                                 </label>
                                 <input
@@ -246,7 +246,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                         {/* Password Fields */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Password *
                                 </label>
                                 <input
@@ -264,7 +264,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Confirm Password *
                                 </label>
                                 <input
@@ -285,7 +285,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                         {/* Department and Designation */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Department *
                                 </label>
                                 <select
@@ -311,7 +311,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Designation *
                                 </label>
                                 <input
@@ -331,12 +331,12 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
 
                         {/* Agent Assignment */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Assign Agents (Optional)
                             </label>
                             <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
                                 {agentList.length === 0 ? (
-                                    <p className="text-gray-500 text-sm">No agents available</p>
+                                    <p className="text-gray-500 dark:text-gray-400 text-sm">No agents available</p>
                                 ) : (
                                     <div className="space-y-2">
                                         {agentList.map(agent => (
@@ -347,7 +347,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                                     onChange={() => handleAgentSelection(agent._id)}
                                                     className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
                                                 />
-                                                <span className="text-sm text-gray-700">
+                                                <span className="text-sm text-gray-700 dark:text-gray-300">
                                                     {agent.fullName} - {agent.email} ({agent.referralCode})
                                                 </span>
                                             </label>
@@ -356,7 +356,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                 )}
                             </div>
                             {formData.assignedAgents.length > 0 && (
-                                <p className="text-sm text-gray-600 mt-2">
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                                     {formData.assignedAgents.length} agent(s) selected
                                 </p>
                             )}
@@ -367,7 +367,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                             <button
                                 type="button"
                                 onClick={handleClose}
-                                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-200"
+                                className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-200"
                             >
                                 Cancel
                             </button>

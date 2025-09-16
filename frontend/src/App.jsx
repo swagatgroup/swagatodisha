@@ -30,6 +30,8 @@ import AboutUsPage from './components/AboutUsPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
 import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
+import TermsAndConditions from './components/legal/TermsAndConditions'
+import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoolGhantiguda'
 import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
 import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
@@ -208,6 +210,8 @@ function App() {
                                 <Route path="/about" element={<AboutUsPage />} />
                                 <Route path="/gallery" element={<Gallery />} />
                                 <Route path="/contact" element={<ContactPage />} />
+                                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
                                 {/* School Pages */}
                                 <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />

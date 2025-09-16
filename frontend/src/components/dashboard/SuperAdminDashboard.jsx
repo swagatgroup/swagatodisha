@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
-import SecurityDashboard from '../admin/SecurityDashboard';
-import PerformanceDashboard from '../admin/PerformanceDashboard';
 import PasswordManagement from '../admin/PasswordManagement';
 import WebsiteContentManagement from '../admin/WebsiteContentManagement';
 // import StudentsTab from './tabs/StudentsTab';
@@ -93,43 +91,6 @@ const SuperAdminDashboard = () => {
                 </svg>
             )
         },
-        {
-            id: 'security',
-            name: 'Security Dashboard',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-            )
-        },
-        {
-            id: 'performance',
-            name: 'Performance Dashboard',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'profile',
-            name: 'Profile',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-            )
-        },
-        {
-            id: 'settings',
-            name: 'Settings',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-            )
-        }
     ];
 
     useEffect(() => {
@@ -171,72 +132,72 @@ const SuperAdminDashboard = () => {
                 return (
                     <div className="space-y-6">
                         <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Super Admin Dashboard</h1>
-                            <p className="text-sm text-gray-500 mt-1">Welcome back, {user?.fullName || 'Admin'}</p>
+                            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Super Admin Dashboard</h1>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Welcome back, {user?.fullName || 'Admin'}</p>
                         </div>
 
                         {/* Stats Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="bg-white p-6 rounded-lg shadow">
+                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center">
-                                    <div className="p-2 bg-blue-100 rounded-lg">
-                                        <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                        <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500">Total Students</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.totalStudents}</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Students</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalStudents}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white p-6 rounded-lg shadow">
+                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center">
-                                    <div className="p-2 bg-green-100 rounded-lg">
-                                        <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
+                                        <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500">Total Agents</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.totalAgents}</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Agents</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalAgents}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white p-6 rounded-lg shadow">
+                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center">
-                                    <div className="p-2 bg-purple-100 rounded-lg">
-                                        <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                                        <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500">Total Staff</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.totalStaff}</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Staff</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalStaff}</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="bg-white p-6 rounded-lg shadow">
+                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center">
-                                    <div className="p-2 bg-yellow-100 rounded-lg">
-                                        <svg className="h-6 w-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
+                                        <svg className="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500">Pending Applications</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.pendingApplications}</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Applications</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.pendingApplications}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Category Breakdown */}
-                        <div className="bg-white p-6 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Registration Categories</h3>
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Registration Categories</h3>
                             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
                                 {[
                                     { key: 'A', label: 'A - Direct' },
@@ -248,45 +209,45 @@ const SuperAdminDashboard = () => {
                                     { key: 'C2', label: 'C2 - Staff Dash' },
                                     { key: 'C3', label: 'C3 - SA Dash' }
                                 ].map(item => (
-                                    <div key={item.key} className="text-center border rounded p-3">
-                                        <div className="text-xs text-gray-500 mb-1">{item.label}</div>
-                                        <div className="text-xl font-semibold">{categoryCounts[item.key] || 0}</div>
+                                    <div key={item.key} className="text-center border border-gray-200 dark:border-gray-600 rounded p-3 bg-gray-50 dark:bg-gray-700">
+                                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.label}</div>
+                                        <div className="text-xl font-semibold text-gray-900 dark:text-gray-100">{categoryCounts[item.key] || 0}</div>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Students Current Status */}
-                        <div className="bg-white rounded-lg shadow">
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-900">Students - Current Status</h3>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Students - Current Status</h3>
                             </div>
                             <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
+                                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead className="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Current Stage</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned Agent</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned Staff</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Updated</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Student</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Current Stage</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Assigned Agent</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Assigned Staff</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Updated</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
+                                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                         {students.map(s => (
-                                            <tr key={s._id} className="hover:bg-gray-50">
+                                            <tr key={s._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <td className="px-6 py-4 text-sm">
-                                                    <div className="font-medium text-gray-900">{s.personalDetails?.fullName || s.user?.fullName || 'N/A'}</div>
-                                                    <div className="text-gray-500 text-xs">{s.studentId}</div>
+                                                    <div className="font-medium text-gray-900 dark:text-gray-100">{s.personalDetails?.fullName || s.user?.fullName || 'N/A'}</div>
+                                                    <div className="text-gray-500 dark:text-gray-400 text-xs">{s.studentId}</div>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-700">{s.registrationCategory || 'A'}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{s.registrationCategory || 'A'}</td>
                                                 <td className="px-6 py-4 text-sm">
-                                                    <span className="inline-flex px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">{s.workflowStatus?.currentStage || 'N/A'}</span>
+                                                    <span className="inline-flex px-2 py-1 text-xs rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">{s.workflowStatus?.currentStage || 'N/A'}</span>
                                                 </td>
-                                                <td className="px-6 py-4 text-sm text-gray-700">{s.workflowStatus?.assignedAgent?.fullName || '—'}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-700">{s.workflowStatus?.assignedStaff?.fullName || '—'}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-500">{s.updatedAt ? new Date(s.updatedAt).toLocaleDateString() : '—'}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{s.workflowStatus?.assignedAgent?.fullName || '—'}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300">{s.workflowStatus?.assignedStaff?.fullName || '—'}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{s.updatedAt ? new Date(s.updatedAt).toLocaleDateString() : '—'}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -295,29 +256,29 @@ const SuperAdminDashboard = () => {
                         </div>
 
                         {/* Recent Activity */}
-                        <div className="bg-white rounded-lg shadow p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Recent Activity</h3>
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
                                     <div>
-                                        <h5 className="font-medium text-gray-900">New Student Registration</h5>
-                                        <p className="text-sm text-gray-500">Rahul Kumar registered for Class 12 Science</p>
+                                        <h5 className="font-medium text-gray-900 dark:text-gray-100">New Student Registration</h5>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Rahul Kumar registered for Class 12 Science</p>
                                     </div>
-                                    <span className="text-xs text-gray-500">2 hours ago</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">2 hours ago</span>
                                 </div>
-                                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
                                     <div>
-                                        <h5 className="font-medium text-gray-900">Agent Performance Update</h5>
-                                        <p className="text-sm text-gray-500">Priya Sharma completed 5 successful referrals</p>
+                                        <h5 className="font-medium text-gray-900 dark:text-gray-100">Agent Performance Update</h5>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Priya Sharma completed 5 successful referrals</p>
                                     </div>
-                                    <span className="text-xs text-gray-500">4 hours ago</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">4 hours ago</span>
                                 </div>
-                                <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
                                     <div>
-                                        <h5 className="font-medium text-gray-900">Staff Login</h5>
-                                        <p className="text-sm text-gray-500">Dr. Amit Singh logged in</p>
+                                        <h5 className="font-medium text-gray-900 dark:text-gray-100">Staff Login</h5>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">Dr. Amit Singh logged in</p>
                                     </div>
-                                    <span className="text-xs text-gray-500">6 hours ago</span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400">6 hours ago</span>
                                 </div>
                             </div>
                         </div>
@@ -333,137 +294,6 @@ const SuperAdminDashboard = () => {
                 return <PasswordManagement />;
             case 'content':
                 return <WebsiteContentManagement />;
-            case 'security':
-                return <SecurityDashboard />;
-            case 'performance':
-                return <PerformanceDashboard />;
-            case 'profile':
-                return (
-                    <div className="bg-white rounded-lg shadow overflow-hidden">
-                        {/* Header Banner */}
-                        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 h-28 relative">
-                            <div className="absolute -bottom-10 left-6">
-                                <div className="h-20 w-20 rounded-full ring-4 ring-white flex items-center justify-center bg-white shadow-lg">
-                                    <div className="h-18 w-18 rounded-full bg-gradient-to-r from-purple-600 to-indigo-600 flex items-center justify-center">
-                                        <span className="text-white font-semibold text-xl">
-                                            {(user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`)?.trim().split(' ').map(n => n[0]).slice(0, 2).join('')}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Body */}
-                        <div className="pt-14 px-6 pb-6">
-                            <div className="flex justify-between items-start mb-6">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-gray-900">
-                                        {user?.fullName || `${user?.firstName || ''} ${user?.lastName || ''}`}
-                                    </h3>
-                                    <p className="text-sm text-gray-500">Super Administrator</p>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <button className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg">Edit Profile</button>
-                                    <button className="px-3 py-2 text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg">Update Password</button>
-                                </div>
-                            </div>
-
-                            {/* Info Grid */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="p-4 border border-gray-200 rounded-lg">
-                                    <div className="text-xs font-medium text-gray-500 mb-1">Email</div>
-                                    <div className="text-gray-900">{user?.email || '—'}</div>
-                                </div>
-                                <div className="p-4 border border-gray-200 rounded-lg">
-                                    <div className="text-xs font-medium text-gray-500 mb-1">Phone</div>
-                                    <div className="text-gray-900">{user?.phoneNumber || '—'}</div>
-                                </div>
-                                <div className="p-4 border border-gray-200 rounded-lg">
-                                    <div className="text-xs font-medium text-gray-500 mb-1">Department</div>
-                                    <div className="text-gray-900">{user?.department || 'Administration'}</div>
-                                </div>
-                                <div className="p-4 border border-gray-200 rounded-lg">
-                                    <div className="text-xs font-medium text-gray-500 mb-1">Designation</div>
-                                    <div className="text-gray-900">{user?.designation || 'Super Administrator'}</div>
-                                </div>
-                            </div>
-
-                            {/* Badges */}
-                            <div className="mt-6 flex flex-wrap gap-2">
-                                <span className="px-2.5 py-1 text-xs rounded-full bg-purple-100 text-purple-800">Super Admin</span>
-                                <span className="px-2.5 py-1 text-xs rounded-full bg-green-100 text-green-800">Active</span>
-                                <span className="px-2.5 py-1 text-xs rounded-full bg-blue-100 text-blue-800">Verified</span>
-                            </div>
-                        </div>
-                    </div>
-                );
-            case 'settings':
-                return (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-6">Settings</h3>
-                        <div className="space-y-6">
-                            {/* Account Settings */}
-                            <div className="border-b border-gray-200 pb-6">
-                                <h4 className="text-md font-medium text-gray-900 mb-4">Account Settings</h4>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900">Email Notifications</p>
-                                            <p className="text-sm text-gray-500">Receive email updates about system activities</p>
-                                        </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" className="sr-only peer" defaultChecked />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900">SMS Notifications</p>
-                                            <p className="text-sm text-gray-500">Receive SMS updates about critical system events</p>
-                                        </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" className="sr-only peer" />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* System Settings */}
-                            <div className="border-b border-gray-200 pb-6">
-                                <h4 className="text-md font-medium text-gray-900 mb-4">System Settings</h4>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="text-sm font-medium text-gray-900">Maintenance Mode</p>
-                                            <p className="text-sm text-gray-500">Enable maintenance mode for system updates</p>
-                                        </div>
-                                        <label className="relative inline-flex items-center cursor-pointer">
-                                            <input type="checkbox" className="sr-only peer" />
-                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Security Settings */}
-                            <div>
-                                <h4 className="text-md font-medium text-gray-900 mb-4">Security Settings</h4>
-                                <div className="space-y-4">
-                                    <button className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                        Change Password
-                                    </button>
-                                    <button className="w-full sm:w-auto px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 ml-2">
-                                        Enable Two-Factor Authentication
-                                    </button>
-                                    <button className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 ml-2">
-                                        Force Logout All Sessions
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
             default:
                 return <div>Coming Soon...</div>;
         }

@@ -25,7 +25,7 @@ const PasswordInput = ({
     return (
         <div className="relative">
             {showLabel && label && (
-                <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {label}
                 </label>
             )}
@@ -39,7 +39,7 @@ const PasswordInput = ({
                     required={required}
                     value={value}
                     onChange={onChange}
-                    className={`w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 ${className}`}
+                    className={`w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ${className}`}
                     placeholder={placeholder}
                 />
 
@@ -47,7 +47,7 @@ const PasswordInput = ({
                 <button
                     type="button"
                     onClick={togglePasswordVisibility}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors duration-200 focus:outline-none focus:text-gray-600"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-300"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                     <motion.div
@@ -105,7 +105,7 @@ const PasswordInput = ({
                 <motion.p
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-1 text-sm text-red-600"
+                    className="mt-1 text-sm text-red-600 dark:text-red-400"
                 >
                     {error}
                 </motion.p>

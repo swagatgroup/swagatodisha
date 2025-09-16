@@ -318,9 +318,9 @@ const UserManagement = ({ userType = 'students' }) => {
     }
 
     return (
-        <div className="bg-white rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {userType === 'students' ? 'Student Management' :
                         userType === 'agents' ? 'Agent Management' : 'Staff Management'}
                 </h3>
@@ -338,12 +338,12 @@ const UserManagement = ({ userType = 'students' }) => {
                         placeholder="Search users..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                     <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -356,48 +356,48 @@ const UserManagement = ({ userType = 'students' }) => {
             {/* Users Table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-gray-700">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 User
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Contact
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Status
                             </th>
                             {userType === 'students' && (
                                 <>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Course
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Aadhar
                                     </th>
                                 </>
                             )}
                             {userType === 'agents' && (
                                 <>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Referral Code
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Referrals
                                     </th>
                                 </>
                             )}
                             {userType === 'staff' && (
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Department
                                 </th>
                             )}
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {Array.isArray(users) ? users.map((user) => (
                             <motion.tr
                                 key={user.id}
@@ -415,8 +415,8 @@ const UserManagement = ({ userType = 'students' }) => {
                                             </div>
                                         </div>
                                         <div className="ml-4">
-                                            <div className="text-sm font-medium text-gray-900">{user.name || user.fullName}</div>
-                                            <div className="text-sm text-gray-500">
+                                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name || user.fullName}</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
                                                     {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown'}
                                                 </span>
@@ -425,8 +425,8 @@ const UserManagement = ({ userType = 'students' }) => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-900">{user.email}</div>
-                                    <div className="text-sm text-gray-500">{user.phone || user.phoneNumber}</div>
+                                    <div className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">{user.email}</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{user.phone || user.phoneNumber}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
@@ -435,26 +435,26 @@ const UserManagement = ({ userType = 'students' }) => {
                                 </td>
                                 {userType === 'students' && (
                                     <>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {user.course || 'N/A'}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {user.aadharNumber || 'N/A'}
                                         </td>
                                     </>
                                 )}
                                 {userType === 'agents' && (
                                     <>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-mono">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
                                             {user.referralCode || 'N/A'}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {user.totalReferrals || 0} (₹{user.totalCommission ? user.totalCommission.toLocaleString() : '0'})
                                         </td>
                                     </>
                                 )}
                                 {userType === 'staff' && (
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                         {user.department || 'N/A'}
                                     </td>
                                 )}
@@ -486,7 +486,7 @@ const UserManagement = ({ userType = 'students' }) => {
                             </motion.tr>
                         )) : (
                             <tr>
-                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                     No users found
                                 </td>
                             </tr>
@@ -502,7 +502,7 @@ const UserManagement = ({ userType = 'students' }) => {
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Previous
                         </button>
@@ -513,7 +513,7 @@ const UserManagement = ({ userType = 'students' }) => {
                                 onClick={() => setCurrentPage(page)}
                                 className={`px-3 py-2 border rounded-md text-sm font-medium ${page === currentPage
                                     ? 'border-purple-500 bg-purple-50 text-purple-600'
-                                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                                    : 'border-gray-300 text-gray-700 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
                                     }`}
                             >
                                 {page}
@@ -523,7 +523,7 @@ const UserManagement = ({ userType = 'students' }) => {
                         <button
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Next
                         </button>
@@ -534,55 +534,55 @@ const UserManagement = ({ userType = 'students' }) => {
             {/* Edit Modal */}
             {showEditModal && selectedUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
                         <div className="mt-3">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Edit User</h3>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Edit User</h3>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Name *
                                     </label>
                                     <input
                                         type="text"
                                         value={editData.name}
                                         onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Email *
                                     </label>
                                     <input
                                         type="email"
                                         value={editData.email}
                                         onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Phone *
                                     </label>
                                     <input
                                         type="tel"
                                         value={editData.phone}
                                         onChange={(e) => setEditData(prev => ({ ...prev, phone: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Status *
                                     </label>
                                     <select
                                         value={editData.status}
                                         onChange={(e) => setEditData(prev => ({ ...prev, status: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     >
                                         <option value="active">Active</option>
                                         <option value="inactive">Inactive</option>
@@ -593,25 +593,25 @@ const UserManagement = ({ userType = 'students' }) => {
                                 {userType === 'students' && (
                                     <>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 Course
                                             </label>
                                             <input
                                                 type="text"
                                                 value={editData.course || ''}
                                                 onChange={(e) => setEditData(prev => ({ ...prev, course: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 Aadhar Number
                                             </label>
                                             <input
                                                 type="text"
                                                 value={editData.aadharNumber || ''}
                                                 onChange={(e) => setEditData(prev => ({ ...prev, aadharNumber: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             />
                                         </div>
                                     </>
@@ -619,28 +619,28 @@ const UserManagement = ({ userType = 'students' }) => {
 
                                 {userType === 'agents' && (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Referral Code
                                         </label>
                                         <input
                                             type="text"
                                             value={editData.referralCode || ''}
                                             onChange={(e) => setEditData(prev => ({ ...prev, referralCode: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                         />
                                     </div>
                                 )}
 
                                 {userType === 'staff' && (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                             Department
                                         </label>
                                         <input
                                             type="text"
                                             value={editData.department || ''}
                                             onChange={(e) => setEditData(prev => ({ ...prev, department: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                         />
                                     </div>
                                 )}
@@ -649,7 +649,7 @@ const UserManagement = ({ userType = 'students' }) => {
                             <div className="flex justify-end space-x-3 mt-6">
                                 <button
                                     onClick={() => setShowEditModal(false)}
-                                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                                 >
                                     Cancel
                                 </button>
@@ -669,22 +669,22 @@ const UserManagement = ({ userType = 'students' }) => {
             {/* Password Reset Modal */}
             {showPasswordModal && selectedUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
                         <div className="mt-3">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                                 Reset Password for {selectedUser.name || selectedUser.fullName}
                             </h3>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         New Password *
                                     </label>
                                     <input
                                         type="password"
                                         value={passwordData.newPassword}
                                         onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                         placeholder="Enter new password"
                                     />
                                 </div>
@@ -693,7 +693,7 @@ const UserManagement = ({ userType = 'students' }) => {
                             <div className="flex justify-end space-x-3 mt-6">
                                 <button
                                     onClick={() => setShowPasswordModal(false)}
-                                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
                                 >
                                     Cancel
                                 </button>

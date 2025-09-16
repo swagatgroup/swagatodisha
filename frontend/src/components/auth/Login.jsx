@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDarkMode } from '../../contexts/DarkModeContext';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import ForgotPassword from './ForgotPassword';
@@ -15,6 +16,7 @@ const Login = () => {
     const [error, setError] = useState('');
     const [showForgotPassword, setShowForgotPassword] = useState(false);
     const { login } = useAuth();
+    const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -148,12 +150,12 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="max-w-md w-full space-y-8"
+                className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700"
             >
                 {/* Header */}
                 <div className="text-center">
@@ -172,7 +174,7 @@ const Login = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.3 }}
-                        className="text-3xl font-bold text-gray-900 mb-2"
+                        className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2"
                     >
                         Welcome Back
                     </motion.h2>
@@ -181,7 +183,7 @@ const Login = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
-                        className="text-gray-600"
+                        className="text-gray-600 dark:text-gray-300"
                     >
                         Sign in to your account
                     </motion.p>
@@ -199,7 +201,7 @@ const Login = () => {
                     <div className="space-y-4">
                         {/* Email Field */}
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                 Email Address
                             </label>
                             <input
@@ -210,7 +212,7 @@ const Login = () => {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400"
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 placeholder="Enter your email"
                             />
                         </div>
@@ -255,7 +257,7 @@ const Login = () => {
                         >
                             <button
                                 onClick={() => setShowForgotPassword(true)}
-                                className="text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200"
+                                className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-200"
                             >
                                 Forgot your password?
                             </button>
@@ -265,12 +267,12 @@ const Login = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.5, delay: 0.7 }}
-                            className="text-sm text-gray-600"
+                            className="text-sm text-gray-600 dark:text-gray-300"
                         >
                             Don't have an account?{' '}
                             <Link
                                 to="/register"
-                                className="text-purple-600 hover:text-purple-700 font-medium transition-colors duration-200"
+                                className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-200"
                             >
                                 Sign up here
                             </Link>
@@ -287,7 +289,7 @@ const Login = () => {
                 >
                     <Link
                         to="/"
-                        className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 flex items-center justify-center"
+                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 flex items-center justify-center"
                     >
                         <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -299,7 +301,7 @@ const Login = () => {
 
             {/* Forgot Password Modal */}
             {showForgotPassword && (
-                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                <div className="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
                     <div className="relative p-5 w-full max-w-md">
                         <ForgotPassword onBackToLogin={() => setShowForgotPassword(false)} />
                     </div>

@@ -132,24 +132,6 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         <button
                                             onClick={() => {
                                                 closeUserMenu();
-                                                onItemClick('profile');
-                                            }}
-                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        >
-                                            Your Profile
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                closeUserMenu();
-                                                onItemClick('settings');
-                                            }}
-                                            className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                        >
-                                            Settings
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                closeUserMenu();
                                                 handleLogout();
                                             }}
                                             className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"

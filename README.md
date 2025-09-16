@@ -39,7 +39,7 @@
   - System settings and configuration
   - Performance monitoring and analytics
   - Security dashboard and audit logs
-  - Website content management
+  - Website Content management
   - All CRUD operations
 
 ### 2. **Staff Members** 👨‍💼
