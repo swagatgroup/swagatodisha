@@ -195,6 +195,23 @@ export const SocketProvider = ({ children }) => {
         }
     }, [user, token]);
 
+    // Application workflow notifications (no-op handlers to ensure events are received globally)
+    useEffect(() => {
+        if (!socket) return;
+        const noop = () => { };
+        const events = [
+            'application_created',
+            'application_updated',
+            'application_draft_saved',
+            'application_pdf_generated',
+            'application_submitted',
+            'application_approved',
+            'application_rejected'
+        ];
+        events.forEach((ev) => socket.on(ev, noop));
+        return () => { events.forEach((ev) => socket.off(ev, noop)); };
+    }, [socket]);
+
     const addNotification = (notification) => {
         setNotifications(prev => [notification, ...prev]);
         setUnreadCount(prev => prev + 1);
@@ -241,6 +258,18 @@ export const SocketProvider = ({ children }) => {
         }
     };
 
+    const joinApplicationRoom = (applicationId) => {
+        if (socket && connected && applicationId) {
+            socket.emit('join_application_room', applicationId);
+        }
+    };
+
+    const leaveApplicationRoom = (applicationId) => {
+        if (socket && connected && applicationId) {
+            socket.emit('leave_application_room', applicationId);
+        }
+    };
+
     const value = {
         socket,
         connected,
@@ -255,7 +284,9 @@ export const SocketProvider = ({ children }) => {
         clearNotifications,
         emitDocumentStatusUpdate,
         emitTypingStart,
-        emitTypingStop
+        emitTypingStop,
+        joinApplicationRoom,
+        leaveApplicationRoom
     };
 
     return (

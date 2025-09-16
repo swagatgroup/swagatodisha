@@ -7,6 +7,8 @@ import StudentManagement from './tabs/StudentManagement';
 import DocumentVerification from './tabs/DocumentVerification';
 import ContentManagement from './tabs/ContentManagement';
 import AgentManagement from './tabs/AgentManagement';
+import StudentApplicationWorkflow from './tabs/StudentApplicationWorkflow';
+import StaffApplicationsReview from './tabs/StaffApplicationsReview';
 import StudentTable from './components/StudentTable';
 import ProcessingStats from './components/ProcessingStats';
 import api from '../../utils/api';
@@ -32,6 +34,15 @@ const EnhancedStaffDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                </svg>
+            )
+        },
+        {
+            id: 'applications',
+            name: 'Applications Review',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
             )
         },
@@ -202,6 +213,8 @@ const EnhancedStaffDashboard = () => {
                 return <StudentManagement onStudentUpdate={handleStudentUpdate} />;
             case 'verification':
                 return <DocumentVerification onStudentUpdate={handleStudentUpdate} />;
+            case 'applications':
+                return <StaffApplicationsReview />;
             case 'content':
                 return <ContentManagement />;
             case 'agents':

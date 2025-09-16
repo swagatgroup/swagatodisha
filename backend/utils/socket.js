@@ -131,6 +131,15 @@ class SocketManager {
                 this.sendDashboardData(socket, data);
             });
 
+            // Handle application workflow events
+            socket.on('join_application_room', (applicationId) => {
+                socket.join(`application_${applicationId}`);
+            });
+
+            socket.on('leave_application_room', (applicationId) => {
+                socket.leave(`application_${applicationId}`);
+            });
+
             // Handle disconnect
             socket.on('disconnect', () => {
                 console.log(`User disconnected: ${socket.userName} (${socket.userRole})`);
@@ -337,6 +346,100 @@ class SocketManager {
             ...activity,
             timestamp: new Date()
         });
+    }
+
+    // Application workflow notifications
+    notifyApplicationCreated(applicationData) {
+        // Notify student
+        this.broadcastToUser(applicationData.userId, 'application_created', applicationData);
+
+        // Notify staff about new application
+        this.broadcastToRole('staff', 'new_application_created', applicationData);
+
+        // Notify super admin
+        this.broadcastToRole('super_admin', 'new_application_created', applicationData);
+    }
+
+    notifyApplicationUpdated(applicationData) {
+        // Notify student
+        this.broadcastToUser(applicationData.userId, 'application_updated', applicationData);
+
+        // Notify assigned agent if exists
+        if (applicationData.assignedAgent) {
+            this.broadcastToUser(applicationData.assignedAgent, 'application_updated', applicationData);
+        }
+
+        // Notify assigned staff if exists
+        if (applicationData.assignedStaff) {
+            this.broadcastToUser(applicationData.assignedStaff, 'application_updated', applicationData);
+        }
+
+        // Notify application room
+        this.io.to(`application_${applicationData.applicationId}`).emit('application_updated', applicationData);
+    }
+
+    notifyApplicationSubmitted(applicationData) {
+        // Notify student
+        this.broadcastToUser(applicationData.userId, 'application_submitted', applicationData);
+
+        // Notify assigned agent
+        if (applicationData.assignedAgent) {
+            this.broadcastToUser(applicationData.assignedAgent, 'application_submitted', applicationData);
+        }
+
+        // Notify staff about new submission
+        this.broadcastToRole('staff', 'application_submitted', applicationData);
+
+        // Notify super admin
+        this.broadcastToRole('super_admin', 'application_submitted', applicationData);
+    }
+
+    notifyApplicationApproved(applicationData) {
+        // Notify student
+        this.broadcastToUser(applicationData.userId, 'application_approved', applicationData);
+
+        // Notify assigned agent
+        if (applicationData.assignedAgent) {
+            this.broadcastToUser(applicationData.assignedAgent, 'application_approved', applicationData);
+        }
+
+        // Notify staff
+        this.broadcastToRole('staff', 'application_approved', applicationData);
+
+        // Notify super admin
+        this.broadcastToRole('super_admin', 'application_approved', applicationData);
+    }
+
+    notifyApplicationRejected(applicationData) {
+        // Notify student
+        this.broadcastToUser(applicationData.userId, 'application_rejected', applicationData);
+
+        // Notify assigned agent
+        if (applicationData.assignedAgent) {
+            this.broadcastToUser(applicationData.assignedAgent, 'application_rejected', applicationData);
+        }
+
+        // Notify staff
+        this.broadcastToRole('staff', 'application_rejected', applicationData);
+
+        // Notify super admin
+        this.broadcastToRole('super_admin', 'application_rejected', applicationData);
+    }
+
+    notifyApplicationPDFGenerated(applicationData) {
+        // Notify student
+        this.broadcastToUser(applicationData.userId, 'application_pdf_generated', applicationData);
+
+        // Notify application room
+        this.io.to(`application_${applicationData.applicationId}`).emit('application_pdf_generated', applicationData);
+    }
+
+    notifyApplicationDraftSaved(applicationData) {
+        // Notify student
+        this.broadcastToUser(applicationData.userId, 'application_draft_saved', applicationData);
+
+        // Notify application room
+        this.io.to(`application_${applicationData.applicationId}`).emit('application_draft_saved', applicationData);
     }
 }
 

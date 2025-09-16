@@ -81,6 +81,9 @@ const databaseOptimization = require('./utils/databaseOptimization');
 // Import error handling middleware
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
+// Import socket middleware
+const { addSocketManager } = require('./middleware/socket');
+
 // Middleware
 app.use(securityHeaders);
 app.use(compression());
@@ -213,6 +216,9 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Attach socket manager before routes so controllers can use req.socketManager
+app.use(addSocketManager(socketManager));
+
 // Static files
 app.use('/uploads', express.static('uploads'));
 
@@ -270,6 +276,7 @@ const studentApplicationRoutes = require('./routes/studentApplications');
 const studentAcademicRoutes = require('./routes/studentAcademic');
 const workflowRoutes = require('./routes/workflow');
 const paymentRoutes = require('./routes/paymentRoutes');
+const studentApplicationWorkflowRoutes = require('./routes/studentApplicationWorkflow');
 
 // API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
@@ -278,6 +285,7 @@ app.use('/api/students', apiRateLimit, studentRoutes);
 app.use('/api/students/payments', apiRateLimit, studentPaymentRoutes);
 app.use('/api/students/applications', apiRateLimit, studentApplicationRoutes);
 app.use('/api/students/academic', apiRateLimit, studentAcademicRoutes);
+app.use('/api/student-application', apiRateLimit, studentApplicationWorkflowRoutes);
 app.use('/api/workflow', apiRateLimit, workflowRoutes);
 app.use('/api/enhanced-workflow', apiRateLimit, enhancedWorkflowRoutes);
 app.use('/api/payments', apiRateLimit, paymentRoutes);

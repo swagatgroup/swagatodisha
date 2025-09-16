@@ -16,6 +16,7 @@ import {
     showErrorToast
 } from '../../utils/sweetAlert';
 import api from '../../utils/api';
+import StudentApplicationWorkflow from './tabs/StudentApplicationWorkflow';
 
 const AgentDashboard = () => {
     const { user } = useAuth();
@@ -40,6 +41,15 @@ const AgentDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                </svg>
+            )
+        },
+        {
+            id: 'application_workflow',
+            name: 'Application Workflow',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-9 4h12M9 8h12M4 6h.01M4 10h.01M4 14h.01M4 18h.01" />
                 </svg>
             )
         },
@@ -274,6 +284,8 @@ const AgentDashboard = () => {
                 );
             case 'referrals':
                 return <ReferralManagement />;
+            case 'application_workflow':
+                return <StudentApplicationWorkflow />;
             case 'documents':
                 return <DocumentManagement />;
             // drafts and commission views removed

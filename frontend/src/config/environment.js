@@ -1,7 +1,7 @@
 // Environment Configuration
 const config = {
     development: {
-        apiBaseURL: 'http://localhost:3000',
+        apiBaseURL: 'http://localhost:5000',
         timeout: 10000,
     },
     production: {

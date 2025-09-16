@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Swal from 'sweetalert2';
-import api from '../../api/axiosInstance'; // Added import for api
+import api from '../../utils/api';
 
 const DocumentUpload = ({ userRole, onUploadSuccess, maxFiles = 5 }) => {
     const [uploading, setUploading] = useState(false);
