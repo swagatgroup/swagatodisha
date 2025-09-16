@@ -157,9 +157,9 @@ const ContactUs = () => {
         <section id="contact" className="relative py-20 overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 dark:from-purple-900/10 dark:to-blue-900/10 rounded-full blur-3xl"></div>
             </div>
 
             {/* Section Header */}
@@ -167,10 +167,10 @@ const ContactUs = () => {
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
                     <i className="fa-solid fa-envelope text-white text-3xl"></i>
                 </div>
-                <h2 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
+                <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                     Get In <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Touch</span>
                 </h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                     We're here to help and answer any questions you might have. We look forward to hearing from you.
                 </p>
             </div>
@@ -181,13 +181,13 @@ const ContactUs = () => {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
                         {/* Left Side - Contact Information */}
                         <div>
-                            <h3 className="text-3xl font-bold text-gray-800 mb-6">
+                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                 Let's Start a Conversation
                             </h3>
-                            <p className="text-gray-600 text-lg leading-relaxed mb-8">
+                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-8">
                                 Ready to take the next step in your educational journey? We're here to guide you through every process, from admissions to career guidance. Our team of experts is committed to providing you with the information and support you need.
                             </p>
-                            <p className="text-gray-600 text-lg leading-relaxed mb-12">
+                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-12">
                                 Whether you have questions about our programs, want to schedule a campus visit, or need assistance with the application process, don't hesitate to reach out. We believe in building lasting relationships with our students and their families.
                             </p>
 
@@ -198,10 +198,10 @@ const ContactUs = () => {
                                         <img
                                             src="/Swagat_Logo.png"
                                             alt="Swagat Group of Institutions"
-                                            className="w-48 h-auto object-contain"
+                                            className="w-48 h-auto object-contain dark:brightness-0 dark:invert"
                                         />
                                     </div>
-                                    <p className="text-gray-700 text-sm leading-relaxed mb-4">
+                                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-4">
                                         Empowering students with quality education, innovative learning methods, and holistic development.
                                     </p>
                                 </div>
@@ -211,13 +211,13 @@ const ContactUs = () => {
 
                             {/* Direct Contact Information */}
                             <div className="mb-8">
-                                <h4 className="text-lg font-semibold text-gray-800 mb-4">Get In Touch Directly</h4>
+                                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Get In Touch Directly</h4>
                                 <div className="space-y-3">
                                     {/* Phone Contact */}
                                     <div className="flex items-center">
                                         <i className="fa-solid fa-phone text-purple-600 mr-3 text-lg"></i>
                                         <div>
-                                            <p className="text-sm text-gray-600">Call Us</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300">Call Us</p>
                                             <a
                                                 href={`tel:${CONTACT_INFO.phone}`}
                                                 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
@@ -231,7 +231,7 @@ const ContactUs = () => {
                                     <div className="flex items-center">
                                         <i className="fa-solid fa-envelope text-purple-600 mr-3 text-lg"></i>
                                         <div>
-                                            <p className="text-sm text-gray-600">Email Us</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300">Email Us</p>
                                             <a
                                                 href={`mailto:${CONTACT_INFO.email}`}
                                                 className="text-lg font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
@@ -245,7 +245,7 @@ const ContactUs = () => {
 
                             {/* Social Media */}
                             <div>
-                                <h4 className="text-lg font-semibold text-gray-800 mb-4">Connect With Us</h4>
+                                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Connect With Us</h4>
                                 <div className="flex space-x-4">
                                     {SOCIAL_LINKS.map((social, index) => (
                                         <motion.a
@@ -266,15 +266,15 @@ const ContactUs = () => {
 
                         {/* Right Side - Contact Form */}
                         <div>
-                            <div className="bg-white rounded-3xl p-8 shadow-2xl border">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">
+                            <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-2xl border dark:border-gray-700">
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
                                     Send Us a Message
                                 </h3>
 
                                 <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                                 Full Name *
                                             </label>
                                             <input
@@ -283,13 +283,13 @@ const ContactUs = () => {
                                                 name="name"
                                                 value={formData.name}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                                 placeholder="Enter your full name"
                                             />
                                         </div>
 
                                         <div>
-                                            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                                            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                                 Email Address *
                                             </label>
                                             <input
@@ -298,14 +298,14 @@ const ContactUs = () => {
                                                 name="email"
                                                 value={formData.email}
                                                 onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                                 placeholder="Enter your email address"
                                             />
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                                        <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                             Phone Number *
                                         </label>
                                         <input
@@ -314,14 +314,14 @@ const ContactUs = () => {
                                             name="phone"
                                             value={formData.phone}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                             placeholder="Enter your phone number"
                                             required
                                         />
                                     </div>
 
                                     <div>
-                                        <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 mb-2">
+                                        <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                             Subject *
                                         </label>
                                         <input
@@ -330,13 +330,13 @@ const ContactUs = () => {
                                             name="subject"
                                             value={formData.subject}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300"
+                                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                             placeholder="What is this about?"
                                         />
                                     </div>
 
                                     <div>
-                                        <label htmlFor="message" className="block text-sm font-semibold text-gray-700 mb-2">
+                                        <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                             Message *
                                         </label>
                                         <textarea
@@ -345,13 +345,13 @@ const ContactUs = () => {
                                             rows="5"
                                             value={formData.message}
                                             onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 resize-none"
+                                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"
                                             placeholder="Tell us more about your inquiry..."
                                         ></textarea>
                                     </div>
 
                                     <div>
-                                        <label htmlFor="documents" className="block text-sm font-semibold text-gray-700 mb-2">
+                                        <label htmlFor="documents" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                             Upload Documents (Optional)
                                         </label>
                                         <div className="relative">
@@ -362,7 +362,7 @@ const ContactUs = () => {
                                                 onChange={handleFileChange}
                                                 multiple
                                                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                                                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                                             />
                                             <div className="mt-2 text-xs text-gray-500">
                                                 Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file)

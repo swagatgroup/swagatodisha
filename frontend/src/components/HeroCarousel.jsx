@@ -7,28 +7,29 @@ const HeroCarousel = () => {
     // Use images from constants for consistency
     const slides = CAROUSEL_IMAGES
 
-    // Auto-advance slides every 4000ms
+    // Auto-advance slides every 3 seconds
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % slides.length)
-        }, 4000)
+        }, 3000)
 
         return () => clearInterval(timer)
     }, [slides.length])
 
     // Go to specific slide
     const goToSlide = (index) => {
+        if (index === currentSlide) return
         setCurrentSlide(index)
     }
 
     return (
-        <section id="hero" className="relative w-full h-[18vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[65vh] mt-20 sm:mt-16 md:mt-16">
+        <section id="hero" className="relative w-full h-[18vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[65vh] mt-20 sm:mt-16 md:mt-16 overflow-hidden isolate">
             {/* Image Carousel */}
             <div className="relative w-full h-full">
                 <img
                     src={slides[currentSlide]}
                     alt={`Slide ${currentSlide + 1}`}
-                    className="w-full h-full object-contain"
+                    className="absolute inset-0 w-full h-full object-cover"
                 />
 
                 {/* Slide Indicators */}

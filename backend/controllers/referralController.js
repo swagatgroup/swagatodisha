@@ -48,6 +48,23 @@ const generateReferralCode = async (req, res) => {
         user.isReferralActive = true;
         await user.save();
 
+        // Emit realtime update if socket manager is available
+        try {
+            if (req.socketManager) {
+                req.socketManager.broadcastToUser(user._id.toString(), 'profile-updated', {
+                    user: {
+                        id: user._id,
+                        fullName: user.fullName,
+                        email: user.email,
+                        role: user.role,
+                        referralCode: user.referralCode
+                    },
+                    updatedFields: ['referralCode'],
+                    timestamp: new Date()
+                });
+            }
+        } catch (e) { }
+
         // Create notification
         await Notification.createNotification({
             recipient: userId,

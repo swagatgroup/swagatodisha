@@ -20,7 +20,7 @@ export const SocketProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [dashboardData, setDashboardData] = useState(null);
     const [realtimeStats, setRealtimeStats] = useState(null);
-    const { user, token } = useAuth();
+    const { user, token, updateUser } = useAuth();
 
     useEffect(() => {
         if (user && token) {
@@ -136,6 +136,27 @@ export const SocketProvider = ({ children }) => {
             newSocket.on('notifications', (data) => {
                 setNotifications(data);
                 setUnreadCount(data.filter(n => !n.read).length);
+            });
+
+            // Profile updated handler (e.g., referralCode assigned)
+            newSocket.on('profile-updated', (data) => {
+                try {
+                    if (data?.user?.id && user && data.user.id === user.id) {
+                        const updated = { ...user, ...data.user };
+                        updateUser(updated);
+                        addNotification({
+                            id: Date.now(),
+                            type: 'profile',
+                            title: 'Profile Updated',
+                            message: data.updatedFields?.includes('referralCode')
+                                ? `Your referral code is now ${data.user.referralCode}`
+                                : 'Your profile has been updated',
+                            data,
+                            timestamp: new Date(),
+                            read: false
+                        });
+                    }
+                } catch (e) { }
             });
 
             // Online users handler

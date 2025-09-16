@@ -1745,9 +1745,9 @@ const InstitutionTypes = () => {
         <section className="relative py-20 overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 dark:from-purple-900/10 dark:to-blue-900/10 rounded-full blur-3xl"></div>
             </div>
 
             {/* Section Header */}
@@ -1755,10 +1755,10 @@ const InstitutionTypes = () => {
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
                     <i className="fa-solid fa-building-columns text-white text-3xl"></i>
                 </div>
-                <h2 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
+                <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                     Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Institution Types</span>
                 </h2>
-                <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
                     Discover our comprehensive range of educational institutions, each designed to provide specialized learning experiences and prepare students for successful careers.
                 </p>
             </div>
@@ -1770,7 +1770,7 @@ const InstitutionTypes = () => {
                         <div
                             key={institution.id}
                             onClick={(event) => handleInstitutionCardClick(event, institution)}
-                            className="group cursor-pointer bg-white rounded-3xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
+                            className="group cursor-pointer bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
                         >
                             {/* Icon Container */}
                             <div className={`w-16 h-16 bg-gradient-to-r ${institution.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
@@ -1779,13 +1779,13 @@ const InstitutionTypes = () => {
 
                             {/* Content */}
                             <div className="text-center">
-                                <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 group-hover:text-purple-600 transition-colors duration-300">
                                     {institution.name}
                                 </h3>
-                                <p className="text-sm text-gray-600 mb-3 font-medium">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">
                                     {institution.subtitle}
                                 </p>
-                                <p className="text-sm text-gray-500 leading-relaxed mb-4">
+                                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
                                     {institution.description}
                                 </p>
                             </div>
@@ -1804,39 +1804,39 @@ const InstitutionTypes = () => {
                 >
                     {/* Modal Content - This prevents event bubbling */}
                     <div
-                        className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                        className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
                         onClick={(event) => event.stopPropagation()}
                     >
                         {/* Modal Header */}
-                        <div className="p-6 border-b border-gray-100">
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700">
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center space-x-4">
                                     <div className={`w-12 h-12 bg-gradient-to-r ${selectedInstitution.iconBg} rounded-xl flex items-center justify-center`}>
                                         <i className={`${selectedInstitution.icon} text-white text-xl`}></i>
                                     </div>
                                     <div>
-                                        <h3 className="text-2xl font-bold text-gray-800">{selectedInstitution.name}</h3>
-                                        <p className="text-gray-600">{selectedInstitution.subtitle}</p>
+                                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedInstitution.name}</h3>
+                                        <p className="text-gray-600 dark:text-gray-300">{selectedInstitution.subtitle}</p>
                                     </div>
                                 </div>
                                 <button
                                     onClick={(event) => handleCloseButtonClick(event, 'main')}
-                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors duration-200"
+                                    className="w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors duration-200"
                                 >
-                                    <i className="fa-solid fa-times text-gray-600"></i>
+                                    <i className="fa-solid fa-times text-gray-600 dark:text-gray-300"></i>
                                 </button>
                             </div>
-                            <p className="text-gray-600 leading-relaxed">{selectedInstitution.description}</p>
+                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedInstitution.description}</p>
                         </div>
 
                         {/* Modal Body - Programs List */}
                         <div className="p-6">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-6">Available Programs</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Available Programs</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {selectedInstitution.programs.map((program, index) => (
                                     <div
                                         key={index}
-                                        className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer border border-gray-200 hover:border-purple-300"
+                                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500"
                                         onClick={(event) => {
                                             if (program.hasWebsite) {
                                                 event.preventDefault()
@@ -1849,18 +1849,18 @@ const InstitutionTypes = () => {
                                     >
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
-                                                <h5 className="font-semibold text-gray-800 mb-2">{program.name}</h5>
-                                                <p className="text-sm text-gray-600 mb-2">{program.type}</p>
-                                                <p className="text-xs text-gray-500">{program.details}</p>
+                                                <h5 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{program.name}</h5>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{program.type}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{program.details}</p>
                                                 <div className="mt-2 flex flex-wrap gap-2">
                                                     {program.hasSubCategories && (
-                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
                                                             <i className="fa-solid fa-layer-group mr-1"></i>
                                                             Has Sub-Categories
                                                         </span>
                                                     )}
                                                     {program.hasWebsite && (
-                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
                                                             <i className="fa-solid fa-globe mr-1"></i>
                                                             Visit Website
                                                         </span>
@@ -1868,7 +1868,7 @@ const InstitutionTypes = () => {
                                                 </div>
                                             </div>
                                             <div className="ml-4">
-                                                <i className={`fa-solid ${program.hasWebsite ? 'fa-external-link-alt' : 'fa-chevron-right'} text-purple-500`}></i>
+                                                <i className={`fa-solid ${program.hasWebsite ? 'fa-external-link-alt' : 'fa-chevron-right'} text-purple-500 dark:text-purple-400`}></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1887,24 +1887,24 @@ const InstitutionTypes = () => {
                 >
                     {/* Sub Modal Content - This prevents event bubbling */}
                     <div
-                        className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                        className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
                         onClick={(event) => event.stopPropagation()}
                     >
                         {/* Sub Modal Header */}
-                        <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-purple-50 to-blue-50">
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
-                                    <h3 className="text-2xl font-bold text-gray-800">{selectedProgram.name}</h3>
-                                    <p className="text-purple-600 font-medium">{selectedProgram.type}</p>
+                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedProgram.name}</h3>
+                                    <p className="text-purple-600 dark:text-purple-400 font-medium">{selectedProgram.type}</p>
                                 </div>
                                 <button
                                     onClick={(event) => handleCloseButtonClick(event, 'sub')}
-                                    className="w-10 h-10 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm"
+                                    className="w-10 h-10 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm"
                                 >
-                                    <i className="fa-solid fa-times text-gray-600"></i>
+                                    <i className="fa-solid fa-times text-gray-600 dark:text-gray-300"></i>
                                 </button>
                             </div>
-                            <p className="text-gray-600 leading-relaxed">{selectedProgram.details}</p>
+                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedProgram.details}</p>
                         </div>
 
                         {/* Sub Modal Body - Show sub-categories if they exist, otherwise show fee structure */}
@@ -1912,22 +1912,22 @@ const InstitutionTypes = () => {
                             {selectedProgram.hasSubCategories ? (
                                 // Show sub-categories (for Engineering)
                                 <div>
-                                    <h4 className="text-xl font-semibold text-gray-800 mb-6">Available Courses</h4>
+                                    <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Available Courses</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {selectedProgram.subCategories.map((course, index) => (
                                             <div
                                                 key={index}
-                                                className="p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors duration-200 cursor-pointer border border-gray-200 hover:border-purple-300"
+                                                className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500"
                                                 onClick={(event) => handleCourseCardClick(event, course)}
                                             >
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex-1">
-                                                        <h5 className="font-semibold text-gray-800 mb-2">{course.name}</h5>
-                                                        <p className="text-sm text-gray-600 mb-2">{course.duration}</p>
-                                                        <p className="text-xs text-gray-500">{course.details}</p>
+                                                        <h5 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{course.name}</h5>
+                                                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{course.duration}</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">{course.details}</p>
                                                     </div>
                                                     <div className="ml-4">
-                                                        <i className="fa-solid fa-chevron-right text-purple-500"></i>
+                                                        <i className="fa-solid fa-chevron-right text-purple-500 dark:text-purple-400"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1937,25 +1937,25 @@ const InstitutionTypes = () => {
                             ) : (
                                 // Show fee structure (for other programs)
                                 <div>
-                                    <h4 className="text-xl font-semibold text-gray-800 mb-6">Fee Structure</h4>
+                                    <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Fee Structure</h4>
                                     <div className="space-y-4">
                                         {Object.entries(selectedProgram.feeStructure).map(([key, value]) => (
-                                            <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                            <div key={key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                                 <div className="flex items-center">
                                                     <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mr-3"></div>
-                                                    <span className="text-gray-700 font-medium capitalize">
+                                                    <span className="text-gray-700 dark:text-gray-300 font-medium capitalize">
                                                         {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                                     </span>
                                                 </div>
-                                                <span className="text-lg font-bold text-purple-600">{value}</span>
+                                                <span className="text-lg font-bold text-purple-600 dark:text-purple-400">{value}</span>
                                             </div>
                                         ))}
                                     </div>
 
                                     {/* Additional Information */}
-                                    <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                                        <h5 className="font-semibold text-blue-800 mb-2">Important Notes:</h5>
-                                        <ul className="text-sm text-blue-700 space-y-1">
+                                    <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                                        <h5 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Important Notes:</h5>
+                                        <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
                                             <li>• Fees are subject to change as per institution policy</li>
                                             <li>• Additional charges may apply for practical sessions</li>
                                             <li>• Scholarships available for meritorious students</li>
@@ -2016,25 +2016,25 @@ const InstitutionTypes = () => {
 
                         {/* Course Modal Body - Individual Course Fee Structure */}
                         <div className="p-6">
-                            <h4 className="text-xl font-semibold text-gray-800 mb-6">Course Fee Structure</h4>
+                            <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Course Fee Structure</h4>
                             <div className="space-y-4">
                                 {Object.entries(selectedCourse.feeStructure).map(([key, value]) => (
-                                    <div key={key} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                                    <div key={key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                         <div className="flex items-center">
                                             <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-full mr-3"></div>
-                                            <span className="text-gray-700 font-medium capitalize">
+                                            <span className="text-gray-700 dark:text-gray-300 font-medium capitalize">
                                                 {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                             </span>
                                         </div>
-                                        <span className="text-lg font-bold text-green-600">{value}</span>
+                                        <span className="text-lg font-bold text-green-600 dark:text-green-400">{value}</span>
                                     </div>
                                 ))}
                             </div>
 
                             {/* Course Highlights */}
-                            <div className="mt-8 p-4 bg-green-50 rounded-xl border border-green-200">
-                                <h5 className="font-semibold text-green-800 mb-2">Course Highlights:</h5>
-                                <ul className="text-sm text-green-700 space-y-1">
+                            <div className="mt-8 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
+                                <h5 className="font-semibold text-green-800 dark:text-green-200 mb-2">Course Highlights:</h5>
+                                <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
                                     <li>• Industry-aligned curriculum with latest technology</li>
                                     <li>• Practical laboratory sessions and workshops</li>
                                     <li>• Industry internships and project work</li>
@@ -2045,11 +2045,11 @@ const InstitutionTypes = () => {
                         </div>
 
                         {/* Course Modal Footer */}
-                        <div className="p-6 border-t border-gray-100">
+                        <div className="p-6 border-t border-gray-100 dark:border-gray-700">
                             <div className="flex justify-end space-x-3">
                                 <button
                                     onClick={(event) => handleCloseButtonClick(event, 'course')}
-                                    className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-200"
+                                    className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
                                 >
                                     Close
                                 </button>

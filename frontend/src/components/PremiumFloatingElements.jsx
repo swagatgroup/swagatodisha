@@ -40,7 +40,7 @@ const PremiumFloatingElements = () => {
     const ElegantBubbles = () => (
         <>
             {[...Array(15)].map((_, i) => (
-                <motion.div
+                <div
                     key={i}
                     className="absolute rounded-full"
                     style={{
@@ -50,18 +50,6 @@ const PremiumFloatingElements = () => {
                         top: `${Math.random() * 100}%`,
                         background: `rgba(${139 + i * 8}, ${92 + i * 6}, ${246 - i * 10}, ${0.15 + Math.random() * 0.1})`,
                         boxShadow: `0 0 ${8 + Math.random() * 4}px rgba(${139 + i * 8}, ${92 + i * 6}, ${246 - i * 10}, 0.3)`
-                    }}
-                    animate={{
-                        y: [0, -20 - Math.random() * 30, 0],
-                        x: [0, Math.random() * 20 - 10, 0],
-                        scale: [1, 1.1, 1],
-                        opacity: [0.3, 0.6, 0.3]
-                    }}
-                    transition={{
-                        duration: 15 + Math.random() * 10,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                        delay: Math.random() * 8
                     }}
                 />
             ))}
@@ -210,7 +198,7 @@ const PremiumFloatingElements = () => {
     return (
         <div
             ref={containerRef}
-            className="fixed inset-0 pointer-events-none z-10 overflow-hidden"
+            className="fixed inset-0 pointer-events-none z-0 overflow-hidden"
             onMouseMove={handleMouseMove}
             style={{
                 // Exclude the hero section (top 100vh) from floating elements
@@ -230,17 +218,10 @@ const PremiumFloatingElements = () => {
             <GentleParticles />
 
             {/* Clean Interactive Background */}
-            <motion.div
-                className="absolute inset-0"
-                style={{
-                    rotateX: springRotateX,
-                    rotateY: springRotateY,
-                    transformStyle: "preserve-3d"
-                }}
-            >
+            <div className="absolute inset-0">
                 {/* Subtle gradient overlay for depth */}
                 <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-transparent"></div>
-            </motion.div>
+            </div>
         </div>
     )
 }

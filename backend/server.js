@@ -15,6 +15,8 @@ const { testR2Connection } = require('./config/r2');
 
 const app = express();
 const server = http.createServer(app);
+// Initialize Socket.IO early so it's available to middleware
+const socketManager = new SocketManager(server);
 
 // CORS Fix for undefined origin - Add this FIRST
 app.use((req, res, next) => {
@@ -359,8 +361,7 @@ const initializeConnections = async () => {
 // Environment variable validation
 
 
-// Initialize Socket.IO
-const socketManager = new SocketManager(server);
+// Socket.IO already initialized above
 
 // Initialize database optimization (disabled to avoid duplicate index warnings)
 // databaseOptimization.createOptimizedIndexes();

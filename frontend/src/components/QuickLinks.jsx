@@ -510,8 +510,8 @@ const QuickLinks = () => {
         <section className="relative py-20 overflow-hidden">
             {/* Subtle background elements */}
             <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-purple-100/30 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-100/30 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 left-0 w-64 h-64 bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
             </div>
 
             <div className="container mx-auto px-6 relative z-10">
@@ -523,7 +523,7 @@ const QuickLinks = () => {
                     transition={{ duration: 0.6 }}
                 >
                     <motion.h2
-                        className="text-4xl md:text-5xl font-bold text-gray-800 mb-4"
+                        className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
@@ -532,7 +532,7 @@ const QuickLinks = () => {
                     </motion.h2>
 
                     <motion.p
-                        className="text-lg text-gray-600 max-w-2xl mx-auto"
+                        className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.2 }}
@@ -571,7 +571,7 @@ const QuickLinks = () => {
                             }}
                         >
                             {/* Card */}
-                            <div className="relative h-48 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden group-hover:shadow-2xl transition-all duration-300 hover:border-gray-200">
+                            <div className="relative h-48 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group-hover:shadow-2xl transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-600">
                                 {/* Icon Container */}
                                 <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
                                     <div className={`w-16 h-16 bg-gradient-to-r ${link.bgColor} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
@@ -581,11 +581,11 @@ const QuickLinks = () => {
 
                                 {/* Content */}
                                 <div className="absolute bottom-6 left-0 right-0 text-center px-4">
-                                    <h3 className="text-lg font-bold text-gray-800 mb-2">
+                                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
                                         {link.title}
                                     </h3>
 
-                                    <p className="text-sm text-gray-600 leading-relaxed">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                                         {link.description}
                                     </p>
                                 </div>
@@ -602,7 +602,7 @@ const QuickLinks = () => {
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                                         transition={{ duration: 0.3, ease: "easeOut" }}
-                                        className="absolute top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-purple-200 overflow-hidden"
+                                        className="absolute top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-purple-200 dark:border-gray-700 overflow-hidden"
                                         style={{ height: '400px' }}
                                     >
                                         {/* Overlay Header */}

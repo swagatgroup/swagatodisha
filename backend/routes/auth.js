@@ -202,7 +202,15 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Update last login WITHOUT validation
+        // Ensure agent has a referral code
+        if (user.role === 'agent' && !user.referralCode) {
+            try {
+                user.referralCode = user.generateReferralCode();
+                user.isReferralActive = true;
+            } catch (e) { }
+        }
+
+        // Update last login WITHOUT validation (and persist possible referral code assignment)
         user.lastLogin = new Date();
         await user.save({ validateBeforeSave: false });
 
@@ -234,7 +242,8 @@ router.post('/login', async (req, res) => {
         let userData = {
             id: user._id,
             email: user.email,
-            role: user.role || 'user'
+            role: user.role || 'user',
+            referralCode: user.referralCode || undefined
         };
 
         // Add appropriate name field based on user type
@@ -248,6 +257,23 @@ router.post('/login', async (req, res) => {
         if (studentData) {
             userData = { ...userData, ...studentData };
         }
+
+        // Notify this user in realtime if referral code was created during login
+        try {
+            if (user.role === 'agent' && user.referralCode && req.socketManager) {
+                req.socketManager.broadcastToUser(user._id.toString(), 'profile-updated', {
+                    user: {
+                        id: user._id,
+                        fullName: user.fullName,
+                        email: user.email,
+                        role: user.role,
+                        referralCode: user.referralCode
+                    },
+                    updatedFields: ['referralCode'],
+                    timestamp: new Date()
+                });
+            }
+        } catch (e) { }
 
         res.json({
             success: true,
@@ -917,11 +943,23 @@ router.get('/me', async (req, res) => {
             });
         }
 
+        // Ensure agent has a referral code (auto-generate on first fetch)
+        let generatedNow = false;
+        if (user.role === 'agent' && !user.referralCode) {
+            try {
+                user.referralCode = user.generateReferralCode();
+                user.isReferralActive = true;
+                await user.save({ validateBeforeSave: false });
+                generatedNow = true;
+            } catch (e) { }
+        }
+
         // Prepare user data
         let userData = {
             id: user._id,
             email: user.email,
-            role: user.role || 'user'
+            role: user.role || 'user',
+            referralCode: user.referralCode || undefined
         };
 
         // Add appropriate name field based on user type
@@ -946,6 +984,23 @@ router.get('/me', async (req, res) => {
                 };
             }
         }
+
+        // Emit realtime update if referral code was created now
+        try {
+            if (generatedNow && req.socketManager) {
+                req.socketManager.broadcastToUser(user._id.toString(), 'profile-updated', {
+                    user: {
+                        id: user._id,
+                        fullName: user.fullName,
+                        email: user.email,
+                        role: user.role,
+                        referralCode: user.referralCode
+                    },
+                    updatedFields: ['referralCode'],
+                    timestamp: new Date()
+                });
+            }
+        } catch (e) { }
 
         res.json({
             success: true,

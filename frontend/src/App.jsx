@@ -4,6 +4,7 @@ import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SocketProvider } from './contexts/SocketContext'
+import { DarkModeProvider } from './contexts/DarkModeContext'
 import NotificationToast from './components/shared/NotificationToast'
 import Header from './components/Header'
 import HeroCarousel from './components/HeroCarousel'
@@ -93,9 +94,9 @@ const AppContent = () => {
     const [isNavOpen, setIsNavOpen] = useState(false)
 
     return (
-        <div className="App relative m-0 p-0">
+        <div className="App relative m-0 p-0 bg-white dark:bg-gray-900">
             {/* Premium Floating Elements - Global Animation Layer */}
-            <PremiumFloatingElements />
+            {/* <PremiumFloatingElements /> */}
 
             <Header isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
 
@@ -106,12 +107,12 @@ const AppContent = () => {
 
 
             {/* 2. Quick Access */}
-            <section className="bg-white">
+            <section className="bg-white dark:bg-gray-800">
                 <QuickLinks />
             </section>
 
             {/* 3. Approval and Recognitions */}
-            <section id="approvals">
+            <section id="approvals" className="bg-white dark:bg-gray-900">
                 <ApprovalsRecognitions />
             </section>
 
@@ -121,16 +122,16 @@ const AppContent = () => {
             </section>
 
             {/* 5. Location with Small Maps */}
-            <section className="py-20 bg-white">
+            <section className="py-20 bg-white dark:bg-gray-900">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
                             <i className="fa-solid fa-map-marker-alt text-white text-3xl"></i>
                         </div>
-                        <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                        <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                             Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Locations</span>
                         </h2>
-                        <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                             Visit us at our state-of-the-art campuses in Sargiguda, Kantabanji, Balangir and Ghantiguda, Sinapali, Nuapada, Odisha
                         </p>
                     </div>
@@ -148,8 +149,8 @@ const AppContent = () => {
                                 coordinates: { lat: 20.099885, lng: 82.677498 }
                             }
                         ].map((location, index) => (
-                            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">{location.name}</h3>
+                            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">{location.name}</h3>
 
                                 {/* Small Map */}
                                 <div className="relative w-full h-64 mb-4 rounded-xl overflow-hidden">
@@ -166,7 +167,7 @@ const AppContent = () => {
                                 </div>
 
                                 <div className="text-center">
-                                    <p className="text-gray-600 mb-4">{location.address}</p>
+                                    <p className="text-gray-600 dark:text-gray-300 mb-4">{location.address}</p>
                                     <a
                                         href={`https://www.google.com/maps/dir/?api=1&destination=${location.coordinates.lat},${location.coordinates.lng}`}
                                         target="_blank"
@@ -198,66 +199,68 @@ const AppContent = () => {
 function App() {
     return (
         <HelmetProvider>
-            <AuthProvider>
-                <SocketProvider>
-                    <Router>
-                        <Routes>
-                            <Route path="/" element={<AppContent />} />
-                            <Route path="/about" element={<AboutUsPage />} />
-                            <Route path="/gallery" element={<Gallery />} />
-                            <Route path="/contact" element={<ContactPage />} />
+            <DarkModeProvider>
+                <AuthProvider>
+                    <SocketProvider>
+                        <Router>
+                            <Routes>
+                                <Route path="/" element={<AppContent />} />
+                                <Route path="/about" element={<AboutUsPage />} />
+                                <Route path="/gallery" element={<Gallery />} />
+                                <Route path="/contact" element={<ContactPage />} />
 
-                            {/* School Pages */}
-                            <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
-                            <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
-                            <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/register" element={<Register />} />
+                                {/* School Pages */}
+                                <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
+                                <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
+                                <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
 
-                            {/* General Dashboard Route - redirects to role-specific dashboard */}
-                            <Route path="/dashboard" element={<DashboardRouter />} />
+                                {/* General Dashboard Route - redirects to role-specific dashboard */}
+                                <Route path="/dashboard" element={<DashboardRouter />} />
 
-                            {/* Role-specific Dashboard Routes */}
-                            <Route
-                                path="/dashboard/student"
-                                element={
-                                    <ProtectedRoute allowedRoles={['user', 'student']}>
-                                        <StudentDashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/dashboard/agent"
-                                element={
-                                    <ProtectedRoute allowedRoles={['agent']}>
-                                        <EnhancedAgentDashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/dashboard/staff"
-                                element={
-                                    <ProtectedRoute allowedRoles={['staff']}>
-                                        <EnhancedStaffDashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/dashboard/admin"
-                                element={
-                                    <ProtectedRoute allowedRoles={['super_admin']}>
-                                        <SuperAdminDashboard />
-                                    </ProtectedRoute>
-                                }
-                            />
+                                {/* Role-specific Dashboard Routes */}
+                                <Route
+                                    path="/dashboard/student"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['user', 'student']}>
+                                            <StudentDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/dashboard/agent"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['agent']}>
+                                            <EnhancedAgentDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/dashboard/staff"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['staff']}>
+                                            <EnhancedStaffDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/dashboard/admin"
+                                    element={
+                                        <ProtectedRoute allowedRoles={['super_admin']}>
+                                            <SuperAdminDashboard />
+                                        </ProtectedRoute>
+                                    }
+                                />
 
-                            {/* Catch all route */}
-                            <Route path="*" element={<Navigate to="/" replace />} />
-                        </Routes>
-                    </Router>
-                    <NotificationToast />
-                </SocketProvider>
-            </AuthProvider>
+                                {/* Catch all route */}
+                                <Route path="*" element={<Navigate to="/" replace />} />
+                            </Routes>
+                        </Router>
+                        <NotificationToast />
+                    </SocketProvider>
+                </AuthProvider>
+            </DarkModeProvider>
         </HelmetProvider>
     )
 }
