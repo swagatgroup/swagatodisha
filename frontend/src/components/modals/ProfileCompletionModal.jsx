@@ -11,6 +11,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
     const [completionPercentage, setCompletionPercentage] = useState(0);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [applicationId, setApplicationId] = useState(null);
 
     // Form data state
     const [formData, setFormData] = useState({
@@ -162,26 +163,76 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
 
     // Load existing data
     useEffect(() => {
-        if (isOpen && user) {
+        if (isOpen && user?._id) {
             loadExistingData();
         }
-    }, [isOpen, user]);
+    }, [isOpen, user?._id]);
 
     const loadExistingData = async () => {
         try {
             setLoading(true);
-            const response = await api.get(`/api/students/profile/${user._id}`);
-            if (response.data.success) {
-                const studentData = response.data.data;
+            // Try existing application
+            const appRes = await api.get('/api/student-application/my-application');
+            if (appRes.data?.success && appRes.data.data) {
+                const app = appRes.data.data;
+                setApplicationId(app.applicationId);
                 setFormData(prev => ({
                     ...prev,
-                    ...studentData.personalDetails,
-                    ...studentData.contactDetails,
-                    ...studentData.academicDetails,
-                    guardianDetails: studentData.guardianDetails
+                    fullName: app.personalDetails?.fullName || prev.fullName,
+                    dateOfBirth: app.personalDetails?.dateOfBirth ? new Date(app.personalDetails.dateOfBirth).toISOString().substring(0, 10) : prev.dateOfBirth,
+                    gender: app.personalDetails?.gender || prev.gender,
+                    aadharNumber: app.personalDetails?.aadharNumber || prev.aadharNumber,
+                    primaryPhone: app.contactDetails?.primaryPhone || prev.primaryPhone,
+                    alternatePhone: app.contactDetails?.whatsappNumber || prev.alternatePhone,
+                    email: app.contactDetails?.email || prev.email,
+                    permanentAddress: {
+                        street: app.contactDetails?.permanentAddress?.street || '',
+                        city: app.contactDetails?.permanentAddress?.city || '',
+                        state: app.contactDetails?.permanentAddress?.state || '',
+                        pincode: app.contactDetails?.permanentAddress?.pincode || '',
+                        country: app.contactDetails?.permanentAddress?.country || 'India'
+                    },
+                    currentAddress: {
+                        street: app.contactDetails?.currentAddress?.street || '',
+                        city: app.contactDetails?.currentAddress?.city || '',
+                        state: app.contactDetails?.currentAddress?.state || '',
+                        pincode: app.contactDetails?.currentAddress?.pincode || '',
+                        country: app.contactDetails?.currentAddress?.country || 'India'
+                    },
+                    previousEducation: {
+                        qualification: app.academicDetails?.qualification || '',
+                        institution: app.academicDetails?.institution || '',
+                        year: app.academicDetails?.year || '',
+                        percentage: app.academicDetails?.percentage || '',
+                        board: app.academicDetails?.board || ''
+                    },
+                    desiredCourse: app.courseDetails?.selectedCourse || '',
+                    campus: app.courseDetails?.campus || '',
+                    guardianDetails: {
+                        fatherName: app.guardianDetails?.guardianName || '',
+                        motherName: app.guardianDetails?.motherName || '',
+                        guardianPhone: app.guardianDetails?.guardianPhone || '',
+                        guardianEmail: app.guardianDetails?.guardianEmail || '',
+                        occupation: '',
+                        annualIncome: ''
+                    }
                 }));
-                setCurrentStep(studentData.profileCompletionStatus?.currentStep || 1);
-                setCompletedSteps(studentData.profileCompletionStatus?.completedSteps || []);
+                // Load any locally saved step state
+                const draft = localStorage.getItem(`profileDraft_${user._id}`);
+                if (draft) {
+                    const d = JSON.parse(draft);
+                    setCurrentStep(d.currentStep || 1);
+                    setCompletedSteps(d.completedSteps || []);
+                }
+            } else {
+                // No application yet; try local draft
+                const draft = localStorage.getItem(`profileDraft_${user._id}`);
+                if (draft) {
+                    const d = JSON.parse(draft);
+                    setFormData(d.formData || formData);
+                    setCurrentStep(d.currentStep || 1);
+                    setCompletedSteps(d.completedSteps || []);
+                }
             }
         } catch (error) {
             console.error('Error loading existing data:', error);
@@ -223,22 +274,17 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
     const handleSave = async () => {
         try {
             setSaving(true);
-            const response = await api.put(`/api/workflow/profile-completion/${user._id}`, {
+            // Persist to localStorage to avoid data loss between sessions
+            localStorage.setItem(`profileDraft_${user._id}`, JSON.stringify({
+                formData,
                 completedSteps,
                 currentStep,
-                completionPercentage,
-                formData
-            });
-
-            if (response.data.success) {
-                showSuccess('Profile Updated', 'Your profile has been saved successfully!');
-                if (completionPercentage === 100) {
-                    onComplete();
-                }
-            }
+                completionPercentage
+            }));
+            showSuccess('Draft Saved', 'Your progress has been saved. You can continue anytime.');
         } catch (error) {
             console.error('Error saving profile:', error);
-            showError('Save Failed', 'Failed to save your profile. Please try again.');
+            showError('Save Failed', 'Failed to save your profile locally.');
         } finally {
             setSaving(false);
         }
@@ -252,16 +298,47 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
 
         try {
             setSaving(true);
-            const response = await api.put(`/api/workflow/profile-completion/${user._id}`, {
-                completedSteps: steps.map(s => s.id),
-                currentStep: steps.length,
-                completionPercentage: 100,
-                formData
+            // Construct payload matching backend StudentApplication expectations
+            const personalDetails = {
+                fullName: formData.fullName,
+                fathersName: formData.guardianDetails.fatherName,
+                mothersName: formData.guardianDetails.motherName,
+                dateOfBirth: formData.dateOfBirth,
+                gender: formData.gender,
+                aadharNumber: formData.aadharNumber
+            };
+            const contactDetails = {
+                primaryPhone: formData.primaryPhone,
+                whatsappNumber: formData.alternatePhone || '',
+                email: formData.email,
+                permanentAddress: formData.permanentAddress,
+                currentAddress: formData.currentAddress
+            };
+            const courseDetails = {
+                selectedCourse: formData.desiredCourse,
+                campus: formData.campus
+            };
+            const guardianDetails = {
+                guardianName: formData.guardianDetails.fatherName,
+                relationship: 'Father',
+                guardianPhone: formData.guardianDetails.guardianPhone,
+                guardianEmail: formData.guardianDetails.guardianEmail || ''
+            };
+
+            const createRes = await api.post('/api/student-application/create', {
+                personalDetails,
+                contactDetails,
+                courseDetails,
+                guardianDetails
             });
 
-            if (response.data.success) {
-                showSuccess('Profile Complete!', 'Your profile has been completed successfully!');
-                onComplete();
+            if (createRes.data?.success) {
+                const app = createRes.data.data;
+                setApplicationId(app.applicationId);
+                // Clear local draft on success
+                localStorage.removeItem(`profileDraft_${user._id}`);
+                showSuccess('Profile Complete!', 'Application created. Proceed to upload documents.');
+                onComplete(app.applicationId);
             }
         } catch (error) {
             console.error('Error completing profile:', error);
@@ -760,13 +837,13 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     <div
                                         key={step.id}
                                         className={`flex flex-col items-center ${currentStep === step.id ? 'text-purple-600' :
-                                                completedSteps.includes(step.id) ? 'text-green-600' :
-                                                    'text-gray-400'
+                                            completedSteps.includes(step.id) ? 'text-green-600' :
+                                                'text-gray-400'
                                             }`}
                                     >
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === step.id ? 'bg-purple-100' :
-                                                completedSteps.includes(step.id) ? 'bg-green-100' :
-                                                    'bg-gray-100'
+                                            completedSteps.includes(step.id) ? 'bg-green-100' :
+                                                'bg-gray-100'
                                             }`}>
                                             {completedSteps.includes(step.id) ? '✓' : step.id}
                                         </div>

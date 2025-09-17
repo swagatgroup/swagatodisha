@@ -66,7 +66,7 @@ const GalleryManagement = () => {
     const loadGalleryItems = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/api/admin/gallery', {
+            const response = await api.get('/api/gallery', {
                 params: {
                     category: filters.category || undefined,
                     institution: filters.institution || undefined,
@@ -85,7 +85,7 @@ const GalleryManagement = () => {
 
     const loadInstitutions = async () => {
         try {
-            const response = await api.get('/api/admin/institutions');
+            const response = await api.get('/api/admin/staff');
             if (response.data.success) {
                 setInstitutions(response.data.data.institutions || []);
             }
@@ -98,7 +98,7 @@ const GalleryManagement = () => {
         e.preventDefault();
         try {
             setSaving(true);
-            const url = editingItem ? `/api/admin/gallery/${editingItem._id}` : '/api/admin/gallery';
+            const url = editingItem ? `/api/gallery/${editingItem._id}` : '/api/gallery';
             const method = editingItem ? 'put' : 'post';
 
             const response = await api[method](url, formData);
@@ -131,7 +131,7 @@ const GalleryManagement = () => {
         if (!window.confirm('Are you sure you want to delete this gallery item?')) return;
 
         try {
-            const response = await api.delete(`/api/admin/gallery/${itemId}`);
+            const response = await api.delete(`/api/gallery/${itemId}`);
             if (response.data.success) {
                 alert('Gallery item deleted successfully!');
                 loadGalleryItems();
@@ -234,7 +234,7 @@ const GalleryManagement = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">Gallery Management</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Gallery Management</h2>
                 <button
                     onClick={() => {
                         resetForm();
@@ -248,24 +248,24 @@ const GalleryManagement = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
                         <input
                             type="text"
                             value={filters.search}
                             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="Search gallery..."
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
                         <select
                             value={filters.category}
                             onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Categories</option>
                             {categories.map(category => (
@@ -274,11 +274,11 @@ const GalleryManagement = () => {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Institution</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Institution</label>
                         <select
                             value={filters.institution}
                             onChange={(e) => setFilters(prev => ({ ...prev, institution: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Institutions</option>
                             {institutions.map(institution => (
@@ -298,9 +298,9 @@ const GalleryManagement = () => {
             </div>
 
             {/* Gallery Grid */}
-            <div className="bg-white rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Gallery Items ({filteredGalleryItems.length})
                     </h3>
                 </div>
@@ -312,7 +312,7 @@ const GalleryManagement = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
                             >
                                 <div className="aspect-w-16 aspect-h-9">
                                     <img
@@ -323,35 +323,35 @@ const GalleryManagement = () => {
                                 </div>
                                 <div className="p-4">
                                     <div className="flex items-center justify-between mb-2">
-                                        <h4 className="text-sm font-medium text-gray-900 truncate">{item.title}</h4>
+                                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{item.title}</h4>
                                         <div className="flex space-x-1">
                                             {item.isFeatured && (
-                                                <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">
+                                                <span className="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 rounded-full">
                                                     Featured
                                                 </span>
                                             )}
-                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${item.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${item.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
                                                 }`}>
                                                 {item.isActive ? 'Active' : 'Inactive'}
                                             </span>
                                         </div>
                                     </div>
-                                    <p className="text-xs text-gray-600 mb-2">{item.category}</p>
-                                    <p className="text-xs text-gray-500 mb-3 line-clamp-2">{item.description}</p>
-                                    <div className="flex items-center justify-between text-xs text-gray-500">
+                                    <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">{item.category}</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{item.description}</p>
+                                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                                         <span>{formatFileSize(item.fileSize)}</span>
                                         <span>Views: {item.views || 0}</span>
                                     </div>
                                     <div className="flex space-x-2 mt-3">
                                         <button
                                             onClick={() => editGalleryItem(item)}
-                                            className="flex-1 px-2 py-1 text-blue-600 hover:text-blue-800 text-xs font-medium"
+                                            className="flex-1 px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs font-medium"
                                         >
                                             Edit
                                         </button>
                                         <button
                                             onClick={() => deleteGalleryItem(item._id)}
-                                            className="flex-1 px-2 py-1 text-red-600 hover:text-red-800 text-xs font-medium"
+                                            className="flex-1 px-2 py-1 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-xs font-medium"
                                         >
                                             Delete
                                         </button>
@@ -365,11 +365,11 @@ const GalleryManagement = () => {
 
             {/* Gallery Item Form Modal */}
             {showForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-lg font-semibold text-gray-900">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     {editingItem ? 'Edit Gallery Item' : 'Add New Gallery Item'}
                                 </h3>
                                 <button
@@ -378,7 +378,7 @@ const GalleryManagement = () => {
                                         setEditingItem(null);
                                         resetForm();
                                     }}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -390,22 +390,22 @@ const GalleryManagement = () => {
                                 {/* Basic Information */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                                         <input
                                             type="text"
                                             value={formData.title}
                                             onChange={(e) => handleInputChange('title', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category *</label>
                                         <select
                                             value={formData.category}
                                             onChange={(e) => handleInputChange('category', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {categories.map(category => (
@@ -415,86 +415,86 @@ const GalleryManagement = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Image URL *</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Image URL *</label>
                                         <input
                                             type="url"
                                             value={formData.imageUrl}
                                             onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Thumbnail URL</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Thumbnail URL</label>
                                         <input
                                             type="url"
                                             value={formData.thumbnailUrl}
                                             onChange={(e) => handleInputChange('thumbnailUrl', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Alt Text</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Alt Text</label>
                                         <input
                                             type="text"
                                             value={formData.alt}
                                             onChange={(e) => handleInputChange('alt', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Subcategory</label>
                                         <input
                                             type="text"
                                             value={formData.subcategory}
                                             onChange={(e) => handleInputChange('subcategory', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Description</label>
                                     <textarea
                                         value={formData.description}
                                         onChange={(e) => handleInputChange('description', e.target.value)}
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                     />
                                 </div>
 
                                 {/* File Information */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">File Size (bytes)</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">File Size (bytes)</label>
                                         <input
                                             type="number"
                                             value={formData.fileSize}
                                             onChange={(e) => handleInputChange('fileSize', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Width (px)</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Width (px)</label>
                                         <input
                                             type="number"
                                             value={formData.dimensions.width}
                                             onChange={(e) => handleInputChange('dimensions.width', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Height (px)</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Height (px)</label>
                                         <input
                                             type="number"
                                             value={formData.dimensions.height}
                                             onChange={(e) => handleInputChange('dimensions.height', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 </div>
@@ -502,49 +502,49 @@ const GalleryManagement = () => {
                                 {/* Tags and Keywords */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Tags (comma separated)</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tags (comma separated)</label>
                                         <input
                                             type="text"
                                             value={formData.tags.join(', ')}
                                             onChange={(e) => handleArrayChange('tags', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             placeholder="tag1, tag2, tag3"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">SEO Keywords (comma separated)</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">SEO Keywords (comma separated)</label>
                                         <input
                                             type="text"
                                             value={formData.seoKeywords.join(', ')}
                                             onChange={(e) => handleArrayChange('seoKeywords', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             placeholder="keyword1, keyword2, keyword3"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Album Information */}
-                                <div className="bg-gray-50 p-4 rounded-lg">
-                                    <h4 className="text-md font-medium text-gray-900 mb-3">Album Information</h4>
+                                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                                    <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Album Information</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Album Name</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Album Name</label>
                                             <input
                                                 type="text"
                                                 value={formData.album.name}
                                                 onChange={(e) => handleInputChange('album.name', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             />
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Album Description</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Album Description</label>
                                             <input
                                                 type="text"
                                                 value={formData.album.description}
                                                 onChange={(e) => handleInputChange('album.description', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             />
                                         </div>
 
@@ -556,7 +556,7 @@ const GalleryManagement = () => {
                                                     onChange={(e) => handleInputChange('album.coverImage', e.target.checked)}
                                                     className="mr-2"
                                                 />
-                                                <span className="text-sm text-gray-700">Use as Album Cover Image</span>
+                                                <span className="text-sm text-gray-700 dark:text-gray-300">Use as Album Cover Image</span>
                                             </label>
                                         </div>
                                     </div>
@@ -565,12 +565,12 @@ const GalleryManagement = () => {
                                 {/* Display Settings */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Display Order</label>
                                         <input
                                             type="number"
                                             value={formData.displayOrder}
                                             onChange={(e) => handleInputChange('displayOrder', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -582,7 +582,7 @@ const GalleryManagement = () => {
                                                 onChange={(e) => handleInputChange('isActive', e.target.checked)}
                                                 className="mr-2"
                                             />
-                                            <span className="text-sm text-gray-700">Active</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
                                         </label>
 
                                         <label className="flex items-center">
@@ -592,7 +592,7 @@ const GalleryManagement = () => {
                                                 onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
                                                 className="mr-2"
                                             />
-                                            <span className="text-sm text-gray-700">Featured</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-300">Featured</span>
                                         </label>
 
                                         <label className="flex items-center">
@@ -602,13 +602,13 @@ const GalleryManagement = () => {
                                                 onChange={(e) => handleInputChange('showOnHomepage', e.target.checked)}
                                                 className="mr-2"
                                             />
-                                            <span className="text-sm text-gray-700">Show on Homepage</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-300">Show on Homepage</span>
                                         </label>
                                     </div>
                                 </div>
 
                                 {/* Form Actions */}
-                                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                                     <button
                                         type="button"
                                         onClick={() => {

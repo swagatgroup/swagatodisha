@@ -131,7 +131,7 @@ class SocketManager {
                 this.sendDashboardData(socket, data);
             });
 
-            // Handle application workflow events
+            // Handle Dashboard events
             socket.on('join_application_room', (applicationId) => {
                 socket.join(`application_${applicationId}`);
             });
@@ -348,7 +348,7 @@ class SocketManager {
         });
     }
 
-    // Application workflow notifications
+    // Dashboard notifications
     notifyApplicationCreated(applicationData) {
         // Notify student
         this.broadcastToUser(applicationData.userId, 'application_created', applicationData);

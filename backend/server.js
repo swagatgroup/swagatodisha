@@ -52,7 +52,7 @@ const adminRoutes = require('./routes/admin');
 const adminAuthRoutes = require('./routes/adminAuth');
 const dashboardRoutes = require('./routes/dashboard');
 const documentRoutes = require('./routes/documents');
-const referralRoutes = require('./routes/referrals');
+const referralRoutes = require('./routes/referral');
 const notificationRoutes = require('./routes/notifications');
 const securityRoutes = require('./routes/security');
 const performanceRoutes = require('./routes/performance');
@@ -278,13 +278,9 @@ const studentAcademicRoutes = require('./routes/studentAcademic');
 const workflowRoutes = require('./routes/workflow');
 const paymentRoutes = require('./routes/paymentRoutes');
 const studentApplicationWorkflowRoutes = require('./routes/studentApplicationWorkflow');
-const documentRoutes = require('./routes/documents');
 const websiteContentRoutes = require('./routes/websiteContent');
 const courseRoutes = require('./routes/courses');
-const notificationRoutes = require('./routes/notifications');
 const galleryRoutes = require('./routes/gallery');
-const agentRoutes = require('./routes/agents');
-const referralRoutes = require('./routes/referral');
 const pdfRoutes = require('./routes/pdf');
 
 // API Routes
@@ -300,14 +296,13 @@ app.use('/api/website-content', apiRateLimit, websiteContentRoutes);
 app.use('/api/courses', apiRateLimit, courseRoutes);
 app.use('/api/notifications', apiRateLimit, notificationRoutes);
 app.use('/api/gallery', apiRateLimit, galleryRoutes);
-app.use('/api/agents', apiRateLimit, agentRoutes);
+// Removed duplicate agents mount
 app.use('/api/referral', apiRateLimit, referralRoutes);
 app.use('/api/pdf', apiRateLimit, pdfRoutes);
 app.use('/api/workflow', apiRateLimit, workflowRoutes);
 app.use('/api/payments', apiRateLimit, paymentRoutes);
 app.use('/api/admin', apiRateLimit, adminRoutes);
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
-app.use('/api/notifications', apiRateLimit, notificationRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
 app.use('/api/contact', apiRateLimit, contactRoutes);

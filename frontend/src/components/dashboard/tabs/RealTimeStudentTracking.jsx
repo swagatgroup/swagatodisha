@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../utils/api';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 const RealTimeStudentTracking = () => {
     const { user } = useAuth();
@@ -43,8 +43,16 @@ const RealTimeStudentTracking = () => {
 
     const initializeSocket = () => {
         const token = localStorage.getItem('token');
-        const newSocket = io(process.env.REACT_APP_API_URL || 'http://localhost:5000', {
-            auth: { token }
+        const apiBase = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+            ? import.meta.env.VITE_API_URL
+            : (typeof window !== 'undefined'
+                ? (window.location.origin.includes('localhost:3000')
+                    ? 'http://localhost:5000'
+                    : window.location.origin)
+                : 'http://localhost:5000');
+        const newSocket = io(apiBase, {
+            auth: { token },
+            transports: ['websocket', 'polling']
         });
 
         newSocket.on('connect', () => {
@@ -173,13 +181,14 @@ const RealTimeStudentTracking = () => {
     };
 
     const getProgressPercentage = (progress) => {
+        const safe = progress || {};
         let completed = 0;
         let total = 4; // Total steps
 
-        if (progress.registrationComplete) completed++;
-        if (progress.documentsComplete) completed++;
-        if (progress.applicationPdfGenerated) completed++;
-        if (progress.termsAccepted) completed++;
+        if (safe.registrationComplete) completed++;
+        if (safe.documentsComplete) completed++;
+        if (safe.applicationPdfGenerated) completed++;
+        if (safe.termsAccepted) completed++;
 
         return Math.round((completed / total) * 100);
     };
@@ -221,10 +230,10 @@ const RealTimeStudentTracking = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Real-Time Student Tracking</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Real-Time Student Tracking</h3>
                 <div className="flex items-center space-x-2">
                     <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-gray-600">Live Updates</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-300">Live Updates</span>
                 </div>
             </div>
 
@@ -233,7 +242,7 @@ const RealTimeStudentTracking = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 rounded-lg">
@@ -252,7 +261,7 @@ const RealTimeStudentTracking = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-yellow-100 rounded-lg">
@@ -271,7 +280,7 @@ const RealTimeStudentTracking = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-purple-100 rounded-lg">
@@ -290,7 +299,7 @@ const RealTimeStudentTracking = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-orange-100 rounded-lg">
@@ -309,7 +318,7 @@ const RealTimeStudentTracking = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-green-100 rounded-lg">
@@ -328,7 +337,7 @@ const RealTimeStudentTracking = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-indigo-100 rounded-lg">
@@ -347,7 +356,7 @@ const RealTimeStudentTracking = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-emerald-100 rounded-lg">
@@ -366,7 +375,7 @@ const RealTimeStudentTracking = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700"
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-red-100 rounded-lg">
@@ -383,7 +392,7 @@ const RealTimeStudentTracking = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
@@ -391,7 +400,7 @@ const RealTimeStudentTracking = () => {
                             type="text"
                             value={filters.search}
                             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="Search by name or application ID"
                         />
                     </div>
@@ -400,7 +409,7 @@ const RealTimeStudentTracking = () => {
                         <select
                             value={filters.status}
                             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Statuses</option>
                             <option value="DRAFT">Draft</option>
@@ -415,7 +424,7 @@ const RealTimeStudentTracking = () => {
                         <select
                             value={filters.stage}
                             onChange={(e) => setFilters(prev => ({ ...prev, stage: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Stages</option>
                             <option value="REGISTRATION">Registration</option>
@@ -437,13 +446,13 @@ const RealTimeStudentTracking = () => {
             </div>
 
             {/* Student List */}
-            <div className="bg-white rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <h4 className="text-md font-semibold text-gray-900">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
                         Students ({filteredStudents.length})
                     </h4>
                 </div>
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-gray-200 dark:divide-gray-700">
                     <AnimatePresence>
                         {filteredStudents.map((student, index) => (
                             <motion.div
@@ -452,24 +461,24 @@ const RealTimeStudentTracking = () => {
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -20 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="p-6 hover:bg-gray-50"
+                                className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center space-x-4">
-                                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <span className="text-blue-600 font-semibold">
+                                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
+                                            <span className="text-blue-600 dark:text-blue-300 font-semibold">
                                                 {student.user?.fullName?.charAt(0) || 'S'}
                                             </span>
                                         </div>
                                         <div>
-                                            <h5 className="font-medium text-gray-900">
+                                            <h5 className="font-medium text-gray-900 dark:text-gray-100">
                                                 {student.user?.fullName || 'Unknown Student'}
                                             </h5>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
                                                 {student.applicationId} • {student.courseDetails?.selectedCourse}
                                             </p>
-                                            <p className="text-xs text-gray-400">
-                                                Last updated: {new Date(student.lastModified).toLocaleString()}
+                                            <p className="text-xs text-gray-400 dark:text-gray-500">
+                                                Last updated: {student.lastModified ? new Date(student.lastModified).toLocaleString() : '—'}
                                             </p>
                                         </div>
                                     </div>
@@ -477,13 +486,13 @@ const RealTimeStudentTracking = () => {
                                     <div className="flex items-center space-x-4">
                                         {/* Progress Bar */}
                                         <div className="w-32">
-                                            <div className="flex justify-between text-xs text-gray-600 mb-1">
+                                            <div className="flex justify-between text-xs text-gray-600 dark:text-gray-300 mb-1">
                                                 <span>Progress</span>
                                                 <span>{getProgressPercentage(student.progress)}%</span>
                                             </div>
-                                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                                 <div
-                                                    className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                                    className="bg-blue-600 dark:bg-blue-500 h-2 rounded-full transition-all duration-300"
                                                     style={{ width: `${getProgressPercentage(student.progress)}%` }}
                                                 ></div>
                                             </div>
@@ -495,8 +504,8 @@ const RealTimeStudentTracking = () => {
                                         </span>
 
                                         {/* Stage Badge */}
-                                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStageColor(student.currentStage)}`}>
-                                            {student.currentStage.replace('_', ' ')}
+                                        <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStageColor(student.currentStage || '')}`}>
+                                            {(student.currentStage || '—').replace('_', ' ')}
                                         </span>
 
                                         {/* Actions */}
@@ -505,7 +514,7 @@ const RealTimeStudentTracking = () => {
                                                 <>
                                                     <button
                                                         onClick={() => handleStatusUpdate(student.applicationId, 'APPROVED')}
-                                                        className="px-3 py-1 text-green-600 hover:text-green-800 text-sm font-medium"
+                                                        className="px-3 py-1 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 text-sm font-medium"
                                                     >
                                                         Approve
                                                     </button>
@@ -516,7 +525,7 @@ const RealTimeStudentTracking = () => {
                                                                 handleStatusUpdate(student.applicationId, 'REJECTED', reason);
                                                             }
                                                         }}
-                                                        className="px-3 py-1 text-red-600 hover:text-red-800 text-sm font-medium"
+                                                        className="px-3 py-1 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
                                                     >
                                                         Reject
                                                     </button>
@@ -527,7 +536,7 @@ const RealTimeStudentTracking = () => {
                                                     // View application details
                                                     alert('View application details functionality would be implemented here');
                                                 }}
-                                                className="px-3 py-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                className="px-3 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                                             >
                                                 View
                                             </button>
@@ -537,16 +546,16 @@ const RealTimeStudentTracking = () => {
 
                                 {/* Progress Details */}
                                 <div className="mt-4 grid grid-cols-4 gap-4 text-xs">
-                                    <div className={`text-center p-2 rounded ${student.progress.registrationComplete ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                                    <div className={`text-center p-2 rounded ${student.progress?.registrationComplete ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
                                         Registration
                                     </div>
-                                    <div className={`text-center p-2 rounded ${student.progress.documentsComplete ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                                    <div className={`text-center p-2 rounded ${student.progress?.documentsComplete ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
                                         Documents
                                     </div>
-                                    <div className={`text-center p-2 rounded ${student.progress.applicationPdfGenerated ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                                    <div className={`text-center p-2 rounded ${student.progress?.applicationPdfGenerated ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
                                         PDF Generated
                                     </div>
-                                    <div className={`text-center p-2 rounded ${student.progress.termsAccepted ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
+                                    <div className={`text-center p-2 rounded ${student.progress?.termsAccepted ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'}`}>
                                         Terms Accepted
                                     </div>
                                 </div>

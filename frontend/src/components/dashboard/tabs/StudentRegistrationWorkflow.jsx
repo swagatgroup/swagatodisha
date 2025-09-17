@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../utils/api';
 import DocumentUpload from '../../shared/DocumentUpload';
 import TermsAndConditions from '../../legal/TermsAndConditions';
+import { showSuccessToast, showErrorToast } from '../../../utils/sweetAlert';
 
 const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
     const { user } = useAuth();
@@ -12,6 +13,7 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
     const [saving, setSaving] = useState(false);
     const [application, setApplication] = useState(null);
     const [errors, setErrors] = useState({});
+    const draftKey = `studentAppDraft_${(useAuth()?.user?._id) || 'local'}`;
 
     const [formData, setFormData] = useState({
         personalDetails: {
@@ -37,8 +39,7 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
         courseDetails: {
             selectedCourse: '',
             customCourse: '',
-            stream: '',
-            campus: 'Sargiguda'
+            stream: ''
         },
         guardianDetails: {
             guardianName: '',
@@ -78,8 +79,9 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
     ];
 
     useEffect(() => {
+        if (!user) return;
         loadExistingApplication();
-    }, []);
+    }, [user]);
 
     const loadExistingApplication = async () => {
         try {
@@ -98,9 +100,118 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
                     documents: app.documents || [],
                     termsAccepted: app.termsAccepted || false
                 });
+            } else {
+                // No application yet; try to prefill from user context first, then /me as fallback
+                const u = user || {};
+                const genderMap = { male: 'Male', female: 'Female', other: 'Other' };
+                setFormData(prev => ({
+                    ...prev,
+                    personalDetails: {
+                        ...prev.personalDetails,
+                        fullName: u.fullName || `${u.firstName || ''} ${u.lastName || ''}`.trim(),
+                        aadharNumber: u.aadharNumber || u.aadhaarNumber || prev.personalDetails.aadharNumber,
+                        gender: genderMap[(u.gender || '').toLowerCase()] || prev.personalDetails.gender,
+                        dateOfBirth: u.dateOfBirth ? new Date(u.dateOfBirth).toISOString().substring(0, 10) : prev.personalDetails.dateOfBirth,
+                        fathersName: u.fathersName || u.fatherName || prev.personalDetails.fathersName || '',
+                        mothersName: u.mothersName || u.motherName || prev.personalDetails.mothersName || ''
+                    },
+                    contactDetails: {
+                        ...prev.contactDetails,
+                        primaryPhone: u.phoneNumber || u.phone || prev.contactDetails.primaryPhone,
+                        email: u.email || prev.contactDetails.email,
+                        permanentAddress: {
+                            ...prev.contactDetails.permanentAddress,
+                            street: u.address?.street || prev.contactDetails.permanentAddress.street,
+                            city: u.address?.city || prev.contactDetails.permanentAddress.city,
+                            state: u.address?.state || prev.contactDetails.permanentAddress.state,
+                            pincode: u.address?.pincode || prev.contactDetails.permanentAddress.pincode
+                        }
+                    }
+                }));
+
+                try {
+                    const me = await api.get('/api/auth/me');
+                    if (me.data?.success) {
+                        const mu = me.data.data.user || {};
+                        const mGender = genderMap[(mu.gender || '').toLowerCase()] || undefined;
+                        setFormData(prev => ({
+                            ...prev,
+                            personalDetails: {
+                                ...prev.personalDetails,
+                                fullName: prev.personalDetails.fullName || mu.fullName || `${mu.firstName || ''} ${mu.lastName || ''}`.trim(),
+                                aadharNumber: prev.personalDetails.aadharNumber || mu.aadharNumber || mu.aadhaarNumber,
+                                gender: prev.personalDetails.gender || mGender || '',
+                                dateOfBirth: prev.personalDetails.dateOfBirth || (mu.dateOfBirth ? new Date(mu.dateOfBirth).toISOString().substring(0, 10) : ''),
+                                fathersName: prev.personalDetails.fathersName || mu.fathersName || mu.fatherName || '',
+                                mothersName: prev.personalDetails.mothersName || mu.mothersName || mu.motherName || ''
+                            },
+                            contactDetails: {
+                                ...prev.contactDetails,
+                                primaryPhone: prev.contactDetails.primaryPhone || mu.phoneNumber || mu.phone,
+                                email: prev.contactDetails.email || mu.email,
+                                permanentAddress: {
+                                    ...prev.contactDetails.permanentAddress,
+                                    street: prev.contactDetails.permanentAddress.street || mu.address?.street,
+                                    city: prev.contactDetails.permanentAddress.city || mu.address?.city,
+                                    state: prev.contactDetails.permanentAddress.state || mu.address?.state,
+                                    pincode: prev.contactDetails.permanentAddress.pincode || mu.address?.pincode
+                                }
+                            }
+                        }));
+                        // Load any locally saved draft on top
+                        try {
+                            const local = localStorage.getItem(draftKey);
+                            if (local) {
+                                const parsed = JSON.parse(local);
+                                setFormData(prev => ({ ...prev, ...parsed }));
+                            }
+                        } catch (_) { }
+                    }
+                } catch (_) { }
             }
         } catch (error) {
-            console.error('Error loading existing application:', error);
+            if (error?.response?.status === 404) {
+                // No existing application is expected for new users
+                // Prefill from user context handled below
+            } else {
+                console.error('Error loading existing application:', error);
+            }
+            // Attempt prefill from user context even if API fails
+            if (user) {
+                const genderMap = { male: 'Male', female: 'Female', other: 'Other' };
+                setFormData(prev => ({
+                    ...prev,
+                    personalDetails: {
+                        ...prev.personalDetails,
+                        fullName: user.fullName || `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+                        aadharNumber: user.aadharNumber || user.aadhaarNumber || prev.personalDetails.aadharNumber,
+                        gender: genderMap[(user.gender || '').toLowerCase()] || prev.personalDetails.gender,
+                        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().substring(0, 10) : prev.personalDetails.dateOfBirth,
+                        fathersName: user.fathersName || user.fatherName || prev.personalDetails.fathersName || '',
+                        mothersName: user.mothersName || user.motherName || prev.personalDetails.mothersName || ''
+                    },
+                    contactDetails: {
+                        ...prev.contactDetails,
+                        primaryPhone: user.phoneNumber || user.phone || prev.contactDetails.primaryPhone,
+                        email: user.email || prev.contactDetails.email,
+                        permanentAddress: {
+                            ...prev.contactDetails.permanentAddress,
+                            street: user.address?.street || prev.contactDetails.permanentAddress.street,
+                            city: user.address?.city || prev.contactDetails.permanentAddress.city,
+                            state: user.address?.state || prev.contactDetails.permanentAddress.state,
+                            pincode: user.address?.pincode || prev.contactDetails.permanentAddress.pincode
+                        }
+                    }
+                }));
+            }
+            // Also attempt to load local draft when API fails/404
+            try {
+                const local = localStorage.getItem(draftKey);
+                if (local) {
+                    const parsed = JSON.parse(local);
+                    setFormData(prev => ({ ...prev, ...parsed }));
+                }
+            } catch (_) { }
         }
     };
 
@@ -208,47 +319,72 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
         return Object.keys(newErrors).length === 0;
     };
 
+    const hasMinimumForCreate = () => {
+        const p = formData.personalDetails || {};
+        const c = formData.contactDetails || {};
+        const a = c.permanentAddress || {};
+        const g = formData.guardianDetails || {};
+        const cd = formData.courseDetails || {};
+        return (
+            p.fullName && p.fathersName && p.mothersName && p.dateOfBirth && p.gender && /^\d{12}$/.test(p.aadharNumber || '') &&
+            /^[6-9]\d{9}$/.test(c.primaryPhone || '') && c.email && a.street && a.city && a.state && /^\d{6}$/.test(a.pincode || '') &&
+            cd.selectedCourse && g.guardianName && g.relationship && /^[6-9]\d{9}$/.test(g.guardianPhone || '')
+        );
+    };
+
     const saveDraft = async () => {
         try {
             setSaving(true);
             const stage = getStageFromStep(currentStep);
-
-            if (application) {
-                // Update existing application
-                await api.put(`/api/student-application/${application.applicationId}`, {
-                    data: formData,
-                    stage: stage,
-                    status: 'DRAFT'
+            if (application?.applicationId) {
+                await api.put(`/api/student-application/${application.applicationId}/save-draft`, {
+                    data: {
+                        personalDetails: formData.personalDetails,
+                        contactDetails: formData.contactDetails,
+                        courseDetails: formData.courseDetails,
+                        guardianDetails: formData.guardianDetails,
+                        documents: formData.documents
+                    },
+                    stage
                 });
+                showSuccessToast('Draft saved');
             } else {
-                // Create new application
-                const response = await api.post('/api/student-application', {
-                    ...formData,
-                    stage: stage,
-                    status: 'DRAFT',
-                    agentId: user._id
-                });
-                if (response.data.success) {
-                    setApplication(response.data.data);
-
-                    // Track referral if referral code is provided
-                    if (formData.referralCode) {
-                        try {
-                            await api.post('/api/referral/track', {
-                                referralCode: formData.referralCode,
-                                applicationId: response.data.data._id
-                            });
-                        } catch (error) {
-                            console.error('Error tracking referral:', error);
-                        }
+                // Avoid backend create before step 4 or when data incomplete. Save locally instead.
+                if (currentStep < 4 || !hasMinimumForCreate()) {
+                    try {
+                        const key = `studentAppDraft_${user?._id || 'local'}`;
+                        localStorage.setItem(key, JSON.stringify(formData));
+                        showSuccessToast('Draft saved locally');
+                        return;
+                    } catch (_) { }
+                }
+                try {
+                    const response = await api.post('/api/student-application/create', {
+                        personalDetails: formData.personalDetails,
+                        contactDetails: formData.contactDetails,
+                        courseDetails: formData.courseDetails,
+                        guardianDetails: formData.guardianDetails,
+                        financialDetails: {},
+                        referralCode: formData.referralCode || undefined
+                    });
+                    if (response.data.success) {
+                        setApplication(response.data.data);
+                        try { localStorage.removeItem(draftKey); } catch (_) { }
+                        showSuccessToast('Draft created');
                     }
+                } catch (createErr) {
+                    console.error('Create draft failed:', createErr);
+                    try {
+                        const key = `studentAppDraft_${user?._id || 'local'}`;
+                        localStorage.setItem(key, JSON.stringify(formData));
+                    } catch (_) { }
+                    const serverMsg = createErr?.response?.data?.message || 'Server error';
+                    showErrorToast(`Draft create failed: ${serverMsg}. Saved locally instead.`);
                 }
             }
-
-            alert('Draft saved successfully!');
         } catch (error) {
             console.error('Error saving draft:', error);
-            alert('Error saving draft. Please try again.');
+            showErrorToast('Failed to save draft');
         } finally {
             setSaving(false);
         }
@@ -280,37 +416,29 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
         setCurrentStep(prev => Math.max(prev - 1, 1));
     };
 
-    const handleDocumentUpload = (document) => {
+    const handleDocumentUpload = async (document) => {
+        const updatedDocs = [...formData.documents, document];
         setFormData(prev => ({
             ...prev,
-            documents: [...prev.documents, document]
+            documents: updatedDocs
         }));
+        try {
+            if (application?.applicationId) {
+                await api.put(`/api/student-application/${application.applicationId}/save-draft`, {
+                    data: { documents: updatedDocs },
+                    stage: 'DOCUMENTS'
+                });
+            }
+        } catch (e) {
+            console.error('Error saving documents draft:', e);
+        }
     };
 
     const generatePDF = async () => {
         try {
             setLoading(true);
-
-            // First get terms and conditions
-            const termsResponse = await api.get('/api/pdf/terms');
-            const termsAndConditions = termsResponse.data.data.content;
-
-            // Generate PDF
-            const response = await api.post(`/api/pdf/generate/${application.applicationId}`, {
-                termsAndConditions
-            }, {
-                responseType: 'blob'
-            });
-
-            // Create download link
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `application_${application.applicationId}.pdf`;
-            link.click();
-            window.URL.revokeObjectURL(url);
-
-            alert('PDF generated and downloaded successfully!');
+            await api.post(`/api/student-application/${application.applicationId}/generate-pdf`);
+            alert('PDF generated. Use Download PDF to get the file.');
             setCurrentStep(6);
         } catch (error) {
             console.error('Error generating PDF:', error);
@@ -321,44 +449,17 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
     };
 
     const previewPDF = async () => {
-        try {
-            setLoading(true);
-
-            // Get terms and conditions
-            const termsResponse = await api.get('/api/pdf/terms');
-            const termsAndConditions = termsResponse.data.data.content;
-
-            // Generate preview PDF
-            const response = await api.post('/api/pdf/preview', {
-                formData,
-                termsAndConditions
-            }, {
-                responseType: 'blob'
-            });
-
-            // Open PDF in new tab
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            window.open(url, '_blank');
-
-        } catch (error) {
-            console.error('Error previewing PDF:', error);
-            alert('Error previewing PDF. Please try again.');
-        } finally {
-            setLoading(false);
-        }
+        await generatePDF();
     };
 
     const downloadPDF = async () => {
         try {
-            const response = await api.get(`/api/pdf/download/${application.applicationId}`, {
-                responseType: 'blob'
-            });
-
+            const response = await api.get(`/api/student-application/${application.applicationId}/download-pdf`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `application_${application.applicationId}.pdf`;
-            link.click();
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `application_${application.applicationId}.pdf`;
+            a.click();
             window.URL.revokeObjectURL(url);
         } catch (error) {
             console.error('Error downloading PDF:', error);
@@ -416,7 +517,7 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
                     <input
                         type="text"
                         value={formData.personalDetails.fullName}
-                        onChange={(e) => handleInputChange('personalDetails.fullName', e.target.value.toUpperCase())}
+                        onChange={(e) => handleInputChange('personalDetails.fullName', e.target.value)}
                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.fullName'] ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="Enter full name"
                     />
@@ -430,7 +531,7 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
                     <input
                         type="text"
                         value={formData.personalDetails.fathersName}
-                        onChange={(e) => handleInputChange('personalDetails.fathersName', e.target.value.toUpperCase())}
+                        onChange={(e) => handleInputChange('personalDetails.fathersName', e.target.value)}
                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.fathersName'] ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="Enter father's name"
                     />
@@ -444,7 +545,7 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
                     <input
                         type="text"
                         value={formData.personalDetails.mothersName}
-                        onChange={(e) => handleInputChange('personalDetails.mothersName', e.target.value.toUpperCase())}
+                        onChange={(e) => handleInputChange('personalDetails.mothersName', e.target.value)}
                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.mothersName'] ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="Enter mother's name"
                     />
@@ -709,7 +810,7 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
                     <input
                         type="text"
                         value={formData.guardianDetails.guardianName}
-                        onChange={(e) => handleInputChange('guardianDetails.guardianName', e.target.value.toUpperCase())}
+                        onChange={(e) => handleInputChange('guardianDetails.guardianName', e.target.value)}
                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['guardianDetails.guardianName'] ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="Enter guardian's name"
                     />
@@ -814,9 +915,7 @@ const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
                     <div>
                         <span className="font-medium">Phone:</span> {formData.contactDetails.primaryPhone}
                     </div>
-                    <div>
-                        <span className="font-medium">Campus:</span> {formData.courseDetails.campus}
-                    </div>
+
                     <div>
                         <span className="font-medium">Documents:</span> {formData.documents.length} uploaded
                     </div>

@@ -216,7 +216,7 @@ export const SocketProvider = ({ children }) => {
         }
     }, [user, token]);
 
-    // Application workflow notifications (no-op handlers to ensure events are received globally)
+    // Dashboard notifications (no-op handlers to ensure events are received globally)
     useEffect(() => {
         if (!socket) return;
         const noop = () => { };

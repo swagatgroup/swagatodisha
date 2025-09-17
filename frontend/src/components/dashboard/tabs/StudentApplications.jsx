@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../../utils/api';
-import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
+import { showSuccess, showErrorToast, showConfirm } from '../../../utils/sweetAlert';
 import EnhancedStudentApplicationForm from '../../forms/EnhancedStudentApplicationForm';
 
 const StudentApplications = () => {
@@ -51,7 +51,11 @@ const StudentApplications = () => {
             setApplications(Array.isArray(list) ? list : []);
         } catch (error) {
             console.error('Error fetching applications:', error);
-            showError('Failed to load applications');
+            // Degrade gracefully: show empty state instead of modal
+            setApplications([]);
+            if (error?.response?.status && error.response.status !== 404) {
+                showErrorToast('Failed to load applications');
+            }
         } finally {
             setLoading(false);
         }

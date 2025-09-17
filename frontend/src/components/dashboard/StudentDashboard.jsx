@@ -7,12 +7,12 @@ import ProfileCompletionModal from '../modals/ProfileCompletionModal';
 import InteractivePieChart from '../analytics/InteractivePieChart';
 import DetailModal from '../analytics/DetailModal';
 import StudentProfile from './tabs/StudentProfile';
-import EnhancedStudentProfile from './tabs/EnhancedStudentProfile';
 import StudentApplications from './tabs/StudentApplications';
 import StudentPayments from './tabs/StudentPayments';
 import StudentAcademic from './tabs/StudentAcademic';
 import ReferralDashboard from './tabs/ReferralDashboard';
 import api from '../../utils/api';
+import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -34,15 +34,15 @@ const StudentDashboard = () => {
     const [selectedChartData, setSelectedChartData] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
 
-    const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
+    const [activeSidebarItem, setActiveSidebarItem] = useState('registration');
 
     const sidebarItems = [
         {
-            id: 'dashboard',
+            id: 'registration',
             name: 'Dashboard',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
             )
         },
@@ -83,6 +83,15 @@ const StudentDashboard = () => {
             )
         },
         {
+            id: 'profile',
+            name: 'Profile',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            )
+        },
+        {
             id: 'referral',
             name: 'Refer & Earn',
             icon: (
@@ -101,7 +110,7 @@ const StudentDashboard = () => {
                 setStudentData(response.data.data.user);
 
                 // Check if profile completion is needed
-                if (response.data.data.user.role === 'student' || response.data.data.user.role === 'user') {
+                if ((response.data.data.user.role === 'student' || response.data.data.user.role === 'user') && response.data.data.user._id) {
                     const profileResponse = await api.get(`/api/workflow/stages/${response.data.data.user._id}`);
                     if (profileResponse.data.success) {
                         const profileData = profileResponse.data.data;
@@ -159,6 +168,8 @@ const StudentDashboard = () => {
 
     const renderSidebarContent = () => {
         switch (activeSidebarItem) {
+            case 'registration':
+                return <StudentRegistrationWorkflow onStudentUpdate={() => setActiveSidebarItem('documents')} />;
             case 'dashboard':
                 return (
                     <>
@@ -450,6 +461,8 @@ const StudentDashboard = () => {
                 return <StudentPayments />;
             case 'referral':
                 return <ReferralDashboard />;
+            case 'profile':
+                return <StudentProfile />;
             default:
                 return null;
         }
@@ -475,10 +488,11 @@ const StudentDashboard = () => {
             <ProfileCompletionModal
                 isOpen={showProfileModal}
                 onClose={() => setShowProfileModal(false)}
-                onComplete={() => {
+                onComplete={(newAppId) => {
                     setShowProfileModal(false);
                     setProfileCompletion(100);
                     setApplicationStage('DOCUMENT_UPLOAD');
+                    setActiveSidebarItem('documents');
                     loadAnalyticsData();
                 }}
             />

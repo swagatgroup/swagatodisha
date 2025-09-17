@@ -67,7 +67,7 @@ const NotificationManagement = () => {
     const loadNotifications = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/api/admin/notifications', {
+            const response = await api.get('/api/notifications', {
                 params: {
                     type: filters.type || undefined,
                     category: filters.category || undefined,
@@ -89,7 +89,7 @@ const NotificationManagement = () => {
         e.preventDefault();
         try {
             setSaving(true);
-            const url = editingNotification ? `/api/admin/notifications/${editingNotification._id}` : '/api/admin/notifications';
+            const url = editingNotification ? `/api/notifications/${editingNotification._id}` : '/api/notifications';
             const method = editingNotification ? 'put' : 'post';
 
             const response = await api[method](url, formData);
@@ -124,7 +124,7 @@ const NotificationManagement = () => {
         if (!window.confirm('Are you sure you want to delete this notification?')) return;
 
         try {
-            const response = await api.delete(`/api/admin/notifications/${notificationId}`);
+            const response = await api.delete(`/api/notifications/${notificationId}`);
             if (response.data.success) {
                 alert('Notification deleted successfully!');
                 loadNotifications();
@@ -137,7 +137,7 @@ const NotificationManagement = () => {
 
     const publishNotification = async (notificationId) => {
         try {
-            const response = await api.put(`/api/admin/notifications/${notificationId}/status`, {
+            const response = await api.put(`/api/notifications/${notificationId}/status`, {
                 status: 'Published'
             });
             if (response.data.success) {
@@ -252,7 +252,7 @@ const NotificationManagement = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900">Notification Management</h2>
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Notification Management</h2>
                 <button
                     onClick={() => {
                         resetForm();
@@ -266,24 +266,24 @@ const NotificationManagement = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
                         <input
                             type="text"
                             value={filters.search}
                             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="Search notifications..."
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Type</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type</label>
                         <select
                             value={filters.type}
                             onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Types</option>
                             {notificationTypes.map(type => (
@@ -292,11 +292,11 @@ const NotificationManagement = () => {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
                         <select
                             value={filters.category}
                             onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Categories</option>
                             {categories.map(category => (
@@ -305,11 +305,11 @@ const NotificationManagement = () => {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
                         <select
                             value={filters.status}
                             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Statuses</option>
                             {statuses.map(status => (
@@ -329,25 +329,25 @@ const NotificationManagement = () => {
             </div>
 
             {/* Notification List */}
-            <div className="bg-white rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Notifications ({filteredNotifications.length})
                     </h3>
                 </div>
-                <div className="divide-y divide-gray-200">
+                <div className="divide-y divide-gray-200 dark:divide-gray-700">
                     {filteredNotifications.map((notification, index) => (
                         <motion.div
                             key={notification._id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="p-6 hover:bg-gray-50"
+                            className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center space-x-3 mb-2">
-                                        <h4 className="text-lg font-medium text-gray-900">{notification.title}</h4>
+                                        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">{notification.title}</h4>
                                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getPriorityColor(notification.priority)}`}>
                                             {notification.priority}
                                         </span>
@@ -355,23 +355,23 @@ const NotificationManagement = () => {
                                             {notification.status}
                                         </span>
                                         {notification.isUrgent && (
-                                            <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+                                            <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-full">
                                                 Urgent
                                             </span>
                                         )}
                                         {notification.isImportant && (
-                                            <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                                            <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
                                                 Important
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-sm text-gray-600 mb-2">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                         {notification.type} • {notification.category} • {notification.targetAudience}
                                     </p>
-                                    <p className="text-sm text-gray-700 mb-2">
+                                    <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
                                         {notification.shortDescription || notification.content.substring(0, 150)}...
                                     </p>
-                                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                    <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
                                         <span>Published: {new Date(notification.publishDate).toLocaleDateString()}</span>
                                         <span>Views: {notification.views || 0}</span>
                                         <span>Clicks: {notification.clicks || 0}</span>
@@ -382,20 +382,20 @@ const NotificationManagement = () => {
                                     {notification.status === 'Draft' && (
                                         <button
                                             onClick={() => publishNotification(notification._id)}
-                                            className="px-3 py-1 text-green-600 hover:text-green-800 text-sm font-medium"
+                                            className="px-3 py-1 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 text-sm font-medium"
                                         >
                                             Publish
                                         </button>
                                     )}
                                     <button
                                         onClick={() => editNotification(notification)}
-                                        className="px-3 py-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                        className="px-3 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                                     >
                                         Edit
                                     </button>
                                     <button
                                         onClick={() => deleteNotification(notification._id)}
-                                        className="px-3 py-1 text-red-600 hover:text-red-800 text-sm font-medium"
+                                        className="px-3 py-1 text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 text-sm font-medium"
                                     >
                                         Delete
                                     </button>
@@ -408,11 +408,11 @@ const NotificationManagement = () => {
 
             {/* Notification Form Modal */}
             {showForm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="text-lg font-semibold text-gray-900">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     {editingNotification ? 'Edit Notification' : 'Add New Notification'}
                                 </h3>
                                 <button
@@ -421,7 +421,7 @@ const NotificationManagement = () => {
                                         setEditingNotification(null);
                                         resetForm();
                                     }}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -433,22 +433,22 @@ const NotificationManagement = () => {
                                 {/* Basic Information */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Title *</label>
                                         <input
                                             type="text"
                                             value={formData.title}
                                             onChange={(e) => handleInputChange('title', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Type *</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type *</label>
                                         <select
                                             value={formData.type}
                                             onChange={(e) => handleInputChange('type', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {notificationTypes.map(type => (
@@ -458,11 +458,11 @@ const NotificationManagement = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
                                         <select
                                             value={formData.category}
                                             onChange={(e) => handleInputChange('category', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         >
                                             {categories.map(category => (
                                                 <option key={category} value={category}>{category}</option>
@@ -471,11 +471,11 @@ const NotificationManagement = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Target Audience *</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Target Audience *</label>
                                         <select
                                             value={formData.targetAudience}
                                             onChange={(e) => handleInputChange('targetAudience', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {targetAudiences.map(audience => (
@@ -485,11 +485,11 @@ const NotificationManagement = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Priority</label>
                                         <select
                                             value={formData.priority}
                                             onChange={(e) => handleInputChange('priority', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         >
                                             {priorities.map(priority => (
                                                 <option key={priority} value={priority}>{priority}</option>
@@ -498,11 +498,11 @@ const NotificationManagement = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Status</label>
                                         <select
                                             value={formData.status}
                                             onChange={(e) => handleInputChange('status', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         >
                                             {statuses.map(status => (
                                                 <option key={status} value={status}>{status}</option>
@@ -512,23 +512,23 @@ const NotificationManagement = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Short Description</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Short Description</label>
                                     <input
                                         type="text"
                                         value={formData.shortDescription}
                                         onChange={(e) => handleInputChange('shortDescription', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         maxLength={200}
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Content *</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Content *</label>
                                     <textarea
                                         value={formData.content}
                                         onChange={(e) => handleInputChange('content', e.target.value)}
                                         rows={6}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -536,32 +536,32 @@ const NotificationManagement = () => {
                                 {/* Dates */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Publish Date</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Publish Date</label>
                                         <input
                                             type="date"
                                             value={formData.publishDate}
                                             onChange={(e) => handleInputChange('publishDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Expiry Date</label>
                                         <input
                                             type="date"
                                             value={formData.expiryDate}
                                             onChange={(e) => handleInputChange('expiryDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Event Date</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Event Date</label>
                                         <input
                                             type="date"
                                             value={formData.eventDate}
                                             onChange={(e) => handleInputChange('eventDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 </div>
@@ -569,12 +569,12 @@ const NotificationManagement = () => {
                                 {/* Display Settings */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Display Order</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Display Order</label>
                                         <input
                                             type="number"
                                             value={formData.displayOrder}
                                             onChange={(e) => handleInputChange('displayOrder', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -586,7 +586,7 @@ const NotificationManagement = () => {
                                                 onChange={(e) => handleInputChange('isUrgent', e.target.checked)}
                                                 className="mr-2"
                                             />
-                                            <span className="text-sm text-gray-700">Urgent</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-300">Urgent</span>
                                         </label>
 
                                         <label className="flex items-center">
@@ -596,7 +596,7 @@ const NotificationManagement = () => {
                                                 onChange={(e) => handleInputChange('isImportant', e.target.checked)}
                                                 className="mr-2"
                                             />
-                                            <span className="text-sm text-gray-700">Important</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-300">Important</span>
                                         </label>
 
                                         <label className="flex items-center">
@@ -606,7 +606,7 @@ const NotificationManagement = () => {
                                                 onChange={(e) => handleInputChange('showOnHomepage', e.target.checked)}
                                                 className="mr-2"
                                             />
-                                            <span className="text-sm text-gray-700">Show on Homepage</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-300">Show on Homepage</span>
                                         </label>
 
                                         <label className="flex items-center">
@@ -616,13 +616,13 @@ const NotificationManagement = () => {
                                                 onChange={(e) => handleInputChange('showInQuickLinks', e.target.checked)}
                                                 className="mr-2"
                                             />
-                                            <span className="text-sm text-gray-700">Show in Quick Links</span>
+                                            <span className="text-sm text-gray-700 dark:text-gray-300">Show in Quick Links</span>
                                         </label>
                                     </div>
                                 </div>
 
                                 {/* Form Actions */}
-                                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                                     <button
                                         type="button"
                                         onClick={() => {

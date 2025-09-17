@@ -3,7 +3,7 @@ const Student = require('../models/Student');
 const Admin = require('../models/Admin');
 
 // Student Dashboard
-exports.getStudentDashboard = async (req, res) => {
+const getStudentDashboard = async (req, res) => {
     try {
         const student = await Student.findOne({ user: req.user._id })
             .populate('user', 'firstName lastName email phone profilePicture')
@@ -53,7 +53,7 @@ exports.getStudentDashboard = async (req, res) => {
 };
 
 // Agent Dashboard
-exports.getAgentDashboard = async (req, res) => {
+const getAgentDashboard = async (req, res) => {
     try {
         const agent = await User.findById(req.user._id).select('-password');
 
@@ -127,7 +127,7 @@ exports.getAgentDashboard = async (req, res) => {
 };
 
 // Staff Dashboard
-exports.getStaffDashboard = async (req, res) => {
+const getStaffDashboard = async (req, res) => {
     try {
         const staff = await Admin.findById(req.user._id).select('-password');
 
@@ -241,7 +241,7 @@ exports.getStaffDashboard = async (req, res) => {
 };
 
 // Super Admin Dashboard
-exports.getSuperAdminDashboard = async (req, res) => {
+const getSuperAdminDashboard = async (req, res) => {
     try {
         const superAdmin = await Admin.findById(req.user._id).select('-password');
 
