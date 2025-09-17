@@ -8,7 +8,7 @@ const router = express.Router();
 
 // Generate JWT Token
 const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id }, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development', {
         expiresIn: process.env.JWT_EXPIRE || '7d'
     });
 };
@@ -199,7 +199,7 @@ router.get('/me', async (req, res) => {
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development');
         const admin = await Admin.findById(decoded.id).select('-password');
 
         if (!admin) {

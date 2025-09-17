@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
@@ -15,6 +15,7 @@ import CourseManagement from './tabs/CourseManagement';
 import NotificationManagement from './tabs/NotificationManagement';
 import GalleryManagement from './tabs/GalleryManagement';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
+import CMSDashboard from '../cms/CMSDashboard';
 import {
     showSuccess,
     showError,
@@ -66,6 +67,15 @@ const SuperAdminDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            )
+        },
+        {
+            id: 'cms',
+            name: 'Content Management',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
             )
         },
@@ -285,7 +295,7 @@ const SuperAdminDashboard = () => {
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                        {students.map(s => (
+                                        {Array.isArray(students) ? students.map(s => (
                                             <tr key={s._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                                 <td className="px-6 py-4 text-sm">
                                                     <div className="font-medium text-gray-900 dark:text-gray-100">{s.personalDetails?.fullName || s.user?.fullName || 'N/A'}</div>
@@ -299,7 +309,13 @@ const SuperAdminDashboard = () => {
                                                 <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.workflowStatus?.assignedStaff?.fullName || '—'}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{s.updatedAt ? new Date(s.updatedAt).toLocaleDateString() : '—'}</td>
                                             </tr>
-                                        ))}
+                                        )) : (
+                                            <tr>
+                                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                                    No students found
+                                                </td>
+                                            </tr>
+                                        )}
                                     </tbody>
                                 </table>
                             </div>
@@ -338,6 +354,8 @@ const SuperAdminDashboard = () => {
                 return <UserManagement userType="students" />;
             case 'tracking':
                 return <RealTimeStudentTracking />;
+            case 'cms':
+                return <CMSDashboard />;
             case 'website-content':
                 return <WebsiteContentManagement />;
             case 'courses':

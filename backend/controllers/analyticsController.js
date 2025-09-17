@@ -1,6 +1,8 @@
 const Student = require('../models/Student');
 const User = require('../models/User');
 const Document = require('../models/Document');
+const Admin = require('../models/Admin');
+const Payment = require('../models/Payment');
 
 // Helper to build pie dataset [{ name, value, total }]
 const buildPie = (entries) => {
@@ -99,6 +101,83 @@ exports.getStaffDashboard = async (req, res) => {
         res.json({ success: true, data: { verificationQueue, documentCategories } });
     } catch (error) {
         res.json({ success: true, data: { verificationQueue: buildPie([{ name: 'Pending', value: 0 }]), documentCategories: buildPie([{ name: 'Other', value: 0 }]) } });
+    }
+};
+
+// GET /api/analytics/overview
+exports.getOverviewAnalytics = async (req, res) => {
+    try {
+        // Get overall statistics
+        const [
+            totalStudents,
+            totalAgents,
+            totalStaff,
+            totalAdmins,
+            totalDocuments,
+            totalPayments
+        ] = await Promise.all([
+            User.countDocuments({ role: { $in: ['student', 'user'] } }).catch(() => 0),
+            User.countDocuments({ role: 'agent' }).catch(() => 0),
+            User.countDocuments({ role: 'staff' }).catch(() => 0),
+            Admin.countDocuments({ role: 'super_admin' }).catch(() => 0),
+            Document.countDocuments().catch(() => 0),
+            Payment.countDocuments().catch(() => 0)
+        ]);
+
+        // Get recent activity
+        const recentStudents = await User.find({ role: { $in: ['student', 'user'] } })
+            .sort({ createdAt: -1 })
+            .limit(5)
+            .select('fullName email createdAt')
+            .catch(() => []);
+
+        // Get document status distribution
+        const documentStatus = await Document.aggregate([
+            { $group: { _id: '$status', count: { $sum: 1 } } }
+        ]).catch(() => []);
+
+        const documentStatusData = buildPie(
+            documentStatus.map(item => ({
+                name: item._id || 'Unknown',
+                value: item.count
+            }))
+        );
+
+        // Get user role distribution
+        const userRoles = buildPie([
+            { name: 'Students', value: totalStudents },
+            { name: 'Agents', value: totalAgents },
+            { name: 'Staff', value: totalStaff },
+            { name: 'Admins', value: totalAdmins }
+        ]);
+
+        res.json({
+            success: true,
+            data: {
+                overview: {
+                    totalStudents,
+                    totalAgents,
+                    totalStaff,
+                    totalAdmins,
+                    totalDocuments,
+                    totalPayments
+                },
+                recentActivity: {
+                    students: recentStudents
+                },
+                charts: {
+                    documentStatus: documentStatusData,
+                    userRoles: userRoles
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Analytics overview error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get analytics overview',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
     }
 };
 

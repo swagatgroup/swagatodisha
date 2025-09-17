@@ -4,8 +4,12 @@ const { protect } = require('../middleware/auth');
 const {
     getStudentDashboard,
     getAgentDashboard,
-    getStaffDashboard
+    getStaffDashboard,
+    getOverviewAnalytics
 } = require('../controllers/analyticsController');
+
+// Overview analytics
+router.get('/overview', protect, getOverviewAnalytics);
 
 // Role-specific dashboard analytics
 router.get('/dashboard/student', protect, getStudentDashboard);

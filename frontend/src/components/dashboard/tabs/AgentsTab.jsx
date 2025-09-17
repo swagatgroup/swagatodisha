@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import api from '../../../utils/api';
 import { showSuccess, showError } from '../../../utils/sweetAlert';
 import CreateAgentModal from '../../admin/CreateAgentModal';

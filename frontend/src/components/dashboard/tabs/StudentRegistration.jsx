@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../../utils/api';
 
@@ -27,8 +27,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
         courseDetails: {
             selectedCourse: '',
             customCourse: '',
-            stream: '',
-            campus: 'Sargiguda'
+            stream: ''
         },
         guardianDetails: {
             guardianName: '',
@@ -187,8 +186,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
             courseDetails: {
                 selectedCourse: '',
                 customCourse: '',
-                stream: '',
-                campus: 'Sargiguda'
+                stream: ''
             },
             guardianDetails: {
                 guardianName: '',
@@ -549,18 +547,6 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Campus</label>
-                            <select
-                                value={formData.courseDetails.campus}
-                                onChange={(e) => handleInputChange('courseDetails.campus', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="Sargiguda">Sargiguda</option>
-                                <option value="Ghantiguda">Ghantiguda</option>
-                                <option value="Online">Online</option>
-                            </select>
-                        </div>
                     </div>
                 </motion.div>
 

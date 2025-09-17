@@ -8,7 +8,55 @@ const Payment = require('../models/Payment');
 // All routes are protected
 router.use(protect);
 
-// Get students assigned to agent
+// Get students assigned to agent (alias for my-students)
+router.get('/my-students', async (req, res) => {
+    try {
+        const { page = 1, limit = 20, status, search } = req.query;
+
+        let query = { 'workflowStatus.assignedAgent': req.user._id };
+
+        if (status && status !== 'all') {
+            query['workflowStatus.currentStage'] = status;
+        }
+
+        if (search) {
+            query.$or = [
+                { 'personalDetails.fullName': { $regex: search, $options: 'i' } },
+                { 'studentId': { $regex: search, $options: 'i' } },
+                { 'personalDetails.aadharNumber': { $regex: search, $options: 'i' } }
+            ];
+        }
+
+        const students = await Student.find(query)
+            .populate('user', 'fullName email phoneNumber')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await Student.countDocuments(query);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                students,
+                pagination: {
+                    current: parseInt(page),
+                    pages: Math.ceil(total / limit),
+                    total
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Get agent students error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get students',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// Get students assigned to agent (original endpoint)
 router.get('/students', async (req, res) => {
     try {
         const { page = 1, limit = 20, status, search } = req.query;
@@ -104,7 +152,48 @@ router.get('/commission', async (req, res) => {
     }
 });
 
-// Get agent statistics
+// Get agent student statistics (alias for student-stats)
+router.get('/student-stats', async (req, res) => {
+    try {
+        const totalStudents = await Student.countDocuments({
+            'workflowStatus.assignedAgent': req.user._id
+        });
+
+        const pendingStudents = await Student.countDocuments({
+            'workflowStatus.assignedAgent': req.user._id,
+            'workflowStatus.currentStage': { $in: ['pending_review', 'under_review'] }
+        });
+
+        const completedStudents = await Student.countDocuments({
+            'workflowStatus.assignedAgent': req.user._id,
+            'workflowStatus.currentStage': 'completed'
+        });
+
+        const thisMonthRegistrations = await Student.countDocuments({
+            'workflowStatus.assignedAgent': req.user._id,
+            createdAt: { $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) }
+        });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                totalStudents,
+                pendingStudents,
+                completedStudents,
+                thisMonthRegistrations
+            }
+        });
+    } catch (error) {
+        console.error('Get agent student stats error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get student statistics',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// Get agent statistics (original endpoint)
 router.get('/stats', async (req, res) => {
     try {
         const totalStudents = await Student.countDocuments({

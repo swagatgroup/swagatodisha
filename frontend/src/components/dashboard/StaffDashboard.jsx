@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
@@ -99,7 +99,8 @@ const EnhancedStaffDashboard = () => {
             ]);
 
             if (studentsRes.data.success) {
-                setStudents(studentsRes.data.data);
+                const studentsData = studentsRes.data.data.students || studentsRes.data.data;
+                setStudents(Array.isArray(studentsData) ? studentsData : []);
             }
 
             if (statsRes.data.success) {
@@ -117,9 +118,12 @@ const EnhancedStaffDashboard = () => {
     };
 
     const handleStudentUpdate = (updatedStudent) => {
-        setStudents(prev => prev.map(student =>
-            student._id === updatedStudent._id ? updatedStudent : student
-        ));
+        setStudents(prev => {
+            if (!Array.isArray(prev)) return [];
+            return prev.map(student =>
+                student._id === updatedStudent._id ? updatedStudent : student
+            );
+        });
     };
 
     const renderDashboardContent = () => {
@@ -214,7 +218,7 @@ const EnhancedStaffDashboard = () => {
                             </div>
                             <div className="p-6">
                                 <StudentTable
-                                    students={students.slice(0, 10)}
+                                    students={Array.isArray(students) ? students.slice(0, 10) : []}
                                     onStudentUpdate={handleStudentUpdate}
                                     showActions={true}
                                 />

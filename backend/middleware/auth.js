@@ -12,16 +12,17 @@ const protect = async (req, res, next) => {
             token = req.headers.authorization.split(' ')[1];
 
             // Verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development');
 
             // Get user from token - check both User and Admin models
-            let user = await User.findById(decoded.id).select('-password');
+            const userId = decoded.userId || decoded.id; // Support both userId and id
+            let user = await User.findById(userId).select('-password');
             let userType = 'user';
 
             if (!user) {
                 // Try Admin model
                 const Admin = require('../models/Admin');
-                user = await Admin.findById(decoded.id).select('-password');
+                user = await Admin.findById(userId).select('-password');
                 userType = 'admin';
             }
 

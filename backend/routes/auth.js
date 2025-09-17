@@ -10,14 +10,14 @@ const router = express.Router();
 
 // Generate JWT Token with 7-day expiration
 const generateToken = (id, role = 'user') => {
-    return jwt.sign({ id, role }, process.env.JWT_SECRET, {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development', {
         expiresIn: '7d' // 7-day auto-login
     });
 };
 
 // Generate Refresh Token
 const generateRefreshToken = (id) => {
-    return jwt.sign({ id, type: 'refresh' }, process.env.JWT_SECRET, {
+    return jwt.sign({ id, type: 'refresh' }, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development', {
         expiresIn: '30d' // 30-day refresh token
     });
 };
@@ -489,7 +489,7 @@ router.post('/refresh', async (req, res) => {
         }
 
         // Verify refresh token
-        const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+        const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development');
 
         if (decoded.type !== 'refresh') {
             return res.status(401).json({
@@ -912,7 +912,7 @@ router.get('/me', async (req, res) => {
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development');
         const userId = decoded.id || decoded.userId;
 
         let user;
@@ -1031,7 +1031,7 @@ router.put('/profile', async (req, res) => {
             });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development');
         const userId = decoded.id || decoded.userId;
 
         const allowedUpdates = [

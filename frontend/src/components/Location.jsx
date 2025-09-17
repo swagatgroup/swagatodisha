@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import {useState} from 'react';
 
 const Location = () => {
     const [mapType, setMapType] = useState('roadmap') // 'roadmap', 'satellite', 'hybrid', 'terrain'

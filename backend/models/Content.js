@@ -1,178 +1,184 @@
 const mongoose = require('mongoose');
 
 const contentSchema = new mongoose.Schema({
-    // Content Identification
-    section: {
+    // Basic Content Information
+    title: {
         type: String,
-        required: [true, 'Section name is required'],
-        enum: [
-            'hero',
-            'about_us',
-            'institutions',
-            'programs',
-            'management',
-            'gallery',
-            'contact',
-            'footer',
-            'announcements',
-            'testimonials',
-            'achievements',
-            'facilities'
-        ]
+        required: [true, 'Content title is required'],
+        trim: true,
+        maxlength: [200, 'Title cannot exceed 200 characters']
     },
-
-    // Content Type
-    contentType: {
+    slug: {
+        type: String,
+        required: [true, 'Content slug is required'],
+        unique: true,
+        lowercase: true,
+        trim: true,
+        match: [/^[a-z0-9-]+$/, 'Slug can only contain lowercase letters, numbers, and hyphens']
+    },
+    type: {
         type: String,
         required: [true, 'Content type is required'],
-        enum: ['text', 'image', 'video', 'document', 'link', 'mixed']
+        enum: {
+            values: ['page', 'section', 'announcement', 'news', 'event', 'gallery', 'course', 'institution', 'testimonial', 'faq', 'custom'],
+            message: 'Invalid content type'
+        }
+    },
+    category: {
+        type: String,
+        required: [true, 'Content category is required'],
+        enum: {
+            values: ['home', 'about', 'admissions', 'academics', 'institutions', 'gallery', 'news', 'events', 'contact', 'general'],
+            message: 'Invalid content category'
+        }
     },
 
     // Content Data
-    title: {
-        type: String,
-        required: [true, 'Title is required'],
-        maxlength: [200, 'Title cannot exceed 200 characters']
-    },
-
-    subtitle: {
-        type: String,
-        maxlength: [300, 'Subtitle cannot exceed 300 characters']
-    },
-
-    description: {
-        type: String,
-        maxlength: [2000, 'Description cannot exceed 2000 characters']
-    },
-
     content: {
-        type: mongoose.Schema.Types.Mixed,
-        required: [true, 'Content is required']
+        type: String,
+        required: [true, 'Content body is required']
     },
+    excerpt: {
+        type: String,
+        maxlength: [500, 'Excerpt cannot exceed 500 characters']
+    },
+    featuredImage: {
+        url: String,
+        alt: String,
+        caption: String
+    },
+    images: [{
+        url: String,
+        alt: String,
+        caption: String,
+        order: { type: Number, default: 0 }
+    }],
 
-    // Media Files
-    media: {
-        images: [{
-            url: String,
-            alt: String,
-            caption: String,
-            order: Number
-        }],
-        videos: [{
-            url: String,
-            title: String,
-            description: String,
-            thumbnail: String,
-            duration: String
-        }],
-        documents: [{
-            url: String,
-            name: String,
-            type: String,
-            size: Number
-        }]
+    // SEO and Meta
+    metaTitle: {
+        type: String,
+        maxlength: [60, 'Meta title cannot exceed 60 characters']
     },
-
-    // Styling and Layout
-    styling: {
-        backgroundColor: String,
-        textColor: String,
-        fontSize: String,
-        fontWeight: String,
-        alignment: {
-            type: String,
-            enum: ['left', 'center', 'right', 'justify'],
-            default: 'left'
-        },
-        customCSS: String
+    metaDescription: {
+        type: String,
+        maxlength: [160, 'Meta description cannot exceed 160 characters']
     },
+    keywords: [String],
 
     // Display Settings
-    isActive: {
+    isPublished: {
         type: Boolean,
-        default: true
+        default: false
     },
-
+    isFeatured: {
+        type: Boolean,
+        default: false
+    },
+    isSticky: {
+        type: Boolean,
+        default: false
+    },
     displayOrder: {
         type: Number,
         default: 0
     },
-
-    startDate: {
-        type: Date,
-        default: Date.now
+    visibility: {
+        type: String,
+        enum: ['public', 'private', 'draft'],
+        default: 'draft'
     },
 
-    endDate: {
-        type: Date,
+    // Publishing
+    publishedAt: Date,
+    scheduledAt: Date,
+    expiresAt: Date,
+
+    // Content Structure
+    parent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Content',
         default: null
     },
-
-    // SEO and Meta
-    seo: {
-        metaTitle: String,
-        metaDescription: String,
-        keywords: [String],
-        canonicalUrl: String
-    },
-
-    // Links and Navigation
-    links: [{
-        text: String,
-        url: String,
-        target: {
-            type: String,
-            enum: ['_self', '_blank', '_parent', '_top'],
-            default: '_self'
-        },
-        order: Number
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Content'
     }],
 
-    // Dynamic Content (for forms, lists, etc.)
-    dynamicContent: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
+    // Custom Fields
+    customFields: {
+        type: Map,
+        of: mongoose.Schema.Types.Mixed
     },
 
-    // Version Control
+    // Content Settings
+    allowComments: {
+        type: Boolean,
+        default: true
+    },
+    template: {
+        type: String,
+        default: 'default'
+    },
+    layout: {
+        type: String,
+        default: 'standard'
+    },
+
+    // Versioning
     version: {
         type: Number,
         default: 1
     },
-
-    previousVersions: [{
-        content: mongoose.Schema.Types.Mixed,
+    previousVersion: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Content'
+    },
+    changeLog: [{
+        version: Number,
+        changes: String,
         changedBy: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'Admin'
         },
         changedAt: {
             type: Date,
             default: Date.now
-        },
-        changeReason: String
+        }
     }],
 
-    // Audit Fields
-    createdBy: {
+    // Analytics
+    views: {
+        type: Number,
+        default: 0
+    },
+    likes: {
+        type: Number,
+        default: 0
+    },
+    shares: {
+        type: Number,
+        default: 0
+    },
+
+    // Author and Management
+    author: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Admin',
         required: true
     },
-
-    updatedBy: {
+    lastModifiedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'Admin'
     },
 
-    lastPublished: {
+    // Timestamps
+    createdAt: {
         type: Date,
-        default: null
+        default: Date.now
     },
-
-    publishedBy: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+    updatedAt: {
+        type: Date,
+        default: Date.now
     }
 }, {
     timestamps: true,
@@ -180,113 +186,116 @@ const contentSchema = new mongoose.Schema({
     toObject: { virtuals: true }
 });
 
-// Virtual for content status
-contentSchema.virtual('isPublished').get(function () {
-    return this.lastPublished !== null;
+// Indexes for performance
+contentSchema.index({ slug: 1 });
+contentSchema.index({ type: 1, category: 1 });
+contentSchema.index({ isPublished: 1, visibility: 1 });
+contentSchema.index({ publishedAt: -1 });
+contentSchema.index({ displayOrder: 1 });
+contentSchema.index({ author: 1 });
+contentSchema.index({ createdAt: -1 });
+
+// Virtual for URL
+contentSchema.virtual('url').get(function () {
+    return `/${this.slug}`;
 });
 
-// Virtual for content age
-contentSchema.virtual('contentAge').get(function () {
-    const now = new Date();
-    const diffTime = Math.abs(now - this.updatedAt);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-});
+// Virtual for full content with images
+contentSchema.virtual('fullContent').get(function () {
+    let fullContent = this.content;
 
-// Pre-save middleware to handle versioning
-contentSchema.pre('save', function (next) {
-    if (this.isModified('content') || this.isModified('title') || this.isModified('description')) {
-        // Store previous version
-        if (this.previousVersions.length >= 10) {
-            this.previousVersions.shift(); // Remove oldest version
-        }
-
-        this.previousVersions.push({
-            content: this.content,
-            changedBy: this.updatedBy,
-            changeReason: 'Content updated'
+    // Replace image placeholders with actual image URLs
+    if (this.images && this.images.length > 0) {
+        this.images.forEach((image, index) => {
+            const placeholder = `{{image_${index}}}`;
+            const imageTag = `<img src="${image.url}" alt="${image.alt || ''}" class="content-image" />`;
+            fullContent = fullContent.replace(placeholder, imageTag);
         });
-
-        this.version += 1;
     }
+
+    return fullContent;
+});
+
+// Pre-save middleware
+contentSchema.pre('save', function (next) {
+    // Update version if content changed
+    if (this.isModified('content') || this.isModified('title')) {
+        this.version += 1;
+        this.updatedAt = new Date();
+    }
+
+    // Generate slug if not provided
+    if (!this.slug && this.title) {
+        this.slug = this.title
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-')
+            .trim('-');
+    }
+
+    // Set published date when publishing
+    if (this.isModified('isPublished') && this.isPublished && !this.publishedAt) {
+        this.publishedAt = new Date();
+    }
+
     next();
 });
 
-// Indexes
-contentSchema.index({ section: 1, isActive: 1 });
-contentSchema.index({ contentType: 1 });
-contentSchema.index({ displayOrder: 1 });
-contentSchema.index({ startDate: 1, endDate: 1 });
-contentSchema.index({ 'seo.keywords': 1 });
+// Instance methods
+contentSchema.methods.publish = function () {
+    this.isPublished = true;
+    this.visibility = 'public';
+    this.publishedAt = new Date();
+    return this.save();
+};
+
+contentSchema.methods.unpublish = function () {
+    this.isPublished = false;
+    this.visibility = 'draft';
+    return this.save();
+};
+
+contentSchema.methods.addChangeLog = function (changes, changedBy) {
+    this.changeLog.push({
+        version: this.version,
+        changes,
+        changedBy,
+        changedAt: new Date()
+    });
+    return this.save();
+};
 
 // Static methods
-contentSchema.statics.findBySection = function (section, activeOnly = true) {
-    const query = { section };
-    if (activeOnly) {
-        query.isActive = true;
-        query.$or = [
-            { endDate: null },
-            { endDate: { $gt: new Date() } }
-        ];
-    }
-    return this.find(query).sort({ displayOrder: 1, createdAt: -1 });
-};
-
-contentSchema.statics.findActiveContent = function () {
-    const now = new Date();
+contentSchema.statics.findPublished = function (query = {}) {
     return this.find({
-        isActive: true,
+        ...query,
+        isPublished: true,
+        visibility: 'public'
+    }).sort({ publishedAt: -1 });
+};
+
+contentSchema.statics.findByCategory = function (category) {
+    return this.findPublished({ category });
+};
+
+contentSchema.statics.findByType = function (type) {
+    return this.findPublished({ type });
+};
+
+contentSchema.statics.getFeatured = function (limit = 5) {
+    return this.findPublished({ isFeatured: true }).limit(limit);
+};
+
+contentSchema.statics.search = function (searchTerm) {
+    return this.findPublished({
         $or: [
-            { endDate: null },
-            { endDate: { $gt: now } }
+            { title: { $regex: searchTerm, $options: 'i' } },
+            { content: { $regex: searchTerm, $options: 'i' } },
+            { excerpt: { $regex: searchTerm, $options: 'i' } },
+            { keywords: { $in: [new RegExp(searchTerm, 'i')] } }
         ]
-    }).sort({ section: 1, displayOrder: 1 });
-};
-
-contentSchema.statics.findByContentType = function (contentType) {
-    return this.find({ contentType, isActive: true });
-};
-
-// Instance methods
-contentSchema.methods.publish = function (publishedBy) {
-    this.lastPublished = new Date();
-    this.publishedBy = publishedBy;
-    return this.save();
-};
-
-contentSchema.methods.duplicate = function (createdBy) {
-    const duplicate = new this.constructor({
-        ...this.toObject(),
-        _id: undefined,
-        version: 1,
-        previousVersions: [],
-        createdAt: undefined,
-        updatedAt: undefined,
-        lastPublished: undefined,
-        publishedBy: undefined,
-        createdBy,
-        updatedBy: createdBy
     });
-
-    duplicate.title = `${this.title} (Copy)`;
-    return duplicate.save();
-};
-
-contentSchema.methods.revertToVersion = function (versionNumber, revertedBy) {
-    const targetVersion = this.previousVersions.find(v => v.version === versionNumber);
-    if (!targetVersion) {
-        throw new Error('Version not found');
-    }
-
-    this.content = targetVersion.content;
-    this.updatedBy = revertedBy;
-
-    this.previousVersions.push({
-        content: this.content,
-        changedBy: revertedBy,
-        changeReason: `Reverted to version ${versionNumber}`
-    });
-
-    return this.save();
 };
 
 module.exports = mongoose.model('Content', contentSchema);

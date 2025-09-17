@@ -11,8 +11,7 @@ const studentApplicationSchema = new mongoose.Schema({
     // Application ID
     applicationId: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
 
     // Application Status

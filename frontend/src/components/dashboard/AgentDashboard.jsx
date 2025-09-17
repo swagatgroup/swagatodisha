@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
@@ -87,9 +87,12 @@ const EnhancedAgentDashboard = () => {
     };
 
     const handleStudentUpdate = (updatedStudent) => {
-        setStudents(prev => prev.map(student =>
-            student._id === updatedStudent._id ? updatedStudent : student
-        ));
+        setStudents(prev => {
+            if (!Array.isArray(prev)) return [];
+            return prev.map(student =>
+                student._id === updatedStudent._id ? updatedStudent : student
+            );
+        });
     };
 
     const renderDashboardContent = () => {

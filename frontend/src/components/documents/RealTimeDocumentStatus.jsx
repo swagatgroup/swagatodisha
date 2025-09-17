@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import { useSocket } from '../../contexts/SocketContext';
 
 const RealTimeDocumentStatus = ({ documentId, initialStatus }) => {

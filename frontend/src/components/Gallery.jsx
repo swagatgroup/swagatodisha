@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import {useState} from 'react';
 import BackToMainWebsite from './BackToMainWebsite'
 
 const Gallery = () => {

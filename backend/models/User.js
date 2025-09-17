@@ -239,6 +239,37 @@ userSchema.index({ role: 1 });
 userSchema.index({ isActive: 1 });
 userSchema.index({ role: 1, isActive: 1 });
 
+// Pre-save middleware to generate referral code
+userSchema.pre('save', async function (next) {
+    // Generate referral code if it doesn't exist
+    if (!this.referralCode && this.isNew) {
+        let attempts = 0;
+        const maxAttempts = 10;
+
+        while (attempts < maxAttempts) {
+            const generatedCode = this.generateReferralCode();
+
+            // Check if code already exists
+            const existingUser = await this.constructor.findOne({ referralCode: generatedCode });
+            if (!existingUser) {
+                this.referralCode = generatedCode;
+                this.isReferralActive = true; // Auto-activate referral system
+                break;
+            }
+            attempts++;
+        }
+
+        // If we couldn't generate a unique code, use a fallback
+        if (!this.referralCode) {
+            const timestamp = Date.now().toString().slice(-4);
+            this.referralCode = `usr${timestamp}${this.role.charAt(0)}25`;
+            this.isReferralActive = true;
+        }
+    }
+
+    next();
+});
+
 // Pre-save middleware to hash password
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
@@ -257,7 +288,8 @@ userSchema.methods.generateReferralCode = function () {
     // Format: [3-letter-name][2-digit-phone][1-role-letter][2-digit-year]
     // Example: raj69a25 (Rajesh, phone ending 69, agent, year 2025)
 
-    const namePrefix = this.fullName ? this.fullName.substring(0, 3).toLowerCase() : 'xxx';
+    const namePrefix = this.fullName ?
+        this.fullName.replace(/\s+/g, '').substring(0, 3).toLowerCase() : 'xxx';
     const phoneSuffix = this.phoneNumber ? this.phoneNumber.slice(-2) : '00';
 
     const roleMap = {

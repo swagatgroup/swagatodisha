@@ -9,6 +9,9 @@ const PDFDocument = require('pdfkit');
 // Create new application
 const createApplication = async (req, res) => {
     try {
+        console.log('createApplication called with user:', req.user);
+        console.log('Request body:', req.body);
+
         const {
             personalDetails,
             contactDetails,
@@ -18,6 +21,13 @@ const createApplication = async (req, res) => {
             referralCode
         } = req.body;
 
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
+            });
+        }
+
         // Check if user already has an application
         const existingApplication = await StudentApplication.findOne({ user: req.user._id });
         if (existingApplication) {
@@ -25,6 +35,19 @@ const createApplication = async (req, res) => {
                 success: false,
                 message: 'You already have an application. Please update the existing one.'
             });
+        }
+
+        // Check if Aadhar number is already used
+        if (personalDetails && personalDetails.aadharNumber) {
+            const existingAadhar = await StudentApplication.findOne({
+                'personalDetails.aadharNumber': personalDetails.aadharNumber
+            });
+            if (existingAadhar) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'An application with this Aadhar number already exists.'
+                });
+            }
         }
 
         // Handle referral code if provided
@@ -40,8 +63,13 @@ const createApplication = async (req, res) => {
             }
         }
 
+        // Convert date string to Date object for personalDetails.dateOfBirth
+        if (personalDetails && personalDetails.dateOfBirth) {
+            personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
+        }
+
         // Create application
-        const application = new StudentApplication({
+        const applicationData = {
             user: req.user._id,
             personalDetails,
             contactDetails,
@@ -52,9 +80,15 @@ const createApplication = async (req, res) => {
             progress: {
                 registrationComplete: true
             }
-        });
+        };
 
+        console.log('Creating application with data:', JSON.stringify(applicationData, null, 2));
+
+        const application = new StudentApplication(applicationData);
+
+        console.log('Application object created, saving...');
         await application.save();
+        console.log('Application saved successfully');
         await application.populate('user', 'fullName email phoneNumber');
 
         // Emit real-time update
@@ -73,10 +107,22 @@ const createApplication = async (req, res) => {
 
     } catch (error) {
         console.error('Create application error:', error);
+        console.error('Error details:', {
+            name: error.name,
+            message: error.message,
+            stack: error.stack,
+            code: error.code,
+            errors: error.errors
+        });
         res.status(500).json({
             success: false,
             message: 'Failed to create application',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? {
+                name: error.name,
+                code: error.code,
+                errors: error.errors
+            } : undefined
         });
     }
 };
@@ -84,6 +130,15 @@ const createApplication = async (req, res) => {
 // Get application by user
 const getApplication = async (req, res) => {
     try {
+        console.log('getApplication called with user:', req.user);
+
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
+            });
+        }
+
         const application = await StudentApplication.findOne({ user: req.user._id })
             .populate('user', 'fullName email phoneNumber')
             .populate('assignedAgent', 'fullName email phoneNumber')

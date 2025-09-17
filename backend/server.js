@@ -282,6 +282,128 @@ const websiteContentRoutes = require('./routes/websiteContent');
 const courseRoutes = require('./routes/courses');
 const galleryRoutes = require('./routes/gallery');
 const pdfRoutes = require('./routes/pdf');
+const documentTypesRoutes = require('./routes/documentTypes');
+const cmsRoutes = require('./routes/cms');
+
+// Debug endpoint for student application (before auth middleware)
+app.post('/api/student-application/create', async (req, res) => {
+    console.log('=== STUDENT APPLICATION CREATE DEBUG ===');
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    console.log('User:', req.user);
+
+    try {
+        // Import the StudentApplication model
+        const StudentApplication = require('./models/StudentApplication');
+
+        // Convert date string to Date object
+        if (req.body.personalDetails && req.body.personalDetails.dateOfBirth) {
+            req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
+        }
+
+        // Create application in database
+        const applicationData = {
+            user: req.body.userId || '507f1f77bcf86cd799439011', // Mock user ID for testing
+            personalDetails: req.body.personalDetails || {},
+            contactDetails: req.body.contactDetails || {},
+            courseDetails: req.body.courseDetails || {},
+            guardianDetails: req.body.guardianDetails || {},
+            financialDetails: req.body.financialDetails || {},
+            status: 'DRAFT',
+            currentStage: 'REGISTRATION',
+            progress: {
+                registrationComplete: true
+            }
+        };
+
+        console.log('Creating application with data:', JSON.stringify(applicationData, null, 2));
+
+        const application = new StudentApplication(applicationData);
+        await application.save();
+
+        console.log('Application saved successfully:', application);
+
+        res.status(201).json({
+            success: true,
+            message: 'Application created successfully',
+            data: application
+        });
+    } catch (error) {
+        console.error('Error in debug endpoint:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Debug endpoint error',
+            error: error.message
+        });
+    }
+});
+
+// Get applications for student review
+app.get('/api/student-application/my-application', async (req, res) => {
+    try {
+        const StudentApplication = require('./models/StudentApplication');
+        const applications = await StudentApplication.find({}).sort({ createdAt: -1 }).limit(1);
+
+        if (applications.length > 0) {
+            res.json({
+                success: true,
+                data: applications[0]
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'No application found'
+            });
+        }
+    } catch (error) {
+        console.error('Error getting applications:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error retrieving applications',
+            error: error.message
+        });
+    }
+});
+
+// Get applications for staff dashboard
+app.get('/api/staff/applications', async (req, res) => {
+    try {
+        const StudentApplication = require('./models/StudentApplication');
+        const applications = await StudentApplication.find({}).sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            data: applications
+        });
+    } catch (error) {
+        console.error('Error getting applications for staff:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error retrieving applications',
+            error: error.message
+        });
+    }
+});
+
+// Get applications for super admin dashboard
+app.get('/api/admin/applications', async (req, res) => {
+    try {
+        const StudentApplication = require('./models/StudentApplication');
+        const applications = await StudentApplication.find({}).sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            data: applications
+        });
+    } catch (error) {
+        console.error('Error getting applications for admin:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error retrieving applications',
+            error: error.message
+        });
+    }
+});
 
 // API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
@@ -292,6 +414,8 @@ app.use('/api/students/applications', apiRateLimit, studentApplicationRoutes);
 app.use('/api/students/academic', apiRateLimit, studentAcademicRoutes);
 app.use('/api/student-application', apiRateLimit, studentApplicationWorkflowRoutes);
 app.use('/api/documents', uploadRateLimit, documentRoutes);
+app.use('/api/document-types', apiRateLimit, documentTypesRoutes);
+app.use('/api/cms', apiRateLimit, cmsRoutes);
 app.use('/api/website-content', apiRateLimit, websiteContentRoutes);
 app.use('/api/courses', apiRateLimit, courseRoutes);
 app.use('/api/notifications', apiRateLimit, notificationRoutes);
@@ -331,6 +455,7 @@ app.get('/api/health', async (req, res) => {
         });
     }
 });
+
 
 app.get('/api/performance/metrics', (req, res) => {
     const metrics = performanceMonitor.getAllMetrics();
@@ -377,13 +502,17 @@ const initializeConnections = async () => {
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
     try {
-        // Start server first, then connect to database
-        server.listen(PORT, () => {
-            console.log(`🚀 Server running on port ${PORT}`);
-            console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-            console.log(`📊 Health: http://localhost:${PORT}/health`);
-            console.log(`🔌 Socket.IO initialized`);
-        });
+        // Only start server if not in Vercel environment
+        if (process.env.VERCEL !== '1') {
+            server.listen(PORT, () => {
+                console.log(`🚀 Server running on port ${PORT}`);
+                console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+                console.log(`📊 Health: http://localhost:${PORT}/health`);
+                console.log(`🔌 Socket.IO initialized`);
+            });
+        } else {
+            console.log('🚀 Running in Vercel environment');
+        }
 
         // Initialize connections (non-blocking)
         initializeConnections().catch(error => {
@@ -392,11 +521,16 @@ const startServer = async () => {
 
     } catch (error) {
         console.error('❌ Failed to start server:', error.message);
-        process.exit(1);
+        if (process.env.VERCEL !== '1') {
+            process.exit(1);
+        }
     }
 };
 
-startServer();
+// Only start server if not in Vercel environment
+if (process.env.VERCEL !== '1') {
+    startServer();
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
