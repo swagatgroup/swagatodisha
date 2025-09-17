@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import { showSuccess, showError } from '../../utils/sweetAlert';
+import PasswordInput from '../auth/PasswordInput';
 
 const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
@@ -268,41 +269,31 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
 
                         {/* Password Fields */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Password *
-                                </label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.password ? 'border-red-500' : 'border-gray-300'
-                                        }`}
-                                    placeholder="Enter password"
-                                />
-                                {errors.password && (
-                                    <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-                                )}
-                            </div>
+                            <PasswordInput
+                                id="password"
+                                name="password"
+                                value={formData.password}
+                                onChange={handleInputChange}
+                                placeholder="Enter password"
+                                required
+                                autoComplete="new-password"
+                                label="Password *"
+                                error={errors.password}
+                                showLabel={true}
+                            />
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Confirm Password *
-                                </label>
-                                <input
-                                    type="password"
-                                    name="confirmPassword"
-                                    value={formData.confirmPassword}
-                                    onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                                        }`}
-                                    placeholder="Confirm password"
-                                />
-                                {errors.confirmPassword && (
-                                    <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>
-                                )}
-                            </div>
+                            <PasswordInput
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange}
+                                placeholder="Confirm password"
+                                required
+                                autoComplete="new-password"
+                                label="Confirm Password *"
+                                error={errors.confirmPassword}
+                                showLabel={true}
+                            />
                         </div>
 
                         {/* Staff Assignment */}

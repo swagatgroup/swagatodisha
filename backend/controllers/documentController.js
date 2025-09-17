@@ -1,211 +1,107 @@
 const Document = require('../models/Document');
 const DocumentType = require('../models/DocumentType');
-const User = require('../models/User');
-const Notification = require('../models/Notification');
-const cloudinary = require('cloudinary').v2;
-const { promisify } = require('util');
-const { uploadFile, getDownloadUrl, deleteFile } = require('../utils/hybridStorage');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
-// Configure Cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadPath = path.join(__dirname, '../uploads/documents');
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        const uniqueName = `${uuidv4()}-${Date.now()}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    }
 });
 
-const uploadToCloudinary = promisify(cloudinary.uploader.upload);
+const fileFilter = (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|pdf|doc|docx/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
 
-// Upload document (universal - all user types can upload)
+    if (mimetype && extname) {
+        return cb(null, true);
+    } else {
+        cb(new Error('Only PDF, JPG, PNG, DOC, and DOCX files are allowed'));
+    }
+};
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 10 * 1024 * 1024 // 10MB limit
+    },
+    fileFilter: fileFilter
+});
+
+// Upload document
 const uploadDocument = async (req, res) => {
     try {
-        const { documentType, priority = 'medium', tags = [] } = req.body;
-        const uploadedFile = req.file || (Array.isArray(req.files) && req.files.length > 0 ? req.files[0] : null);
+        const { documentType } = req.body;
+        const file = req.file;
 
-        if (!uploadedFile) {
+        if (!file) {
             return res.status(400).json({
                 success: false,
                 message: 'No file uploaded'
             });
         }
 
-        // Validate file type and size
-        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
-        const maxSize = 10 * 1024 * 1024; // 10MB
-
-        if (!allowedTypes.includes(uploadedFile.mimetype)) {
+        if (!documentType) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid file type. Only PDF, JPEG, PNG, and WebP files are allowed'
+                message: 'Document type is required'
             });
         }
 
-        if (uploadedFile.size > maxSize) {
-            return res.status(400).json({
-                success: false,
-                message: 'File size exceeds 10MB limit'
-            });
-        }
-
-        // Use hybrid storage for document upload
-        let uploadResult;
-        try {
-            uploadResult = await uploadFile(uploadedFile, {
-                uploadedBy: req.user._id,
-                category: 'document',
-                documentType: documentType
-            });
-        } catch (uploadError) {
-            console.error('Hybrid storage upload failed:', uploadError);
-            return res.status(500).json({
-                success: false,
-                message: 'Failed to upload document',
-                error: uploadError.message
-            });
-        }
-
-        // Assign to staff member (for student uploads)
-        let assignedTo = null;
-        if (req.user.role === 'student' || req.user.role === 'user') {
-            assignedTo = await assignToAvailableStaff();
-        }
-
+        // Create document record
         const document = new Document({
+            fileName: file.originalname,
+            filePath: file.path,
+            fileSize: file.size,
+            mimeType: file.mimetype,
+            documentType: documentType,
             uploadedBy: req.user._id,
-            uploadedByRole: req.user.role,
-            assignedTo,
-            documentType,
-            originalName: uploadedFile.originalname,
-            fileName: uploadResult.fileName,
-            fileUrl: uploadResult.fileUrl,
-            fileSize: uploadedFile.size,
-            mimeType: uploadedFile.mimetype,
-            storageType: uploadResult.storageType,
-            priority,
-            tags: Array.isArray(tags) ? tags : [],
-            verificationHistory: [{
-                reviewedBy: req.user._id,
-                reviewedByName: req.user.fullName,
-                action: 'submitted',
-                remarks: 'Document uploaded successfully',
-                timestamp: new Date()
-            }]
+            status: 'PENDING'
         });
 
         await document.save();
-        await document.populate('uploadedBy', 'fullName email role');
-
-        // Create notification for assigned staff
-        if (assignedTo) {
-            await Notification.createNotification({
-                recipient: assignedTo,
-                sender: req.user._id,
-                type: 'document_upload',
-                title: 'New Document for Review',
-                message: `${req.user.fullName} uploaded a ${documentType.replace('_', ' ')} for verification`,
-                relatedDocument: document._id,
-                priority: priority === 'urgent' ? 'high' : 'medium'
-            });
-        }
-
-        // Emit realtime notifications
-        try {
-            const { socketManager } = require('../server');
-            if (socketManager) {
-                socketManager.notifyDocumentUpload(req.user._id.toString(), {
-                    id: document._id.toString(),
-                    type: document.documentType,
-                    status: document.status
-                });
-            }
-        } catch (e) {
-            console.warn('Socket notifyDocumentUpload failed (non-blocking):', e.message);
-        }
 
         res.status(201).json({
             success: true,
             message: 'Document uploaded successfully',
             data: document
         });
+
     } catch (error) {
-        console.error('Document upload error:', error);
+        console.error('Upload document error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to upload document',
-            error: error.message
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };
 
-// Assign document to available staff member
-const assignToAvailableStaff = async () => {
+// Get documents by user
+const getDocumentsByUser = async (req, res) => {
     try {
-        const Admin = require('../models/Admin');
-        const staff = await Admin.find({
-            role: 'staff',
-            isActive: true
-        }).select('_id');
-
-        if (staff.length === 0) {
-            return null;
-        }
-
-        // Simple round-robin assignment (can be enhanced with workload balancing)
-        const randomStaff = staff[Math.floor(Math.random() * staff.length)];
-        return randomStaff._id;
-    } catch (error) {
-        console.error('Staff assignment error:', error);
-        return null;
-    }
-};
-
-// Get user's documents
-const getUserDocuments = async (req, res) => {
-    try {
-        console.log('Getting documents for user:', req.user._id, 'Role:', req.user.role);
-
-        const { status, documentType, page = 1, limit = 20 } = req.query;
-        const userId = req.user._id;
-
-        let query = { uploadedBy: userId, isActive: true };
-
-        if (status) {
-            query.status = status;
-        }
-
-        if (documentType) {
-            query.documentType = documentType;
-        }
-
-        console.log('Query:', query);
-
-        const documents = await Document.find(query)
-            .populate('assignedTo', 'fullName email')
-            .sort({ createdAt: -1 })
-            .limit(limit * 1)
-            .skip((page - 1) * limit);
-
-        const total = await Document.countDocuments(query);
-
-        console.log('Found documents:', documents.length);
+        const documents = await Document.find({ uploadedBy: req.user._id })
+            .sort({ uploadedAt: -1 });
 
         res.status(200).json({
             success: true,
-            data: {
-                documents,
-                pagination: {
-                    current: parseInt(page),
-                    pages: Math.ceil(total / limit),
-                    total
-                }
-            }
+            data: documents
         });
+
     } catch (error) {
-        console.error('Get user documents error:', error);
-        console.error('Error details:', {
-            message: error.message,
-            name: error.name,
-            stack: error.stack
-        });
+        console.error('Get documents error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to get documents',
@@ -214,14 +110,11 @@ const getUserDocuments = async (req, res) => {
     }
 };
 
-// Get specific document
+// Get document by ID
 const getDocumentById = async (req, res) => {
     try {
-        const { id } = req.params;
-
-        const document = await Document.findById(id)
-            .populate('uploadedBy', 'fullName email role')
-            .populate('assignedTo', 'fullName email');
+        const { documentId } = req.params;
+        const document = await Document.findById(documentId);
 
         if (!document) {
             return res.status(404).json({
@@ -230,11 +123,8 @@ const getDocumentById = async (req, res) => {
             });
         }
 
-        // Check access permissions
-        if (document.uploadedBy._id.toString() !== req.user._id.toString() &&
-            req.user.role !== 'staff' &&
-            req.user.role !== 'admin' &&
-            req.user.role !== 'super_admin') {
+        // Check if user has access to this document
+        if (document.uploadedBy.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied'
@@ -245,32 +135,22 @@ const getDocumentById = async (req, res) => {
             success: true,
             data: document
         });
+
     } catch (error) {
         console.error('Get document error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to get document',
-            error: error.message
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };
 
-// Review document (staff and admin only)
-const reviewDocument = async (req, res) => {
+// Download document
+const downloadDocument = async (req, res) => {
     try {
-        const { id: documentId } = req.params;
-        const { action, remarks, isCustomRemarks = false, remarkType } = req.body;
-
-        // Validate staff permissions
-        if (req.user.role !== 'staff' && req.user.role !== 'admin' && req.user.role !== 'super_admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Only staff members can review documents'
-            });
-        }
-
-        const document = await Document.findById(documentId)
-            .populate('uploadedBy', 'fullName email role');
+        const { documentId } = req.params;
+        const document = await Document.findById(documentId);
 
         if (!document) {
             return res.status(404).json({
@@ -279,202 +159,136 @@ const reviewDocument = async (req, res) => {
             });
         }
 
-        // Validate action
-        const validActions = ['APPROVED', 'REJECTED', 'RESUBMISSION_REQUIRED'];
-        if (!validActions.includes(action)) {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid action'
-            });
-        }
-
-        let finalRemarks = remarks;
-
-        // Use predefined remarks if not custom
-        if (!isCustomRemarks && action !== 'APPROVED') {
-            finalRemarks = getPredefinedRemarks(action, remarkType);
-        } else if (action === 'APPROVED') {
-            finalRemarks = getApprovalMessage(document.documentType);
-        }
-
-        // Update document status and add verification history
-        document.status = action === 'RESUBMISSION_REQUIRED' ? 'RESUBMISSION_REQUIRED' : action;
-        document.currentRemarks = finalRemarks;
-        document.verificationHistory.push({
-            reviewedBy: req.user._id,
-            reviewedByName: req.user.fullName,
-            action,
-            remarks: finalRemarks,
-            timestamp: new Date()
-        });
-
-        if (action === 'RESUBMISSION_REQUIRED') {
-            document.resubmissionCount += 1;
-        }
-
-        await document.save();
-
-        // Create notification for student
-        const notificationType = action === 'APPROVED' ? 'document_approved' :
-            action === 'REJECTED' ? 'document_rejected' : 'document_resubmission_required';
-        const notificationTitle = action === 'APPROVED' ? 'Document Approved' :
-            action === 'REJECTED' ? 'Document Rejected' : 'Resubmission Required';
-
-        await Notification.createNotification({
-            recipient: document.uploadedBy._id,
-            sender: req.user._id,
-            type: notificationType,
-            title: notificationTitle,
-            message: `Your ${document.documentType.replace('_', ' ')} has been ${action}. ${finalRemarks}`,
-            relatedDocument: document._id,
-            priority: action === 'rejected' ? 'high' : 'medium'
-        });
-
-        // Realtime events for review updates
-        try {
-            const { socketManager } = require('../server');
-            if (socketManager) {
-                socketManager.broadcastToUser(document.uploadedBy._id.toString(), 'document_status_changed', {
-                    documentId: document._id.toString(),
-                    status: document.status,
-                    remarks: finalRemarks
-                });
-                socketManager.broadcastToRole('staff', 'document_reviewed', {
-                    documentId: document._id.toString(),
-                    studentId: document.uploadedBy._id.toString(),
-                    status: document.status
-                });
-                socketManager.broadcastToRole('super_admin', 'document_activity', {
-                    documentId: document._id.toString(),
-                    studentId: document.uploadedBy._id.toString(),
-                    status: document.status
-                });
-            }
-        } catch (e) {
-            console.warn('Socket review broadcast failed (non-blocking):', e.message);
-        }
-
-        res.status(200).json({
-            success: true,
-            message: `Document ${action} successfully`,
-            data: document
-        });
-    } catch (error) {
-        console.error('Document review error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to review document',
-            error: error.message
-        });
-    }
-};
-
-// Get predefined remarks
-const getPredefinedRemarks = (action, remarkType) => {
-    const remarks = {
-        rejected: {
-            'poor_quality': 'Document quality is not clear. Please upload a high-resolution, clearly visible document.',
-            'incomplete_info': 'Required information is missing or incomplete. Please ensure all fields are properly filled.',
-            'wrong_document': 'This appears to be the wrong document type. Please upload the correct document as requested.',
-            'expired_document': 'The document appears to be expired. Please provide a valid, current document.',
-            'illegible_text': 'Text in the document is not readable. Please provide a clearer version with legible text.'
-        },
-        resubmission_required: {
-            'minor_corrections': 'Minor corrections needed. Please address the highlighted issues and resubmit.',
-            'additional_info': 'Additional information required. Please provide the missing details.',
-            'format_issue': 'Document format needs adjustment. Please follow the specified format guidelines.',
-            'signature_missing': 'Signature or official stamp is missing. Please ensure proper authorization.',
-            'date_discrepancy': 'Date discrepancy found. Please verify and correct the dates mentioned.'
-        }
-    };
-
-    return remarks[action]?.[remarkType] || 'Please review and resubmit the document with necessary corrections.';
-};
-
-// Get approval message
-const getApprovalMessage = (documentType) => {
-    const approvalMessages = {
-        'academic_certificate': 'Excellent! Your academic certificate has been verified and approved. All details are accurate and complete.',
-        'identity_proof': 'Perfect! Your identity proof has been successfully verified. Thank you for providing clear documentation.',
-        'address_proof': 'Great! Your address proof has been approved. All address details match our requirements.',
-        'income_certificate': 'Wonderful! Your income certificate has been verified and meets all criteria.',
-        'caste_certificate': 'Approved! Your caste certificate has been successfully verified.',
-        'default': 'Fantastic! Your document has been thoroughly reviewed and approved. Everything looks perfect!'
-    };
-
-    return approvalMessages[documentType] || approvalMessages.default;
-};
-
-// Delete document
-const deleteDocument = async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const document = await Document.findById(id);
-
-        if (!document) {
-            return res.status(404).json({
-                success: false,
-                message: 'Document not found'
-            });
-        }
-
-        // Check permissions
-        if (document.uploadedBy.toString() !== req.user._id.toString() &&
-            req.user.role !== 'admin' &&
-            req.user.role !== 'super_admin') {
+        // Check if user has access to this document
+        if (document.uploadedBy.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 success: false,
                 message: 'Access denied'
             });
         }
 
-        // Delete from storage
-        try {
-            await deleteFile(document);
-        } catch (deleteError) {
-            console.error('Error deleting document from storage:', deleteError);
-            // Continue with database deletion even if storage deletion fails
+        if (!fs.existsSync(document.filePath)) {
+            return res.status(404).json({
+                success: false,
+                message: 'File not found on server'
+            });
         }
 
-        // Soft delete
-        document.isActive = false;
-        await document.save();
+        res.download(document.filePath, document.fileName);
+
+    } catch (error) {
+        console.error('Download document error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to download document',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Delete document
+const deleteDocument = async (req, res) => {
+    try {
+        const { documentId } = req.params;
+        const document = await Document.findById(documentId);
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                message: 'Document not found'
+            });
+        }
+
+        // Check if user has access to this document
+        if (document.uploadedBy.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: 'Access denied'
+            });
+        }
+
+        // Delete file from filesystem
+        if (fs.existsSync(document.filePath)) {
+            fs.unlinkSync(document.filePath);
+        }
+
+        // Delete document record
+        await Document.findByIdAndDelete(documentId);
 
         res.status(200).json({
             success: true,
             message: 'Document deleted successfully'
         });
+
     } catch (error) {
         console.error('Delete document error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to delete document',
-            error: error.message
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };
 
-// Get staff assigned documents
-const getStaffDocuments = async (req, res) => {
+// Update document status (for staff/admin)
+const updateDocumentStatus = async (req, res) => {
     try {
-        const { status, priority, page = 1, limit = 20 } = req.query;
-        const staffId = req.user._id;
+        const { documentId } = req.params;
+        const { status, remarks } = req.body;
 
-        let query = { assignedTo: staffId, isActive: true };
+        const document = await Document.findById(documentId);
+
+        if (!document) {
+            return res.status(404).json({
+                success: false,
+                message: 'Document not found'
+            });
+        }
+
+        document.status = status;
+        if (remarks) {
+            document.remarks = remarks;
+        }
+        document.reviewedBy = req.user._id;
+        document.reviewedAt = new Date();
+
+        await document.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Document status updated successfully',
+            data: document
+        });
+
+    } catch (error) {
+        console.error('Update document status error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update document status',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Get all documents (for staff/admin)
+const getAllDocuments = async (req, res) => {
+    try {
+        const { status, documentType, page = 1, limit = 20 } = req.query;
+
+        let query = {};
 
         if (status) {
             query.status = status;
         }
 
-        if (priority) {
-            query.priority = priority;
+        if (documentType) {
+            query.documentType = documentType;
         }
 
         const documents = await Document.find(query)
-            .populate('uploadedBy', 'fullName email role phoneNumber')
-            .populate('assignedTo', 'fullName email')
-            .sort({ createdAt: -1 })
+            .populate('uploadedBy', 'fullName email')
+            .populate('reviewedBy', 'fullName email')
+            .sort({ uploadedAt: -1 })
             .limit(limit * 1)
             .skip((page - 1) * limit);
 
@@ -491,82 +305,24 @@ const getStaffDocuments = async (req, res) => {
                 }
             }
         });
+
     } catch (error) {
-        console.error('Get staff documents error:', error);
+        console.error('Get all documents error:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to get staff documents',
-            error: error.message
-        });
-    }
-};
-
-// Get documents by student ID (for staff review)
-const getStudentDocuments = async (req, res) => {
-    try {
-        const { studentId } = req.params;
-        const { status, documentType } = req.query;
-
-        // Check if user has permission to view student documents
-        if (req.user.role !== 'staff' && req.user.role !== 'admin' && req.user.role !== 'super_admin') {
-            return res.status(403).json({
-                success: false,
-                message: 'Access denied'
-            });
-        }
-
-        let query = {
-            uploadedBy: studentId,
-            isActive: true
-        };
-
-        if (status) {
-            query.status = status;
-        }
-
-        if (documentType) {
-            query.documentType = documentType;
-        }
-
-        const documents = await Document.find(query)
-            .populate('uploadedBy', 'fullName email role phoneNumber')
-            .populate('assignedTo', 'fullName email')
-            .sort({ createdAt: -1 });
-
-        res.status(200).json({
-            success: true,
-            data: {
-                documents,
-                total: documents.length
-            }
-        });
-    } catch (error) {
-        console.error('Get student documents error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to get student documents',
-            error: error.message
+            message: 'Failed to get documents',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 };
 
 module.exports = {
+    upload,
     uploadDocument,
-    getUserDocuments,
+    getDocumentsByUser,
     getDocumentById,
-    reviewDocument,
+    downloadDocument,
     deleteDocument,
-    getStaffDocuments,
-    getStudentDocuments
-};
-
-// List document types (master data)
-module.exports.getDocumentTypes = async (req, res) => {
-    try {
-        const types = await DocumentType.find({ isActive: true }).sort({ category: 1, name: 1 });
-        res.status(200).json({ success: true, data: types });
-    } catch (error) {
-        console.error('Get document types error:', error);
-        res.status(500).json({ success: false, message: 'Failed to fetch document types' });
-    }
+    updateDocumentStatus,
+    getAllDocuments
 };

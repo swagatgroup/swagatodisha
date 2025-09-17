@@ -106,7 +106,7 @@ const AboutUsPage = () => {
             </section>
 
             {/* Mission & Vision Section */}
-            <section className="py-20 bg-white">
+            <section className="py-20 bg-white dark:bg-gray-900">
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
                         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
@@ -148,7 +148,7 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                         {values.map((value, index) => (
-                            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                                 <div className={`w-16 h-16 bg-gradient-to-r ${value.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
                                     <i className={`${value.icon} text-white text-2xl`}></i>
                                 </div>
@@ -161,7 +161,7 @@ const AboutUsPage = () => {
             </section>
 
             {/* Milestones Section */}
-            <section className="py-20 bg-white">
+            <section className="py-20 bg-white dark:bg-gray-900">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
@@ -181,12 +181,12 @@ const AboutUsPage = () => {
                                 {milestones.map((milestone, index) => (
                                     <div key={index} className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
                                         <div className="w-1/2 px-8">
-                                            <div className={`bg-white rounded-2xl p-6 shadow-lg border border-gray-100 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                                            <div className={`bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
                                                 <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mb-3">
                                                     <i className={`${milestone.icon} text-white text-lg`}></i>
                                                 </div>
-                                                <h3 className="text-2xl font-bold text-gray-800 mb-2">{milestone.title}</h3>
-                                                <p className="text-gray-600 text-sm leading-relaxed">{milestone.description}</p>
+                                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">{milestone.title}</h3>
+                                                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{milestone.description}</p>
                                             </div>
                                         </div>
 
@@ -217,7 +217,7 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {team.map((member, index) => (
-                            <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                                 <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
                                     <img
                                         src={member.image}
@@ -235,7 +235,7 @@ const AboutUsPage = () => {
             </section>
 
             {/* Why Choose Us Section */}
-            <section className="py-20 bg-white">
+            <section className="py-20 bg-white dark:bg-gray-900">
                 <div className="container mx-auto px-6">
                     <div className="max-w-6xl mx-auto">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -281,21 +281,21 @@ const AboutUsPage = () => {
                                 <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Our Achievements</h3>
 
                                 <div className="space-y-4">
-                                    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
+                                    <div className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
                                         <i className="fa-solid fa-trophy text-purple-600 text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800">Multiple Awards</h5>
                                             <p className="text-gray-600 text-sm">Recognized for excellence in education</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
+                                    <div className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
                                         <i className="fa-solid fa-users text-blue-600 text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800">1000+ Students</h5>
                                             <p className="text-gray-600 text-sm">Successfully educated students</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
+                                    <div className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
                                         <i className="fa-solid fa-star text-green-600 text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800">High Satisfaction</h5>

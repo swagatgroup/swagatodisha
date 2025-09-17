@@ -116,7 +116,7 @@ const AgentDraftManager = () => {
 
     const handleEditDraft = (draftId) => {
         // Navigate to edit form
-        console.log('Edit draft:', draftId);
+        // TODO: Implement edit draft functionality
     };
 
     const handleDuplicateDraft = async (draftId) => {
@@ -297,8 +297,8 @@ const AgentDraftManager = () => {
                         <button
                             onClick={() => setActiveTab('drafts')}
                             className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'drafts'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-green-500 text-green-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             Drafts ({drafts.length})
@@ -306,8 +306,8 @@ const AgentDraftManager = () => {
                         <button
                             onClick={() => setActiveTab('submitted')}
                             className={`py-4 px-1 border-b-2 font-medium text-sm ${activeTab === 'submitted'
-                                    ? 'border-green-500 text-green-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                ? 'border-green-500 text-green-600'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 }`}
                         >
                             Submitted ({submitted.length})

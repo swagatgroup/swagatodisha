@@ -1,225 +1,200 @@
-import React, { useState, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import Swal from 'sweetalert2';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import api from '../../utils/api';
 
-const DocumentUpload = ({ userRole, onUploadSuccess, maxFiles = 5 }) => {
+const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
     const [uploading, setUploading] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
-    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [dragActive, setDragActive] = useState(false);
+    const [documents, setDocuments] = useState(existingDocuments);
 
-    const documentTypes = {
-        student: [
-            'academic_certificate', 'identity_proof', 'address_proof',
-            'income_certificate', 'caste_certificate', 'photo', 'signature',
-            'migration_certificate', 'tc', 'mark_sheet', 'entrance_exam_card'
-        ],
-        staff: ['identity_proof', 'address_proof', 'qualification_certificate'],
-        agent: ['identity_proof', 'address_proof', 'business_registration'],
-        admin: ['all'] // Admin can upload any type
-    };
+    const documentTypes = [
+        '10th Mark Sheet',
+        '12th Mark Sheet',
+        'Aadhaar Card',
+        'Passport Size Photo',
+        'Signature',
+        'Transfer Certificate',
+        'Character Certificate',
+        'Income Certificate',
+        'Caste Certificate',
+        'Other'
+    ];
 
-    const onDrop = useCallback((acceptedFiles) => {
-        const validFiles = acceptedFiles.filter(file => {
-            const isValidType = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp']
-                .includes(file.type);
-            const isValidSize = file.size <= 10 * 1024 * 1024; // 10MB
-
-            if (!isValidType) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid File Type',
-                    text: `${file.name} is not a supported file type.`
-                });
-                return false;
-            }
-
-            if (!isValidSize) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'File Too Large',
-                    text: `${file.name} exceeds the 10MB size limit.`
-                });
-                return false;
-            }
-
-            return true;
-        });
-
-        setSelectedFiles(prev => [...prev, ...validFiles].slice(0, maxFiles));
-    }, [maxFiles]);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({
-        onDrop,
-        accept: {
-            'application/pdf': ['.pdf'],
-            'image/jpeg': ['.jpeg', '.jpg'],
-            'image/png': ['.png'],
-            'image/webp': ['.webp']
-        },
-        maxFiles,
-        multiple: true
-    });
-
-    const removeFile = (index) => {
-        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-    };
-
-    const uploadFiles = async () => {
-        if (selectedFiles.length === 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'No Files Selected',
-                text: 'Please select at least one file to upload.'
-            });
-            return;
-        }
-
-        setUploading(true);
-        setUploadProgress(0);
-
+    const handleFileUpload = async (file, documentType) => {
         try {
-            const uploadPromises = selectedFiles.map(async (file, index) => {
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('documentType', file.documentType || 'other');
-                formData.append('priority', file.priority || 'medium');
+            setUploading(true);
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('documentType', documentType);
 
-                const response = await api.post('/api/documents/upload', formData, {
-                    headers: { 'Content-Type': 'multipart/form-data' }
-                });
-
-                setUploadProgress(((index + 1) / selectedFiles.length) * 100);
-                return response.data;
+            const response = await api.post('/api/documents/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
             });
 
-            const results = await Promise.all(uploadPromises);
-            const successCount = results.filter(r => r.success).length;
+            if (response.data.success) {
+                const newDocument = {
+                    ...response.data.data,
+                    documentType,
+                    uploadedAt: new Date()
+                };
 
-            if (successCount === selectedFiles.length) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Upload Successful!',
-                    text: `All ${successCount} documents uploaded successfully.`
-                });
-                setSelectedFiles([]);
-                onUploadSuccess?.();
-            } else {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Partial Upload',
-                    text: `${successCount} of ${selectedFiles.length} documents uploaded successfully.`
-                });
+                setDocuments(prev => [...prev, newDocument]);
+                onUploadSuccess?.(newDocument);
             }
-        } catch (e) {
-            console.error('Upload error:', e);
-            Swal.fire({
-                icon: 'error',
-                title: 'Upload Failed',
-                text: 'Failed to upload documents. Please try again.'
-            });
+        } catch (error) {
+            console.error('Error uploading document:', error);
+            alert('Error uploading document. Please try again.');
         } finally {
             setUploading(false);
-            setUploadProgress(0);
         }
+    };
+
+    const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === 'dragenter' || e.type === 'dragover') {
+            setDragActive(true);
+        } else if (e.type === 'dragleave') {
+            setDragActive(false);
+        }
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+
+        const files = e.dataTransfer.files;
+        if (files && files[0]) {
+            const file = files[0];
+            const documentType = prompt('Please select document type:', documentTypes[0]);
+            if (documentType && documentTypes.includes(documentType)) {
+                handleFileUpload(file, documentType);
+            }
+        }
+    };
+
+    const handleFileInput = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const documentType = prompt('Please select document type:', documentTypes[0]);
+            if (documentType && documentTypes.includes(documentType)) {
+                handleFileUpload(file, documentType);
+            }
+        }
+    };
+
+    const removeDocument = (index) => {
+        setDocuments(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const formatFileSize = (bytes) => {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6">
-            <h3 className="text-lg font-semibold mb-4">Upload Documents</h3>
-
-            {/* Drag and Drop Zone */}
+        <div className="space-y-6">
+            {/* Upload Area */}
             <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer
-          ${isDragActive ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
-          ${uploading ? 'pointer-events-none opacity-50' : ''}
-        `}
+                className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                onDragEnter={handleDrag}
+                onDragLeave={handleDrag}
+                onDragOver={handleDrag}
+                onDrop={handleDrop}
             >
-                <input {...getInputProps()} />
-                <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <p className="text-gray-600">
-                    {isDragActive ? 'Drop files here...' : 'Drag & drop files here, or click to browse'}
-                </p>
-                <p className="text-sm text-gray-500 mt-2">
-                    Supports PDF, JPEG, PNG, WebP (Max: 10MB per file)
-                </p>
+                <input
+                    type="file"
+                    onChange={handleFileInput}
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    disabled={uploading}
+                />
+
+                <div className="space-y-4">
+                    <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                    </div>
+
+                    <div>
+                        <p className="text-lg font-medium text-gray-900">
+                            {uploading ? 'Uploading...' : 'Upload Documents'}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                            Drag and drop files here, or click to select files
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                            Supported formats: PDF, JPG, PNG, DOC, DOCX (Max 10MB)
+                        </p>
+                    </div>
+                </div>
             </div>
 
-            {/* Selected Files */}
-            <AnimatePresence>
-                {selectedFiles.length > 0 && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="mt-4"
-                    >
-                        <h4 className="font-medium mb-2">Selected Files ({selectedFiles.length})</h4>
-                        <div className="space-y-2">
-                            {selectedFiles.map((file, index) => (
-                                <div
-                                    key={index}
-                                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-                                >
-                                    <div className="flex items-center space-x-3">
-                                        <FileText className="h-5 w-5 text-blue-500" />
-                                        <div>
-                                            <p className="text-sm font-medium">{file.name}</p>
-                                            <p className="text-xs text-gray-500">
-                                                {(file.size / 1024 / 1024).toFixed(2)} MB
-                                            </p>
-                                        </div>
+            {/* Document List */}
+            {documents.length > 0 && (
+                <div className="space-y-4">
+                    <h4 className="text-md font-medium text-gray-900">Uploaded Documents</h4>
+                    <div className="space-y-3">
+                        {documents.map((doc, index) => (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                            >
+                                <div className="flex items-center space-x-3">
+                                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
                                     </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900">{doc.fileName}</p>
+                                        <p className="text-xs text-gray-500">
+                                            {doc.documentType} • {formatFileSize(doc.fileSize)} • {new Date(doc.uploadedAt).toLocaleDateString()}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${doc.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                                            doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                                                'bg-yellow-100 text-yellow-800'
+                                        }`}>
+                                        {doc.status || 'PENDING'}
+                                    </span>
+
                                     <button
-                                        onClick={() => removeFile(index)}
-                                        className="p-1 text-red-500 hover:bg-red-50 rounded"
-                                        disabled={uploading}
+                                        onClick={() => removeDocument(index)}
+                                        className="p-1 text-red-600 hover:text-red-800"
                                     >
-                                        <X className="h-4 w-4" />
+                                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
                                     </button>
                                 </div>
-                            ))}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Upload Progress */}
-            {uploading && (
-                <div className="mt-4">
-                    <div className="flex justify-between text-sm mb-2">
-                        <span>Uploading...</span>
-                        <span>{Math.round(uploadProgress)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${uploadProgress}%` }}
-                        />
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             )}
 
-            {/* Upload Button */}
-            {selectedFiles.length > 0 && (
-                <button
-                    onClick={uploadFiles}
-                    disabled={uploading}
-                    className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 
-                   disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center"
-                >
-                    {uploading ? (
-                        <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Uploading...
-                        </>
-                    ) : (
-                        `Upload ${selectedFiles.length} File(s)`
-                    )}
-                </button>
+            {/* Upload Progress */}
+            {uploading && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center space-x-3">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                        <span className="text-sm text-blue-800">Uploading document...</span>
+                    </div>
+                </div>
             )}
         </div>
     );

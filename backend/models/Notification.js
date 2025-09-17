@@ -1,132 +1,161 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-    recipient: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
-    },
-    sender: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        default: null
-    },
-    type: {
-        type: String,
-        enum: [
-            'document_upload',
-            'document_approved',
-            'document_rejected',
-            'document_resubmission_required',
-            'referral_new',
-            'referral_approved',
-            'system_update',
-            'general'
-        ],
-        required: true
-    },
+    // Basic information
     title: {
         type: String,
         required: true,
-        maxlength: [200, 'Title cannot exceed 200 characters']
+        trim: true
     },
-    message: {
+    content: {
+        type: String,
+        required: true
+    },
+    shortDescription: {
+        type: String,
+        maxlength: 200
+    },
+
+    // Notification type
+    type: {
         type: String,
         required: true,
-        maxlength: [1000, 'Message cannot exceed 1000 characters']
+        enum: ['General', 'Academic', 'Admission', 'Exam', 'Result', 'Holiday', 'Event', 'Emergency', 'Maintenance']
     },
-    relatedDocument: {
+    category: {
+        type: String,
+        enum: ['Timetable', 'Result', 'Notification', 'Announcement', 'Alert']
+    },
+
+    // Target audience
+    targetAudience: {
+        type: String,
+        required: true,
+        enum: ['All', 'Students', 'Parents', 'Teachers', 'Staff', 'Agents', 'Public']
+    },
+    targetInstitutions: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Document',
-        default: null
+        ref: 'Institution'
+    }],
+    targetCourses: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    }],
+
+    // Priority and importance
+    priority: {
+        type: String,
+        enum: ['Low', 'Medium', 'High', 'Critical'],
+        default: 'Medium'
     },
-    isRead: {
+    isUrgent: {
         type: Boolean,
         default: false
     },
-    priority: {
-        type: String,
-        enum: ['low', 'medium', 'high', 'urgent'],
-        default: 'medium'
+    isImportant: {
+        type: Boolean,
+        default: false
     },
-    actionUrl: {
+
+    // Media and attachments
+    attachments: [{
+        name: String,
+        url: String,
         type: String,
-        default: null
+        size: Number
+    }],
+    image: String,
+    pdfDocument: String,
+
+    // Dates
+    publishDate: {
+        type: Date,
+        default: Date.now
     },
-    metadata: {
-        type: mongoose.Schema.Types.Mixed,
-        default: {}
+    expiryDate: Date,
+    eventDate: Date,
+
+    // Status
+    status: {
+        type: String,
+        enum: ['Draft', 'Published', 'Archived', 'Expired'],
+        default: 'Draft'
+    },
+    isActive: {
+        type: Boolean,
+        default: true
+    },
+
+    // Display settings
+    displayOrder: {
+        type: Number,
+        default: 0
+    },
+    showOnHomepage: {
+        type: Boolean,
+        default: false
+    },
+    showInQuickLinks: {
+        type: Boolean,
+        default: false
+    },
+
+    // Analytics
+    views: {
+        type: Number,
+        default: 0
+    },
+    clicks: {
+        type: Number,
+        default: 0
+    },
+
+    // SEO
+    seoTitle: String,
+    seoDescription: String,
+    seoKeywords: [String],
+
+    // Timestamps
+    lastModified: {
+        type: Date,
+        default: Date.now
+    },
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin',
+        required: true
+    },
+    modifiedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin'
     }
 }, {
     timestamps: true
 });
 
-// Indexes for better performance
-notificationSchema.index({ recipient: 1, isRead: 1 });
-notificationSchema.index({ type: 1 });
-notificationSchema.index({ createdAt: -1 });
-notificationSchema.index({ priority: 1 });
+// Indexes
+notificationSchema.index({ type: 1, status: 1, isActive: 1 });
+notificationSchema.index({ targetAudience: 1, status: 1 });
+notificationSchema.index({ publishDate: -1 });
+notificationSchema.index({ priority: 1, isUrgent: 1 });
 
-// Virtual for time ago
-notificationSchema.virtual('timeAgo').get(function () {
-    const now = new Date();
-    const diffInSeconds = Math.floor((now - this.createdAt) / 1000);
-
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
-    if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
-    return this.createdAt.toLocaleDateString();
+// Virtual for formatted publish date
+notificationSchema.virtual('formattedPublishDate').get(function () {
+    return this.publishDate.toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
 });
 
-// Static methods
-notificationSchema.statics.createNotification = async function (notificationData) {
-    try {
-        const notification = new this(notificationData);
-        await notification.save();
-        return notification;
-    } catch (error) {
-        console.error('Error creating notification:', error);
-        throw error;
-    }
-};
-
-notificationSchema.statics.getUserNotifications = function (userId, limit = 50, skip = 0) {
-    return this.find({ recipient: userId })
-        .populate('sender', 'fullName email role')
-        .populate('relatedDocument', 'originalName documentType status')
-        .sort({ createdAt: -1 })
-        .limit(limit)
-        .skip(skip);
-};
-
-notificationSchema.statics.markAsRead = function (notificationId, userId) {
-    return this.findOneAndUpdate(
-        { _id: notificationId, recipient: userId },
-        { isRead: true },
-        { new: true }
-    );
-};
-
-notificationSchema.statics.markAllAsRead = function (userId) {
-    return this.updateMany(
-        { recipient: userId, isRead: false },
-        { isRead: true }
-    );
-};
-
-notificationSchema.statics.getUnreadCount = function (userId) {
-    return this.countDocuments({ recipient: userId, isRead: false });
-};
-
-// Instance methods
-notificationSchema.methods.markAsRead = function () {
-    this.isRead = true;
-    return this.save();
-};
-
-// Ensure virtual fields are serialized
-notificationSchema.set('toJSON', { virtuals: true });
-notificationSchema.set('toObject', { virtuals: true });
+// Virtual for time until expiry
+notificationSchema.virtual('timeUntilExpiry').get(function () {
+    if (!this.expiryDate) return null;
+    const now = new Date();
+    const expiry = new Date(this.expiryDate);
+    const diffTime = expiry - now;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+});
 
 module.exports = mongoose.model('Notification', notificationSchema);

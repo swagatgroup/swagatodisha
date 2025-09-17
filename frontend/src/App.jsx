@@ -23,8 +23,8 @@ import PremiumFloatingElements from './components/PremiumFloatingElements'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
 import StudentDashboard from './components/dashboard/StudentDashboard'
-import EnhancedAgentDashboard from './components/dashboard/EnhancedAgentDashboard'
-import EnhancedStaffDashboard from './components/dashboard/EnhancedStaffDashboard'
+import AgentDashboard from './components/dashboard/AgentDashboard'
+import StaffDashboard from './components/dashboard/StaffDashboard'
 import SuperAdminDashboard from './components/dashboard/SuperAdminDashboard'
 import AboutUsPage from './components/AboutUsPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
@@ -236,7 +236,7 @@ function App() {
                                     path="/dashboard/agent"
                                     element={
                                         <ProtectedRoute allowedRoles={['agent']}>
-                                            <EnhancedAgentDashboard />
+                                            <AgentDashboard />
                                         </ProtectedRoute>
                                     }
                                 />
@@ -244,7 +244,7 @@ function App() {
                                     path="/dashboard/staff"
                                     element={
                                         <ProtectedRoute allowedRoles={['staff']}>
-                                            <EnhancedStaffDashboard />
+                                            <StaffDashboard />
                                         </ProtectedRoute>
                                     }
                                 />

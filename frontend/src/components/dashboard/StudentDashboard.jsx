@@ -11,6 +11,7 @@ import EnhancedStudentProfile from './tabs/EnhancedStudentProfile';
 import StudentApplications from './tabs/StudentApplications';
 import StudentPayments from './tabs/StudentPayments';
 import StudentAcademic from './tabs/StudentAcademic';
+import ReferralDashboard from './tabs/ReferralDashboard';
 import api from '../../utils/api';
 
 const StudentDashboard = () => {
@@ -78,6 +79,15 @@ const StudentDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+            )
+        },
+        {
+            id: 'referral',
+            name: 'Refer & Earn',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
             )
         }
@@ -172,7 +182,7 @@ const StudentDashboard = () => {
                                             </div>
                                             <div className="mt-4">
                                                 <button
-                                                    onClick={() => setActiveSidebarItem('profile')}
+                                                    onClick={() => setShowProfileModal(true)}
                                                     className="inline-flex items-center rounded-md border border-transparent bg-red-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700"
                                                 >
                                                     Complete Profile Now
@@ -203,7 +213,7 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="bg-white rounded-lg shadow p-6"
+                                className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
                                     <div className="p-3 bg-blue-100 rounded-full">
@@ -212,8 +222,8 @@ const StudentDashboard = () => {
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.totalApplications}</p>
+                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Applications</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalApplications}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -222,7 +232,7 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-white rounded-lg shadow p-6"
+                                className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
                                     <div className="p-3 bg-yellow-100 rounded-full">
@@ -231,8 +241,8 @@ const StudentDashboard = () => {
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Pending</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.pendingApplications}</p>
+                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Pending</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.pendingApplications}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -241,7 +251,7 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-white rounded-lg shadow p-6"
+                                className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
                                     <div className="p-3 bg-green-100 rounded-full">
@@ -250,8 +260,8 @@ const StudentDashboard = () => {
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Approved</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.approvedApplications}</p>
+                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Approved</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.approvedApplications}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -260,7 +270,7 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
-                                className="bg-white rounded-lg shadow p-6"
+                                className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
                                     <div className="p-3 bg-purple-100 rounded-full">
@@ -269,8 +279,8 @@ const StudentDashboard = () => {
                                         </svg>
                                     </div>
                                     <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Enrolled</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.enrolledPrograms}</p>
+                                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Enrolled</p>
+                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.enrolledPrograms}</p>
                                     </div>
                                 </div>
                             </motion.div>
@@ -281,29 +291,38 @@ const StudentDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
-                            className="bg-white rounded-lg shadow p-6 mb-8"
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8"
                         >
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200">
+                                <button
+                                    onClick={() => setActiveSidebarItem('applications')}
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200"
+                                >
                                     <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    <span className="text-gray-600 font-medium">New Application</span>
+                                    <span className="text-gray-600 dark:text-gray-300 font-medium">View Applications</span>
                                 </button>
 
-                                <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200">
+                                <button
+                                    onClick={() => setActiveSidebarItem('documents')}
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200"
+                                >
                                     <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
                                     </svg>
-                                    <span className="text-gray-600 font-medium">Upload Documents</span>
+                                    <span className="text-gray-600 dark:text-gray-300 font-medium">Upload Documents</span>
                                 </button>
 
-                                <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200">
+                                <button
+                                    onClick={() => setActiveSidebarItem('payments')}
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200"
+                                >
                                     <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                     </svg>
-                                    <span className="text-gray-600 font-medium">Make Payment</span>
+                                    <span className="text-gray-600 dark:text-gray-300 font-medium">View Payments</span>
                                 </button>
                             </div>
                         </motion.div>
@@ -313,10 +332,10 @@ const StudentDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
-                            className="bg-white rounded-lg shadow mb-8"
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow mb-8"
                         >
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-900">Application Progress</h3>
+                            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Application Progress</h3>
                             </div>
                             <div className="p-6">
                                 <div className="relative">
@@ -375,10 +394,10 @@ const StudentDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.8 }}
-                            className="bg-white rounded-lg shadow"
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow"
                         >
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-900">Recent Applications</h3>
+                            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Applications</h3>
                             </div>
                             <div className="p-6">
                                 {admissions.length > 0 ? (
@@ -408,8 +427,11 @@ const StudentDashboard = () => {
                                         <h3 className="mt-2 text-sm font-medium text-gray-900">No applications yet</h3>
                                         <p className="mt-1 text-sm text-gray-500">Get started by creating your first application.</p>
                                         <div className="mt-6">
-                                            <button className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
-                                                New Application
+                                            <button
+                                                onClick={() => setActiveSidebarItem('applications')}
+                                                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                                            >
+                                                View Applications
                                             </button>
                                         </div>
                                     </div>
@@ -426,6 +448,8 @@ const StudentDashboard = () => {
                 return <EnhancedDocumentManagement />;
             case 'payments':
                 return <StudentPayments />;
+            case 'referral':
+                return <ReferralDashboard />;
             default:
                 return null;
         }

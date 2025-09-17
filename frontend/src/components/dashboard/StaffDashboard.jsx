@@ -2,38 +2,31 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
-import DocumentVerificationInterface from '../staff/DocumentVerificationInterface';
-import InteractivePieChart from '../analytics/InteractivePieChart';
-import DetailModal from '../analytics/DetailModal';
-import {
-    showSuccess,
-    showError,
-    showConfirm,
-    showLoading,
-    closeLoading,
-    handleApiError,
-    showSuccessToast,
-    showErrorToast
-} from '../../utils/sweetAlert';
+import StudentRegistration from './tabs/StudentRegistration';
+import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
+import StudentManagement from './tabs/StudentManagement';
+import DocumentVerification from './tabs/DocumentVerification';
+import ContentManagement from './tabs/ContentManagement';
+import AgentManagement from './tabs/AgentManagement';
+import StaffApplicationsReview from './tabs/StaffApplicationsReview';
+import RealTimeStudentTracking from './tabs/RealTimeStudentTracking';
+import StudentTable from './components/StudentTable';
+import ProcessingStats from './components/ProcessingStats';
 import api from '../../utils/api';
 
-const StaffDashboard = () => {
+const EnhancedStaffDashboard = () => {
     const { user } = useAuth();
     const [loading, setLoading] = useState(true);
-    const [stats, setStats] = useState({
-        totalApplications: 0,
-        pendingApplications: 0,
-        approvedApplications: 0,
-        referralBased: 0,
-        directEnrollments: 0
+    const [activeTab, setActiveTab] = useState('dashboard');
+    const [students, setStudents] = useState([]);
+    const [processingStats, setProcessingStats] = useState({
+        totalStudents: 0,
+        pendingVerification: 0,
+        approvedToday: 0,
+        rejectedToday: 0,
+        averageProcessingTime: 0
     });
-
-    // New state for enhanced features
-    const [analyticsData, setAnalyticsData] = useState({});
-    const [selectedChartData, setSelectedChartData] = useState(null);
-    const [showDetailModal, setShowDetailModal] = useState(false);
-
-    const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
+    const [agents, setAgents] = useState([]);
 
     const sidebarItems = [
         {
@@ -47,16 +40,25 @@ const StaffDashboard = () => {
         },
         {
             id: 'applications',
-            name: 'Applications',
+            name: 'Applications Review',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+            )
+        },
+        {
+            id: 'new-registration',
+            name: 'New Registration',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
             )
         },
         {
             id: 'students',
-            name: 'Students',
+            name: 'Student Processing',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -64,17 +66,8 @@ const StaffDashboard = () => {
             )
         },
         {
-            id: 'agents',
-            name: 'Agents',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'documents',
-            name: 'Document Review',
+            id: 'verification',
+            name: 'Document Verification',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -82,98 +75,55 @@ const StaffDashboard = () => {
             )
         },
         {
-            id: 'reports',
-            name: 'Reports',
+            id: 'content',
+            name: 'Content Management',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                 </svg>
             )
-        }
+        },
     ];
 
     useEffect(() => {
-        const fetchStaffData = async () => {
-            try {
-                showLoading('Loading Dashboard...', 'Please wait while we fetch your data');
-
-                // Fetch staff stats from API
-                const response = await api.get('/api/dashboard/staff/dashboard');
-                setStats(response.data.data.stats);
-
-                // Load analytics data
-                await loadAnalyticsData();
-
-                closeLoading();
-            } catch (error) {
-                console.error('Error fetching staff data:', error);
-                closeLoading();
-                await handleApiError(error);
-
-                // Fallback to mock data
-                setStats({
-                    totalApplications: 45,
-                    pendingApplications: 12,
-                    approvedApplications: 28,
-                    referralBased: 15,
-                    directEnrollments: 30
-                });
-
-                // Set mock analytics data
-                setAnalyticsData({
-                    verificationQueue: [
-                        { name: 'Pending Review', value: 12, total: 20 },
-                        { name: 'Under Review', value: 5, total: 20 },
-                        { name: 'Completed', value: 3, total: 20 }
-                    ],
-                    documentCategories: [
-                        { name: 'Academic Certificates', value: 8, total: 20 },
-                        { name: 'Identity Proof', value: 6, total: 20 },
-                        { name: 'Address Proof', value: 4, total: 20 },
-                        { name: 'Other Documents', value: 2, total: 20 }
-                    ],
-                    studentApplications: [
-                        { name: 'Approved', value: 28, total: 45 },
-                        { name: 'Pending', value: 12, total: 45 },
-                        { name: 'Rejected', value: 5, total: 45 }
-                    ],
-                    agentPerformance: [
-                        { name: 'Top Performers', value: 8, total: 15 },
-                        { name: 'Average Performers', value: 5, total: 15 },
-                        { name: 'Low Performers', value: 2, total: 15 }
-                    ]
-                });
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStaffData();
+        loadDashboardData();
     }, []);
 
-    const loadAnalyticsData = async () => {
+    const loadDashboardData = async () => {
         try {
-            const response = await api.get('/api/analytics/dashboard/staff');
-            if (response.data.success) {
-                setAnalyticsData(response.data.data);
+            setLoading(true);
+            const [studentsRes, statsRes, agentsRes] = await Promise.all([
+                api.get('/api/staff/students'),
+                api.get('/api/staff/processing-stats'),
+                api.get('/api/staff/agents')
+            ]);
+
+            if (studentsRes.data.success) {
+                setStudents(studentsRes.data.data);
+            }
+
+            if (statsRes.data.success) {
+                setProcessingStats(statsRes.data.data);
+            }
+
+            if (agentsRes.data.success) {
+                setAgents(agentsRes.data.data);
             }
         } catch (error) {
-            console.error('Error loading analytics data:', error);
+            console.error('Error loading dashboard data:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'approved': return 'bg-green-100 text-green-800';
-            case 'pending': return 'bg-yellow-100 text-yellow-800';
-            case 'under_review': return 'bg-blue-100 text-blue-800';
-            case 'rejected': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
+    const handleStudentUpdate = (updatedStudent) => {
+        setStudents(prev => prev.map(student =>
+            student._id === updatedStudent._id ? updatedStudent : student
+        ));
     };
 
-    const renderSidebarContent = () => {
-        switch (activeSidebarItem) {
+    const renderDashboardContent = () => {
+        switch (activeTab) {
             case 'dashboard':
                 return (
                     <>
@@ -181,284 +131,107 @@ const StaffDashboard = () => {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg p-6 text-white mb-6"
+                            className="bg-gradient-to-r from-green-600 to-blue-600 rounded-lg p-6 text-white mb-6"
                         >
                             <h2 className="text-2xl font-bold mb-2">
-                                Welcome back, {user?.firstName} {user?.lastName}! 📋
+                                Welcome back, {user?.fullName}! 👋
                             </h2>
-                            <p className="text-blue-100">
-                                Manage applications, track students, and oversee the admission process.
+                            <p className="text-green-100">
+                                Process student applications, verify documents, and manage academic content.
                             </p>
                         </motion.div>
 
-                        {/* Stats Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="bg-white rounded-lg shadow p-6"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-3 bg-blue-100 rounded-full">
-                                        <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Total Applications</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.totalApplications}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="bg-white rounded-lg shadow p-6"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-3 bg-yellow-100 rounded-full">
-                                        <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Pending</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.pendingApplications}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="bg-white rounded-lg shadow p-6"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-3 bg-green-100 rounded-full">
-                                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Approved</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.approvedApplications}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
-                                className="bg-white rounded-lg shadow p-6"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-3 bg-purple-100 rounded-full">
-                                        <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-600">Referral Based</p>
-                                        <p className="text-2xl font-semibold text-gray-900">{stats.referralBased}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        </div>
+                        {/* Processing Stats */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="mb-8"
+                        >
+                            <ProcessingStats data={processingStats} />
+                        </motion.div>
 
                         {/* Quick Actions */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                            className="bg-white rounded-lg shadow p-6 mb-8"
+                            transition={{ delay: 0.2 }}
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-8"
                         >
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors duration-200">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <button
+                                    onClick={() => setActiveTab('verification')}
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors duration-200"
+                                >
+                                    <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    <span className="text-gray-600 font-medium">Verify Documents</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setActiveTab('content')}
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors duration-200"
+                                >
+                                    <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                    </svg>
+                                    <span className="text-gray-600 font-medium">Manage Content</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setActiveTab('students')}
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200"
+                                >
+                                    <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                    </svg>
+                                    <span className="text-gray-600 font-medium">Process Students</span>
+                                </button>
+
+                                <button
+                                    onClick={() => setActiveTab('applications')}
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-orange-400 hover:bg-orange-50 transition-colors duration-200"
+                                >
                                     <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                     <span className="text-gray-600 font-medium">Review Applications</span>
                                 </button>
-
-                                <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors duration-200">
-                                    <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                                    </svg>
-                                    <span className="text-gray-600 font-medium">Manage Students</span>
-                                </button>
-
-                                <button className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors duration-200">
-                                    <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                    </svg>
-                                    <span className="text-gray-600 font-medium">Generate Reports</span>
-                                </button>
                             </div>
                         </motion.div>
 
-                        {/* Analytics Charts */}
+                        {/* Recent Students */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.6 }}
-                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
+                            transition={{ delay: 0.3 }}
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow"
                         >
-                            <InteractivePieChart
-                                data={analyticsData.verificationQueue || []}
-                                title="Verification Queue"
-                                onSegmentClick={(data) => {
-                                    setSelectedChartData(data);
-                                    setShowDetailModal(true);
-                                }}
-                            />
-                            <InteractivePieChart
-                                data={analyticsData.documentCategories || []}
-                                title="Document Categories"
-                                onSegmentClick={(data) => {
-                                    setSelectedChartData(data);
-                                    setShowDetailModal(true);
-                                }}
-                            />
-                        </motion.div>
-
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.7 }}
-                            className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8"
-                        >
-                            <InteractivePieChart
-                                data={analyticsData.studentApplications || []}
-                                title="Student Applications"
-                                onSegmentClick={(data) => {
-                                    setSelectedChartData(data);
-                                    setShowDetailModal(true);
-                                }}
-                            />
-                            <InteractivePieChart
-                                data={analyticsData.agentPerformance || []}
-                                title="Agent Performance"
-                                onSegmentClick={(data) => {
-                                    setSelectedChartData(data);
-                                    setShowDetailModal(true);
-                                }}
-                            />
-                        </motion.div>
-
-                        {/* Recent Applications */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.8 }}
-                            className="bg-white rounded-lg shadow"
-                        >
-                            <div className="px-6 py-4 border-b border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-900">Recent Applications</h3>
+                            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Students</h3>
                             </div>
                             <div className="p-6">
-                                <div className="text-center py-8">
-                                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    <h3 className="mt-2 text-sm font-medium text-gray-900">No applications yet</h3>
-                                    <p className="mt-1 text-sm text-gray-500">Applications will appear here as students apply.</p>
-                                </div>
+                                <StudentTable
+                                    students={students.slice(0, 10)}
+                                    onStudentUpdate={handleStudentUpdate}
+                                    showActions={true}
+                                />
                             </div>
                         </motion.div>
                     </>
                 );
-            case 'applications':
-                return (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Applications</h3>
-                        <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Application Management</h3>
-                            <p className="text-gray-500 mb-4">This feature is coming soon! You'll be able to manage all applications here.</p>
-                            <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
-                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Coming Soon
-                            </div>
-                        </div>
-                    </div>
-                );
             case 'students':
-                return (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Students</h3>
-                        <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Student Management</h3>
-                            <p className="text-gray-500 mb-4">This feature is coming soon! You'll be able to manage all students here.</p>
-                            <div className="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-lg">
-                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Coming Soon
-                            </div>
-                        </div>
-                    </div>
-                );
-            case 'agents':
-                return (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Agents</h3>
-                        <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Agent Management</h3>
-                            <p className="text-gray-500 mb-4">This feature is coming soon! You'll be able to manage all agents here.</p>
-                            <div className="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-800 rounded-lg">
-                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Coming Soon
-                            </div>
-                        </div>
-                    </div>
-                );
-            case 'documents':
-                return <DocumentVerificationInterface />;
-            case 'reports':
-                return (
-                    <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Reports</h3>
-                        <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-yellow-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">Report Generation</h3>
-                            <p className="text-gray-500 mb-4">This feature is coming soon! You'll be able to generate various reports here.</p>
-                            <div className="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg">
-                                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Coming Soon
-                            </div>
-                        </div>
-                    </div>
-                );
+                return <StudentManagement onStudentUpdate={handleStudentUpdate} />;
+            case 'verification':
+                return <DocumentVerification onStudentUpdate={handleStudentUpdate} />;
+            case 'applications':
+                return <StaffApplicationsReview />;
+            case 'new-registration':
+                return <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />;
+            case 'content':
+                return <ContentManagement />;
             default:
                 return null;
         }
@@ -466,30 +239,29 @@ const StaffDashboard = () => {
 
     if (loading) {
         return (
-            <DashboardLayout title="Staff Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
+            <DashboardLayout
+                title="Staff Dashboard"
+                sidebarItems={sidebarItems}
+                activeItem={activeTab}
+                onItemClick={setActiveTab}
+            >
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
                 </div>
             </DashboardLayout>
         );
     }
 
     return (
-        <>
-            <DashboardLayout title="Staff Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
-                {renderSidebarContent()}
-            </DashboardLayout>
-
-            {/* Detail Modal for Analytics */}
-            <DetailModal
-                isOpen={showDetailModal}
-                onClose={() => setShowDetailModal(false)}
-                data={selectedChartData?.details || []}
-                title={selectedChartData?.name || 'Details'}
-                type="analytics"
-            />
-        </>
+        <DashboardLayout
+            title="Staff Dashboard"
+            sidebarItems={sidebarItems}
+            activeItem={activeTab}
+            onItemClick={setActiveTab}
+        >
+            {renderDashboardContent()}
+        </DashboardLayout>
     );
 };
 
-export default StaffDashboard;
+export default EnhancedStaffDashboard;

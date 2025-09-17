@@ -15,7 +15,7 @@ const Admissions = () => {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {/* Admission Process */}
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="text-center mb-6">
                             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-file-alt text-2xl text-blue-600"></i>
@@ -28,7 +28,7 @@ const Admissions = () => {
                     </div>
 
                     {/* Requirements */}
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="text-center mb-6">
                             <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-check-circle text-2xl text-purple-600"></i>
@@ -41,7 +41,7 @@ const Admissions = () => {
                     </div>
 
                     {/* Contact */}
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="text-center mb-6">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-phone text-2xl text-green-600"></i>

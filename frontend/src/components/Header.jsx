@@ -290,7 +290,6 @@ const Header = ({ isNavOpen, setIsNavOpen }) => {
                     </div>
                 </>
             )}
-            )}
         </>
     )
 }

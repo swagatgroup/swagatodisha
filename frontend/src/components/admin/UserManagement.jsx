@@ -9,6 +9,7 @@ import {
     closeLoading,
     handleApiError
 } from '../../utils/sweetAlert';
+import PasswordInput from '../auth/PasswordInput';
 import CreateAgentModal from './CreateAgentModal';
 import CreateStaffModal from './CreateStaffModal';
 
@@ -86,7 +87,7 @@ const UserManagement = ({ userType = 'students' }) => {
             closeLoading();
 
             // Use mock data as fallback when API fails
-            console.log('Using mock data as fallback');
+            // Using mock data as fallback
             const mockUsers = generateMockUsers(userType);
             setUsers(mockUsers);
             setTotalPages(Math.ceil(mockUsers.length / 10));
@@ -309,7 +310,7 @@ const UserManagement = ({ userType = 'students' }) => {
 
     if (loading) {
         return (
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <div className="flex items-center justify-center h-64">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
                 </div>
@@ -676,18 +677,17 @@ const UserManagement = ({ userType = 'students' }) => {
                             </h3>
 
                             <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        New Password *
-                                    </label>
-                                    <input
-                                        type="password"
-                                        value={passwordData.newPassword}
-                                        onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        placeholder="Enter new password"
-                                    />
-                                </div>
+                                <PasswordInput
+                                    id="newPassword"
+                                    name="newPassword"
+                                    value={passwordData.newPassword}
+                                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                                    placeholder="Enter new password"
+                                    required
+                                    autoComplete="new-password"
+                                    label="New Password *"
+                                    showLabel={true}
+                                />
                             </div>
 
                             <div className="flex justify-end space-x-3 mt-6">
