@@ -267,7 +267,8 @@ class PerformanceOptimizer {
 
     // Service Worker registration
     registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
+        // Only register service worker in production
+        if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then(registration => {
@@ -277,6 +278,8 @@ class PerformanceOptimizer {
                         // Service Worker registration failed
                     });
             });
+        } else if (process.env.NODE_ENV === 'development') {
+            console.log('Service Worker disabled in development mode');
         }
     }
 

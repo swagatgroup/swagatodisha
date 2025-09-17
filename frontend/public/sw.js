@@ -1,4 +1,13 @@
 // Service Worker for Caching and Performance Optimization
+// Disabled in development mode
+
+// Check if we're in development mode
+if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+    console.log('Service Worker disabled in development mode');
+    self.addEventListener('install', () => self.skipWaiting());
+    self.addEventListener('activate', () => self.clients.claim());
+    return;
+}
 
 const CACHE_NAME = 'swagat-odisha-v1';
 const STATIC_CACHE = 'static-v1';

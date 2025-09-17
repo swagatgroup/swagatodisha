@@ -77,12 +77,16 @@ export default defineConfig({
   // Development server optimization
   server: {
     // Enable HMR
-    hmr: true,
+    hmr: {
+      port: 3001,
+      host: 'localhost'
+    },
 
     // Optimize for development
-    host: true,
+    host: 'localhost',
     port: 3000,
     cors: true,
+    strictPort: true,
 
     // Add proxy for API calls to avoid CORS issues
     proxy: {
