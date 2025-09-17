@@ -349,9 +349,17 @@ const SuperAdminDashboard = () => {
             case 'new-registration':
                 return <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />;
             case 'agents':
-                return <UserManagement userType="agents" />;
+                return (
+                    <div className="dark:text-gray-100">
+                        <UserManagement userType="agents" rowHoverClass="dark:hover:bg-gray-700 hover:bg-gray-50" />
+                    </div>
+                );
             case 'staff':
-                return <UserManagement userType="staff" />;
+                return (
+                    <div className="dark:text-gray-100">
+                        <UserManagement userType="staff" rowHoverClass="dark:hover:bg-gray-700 hover:bg-gray-50" />
+                    </div>
+                );
             case 'passwords':
                 return <PasswordManagement />;
             default:

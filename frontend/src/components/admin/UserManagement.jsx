@@ -13,7 +13,7 @@ import PasswordInput from '../auth/PasswordInput';
 import CreateAgentModal from './CreateAgentModal';
 import CreateStaffModal from './CreateStaffModal';
 
-const UserManagement = ({ userType = 'students' }) => {
+const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-50' }) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -404,7 +404,7 @@ const UserManagement = ({ userType = 'students' }) => {
                                 key={user.id}
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
-                                className="hover:bg-gray-50"
+                                className={`${rowHoverClass}`}
                             >
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
