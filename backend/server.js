@@ -13,6 +13,9 @@ require('dotenv').config();
 const connectDB = require('./config/db');
 const { testR2Connection } = require('./config/r2');
 
+// Import middleware
+const { protect } = require('./middleware/auth');
+
 const app = express();
 const server = http.createServer(app);
 // Initialize Socket.IO early so it's available to middleware
@@ -285,16 +288,34 @@ const pdfRoutes = require('./routes/pdf');
 const documentTypesRoutes = require('./routes/documentTypes');
 const cmsRoutes = require('./routes/cms');
 
-// Debug endpoint for student application (before auth middleware)
-app.post('/api/student-application/create', async (req, res) => {
-    console.log('=== STUDENT APPLICATION CREATE DEBUG ===');
+// Redis Application Routes (fallback endpoints for regular server)
+app.post('/api/redis/application/create', protect, async (req, res) => {
+    console.log('=== REDIS APPLICATION CREATE (FALLBACK) ===');
     console.log('Headers:', req.headers);
     console.log('Body:', req.body);
     console.log('User:', req.user);
 
     try {
+        // Check if user is authenticated
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
+            });
+        }
+
         // Import the StudentApplication model
         const StudentApplication = require('./models/StudentApplication');
+
+        // Check if user already has an application
+        const existingApplication = await StudentApplication.findOne({ user: req.user._id });
+        if (existingApplication) {
+            return res.status(400).json({
+                success: false,
+                message: 'You already have an application. Please update the existing one.',
+                applicationId: existingApplication.applicationId
+            });
+        }
 
         // Convert date string to Date object
         if (req.body.personalDetails && req.body.personalDetails.dateOfBirth) {
@@ -303,7 +324,132 @@ app.post('/api/student-application/create', async (req, res) => {
 
         // Create application in database
         const applicationData = {
-            user: req.body.userId || '507f1f77bcf86cd799439011', // Mock user ID for testing
+            user: req.user._id, // Use authenticated user ID
+            personalDetails: req.body.personalDetails || {},
+            contactDetails: req.body.contactDetails || {},
+            courseDetails: req.body.courseDetails || {},
+            guardianDetails: req.body.guardianDetails || {},
+            financialDetails: req.body.financialDetails || {},
+            status: 'SUBMITTED',
+            currentStage: 'SUBMITTED',
+            progress: {
+                registrationComplete: true,
+                documentsComplete: true,
+                applicationPdfGenerated: false,
+                termsAccepted: true,
+                submissionComplete: true
+            },
+            submittedAt: new Date(),
+            termsAccepted: true,
+            termsAcceptedAt: new Date()
+        };
+
+        // Generate applicationId if not provided
+        if (!applicationData.applicationId) {
+            const year = new Date().getFullYear().toString().substr(-2);
+            const random = Math.random().toString().substr(2, 6).toUpperCase();
+            applicationData.applicationId = `APP${year}${random}`;
+        }
+
+        console.log('Creating application with data:', JSON.stringify(applicationData, null, 2));
+
+        const application = new StudentApplication(applicationData);
+        await application.save();
+        await application.populate('user', 'fullName email phoneNumber');
+
+        console.log('Application saved successfully:', application);
+
+        // Simulate Redis workflow response
+        const submissionId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
+
+        res.status(202).json({
+            success: true,
+            message: 'Application submission started',
+            submissionId,
+            data: application,
+            status: 'processing',
+            estimatedCompletion: '2-3 minutes'
+        });
+    } catch (error) {
+        console.error('Error creating application:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to create application',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// Redis application status endpoint (fallback)
+app.get('/api/redis/application/status/:submissionId', protect, async (req, res) => {
+    try {
+        const { submissionId } = req.params;
+        const userId = req.user._id;
+
+        // For fallback, just return a completed status
+        res.status(200).json({
+            success: true,
+            data: {
+                submissionId,
+                status: {
+                    validation: { status: 'completed', timestamp: Date.now() },
+                    document_processing: { status: 'completed', timestamp: Date.now() },
+                    database_creation: { status: 'completed', timestamp: Date.now() },
+                    notification: { status: 'completed', timestamp: Date.now() },
+                    completion: { status: 'completed', timestamp: Date.now() }
+                },
+                progress: 100,
+                application: null,
+                lastUpdated: Date.now()
+            }
+        });
+    } catch (error) {
+        console.error('Error getting application status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get application status',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// Updated endpoint for student application with proper auth
+app.post('/api/student-application/create', protect, async (req, res) => {
+    console.log('=== STUDENT APPLICATION CREATE ===');
+    console.log('Headers:', req.headers);
+    console.log('Body:', req.body);
+    console.log('User:', req.user);
+
+    try {
+        // Check if user is authenticated
+        if (!req.user || !req.user._id) {
+            return res.status(401).json({
+                success: false,
+                message: 'User not authenticated'
+            });
+        }
+
+        // Import the StudentApplication model
+        const StudentApplication = require('./models/StudentApplication');
+
+        // Check if user already has an application
+        const existingApplication = await StudentApplication.findOne({ user: req.user._id });
+        if (existingApplication) {
+            return res.status(400).json({
+                success: false,
+                message: 'You already have an application. Please update the existing one.',
+                applicationId: existingApplication.applicationId
+            });
+        }
+
+        // Convert date string to Date object
+        if (req.body.personalDetails && req.body.personalDetails.dateOfBirth) {
+            req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
+        }
+
+        // Create application in database
+        const applicationData = {
+            user: req.user._id, // Use authenticated user ID
             personalDetails: req.body.personalDetails || {},
             contactDetails: req.body.contactDetails || {},
             courseDetails: req.body.courseDetails || {},
@@ -320,6 +466,7 @@ app.post('/api/student-application/create', async (req, res) => {
 
         const application = new StudentApplication(applicationData);
         await application.save();
+        await application.populate('user', 'fullName email phoneNumber');
 
         console.log('Application saved successfully:', application);
 
@@ -329,11 +476,11 @@ app.post('/api/student-application/create', async (req, res) => {
             data: application
         });
     } catch (error) {
-        console.error('Error in debug endpoint:', error);
+        console.error('Error creating application:', error);
         res.status(500).json({
             success: false,
-            message: 'Debug endpoint error',
-            error: error.message
+            message: 'Failed to create application',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
 });

@@ -291,14 +291,39 @@ const UniversalStudentRegistration = ({
 
         try {
             setLoading(true);
-            const response = await api.post('/api/student-application/create', {
-                ...formData,
-                termsAccepted: true
-            });
+
+            // Try Redis endpoint first, fallback to regular endpoint
+            let response;
+            try {
+                response = await api.post('/api/redis/application/create', {
+                    ...formData,
+                    termsAccepted: true
+                });
+            } catch (redisError) {
+                if (redisError.response?.status === 404) {
+                    // Redis endpoint not available, use regular endpoint
+                    console.log('Redis endpoint not available, using regular endpoint');
+                    response = await api.post('/api/student-application/create', {
+                        ...formData,
+                        termsAccepted: true
+                    });
+                } else {
+                    throw redisError;
+                }
+            }
 
             if (response.data.success) {
                 setApplication(response.data.data);
-                showSuccessToast('Application submitted successfully!');
+
+                if (response.data.submissionId) {
+                    // Redis system response
+                    showSuccessToast('Application submission started! Processing in background...');
+                    monitorWorkflowProgress(response.data.submissionId);
+                } else {
+                    // Regular system response
+                    showSuccessToast('Application submitted successfully!');
+                }
+
                 if (onStudentUpdate) {
                     onStudentUpdate(response.data.data);
                 }
@@ -309,6 +334,41 @@ const UniversalStudentRegistration = ({
         } finally {
             setLoading(false);
         }
+    };
+
+    const monitorWorkflowProgress = async (submissionId) => {
+        let attempts = 0;
+        const maxAttempts = 30; // 30 seconds timeout
+
+        const checkProgress = async () => {
+            try {
+                const response = await api.get(`/api/redis/application/status/${submissionId}`);
+                if (response.data.success) {
+                    const { progress, status } = response.data.data;
+                    console.log(`Workflow progress: ${progress}%`);
+
+                    if (progress === 100) {
+                        showSuccessToast('Application submitted successfully!');
+                        return;
+                    }
+                }
+
+                attempts++;
+                if (attempts < maxAttempts) {
+                    setTimeout(checkProgress, 2000); // Check every 2 seconds
+                } else {
+                    showErrorToast('Application submission timed out. Please check status later.');
+                }
+            } catch (error) {
+                console.error('Error monitoring workflow:', error);
+                attempts++;
+                if (attempts < maxAttempts) {
+                    setTimeout(checkProgress, 2000);
+                }
+            }
+        };
+
+        checkProgress();
     };
 
     const renderStepContent = () => {
