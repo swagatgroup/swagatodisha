@@ -405,6 +405,177 @@ app.get('/api/admin/applications', async (req, res) => {
     }
 });
 
+// Test route for submitted applications (before auth middleware)
+app.get('/api/student-application/submitted-test', async (req, res) => {
+    try {
+        console.log('=== TEST SUBMITTED APPLICATIONS ROUTE ===');
+        const StudentApplication = require('./models/StudentApplication');
+        const applications = await StudentApplication.find({ status: 'SUBMITTED' }).sort({ submittedAt: -1 });
+
+        res.json({
+            success: true,
+            message: 'Test route working',
+            data: {
+                applications,
+                count: applications.length
+            }
+        });
+    } catch (error) {
+        console.error('Error in test route:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Test route error',
+            error: error.message
+        });
+    }
+});
+
+// Debug route for submitted applications (without auth for testing)
+app.get('/api/student-application/submitted-debug', async (req, res) => {
+    try {
+        console.log('=== DEBUG SUBMITTED APPLICATIONS ROUTE ===');
+        console.log('Query params:', req.query);
+
+        const StudentApplication = require('./models/StudentApplication');
+        const { status = 'SUBMITTED', page = 1, limit = 20 } = req.query;
+
+        let query = { status };
+
+        const applications = await StudentApplication.find(query)
+            .populate('user', 'fullName email phoneNumber')
+            .populate('assignedAgent', 'fullName email phoneNumber')
+            .populate('assignedStaff', 'fullName email phoneNumber')
+            .sort({ submittedAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await StudentApplication.countDocuments(query);
+
+        res.json({
+            success: true,
+            data: {
+                applications,
+                pagination: {
+                    current: parseInt(page),
+                    pages: Math.ceil(total / limit),
+                    total
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error in debug route:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Debug route error',
+            error: error.message
+        });
+    }
+});
+
+// Create test application route (without auth for testing)
+app.post('/api/student-application/create-test', async (req, res) => {
+    try {
+        console.log('=== CREATE TEST APPLICATION ===');
+
+        const StudentApplication = require('./models/StudentApplication');
+        const User = require('./models/User');
+
+        // Find existing test user
+        let testUser = await User.findOne({ email: 'test@example.com' });
+
+        if (!testUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'Test user not found. Please create a user first.'
+            });
+        }
+
+        console.log('Using existing test user:', testUser.email);
+
+        // Create test application
+        const testApplication = new StudentApplication({
+            user: testUser._id,
+            applicationId: 'SO2024001',
+            status: 'SUBMITTED',
+            currentStage: 'UNDER_REVIEW',
+            personalDetails: {
+                fullName: 'Test Student',
+                email: 'test@example.com',
+                phoneNumber: '9876543210',
+                dateOfBirth: new Date('2000-01-01'),
+                gender: 'Male',
+                aadharNumber: '123456789012',
+                address: 'Test Address, Test City, Test State'
+            },
+            academicDetails: {
+                courseName: 'Bachelor of Technology',
+                previousInstitution: 'Test School',
+                previousCourse: '12th Standard',
+                yearOfPassing: '2020',
+                percentage: '85'
+            },
+            guardianDetails: {
+                guardianName: 'Test Guardian',
+                guardianPhone: '9876543211',
+                guardianEmail: 'guardian@example.com',
+                relationship: 'Father',
+                guardianAddress: 'Test Guardian Address'
+            },
+            financialDetails: {
+                annualIncome: '500000',
+                paymentMethod: 'Online',
+                scholarshipApplied: false
+            },
+            documents: {
+                aadharCard: { url: 'https://example.com/aadhar.pdf', fileType: 'pdf' },
+                passportPhoto: { url: 'https://example.com/photo.jpg', fileType: 'jpg' },
+                tenthMarksheet: { url: 'https://example.com/10th.pdf', fileType: 'pdf' },
+                twelfthMarksheet: { url: 'https://example.com/12th.pdf', fileType: 'pdf' },
+                migrationCertificate: { url: 'https://example.com/migration.pdf', fileType: 'pdf' },
+                characterCertificate: { url: 'https://example.com/character.pdf', fileType: 'pdf' }
+            },
+            progress: {
+                registrationComplete: true,
+                documentsComplete: true,
+                applicationPdfGenerated: true,
+                termsAccepted: true,
+                submissionComplete: true
+            },
+            submittedAt: new Date(),
+            termsAccepted: true,
+            termsAcceptedAt: new Date(),
+            reviewStatus: {
+                documentsVerified: false,
+                personalDetailsVerified: false,
+                academicDetailsVerified: false,
+                guardianDetailsVerified: false,
+                financialDetailsVerified: false,
+                overallApproved: false,
+                reviewedBy: null,
+                reviewedAt: null,
+                comments: []
+            }
+        });
+
+        await testApplication.save();
+        console.log('Test application created successfully:', testApplication.applicationId);
+
+        res.json({
+            success: true,
+            message: 'Test application created successfully',
+            data: testApplication
+        });
+
+    } catch (error) {
+        console.error('Error creating test application:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error creating test application',
+            error: error.message
+        });
+    }
+});
+
 // API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
 app.use('/api/admin-auth', authRateLimit, adminAuthRoutes);

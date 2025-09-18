@@ -302,7 +302,58 @@ const studentApplicationSchema = new mongoose.Schema({
     lastModified: {
         type: Date,
         default: Date.now
-    }
+    },
+
+    // Review Status for Staff Verification
+    reviewStatus: {
+        documentsVerified: {
+            type: Boolean,
+            default: false
+        },
+        personalDetailsVerified: {
+            type: Boolean,
+            default: false
+        },
+        academicDetailsVerified: {
+            type: Boolean,
+            default: false
+        },
+        guardianDetailsVerified: {
+            type: Boolean,
+            default: false
+        },
+        financialDetailsVerified: {
+            type: Boolean,
+            default: false
+        },
+        overallApproved: {
+            type: Boolean,
+            default: false
+        },
+        reviewedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        reviewedAt: Date,
+        comments: [{
+            type: {
+                type: String
+            },
+            comment: String,
+            reviewedBy: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User'
+            },
+            reviewedAt: {
+                type: Date,
+                default: Date.now
+            }
+        }]
+    },
+
+    // Generated Files
+    combinedPdfUrl: String,
+    documentsZipUrl: String
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

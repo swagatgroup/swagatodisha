@@ -5,6 +5,7 @@ import UserManagement from '../admin/UserManagement';
 import RealTimeStudentTracking from './tabs/RealTimeStudentTracking';
 import WebsiteManagementSystem from '../cms/WebsiteManagementSystem';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
+import ApplicationReview from './tabs/ApplicationReview';
 import {
     showSuccess,
     showError,
@@ -92,6 +93,15 @@ const SuperAdminDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+            )
+        },
+        {
+            id: 'application-review',
+            name: 'Application Review',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             )
         },
@@ -323,6 +333,8 @@ const SuperAdminDashboard = () => {
                 );
             case 'new-registration':
                 return <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />;
+            case 'application-review':
+                return <ApplicationReview />;
             default:
                 return <div>Coming Soon...</div>;
         }

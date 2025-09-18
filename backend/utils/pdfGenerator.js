@@ -1,382 +1,310 @@
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
 const path = require('path');
+const archiver = require('archiver');
+const { promisify } = require('util');
 
 class PDFGenerator {
     constructor() {
-        this.doc = new PDFDocument({
-            size: 'A4',
-            margin: 50,
-            compress: true
-        });
+        this.outputDir = path.join(__dirname, '../uploads/processed');
+        this.ensureOutputDir();
     }
 
-    generateApplicationPDF(formData, termsAndConditions) {
-        const buffers = [];
-        this.doc.on('data', buffers.push.bind(buffers));
+    ensureOutputDir() {
+        if (!fs.existsSync(this.outputDir)) {
+            fs.mkdirSync(this.outputDir, { recursive: true });
+        }
+    }
 
-        return new Promise((resolve, reject) => {
-            this.doc.on('end', () => {
-                const pdfData = Buffer.concat(buffers);
-                resolve(pdfData);
+    async generateCombinedPDF(application) {
+        try {
+            const doc = new PDFDocument({ margin: 50 });
+            const fileName = `application_${application.applicationId}_combined.pdf`;
+            const filePath = path.join(this.outputDir, fileName);
+
+            // Create write stream
+            const stream = fs.createWriteStream(filePath);
+            doc.pipe(stream);
+
+            // Add application header
+            this.addApplicationHeader(doc, application);
+
+            // Add personal details
+            this.addPersonalDetails(doc, application);
+
+            // Add academic details
+            this.addAcademicDetails(doc, application);
+
+            // Add guardian details
+            this.addGuardianDetails(doc, application);
+
+            // Add financial details
+            this.addFinancialDetails(doc, application);
+
+            // Add documents section
+            this.addDocumentsSection(doc, application);
+
+            // Add terms and conditions
+            this.addTermsAndConditions(doc);
+
+            // Finalize PDF
+            doc.end();
+
+            return new Promise((resolve, reject) => {
+                stream.on('finish', () => {
+                    resolve({
+                        fileName,
+                        filePath,
+                        url: `/api/files/download/${fileName}`
+                    });
+                });
+                stream.on('error', reject);
             });
 
-            try {
-                this.generateHeader();
-                this.generatePersonalDetails(formData.personalDetails);
-                this.generateContactDetails(formData.contactDetails);
-                this.generateCourseDetails(formData.courseDetails);
-                this.generateGuardianDetails(formData.guardianDetails);
-                this.generateDocumentsList(formData.documents);
-                this.generateTermsAndConditions(termsAndConditions);
-                this.generateFooter();
-
-                this.doc.end();
-            } catch (error) {
-                reject(error);
-            }
-        });
+        } catch (error) {
+            console.error('Error generating combined PDF:', error);
+            throw error;
+        }
     }
 
-    generateHeader() {
-        // Header with logo and title
-        this.doc.rect(0, 0, 595, 100)
-            .fill('#1e40af'); // Blue background
-
+    addApplicationHeader(doc, application) {
         // Title
-        this.doc.fillColor('white')
-            .fontSize(24)
+        doc.fontSize(24)
             .font('Helvetica-Bold')
-            .text('SWAGAT GROUP OF INSTITUTIONS', 50, 30, { align: 'center' });
+            .fillColor('#1f2937')
+            .text('Student Application Form', 50, 50, { align: 'center' });
 
-        this.doc.fontSize(14)
-            .text('Student Application Form', 50, 60, { align: 'center' });
-
-        // Application ID and Date
-        this.doc.fontSize(10)
-            .text(`Application ID: ${Date.now().toString().slice(-8)}`, 50, 80)
-            .text(`Date: ${new Date().toLocaleDateString('en-IN')}`, 450, 80);
-
-        // Move to content area
-        this.doc.y = 120;
-    }
-
-    generatePersonalDetails(personalDetails) {
-        this.doc.fillColor('#1e40af')
-            .fontSize(16)
-            .font('Helvetica-Bold')
-            .text('1. PERSONAL DETAILS', 50, this.doc.y + 10);
-
-        this.doc.strokeColor('#e5e7eb')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y + 5)
-            .lineTo(545, this.doc.y + 5)
-            .stroke();
-
-        this.doc.y += 20;
-
-        // Personal details in a table format
-        const personalData = [
-            ['Full Name', personalDetails.fullName || 'N/A'],
-            ['Father\'s Name', personalDetails.fathersName || 'N/A'],
-            ['Mother\'s Name', personalDetails.mothersName || 'N/A'],
-            ['Date of Birth', personalDetails.dateOfBirth || 'N/A'],
-            ['Gender', personalDetails.gender || 'N/A'],
-            ['Aadhaar Number', personalDetails.aadharNumber || 'N/A']
-        ];
-
-        this.generateTable(personalData, 50, this.doc.y);
-        this.doc.y += 20;
-    }
-
-    generateContactDetails(contactDetails) {
-        this.doc.fillColor('#1e40af')
-            .fontSize(16)
-            .font('Helvetica-Bold')
-            .text('2. CONTACT DETAILS', 50, this.doc.y + 10);
-
-        this.doc.strokeColor('#e5e7eb')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y + 5)
-            .lineTo(545, this.doc.y + 5)
-            .stroke();
-
-        this.doc.y += 20;
-
-        const contactData = [
-            ['Primary Phone', contactDetails.primaryPhone || 'N/A'],
-            ['WhatsApp Number', contactDetails.whatsappNumber || 'N/A'],
-            ['Email Address', contactDetails.email || 'N/A'],
-            ['Street Address', contactDetails.permanentAddress?.street || 'N/A'],
-            ['City', contactDetails.permanentAddress?.city || 'N/A'],
-            ['State', contactDetails.permanentAddress?.state || 'N/A'],
-            ['Pincode', contactDetails.permanentAddress?.pincode || 'N/A'],
-            ['Country', contactDetails.permanentAddress?.country || 'N/A']
-        ];
-
-        this.generateTable(contactData, 50, this.doc.y);
-        this.doc.y += 20;
-    }
-
-    generateCourseDetails(courseDetails) {
-        this.doc.fillColor('#1e40af')
-            .fontSize(16)
-            .font('Helvetica-Bold')
-            .text('3. COURSE DETAILS', 50, this.doc.y + 10);
-
-        this.doc.strokeColor('#e5e7eb')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y + 5)
-            .lineTo(545, this.doc.y + 5)
-            .stroke();
-
-        this.doc.y += 20;
-
-        const courseData = [
-            ['Selected Course', courseDetails.selectedCourse || 'N/A'],
-            ['Custom Course', courseDetails.customCourse || 'N/A'],
-            ['Stream/Subject', courseDetails.stream || 'N/A'],
-            ['Campus', courseDetails.campus || 'N/A'],
-            ['Referral Code', courseDetails.referralCode || 'N/A']
-        ];
-
-        this.generateTable(courseData, 50, this.doc.y);
-        this.doc.y += 20;
-    }
-
-    generateGuardianDetails(guardianDetails) {
-        this.doc.fillColor('#1e40af')
-            .fontSize(16)
-            .font('Helvetica-Bold')
-            .text('4. GUARDIAN DETAILS', 50, this.doc.y + 10);
-
-        this.doc.strokeColor('#e5e7eb')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y + 5)
-            .lineTo(545, this.doc.y + 5)
-            .stroke();
-
-        this.doc.y += 20;
-
-        const guardianData = [
-            ['Guardian Name', guardianDetails.guardianName || 'N/A'],
-            ['Relationship', guardianDetails.relationship || 'N/A'],
-            ['Guardian Phone', guardianDetails.guardianPhone || 'N/A'],
-            ['Guardian Email', guardianDetails.guardianEmail || 'N/A']
-        ];
-
-        this.generateTable(guardianData, 50, this.doc.y);
-        this.doc.y += 20;
-    }
-
-    generateDocumentsList(documents) {
-        this.doc.fillColor('#1e40af')
-            .fontSize(16)
-            .font('Helvetica-Bold')
-            .text('5. UPLOADED DOCUMENTS', 50, this.doc.y + 10);
-
-        this.doc.strokeColor('#e5e7eb')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y + 5)
-            .lineTo(545, this.doc.y + 5)
-            .stroke();
-
-        this.doc.y += 20;
-
-        if (documents && documents.length > 0) {
-            documents.forEach((doc, index) => {
-                this.doc.fillColor('#374151')
-                    .fontSize(12)
-                    .font('Helvetica')
-                    .text(`${index + 1}. ${doc.name || 'Document'}`, 50, this.doc.y);
-                this.doc.y += 15;
-            });
-        } else {
-            this.doc.fillColor('#6b7280')
-                .fontSize(12)
-                .font('Helvetica')
-                .text('No documents uploaded', 50, this.doc.y);
-            this.doc.y += 15;
-        }
-
-        this.doc.y += 10;
-    }
-
-    generateTermsAndConditions(termsAndConditions) {
-        // Check if we need a new page
-        if (this.doc.y > 700) {
-            this.doc.addPage();
-        }
-
-        this.doc.fillColor('#1e40af')
-            .fontSize(16)
-            .font('Helvetica-Bold')
-            .text('6. TERMS AND CONDITIONS', 50, this.doc.y + 10);
-
-        this.doc.strokeColor('#e5e7eb')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y + 5)
-            .lineTo(545, this.doc.y + 5)
-            .stroke();
-
-        this.doc.y += 20;
-
-        // Terms and conditions content
-        const terms = termsAndConditions || this.getDefaultTerms();
-
-        this.doc.fillColor('#374151')
-            .fontSize(10)
+        // Application ID
+        doc.fontSize(14)
             .font('Helvetica')
-            .text(terms, 50, this.doc.y, {
-                width: 495,
-                align: 'justify',
-                lineGap: 3
-            });
+            .fillColor('#6b7280')
+            .text(`Application ID: ${application.applicationId}`, 50, 100, { align: 'center' });
 
-        this.doc.y += 30;
+        // Status
+        doc.fontSize(12)
+            .fillColor(application.status === 'APPROVED' ? '#10b981' : '#f59e0b')
+            .text(`Status: ${application.status}`, 50, 120, { align: 'center' });
+
+        // Date
+        doc.fontSize(10)
+            .fillColor('#6b7280')
+            .text(`Submitted: ${new Date(application.submittedAt).toLocaleDateString()}`, 50, 140, { align: 'center' });
+
+        doc.moveDown(2);
+    }
+
+    addPersonalDetails(doc, application) {
+        const personalDetails = application.personalDetails || {};
+
+        doc.fontSize(16)
+            .font('Helvetica-Bold')
+            .fillColor('#1f2937')
+            .text('Personal Details', 50, doc.y);
+
+        doc.moveDown(0.5);
+
+        const personalFields = [
+            { label: 'Full Name', value: personalDetails.fullName || 'N/A' },
+            { label: 'Email', value: personalDetails.email || 'N/A' },
+            { label: 'Phone Number', value: personalDetails.phoneNumber || 'N/A' },
+            { label: 'Date of Birth', value: personalDetails.dateOfBirth ? new Date(personalDetails.dateOfBirth).toLocaleDateString() : 'N/A' },
+            { label: 'Gender', value: personalDetails.gender || 'N/A' },
+            { label: 'Aadhar Number', value: personalDetails.aadharNumber || 'N/A' },
+            { label: 'Address', value: personalDetails.address || 'N/A' }
+        ];
+
+        this.addFieldList(doc, personalFields);
+    }
+
+    addAcademicDetails(doc, application) {
+        const academicDetails = application.academicDetails || {};
+
+        doc.addPage();
+        doc.fontSize(16)
+            .font('Helvetica-Bold')
+            .fillColor('#1f2937')
+            .text('Academic Details', 50, 50);
+
+        doc.moveDown(0.5);
+
+        const academicFields = [
+            { label: 'Course Name', value: academicDetails.courseName || 'N/A' },
+            { label: 'Previous Institution', value: academicDetails.previousInstitution || 'N/A' },
+            { label: 'Previous Course', value: academicDetails.previousCourse || 'N/A' },
+            { label: 'Year of Passing', value: academicDetails.yearOfPassing || 'N/A' },
+            { label: 'Percentage/CGPA', value: academicDetails.percentage || 'N/A' }
+        ];
+
+        this.addFieldList(doc, academicFields);
+    }
+
+    addGuardianDetails(doc, application) {
+        const guardianDetails = application.guardianDetails || {};
+
+        doc.fontSize(16)
+            .font('Helvetica-Bold')
+            .fillColor('#1f2937')
+            .text('Guardian Details', 50, doc.y + 20);
+
+        doc.moveDown(0.5);
+
+        const guardianFields = [
+            { label: 'Guardian Name', value: guardianDetails.guardianName || 'N/A' },
+            { label: 'Guardian Phone', value: guardianDetails.guardianPhone || 'N/A' },
+            { label: 'Guardian Email', value: guardianDetails.guardianEmail || 'N/A' },
+            { label: 'Relationship', value: guardianDetails.relationship || 'N/A' },
+            { label: 'Guardian Address', value: guardianDetails.guardianAddress || 'N/A' }
+        ];
+
+        this.addFieldList(doc, guardianFields);
+    }
+
+    addFinancialDetails(doc, application) {
+        const financialDetails = application.financialDetails || {};
+
+        doc.fontSize(16)
+            .font('Helvetica-Bold')
+            .fillColor('#1f2937')
+            .text('Financial Details', 50, doc.y + 20);
+
+        doc.moveDown(0.5);
+
+        const financialFields = [
+            { label: 'Annual Income', value: financialDetails.annualIncome || 'N/A' },
+            { label: 'Payment Method', value: financialDetails.paymentMethod || 'N/A' },
+            { label: 'Scholarship Applied', value: financialDetails.scholarshipApplied ? 'Yes' : 'No' },
+            { label: 'Scholarship Details', value: financialDetails.scholarshipDetails || 'N/A' }
+        ];
+
+        this.addFieldList(doc, financialFields);
+    }
+
+    addDocumentsSection(doc, application) {
+        doc.fontSize(16)
+            .font('Helvetica-Bold')
+            .fillColor('#1f2937')
+            .text('Uploaded Documents', 50, doc.y + 20);
+
+        doc.moveDown(0.5);
+
+        const documents = application.documents || {};
+        const documentList = [
+            { name: 'Aadhar Card', status: documents.aadharCard ? 'Uploaded' : 'Not Uploaded' },
+            { name: 'Passport Photo', status: documents.passportPhoto ? 'Uploaded' : 'Not Uploaded' },
+            { name: '10th Marksheet', status: documents.tenthMarksheet ? 'Uploaded' : 'Not Uploaded' },
+            { name: '12th Marksheet', status: documents.twelfthMarksheet ? 'Uploaded' : 'Not Uploaded' },
+            { name: 'Migration Certificate', status: documents.migrationCertificate ? 'Uploaded' : 'Not Uploaded' },
+            { name: 'Character Certificate', status: documents.characterCertificate ? 'Uploaded' : 'Not Uploaded' }
+        ];
+
+        documentList.forEach(docItem => {
+            doc.fontSize(12)
+                .font('Helvetica')
+                .fillColor('#374151')
+                .text(`• ${docItem.name}: `, 70, doc.y);
+
+            doc.fillColor(docItem.status === 'Uploaded' ? '#10b981' : '#ef4444')
+                .text(docItem.status, doc.x, doc.y);
+
+            doc.moveDown(0.3);
+        });
+    }
+
+    addTermsAndConditions(doc) {
+        doc.addPage();
+        doc.fontSize(16)
+            .font('Helvetica-Bold')
+            .fillColor('#1f2937')
+            .text('Terms and Conditions', 50, 50);
+
+        doc.moveDown(0.5);
+
+        const terms = [
+            '1. All information provided in this application is true and accurate to the best of my knowledge.',
+            '2. I understand that providing false information may result in rejection of my application.',
+            '3. I agree to abide by the rules and regulations of the institution.',
+            '4. I understand that the institution reserves the right to verify all submitted documents.',
+            '5. I consent to the processing of my personal data for admission purposes.',
+            '6. I understand that admission is subject to availability of seats and meeting eligibility criteria.',
+            '7. I agree to pay all applicable fees as per the institution\'s fee structure.',
+            '8. I understand that this application does not guarantee admission.'
+        ];
+
+        terms.forEach(term => {
+            doc.fontSize(10)
+                .font('Helvetica')
+                .fillColor('#374151')
+                .text(term, 50, doc.y, { width: 500 });
+            doc.moveDown(0.3);
+        });
 
         // Signature section
-        this.doc.fillColor('#1e40af')
-            .fontSize(12)
-            .font('Helvetica-Bold')
-            .text('DECLARATION', 50, this.doc.y);
+        doc.moveDown(2);
+        doc.text('Student Signature: _________________', 50, doc.y);
+        doc.text('Date: _________________', 300, doc.y);
+        doc.moveDown(1);
+        doc.text('Guardian Signature: _________________', 50, doc.y);
+        doc.text('Date: _________________', 300, doc.y);
+    }
 
-        this.doc.y += 10;
+    addFieldList(doc, fields) {
+        fields.forEach(field => {
+            doc.fontSize(12)
+                .font('Helvetica-Bold')
+                .fillColor('#374151')
+                .text(`${field.label}:`, 70, doc.y);
 
-        this.doc.fillColor('#374151')
-            .fontSize(10)
-            .font('Helvetica')
-            .text('I hereby declare that all the information provided above is true and correct to the best of my knowledge. I understand that any false information may result in the rejection of my application.', 50, this.doc.y, {
-                width: 495,
-                align: 'justify'
+            doc.font('Helvetica')
+                .fillColor('#6b7280')
+                .text(field.value, 200, doc.y);
+
+            doc.moveDown(0.4);
+        });
+    }
+
+    async generateDocumentsZIP(application) {
+        try {
+            const fileName = `application_${application.applicationId}_documents.zip`;
+            const filePath = path.join(this.outputDir, fileName);
+
+            const output = fs.createWriteStream(filePath);
+            const archive = archiver('zip', { zlib: { level: 9 } });
+
+            return new Promise((resolve, reject) => {
+                output.on('close', () => {
+                    resolve({
+                        fileName,
+                        filePath,
+                        url: `/api/files/download/${fileName}`,
+                        size: archive.pointer()
+                    });
+                });
+
+                archive.on('error', reject);
+                archive.pipe(output);
+
+                // Add individual documents
+                const documents = application.documents || {};
+                Object.entries(documents).forEach(([key, doc]) => {
+                    if (doc && doc.url) {
+                        const fileName = `${key}_${application.applicationId}.${doc.fileType || 'pdf'}`;
+                        archive.file(doc.url, { name: fileName });
+                    }
+                });
+
+                // Add application PDF if exists
+                if (application.applicationPdfUrl) {
+                    archive.file(application.applicationPdfUrl, { name: `application_${application.applicationId}.pdf` });
+                }
+
+                archive.finalize();
             });
 
-        this.doc.y += 30;
-
-        // Signature lines
-        this.doc.strokeColor('#000000')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y)
-            .lineTo(200, this.doc.y)
-            .stroke();
-
-        this.doc.fillColor('#374151')
-            .fontSize(10)
-            .font('Helvetica')
-            .text('Student Signature', 50, this.doc.y + 5);
-
-        this.doc.strokeColor('#000000')
-            .lineWidth(1)
-            .moveTo(350, this.doc.y - 5)
-            .lineTo(500, this.doc.y - 5)
-            .stroke();
-
-        this.doc.fillColor('#374151')
-            .fontSize(10)
-            .font('Helvetica')
-            .text('Date', 350, this.doc.y);
-
-        this.doc.y += 30;
-
-        this.doc.strokeColor('#000000')
-            .lineWidth(1)
-            .moveTo(50, this.doc.y)
-            .lineTo(200, this.doc.y)
-            .stroke();
-
-        this.doc.fillColor('#374151')
-            .fontSize(10)
-            .font('Helvetica')
-            .text('Parent/Guardian Signature', 50, this.doc.y + 5);
-
-        this.doc.strokeColor('#000000')
-            .lineWidth(1)
-            .moveTo(350, this.doc.y - 5)
-            .lineTo(500, this.doc.y - 5)
-            .stroke();
-
-        this.doc.fillColor('#374151')
-            .fontSize(10)
-            .font('Helvetica')
-            .text('Date', 350, this.doc.y);
-    }
-
-    generateTable(data, x, y) {
-        const rowHeight = 20;
-        const col1Width = 150;
-        const col2Width = 345;
-
-        data.forEach((row, index) => {
-            const currentY = y + (index * rowHeight);
-
-            // Draw cell borders
-            this.doc.rect(x, currentY, col1Width, rowHeight)
-                .fill('#f8fafc')
-                .stroke('#e5e7eb');
-
-            this.doc.rect(x + col1Width, currentY, col2Width, rowHeight)
-                .fill('#ffffff')
-                .stroke('#e5e7eb');
-
-            // Add text
-            this.doc.fillColor('#374151')
-                .fontSize(10)
-                .font('Helvetica-Bold')
-                .text(row[0], x + 5, currentY + 5, { width: col1Width - 10 });
-
-            this.doc.fillColor('#6b7280')
-                .fontSize(10)
-                .font('Helvetica')
-                .text(row[1], x + col1Width + 5, currentY + 5, { width: col2Width - 10 });
-        });
-
-        this.doc.y = y + (data.length * rowHeight) + 10;
-    }
-
-    generateFooter() {
-        const pageHeight = this.doc.page.height;
-
-        this.doc.fillColor('#f3f4f6')
-            .rect(0, pageHeight - 50, 595, 50)
-            .fill();
-
-        this.doc.fillColor('#6b7280')
-            .fontSize(8)
-            .font('Helvetica')
-            .text('This document is computer generated and does not require a signature.', 50, pageHeight - 35, { align: 'center' });
-
-        this.doc.text('© 2024 Swagat Group of Institutions. All rights reserved.', 50, pageHeight - 20, { align: 'center' });
-    }
-
-    getDefaultTerms() {
-        return `
-1. ELIGIBILITY: The applicant must meet all the eligibility criteria as specified for the chosen course.
-
-2. DOCUMENTATION: All required documents must be submitted in original or certified copies. Any false or misleading information will result in immediate rejection.
-
-3. ADMISSION PROCESS: Admission is subject to verification of documents, payment of fees, and availability of seats. The institution reserves the right to reject any application without assigning reasons.
-
-4. FEE STRUCTURE: The fee structure is as per the current academic year. Fees are subject to revision as per institutional policy. All fees must be paid within the stipulated time.
-
-5. REFUND POLICY: Refund of fees will be as per the institutional refund policy. No refund will be made after the commencement of classes.
-
-6. CODE OF CONDUCT: Students must adhere to the institutional code of conduct and disciplinary rules. Violation may result in disciplinary action including expulsion.
-
-7. ATTENDANCE: Minimum 75% attendance is mandatory for all courses. Students failing to meet attendance requirements may not be allowed to appear for examinations.
-
-8. EXAMINATION: Students must appear for all examinations as per the academic calendar. Malpractice in examinations will result in severe disciplinary action.
-
-9. CERTIFICATE: Certificates will be issued only after successful completion of the course and fulfillment of all academic requirements.
-
-10. AMENDMENTS: The institution reserves the right to amend these terms and conditions at any time. Students will be informed of any changes.
-
-11. JURISDICTION: All disputes will be subject to the jurisdiction of the courts in Odisha, India.
-
-12. FORCE MAJEURE: The institution shall not be liable for any delay or failure in performance due to circumstances beyond its control.
-
-By signing this application, I acknowledge that I have read, understood, and agree to abide by all the terms and conditions mentioned above.
-        `;
+        } catch (error) {
+            console.error('Error generating documents ZIP:', error);
+            throw error;
+        }
     }
 }
 
-module.exports = PDFGenerator;
+module.exports = new PDFGenerator();

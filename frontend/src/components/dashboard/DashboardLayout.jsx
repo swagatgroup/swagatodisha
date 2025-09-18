@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -63,8 +63,16 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                         {/* Left side - Logo and Menu Button */}
                         <div className="flex items-center">
                             <button
-                                onClick={() => setSidebarOpen(!sidebarOpen)}
+                                onClick={() => {
+                                    console.log('Hamburger clicked, current state:', sidebarOpen);
+                                    setSidebarOpen(!sidebarOpen);
+                                }}
                                 className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+                                style={{
+                                    display: 'block',
+                                    visibility: 'visible',
+                                    opacity: 1
+                                }}
                             >
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -92,6 +100,9 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                 >
                                     ← Main Website
                                 </Link>
+                                <span className="ml-2 text-xs text-gray-400">
+                                    {sidebarOpen ? 'Menu Open' : 'Menu Closed'}
+                                </span>
                             </div>
                         </div>
 
@@ -147,7 +158,22 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
             </nav>
 
             <div className="flex">
-                {/* Sidebar */}
+                {/* Mobile Sidebar Overlay */}
+                <AnimatePresence>
+                    {sidebarOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className="fixed inset-0 z-30 bg-gray-600 bg-opacity-75 lg:hidden"
+                            style={{ zIndex: 30 }}
+                            onClick={() => setSidebarOpen(false)}
+                        />
+                    )}
+                </AnimatePresence>
+
+                {/* Mobile Sidebar */}
                 <AnimatePresence>
                     {sidebarOpen && (
                         <motion.div
@@ -156,6 +182,16 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             exit={{ x: -300 }}
                             transition={{ duration: 0.3 }}
                             className="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-lg lg:hidden"
+                            style={{
+                                zIndex: 40,
+                                position: 'fixed',
+                                top: 0,
+                                left: 0,
+                                height: '100vh',
+                                width: '16rem'
+                            }}
+                            onAnimationStart={() => console.log('Sidebar animation started')}
+                            onAnimationComplete={() => console.log('Sidebar animation completed')}
                         >
                             <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200 dark:border-gray-700">
                                 <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Menu</span>
@@ -168,28 +204,30 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     </svg>
                                 </button>
                             </div>
-                            <nav className="mt-5 px-2">
-                                {sidebarItems.map((item) => (
-                                    <button
-                                        key={item.name}
-                                        onClick={() => {
-                                            if (onItemClick) {
-                                                onItemClick(item.id);
-                                            } else if (item.href) {
-                                                navigate(item.href);
-                                            }
-                                            setSidebarOpen(false);
-                                        }}
-                                        className={`group flex items-center w-full px-2 py-2 text-base font-medium rounded-md ${activeItem === item.id
-                                            ? 'bg-purple-100 dark:bg-purple-900 text-purple-900 dark:text-purple-100'
-                                            : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
-                                            }`}
-                                    >
-                                        {item.icon}
-                                        {item.name}
-                                    </button>
-                                ))}
-                            </nav>
+                            <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
+                                <nav className="mt-5 flex-1 px-2 space-y-1">
+                                    {sidebarItems.map((item) => (
+                                        <button
+                                            key={item.name}
+                                            onClick={() => {
+                                                if (onItemClick) {
+                                                    onItemClick(item.id);
+                                                } else if (item.href) {
+                                                    navigate(item.href);
+                                                }
+                                                setSidebarOpen(false);
+                                            }}
+                                            className={`group flex items-center w-full px-2 py-2 text-base font-medium rounded-md ${activeItem === item.id
+                                                ? 'bg-purple-100 dark:bg-purple-900 text-purple-900 dark:text-purple-100'
+                                                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
+                                                }`}
+                                        >
+                                            {item.icon}
+                                            {item.name}
+                                        </button>
+                                    ))}
+                                </nav>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -237,17 +275,6 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                     </main>
                 </div>
             </div>
-
-            {/* Mobile overlay */}
-            {sidebarOpen && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-30 bg-gray-600 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 lg:hidden"
-                    onClick={() => setSidebarOpen(false)}
-                />
-            )}
         </div>
     );
 };

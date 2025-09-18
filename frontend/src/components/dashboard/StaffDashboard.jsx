@@ -8,6 +8,7 @@ import DocumentVerification from './tabs/DocumentVerification';
 import ContentManagement from './tabs/ContentManagement';
 import AgentManagement from './tabs/AgentManagement';
 import StaffApplicationsReview from './tabs/StaffApplicationsReview';
+import ApplicationReview from './tabs/ApplicationReview';
 import RealTimeStudentTracking from './tabs/RealTimeStudentTracking';
 import StudentTable from './components/StudentTable';
 import ProcessingStats from './components/ProcessingStats';
@@ -210,7 +211,7 @@ const EnhancedStaffDashboard = () => {
             case 'verification':
                 return <DocumentVerification onStudentUpdate={handleStudentUpdate} />;
             case 'applications':
-                return <StaffApplicationsReview />;
+                return <ApplicationReview />;
             case 'new-registration':
                 return <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />;
             case 'content':

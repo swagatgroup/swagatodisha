@@ -345,19 +345,66 @@ const submitApplication = async (req, res) => {
             await application.assignToAgent(application.referralInfo.referredBy);
         }
 
-        // Emit real-time update
-        req.socketManager.notifyApplicationSubmitted({
+        // Initialize review status
+        application.reviewStatus = {
+            documentsVerified: false,
+            personalDetailsVerified: false,
+            academicDetailsVerified: false,
+            guardianDetailsVerified: false,
+            financialDetailsVerified: false,
+            overallApproved: false,
+            reviewedBy: null,
+            reviewedAt: null,
+            comments: []
+        };
+
+        await application.save();
+
+        // Update referral counts if applicable
+        if (application.referralInfo.referredBy) {
+            await User.findByIdAndUpdate(application.referralInfo.referredBy, {
+                $inc: { 'referralStats.totalReferrals': 1, 'referralStats.pendingReferrals': 1 }
+            });
+        }
+
+        // Emit real-time update to all relevant dashboards
+        const updateData = {
             applicationId: application.applicationId,
-            userId: req.user._id,
-            stage: application.currentStage,
+            studentName: application.personalDetails?.fullName,
+            studentEmail: application.personalDetails?.email,
+            submittedAt: application.submittedAt,
+            referredBy: application.referralInfo.referredBy,
             status: application.status,
             assignedAgent: application.assignedAgent
-        });
+        };
+
+        if (req.socketManager) {
+            // Notify staff and super admin
+            req.socketManager.emitToRole('staff', 'applicationSubmitted', updateData);
+            req.socketManager.emitToRole('super_admin', 'applicationSubmitted', updateData);
+
+            // Notify the referring agent if applicable
+            if (application.referralInfo.referredBy) {
+                req.socketManager.emitToUser(application.referralInfo.referredBy, 'referralSubmitted', updateData);
+            }
+
+            // Notify the student
+            req.socketManager.emitToUser(req.user._id, 'applicationStatusUpdate', {
+                applicationId: application.applicationId,
+                status: application.status,
+                message: 'Your application has been submitted successfully and is under review.'
+            });
+        }
 
         res.status(200).json({
             success: true,
             message: 'Application submitted successfully',
-            data: application
+            data: {
+                applicationId: application.applicationId,
+                status: application.status,
+                submittedAt: application.submittedAt,
+                nextSteps: 'Your application is now under review. You will be notified of any updates.'
+            }
         });
 
     } catch (error) {
@@ -731,6 +778,286 @@ const getWorkflowStats = async (req, res) => {
     }
 };
 
+// Get submitted applications for review
+const getSubmittedApplications = async (req, res) => {
+    try {
+        console.log('=== GET SUBMITTED APPLICATIONS ===');
+        console.log('Query params:', req.query);
+        console.log('User:', req.user);
+
+        const { status = 'SUBMITTED', page = 1, limit = 20 } = req.query;
+        const userRole = req.user.role;
+
+        let query = { status };
+
+        // Filter based on user role
+        if (userRole === 'agent') {
+            query.assignedAgent = req.user._id;
+        } else if (userRole === 'staff') {
+            // Staff can see all applications
+            // query.assignedStaff = req.user._id; // Commented out to show all applications
+        }
+
+        console.log('Query:', query);
+
+        const applications = await StudentApplication.find(query)
+            .populate('user', 'fullName email phoneNumber')
+            .populate('assignedAgent', 'fullName email phoneNumber')
+            .populate('assignedStaff', 'fullName email phoneNumber')
+            .sort({ submittedAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+
+        const total = await StudentApplication.countDocuments(query);
+
+        console.log('Found applications:', applications.length);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                applications,
+                pagination: {
+                    current: parseInt(page),
+                    pages: Math.ceil(total / limit),
+                    total
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Get submitted applications error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get submitted applications',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Verify documents step by step
+const verifyDocuments = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        const { verificationType, isVerified, comments } = req.body;
+
+        const application = await StudentApplication.findOne({ applicationId });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        if (!application.reviewStatus) {
+            application.reviewStatus = {
+                documentsVerified: false,
+                personalDetailsVerified: false,
+                academicDetailsVerified: false,
+                guardianDetailsVerified: false,
+                financialDetailsVerified: false,
+                overallApproved: false,
+                reviewedBy: null,
+                reviewedAt: null,
+                comments: []
+            };
+        }
+
+        // Update specific verification type
+        application.reviewStatus[verificationType] = isVerified;
+        application.reviewStatus.reviewedBy = req.user._id;
+        application.reviewStatus.reviewedAt = new Date();
+
+        if (comments) {
+            application.reviewStatus.comments.push({
+                type: verificationType,
+                comment: comments,
+                reviewedBy: req.user._id,
+                reviewedAt: new Date()
+            });
+        }
+
+        // Check if all verifications are complete
+        const allVerified = application.reviewStatus.documentsVerified &&
+            application.reviewStatus.personalDetailsVerified &&
+            application.reviewStatus.academicDetailsVerified &&
+            application.reviewStatus.guardianDetailsVerified &&
+            application.reviewStatus.financialDetailsVerified;
+
+        if (allVerified) {
+            application.reviewStatus.overallApproved = true;
+            application.status = 'APPROVED';
+            application.currentStage = 'APPROVED';
+        }
+
+        await application.save();
+
+        // Emit real-time update
+        if (req.socketManager) {
+            req.socketManager.emitToRole('staff', 'applicationVerified', {
+                applicationId: application.applicationId,
+                verificationType,
+                isVerified,
+                overallApproved: application.reviewStatus.overallApproved,
+                reviewedBy: req.user._id
+            });
+
+            req.socketManager.emitToRole('super_admin', 'applicationVerified', {
+                applicationId: application.applicationId,
+                verificationType,
+                isVerified,
+                overallApproved: application.reviewStatus.overallApproved,
+                reviewedBy: req.user._id
+            });
+
+            // Notify the student
+            req.socketManager.emitToUser(application.user, 'applicationStatusUpdate', {
+                applicationId: application.applicationId,
+                status: application.status,
+                message: `Your ${verificationType.replace(/([A-Z])/g, ' $1').toLowerCase()} has been ${isVerified ? 'verified' : 'rejected'}.`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `${verificationType.replace(/([A-Z])/g, ' $1').toLowerCase()} ${isVerified ? 'verified' : 'rejected'} successfully`,
+            data: {
+                applicationId: application.applicationId,
+                verificationType,
+                isVerified,
+                overallApproved: application.reviewStatus.overallApproved,
+                status: application.status
+            }
+        });
+
+    } catch (error) {
+        console.error('Verify documents error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to verify documents',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Generate combined PDF of all documents
+const generateCombinedPDF = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+
+        const application = await StudentApplication.findOne({ applicationId })
+            .populate('user', 'fullName email phoneNumber');
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        const PDFGenerator = require('../utils/pdfGenerator');
+        const result = await PDFGenerator.generateCombinedPDF(application);
+
+        // Update application with PDF URL
+        application.combinedPdfUrl = result.url;
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Combined PDF generated successfully',
+            data: {
+                applicationId: application.applicationId,
+                pdfUrl: result.url,
+                fileName: result.fileName,
+                status: 'completed'
+            }
+        });
+
+    } catch (error) {
+        console.error('Generate combined PDF error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to generate combined PDF',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Generate ZIP file of all documents
+const generateDocumentsZIP = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+
+        const application = await StudentApplication.findOne({ applicationId });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        const PDFGenerator = require('../utils/pdfGenerator');
+        const result = await PDFGenerator.generateDocumentsZIP(application);
+
+        // Update application with ZIP URL
+        application.documentsZipUrl = result.url;
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Documents ZIP generated successfully',
+            data: {
+                applicationId: application.applicationId,
+                zipUrl: result.url,
+                fileName: result.fileName,
+                size: result.size,
+                status: 'completed'
+            }
+        });
+
+    } catch (error) {
+        console.error('Generate documents ZIP error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to generate documents ZIP',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Get application review details
+const getApplicationReview = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+
+        const application = await StudentApplication.findOne({ applicationId })
+            .populate('user', 'fullName email phoneNumber')
+            .populate('assignedAgent', 'fullName email phoneNumber')
+            .populate('assignedStaff', 'fullName email phoneNumber');
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: application
+        });
+
+    } catch (error) {
+        console.error('Get application review error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get application review',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 module.exports = {
     createApplication,
     getApplication,
@@ -742,5 +1069,10 @@ module.exports = {
     getApplicationsByStatus,
     approveApplication,
     rejectApplication,
-    getWorkflowStats
+    getWorkflowStats,
+    getSubmittedApplications,
+    verifyDocuments,
+    generateCombinedPDF,
+    generateDocumentsZIP,
+    getApplicationReview
 };

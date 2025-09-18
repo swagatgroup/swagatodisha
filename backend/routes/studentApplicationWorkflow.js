@@ -12,7 +12,12 @@ const {
     getApplicationsByStatus,
     approveApplication,
     rejectApplication,
-    getWorkflowStats
+    getWorkflowStats,
+    getSubmittedApplications,
+    verifyDocuments,
+    generateCombinedPDF,
+    generateDocumentsZIP,
+    getApplicationReview
 } = require('../controllers/studentApplicationWorkflowController');
 
 // Student routes
@@ -26,8 +31,13 @@ router.get('/:applicationId/download-pdf', protect, downloadApplicationPDF);
 
 // Staff/Admin routes
 router.get('/applications', protect, getApplicationsByStatus);
+router.get('/submitted', protect, getSubmittedApplications);
+router.get('/:applicationId/review', protect, getApplicationReview);
+router.put('/:applicationId/verify', protect, verifyDocuments);
 router.put('/:applicationId/approve', protect, approveApplication);
 router.put('/:applicationId/reject', protect, rejectApplication);
+router.post('/:applicationId/combined-pdf', protect, generateCombinedPDF);
+router.post('/:applicationId/documents-zip', protect, generateDocumentsZIP);
 router.get('/stats', protect, getWorkflowStats);
 
 module.exports = router;
