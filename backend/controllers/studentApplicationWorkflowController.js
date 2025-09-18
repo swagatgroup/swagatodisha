@@ -543,7 +543,8 @@ const getApplicationsByStatus = async (req, res) => {
         if (userRole === 'agent') {
             query.assignedAgent = req.user._id;
         } else if (userRole === 'staff') {
-            query.assignedStaff = req.user._id;
+            // Staff can see all applications, not just assigned ones
+            // query.assignedStaff = req.user._id; // Commented out to show all applications
         }
 
         if (status) {

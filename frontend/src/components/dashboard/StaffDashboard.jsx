@@ -4,7 +4,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import StudentRegistration from './tabs/StudentRegistration';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
-import StudentManagement from './tabs/StudentManagement';
 import DocumentVerification from './tabs/DocumentVerification';
 import ContentManagement from './tabs/ContentManagement';
 import AgentManagement from './tabs/AgentManagement';
@@ -53,15 +52,6 @@ const EnhancedStaffDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-            )
-        },
-        {
-            id: 'students',
-            name: 'Student Processing',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                 </svg>
             )
         },
@@ -184,15 +174,6 @@ const EnhancedStaffDashboard = () => {
                                     <span className="text-gray-600 font-medium">Manage Content</span>
                                 </button>
 
-                                <button
-                                    onClick={() => setActiveTab('students')}
-                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200"
-                                >
-                                    <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                                    </svg>
-                                    <span className="text-gray-600 font-medium">Process Students</span>
-                                </button>
 
                                 <button
                                     onClick={() => setActiveTab('applications')}
@@ -226,8 +207,6 @@ const EnhancedStaffDashboard = () => {
                         </motion.div>
                     </>
                 );
-            case 'students':
-                return <StudentManagement onStudentUpdate={handleStudentUpdate} />;
             case 'verification':
                 return <DocumentVerification onStudentUpdate={handleStudentUpdate} />;
             case 'applications':
