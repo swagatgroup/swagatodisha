@@ -4,7 +4,6 @@ const User = require('../models/User');
 // Get student applications
 const getStudentApplications = async (req, res) => {
     try {
-        console.log('Getting applications for student:', req.user._id);
 
         const { status, page = 1, limit = 20 } = req.query;
         const studentId = req.user._id;

@@ -290,10 +290,6 @@ const cmsRoutes = require('./routes/cms');
 
 // Redis Application Routes (fallback endpoints for regular server)
 app.post('/api/redis/application/create', protect, async (req, res) => {
-    console.log('=== REDIS APPLICATION CREATE (FALLBACK) ===');
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
-    console.log('User:', req.user);
 
     try {
         // Check if user is authenticated
@@ -351,13 +347,11 @@ app.post('/api/redis/application/create', protect, async (req, res) => {
             applicationData.applicationId = `APP${year}${random}`;
         }
 
-        console.log('Creating application with data:', JSON.stringify(applicationData, null, 2));
 
         const application = new StudentApplication(applicationData);
         await application.save();
         await application.populate('user', 'fullName email phoneNumber');
 
-        console.log('Application saved successfully:', application);
 
         // Simulate Redis workflow response
         const submissionId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
@@ -462,13 +456,11 @@ app.post('/api/student-application/create', protect, async (req, res) => {
             }
         };
 
-        console.log('Creating application with data:', JSON.stringify(applicationData, null, 2));
 
         const application = new StudentApplication(applicationData);
         await application.save();
         await application.populate('user', 'fullName email phoneNumber');
 
-        console.log('Application saved successfully:', application);
 
         res.status(201).json({
             success: true,
