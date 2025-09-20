@@ -107,10 +107,11 @@ const EnhancedAgentDashboard = () => {
     try {
       setLoading(true);
       const [studentsRes, statsRes] = await Promise.all([
-        api.get("/api/agents/students"),
+        api.get("/api/agents/my-students"),
         api.get("/api/agents/stats"),
       ]);
-      console.log(studentsRes.data.data);
+
+      console.log("Students response:", studentsRes.data);
       if (studentsRes.data.success) {
         const list =
           studentsRes.data.data?.students ?? studentsRes.data.data ?? [];

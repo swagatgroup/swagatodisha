@@ -9,70 +9,128 @@ const Payment = require("../models/Payment");
 // All routes are protected
 router.use(protect);
 
-// Get students assigned to agent (alias for my-students)
-router.get("/my-students", async (req, res) => {
+// Debug endpoint to check agent data
+router.get("/debug", async (req, res) => {
   try {
-    const { page = 1, limit = 20, status, search } = req.query;
+    const agentId = req.user._id;
+    console.log("Debug - Agent ID:", agentId);
 
-    // Prefer applications assigned to this agent (new workflow)
-    const appQuery = {
-      $or: [
-        { assignedAgent: req.user._id },
-        { "referralInfo.referredBy": req.user._id },
-      ],
-    };
-    if (status && status !== "all") {
-      appQuery.status = status.toUpperCase();
-    }
-    if (search) {
-      appQuery.$or = [
-        { "personalDetails.fullName": { $regex: search, $options: "i" } },
-        { "personalDetails.aadharNumber": { $regex: search, $options: "i" } },
-        { applicationId: { $regex: search, $options: "i" } },
-      ];
-    }
+    // Check StudentApplication model
+    const allApplications = await StudentApplication.find({}).limit(5);
+    const agentApplications = await StudentApplication.find({
+      $or: [{ assignedAgent: agentId }, { "referralInfo.referredBy": agentId }],
+    });
 
-    const applications = await StudentApplication.find(appQuery)
+    // Check Student model
+    const allStudents = await Student.find({}).limit(5);
+    const agentStudents = await Student.find({
+      "workflowStatus.assignedAgent": agentId,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        agentId,
+        totalApplications: await StudentApplication.countDocuments({}),
+        agentApplications: agentApplications.length,
+        totalStudents: await Student.countDocuments({}),
+        agentStudents: agentStudents.length,
+        sampleApplications: allApplications.map((app) => ({
+          id: app._id,
+          assignedAgent: app.assignedAgent,
+          referredBy: app.referralInfo?.referredBy,
+          status: app.status,
+          fullName: app.personalDetails?.fullName,
+        })),
+        sampleStudents: allStudents.map((student) => ({
+          id: student._id,
+          assignedAgent: student.workflowStatus?.assignedAgent,
+          status: student.workflowStatus?.currentStage,
+          fullName: student.personalDetails?.fullName,
+        })),
+      },
+    });
+  } catch (error) {
+    console.error("Debug error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Debug failed",
+      error: error.message,
+    });
+  }
+});
+
+// Get ALL student applications (for debugging)
+router.get("/all-applications", async (req, res) => {
+  try {
+    const { page = 1, limit = 50 } = req.query;
+
+    const allApplications = await StudentApplication.find({})
       .populate("user", "fullName email phoneNumber")
+      .populate("assignedAgent", "fullName email")
+      .populate("referralInfo.referredBy", "fullName email")
       .sort({ createdAt: -1 })
       .limit(limit * 1)
       .skip((page - 1) * limit);
-    const totalApps = await StudentApplication.countDocuments(appQuery);
 
-    // If no applications found, fallback to legacy students assignment
-    let resultList = applications;
-    let total = totalApps;
-    if (!applications || applications.length === 0) {
-      let legacyQuery = { "workflowStatus.assignedAgent": req.user._id };
-      if (status && status !== "all") {
-        legacyQuery["workflowStatus.currentStage"] = status;
-      }
-      if (search) {
-        legacyQuery.$or = [
-          { "personalDetails.fullName": { $regex: search, $options: "i" } },
-          { studentId: { $regex: search, $options: "i" } },
-          { "personalDetails.aadharNumber": { $regex: search, $options: "i" } },
-        ];
-      }
-      const students = await Student.find(legacyQuery)
-        .populate("user", "fullName email phoneNumber")
-        .sort({ createdAt: -1 })
-        .limit(limit * 1)
-        .skip((page - 1) * limit);
-      const totalStudents = await Student.countDocuments(legacyQuery);
-      resultList = students;
-      total = totalStudents;
-    }
+    const total = await StudentApplication.countDocuments({});
+
+    res.json({
+      success: true,
+      data: {
+        applications: allApplications,
+        pagination: {
+          current: parseInt(page),
+          pages: Math.ceil(total / limit),
+          total: total,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Get all applications error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to get all applications",
+      error: error.message,
+    });
+  }
+});
+
+// Get students assigned to agent (alias for my-students)
+router.get("/my-students", async (req, res) => {
+  try {
+    const agentId = req.user._id;
+
+    console.log("Agent ID:", agentId);
+
+    // Get all applications and filter by agent referral
+    const allApplications = await StudentApplication.find({})
+      .populate("user", "fullName email phoneNumber")
+      .sort({ createdAt: -1 });
+
+    // Filter applications that have this agent in referral info
+    const filteredApplications = allApplications.filter((app) => {
+      // Check if agent is in referralInfo.referredBy
+      const referredBy = app.referralInfo?.referredBy;
+      const assignedAgent = app.assignedAgent;
+
+      return (
+        (referredBy && referredBy.toString() === agentId.toString()) ||
+        (assignedAgent && assignedAgent.toString() === agentId.toString())
+      );
+    });
+
+    console.log("Total all applications:", allApplications.length);
+    console.log(
+      "Filtered applications for agent:",
+      filteredApplications.length
+    );
 
     res.status(200).json({
       success: true,
       data: {
-        students: resultList,
-        pagination: {
-          current: parseInt(page),
-          pages: Math.ceil(total / limit),
-          total,
-        },
+        students: filteredApplications,
+        total: filteredApplications.length,
       },
     });
   } catch (error) {
@@ -91,70 +149,38 @@ router.get("/my-students", async (req, res) => {
 // Get students assigned to agent (original endpoint)
 router.get("/students", async (req, res) => {
   try {
-    const { page = 1, limit = 20, status, search } = req.query;
+    const agentId = req.user._id;
 
-    console.log("Agent ID:", req.user._id);
-    console.log("Agent role:", req.user.role);
+    console.log("Agent ID:", agentId);
 
-    // Prefer StudentApplication in new workflow
-    const appQuery = {
-      $or: [
-        { assignedAgent: req.user._id },
-        { "referralInfo.referredBy": req.user._id },
-      ],
-    };
-    if (status && status !== "all") {
-      appQuery.status = status.toUpperCase();
-    }
-    if (search) {
-      appQuery.$or = [
-        { "personalDetails.fullName": { $regex: search, $options: "i" } },
-        { "personalDetails.aadharNumber": { $regex: search, $options: "i" } },
-        { applicationId: { $regex: search, $options: "i" } },
-      ];
-    }
-
-    const applications = await StudentApplication.find(appQuery)
+    // Get all applications and filter by agent referral
+    const allApplications = await StudentApplication.find({})
       .populate("user", "fullName email phoneNumber")
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-    const totalApps = await StudentApplication.countDocuments(appQuery);
+      .sort({ createdAt: -1 });
 
+    // Filter applications that have this agent in referral info
+    const filteredApplications = allApplications.filter((app) => {
+      // Check if agent is in referralInfo.referredBy
+      const referredBy = app.referralInfo?.referredBy;
+      const assignedAgent = app.assignedAgent;
 
-    let resultList = applications;
-    let total = totalApps;
-    if (!applications || applications.length === 0) {
-      let legacyQuery = { "workflowStatus.assignedAgent": req.user._id };
-      if (status && status !== "all") {
-        legacyQuery["workflowStatus.currentStage"] = status;
-      }
-      if (search) {
-        legacyQuery.$or = [
-          { "personalDetails.fullName": { $regex: search, $options: "i" } },
-          { studentId: { $regex: search, $options: "i" } },
-          { "personalDetails.aadharNumber": { $regex: search, $options: "i" } },
-        ];
-      }
-      const students = await Student.find(legacyQuery)
-        .populate("user", "fullName email phoneNumber")
-        .sort({ createdAt: -1 })
-        .limit(limit * 1)
-        .skip((page - 1) * limit);
-      const totalStudents = await Student.countDocuments(legacyQuery);
-      resultList = students;
-      total = totalStudents;
-    }
+      return (
+        (referredBy && referredBy.toString() === agentId.toString()) ||
+        (assignedAgent && assignedAgent.toString() === agentId.toString())
+      );
+    });
+
+    console.log("Total all applications:", allApplications.length);
+    console.log(
+      "Filtered applications for agent:",
+      filteredApplications.length
+    );
 
     res.status(200).json({
       success: true,
       data: {
-        students: resultList,
-        pagination: {
-          current: parseInt(page),
-          pages: Math.ceil(total / limit),
-          total,
-        },
+        students: filteredApplications,
+        total: filteredApplications.length,
       },
     });
   } catch (error) {
@@ -297,7 +323,6 @@ router.get("/stats", async (req, res) => {
         $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
       },
     });
-
 
     res.status(200).json({
       success: true,
