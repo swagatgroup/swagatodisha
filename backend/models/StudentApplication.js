@@ -277,6 +277,18 @@ const studentApplicationSchema = new mongoose.Schema({
         }
     },
 
+    // Submitter Information - who actually submitted this application
+    submittedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    submitterRole: {
+        type: String,
+        enum: ['student', 'agent', 'staff', 'super_admin'],
+        required: true
+    },
+
     // Review Information
     reviewInfo: {
         reviewedBy: {
@@ -497,6 +509,13 @@ studentApplicationSchema.statics.getByStaff = function (staffId) {
     return this.find({ assignedStaff: staffId }).populate('user', 'fullName email phoneNumber');
 };
 
+studentApplicationSchema.statics.getBySubmitter = function (submitterId) {
+    return this.find({ submittedBy: submitterId })
+        .populate('user', 'fullName email phoneNumber')
+        .populate('submittedBy', 'fullName email')
+        .sort({ createdAt: -1 });
+};
+
 // Indexes
 studentApplicationSchema.index({ user: 1 });
 studentApplicationSchema.index({ applicationId: 1 }, { unique: true });
@@ -504,6 +523,8 @@ studentApplicationSchema.index({ status: 1 });
 studentApplicationSchema.index({ currentStage: 1 });
 studentApplicationSchema.index({ assignedAgent: 1 });
 studentApplicationSchema.index({ assignedStaff: 1 });
+studentApplicationSchema.index({ submittedBy: 1 });
+studentApplicationSchema.index({ submitterRole: 1 });
 studentApplicationSchema.index({ createdAt: -1 });
 studentApplicationSchema.index({ lastModified: -1 });
 

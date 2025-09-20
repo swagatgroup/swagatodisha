@@ -28,16 +28,18 @@ const createApplication = async (req, res) => {
       });
     }
 
-    // Check if user already has an application
-    const existingApplication = await StudentApplication.findOne({
-      user: req.user._id,
-    });
-    if (existingApplication) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "You already have an application. Please update the existing one.",
+    // Check if user already has an application (only for students)
+    if (req.user.role === 'student') {
+      const existingApplication = await StudentApplication.findOne({
+        user: req.user._id,
       });
+      if (existingApplication) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "You already have an application. Please update the existing one.",
+        });
+      }
     }
 
     // Check if Aadhar number is already used
@@ -80,6 +82,8 @@ const createApplication = async (req, res) => {
       guardianDetails,
       financialDetails,
       referralInfo,
+      submittedBy: req.user._id,
+      submitterRole: req.user.role || 'student',
       progress: {
         registrationComplete: true,
       },
@@ -134,10 +138,10 @@ const createApplication = async (req, res) => {
       details:
         process.env.NODE_ENV === "development"
           ? {
-              name: error.name,
-              code: error.code,
-              errors: error.errors,
-            }
+            name: error.name,
+            code: error.code,
+            errors: error.errors,
+          }
           : undefined,
     });
   }
@@ -501,9 +505,8 @@ const generateApplicationPDF = async (req, res) => {
 
     // Create PDF
     const doc = new PDFDocument();
-    const fileName = `application_${
-      application.applicationId
-    }_${Date.now()}.pdf`;
+    const fileName = `application_${application.applicationId
+      }_${Date.now()}.pdf`;
     const filePath = path.join(__dirname, "../uploads/processed", fileName);
 
     // Ensure directory exists
@@ -1012,9 +1015,8 @@ const verifyDocuments = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `${verificationType.replace(/([A-Z])/g, " $1").toLowerCase()} ${
-        isVerified ? "verified" : "rejected"
-      } successfully`,
+      message: `${verificationType.replace(/([A-Z])/g, " $1").toLowerCase()} ${isVerified ? "verified" : "rejected"
+        } successfully`,
       data: {
         applicationId: application.applicationId,
         verificationType,

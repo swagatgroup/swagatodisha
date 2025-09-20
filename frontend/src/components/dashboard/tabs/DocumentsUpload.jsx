@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../../utils/api';
 
@@ -79,24 +79,34 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
 
         try {
             setUploading(true);
-            const formData = new FormData();
 
-            Array.from(files).forEach((file, index) => {
-                formData.append(`files`, file);
+            // Process each file individually to ensure proper upload
+            const uploadPromises = Array.from(files).map(async (file) => {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('studentId', selectedStudent);
+                formData.append('category', category);
+                formData.append('type', type);
+
+                const response = await api.post('/api/documents/upload', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                return response.data;
             });
 
-            formData.append('studentId', selectedStudent);
-            formData.append('category', category);
-            formData.append('type', type);
+            // Wait for all uploads to complete
+            const results = await Promise.all(uploadPromises);
 
-            const response = await api.post('/api/documents/upload', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
+            // Check if all uploads were successful
+            const allSuccessful = results.every(result => result.success);
 
-            if (response.data.success) {
-                alert('Documents uploaded successfully!');
+            if (allSuccessful) {
+                alert(`${files.length} document(s) uploaded successfully!`);
                 loadDocuments();
                 onStudentUpdate();
+            } else {
+                alert('Some documents failed to upload. Please check and try again.');
             }
         } catch (error) {
             console.error('Error uploading documents:', error);
@@ -229,6 +239,8 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                             onChange={(e) => {
                                                 if (e.target.files.length > 0) {
                                                     handleFileUpload(category.id, type, e.target.files);
+                                                    // Clear the input after upload
+                                                    e.target.value = '';
                                                 }
                                             }}
                                             className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"

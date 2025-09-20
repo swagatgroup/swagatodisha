@@ -376,6 +376,8 @@ class WorkflowEngine {
       guardianDetails: applicationData.guardianDetails,
       financialDetails: applicationData.financialDetails || {},
       referralInfo,
+      submittedBy: applicationData.submittedBy || userId,
+      submitterRole: applicationData.submitterRole || 'student',
       status: "SUBMITTED",
       currentStage: "SUBMITTED",
       progress: {
@@ -553,8 +555,7 @@ class WorkflowEngine {
       Math.pow(retryPolicy.backoffMultiplier, retryCount);
 
     console.log(
-      `Retrying step ${step} in ${delay}ms (attempt ${
-        parseInt(retryCount) + 1
+      `Retrying step ${step} in ${delay}ms (attempt ${parseInt(retryCount) + 1
       })`
     );
 

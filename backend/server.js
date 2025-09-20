@@ -449,6 +449,8 @@ app.post('/api/student-application/create', protect, async (req, res) => {
             courseDetails: req.body.courseDetails || {},
             guardianDetails: req.body.guardianDetails || {},
             financialDetails: req.body.financialDetails || {},
+            submittedBy: req.user._id,
+            submitterRole: req.user.role || 'student',
             status: 'DRAFT',
             currentStage: 'REGISTRATION',
             progress: {

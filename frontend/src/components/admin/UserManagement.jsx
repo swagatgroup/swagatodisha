@@ -571,8 +571,9 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                     <input
                                         type="tel"
                                         value={editData.phone}
-                                        onChange={(e) => setEditData(prev => ({ ...prev, phone: e.target.value }))}
+                                        onChange={(e) => setEditData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        maxLength="10"
                                     />
                                 </div>
 

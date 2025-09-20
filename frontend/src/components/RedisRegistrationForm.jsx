@@ -436,9 +436,10 @@ const RedisRegistrationForm = ({ onStudentUpdate, userRole = 'student' }) => {
                                     value={formData.contactDetails.primaryPhone}
                                     onChange={(e) => handleInputChange('contactDetails', {
                                         ...formData.contactDetails,
-                                        primaryPhone: e.target.value
+                                        primaryPhone: e.target.value.replace(/\D/g, '').slice(0, 10)
                                     })}
                                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2"
+                                    maxLength="10"
                                 />
                                 {errors.primaryPhone && <p className="text-red-500 text-xs mt-1">{errors.primaryPhone}</p>}
                             </div>
@@ -464,8 +465,8 @@ const RedisRegistrationForm = ({ onStudentUpdate, userRole = 'student' }) => {
                                     {formData.documents[docType] && (
                                         <div className="mt-2">
                                             <span className={`text-xs px-2 py-1 rounded ${formData.documents[docType].status === 'completed' ? 'bg-green-100 text-green-800' :
-                                                    formData.documents[docType].status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-red-100 text-red-800'
+                                                formData.documents[docType].status === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-red-100 text-red-800'
                                                 }`}>
                                                 {formData.documents[docType].status}
                                             </span>
@@ -525,8 +526,8 @@ const RedisRegistrationForm = ({ onStudentUpdate, userRole = 'student' }) => {
                         {steps.map((step, index) => (
                             <div key={step.id} className="flex items-center">
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.id
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-200 text-gray-600'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-200 text-gray-600'
                                     }`}>
                                     {step.id}
                                 </div>

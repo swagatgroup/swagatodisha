@@ -211,10 +211,16 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                 <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
                                     <input
                                         type="file"
+                                        multiple
                                         accept={docType.allowedFormats.map(f => `.${f}`).join(',')}
                                         onChange={(e) => {
-                                            if (e.target.files && e.target.files[0]) {
-                                                handleFileUpload(docType.id, e.target.files[0]);
+                                            if (e.target.files && e.target.files.length > 0) {
+                                                // Handle multiple files
+                                                Array.from(e.target.files).forEach(file => {
+                                                    handleFileUpload(docType.id, file);
+                                                });
+                                                // Clear the input after upload
+                                                e.target.value = '';
                                             }
                                         }}
                                         className="hidden"
@@ -228,7 +234,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                         <div className="flex flex-col items-center">
                                             <CloudArrowUpIcon className="w-8 h-8 text-gray-400 mb-2" />
                                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                Click to upload or drag and drop
+                                                Click to upload multiple files or drag and drop
                                             </p>
                                             <p className="text-xs text-gray-500 mt-1">
                                                 {docType.allowedFormats.join(', ').toUpperCase()} up to {docType.maxSize}

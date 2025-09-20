@@ -96,102 +96,222 @@ router.get("/all-applications", async (req, res) => {
   }
 });
 
-// Get students assigned to agent (alias for my-students)
+// Get students assigned to agent (using StudentApplication model - temporary fix)
 router.get("/my-students", async (req, res) => {
   try {
     const agentId = req.user._id;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      status,
+      currentClass,
+      academicYear,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
 
     console.log("Agent ID:", agentId);
 
-    // Get all applications and filter by agent referral
-    const allApplications = await StudentApplication.find({})
-      .populate("user", "fullName email phoneNumber")
-      .sort({ createdAt: -1 });
+    // Import StudentApplication model (temporary fix)
+    const StudentApplication = require('../models/StudentApplication');
 
-    // Filter applications that have this agent in referral info
-    const filteredApplications = allApplications.filter((app) => {
-      // Check if agent is in referralInfo.referredBy
-      const referredBy = app.referralInfo?.referredBy;
-      const assignedAgent = app.assignedAgent;
+    // Build filter query - applications either referred by this agent or assigned to this agent
+    const filter = {
+      $or: [
+        { 'referralInfo.referredBy': agentId }, // Applications that used this agent's referral code
+        { 'assignedAgent': agentId } // Applications assigned to this agent
+      ]
+    };
 
-      return (
-        (referredBy && referredBy.toString() === agentId.toString()) ||
-        (assignedAgent && assignedAgent.toString() === agentId.toString())
-      );
-    });
+    // Add search filter
+    if (search) {
+      filter.$and = [
+        {
+          $or: [
+            { 'personalDetails.fullName': { $regex: search, $options: 'i' } },
+            { 'personalDetails.aadharNumber': { $regex: search, $options: 'i' } },
+            { 'contactDetails.primaryPhone': { $regex: search, $options: 'i' } },
+            { applicationId: { $regex: search, $options: 'i' } }
+          ]
+        }
+      ];
+    }
 
-    console.log("Total all applications:", allApplications.length);
-    console.log(
-      "Filtered applications for agent:",
-      filteredApplications.length
-    );
+    // Add status filter
+    if (status) filter.status = status;
+    if (currentClass) filter.currentClass = currentClass;
+    if (academicYear) filter.academicYear = academicYear;
+
+    // Build sort query
+    const sort = {};
+    sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute query with pagination
+    const applications = await StudentApplication.find(filter)
+      .populate('user', 'firstName lastName email phone')
+      .populate('referralInfo.referredBy', 'firstName lastName referralCode')
+      .populate('assignedAgent', 'firstName lastName referralCode')
+      .sort(sort)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
+
+    // Get total count for pagination
+    const total = await StudentApplication.countDocuments(filter);
+
+    // Transform data for frontend (convert StudentApplication to Student-like format)
+    const transformedStudents = applications.map(app => ({
+      _id: app._id,
+      applicationId: app.applicationId,
+      studentId: app.applicationId, // Use applicationId as studentId for now
+      personalDetails: app.personalDetails,
+      contactDetails: app.contactDetails,
+      courseDetails: app.courseDetails,
+      guardianDetails: app.guardianDetails,
+      status: app.status,
+      currentStage: app.currentStage,
+      referralInfo: app.referralInfo,
+      assignedAgent: app.assignedAgent,
+      user: app.user,
+      createdAt: app.createdAt,
+      updatedAt: app.updatedAt,
+      // Add relationship type for agent reference
+      relationshipType: app.referralInfo?.referredBy?.toString() === agentId.toString()
+        ? 'referral'
+        : 'assigned'
+    }));
+
+    console.log("Total applications for agent:", total);
+    console.log("Filtered applications:", transformedStudents.length);
 
     res.status(200).json({
       success: true,
       data: {
-        students: filteredApplications,
-        total: filteredApplications.length,
-      },
+        students: transformedStudents,
+        pagination: {
+          current: parseInt(page),
+          pages: Math.ceil(total / limit),
+          total
+        }
+      }
     });
   } catch (error) {
     console.error("Get agent students error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to get students",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
     });
   }
 });
 
-// Get students assigned to agent (original endpoint)
+// Get students assigned to agent (original endpoint - now uses StudentApplication model)
 router.get("/students", async (req, res) => {
   try {
     const agentId = req.user._id;
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      status,
+      currentClass,
+      academicYear,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = req.query;
 
     console.log("Agent ID:", agentId);
 
-    // Get all applications and filter by agent referral
-    const allApplications = await StudentApplication.find({})
-      .populate("user", "fullName email phoneNumber")
-      .sort({ createdAt: -1 });
+    // Import StudentApplication model (temporary fix)
+    const StudentApplication = require('../models/StudentApplication');
 
-    // Filter applications that have this agent in referral info
-    const filteredApplications = allApplications.filter((app) => {
-      // Check if agent is in referralInfo.referredBy
-      const referredBy = app.referralInfo?.referredBy;
-      const assignedAgent = app.assignedAgent;
+    // Build filter query - applications either referred by this agent or assigned to this agent
+    const filter = {
+      $or: [
+        { 'referralInfo.referredBy': agentId }, // Applications that used this agent's referral code
+        { 'assignedAgent': agentId } // Applications assigned to this agent
+      ]
+    };
 
-      return (
-        (referredBy && referredBy.toString() === agentId.toString()) ||
-        (assignedAgent && assignedAgent.toString() === agentId.toString())
-      );
-    });
+    // Add search filter
+    if (search) {
+      filter.$and = [
+        {
+          $or: [
+            { 'personalDetails.fullName': { $regex: search, $options: 'i' } },
+            { 'personalDetails.aadharNumber': { $regex: search, $options: 'i' } },
+            { 'contactDetails.primaryPhone': { $regex: search, $options: 'i' } },
+            { applicationId: { $regex: search, $options: 'i' } }
+          ]
+        }
+      ];
+    }
 
-    console.log("Total all applications:", allApplications.length);
-    console.log(
-      "Filtered applications for agent:",
-      filteredApplications.length
-    );
+    // Add status filter
+    if (status) filter.status = status;
+    if (currentClass) filter.currentClass = currentClass;
+    if (academicYear) filter.academicYear = academicYear;
+
+    // Build sort query
+    const sort = {};
+    sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
+
+    // Execute query with pagination
+    const applications = await StudentApplication.find(filter)
+      .populate('user', 'firstName lastName email phone')
+      .populate('referralInfo.referredBy', 'firstName lastName referralCode')
+      .populate('assignedAgent', 'firstName lastName referralCode')
+      .sort(sort)
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
+
+    // Get total count for pagination
+    const total = await StudentApplication.countDocuments(filter);
+
+    // Transform data for frontend (convert StudentApplication to Student-like format)
+    const transformedStudents = applications.map(app => ({
+      _id: app._id,
+      applicationId: app.applicationId,
+      studentId: app.applicationId, // Use applicationId as studentId for now
+      personalDetails: app.personalDetails,
+      contactDetails: app.contactDetails,
+      courseDetails: app.courseDetails,
+      guardianDetails: app.guardianDetails,
+      status: app.status,
+      currentStage: app.currentStage,
+      referralInfo: app.referralInfo,
+      assignedAgent: app.assignedAgent,
+      user: app.user,
+      createdAt: app.createdAt,
+      updatedAt: app.updatedAt,
+      // Add relationship type for agent reference
+      relationshipType: app.referralInfo?.referredBy?.toString() === agentId.toString()
+        ? 'referral'
+        : 'assigned'
+    }));
+
+    console.log("Total applications for agent:", total);
+    console.log("Filtered applications:", transformedStudents.length);
 
     res.status(200).json({
       success: true,
       data: {
-        students: filteredApplications,
-        total: filteredApplications.length,
-      },
+        students: transformedStudents,
+        pagination: {
+          current: parseInt(page),
+          pages: Math.ceil(total / limit),
+          total
+        }
+      }
     });
   } catch (error) {
     console.error("Get agent students error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to get students",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
+      error: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
     });
   }
 });
@@ -364,6 +484,145 @@ router.post("/bulk-import", async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to import students",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
+    });
+  }
+});
+
+// Submit application for a student (agent can submit multiple applications)
+router.post("/submit-application", async (req, res) => {
+  try {
+    const {
+      studentId,
+      personalDetails,
+      contactDetails,
+      courseDetails,
+      guardianDetails,
+      financialDetails = {},
+      referralCode,
+    } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Student ID is required",
+      });
+    }
+
+    // Check if student exists
+    const student = await User.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    // Handle referral code if provided
+    let referralInfo = {};
+    if (referralCode) {
+      const referrer = await User.findOne({ referralCode });
+      if (referrer) {
+        referralInfo = {
+          referredBy: referrer._id,
+          referralCode,
+          referralType: referrer.role,
+        };
+      }
+    }
+
+    // Convert date string to Date object for personalDetails.dateOfBirth
+    if (personalDetails && personalDetails.dateOfBirth) {
+      personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
+    }
+
+    // Create application data
+    const applicationData = {
+      user: studentId, // Student for whom application is being submitted
+      personalDetails,
+      contactDetails,
+      courseDetails,
+      guardianDetails,
+      financialDetails,
+      referralInfo,
+      submittedBy: req.user._id, // Agent who is submitting
+      submitterRole: req.user.role,
+      status: "SUBMITTED",
+      currentStage: "SUBMITTED",
+      progress: {
+        registrationComplete: true,
+        documentsComplete: true,
+        applicationPdfGenerated: false,
+        termsAccepted: true,
+        submissionComplete: true,
+      },
+      submittedAt: new Date(),
+      termsAccepted: true,
+      termsAcceptedAt: new Date(),
+    };
+
+    const application = new StudentApplication(applicationData);
+    await application.save();
+    await application.populate("user", "fullName email phoneNumber");
+    await application.populate("submittedBy", "fullName email");
+
+    res.status(201).json({
+      success: true,
+      message: "Application submitted successfully for student",
+      data: application,
+    });
+  } catch (error) {
+    console.error("Submit application error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to submit application",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
+    });
+  }
+});
+
+// Get applications submitted by this agent
+router.get("/my-submitted-applications", async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status } = req.query;
+    const agentId = req.user._id;
+
+    let query = { submittedBy: agentId };
+    if (status && status !== "all") {
+      query.status = status.toUpperCase();
+    }
+
+    const applications = await StudentApplication.find(query)
+      .populate("user", "fullName email phoneNumber")
+      .populate("submittedBy", "fullName email")
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const total = await StudentApplication.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        applications,
+        pagination: {
+          current: parseInt(page),
+          pages: Math.ceil(total / limit),
+          total: total,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Get submitted applications error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to get submitted applications",
       error:
         process.env.NODE_ENV === "development"
           ? error.message

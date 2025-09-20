@@ -20,6 +20,17 @@ const UniversalStudentRegistration = ({
   const [errors, setErrors] = useState({});
   const draftKey = `studentAppDraft_${userRole}_${user?._id || "local"}`;
 
+  // Function to clear application state and reset form
+  const clearApplicationState = () => {
+    setApplication(null);
+    // Clear any cached application data
+    try {
+      localStorage.removeItem(`application_${user?._id || "local"}`);
+    } catch (e) {
+      console.warn("Could not clear cached application data");
+    }
+  };
+
   const [formData, setFormData] = useState({
     personalDetails: {
       fullName: "",
@@ -279,7 +290,7 @@ const UniversalStudentRegistration = ({
             localStorage.setItem(key, JSON.stringify(formData));
             showSuccessToast("Draft saved locally");
             return;
-          } catch (_) {}
+          } catch (_) { }
         }
         // Only try server save if user is authenticated
         if (user && token) {
@@ -296,7 +307,7 @@ const UniversalStudentRegistration = ({
               setApplication(response.data.data);
               try {
                 localStorage.removeItem(draftKey);
-              } catch (_) {}
+              } catch (_) { }
               showSuccessToast("Draft created on server");
             }
           } catch (createErr) {
@@ -306,7 +317,7 @@ const UniversalStudentRegistration = ({
               const key = `studentAppDraft_${userRole}_${user?._id || "local"}`;
               localStorage.setItem(key, JSON.stringify(formData));
               showSuccessToast("Draft saved locally (server unavailable)");
-            } catch (_) {}
+            } catch (_) { }
           }
         } else {
           // User not authenticated, save locally
@@ -314,7 +325,7 @@ const UniversalStudentRegistration = ({
             const key = `studentAppDraft_${userRole}_${user?._id || "local"}`;
             localStorage.setItem(key, JSON.stringify(formData));
             showSuccessToast("Draft saved locally");
-          } catch (_) {}
+          } catch (_) { }
         }
       }
     } catch (error) {
@@ -370,41 +381,67 @@ const UniversalStudentRegistration = ({
       setLoading(true);
 
       // If an application already exists, save latest data then submit
-      if (application?.applicationId) {
+      if (application && (application.applicationId || application._id)) {
+        const appId = application.applicationId || application._id;
+        console.log('Application ID:', appId);
+        console.log('Application object:', application);
+
+        if (!appId) {
+          console.error('Application ID is undefined, cannot proceed with update');
+          showErrorToast('Application ID is missing. Please try creating a new application.');
+          return;
+        }
+
         try {
-          await api.put(
-            `/api/student-application/${application.applicationId}/save-draft`,
-            {
-              data: {
-                personalDetails: formData.personalDetails,
-                contactDetails: formData.contactDetails,
-                courseDetails: formData.courseDetails,
-                guardianDetails: formData.guardianDetails,
-                documents: formData.documents,
-              },
-              stage: "APPLICATION_PDF",
+          // First, try to verify the application exists in the database
+          const verifyRes = await api.get(`/api/student-application/my-application`);
+          if (!verifyRes.data.success || !verifyRes.data.data) {
+            console.log('Application not found in database, clearing local state and creating new one');
+            showErrorToast('Previous application not found. Creating a new application...');
+            clearApplicationState();
+            // Fall through to create new application
+          } else {
+            // Application exists, proceed with update
+            try {
+              await api.put(
+                `/api/student-application/${appId}/save-draft`,
+                {
+                  data: {
+                    personalDetails: formData.personalDetails,
+                    contactDetails: formData.contactDetails,
+                    courseDetails: formData.courseDetails,
+                    guardianDetails: formData.guardianDetails,
+                    documents: formData.documents,
+                  },
+                  stage: "APPLICATION_PDF",
+                }
+              );
+            } catch (e) {
+              // proceed to submit even if draft save fails; backend validates progress
+              console.warn(
+                "Draft save before submit failed:",
+                e?.response?.data || e?.message
+              );
             }
-          );
-        } catch (e) {
-          // proceed to submit even if draft save fails; backend validates progress
-          console.warn(
-            "Draft save before submit failed:",
-            e?.response?.data || e?.message
-          );
-        }
 
-        const submitRes = await api.put(
-          `/api/student-application/${application.applicationId}/submit`,
-          {
-            termsAccepted: true,
+            const submitRes = await api.put(
+              `/api/student-application/${appId}/submit`,
+              {
+                termsAccepted: true,
+              }
+            );
+
+            if (submitRes.data.success) {
+              showSuccessToast("Application submitted successfully!");
+              if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+            }
+            return;
           }
-        );
-
-        if (submitRes.data.success) {
-          showSuccessToast("Application submitted successfully!");
-          if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+        } catch (verifyError) {
+          console.log('Error verifying application, clearing local state and creating new one');
+          clearApplicationState();
+          // Fall through to create new application
         }
-        return;
       }
 
       // Try Redis endpoint first, fallback to regular endpoint
@@ -425,6 +462,8 @@ const UniversalStudentRegistration = ({
         } else if (redisError.response?.status === 400) {
           // Handle known 400s by loading existing app and submitting
           const serverMsg = redisError.response?.data?.message;
+          console.log("Redis 400 error:", serverMsg);
+
           if (
             serverMsg?.toLowerCase().includes("already have an application")
           ) {
@@ -452,7 +491,7 @@ const UniversalStudentRegistration = ({
                       stage: "APPLICATION_PDF",
                     }
                   );
-                } catch (_) {}
+                } catch (_) { }
                 const submitRes = await api.put(
                   `/api/student-application/${existing.data.data.applicationId}/submit`,
                   {
@@ -489,9 +528,19 @@ const UniversalStudentRegistration = ({
           monitorWorkflowProgress(response.data.submissionId);
         } else {
           // Created draft in regular system; proceed to save and submit
+          const newAppId = response.data.data.applicationId || response.data.data._id;
+          console.log('New application ID:', newAppId);
+          console.log('Response data:', response.data.data);
+
+          if (!newAppId) {
+            console.error('New application ID is undefined, cannot proceed with submission');
+            showErrorToast('Application ID is missing from server response. Please try again.');
+            return;
+          }
+
           try {
             await api.put(
-              `/api/student-application/${response.data.data.applicationId}/save-draft`,
+              `/api/student-application/${newAppId}/save-draft`,
               {
                 data: {
                   documents: formData.documents,
@@ -499,9 +548,9 @@ const UniversalStudentRegistration = ({
                 stage: "APPLICATION_PDF",
               }
             );
-          } catch (_) {}
+          } catch (_) { }
           const submitRes = await api.put(
-            `/api/student-application/${response.data.data.applicationId}/submit`,
+            `/api/student-application/${newAppId}/submit`,
             {
               termsAccepted: true,
             }
@@ -736,7 +785,7 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 personalDetails: {
                   ...prev.personalDetails,
-                  aadharNumber: e.target.value,
+                  aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12),
                 },
               }))
             }
@@ -769,12 +818,13 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 contactDetails: {
                   ...prev.contactDetails,
-                  primaryPhone: e.target.value,
+                  primaryPhone: e.target.value.replace(/\D/g, '').slice(0, 10),
                 },
               }))
             }
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter 10-digit phone number"
+            maxLength="10"
           />
           {errors["contactDetails.primaryPhone"] && (
             <p className="text-red-500 text-sm mt-1">
@@ -795,12 +845,13 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 contactDetails: {
                   ...prev.contactDetails,
-                  whatsappNumber: e.target.value,
+                  whatsappNumber: e.target.value.replace(/\D/g, '').slice(0, 10),
                 },
               }))
             }
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter WhatsApp number (optional)"
+            maxLength="10"
           />
         </div>
 
@@ -931,7 +982,7 @@ const UniversalStudentRegistration = ({
                   ...prev.contactDetails,
                   permanentAddress: {
                     ...prev.contactDetails.permanentAddress,
-                    pincode: e.target.value,
+                    pincode: e.target.value.replace(/\D/g, '').slice(0, 6),
                   },
                 },
               }))
@@ -1109,12 +1160,13 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 guardianDetails: {
                   ...prev.guardianDetails,
-                  guardianPhone: e.target.value,
+                  guardianPhone: e.target.value.replace(/\D/g, '').slice(0, 10),
                 },
               }))
             }
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter guardian phone number"
+            maxLength="10"
           />
           {errors["guardianDetails.guardianPhone"] && (
             <p className="text-red-500 text-sm mt-1">
@@ -1327,19 +1379,17 @@ const UniversalStudentRegistration = ({
           {steps.map((step, index) => (
             <div key={step.id} className="flex items-center">
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                  currentStep >= step.id
-                    ? "bg-purple-600 border-purple-600 text-white"
-                    : "border-gray-300 text-gray-500"
-                }`}
+                className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${currentStep >= step.id
+                  ? "bg-purple-600 border-purple-600 text-white"
+                  : "border-gray-300 text-gray-500"
+                  }`}
               >
                 {step.id}
               </div>
               <div className="ml-3 hidden sm:block">
                 <p
-                  className={`text-sm font-medium ${
-                    currentStep >= step.id ? "text-purple-600" : "text-gray-500"
-                  }`}
+                  className={`text-sm font-medium ${currentStep >= step.id ? "text-purple-600" : "text-gray-500"
+                    }`}
                 >
                   {step.title}
                 </p>
@@ -1347,9 +1397,8 @@ const UniversalStudentRegistration = ({
               </div>
               {index < steps.length - 1 && (
                 <div
-                  className={`hidden sm:block w-16 h-0.5 mx-4 ${
-                    currentStep > step.id ? "bg-purple-600" : "bg-gray-300"
-                  }`}
+                  className={`hidden sm:block w-16 h-0.5 mx-4 ${currentStep > step.id ? "bg-purple-600" : "bg-gray-300"
+                    }`}
                 />
               )}
             </div>

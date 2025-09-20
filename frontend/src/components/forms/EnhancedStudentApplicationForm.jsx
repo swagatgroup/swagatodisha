@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert';
@@ -338,10 +338,11 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 <input
                                     type="tel"
                                     value={formData.phone}
-                                    onChange={(e) => handleInputChange('phone', e.target.value)}
+                                    onChange={(e) => handleInputChange('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter phone number"
+                                    maxLength="10"
                                 />
                                 {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
                             </div>
@@ -830,8 +831,8 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                             {steps.map((step) => (
                                 <div key={step.number} className="flex items-center">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.number
-                                            ? 'bg-purple-600 text-white'
-                                            : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                                        ? 'bg-purple-600 text-white'
+                                        : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
                                         }`}>
                                         {step.number}
                                     </div>

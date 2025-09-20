@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
 
@@ -185,8 +185,8 @@ const StudentsTab = () => {
                 <button
                     onClick={() => setFilterType('all')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${filterType === 'all'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     All Students
@@ -194,8 +194,8 @@ const StudentsTab = () => {
                 <button
                     onClick={() => setFilterType('referral')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${filterType === 'referral'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Referral Based
@@ -203,8 +203,8 @@ const StudentsTab = () => {
                 <button
                     onClick={() => setFilterType('direct')}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${filterType === 'direct'
-                            ? 'bg-white text-gray-900 shadow-sm'
-                            : 'text-gray-600 hover:text-gray-900'
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
                         }`}
                 >
                     Direct Enrollments
@@ -436,9 +436,10 @@ const StudentsTab = () => {
                                         type="tel"
                                         name="phone"
                                         value={formData.phone}
-                                        onChange={handleInputChange}
+                                        onChange={(e) => handleInputChange({ target: { name: 'phone', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                                         required
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        maxLength="10"
                                     />
                                 </div>
 

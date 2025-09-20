@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContext';
@@ -379,9 +379,10 @@ const Register = () => {
                                     type="tel"
                                     required
                                     value={formData.phoneNumber}
-                                    onChange={handleChange}
+                                    onChange={(e) => handleChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter 10-digit mobile number"
+                                    maxLength="10"
                                 />
                             </div>
                         </div>

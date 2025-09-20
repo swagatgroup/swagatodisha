@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../../utils/api';
 import { showSuccess, showError } from '../../../utils/sweetAlert';
@@ -229,9 +229,10 @@ const StudentProfile = () => {
                             type="tel"
                             name="phoneNumber"
                             value={formData.phoneNumber}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            maxLength="10"
                         />
                     </div>
                     <div>
@@ -331,9 +332,10 @@ const StudentProfile = () => {
                             type="text"
                             name="address.pincode"
                             value={formData.address.pincode}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange({ target: { name: 'address.pincode', value: e.target.value.replace(/\D/g, '').slice(0, 6) } })}
                             disabled={!editing}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            maxLength="6"
                         />
                     </div>
                 </div>
@@ -365,9 +367,10 @@ const StudentProfile = () => {
                             type="text"
                             name="aadharNumber"
                             value={formData.aadharNumber}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange({ target: { name: 'aadharNumber', value: e.target.value.replace(/\D/g, '').slice(0, 12) } })}
                             disabled={!editing}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            maxLength="12"
                         />
                     </div>
                 </div>
@@ -399,9 +402,10 @@ const StudentProfile = () => {
                             type="tel"
                             name="guardianPhone"
                             value={formData.guardianPhone}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange({ target: { name: 'guardianPhone', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            maxLength="10"
                         />
                     </div>
                     <div className="md:col-span-2">
@@ -410,9 +414,10 @@ const StudentProfile = () => {
                             type="tel"
                             name="emergencyContact"
                             value={formData.emergencyContact}
-                            onChange={handleInputChange}
+                            onChange={(e) => handleInputChange({ target: { name: 'emergencyContact', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            maxLength="10"
                         />
                     </div>
                 </div>

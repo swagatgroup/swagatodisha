@@ -7,11 +7,15 @@ import {
   showConfirm,
 } from "../../../utils/sweetAlert";
 import EnhancedStudentApplicationForm from "../../forms/EnhancedStudentApplicationForm";
+import SubmitApplicationForStudent from "../../forms/SubmitApplicationForStudent";
+import MySubmittedApplications from "./MySubmittedApplications";
 
 const StudentApplications = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showNewApplicationModal, setShowNewApplicationModal] = useState(false);
+  const [showSubmitForStudentModal, setShowSubmitForStudentModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("my-applications");
   const [newApplication, setNewApplication] = useState({
     course: "",
     institution: "",
@@ -21,6 +25,7 @@ const StudentApplications = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfBlobUrl, setPdfBlobUrl] = useState("");
+  const [userRole, setUserRole] = useState("student");
 
   const courses = [
     "DMLT (Diploma in Medical Laboratory Technology)",
@@ -44,6 +49,9 @@ const StudentApplications = () => {
   ];
 
   useEffect(() => {
+    // Get user role from localStorage
+    const role = localStorage.getItem('userRole') || 'student';
+    setUserRole(role);
     fetchApplications();
   }, []);
 
@@ -178,6 +186,14 @@ const StudentApplications = () => {
     );
   }
 
+  // Show different tabs based on user role
+  const tabs = userRole === 'student'
+    ? [{ id: 'my-applications', name: 'My Applications' }]
+    : [
+      { id: 'my-applications', name: 'My Applications' },
+      { id: 'submitted-applications', name: 'My Submitted Applications' }
+    ];
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -189,155 +205,43 @@ const StudentApplications = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              My Applications
+              {userRole === 'student' ? 'My Applications' : 'Applications Management'}
             </h2>
             <p className="text-gray-600">
-              Track and manage your course applications
+              {userRole === 'student'
+                ? 'Track and manage your course applications'
+                : 'Manage and submit applications for students'
+              }
             </p>
           </div>
-          <button
-            onClick={() => setShowNewApplicationModal(true)}
-            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center space-x-2"
-          >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-              />
-            </svg>
-            <span>New Application</span>
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Applications List */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-white rounded-lg shadow"
-      >
-        {applications.length > 0 ? (
-          <div className="divide-y divide-gray-200">
-            {applications.map((application, index) => (
-              <motion.div
-                key={application._id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 hover:bg-gray-50"
+          <div className="flex space-x-3">
+            {userRole !== 'student' && (
+              <button
+                onClick={() => setShowSubmitForStudentModal(true)}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">
-                        {application.course}
-                      </h3>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                          application.status
-                        )}`}
-                      >
-                        <span className="mr-1">
-                          {getStatusIcon(application.status)}
-                        </span>
-                        {application.status.replace("_", " ").toUpperCase()}
-                      </span>
-                    </div>
-                    <p className="text-gray-600 mb-2">
-                      {application.institution}
-                    </p>
-                    <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      <span>
-                        Applied:{" "}
-                        {new Date(
-                          application.applicationDate
-                        ).toLocaleDateString()}
-                      </span>
-                      {application.preferredStartDate && (
-                        <span>
-                          Preferred Start:{" "}
-                          {new Date(
-                            application.preferredStartDate
-                          ).toLocaleDateString()}
-                        </span>
-                      )}
-                      <span>Application ID: {application.applicationId}</span>
-                    </div>
-                    {application.notes && (
-                      <p className="text-sm text-gray-600 mt-2 italic">
-                        "{application.notes}"
-                      </p>
-                    )}
-                    {application.reviewNotes && (
-                      <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                        <p className="text-sm font-medium text-blue-900">
-                          Review Notes:
-                        </p>
-                        <p className="text-sm text-blue-800">
-                          {application.reviewNotes}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    {application.status === "pending" && (
-                      <button
-                        onClick={() =>
-                          handleWithdrawApplication(application._id)
-                        }
-                        className="px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg"
-                      >
-                        Withdraw
-                      </button>
-                    )}
-                    <button
-                      onClick={() => openApplicationPdf(application._id)}
-                      className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
-                    >
-                      View PDF
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
-            <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-              <svg
-                className="h-6 w-6 text-purple-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No applications yet
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Get started by creating your first application.
-            </p>
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                <span>Submit for Student</span>
+              </button>
+            )}
             <button
               onClick={() => setShowNewApplicationModal(true)}
-              className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center space-x-2"
             >
               <svg
-                className="h-4 w-4 mr-2"
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -349,11 +253,181 @@ const StudentApplications = () => {
                   d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                 />
               </svg>
-              New Application
+              <span>New Application</span>
             </button>
           </div>
-        )}
+        </div>
       </motion.div>
+
+      {/* Tab Navigation */}
+      {tabs.length > 1 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-lg shadow p-6"
+        >
+          <div className="flex space-x-1">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab.id
+                    ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  }`}
+              >
+                {tab.name}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      )}
+
+      {/* Tab Content */}
+      {activeTab === 'my-applications' && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white rounded-lg shadow"
+        >
+          {applications.length > 0 ? (
+            <div className="divide-y divide-gray-200">
+              {applications.map((application, index) => (
+                <motion.div
+                  key={application._id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="p-6 hover:bg-gray-50"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {application.course}
+                        </h3>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                            application.status
+                          )}`}
+                        >
+                          <span className="mr-1">
+                            {getStatusIcon(application.status)}
+                          </span>
+                          {application.status.replace("_", " ").toUpperCase()}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 mb-2">
+                        {application.institution}
+                      </p>
+                      <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <span>
+                          Applied:{" "}
+                          {new Date(
+                            application.applicationDate
+                          ).toLocaleDateString()}
+                        </span>
+                        {application.preferredStartDate && (
+                          <span>
+                            Preferred Start:{" "}
+                            {new Date(
+                              application.preferredStartDate
+                            ).toLocaleDateString()}
+                          </span>
+                        )}
+                        <span>Application ID: {application.applicationId}</span>
+                      </div>
+                      {application.notes && (
+                        <p className="text-sm text-gray-600 mt-2 italic">
+                          "{application.notes}"
+                        </p>
+                      )}
+                      {application.reviewNotes && (
+                        <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                          <p className="text-sm font-medium text-blue-900">
+                            Review Notes:
+                          </p>
+                          <p className="text-sm text-blue-800">
+                            {application.reviewNotes}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      {application.status === "pending" && (
+                        <button
+                          onClick={() =>
+                            handleWithdrawApplication(application._id)
+                          }
+                          className="px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg"
+                        >
+                          Withdraw
+                        </button>
+                      )}
+                      <button
+                        onClick={() => openApplicationPdf(application._id)}
+                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
+                      >
+                        View PDF
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                <svg
+                  className="h-6 w-6 text-purple-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No applications yet
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Get started by creating your first application.
+              </p>
+              <button
+                onClick={() => setShowNewApplicationModal(true)}
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
+              >
+                <svg
+                  className="h-4 w-4 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                New Application
+              </button>
+            </div>
+          )}
+        </motion.div>
+      )}
+
+      {/* My Submitted Applications Tab */}
+      {activeTab === 'submitted-applications' && (
+        <MySubmittedApplications />
+      )}
 
       {/* Enhanced Application Form Modal */}
       {showNewApplicationModal && (
@@ -363,6 +437,21 @@ const StudentApplications = () => {
             setShowNewApplicationModal(false);
             fetchApplications();
             showSuccess("Application submitted successfully!");
+          }}
+        />
+      )}
+
+      {/* Submit Application for Student Modal */}
+      {showSubmitForStudentModal && (
+        <SubmitApplicationForStudent
+          onClose={() => setShowSubmitForStudentModal(false)}
+          onSuccess={() => {
+            setShowSubmitForStudentModal(false);
+            // Refresh the submitted applications tab if it's active
+            if (activeTab === 'submitted-applications') {
+              // The MySubmittedApplications component will handle its own refresh
+            }
+            showSuccess("Application submitted successfully for student!");
           }}
         />
       )}

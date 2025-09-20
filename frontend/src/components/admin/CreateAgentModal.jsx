@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import api from '../../utils/api';
 import { showSuccess, showError } from '../../utils/sweetAlert';
 import PasswordInput from '../auth/PasswordInput';
@@ -222,10 +222,11 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                     type="tel"
                                     name="phoneNumber"
                                     value={formData.phoneNumber}
-                                    onChange={handleInputChange}
+                                    onChange={(e) => handleInputChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter phone number"
+                                    maxLength="10"
                                 />
                                 {errors.phoneNumber && (
                                     <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
@@ -371,9 +372,10 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                         type="text"
                                         name="address.pincode"
                                         value={formData.address.pincode}
-                                        onChange={handleInputChange}
+                                        onChange={(e) => handleInputChange({ target: { name: 'address.pincode', value: e.target.value.replace(/\D/g, '').slice(0, 6) } })}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                                         placeholder="Enter pincode"
+                                        maxLength="6"
                                     />
                                 </div>
                             </div>

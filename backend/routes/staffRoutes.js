@@ -400,4 +400,143 @@ router.delete("/content/:contentId", async (req, res) => {
   }
 });
 
+// Submit application for a student (staff can submit multiple applications)
+router.post("/submit-application", async (req, res) => {
+  try {
+    const {
+      studentId,
+      personalDetails,
+      contactDetails,
+      courseDetails,
+      guardianDetails,
+      financialDetails = {},
+      referralCode,
+    } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Student ID is required",
+      });
+    }
+
+    // Check if student exists
+    const student = await User.findById(studentId);
+    if (!student) {
+      return res.status(404).json({
+        success: false,
+        message: "Student not found",
+      });
+    }
+
+    // Handle referral code if provided
+    let referralInfo = {};
+    if (referralCode) {
+      const referrer = await User.findOne({ referralCode });
+      if (referrer) {
+        referralInfo = {
+          referredBy: referrer._id,
+          referralCode,
+          referralType: referrer.role,
+        };
+      }
+    }
+
+    // Convert date string to Date object for personalDetails.dateOfBirth
+    if (personalDetails && personalDetails.dateOfBirth) {
+      personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
+    }
+
+    // Create application data
+    const applicationData = {
+      user: studentId, // Student for whom application is being submitted
+      personalDetails,
+      contactDetails,
+      courseDetails,
+      guardianDetails,
+      financialDetails,
+      referralInfo,
+      submittedBy: req.user._id, // Staff who is submitting
+      submitterRole: req.user.role,
+      status: "SUBMITTED",
+      currentStage: "SUBMITTED",
+      progress: {
+        registrationComplete: true,
+        documentsComplete: true,
+        applicationPdfGenerated: false,
+        termsAccepted: true,
+        submissionComplete: true,
+      },
+      submittedAt: new Date(),
+      termsAccepted: true,
+      termsAcceptedAt: new Date(),
+    };
+
+    const application = new StudentApplication(applicationData);
+    await application.save();
+    await application.populate("user", "fullName email phoneNumber");
+    await application.populate("submittedBy", "fullName email");
+
+    res.status(201).json({
+      success: true,
+      message: "Application submitted successfully for student",
+      data: application,
+    });
+  } catch (error) {
+    console.error("Submit application error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to submit application",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
+    });
+  }
+});
+
+// Get applications submitted by this staff member
+router.get("/my-submitted-applications", async (req, res) => {
+  try {
+    const { page = 1, limit = 20, status } = req.query;
+    const staffId = req.user._id;
+
+    let query = { submittedBy: staffId };
+    if (status && status !== "all") {
+      query.status = status.toUpperCase();
+    }
+
+    const applications = await StudentApplication.find(query)
+      .populate("user", "fullName email phoneNumber")
+      .populate("submittedBy", "fullName email")
+      .sort({ createdAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+
+    const total = await StudentApplication.countDocuments(query);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        applications,
+        pagination: {
+          current: parseInt(page),
+          pages: Math.ceil(total / limit),
+          total: total,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Get submitted applications error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to get submitted applications",
+      error:
+        process.env.NODE_ENV === "development"
+          ? error.message
+          : "Internal server error",
+    });
+  }
+});
+
 module.exports = router;

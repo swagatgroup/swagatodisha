@@ -403,7 +403,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                             <input
                                 type="text"
                                 value={formData.aadharNumber}
-                                onChange={(e) => handleInputChange('aadharNumber', e.target.value)}
+                                onChange={(e) => handleInputChange('aadharNumber', e.target.value.replace(/\D/g, '').slice(0, 12))}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                 placeholder="Enter 12-digit Aadhar number"
                                 maxLength="12"
@@ -444,9 +444,10 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 <input
                                     type="tel"
                                     value={formData.primaryPhone}
-                                    onChange={(e) => handleInputChange('primaryPhone', e.target.value)}
+                                    onChange={(e) => handleInputChange('primaryPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     placeholder="Enter 10-digit phone number"
+                                    maxLength="10"
                                 />
                             </div>
                             <div>
@@ -456,9 +457,10 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 <input
                                     type="tel"
                                     value={formData.alternatePhone}
-                                    onChange={(e) => handleInputChange('alternatePhone', e.target.value)}
+                                    onChange={(e) => handleInputChange('alternatePhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     placeholder="Enter alternate phone number"
+                                    maxLength="10"
                                 />
                             </div>
                         </div>
@@ -721,9 +723,10 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 <input
                                     type="tel"
                                     value={formData.guardianDetails.guardianPhone}
-                                    onChange={(e) => handleInputChange('guardianDetails.guardianPhone', e.target.value)}
+                                    onChange={(e) => handleInputChange('guardianDetails.guardianPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     placeholder="Guardian Phone Number"
+                                    maxLength="10"
                                 />
                             </div>
                             <div>
