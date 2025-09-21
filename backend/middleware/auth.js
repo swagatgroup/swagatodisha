@@ -55,8 +55,23 @@ const protect = async (req, res, next) => {
                 });
             }
 
+            // Ensure role is set correctly based on user type
+            if (userType === 'admin') {
+                // For admin users, use the role from the Admin model
+                user.role = user.role || 'super_admin';
+            } else {
+                // For regular users, ensure role is set
+                user.role = user.role || 'user';
+            }
+
             req.user = user;
             req.userType = userType;
+
+            // Debug logging
+            console.log('Auth middleware - User role:', user.role);
+            console.log('Auth middleware - User type:', userType);
+            console.log('Auth middleware - User ID:', user._id);
+
             next();
         } catch (error) {
             console.error('Token verification error:', error);

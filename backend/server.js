@@ -303,14 +303,25 @@ app.post('/api/redis/application/create', protect, async (req, res) => {
         // Import the StudentApplication model
         const StudentApplication = require('./models/StudentApplication');
 
-        // Check if user already has an application
-        const existingApplication = await StudentApplication.findOne({ user: req.user._id });
-        if (existingApplication) {
-            return res.status(400).json({
-                success: false,
-                message: 'You already have an application. Please update the existing one.',
-                applicationId: existingApplication.applicationId
-            });
+        // Debug logging
+        console.log('Redis endpoint - User role:', req.user.role);
+        console.log('Redis endpoint - User ID:', req.user._id);
+        console.log('Redis endpoint - User type:', req.userType);
+        console.log('Redis endpoint - User object keys:', Object.keys(req.user));
+
+        // Check if user already has an application (only for students)
+        if (req.user.role === 'student') {
+            const existingApplication = await StudentApplication.findOne({ user: req.user._id });
+            if (existingApplication) {
+                console.log('Found existing application for student:', existingApplication.applicationId);
+                return res.status(400).json({
+                    success: false,
+                    message: 'You already have an application. Please update the existing one.',
+                    applicationId: existingApplication.applicationId
+                });
+            }
+        } else {
+            console.log('User is not a student, skipping application check');
         }
 
         // Convert date string to Date object
@@ -426,14 +437,25 @@ app.post('/api/student-application/create', protect, async (req, res) => {
         // Import the StudentApplication model
         const StudentApplication = require('./models/StudentApplication');
 
-        // Check if user already has an application
-        const existingApplication = await StudentApplication.findOne({ user: req.user._id });
-        if (existingApplication) {
-            return res.status(400).json({
-                success: false,
-                message: 'You already have an application. Please update the existing one.',
-                applicationId: existingApplication.applicationId
-            });
+        // Debug logging
+        console.log('Redis endpoint - User role:', req.user.role);
+        console.log('Redis endpoint - User ID:', req.user._id);
+        console.log('Redis endpoint - User type:', req.userType);
+        console.log('Redis endpoint - User object keys:', Object.keys(req.user));
+
+        // Check if user already has an application (only for students)
+        if (req.user.role === 'student') {
+            const existingApplication = await StudentApplication.findOne({ user: req.user._id });
+            if (existingApplication) {
+                console.log('Found existing application for student:', existingApplication.applicationId);
+                return res.status(400).json({
+                    success: false,
+                    message: 'You already have an application. Please update the existing one.',
+                    applicationId: existingApplication.applicationId
+                });
+            }
+        } else {
+            console.log('User is not a student, skipping application check');
         }
 
         // Convert date string to Date object

@@ -18,7 +18,12 @@ const UniversalStudentRegistration = ({
   const [saving, setSaving] = useState(false);
   const [application, setApplication] = useState(null);
   const [errors, setErrors] = useState({});
-  const draftKey = `studentAppDraft_${userRole}_${user?._id || "local"}`;
+  // Generate unique draft key for proper isolation
+  const generateDraftKey = () => {
+    const userId = user?._id || `anonymous_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `studentAppDraft_${userRole}_${userId}`;
+  };
+  const draftKey = generateDraftKey();
 
   // Function to clear application state and reset form
   const clearApplicationState = () => {
@@ -286,7 +291,7 @@ const UniversalStudentRegistration = ({
         // Avoid backend create before step 4 or when data incomplete. Save locally instead.
         if (currentStep < 4 || !hasMinimumForCreate()) {
           try {
-            const key = `studentAppDraft_${userRole}_${user?._id || "local"}`;
+            const key = generateDraftKey();
             localStorage.setItem(key, JSON.stringify(formData));
             showSuccessToast("Draft saved locally");
             return;
@@ -314,7 +319,7 @@ const UniversalStudentRegistration = ({
             console.error("Create draft failed:", createErr);
             // Fallback to local save
             try {
-              const key = `studentAppDraft_${userRole}_${user?._id || "local"}`;
+              const key = generateDraftKey();
               localStorage.setItem(key, JSON.stringify(formData));
               showSuccessToast("Draft saved locally (server unavailable)");
             } catch (_) { }
@@ -322,7 +327,7 @@ const UniversalStudentRegistration = ({
         } else {
           // User not authenticated, save locally
           try {
-            const key = `studentAppDraft_${userRole}_${user?._id || "local"}`;
+            const key = generateDraftKey();
             localStorage.setItem(key, JSON.stringify(formData));
             showSuccessToast("Draft saved locally");
           } catch (_) { }

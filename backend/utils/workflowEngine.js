@@ -253,8 +253,8 @@ class WorkflowEngine {
       }
     }
 
-    // Check for duplicate Aadhar number
-    if (applicationData.personalDetails?.aadharNumber) {
+    // Check for duplicate Aadhar number (only if not submitted by staff/agent)
+    if (applicationData.personalDetails?.aadharNumber && applicationData.submitterRole === 'student') {
       const existingApplication = await StudentApplication.findOne({
         "personalDetails.aadharNumber":
           applicationData.personalDetails.aadharNumber,

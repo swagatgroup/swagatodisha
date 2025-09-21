@@ -79,17 +79,19 @@ class RedisApplicationController {
         courseDetails.stream = sanitize(courseDetails.stream);
       }
 
-      // Check for existing application
-      const existingApplication = await StudentApplication.findOne({
-        user: req.user._id,
-      });
-      if (existingApplication) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "You already have an application. Please update the existing one.",
-          applicationId: existingApplication.applicationId,
+      // Check for existing application (only for students)
+      if (req.user.role === 'student') {
+        const existingApplication = await StudentApplication.findOne({
+          user: req.user._id,
         });
+        if (existingApplication) {
+          return res.status(400).json({
+            success: false,
+            message:
+              "You already have an application. Please update the existing one.",
+            applicationId: existingApplication.applicationId,
+          });
+        }
       }
 
       // Prepare application data
@@ -102,6 +104,7 @@ class RedisApplicationController {
         referralCode,
         documents: normalizedDocuments,
         userId: req.user._id,
+        submitterRole: req.user.role,
       };
 
       // Start workflow

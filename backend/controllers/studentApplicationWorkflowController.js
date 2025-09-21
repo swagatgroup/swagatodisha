@@ -42,8 +42,8 @@ const createApplication = async (req, res) => {
       }
     }
 
-    // Check if Aadhar number is already used
-    if (personalDetails && personalDetails.aadharNumber) {
+    // Check if Aadhar number is already used (only for students)
+    if (personalDetails && personalDetails.aadharNumber && req.user.role === 'student') {
       const existingAadhar = await StudentApplication.findOne({
         "personalDetails.aadharNumber": personalDetails.aadharNumber,
       });

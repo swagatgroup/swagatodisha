@@ -7,8 +7,8 @@ const Admin = require('../models/Admin');
 const router = express.Router();
 
 // Generate JWT Token
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development', {
+const generateToken = (id, role = 'super_admin') => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development', {
         expiresIn: process.env.JWT_EXPIRE || '7d'
     });
 };
@@ -68,7 +68,7 @@ router.post('/register', [
         });
 
         // Generate token
-        const token = generateToken(admin._id);
+        const token = generateToken(admin._id, admin.role);
 
         res.status(201).json({
             success: true,
@@ -155,7 +155,7 @@ router.post('/login', [
         await admin.save();
 
         // Generate token
-        const token = generateToken(admin._id);
+        const token = generateToken(admin._id, admin.role);
 
         res.json({
             success: true,
@@ -209,13 +209,15 @@ router.get('/me', async (req, res) => {
             });
         }
 
+        console.log('Admin /me endpoint - Admin role:', admin.role);
+        console.log('Admin /me endpoint - Admin ID:', admin._id);
+
         res.json({
             success: true,
             data: {
-                admin: {
+                user: {
                     id: admin._id,
-                    firstName: admin.firstName,
-                    lastName: admin.lastName,
+                    fullName: `${admin.firstName} ${admin.lastName}`,
                     email: admin.email,
                     role: admin.role,
                     employeeId: admin.employeeId,

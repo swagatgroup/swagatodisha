@@ -1002,6 +1002,9 @@ router.get('/me', async (req, res) => {
             }
         } catch (e) { }
 
+        console.log('Auth /me endpoint - User role:', userData.role);
+        console.log('Auth /me endpoint - User ID:', userData.id);
+
         res.json({
             success: true,
             data: {
