@@ -2,13 +2,13 @@
 
 ## ✅ Implementation Complete!
 
-Your production-ready Cloudflare R2 + MongoDB backend has been successfully implemented with all required features.
+Your production-ready Cloudinary + MongoDB backend has been successfully implemented with all required features.
 
 ## 📁 Files Created/Updated
 
 ### New Files Created:
 - `config/db.js` - MongoDB connection with retry logic
-- `config/r2.js` - Cloudflare R2 S3Client configuration
+- `config/cloudinary.js` - Cloudinary configuration (if needed)
 - `models/File.js` - Complete file schema with indexes
 - `middleware/upload.js` - Multer configuration for file uploads
 - `middleware/errorHandler.js` - Global error handling
@@ -32,12 +32,10 @@ Create a `.env` file in the backend directory with:
 # MongoDB Configuration
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/swagat_odisha
 
-# Cloudflare R2 Configuration
-R2_ACCOUNT_ID=your_account_id_here
-R2_ACCESS_KEY_ID=your_access_key_id_here  
-R2_SECRET_ACCESS_KEY=your_secret_access_key_here
-R2_BUCKET_NAME=your_bucket_name_here
-R2_ENDPOINT=https://your_account_id.r2.cloudflarestorage.com
+# Cloudinary Configuration
+CLOUDINARY_CLOUD_NAME=your_cloud_name_here
+CLOUDINARY_API_KEY=your_api_key_here
+CLOUDINARY_API_SECRET=your_api_secret_here
 
 # Server Configuration
 PORT=5000
@@ -47,14 +45,12 @@ NODE_ENV=development
 MAX_FILE_SIZE=52428800
 ```
 
-### 2. Get Cloudflare R2 Credentials
+### 2. Get Cloudinary Credentials
 
-1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. Navigate to R2 Object Storage
-3. Create a new bucket
-4. Go to "Manage R2 API tokens"
-5. Create a new API token with R2 permissions
-6. Copy the Account ID, Access Key ID, and Secret Access Key
+1. Go to [Cloudinary Dashboard](https://cloudinary.com/console)
+2. Sign up for a free account
+3. Go to Dashboard to get your credentials
+4. Copy your Cloud Name, API Key, and API Secret
 
 ### 3. Test the Setup
 

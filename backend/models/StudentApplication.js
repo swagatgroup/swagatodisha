@@ -73,7 +73,6 @@ const studentApplicationSchema = new mongoose.Schema({
         aadharNumber: {
             type: String,
             required: true,
-            unique: true,
             validate: {
                 validator: function (v) { return /^\d{12}$/.test(v); },
                 message: 'Aadhar number must be 12 digits'
@@ -527,5 +526,14 @@ studentApplicationSchema.index({ submittedBy: 1 });
 studentApplicationSchema.index({ submitterRole: 1 });
 studentApplicationSchema.index({ createdAt: -1 });
 studentApplicationSchema.index({ lastModified: -1 });
+
+// Partial index for Aadhar uniqueness only for student-submitted applications
+studentApplicationSchema.index(
+    { 'personalDetails.aadharNumber': 1 },
+    {
+        unique: true,
+        partialFilterExpression: { submitterRole: 'student' }
+    }
+);
 
 module.exports = mongoose.model('StudentApplication', studentApplicationSchema);

@@ -20,8 +20,8 @@ const fileSchema = new mongoose.Schema({
     },
     storageType: {
         type: String,
-        enum: ['mongodb', 'r2'],
-        default: 'mongodb',
+        enum: ['cloudinary'],
+        default: 'cloudinary',
         required: true
     },
     fileSize: {
@@ -53,6 +53,15 @@ const fileSchema = new mongoose.Schema({
         default: 0,
         min: [0, 'Download count cannot be negative']
     },
+    cloudinaryPublicId: {
+        type: String,
+        trim: true
+    },
+    filePath: {
+        type: String,
+        required: true,
+        trim: true
+    },
     metadata: {
         width: Number,
         height: Number,
@@ -60,7 +69,14 @@ const fileSchema = new mongoose.Schema({
         pages: Number, // for PDF files
         author: String,
         title: String,
-        description: String
+        description: String,
+        // Cloudinary-specific metadata
+        cloudinaryId: String,
+        cloudinaryUrl: String,
+        cloudinaryVersion: String,
+        cloudinaryFormat: String,
+        cloudinaryWidth: Number,
+        cloudinaryHeight: Number
     },
     isActive: {
         type: Boolean,
@@ -194,34 +210,7 @@ fileSchema.statics.getStorageStats = function () {
     ]);
 };
 
-fileSchema.statics.getHybridStorageStats = function () {
-    return this.aggregate([
-        { $match: { isActive: true } },
-        {
-            $group: {
-                _id: '$storageType',
-                count: { $sum: 1 },
-                totalSize: { $sum: '$fileSize' },
-                averageSize: { $avg: '$fileSize' }
-            }
-        },
-        {
-            $group: {
-                _id: null,
-                storageBreakdown: {
-                    $push: {
-                        storageType: '$_id',
-                        count: '$count',
-                        totalSize: '$totalSize',
-                        averageSize: '$averageSize'
-                    }
-                },
-                totalFiles: { $sum: '$count' },
-                totalSize: { $sum: '$totalSize' }
-            }
-        }
-    ]);
-};
+// Removed hybrid storage methods - using Cloudinary only
 
 // Ensure virtual fields are serialized
 fileSchema.set('toJSON', { virtuals: true });

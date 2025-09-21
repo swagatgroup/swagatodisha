@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
-import RealTimeStudentTracking from './tabs/RealTimeStudentTracking';
-import WebsiteManagementSystem from '../cms/WebsiteManagementSystem';
+// RealTimeStudentTracking removed - Socket.IO component
+// WebsiteManagementSystem removed - Socket.IO component
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ApplicationReview from './tabs/ApplicationReview';
 import {
@@ -310,9 +310,9 @@ const SuperAdminDashboard = () => {
                     </div>
                 );
             case 'tracking':
-                return <RealTimeStudentTracking />;
+                return <div className="p-6 text-center text-gray-500">Real-time tracking removed - Socket.IO component</div>;
             case 'website':
-                return <WebsiteManagementSystem />;
+                return <div className="p-6 text-center text-gray-500">Website management removed - Socket.IO component</div>;
             case 'students':
                 return (
                     <div className="dark:text-gray-100">

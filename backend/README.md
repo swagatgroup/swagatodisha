@@ -1,11 +1,11 @@
 # 🚀 Swagat Odisha Backend - Production-Ready File Management System
 
-A robust Node.js + Express backend with **Cloudflare R2** file storage and **MongoDB** metadata management, built for the Swagat Odisha Educational Management System.
+A robust Node.js + Express backend with **Cloudinary** file storage and **MongoDB** metadata management, built for the Swagat Odisha Educational Management System.
 
 ## ✨ Features
 
 - **🔐 Secure File Upload** - Support for multiple file types with validation
-- **☁️ Cloudflare R2 Integration** - Scalable cloud storage with signed URLs
+- **☁️ Cloudinary Integration** - Scalable cloud storage with CDN
 - **📊 MongoDB Metadata** - Rich file metadata with search and filtering
 - **🛡️ Production Security** - Rate limiting, input validation, error handling
 - **📈 Performance Optimized** - Connection pooling, caching, compression
@@ -17,7 +17,7 @@ A robust Node.js + Express backend with **Cloudflare R2** file storage and **Mon
 - **Runtime**: Node.js 16+
 - **Framework**: Express.js 4.18.2
 - **Database**: MongoDB with Mongoose 8.0.0
-- **Storage**: Cloudflare R2 (S3-compatible)
+- **Storage**: Cloudinary (CDN-optimized)
 - **File Upload**: Multer 1.4.5
 - **Security**: Helmet, CORS, Rate Limiting
 - **Validation**: Express Validator
@@ -26,7 +26,7 @@ A robust Node.js + Express backend with **Cloudflare R2** file storage and **Mon
 
 - Node.js 16.0.0 or higher
 - MongoDB Atlas account or local MongoDB instance
-- Cloudflare R2 account with API credentials
+- Cloudinary account with API credentials
 - Git
 
 ## 🚀 Quick Start
@@ -47,12 +47,10 @@ Create a `.env` file in the backend directory:
 # MongoDB
 MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/database
 
-# Cloudflare R2
-R2_ACCOUNT_ID=your_account_id_here
-R2_ACCESS_KEY_ID=your_access_key_id_here  
-R2_SECRET_ACCESS_KEY=your_secret_access_key_here
-R2_BUCKET_NAME=your_bucket_name_here
-R2_ENDPOINT=https://your_account_id.r2.cloudflarestorage.com
+# Cloudinary
+CLOUDINARY_CLOUD_NAME=your_cloud_name_here
+CLOUDINARY_API_KEY=your_api_key_here
+CLOUDINARY_API_SECRET=your_api_secret_here
 
 # Server
 PORT=5000
@@ -71,7 +69,7 @@ npm test
 This will test:
 - ✅ Environment variables
 - ✅ MongoDB connection
-- ✅ Cloudflare R2 connection
+- ✅ Cloudinary connection
 - ✅ File upload functionality
 
 ### 4. Start Server
@@ -200,11 +198,9 @@ All responses follow this format:
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
 | `MONGO_URI` | MongoDB connection string | Yes | - |
-| `R2_ACCOUNT_ID` | Cloudflare R2 Account ID | Yes | - |
-| `R2_ACCESS_KEY_ID` | Cloudflare R2 Access Key | Yes | - |
-| `R2_SECRET_ACCESS_KEY` | Cloudflare R2 Secret Key | Yes | - |
-| `R2_BUCKET_NAME` | Cloudflare R2 Bucket Name | Yes | - |
-| `R2_ENDPOINT` | Cloudflare R2 Endpoint URL | Yes | - |
+| `CLOUDINARY_CLOUD_NAME` | Cloudinary Cloud Name | Yes | - |
+| `CLOUDINARY_API_KEY` | Cloudinary API Key | Yes | - |
+| `CLOUDINARY_API_SECRET` | Cloudinary API Secret | Yes | - |
 | `PORT` | Server port | No | 5000 |
 | `NODE_ENV` | Environment | No | development |
 | `MAX_FILE_SIZE` | Max file size in bytes | No | 52428800 (50MB) |
@@ -263,7 +259,7 @@ All responses follow this format:
 - Query optimization
 
 ### File Storage
-- Efficient R2 integration
+- Efficient Cloudinary integration
 - Signed URL generation
 - Automatic cleanup
 - Metadata caching
@@ -296,7 +292,7 @@ Use the provided `test-endpoints.http` file with your preferred HTTP client (VS 
 
 - [ ] Set all required environment variables
 - [ ] Configure MongoDB Atlas with proper security
-- [ ] Set up Cloudflare R2 bucket with appropriate permissions
+- [ ] Set up Cloudinary account with appropriate permissions
 - [ ] Configure CORS for your frontend domain
 - [ ] Set up monitoring and logging
 - [ ] Configure SSL/TLS certificates
@@ -356,11 +352,11 @@ Error: MongoDB connection failed
 ```
 **Solution**: Check your `MONGO_URI` and ensure MongoDB is accessible.
 
-#### R2 Connection Failed
+#### Cloudinary Connection Failed
 ```
-Error: Cloudflare R2 connection failed
+Error: Cloudinary connection failed
 ```
-**Solution**: Verify your R2 credentials and bucket permissions.
+**Solution**: Verify your Cloudinary credentials and cloud name.
 
 #### File Upload Failed
 ```
@@ -410,7 +406,7 @@ For support and questions:
 ### Version 1.0.0
 - Initial release
 - Complete file management system
-- Cloudflare R2 integration
+- Cloudinary integration
 - MongoDB metadata storage
 - Production-ready security features
 - Comprehensive API documentation

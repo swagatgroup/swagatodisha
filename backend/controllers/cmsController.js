@@ -1,6 +1,6 @@
 const Content = require('../models/Content');
 const Admin = require('../models/Admin');
-const { io } = require('../utils/socket');
+// Socket.IO removed
 
 // Get all content with pagination and filters
 exports.getAllContent = async (req, res) => {

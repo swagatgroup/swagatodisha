@@ -258,22 +258,7 @@ router.post('/login', async (req, res) => {
             userData = { ...userData, ...studentData };
         }
 
-        // Notify this user in realtime if referral code was created during login
-        try {
-            if (user.role === 'agent' && user.referralCode && req.socketManager) {
-                req.socketManager.broadcastToUser(user._id.toString(), 'profile-updated', {
-                    user: {
-                        id: user._id,
-                        fullName: user.fullName,
-                        email: user.email,
-                        role: user.role,
-                        referralCode: user.referralCode
-                    },
-                    updatedFields: ['referralCode'],
-                    timestamp: new Date()
-                });
-            }
-        } catch (e) { }
+        // Real-time updates removed (Socket.IO removed)
 
         res.json({
             success: true,
@@ -985,22 +970,7 @@ router.get('/me', async (req, res) => {
             }
         }
 
-        // Emit realtime update if referral code was created now
-        try {
-            if (generatedNow && req.socketManager) {
-                req.socketManager.broadcastToUser(user._id.toString(), 'profile-updated', {
-                    user: {
-                        id: user._id,
-                        fullName: user.fullName,
-                        email: user.email,
-                        role: user.role,
-                        referralCode: user.referralCode
-                    },
-                    updatedFields: ['referralCode'],
-                    timestamp: new Date()
-                });
-            }
-        } catch (e) { }
+        // Real-time updates removed (Socket.IO removed)
 
         console.log('Auth /me endpoint - User role:', userData.role);
         console.log('Auth /me endpoint - User ID:', userData.id);

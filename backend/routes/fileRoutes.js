@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const {
-    uploadFile,
+    uploadSingleFile,
     uploadMultipleFiles,
-    getFile,
-    getFiles,
-    updateFile,
+    getFileById,
+    getAllFiles,
     deleteFile,
-    downloadFile,
-    getFileStats
+    getStorageStats
 } = require('../controllers/fileController');
 const { uploadSingle, uploadMultiple } = require('../middleware/upload');
 const { asyncHandler } = require('../middleware/errorHandler');
@@ -16,7 +14,7 @@ const { asyncHandler } = require('../middleware/errorHandler');
 // @route   POST /api/files/upload
 // @desc    Upload single file
 // @access  Public
-router.post('/upload', uploadSingle('file'), uploadFile);
+router.post('/upload', uploadSingle('file'), uploadSingleFile);
 
 // @route   POST /api/files/upload-multiple
 // @desc    Upload multiple files
@@ -26,27 +24,19 @@ router.post('/upload-multiple', uploadMultiple('files', 10), uploadMultipleFiles
 // @route   GET /api/files
 // @desc    Get all files with pagination and filtering
 // @access  Public
-router.get('/', getFiles);
+router.get('/', getAllFiles);
 
 // @route   GET /api/files/stats
 // @desc    Get file statistics
 // @access  Public
-router.get('/stats', getFileStats);
+router.get('/stats', getStorageStats);
 
 // @route   GET /api/files/:id
 // @desc    Get file by ID
 // @access  Public
-router.get('/:id', getFile);
+router.get('/:id', getFileById);
 
-// @route   GET /api/files/:id/download
-// @desc    Download file (increment download count)
-// @access  Public
-router.get('/:id/download', downloadFile);
-
-// @route   PUT /api/files/:id
-// @desc    Update file metadata
-// @access  Public
-router.put('/:id', updateFile);
+// Removed download and update routes - not implemented in simplified controller
 
 // @route   DELETE /api/files/:id
 // @desc    Delete file

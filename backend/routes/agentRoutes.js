@@ -631,4 +631,64 @@ router.get("/my-submitted-applications", async (req, res) => {
   }
 });
 
+// Get agent referral information
+router.get("/referral-info", async (req, res) => {
+  try {
+    const agent = await User.findById(req.user._id).select('referralCode referralStats isReferralActive fullName');
+
+    if (!agent) {
+      return res.status(404).json({
+        success: false,
+        message: "Agent not found"
+      });
+    }
+
+    // Get referral statistics from applications
+    const referralStats = await StudentApplication.aggregate([
+      { $match: { 'referralInfo.referredBy': req.user._id } },
+      {
+        $group: {
+          _id: null,
+          totalReferrals: { $sum: 1 },
+          successfulReferrals: { $sum: { $cond: [{ $eq: ['$status', 'APPROVED'] }, 1, 0] } },
+          pendingReferrals: { $sum: { $cond: [{ $eq: ['$status', 'SUBMITTED'] }, 1, 0] } },
+          rejectedReferrals: { $sum: { $cond: [{ $eq: ['$status', 'REJECTED'] }, 1, 0] } }
+        }
+      }
+    ]);
+
+    const stats = referralStats[0] || {
+      totalReferrals: 0,
+      successfulReferrals: 0,
+      pendingReferrals: 0,
+      rejectedReferrals: 0
+    };
+
+    res.status(200).json({
+      success: true,
+      data: {
+        agent: {
+          fullName: agent.fullName,
+          referralCode: agent.referralCode,
+          isReferralActive: agent.isReferralActive
+        },
+        stats: {
+          totalReferrals: stats.totalReferrals,
+          successfulReferrals: stats.successfulReferrals,
+          pendingReferrals: stats.pendingReferrals,
+          rejectedReferrals: stats.rejectedReferrals
+        },
+        referralLink: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/register?ref=${agent.referralCode}`
+      }
+    });
+  } catch (error) {
+    console.error("Get referral info error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to get referral information",
+      error: process.env.NODE_ENV === "development" ? error.message : "Internal server error"
+    });
+  }
+});
+
 module.exports = router;

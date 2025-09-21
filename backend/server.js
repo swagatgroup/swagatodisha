@@ -6,20 +6,16 @@ const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const http = require('http');
-const SocketManager = require('./utils/socket');
 require('dotenv').config();
 
-// Import database and R2 connections
+// Import database connection
 const connectDB = require('./config/db');
-const { testR2Connection } = require('./config/r2');
 
 // Import middleware
 const { protect } = require('./middleware/auth');
 
 const app = express();
 const server = http.createServer(app);
-// Initialize Socket.IO early so it's available to middleware
-const socketManager = new SocketManager(server);
 
 // CORS Fix for undefined origin - Add this FIRST
 app.use((req, res, next) => {
@@ -85,8 +81,6 @@ const databaseOptimization = require('./utils/databaseOptimization');
 // Import error handling middleware
 const { errorHandler, notFound } = require('./middleware/errorHandler');
 
-// Import socket middleware
-const { addSocketManager } = require('./middleware/socket');
 
 // Middleware
 app.use(securityHeaders);
@@ -220,8 +214,6 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Attach socket manager before routes so controllers can use req.socketManager
-app.use(addSocketManager(socketManager));
 
 // Static files
 app.use('/uploads', express.static('uploads'));
@@ -288,9 +280,8 @@ const pdfRoutes = require('./routes/pdf');
 const documentTypesRoutes = require('./routes/documentTypes');
 const cmsRoutes = require('./routes/cms');
 
-// Redis Application Routes (fallback endpoints for regular server)
-app.post('/api/redis/application/create', protect, async (req, res) => {
-
+// MongoDB Application Routes
+app.post('/api/application/create', protect, async (req, res) => {
     try {
         // Check if user is authenticated
         if (!req.user || !req.user._id) {
@@ -303,25 +294,16 @@ app.post('/api/redis/application/create', protect, async (req, res) => {
         // Import the StudentApplication model
         const StudentApplication = require('./models/StudentApplication');
 
-        // Debug logging
-        console.log('Redis endpoint - User role:', req.user.role);
-        console.log('Redis endpoint - User ID:', req.user._id);
-        console.log('Redis endpoint - User type:', req.userType);
-        console.log('Redis endpoint - User object keys:', Object.keys(req.user));
-
         // Check if user already has an application (only for students)
         if (req.user.role === 'student') {
             const existingApplication = await StudentApplication.findOne({ user: req.user._id });
             if (existingApplication) {
-                console.log('Found existing application for student:', existingApplication.applicationId);
                 return res.status(400).json({
                     success: false,
                     message: 'You already have an application. Please update the existing one.',
                     applicationId: existingApplication.applicationId
                 });
             }
-        } else {
-            console.log('User is not a student, skipping application check');
         }
 
         // Convert date string to Date object
@@ -348,7 +330,12 @@ app.post('/api/redis/application/create', protect, async (req, res) => {
             },
             submittedAt: new Date(),
             termsAccepted: true,
-            termsAcceptedAt: new Date()
+            termsAcceptedAt: new Date(),
+            submittedBy: req.user._id,
+            submitterRole: req.user.role,
+            referralInfo: req.body.referralCode ? {
+                referralCode: req.body.referralCode
+            } : {}
         };
 
         // Generate applicationId if not provided
@@ -358,22 +345,14 @@ app.post('/api/redis/application/create', protect, async (req, res) => {
             applicationData.applicationId = `APP${year}${random}`;
         }
 
-
         const application = new StudentApplication(applicationData);
         await application.save();
         await application.populate('user', 'fullName email phoneNumber');
 
-
-        // Simulate Redis workflow response
-        const submissionId = `sub_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`;
-
-        res.status(202).json({
+        res.status(201).json({
             success: true,
-            message: 'Application submission started',
-            submissionId,
-            data: application,
-            status: 'processing',
-            estimatedCompletion: '2-3 minutes'
+            message: 'Application created successfully',
+            data: application
         });
     } catch (error) {
         console.error('Error creating application:', error);
@@ -385,27 +364,33 @@ app.post('/api/redis/application/create', protect, async (req, res) => {
     }
 });
 
-// Redis application status endpoint (fallback)
-app.get('/api/redis/application/status/:submissionId', protect, async (req, res) => {
+// Application status endpoint (MongoDB only)
+app.get('/api/application/status/:applicationId', protect, async (req, res) => {
     try {
-        const { submissionId } = req.params;
-        const userId = req.user._id;
+        const { applicationId } = req.params;
+        const StudentApplication = require('./models/StudentApplication');
 
-        // For fallback, just return a completed status
+        const application = await StudentApplication.findOne({
+            applicationId,
+            user: req.user._id
+        }).populate('user', 'fullName email phoneNumber');
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
         res.status(200).json({
             success: true,
             data: {
-                submissionId,
-                status: {
-                    validation: { status: 'completed', timestamp: Date.now() },
-                    document_processing: { status: 'completed', timestamp: Date.now() },
-                    database_creation: { status: 'completed', timestamp: Date.now() },
-                    notification: { status: 'completed', timestamp: Date.now() },
-                    completion: { status: 'completed', timestamp: Date.now() }
-                },
-                progress: 100,
-                application: null,
-                lastUpdated: Date.now()
+                applicationId: application.applicationId,
+                status: application.status,
+                currentStage: application.currentStage,
+                progress: application.progress,
+                application: application,
+                lastUpdated: application.updatedAt
             }
         });
     } catch (error) {
@@ -438,10 +423,10 @@ app.post('/api/student-application/create', protect, async (req, res) => {
         const StudentApplication = require('./models/StudentApplication');
 
         // Debug logging
-        console.log('Redis endpoint - User role:', req.user.role);
-        console.log('Redis endpoint - User ID:', req.user._id);
-        console.log('Redis endpoint - User type:', req.userType);
-        console.log('Redis endpoint - User object keys:', Object.keys(req.user));
+        console.log('Application endpoint - User role:', req.user.role);
+        console.log('Application endpoint - User ID:', req.user._id);
+        console.log('Application endpoint - User type:', req.userType);
+        console.log('Application endpoint - User object keys:', Object.keys(req.user));
 
         // Check if user already has an application (only for students)
         if (req.user.role === 'student') {
@@ -807,17 +792,12 @@ app.use('*', notFound);
 // Global error handler
 app.use(errorHandler);
 
-// Database and R2 connection initialization
+// Database connection initialization
 const initializeConnections = async () => {
     try {
         // Connect to MongoDB
         await connectDB();
-
-        // Test R2 connection
-        const r2Connected = await testR2Connection();
-        if (!r2Connected) {
-            console.warn('⚠️ Cloudflare R2 connection failed. File uploads will not work.');
-        }
+        console.log('✅ MongoDB Connected Successfully');
     } catch (error) {
         console.error('❌ Connection initialization failed:', error.message);
         // Don't exit the process, let the server run
@@ -827,7 +807,6 @@ const initializeConnections = async () => {
 // Environment variable validation
 
 
-// Socket.IO already initialized above
 
 // Initialize database optimization (disabled to avoid duplicate index warnings)
 // databaseOptimization.createOptimizedIndexes();
@@ -842,7 +821,6 @@ const startServer = async () => {
                 console.log(`🚀 Server running on port ${PORT}`);
                 console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
                 console.log(`📊 Health: http://localhost:${PORT}/health`);
-                console.log(`🔌 Socket.IO initialized`);
             });
         } else {
             console.log('🚀 Running in Vercel environment');
@@ -875,4 +853,4 @@ process.on('unhandledRejection', (err, promise) => {
     });
 });
 
-module.exports = { app, server, socketManager };
+module.exports = { app, server };

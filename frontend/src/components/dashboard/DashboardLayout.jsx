@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import NotificationCenter from '../shared/NotificationCenter';
-import RealTimeStatus from '../shared/RealTimeStatus';
+// NotificationCenter removed - Socket.IO component
+// RealTimeStatus removed - Socket.IO component
 import DarkModeToggle from '../shared/DarkModeToggle';
 
 const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick }) => {
@@ -112,10 +112,9 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             <DarkModeToggle />
 
                             {/* Real-time Status */}
-                            <RealTimeStatus />
+                            {/* RealTimeStatus removed - Socket.IO component */}
 
-                            {/* Notifications */}
-                            <NotificationCenter />
+                            {/* Notifications removed - Socket.IO component */}
 
                             {/* User Menu */}
                             <div className="relative" ref={userMenuRef}>

@@ -7,9 +7,9 @@ import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import DocumentVerification from './tabs/DocumentVerification';
 import ContentManagement from './tabs/ContentManagement';
 import AgentManagement from './tabs/AgentManagement';
-import StaffApplicationsReview from './tabs/StaffApplicationsReview';
+// StaffApplicationsReview removed - Socket.IO component
 import ApplicationReview from './tabs/ApplicationReview';
-import RealTimeStudentTracking from './tabs/RealTimeStudentTracking';
+// RealTimeStudentTracking removed - Socket.IO component
 import StudentTable from './components/StudentTable';
 import ProcessingStats from './components/ProcessingStats';
 import api from '../../utils/api';

@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import DashboardLayout from "./DashboardLayout";
 import StudentRegistrationWorkflow from "./tabs/StudentRegistrationWorkflow";
 import AgentStudentsTab from "./tabs/AgentStudentsTab";
+import AgentApplicationsTab from "./tabs/AgentApplicationsTab";
 import ReferralManagement from "../agents/ReferralManagement";
 import StudentTable from "./components/StudentTable";
 import api from "../../utils/api";
@@ -13,6 +14,7 @@ const EnhancedAgentDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [students, setStudents] = useState([]);
+  const [applications, setApplications] = useState([]);
   const [stats, setStats] = useState({
     totalStudents: 0,
     pendingStudents: 0,
@@ -79,6 +81,25 @@ const EnhancedAgentDashboard = () => {
       ),
     },
     {
+      id: "applications",
+      name: "My Applications",
+      icon: (
+        <svg
+          className="mr-3 h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          />
+        </svg>
+      ),
+    },
+    {
       id: "referrals",
       name: "Referrals",
       icon: (
@@ -106,9 +127,10 @@ const EnhancedAgentDashboard = () => {
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const [studentsRes, statsRes] = await Promise.all([
+      const [studentsRes, statsRes, applicationsRes] = await Promise.all([
         api.get("/api/agents/my-students"),
         api.get("/api/agents/stats"),
+        api.get("/api/student-application/submitted-by-me"),
       ]);
 
       console.log("Students response:", studentsRes.data);
@@ -116,6 +138,11 @@ const EnhancedAgentDashboard = () => {
         const list =
           studentsRes.data.data?.students ?? studentsRes.data.data ?? [];
         setStudents(Array.isArray(list) ? list : []);
+      }
+
+      console.log("Applications response:", applicationsRes.data);
+      if (applicationsRes.data.success) {
+        setApplications(applicationsRes.data.data || []);
       }
 
       if (statsRes.data.success) {
@@ -227,6 +254,8 @@ const EnhancedAgentDashboard = () => {
         return (
           <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />
         );
+      case "applications":
+        return <AgentApplicationsTab applications={applications} />;
       case "referrals":
         return <ReferralManagement />;
       default:

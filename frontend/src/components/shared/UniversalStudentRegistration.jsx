@@ -449,25 +449,18 @@ const UniversalStudentRegistration = ({
         }
       }
 
-      // Try Redis endpoint first, fallback to regular endpoint
+      // Use MongoDB endpoint directly
       let response;
       try {
-        response = await api.post("/api/redis/application/create", {
+        response = await api.post("/api/application/create", {
           ...formData,
           termsAccepted: true,
         });
-      } catch (redisError) {
-        if (redisError.response?.status === 404) {
-          // Redis endpoint not available, use regular endpoint
-          console.log("Redis endpoint not available, using regular endpoint");
-          response = await api.post("/api/student-application/create", {
-            ...formData,
-            termsAccepted: true,
-          });
-        } else if (redisError.response?.status === 400) {
+      } catch (error) {
+        if (error.response?.status === 400) {
           // Handle known 400s by loading existing app and submitting
-          const serverMsg = redisError.response?.data?.message;
-          console.log("Redis 400 error:", serverMsg);
+          const serverMsg = error.response?.data?.message;
+          console.log("Application 400 error:", serverMsg);
 
           if (
             serverMsg?.toLowerCase().includes("already have an application")
@@ -516,55 +509,25 @@ const UniversalStudentRegistration = ({
               );
             }
           }
-          throw redisError;
+          throw error;
         } else {
-          throw redisError;
+          throw error;
         }
       }
 
       if (response.data.success) {
         setApplication(response.data.data);
+        showSuccessToast("Application submitted successfully!");
 
-        if (response.data.submissionId) {
-          // Redis system response
-          showSuccessToast(
-            "Application submission started! Processing in background..."
-          );
-          monitorWorkflowProgress(response.data.submissionId);
-        } else {
-          // Created draft in regular system; proceed to save and submit
-          const newAppId = response.data.data.applicationId || response.data.data._id;
-          console.log('New application ID:', newAppId);
-          console.log('Response data:', response.data.data);
-
-          if (!newAppId) {
-            console.error('New application ID is undefined, cannot proceed with submission');
-            showErrorToast('Application ID is missing from server response. Please try again.');
-            return;
-          }
-
-          try {
-            await api.put(
-              `/api/student-application/${newAppId}/save-draft`,
-              {
-                data: {
-                  documents: formData.documents,
-                },
-                stage: "APPLICATION_PDF",
-              }
-            );
-          } catch (_) { }
-          const submitRes = await api.put(
-            `/api/student-application/${newAppId}/submit`,
-            {
-              termsAccepted: true,
-            }
-          );
-          if (submitRes.data.success) {
-            showSuccessToast("Application submitted successfully!");
-            if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
-          }
+        // Call the update callback if provided
+        if (onStudentUpdate) {
+          onStudentUpdate(response.data.data);
         }
+      } else {
+        console.error("Application creation failed:", response.data);
+        showErrorToast(
+          response.data.message || "Failed to create application. Please try again."
+        );
       }
     } catch (error) {
       console.error("Submit error:", error);
@@ -578,44 +541,6 @@ const UniversalStudentRegistration = ({
     }
   };
 
-  const monitorWorkflowProgress = async (submissionId) => {
-    let attempts = 0;
-    const maxAttempts = 30; // 30 seconds timeout
-
-    const checkProgress = async () => {
-      try {
-        const response = await api.get(
-          `/api/redis/application/status/${submissionId}`
-        );
-        if (response.data.success) {
-          const { progress, status } = response.data.data;
-          console.log(`Workflow progress: ${progress}%`);
-
-          if (progress === 100) {
-            showSuccessToast("Application submitted successfully!");
-            return;
-          }
-        }
-
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(checkProgress, 2000); // Check every 2 seconds
-        } else {
-          showErrorToast(
-            "Application submission timed out. Please check status later."
-          );
-        }
-      } catch (error) {
-        console.error("Error monitoring workflow:", error);
-        attempts++;
-        if (attempts < maxAttempts) {
-          setTimeout(checkProgress, 2000);
-        }
-      }
-    };
-
-    checkProgress();
-  };
 
   const renderStepContent = () => {
     switch (currentStep) {

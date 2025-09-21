@@ -1,1183 +1,419 @@
-const StudentApplication = require("../models/StudentApplication");
-const User = require("../models/User");
-const Admin = require("../models/Admin");
-const Document = require("../models/Document");
-const fs = require("fs");
-const path = require("path");
-const PDFDocument = require("pdfkit");
+const StudentApplication = require('../models/StudentApplication');
+const User = require('../models/User');
 
-// Create new application
+// Create application
 const createApplication = async (req, res) => {
-  try {
-    console.log("createApplication called with user:", req.user);
-    console.log("Request body:", req.body);
+    try {
+        const {
+            personalDetails,
+            contactDetails,
+            courseDetails,
+            guardianDetails,
+            financialDetails = {},
+            referralCode,
+        } = req.body;
 
-    const {
-      personalDetails,
-      contactDetails,
-      courseDetails,
-      guardianDetails,
-      financialDetails = {},
-      referralCode,
-    } = req.body;
-
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
-
-    // Check if user already has an application (only for students)
-    if (req.user.role === 'student') {
-      const existingApplication = await StudentApplication.findOne({
-        user: req.user._id,
-      });
-      if (existingApplication) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "You already have an application. Please update the existing one.",
-        });
-      }
-    }
-
-    // Check if Aadhar number is already used (only for students)
-    if (personalDetails && personalDetails.aadharNumber && req.user.role === 'student') {
-      const existingAadhar = await StudentApplication.findOne({
-        "personalDetails.aadharNumber": personalDetails.aadharNumber,
-      });
-      if (existingAadhar) {
-        return res.status(400).json({
-          success: false,
-          message: "An application with this Aadhar number already exists.",
-        });
-      }
-    }
-
-    // Handle referral code if provided
-    let referralInfo = {};
-    if (referralCode) {
-      const referrer = await User.findOne({ referralCode });
-      if (referrer) {
-        referralInfo = {
-          referredBy: referrer._id,
-          referralCode,
-          referralType: referrer.role,
-        };
-      }
-    }
-
-    // Convert date string to Date object for personalDetails.dateOfBirth
-    if (personalDetails && personalDetails.dateOfBirth) {
-      personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
-    }
-
-    // Create application
-    const applicationData = {
-      user: req.user._id,
-      personalDetails,
-      contactDetails,
-      courseDetails,
-      guardianDetails,
-      financialDetails,
-      referralInfo,
-      submittedBy: req.user._id,
-      submitterRole: req.user.role || 'student',
-      progress: {
-        registrationComplete: true,
-      },
-    };
-
-    console.log(
-      "Creating application with data:",
-      JSON.stringify(applicationData, null, 2)
-    );
-
-    const application = new StudentApplication(applicationData);
-
-    console.log("Application object created, saving...");
-    await application.save();
-    console.log("Application saved successfully");
-    await application.populate("user", "fullName email phoneNumber");
-
-    // Emit real-time update (guard if socket manager missing)
-    if (
-      req.socketManager &&
-      typeof req.socketManager.notifyApplicationCreated === "function"
-    ) {
-      req.socketManager.notifyApplicationCreated({
-        applicationId: application.applicationId,
-        userId: req.user._id,
-        stage: application.currentStage,
-        status: application.status,
-      });
-    }
-
-    res.status(201).json({
-      success: true,
-      message: "Application created successfully",
-      data: application,
-    });
-  } catch (error) {
-    console.error("Create application error:", error);
-    console.error("Error details:", {
-      name: error.name,
-      message: error.message,
-      stack: error.stack,
-      code: error.code,
-      errors: error.errors,
-    });
-    res.status(500).json({
-      success: false,
-      message: "Failed to create application",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-      details:
-        process.env.NODE_ENV === "development"
-          ? {
-            name: error.name,
-            code: error.code,
-            errors: error.errors,
-          }
-          : undefined,
-    });
-  }
-};
-
-// Get application by user
-const getApplication = async (req, res) => {
-  try {
-    console.log("getApplication called with user:", req.user);
-
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({
-        success: false,
-        message: "User not authenticated",
-      });
-    }
-
-    const application = await StudentApplication.findOne({ user: req.user._id })
-      .populate("user", "fullName email phoneNumber")
-      .populate("assignedAgent", "fullName email phoneNumber")
-      .populate("assignedStaff", "fullName email phoneNumber");
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "No application found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: application,
-    });
-  } catch (error) {
-    console.error("Get application error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to get application",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Update application stage
-const updateApplicationStage = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { stage, data, action = "SAVE_DRAFT" } = req.body;
-
-    const application = await StudentApplication.findOne({
-      applicationId,
-      user: req.user._id,
-    });
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    // Update application data based on stage
-    if (data) {
-      Object.keys(data).forEach((key) => {
-        if (application.schema.paths[key]) {
-          application[key] = data[key];
+        // Handle referral code if provided
+        let referralInfo = {};
+        if (referralCode) {
+            const referrer = await User.findOne({ referralCode });
+            if (referrer) {
+                referralInfo = {
+                    referredBy: referrer._id,
+                    referralCode,
+                    referralType: referrer.role,
+                };
+            }
         }
-      });
+
+        // Convert date string to Date object for personalDetails.dateOfBirth
+        if (personalDetails && personalDetails.dateOfBirth) {
+            personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
+        }
+
+        // Create application
+        const applicationData = {
+            user: req.user._id,
+            personalDetails,
+            contactDetails,
+            courseDetails,
+            guardianDetails,
+            financialDetails,
+            referralInfo,
+            submittedBy: req.user._id,
+            submitterRole: req.user.role || 'student',
+            progress: {
+                registrationComplete: true,
+            },
+        };
+
+        console.log(
+            "Creating application with data:",
+            JSON.stringify(applicationData, null, 2)
+        );
+
+        try {
+            const application = new StudentApplication(applicationData);
+
+            console.log("Application object created, saving...");
+            await application.save();
+            console.log("Application saved successfully");
+            await application.populate("user", "fullName email phoneNumber");
+
+            // Real-time updates removed (Socket.IO removed)
+
+            res.status(201).json({
+                success: true,
+                message: "Application created successfully",
+                data: application,
+            });
+        } catch (error) {
+            console.error("Create application error:", error);
+            console.error("Error details:", {
+                name: error.name,
+                message: error.message,
+                stack: error.stack,
+                code: error.code,
+            });
+
+            res.status(500).json({
+                success: false,
+                message: "Failed to create application",
+                error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+            });
+        }
+    } catch (error) {
+        console.error("Create application error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to create application",
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
     }
+};
 
-    // Update stage and progress
-    await application.updateStage(stage, req.user._id, "", action);
+// Update application
+const updateApplication = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        const updateData = req.body;
 
-    // Update progress flags
-    switch (stage) {
-      case "REGISTRATION":
-        application.progress.registrationComplete = true;
-        break;
-      case "DOCUMENTS":
-        application.progress.documentsComplete = true;
-        break;
-      case "APPLICATION_PDF":
-        application.progress.applicationPdfGenerated = true;
-        break;
-      case "TERMS_CONDITIONS":
-        application.progress.termsAccepted = true;
-        break;
+        const application = await StudentApplication.findOne({
+            applicationId,
+            user: req.user._id,
+        });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found",
+            });
+        }
+
+        // Update application data
+        Object.keys(updateData).forEach((key) => {
+            if (updateData[key] !== undefined) {
+                application[key] = updateData[key];
+            }
+        });
+
+        await application.save();
+
+        // Real-time updates removed (Socket.IO removed)
+
+        res.status(200).json({
+            success: true,
+            message: "Application updated successfully",
+            data: application,
+        });
+    } catch (error) {
+        console.error("Update application error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to update application",
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
     }
-
-    await application.save();
-
-    // Emit real-time update (guard)
-    if (
-      req.socketManager &&
-      typeof req.socketManager.notifyApplicationUpdated === "function"
-    ) {
-      req.socketManager.notifyApplicationUpdated({
-        applicationId: application.applicationId,
-        userId: req.user._id,
-        stage: application.currentStage,
-        status: application.status,
-        progress: application.progress,
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Application updated successfully",
-      data: application,
-    });
-  } catch (error) {
-    console.error("Update application stage error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to update application",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
 };
 
 // Save draft
 const saveDraft = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { data, stage } = req.body;
+    try {
+        const { applicationId } = req.params;
+        const { data, stage } = req.body;
 
-    const application = await StudentApplication.findOne({
-      applicationId,
-      user: req.user._id,
-    });
+        const application = await StudentApplication.findOne({
+            applicationId,
+            user: req.user._id,
+        });
 
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    // Update application data
-    if (data) {
-      Object.keys(data).forEach((key) => {
-        if (application.schema.paths[key]) {
-          application[key] = data[key];
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found",
+            });
         }
-      });
+
+        // Update application data
+        if (data) {
+            Object.keys(data).forEach((key) => {
+                if (data[key] !== undefined) {
+                    application[key] = data[key];
+                }
+            });
+        }
+
+        if (stage) {
+            application.currentStage = stage;
+        }
+
+        await application.save();
+
+        // Real-time updates removed (Socket.IO removed)
+
+        res.status(200).json({
+            success: true,
+            message: "Draft saved successfully",
+            data: application,
+        });
+    } catch (error) {
+        console.error("Save draft error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to save draft",
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
     }
-
-    // Update stage if provided
-    if (stage) {
-      application.currentStage = stage;
-    }
-
-    await application.saveDraft(req.user._id);
-
-    // Emit real-time update (guard)
-    if (
-      req.socketManager &&
-      typeof req.socketManager.notifyApplicationDraftSaved === "function"
-    ) {
-      req.socketManager.notifyApplicationDraftSaved({
-        applicationId: application.applicationId,
-        userId: req.user._id,
-        stage: application.currentStage,
-        status: application.status,
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      message: "Draft saved successfully",
-      data: application,
-    });
-  } catch (error) {
-    console.error("Save draft error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to save draft",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
 };
 
 // Submit application
 const submitApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { termsAccepted } = req.body;
+    try {
+        const { applicationId } = req.params;
+        const { termsAccepted } = req.body;
 
-    const application = await StudentApplication.findOne({
-      applicationId,
-      user: req.user._id,
-    });
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    // Validate that all required stages are completed
-    if (
-      !application.progress.registrationComplete ||
-      !application.progress.documentsComplete ||
-      !application.progress.applicationPdfGenerated
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Please complete all required stages before submitting",
-      });
-    }
-
-    if (!termsAccepted) {
-      return res.status(400).json({
-        success: false,
-        message: "Please accept the terms and conditions",
-      });
-    }
-
-    // Update terms acceptance
-    application.termsAccepted = true;
-    application.termsAcceptedAt = new Date();
-    application.progress.termsAccepted = true;
-
-    // Submit application
-    await application.submitApplication(req.user._id);
-
-    // Assign to agent if referral exists (guard against missing referralInfo)
-    const referredBy =
-      application.referralInfo && application.referralInfo.referredBy
-        ? application.referralInfo.referredBy
-        : null;
-    if (
-      referredBy &&
-      application.referralInfo &&
-      application.referralInfo.referralType === "agent"
-    ) {
-      await application.assignToAgent(referredBy);
-    }
-
-    // Initialize review status
-    application.reviewStatus = {
-      documentsVerified: false,
-      personalDetailsVerified: false,
-      academicDetailsVerified: false,
-      guardianDetailsVerified: false,
-      financialDetailsVerified: false,
-      overallApproved: false,
-      reviewedBy: null,
-      reviewedAt: null,
-      comments: [],
-    };
-
-    await application.save();
-
-    // Update referral counts if applicable
-    if (referredBy) {
-      await User.findByIdAndUpdate(referredBy, {
-        $inc: {
-          "referralStats.totalReferrals": 1,
-          "referralStats.pendingReferrals": 1,
-        },
-      });
-    }
-
-    // Emit real-time update to all relevant dashboards
-    const updateData = {
-      applicationId: application.applicationId,
-      studentName: application.personalDetails?.fullName,
-      studentEmail: application.personalDetails?.email,
-      submittedAt: application.submittedAt,
-      referredBy: application.referralInfo.referredBy,
-      status: application.status,
-      assignedAgent: application.assignedAgent,
-    };
-
-    if (req.socketManager) {
-      // Notify staff and super admin
-      if (typeof req.socketManager.emitToRole === "function") {
-        req.socketManager.emitToRole(
-          "staff",
-          "applicationSubmitted",
-          updateData
-        );
-        req.socketManager.emitToRole(
-          "super_admin",
-          "applicationSubmitted",
-          updateData
-        );
-      }
-
-      // Notify the referring agent if applicable
-      if (referredBy && typeof req.socketManager.emitToUser === "function") {
-        req.socketManager.emitToUser(
-          referredBy,
-          "referralSubmitted",
-          updateData
-        );
-      }
-
-      // Notify the student
-      if (typeof req.socketManager.emitToUser === "function") {
-        req.socketManager.emitToUser(req.user._id, "applicationStatusUpdate", {
-          applicationId: application.applicationId,
-          status: application.status,
-          message:
-            "Your application has been submitted successfully and is under review.",
+        const application = await StudentApplication.findOne({
+            applicationId,
+            user: req.user._id,
         });
-      }
-    }
 
-    res.status(200).json({
-      success: true,
-      message: "Application submitted successfully",
-      data: {
-        applicationId: application.applicationId,
-        status: application.status,
-        submittedAt: application.submittedAt,
-        nextSteps:
-          "Your application is now under review. You will be notified of any updates.",
-      },
-    });
-  } catch (error) {
-    console.error("Submit application error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to submit application",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Generate application PDF
-const generateApplicationPDF = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-
-    const application = await StudentApplication.findOne({
-      applicationId,
-      user: req.user._id,
-    }).populate("user", "fullName email phoneNumber");
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    // Create PDF
-    const doc = new PDFDocument();
-    const fileName = `application_${application.applicationId
-      }_${Date.now()}.pdf`;
-    const filePath = path.join(__dirname, "../uploads/processed", fileName);
-
-    // Ensure directory exists
-    const dir = path.dirname(filePath);
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-
-    // Create write stream
-    const stream = fs.createWriteStream(filePath);
-    doc.pipe(stream);
-
-    // Add content to PDF
-    doc.fontSize(20).text("Student Application Form", { align: "center" });
-    doc.moveDown();
-
-    // Personal Details
-    doc.fontSize(16).text("Personal Details", { underline: true });
-    doc.fontSize(12);
-    doc.text(`Full Name: ${application.personalDetails.fullName}`);
-    doc.text(`Father's Name: ${application.personalDetails.fathersName}`);
-    doc.text(`Mother's Name: ${application.personalDetails.mothersName}`);
-    doc.text(
-      `Date of Birth: ${application.personalDetails.dateOfBirth.toLocaleDateString()}`
-    );
-    doc.text(`Gender: ${application.personalDetails.gender}`);
-    doc.text(`Aadhar Number: ${application.personalDetails.aadharNumber}`);
-    doc.moveDown();
-
-    // Contact Details
-    doc.fontSize(16).text("Contact Details", { underline: true });
-    doc.fontSize(12);
-    doc.text(`Phone: ${application.contactDetails.primaryPhone}`);
-    doc.text(`Email: ${application.contactDetails.email}`);
-    doc.text(
-      `Address: ${application.contactDetails.permanentAddress.street}, ${application.contactDetails.permanentAddress.city}, ${application.contactDetails.permanentAddress.state} - ${application.contactDetails.permanentAddress.pincode}`
-    );
-    doc.moveDown();
-
-    // Course Details
-    doc.fontSize(16).text("Course Details", { underline: true });
-    doc.fontSize(12);
-    doc.text(`Selected Course: ${application.courseDetails.selectedCourse}`);
-    doc.text(`Campus: ${application.courseDetails.campus}`);
-    if (application.courseDetails.stream) {
-      doc.text(`Stream: ${application.courseDetails.stream}`);
-    }
-    doc.moveDown();
-
-    // Guardian Details
-    doc.fontSize(16).text("Guardian Details", { underline: true });
-    doc.fontSize(12);
-    doc.text(`Guardian Name: ${application.guardianDetails.guardianName}`);
-    doc.text(`Relationship: ${application.guardianDetails.relationship}`);
-    doc.text(`Phone: ${application.guardianDetails.guardianPhone}`);
-    if (application.guardianDetails.guardianEmail) {
-      doc.text(`Email: ${application.guardianDetails.guardianEmail}`);
-    }
-
-    // Finalize PDF
-    doc.end();
-
-    // Wait for stream to finish
-    stream.on("finish", async () => {
-      // Update application with PDF info
-      application.applicationPdf = {
-        filePath: filePath,
-        generatedAt: new Date(),
-        version: "1.0",
-      };
-      application.progress.applicationPdfGenerated = true;
-      await application.save();
-
-      // Emit real-time update (guard)
-      if (
-        req.socketManager &&
-        typeof req.socketManager.notifyApplicationPDFGenerated === "function"
-      ) {
-        req.socketManager.notifyApplicationPDFGenerated({
-          applicationId: application.applicationId,
-          userId: req.user._id,
-          pdfPath: filePath,
-        });
-      }
-
-      res.status(200).json({
-        success: true,
-        message: "PDF generated successfully",
-        data: {
-          pdfPath: filePath,
-          fileName: fileName,
-        },
-      });
-    });
-  } catch (error) {
-    console.error("Generate PDF error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to generate PDF",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Download application PDF
-const downloadApplicationPDF = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-
-    const application = await StudentApplication.findOne({
-      applicationId,
-      user: req.user._id,
-    });
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    if (!application.applicationPdf || !application.applicationPdf.filePath) {
-      return res.status(400).json({
-        success: false,
-        message: "PDF not generated yet",
-      });
-    }
-
-    const filePath = application.applicationPdf.filePath;
-
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({
-        success: false,
-        message: "PDF file not found",
-      });
-    }
-
-    res.download(filePath, `application_${application.applicationId}.pdf`);
-  } catch (error) {
-    console.error("Download PDF error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to download PDF",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Get applications by status (for staff/admin)
-const getApplicationsByStatus = async (req, res) => {
-  try {
-    const { status, page = 1, limit = 20 } = req.query;
-    const userRole = req.user.role;
-
-    let query = {};
-
-    // Filter based on user role
-    if (userRole === "agent") {
-      query.assignedAgent = req.user._id;
-    } else if (userRole === "staff") {
-      // Staff can see all applications, not just assigned ones
-      // query.assignedStaff = req.user._id; // Commented out to show all applications
-    }
-
-    if (status) {
-      query.status = status;
-    }
-
-    const applications = await StudentApplication.find(query)
-      .populate("user", "fullName email phoneNumber")
-      .populate("assignedAgent", "fullName email phoneNumber")
-      .populate("assignedStaff", "fullName email phoneNumber")
-      .sort({ lastModified: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-
-    const total = await StudentApplication.countDocuments(query);
-
-    res.status(200).json({
-      success: true,
-      data: {
-        applications,
-        pagination: {
-          current: parseInt(page),
-          pages: Math.ceil(total / limit),
-          total,
-        },
-      },
-    });
-  } catch (error) {
-    console.error("Get applications by status error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to get applications",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Approve application
-const approveApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { remarks = "" } = req.body;
-
-    const application = await StudentApplication.findOne({ applicationId });
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    await application.approveApplication(req.user._id, remarks);
-
-    // Emit real-time update
-    req.socketManager.notifyApplicationApproved({
-      applicationId: application.applicationId,
-      userId: application.user,
-      stage: application.currentStage,
-      status: application.status,
-      reviewedBy: req.user._id,
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Application approved successfully",
-      data: application,
-    });
-  } catch (error) {
-    console.error("Approve application error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to approve application",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Reject application
-const rejectApplication = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { rejectionReason, remarks = "" } = req.body;
-
-    if (!rejectionReason) {
-      return res.status(400).json({
-        success: false,
-        message: "Rejection reason is required",
-      });
-    }
-
-    const application = await StudentApplication.findOne({ applicationId });
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    await application.rejectApplication(req.user._id, rejectionReason, remarks);
-
-    // Emit real-time update
-    req.socketManager.notifyApplicationRejected({
-      applicationId: application.applicationId,
-      userId: application.user,
-      stage: application.currentStage,
-      status: application.status,
-      reviewedBy: req.user._id,
-      rejectionReason,
-    });
-
-    res.status(200).json({
-      success: true,
-      message: "Application rejected successfully",
-      data: application,
-    });
-  } catch (error) {
-    console.error("Reject application error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to reject application",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Get workflow statistics
-const getWorkflowStats = async (req, res) => {
-  try {
-    const userRole = req.user.role;
-    let query = {};
-
-    // Filter based on user role
-    if (userRole === "agent") {
-      query.assignedAgent = req.user._id;
-    } else if (userRole === "staff") {
-      query.assignedStaff = req.user._id;
-    }
-
-    const totalApplications = await StudentApplication.countDocuments(query);
-
-    const byStatus = await StudentApplication.aggregate([
-      { $match: query },
-      { $group: { _id: "$status", count: { $sum: 1 } } },
-    ]);
-
-    const byStage = await StudentApplication.aggregate([
-      { $match: query },
-      { $group: { _id: "$currentStage", count: { $sum: 1 } } },
-    ]);
-
-    const recentApplications = await StudentApplication.find(query)
-      .populate("user", "fullName email phoneNumber")
-      .sort({ lastModified: -1 })
-      .limit(10);
-
-    res.status(200).json({
-      success: true,
-      data: {
-        totalApplications,
-        byStatus: byStatus.reduce((acc, item) => {
-          acc[item._id] = item.count;
-          return acc;
-        }, {}),
-        byStage: byStage.reduce((acc, item) => {
-          acc[item._id] = item.count;
-          return acc;
-        }, {}),
-        recentApplications,
-      },
-    });
-  } catch (error) {
-    console.error("Get workflow stats error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to get workflow statistics",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Get submitted applications for review
-const getSubmittedApplications = async (req, res) => {
-  try {
-
-    const { status = "SUBMITTED", page = 1, limit = 20 } = req.query;
-    const userRole = req.user.role;
-
-    let query = { status };
-
-    // Filter based on user role
-    if (userRole === "agent") {
-      query.assignedAgent = req.user._id;
-    } else if (userRole === "staff") {
-      // Staff can see all applications
-      // query.assignedStaff = req.user._id; // Commented out to show all applications
-    }
-
-
-    const applications = await StudentApplication.find(query)
-      .populate("user", "fullName email phoneNumber")
-      .populate("assignedAgent", "fullName email phoneNumber")
-      .populate("assignedStaff", "fullName email phoneNumber")
-      .sort({ submittedAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
-
-    const total = await StudentApplication.countDocuments(query);
-
-
-    res.status(200).json({
-      success: true,
-      data: {
-        applications,
-        pagination: {
-          current: parseInt(page),
-          pages: Math.ceil(total / limit),
-          total,
-        },
-      },
-    });
-  } catch (error) {
-    console.error("Get submitted applications error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to get submitted applications",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
-};
-
-// Verify documents step by step
-const verifyDocuments = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-    const { verificationType, isVerified, comments } = req.body;
-
-    const application = await StudentApplication.findOne({ applicationId });
-
-    if (!application) {
-      return res.status(404).json({
-        success: false,
-        message: "Application not found",
-      });
-    }
-
-    if (!application.reviewStatus) {
-      application.reviewStatus = {
-        documentsVerified: false,
-        personalDetailsVerified: false,
-        academicDetailsVerified: false,
-        guardianDetailsVerified: false,
-        financialDetailsVerified: false,
-        overallApproved: false,
-        reviewedBy: null,
-        reviewedAt: null,
-        comments: [],
-      };
-    }
-
-    // Update specific verification type
-    application.reviewStatus[verificationType] = isVerified;
-    application.reviewStatus.reviewedBy = req.user._id;
-    application.reviewStatus.reviewedAt = new Date();
-
-    if (comments) {
-      application.reviewStatus.comments.push({
-        type: verificationType,
-        comment: comments,
-        reviewedBy: req.user._id,
-        reviewedAt: new Date(),
-      });
-    }
-
-    // Check if all verifications are complete
-    const allVerified =
-      application.reviewStatus.documentsVerified &&
-      application.reviewStatus.personalDetailsVerified &&
-      application.reviewStatus.academicDetailsVerified &&
-      application.reviewStatus.guardianDetailsVerified &&
-      application.reviewStatus.financialDetailsVerified;
-
-    if (allVerified) {
-      application.reviewStatus.overallApproved = true;
-      application.status = "APPROVED";
-      application.currentStage = "APPROVED";
-    }
-
-    await application.save();
-
-    // Emit real-time update
-    if (req.socketManager) {
-      req.socketManager.emitToRole("staff", "applicationVerified", {
-        applicationId: application.applicationId,
-        verificationType,
-        isVerified,
-        overallApproved: application.reviewStatus.overallApproved,
-        reviewedBy: req.user._id,
-      });
-
-      req.socketManager.emitToRole("super_admin", "applicationVerified", {
-        applicationId: application.applicationId,
-        verificationType,
-        isVerified,
-        overallApproved: application.reviewStatus.overallApproved,
-        reviewedBy: req.user._id,
-      });
-
-      // Notify the student
-      req.socketManager.emitToUser(
-        application.user,
-        "applicationStatusUpdate",
-        {
-          applicationId: application.applicationId,
-          status: application.status,
-          message: `Your ${verificationType
-            .replace(/([A-Z])/g, " $1")
-            .toLowerCase()} has been ${isVerified ? "verified" : "rejected"}.`,
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found",
+            });
         }
-      );
-    }
 
-    res.status(200).json({
-      success: true,
-      message: `${verificationType.replace(/([A-Z])/g, " $1").toLowerCase()} ${isVerified ? "verified" : "rejected"
-        } successfully`,
-      data: {
-        applicationId: application.applicationId,
-        verificationType,
-        isVerified,
-        overallApproved: application.reviewStatus.overallApproved,
-        status: application.status,
-      },
-    });
-  } catch (error) {
-    console.error("Verify documents error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to verify documents",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
+        // Update application status
+        application.status = "SUBMITTED";
+        application.currentStage = "SUBMITTED";
+        application.submittedAt = new Date();
+        application.termsAccepted = termsAccepted || false;
+        application.termsAcceptedAt = new Date();
+
+        await application.save();
+
+        // Real-time updates removed (Socket.IO removed)
+
+        res.status(200).json({
+            success: true,
+            message: "Application submitted successfully",
+            data: {
+                applicationId: application.applicationId,
+                status: application.status,
+                submittedAt: application.submittedAt,
+            },
+        });
+    } catch (error) {
+        console.error("Submit application error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to submit application",
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
+    }
 };
 
-// Generate combined PDF of all documents
+// Get application
+const getApplication = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+
+        const application = await StudentApplication.findOne({
+            applicationId,
+            user: req.user._id,
+        }).populate("user", "fullName email phoneNumber");
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: "Application not found",
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: application,
+        });
+    } catch (error) {
+        console.error("Get application error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to get application",
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
+    }
+};
+
+// Get user applications
+const getUserApplications = async (req, res) => {
+    try {
+        const applications = await StudentApplication.find({
+            user: req.user._id,
+        })
+            .populate("user", "fullName email phoneNumber")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: applications,
+        });
+    } catch (error) {
+        console.error("Get user applications error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to get applications",
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
+    }
+};
+
+// Get applications submitted by current user (for agents/staff)
+const getSubmittedApplications = async (req, res) => {
+    try {
+        const applications = await StudentApplication.find({
+            submittedBy: req.user._id,
+        })
+            .populate("user", "fullName email phoneNumber")
+            .populate("submittedBy", "fullName email role")
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: applications,
+        });
+    } catch (error) {
+        console.error("Get submitted applications error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Failed to get submitted applications",
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+        });
+    }
+};
+
+// Placeholder functions for missing routes
+const updateApplicationStage = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const generateApplicationPDF = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const downloadApplicationPDF = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const getApplicationsByStatus = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const approveApplication = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const rejectApplication = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const getWorkflowStats = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const getSubmittedApplications = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
+const verifyDocuments = async (req, res) => {
+    res.status(501).json({
+        success: false,
+        message: "Function not implemented (Socket.IO removed)"
+    });
+};
+
 const generateCombinedPDF = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-
-    const application = await StudentApplication.findOne({
-      applicationId,
-    }).populate("user", "fullName email phoneNumber");
-
-    if (!application) {
-      return res.status(404).json({
+    res.status(501).json({
         success: false,
-        message: "Application not found",
-      });
-    }
-
-    const PDFGenerator = require("../utils/pdfGenerator");
-    const result = await PDFGenerator.generateCombinedPDF(application);
-
-    // Update application with PDF URL
-    application.combinedPdfUrl = result.url;
-    await application.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Combined PDF generated successfully",
-      data: {
-        applicationId: application.applicationId,
-        pdfUrl: result.url,
-        fileName: result.fileName,
-        status: "completed",
-      },
+        message: "Function not implemented (Socket.IO removed)"
     });
-  } catch (error) {
-    console.error("Generate combined PDF error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to generate combined PDF",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
 };
 
-// Generate ZIP file of all documents
 const generateDocumentsZIP = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-
-    const application = await StudentApplication.findOne({ applicationId });
-
-    if (!application) {
-      return res.status(404).json({
+    res.status(501).json({
         success: false,
-        message: "Application not found",
-      });
-    }
-
-    const PDFGenerator = require("../utils/pdfGenerator");
-    const result = await PDFGenerator.generateDocumentsZIP(application);
-
-    // Update application with ZIP URL
-    application.documentsZipUrl = result.url;
-    await application.save();
-
-    res.status(200).json({
-      success: true,
-      message: "Documents ZIP generated successfully",
-      data: {
-        applicationId: application.applicationId,
-        zipUrl: result.url,
-        fileName: result.fileName,
-        size: result.size,
-        status: "completed",
-      },
+        message: "Function not implemented (Socket.IO removed)"
     });
-  } catch (error) {
-    console.error("Generate documents ZIP error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to generate documents ZIP",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
 };
 
-// Get application review details
 const getApplicationReview = async (req, res) => {
-  try {
-    const { applicationId } = req.params;
-
-    const application = await StudentApplication.findOne({ applicationId })
-      .populate("user", "fullName email phoneNumber")
-      .populate("assignedAgent", "fullName email phoneNumber")
-      .populate("assignedStaff", "fullName email phoneNumber");
-
-    if (!application) {
-      return res.status(404).json({
+    res.status(501).json({
         success: false,
-        message: "Application not found",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      data: application,
+        message: "Function not implemented (Socket.IO removed)"
     });
-  } catch (error) {
-    console.error("Get application review error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to get application review",
-      error:
-        process.env.NODE_ENV === "development"
-          ? error.message
-          : "Internal server error",
-    });
-  }
 };
 
 module.exports = {
-  createApplication,
-  getApplication,
-  updateApplicationStage,
-  saveDraft,
-  submitApplication,
-  generateApplicationPDF,
-  downloadApplicationPDF,
-  getApplicationsByStatus,
-  approveApplication,
-  rejectApplication,
-  getWorkflowStats,
-  getSubmittedApplications,
-  verifyDocuments,
-  generateCombinedPDF,
-  generateDocumentsZIP,
-  getApplicationReview,
+    createApplication,
+    updateApplication,
+    saveDraft,
+    submitApplication,
+    getApplication,
+    getUserApplications,
+    getSubmittedApplications,
+    updateApplicationStage,
+    generateApplicationPDF,
+    downloadApplicationPDF,
+    getApplicationsByStatus,
+    approveApplication,
+    rejectApplication,
+    getWorkflowStats,
+    verifyDocuments,
+    generateCombinedPDF,
+    generateDocumentsZIP,
+    getApplicationReview,
 };

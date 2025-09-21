@@ -1,7 +1,8 @@
 const express = require('express');
 const { protect, isSuperAdmin } = require('../middleware/auth');
 const performanceMonitor = require('../utils/performance');
-const cacheManager = require('../utils/cache');
+// Simple in-memory cache (Redis removed)
+const memoryCache = new Map();
 
 const router = express.Router();
 
@@ -11,7 +12,10 @@ const router = express.Router();
 router.get('/metrics', protect, isSuperAdmin, async (req, res) => {
     try {
         const metrics = performanceMonitor.getAllMetrics();
-        const cacheStats = cacheManager.getStats();
+        const cacheStats = {
+            size: memoryCache.size,
+            connected: true
+        };
 
         res.json({
             success: true,
@@ -94,7 +98,7 @@ router.post('/reset', protect, isSuperAdmin, async (req, res) => {
 // @access  Private (Super Admin only)
 router.post('/clear-cache', protect, isSuperAdmin, async (req, res) => {
     try {
-        await cacheManager.flush();
+        memoryCache.clear();
 
         res.json({
             success: true,
@@ -114,7 +118,10 @@ router.post('/clear-cache', protect, isSuperAdmin, async (req, res) => {
 // @access  Private (Super Admin only)
 router.get('/cache-stats', protect, isSuperAdmin, async (req, res) => {
     try {
-        const stats = cacheManager.getStats();
+        const stats = {
+            size: memoryCache.size,
+            connected: true
+        };
 
         res.json({
             success: true,

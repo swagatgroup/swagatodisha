@@ -3,9 +3,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
-import { SocketProvider } from './contexts/SocketContext'
+// Socket.IO removed - using simple state management
 import { DarkModeProvider } from './contexts/DarkModeContext'
-import NotificationToast from './components/shared/NotificationToast'
+// NotificationToast removed - Socket.IO component
 import Header from './components/Header'
 import HeroCarousel from './components/HeroCarousel'
 import AboutUs from './components/AboutUs'
@@ -203,66 +203,63 @@ function App() {
         <HelmetProvider>
             <DarkModeProvider>
                 <AuthProvider>
-                    <SocketProvider>
-                        <Router>
-                            <Routes>
-                                <Route path="/" element={<AppContent />} />
-                                <Route path="/about" element={<AboutUsPage />} />
-                                <Route path="/gallery" element={<Gallery />} />
-                                <Route path="/contact" element={<ContactPage />} />
-                                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-                                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                    <Router>
+                        <Routes>
+                            <Route path="/" element={<AppContent />} />
+                            <Route path="/about" element={<AboutUsPage />} />
+                            <Route path="/gallery" element={<Gallery />} />
+                            <Route path="/contact" element={<ContactPage />} />
+                            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-                                {/* School Pages */}
-                                <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
-                                <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
-                                <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/register" element={<Register />} />
+                            {/* School Pages */}
+                            <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
+                            <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
+                            <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
 
-                                {/* General Dashboard Route - redirects to role-specific dashboard */}
-                                <Route path="/dashboard" element={<DashboardRouter />} />
+                            {/* General Dashboard Route - redirects to role-specific dashboard */}
+                            <Route path="/dashboard" element={<DashboardRouter />} />
 
-                                {/* Role-specific Dashboard Routes */}
-                                <Route
-                                    path="/dashboard/student"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['user', 'student']}>
-                                            <StudentDashboard />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/dashboard/agent"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['agent']}>
-                                            <AgentDashboard />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/dashboard/staff"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['staff']}>
-                                            <StaffDashboard />
-                                        </ProtectedRoute>
-                                    }
-                                />
-                                <Route
-                                    path="/dashboard/admin"
-                                    element={
-                                        <ProtectedRoute allowedRoles={['super_admin']}>
-                                            <SuperAdminDashboard />
-                                        </ProtectedRoute>
-                                    }
-                                />
+                            {/* Role-specific Dashboard Routes */}
+                            <Route
+                                path="/dashboard/student"
+                                element={
+                                    <ProtectedRoute allowedRoles={['user', 'student']}>
+                                        <StudentDashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/dashboard/agent"
+                                element={
+                                    <ProtectedRoute allowedRoles={['agent']}>
+                                        <AgentDashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/dashboard/staff"
+                                element={
+                                    <ProtectedRoute allowedRoles={['staff']}>
+                                        <StaffDashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/dashboard/admin"
+                                element={
+                                    <ProtectedRoute allowedRoles={['super_admin']}>
+                                        <SuperAdminDashboard />
+                                    </ProtectedRoute>
+                                }
+                            />
 
-                                {/* Catch all route */}
-                                <Route path="*" element={<Navigate to="/" replace />} />
-                            </Routes>
-                        </Router>
-                        <NotificationToast />
-                    </SocketProvider>
+                            {/* Catch all route */}
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                    </Router>
                 </AuthProvider>
             </DarkModeProvider>
         </HelmetProvider>
