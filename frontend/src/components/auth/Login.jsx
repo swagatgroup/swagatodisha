@@ -1,7 +1,7 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
-import { useDarkMode } from '../../contexts/DarkModeContext';
+import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import ForgotPassword from './ForgotPassword';

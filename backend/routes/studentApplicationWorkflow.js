@@ -4,6 +4,7 @@ const { protect } = require('../middleware/auth');
 const {
     createApplication,
     getApplication,
+    getUserApplications,
     updateApplicationStage,
     saveDraft,
     submitApplication,

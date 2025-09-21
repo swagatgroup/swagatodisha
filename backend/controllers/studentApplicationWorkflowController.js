@@ -362,12 +362,6 @@ const getWorkflowStats = async (req, res) => {
     });
 };
 
-const getSubmittedApplications = async (req, res) => {
-    res.status(501).json({
-        success: false,
-        message: "Function not implemented (Socket.IO removed)"
-    });
-};
 
 const verifyDocuments = async (req, res) => {
     res.status(501).json({

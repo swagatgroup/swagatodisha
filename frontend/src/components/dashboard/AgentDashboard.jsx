@@ -130,19 +130,26 @@ const EnhancedAgentDashboard = () => {
       const [studentsRes, statsRes, applicationsRes] = await Promise.all([
         api.get("/api/agents/my-students"),
         api.get("/api/agents/stats"),
-        api.get("/api/student-application/submitted-by-me"),
+        api.get("/api/agents/my-submitted-applications"),
       ]);
 
       console.log("Students response:", studentsRes.data);
       if (studentsRes.data.success) {
         const list =
           studentsRes.data.data?.students ?? studentsRes.data.data ?? [];
+        console.log("Students data structure:", list);
+        console.log("Is students data an array?", Array.isArray(list));
+        console.log("Number of students:", Array.isArray(list) ? list.length : 0);
         setStudents(Array.isArray(list) ? list : []);
       }
 
       console.log("Applications response:", applicationsRes.data);
       if (applicationsRes.data.success) {
-        setApplications(applicationsRes.data.data || []);
+        // The API returns { success: true, data: { applications: [...], pagination: {...} } }
+        const applicationsData = applicationsRes.data.data?.applications || applicationsRes.data.data || [];
+        console.log("Applications data structure:", applicationsData);
+        console.log("Is applications data an array?", Array.isArray(applicationsData));
+        setApplications(Array.isArray(applicationsData) ? applicationsData : []);
       }
 
       if (statsRes.data.success) {

@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 // Socket.IO removed - using simple state management
-import { DarkModeProvider } from './contexts/DarkModeContext'
+import { DarkModeProvider } from './contexts/DarkModeContextSimple'
 // NotificationToast removed - Socket.IO component
 import Header from './components/Header'
 import HeroCarousel from './components/HeroCarousel'
@@ -201,8 +201,8 @@ const AppContent = () => {
 function App() {
     return (
         <HelmetProvider>
-            <DarkModeProvider>
-                <AuthProvider>
+            <AuthProvider>
+                <DarkModeProvider>
                     <Router>
                         <Routes>
                             <Route path="/" element={<AppContent />} />
@@ -260,8 +260,8 @@ function App() {
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                     </Router>
-                </AuthProvider>
-            </DarkModeProvider>
+                </DarkModeProvider>
+            </AuthProvider>
         </HelmetProvider>
     )
 }

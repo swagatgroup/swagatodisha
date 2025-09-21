@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const { protect } = require("../middleware/auth");
 const Student = require("../models/Student");
 const StudentApplication = require("../models/StudentApplication");
@@ -116,11 +117,13 @@ router.get("/my-students", async (req, res) => {
     // Import StudentApplication model (temporary fix)
     const StudentApplication = require('../models/StudentApplication');
 
-    // Build filter query - applications either referred by this agent or assigned to this agent
+    // Build filter query - applications either referred by this agent, assigned to this agent, or submitted by this agent
     const filter = {
       $or: [
-        { 'referralInfo.referredBy': agentId }, // Applications that used this agent's referral code
-        { 'assignedAgent': agentId } // Applications assigned to this agent
+        { 'referralInfo.referredBy': new mongoose.Types.ObjectId(agentId) }, // Applications that used this agent's referral code
+        { 'assignedAgent': new mongoose.Types.ObjectId(agentId) }, // Applications assigned to this agent
+        { 'submittedBy': new mongoose.Types.ObjectId(agentId) }, // Applications submitted by this agent
+        { 'submittedBy._id': new mongoose.Types.ObjectId(agentId) } // Applications submitted by this agent (populated)
       ]
     };
 
@@ -226,11 +229,13 @@ router.get("/students", async (req, res) => {
     // Import StudentApplication model (temporary fix)
     const StudentApplication = require('../models/StudentApplication');
 
-    // Build filter query - applications either referred by this agent or assigned to this agent
+    // Build filter query - applications either referred by this agent, assigned to this agent, or submitted by this agent
     const filter = {
       $or: [
-        { 'referralInfo.referredBy': agentId }, // Applications that used this agent's referral code
-        { 'assignedAgent': agentId } // Applications assigned to this agent
+        { 'referralInfo.referredBy': new mongoose.Types.ObjectId(agentId) }, // Applications that used this agent's referral code
+        { 'assignedAgent': new mongoose.Types.ObjectId(agentId) }, // Applications assigned to this agent
+        { 'submittedBy': new mongoose.Types.ObjectId(agentId) }, // Applications submitted by this agent
+        { 'submittedBy._id': new mongoose.Types.ObjectId(agentId) } // Applications submitted by this agent (populated)
       ]
     };
 
@@ -532,6 +537,13 @@ router.post("/submit-application", async (req, res) => {
           referralType: referrer.role,
         };
       }
+    } else {
+      // If no referral code provided, set the submitting agent as the referrer
+      referralInfo = {
+        referredBy: req.user._id,
+        referralCode: req.user.referralCode || null,
+        referralType: req.user.role,
+      };
     }
 
     // Convert date string to Date object for personalDetails.dateOfBirth

@@ -12,36 +12,40 @@ export const useDarkMode = () => {
 
 export const DarkModeProvider = ({ children }) => {
     const [isDarkMode, setIsDarkMode] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
 
-    // Initialize dark mode on mount
     useEffect(() => {
-        try {
-            if (typeof window !== 'undefined') {
-                // Check localStorage first, then system preference
-                const saved = localStorage.getItem('darkMode');
-                if (saved !== null) {
-                    setIsDarkMode(JSON.parse(saved));
-                } else {
-                    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                    setIsDarkMode(prefersDark);
+        // Simple initialization - just set to false initially
+        // The actual dark mode preference will be loaded after component mounts
+        const initializeDarkMode = () => {
+            try {
+                if (typeof window !== 'undefined') {
+                    const saved = localStorage.getItem('darkMode');
+                    if (saved !== null) {
+                        const parsed = JSON.parse(saved);
+                        setIsDarkMode(parsed);
+                    } else {
+                        // Check system preference
+                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                        setIsDarkMode(prefersDark);
+                    }
                 }
-                setIsInitialized(true);
+            } catch (error) {
+                console.warn('Error initializing dark mode:', error);
             }
-        } catch (error) {
-            console.warn('Error initializing dark mode:', error);
-            setIsInitialized(true);
-        }
+        };
+
+        // Initialize after a short delay to ensure React is fully loaded
+        const timer = setTimeout(initializeDarkMode, 100);
+        return () => clearTimeout(timer);
     }, []);
 
-    // Update DOM and localStorage when dark mode changes
     useEffect(() => {
         try {
             if (typeof window !== 'undefined') {
-                // Save to localStorage when dark mode changes
+                // Update localStorage
                 localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
 
-                // Update document class for Tailwind dark mode
+                // Update DOM class
                 if (isDarkMode) {
                     document.documentElement.classList.add('dark');
                 } else {
@@ -54,13 +58,12 @@ export const DarkModeProvider = ({ children }) => {
     }, [isDarkMode]);
 
     const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode);
+        setIsDarkMode(prev => !prev);
     };
 
     const value = {
         isDarkMode,
-        toggleDarkMode,
-        isInitialized
+        toggleDarkMode
     };
 
     return (

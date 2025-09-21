@@ -51,11 +51,12 @@ class ErrorBoundary extends React.Component {
 }
 
 // App component mounting
+const root = ReactDOM.createRoot(document.getElementById('root'));
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+root.render(
     <React.StrictMode>
         <ErrorBoundary>
             <App />
         </ErrorBoundary>
-    </React.StrictMode>,
-)
+    </React.StrictMode>
+);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { useDarkMode } from '../../contexts/DarkModeContext';
+import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 
 const DarkModeToggle = () => {
     const { isDarkMode, toggleDarkMode } = useDarkMode();

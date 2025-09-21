@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../utils/api';
 import { handleAPIError } from '../utils/apiErrorHandler';
 
@@ -16,8 +16,21 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token'));
-    const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+    const [token, setToken] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    // Initialize token from localStorage on mount
+    useEffect(() => {
+        try {
+            const storedToken = localStorage.getItem('token');
+            if (storedToken) {
+                setToken(storedToken);
+                setIsAuthenticated(true);
+            }
+        } catch (error) {
+            console.warn('Error reading token from localStorage:', error);
+        }
+    }, []);
 
     // Set default headers when token changes
     useEffect(() => {
