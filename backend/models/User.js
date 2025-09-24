@@ -21,24 +21,7 @@ const userSchema = new mongoose.Schema({
             message: 'Full name can only contain alphabets and spaces'
         }
     },
-    guardianName: {
-        type: String,
-        required: function () {
-            // Only required for students, not agents or other roles
-            return this.isNew && this.role === 'student';
-        },
-        trim: true,
-        minlength: [2, 'Guardian name must be at least 2 characters'],
-        maxlength: [100, 'Guardian name cannot exceed 100 characters'],
-        validate: {
-            validator: function (v) {
-                // Skip validation if empty and not required
-                if (!v && !(this.isNew && this.role === 'student')) return true;
-                return /^[a-zA-Z\s]+$/.test(v);
-            },
-            message: 'Guardian name can only contain alphabets and spaces'
-        }
-    },
+    // guardianName removed from initial registration requirements
     email: {
         type: String,
         required: [true, 'Email is required'],

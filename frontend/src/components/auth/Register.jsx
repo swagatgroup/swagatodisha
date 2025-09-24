@@ -9,42 +9,21 @@ import Swal from 'sweetalert2';
 const Register = () => {
     const [formData, setFormData] = useState({
         fullName: '',
-        guardianName: '',
         email: '',
         password: '',
         confirmPassword: '',
-        phoneNumber: '',
-        course: '',
-        referralCode: ''
+        phoneNumber: ''
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    const [courseSearch, setCourseSearch] = useState('');
-    const [showCourseDropdown, setShowCourseDropdown] = useState(false);
-    const [customCourse, setCustomCourse] = useState('');
-    const [showCustomCourse, setShowCustomCourse] = useState(false);
+    // Removed course/referral related UI/state for minimal registration
     const { register } = useAuth();
     const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
     const dropdownRef = useRef(null);
 
-    // Course list as per requirements
-    const courseList = [
-        "B.Tech Computer Science",
-        "B.Tech Mechanical Engineering",
-        "B.Tech Electrical Engineering",
-        "B.Tech Civil Engineering",
-        "MBA",
-        "BCA",
-        "MCA",
-        "B.Com",
-        "M.Com",
-        "BA",
-        "MA English",
-        "BSc Mathematics",
-        "MSc Physics"
-    ];
+    // Course list removed
 
     const handleChange = (e) => {
         setFormData({
@@ -55,32 +34,15 @@ const Register = () => {
         setSuccess('');
     };
 
-    const handleCourseSearch = (e) => {
-        setCourseSearch(e.target.value);
-        setShowCourseDropdown(true);
-    };
-
-    const handleCourseSelect = (course) => {
-        setFormData({ ...formData, course });
-        setCourseSearch('');
-        setShowCourseDropdown(false);
-    };
-
-    const filteredCourses = courseList.filter(course =>
-        course.toLowerCase().includes(courseSearch.toLowerCase())
-    );
+    // Course handlers removed
 
     // Close dropdown when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setShowCourseDropdown(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
+        // No dropdowns to manage now
+        const noop = () => { };
+        document.addEventListener('mousedown', noop);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mousedown', noop);
         };
     }, []);
 
@@ -105,25 +67,7 @@ const Register = () => {
             return false;
         }
 
-        // Guardian name validation
-        if (!formData.guardianName || formData.guardianName.length < 2) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Guardian name must be at least 2 characters',
-                confirmButtonColor: '#7c3aed'
-            });
-            return false;
-        }
-        if (!/^[a-zA-Z\s]+$/.test(formData.guardianName)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Guardian name can only contain alphabets and spaces',
-                confirmButtonColor: '#7c3aed'
-            });
-            return false;
-        }
+        // Guardian name validation removed
 
         // Phone number validation (Indian mobile numbers)
         if (!/^[6-9]\d{9}$/.test(formData.phoneNumber)) {
@@ -147,16 +91,7 @@ const Register = () => {
             return false;
         }
 
-        // Course validation
-        if (!formData.course) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Please select a course',
-                confirmButtonColor: '#7c3aed'
-            });
-            return false;
-        }
+        // Course validation removed
 
         // Password validation
         if (formData.password.length < 8) {
@@ -216,7 +151,12 @@ const Register = () => {
             setLoading(true);
             setError('');
 
-            const result = await register(formData);
+            const result = await register({
+                fullName: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                phoneNumber: formData.phoneNumber
+            });
 
             if (result.success) {
 
@@ -318,7 +258,7 @@ const Register = () => {
 
                         {/* Personal Information */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
+                            <div className="md:col-span-2">
                                 <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Full Name *
                                 </label>
@@ -327,26 +267,11 @@ const Register = () => {
                                     name="fullName"
                                     type="text"
                                     required
+                                    autoComplete="name"
                                     value={formData.fullName}
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter your full name"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="guardianName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Guardian's Name *
-                                </label>
-                                <input
-                                    id="guardianName"
-                                    name="guardianName"
-                                    type="text"
-                                    required
-                                    value={formData.guardianName}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                    placeholder="Enter guardian's full name"
                                 />
                             </div>
                         </div>
@@ -362,6 +287,7 @@ const Register = () => {
                                     name="email"
                                     type="email"
                                     required
+                                    autoComplete="username email"
                                     value={formData.email}
                                     onChange={handleChange}
                                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -378,6 +304,7 @@ const Register = () => {
                                     name="phoneNumber"
                                     type="tel"
                                     required
+                                    autoComplete="tel"
                                     value={formData.phoneNumber}
                                     onChange={(e) => handleChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
@@ -413,68 +340,9 @@ const Register = () => {
                             />
                         </div>
 
-                        {/* Course Selection with Search */}
-                        <div className="relative" ref={dropdownRef}>
-                            <label htmlFor="course" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Course *
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="Search and select course..."
-                                    value={courseSearch || formData.course}
-                                    onChange={handleCourseSearch}
-                                    onFocus={() => setShowCourseDropdown(true)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 pr-10"
-                                />
-                                <div className="absolute inset-y-0 right-0 flex items-center pr-3">
-                                    <svg className="h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                    </svg>
-                                </div>
+                        {/* Course selection removed */}
 
-                                {/* Dropdown */}
-                                {showCourseDropdown && (
-                                    <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                        {filteredCourses.length > 0 ? (
-                                            filteredCourses.map((course, index) => (
-                                                <div
-                                                    key={index}
-                                                    onClick={() => handleCourseSelect(course)}
-                                                    className="px-4 py-2 hover:bg-purple-50 cursor-pointer text-sm border-b border-gray-100 last:border-b-0"
-                                                >
-                                                    {course}
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="px-4 py-2 text-gray-500 dark:text-gray-400 text-sm">
-                                                No courses found
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                        </div>
-
-                        {/* Referral Code */}
-                        <div>
-                            <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Referral Code (Optional)
-                            </label>
-                            <input
-                                id="referralCode"
-                                name="referralCode"
-                                type="text"
-                                value={formData.referralCode}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                placeholder="Enter agent referral code if you have one"
-                            />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                If you were referred by an agent, enter their referral code here
-                            </p>
-                        </div>
+                        {/* Referral code removed */}
 
                         {/* Submit Button */}
                         <motion.button

@@ -147,8 +147,7 @@ export const AuthProvider = ({ children }) => {
                 fullName: userData.fullName,
                 email: userData.email,
                 password: userData.password,
-                phoneNumber: userData.phoneNumber,
-                guardianName: userData.guardianName
+                phoneNumber: userData.phoneNumber
             });
 
             // Registration response received

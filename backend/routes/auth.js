@@ -27,7 +27,7 @@ const generateRefreshToken = (id) => {
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { fullName, email, password, phoneNumber, guardianName, role = 'student' } = req.body;
+        const { fullName, email, password, phoneNumber, role = 'student' } = req.body;
 
         // Validate required fields
         const missingFields = [];
@@ -35,7 +35,6 @@ router.post('/register', async (req, res) => {
         if (!email) missingFields.push('email');
         if (!password) missingFields.push('password');
         if (!phoneNumber) missingFields.push('phoneNumber');
-        if (!guardianName) missingFields.push('guardianName');
 
         if (missingFields.length > 0) {
             return res.status(400).json({
@@ -78,7 +77,6 @@ router.post('/register', async (req, res) => {
             email: email.toLowerCase().trim(),
             password: password, // Will be hashed by User model pre-save hook
             phoneNumber: phoneNumber.trim(),
-            guardianName: guardianName.trim(),
             role: role
         };
 
