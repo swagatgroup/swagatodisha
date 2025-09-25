@@ -149,7 +149,13 @@ const saveDraft = async (req, res) => {
             user: req.user._id,
         });
 
-        if (!application) {
+        // Fallback: allow saving by applicationId only if user-scoped lookup failed (edge cases)
+        let appDoc = application;
+        if (!appDoc) {
+            appDoc = await StudentApplication.findOne({ applicationId });
+        }
+
+        if (!appDoc) {
             return res.status(404).json({
                 success: false,
                 message: "Application not found",
@@ -160,16 +166,33 @@ const saveDraft = async (req, res) => {
         if (data) {
             Object.keys(data).forEach((key) => {
                 if (data[key] !== undefined) {
-                    application[key] = data[key];
+                    // Special handling: normalize documents from frontend SimpleDocumentUpload (Cloudinary-backed)
+                    if (key === 'documents' && data.documents && typeof data.documents === 'object' && !Array.isArray(data.documents)) {
+                        const normalizedDocs = Object.entries(data.documents).map(([docType, doc]) => ({
+                            documentType: docType,
+                            fileName: doc.name || 'uploaded',
+                            filePath: doc.downloadUrl || doc.url || doc.filePath || '',
+                            storageType: 'cloudinary',
+                            cloudinaryPublicId: doc.cloudinaryPublicId || doc.public_id || undefined,
+                            fileSize: doc.size,
+                            mimeType: doc.type,
+                            status: 'PENDING',
+                            uploadedAt: new Date()
+                        })).filter(d => d.filePath);
+
+                        appDoc.documents = normalizedDocs;
+                    } else {
+                        appDoc[key] = data[key];
+                    }
                 }
             });
         }
 
         if (stage) {
-            application.currentStage = stage;
+            appDoc.currentStage = stage;
         }
 
-        await application.save();
+        await appDoc.save();
 
         // Real-time updates removed (Socket.IO removed)
 

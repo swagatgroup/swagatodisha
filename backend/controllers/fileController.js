@@ -2,6 +2,7 @@ const File = require('../models/File');
 const cloudinary = require('cloudinary').v2;
 const { generateUniqueFileName, getFileCategory } = require('../middleware/upload');
 const { asyncHandler } = require('../middleware/errorHandler');
+const StudentApplication = require('../models/StudentApplication');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -49,6 +50,7 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
             originalName: originalname,
             fileName: uniqueFileName,
             filePath: cloudinaryResult.secure_url,
+            fileUrl: cloudinaryResult.secure_url,
             fileSize: size,
             mimeType: mimetype,
             category: category,
@@ -97,9 +99,13 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
 
 // @desc    Upload multiple files
 // @route   POST /api/files/upload-multiple
-// @access  Public
+// @access  Protected
 const uploadMultipleFiles = asyncHandler(async (req, res) => {
     try {
+        console.log('Upload multiple files request received');
+        console.log('User:', req.user ? req.user._id : 'No user');
+        console.log('Files:', req.files ? req.files.length : 'No files');
+
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -112,6 +118,7 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
             const { originalname, buffer, mimetype, size } = uploadedFile;
             const category = getFileCategory(mimetype);
             const uniqueFileName = generateUniqueFileName(originalname);
+            const incomingDocType = (req.body && req.body.documentType) ? String(req.body.documentType) : undefined;
 
             // Upload to Cloudinary
             const cloudinaryResult = await new Promise((resolve, reject) => {
@@ -135,6 +142,7 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
                 originalName: originalname,
                 fileName: uniqueFileName,
                 filePath: cloudinaryResult.secure_url,
+                fileUrl: cloudinaryResult.secure_url,
                 fileSize: size,
                 mimeType: mimetype,
                 category: category,
@@ -142,6 +150,7 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
                 cloudinaryPublicId: cloudinaryResult.public_id,
                 uploadedBy: req.user?._id || null,
                 metadata: {
+                    documentType: incomingDocType,
                     cloudinaryId: cloudinaryResult.public_id,
                     cloudinaryUrl: cloudinaryResult.secure_url,
                     cloudinaryVersion: cloudinaryResult.version,
@@ -359,11 +368,84 @@ const getStorageStats = asyncHandler(async (req, res) => {
     }
 });
 
+// Backfill: Map existing Cloudinary assets to StudentApplication.documents
+// Strategy: list resources under folder 'swagat-odisha', group by uploadedBy when possible (File docs),
+// or attach to the most recent application for the authenticated user as a fallback.
+const backfillCloudinaryToApplications = asyncHandler(async (req, res) => {
+    try {
+        const { simulate = 'false', limit = 200 } = req.query;
+        const dryRun = simulate === 'true';
+
+        // 1) Load File records from DB (preferable because they carry uploadedBy and metadata)
+        const files = await File.find({ storageType: 'cloudinary', isActive: true })
+            .sort({ createdAt: -1 })
+            .limit(Number(limit));
+
+        let updated = 0;
+        let scanned = 0;
+
+        for (const f of files) {
+            scanned += 1;
+            // Determine target application: by uploadedBy → latest application
+            let targetApp = null;
+            if (f.uploadedBy) {
+                targetApp = await StudentApplication.findOne({ user: f.uploadedBy })
+                    .sort({ createdAt: -1 });
+            }
+
+            // Fallback: if request is authenticated and has an application, use that
+            if (!targetApp && req.user?._id) {
+                targetApp = await StudentApplication.findOne({ user: req.user._id })
+                    .sort({ createdAt: -1 });
+            }
+
+            if (!targetApp) continue;
+
+            // If already present (by cloudinaryPublicId or filePath), skip
+            const exists = (targetApp.documents || []).some(d => (
+                (d.cloudinaryPublicId && d.cloudinaryPublicId === f.cloudinaryPublicId) ||
+                (d.filePath && d.filePath === f.filePath)
+            ));
+            if (exists) continue;
+
+            const inferredType = (f.mimeType || '').includes('pdf') ? 'pdf_document' : 'uploaded_file';
+            const doc = {
+                documentType: inferredType,
+                fileName: f.originalName || f.fileName,
+                filePath: f.filePath || f.fileUrl,
+                fileSize: f.fileSize,
+                mimeType: f.mimeType,
+                storageType: 'cloudinary',
+                cloudinaryPublicId: f.cloudinaryPublicId,
+                status: 'PENDING',
+                uploadedAt: f.createdAt
+            };
+
+            if (!dryRun) {
+                if (!Array.isArray(targetApp.documents)) targetApp.documents = [];
+                targetApp.documents.push(doc);
+                await targetApp.save();
+            }
+            updated += 1;
+        }
+
+        return res.json({
+            success: true,
+            message: dryRun ? 'Backfill simulation complete' : 'Backfill complete',
+            data: { scanned, updated, dryRun }
+        });
+    } catch (error) {
+        console.error('Backfill error:', error);
+        return res.status(500).json({ success: false, message: 'Backfill failed', error: error.message });
+    }
+});
+
 module.exports = {
     uploadSingleFile,
     uploadMultipleFiles,
     getFileById,
     deleteFile,
     getAllFiles,
-    getStorageStats
+    getStorageStats,
+    backfillCloudinaryToApplications
 };

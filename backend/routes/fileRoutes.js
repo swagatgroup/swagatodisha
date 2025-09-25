@@ -10,16 +10,17 @@ const {
 } = require('../controllers/fileController');
 const { uploadSingle, uploadMultiple } = require('../middleware/upload');
 const { asyncHandler } = require('../middleware/errorHandler');
+const { protect } = require('../middleware/auth');
 
 // @route   POST /api/files/upload
 // @desc    Upload single file
-// @access  Public
-router.post('/upload', uploadSingle('file'), uploadSingleFile);
+// @access  Protected
+router.post('/upload', protect, uploadSingle('file'), uploadSingleFile);
 
 // @route   POST /api/files/upload-multiple
 // @desc    Upload multiple files
-// @access  Public
-router.post('/upload-multiple', uploadMultiple('files', 10), uploadMultipleFiles);
+// @access  Protected
+router.post('/upload-multiple', protect, uploadMultiple('files', 10), uploadMultipleFiles);
 
 // @route   GET /api/files
 // @desc    Get all files with pagination and filtering
@@ -42,5 +43,10 @@ router.get('/:id', getFileById);
 // @desc    Delete file
 // @access  Public
 router.delete('/:id', deleteFile);
+
+// @route   POST /api/files/backfill
+// @desc    Backfill Cloudinary files to applications
+// @access  Protected (admin/staff preferred)
+router.post('/backfill', protect, require('../controllers/fileController').backfillCloudinaryToApplications);
 
 module.exports = router;

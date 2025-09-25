@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { CloudArrowUpIcon, DocumentIcon, XMarkIcon } from '@heroicons/react/24/outline';
 
 const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequired = true, disabled = false }) => {
     const [documents, setDocuments] = useState(initialDocuments);
     const [uploading, setUploading] = useState({});
+    const [dragActive, setDragActive] = useState({});
+    const fileInputRefs = useRef({});
 
     const mockDocumentTypes = [
         {
@@ -86,17 +88,35 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         setUploading(prev => ({ ...prev, [documentType]: true }));
 
         try {
-            // Simulate upload delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const formData = new FormData();
+            formData.append('files', file);
+            formData.append('documentType', documentType);
 
-            // Create file object
+            const response = await fetch('/api/files/upload-multiple', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Upload failed');
+            }
+
+            const result = await response.json();
+            const uploaded = Array.isArray(result.data) ? result.data[0] : null;
+
             const fileObject = {
-                file: file,
-                name: file.name,
-                size: file.size,
-                type: file.type,
+                documentType,
+                name: uploaded?.originalName || file.name,
+                size: uploaded?.fileSize || file.size,
+                type: uploaded?.mimeType || file.type,
                 uploadedAt: new Date().toISOString(),
-                status: 'uploaded'
+                status: 'uploaded',
+                downloadUrl: uploaded?.downloadUrl || uploaded?.filePath,
+                cloudinaryPublicId: uploaded?.cloudinaryPublicId,
             };
 
             setDocuments(prev => ({
@@ -104,7 +124,6 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                 [documentType]: fileObject
             }));
 
-            // Notify parent
             onDocumentsChange({
                 ...documents,
                 [documentType]: fileObject
@@ -129,6 +148,39 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         const newDocs = { ...documents };
         delete newDocs[documentType];
         onDocumentsChange(newDocs);
+    };
+
+    const handleDrag = (e, documentType) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDragIn = (e, documentType) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(prev => ({ ...prev, [documentType]: true }));
+    };
+
+    const handleDragOut = (e, documentType) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(prev => ({ ...prev, [documentType]: false }));
+    };
+
+    const handleDrop = (e, documentType) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(prev => ({ ...prev, [documentType]: false }));
+
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleFileUpload(documentType, e.dataTransfer.files[0]);
+        }
+    };
+
+    const handleFileInputChange = (e, documentType) => {
+        if (e.target.files && e.target.files[0]) {
+            handleFileUpload(documentType, e.target.files[0]);
+        }
     };
 
     const getStatusColor = (status) => {
@@ -208,21 +260,21 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                     </button>
                                 </div>
                             ) : (
-                                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 text-center">
+                                <div
+                                    className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${dragActive[docType.id]
+                                        ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                                        : 'border-gray-300 dark:border-gray-600'
+                                        }`}
+                                    onDragEnter={(e) => handleDragIn(e, docType.id)}
+                                    onDragLeave={(e) => handleDragOut(e, docType.id)}
+                                    onDragOver={(e) => handleDrag(e, docType.id)}
+                                    onDrop={(e) => handleDrop(e, docType.id)}
+                                >
                                     <input
+                                        ref={(el) => fileInputRefs.current[docType.id] = el}
                                         type="file"
-                                        multiple
                                         accept={docType.allowedFormats.map(f => `.${f}`).join(',')}
-                                        onChange={(e) => {
-                                            if (e.target.files && e.target.files.length > 0) {
-                                                // Handle multiple files
-                                                Array.from(e.target.files).forEach(file => {
-                                                    handleFileUpload(docType.id, file);
-                                                });
-                                                // Clear the input after upload
-                                                e.target.value = '';
-                                            }
-                                        }}
+                                        onChange={(e) => handleFileInputChange(e, docType.id)}
                                         className="hidden"
                                         id={`file-${docType.id}`}
                                         disabled={disabled || isUploading}
@@ -232,9 +284,16 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                         className="cursor-pointer block"
                                     >
                                         <div className="flex flex-col items-center">
-                                            <CloudArrowUpIcon className="w-8 h-8 text-gray-400 mb-2" />
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                Click to upload multiple files or drag and drop
+                                            <CloudArrowUpIcon className={`w-8 h-8 mb-2 ${dragActive[docType.id] ? 'text-blue-500' : 'text-gray-400'
+                                                }`} />
+                                            <p className={`text-sm ${dragActive[docType.id]
+                                                ? 'text-blue-600 dark:text-blue-400'
+                                                : 'text-gray-600 dark:text-gray-400'
+                                                }`}>
+                                                {dragActive[docType.id]
+                                                    ? 'Drop file here'
+                                                    : 'Click to upload or drag and drop'
+                                                }
                                             </p>
                                             <p className="text-xs text-gray-500 mt-1">
                                                 {docType.allowedFormats.join(', ').toUpperCase()} up to {docType.maxSize}

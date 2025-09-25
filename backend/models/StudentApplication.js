@@ -202,6 +202,14 @@ const studentApplicationSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        storageType: {
+            type: String,
+            enum: ['cloudinary', 'local'],
+            default: 'cloudinary'
+        },
+        cloudinaryPublicId: {
+            type: String
+        },
         fileSize: Number,
         mimeType: String,
         uploadedAt: {
