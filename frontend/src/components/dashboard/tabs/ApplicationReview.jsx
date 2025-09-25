@@ -27,18 +27,30 @@ const ApplicationReview = () => {
     const [loading, setLoading] = useState(true);
     const [verifying, setVerifying] = useState(false);
     const [activeTab, setActiveTab] = useState('submitted');
-    const [comments, setComments] = useState('');
     const [showDocumentViewer, setShowDocumentViewer] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState(null);
     const [documentDecisions, setDocumentDecisions] = useState({});
-    const [showRemarksModal, setShowRemarksModal] = useState(false);
-    const [pendingAction, setPendingAction] = useState(null);
+    const [tabStats, setTabStats] = useState({
+        submitted: 0,
+        under_review: 0,
+        approved: 0,
+        rejected: 0
+    });
+    const [documentReviewStats, setDocumentReviewStats] = useState({
+        total: 0,
+        notReviewed: 0,
+        partiallyReviewed: 0,
+        fullyReviewed: 0,
+        allApproved: 0,
+        hasRejected: 0
+    });
 
-    const tabs = [
-        { id: 'submitted', name: 'Submitted', count: 0, color: 'blue' },
-        { id: 'under_review', name: 'Under Review', count: 0, color: 'yellow' },
-        { id: 'approved', name: 'Approved', count: 0, color: 'green' },
-        { id: 'rejected', name: 'Rejected', count: 0, color: 'red' }
+    // Make tabs reactive to state changes
+    const getTabs = () => [
+        { id: 'submitted', name: 'Not Reviewed', count: documentReviewStats.notReviewed, color: 'blue' },
+        { id: 'under_review', name: 'Partially Reviewed', count: documentReviewStats.partiallyReviewed, color: 'yellow' },
+        { id: 'approved', name: 'All Approved', count: documentReviewStats.allApproved, color: 'green' },
+        { id: 'rejected', name: 'Has Rejected', count: documentReviewStats.hasRejected, color: 'red' }
     ];
 
     const verificationSteps = [
@@ -79,34 +91,118 @@ const ApplicationReview = () => {
         }
     ];
 
-    const defaultRemarks = {
-        approve: [
-            'All documents verified and approved',
-            'Application meets all requirements',
-            'Documents are clear and valid',
-            'Information verified successfully'
-        ],
-        reject: [
-            'Document quality is poor/unreadable',
-            'Missing required documents',
-            'Invalid or expired documents',
-            'Information mismatch found',
-            'Documents do not meet requirements'
-        ]
-    };
+
+    const suggestedApproveRemarks = [
+        'Document is clear and valid',
+        'Matches application details',
+        'Official copy verified'
+    ];
+
+    const suggestedRejectRemarks = [
+        'Blurry or unreadable',
+        'Incorrect document uploaded',
+        'Details do not match application'
+    ];
 
     useEffect(() => {
+        fetchAllApplicationsForStats();
         fetchApplications();
     }, [activeTab]);
+
+    // Debug: Log when documentReviewStats changes
+    useEffect(() => {
+        console.log('Document review stats updated:', documentReviewStats);
+    }, [documentReviewStats]);
+
+    const fetchAllApplicationsForStats = async () => {
+        try {
+            // First try the dedicated stats endpoint
+            const response = await api.get('/api/student-application/document-review-stats');
+            if (response.data?.success) {
+                setDocumentReviewStats(response.data.data);
+                return;
+            }
+        } catch (error) {
+            console.log('Stats endpoint not available, calculating from applications data');
+        }
+
+        // Fallback: fetch all applications and calculate stats
+        try {
+            const response = await api.get('/api/student-application/applications');
+            if (response.data?.success) {
+                const allApplications = response.data.data.applications || [];
+                calculateStatsFromApplicationsData(allApplications);
+            }
+        } catch (error) {
+            console.error('Error fetching applications for stats:', error);
+        }
+    };
+
+
+    const calculateStatsFromApplicationsData = (applicationsData) => {
+        let notReviewed = 0;
+        let partiallyReviewed = 0;
+        let allApproved = 0;
+        let hasRejected = 0;
+
+        applicationsData.forEach(app => {
+            const documents = app.documents || [];
+            const totalDocs = documents.length;
+            const reviewedDocs = documents.filter(doc => doc.status !== 'PENDING').length;
+            const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
+            const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
+
+            if (totalDocs === 0) {
+                // No documents - skip
+            } else if (reviewedDocs === 0) {
+                notReviewed++;
+            } else if (reviewedDocs === totalDocs) {
+                if (rejectedDocs === 0) {
+                    allApproved++;
+                } else {
+                    hasRejected++;
+                }
+            } else {
+                partiallyReviewed++;
+            }
+        });
+
+        console.log('Calculated stats:', { notReviewed, partiallyReviewed, allApproved, hasRejected });
+
+        setDocumentReviewStats(prev => {
+            const newStats = {
+                ...prev,
+                notReviewed,
+                partiallyReviewed,
+                allApproved,
+                hasRejected
+            };
+            console.log('Setting document review stats:', newStats);
+            return newStats;
+        });
+    };
 
     const fetchApplications = async () => {
         try {
             setLoading(true);
-            // Temporarily use debug route for testing
-            const response = await api.get(`/api/student-application/submitted-debug?status=${activeTab.toUpperCase()}`);
+
+            // Map tab IDs to review filters
+            const reviewFilterMap = {
+                'submitted': 'not_reviewed',
+                'under_review': 'partially_reviewed',
+                'approved': 'all_approved',
+                'rejected': 'has_rejected'
+            };
+
+            const reviewFilter = reviewFilterMap[activeTab];
+            const queryParams = reviewFilter ? `?reviewFilter=${reviewFilter}` : '';
+
+            const response = await api.get(`/api/student-application/applications${queryParams}`);
 
             if (response.data?.success) {
-                setApplications(response.data.data.applications || []);
+                const applicationsData = response.data.data.applications || [];
+                console.log(`Fetched applications for ${activeTab} (${reviewFilter}):`, applicationsData.length, applicationsData);
+                setApplications(applicationsData);
             }
         } catch (error) {
             console.error('Error fetching applications:', error);
@@ -136,13 +232,11 @@ const ApplicationReview = () => {
             setVerifying(true);
             const response = await api.put(`/api/student-application/${selectedApplication.applicationId}/verify`, {
                 verificationType,
-                isVerified,
-                comments: comments.trim() || undefined
+                isVerified
             });
 
             if (response.data?.success) {
                 showSuccess(response.data.message);
-                setComments('');
                 await fetchApplicationDetails(selectedApplication.applicationId);
                 await fetchApplications();
             }
@@ -160,9 +254,11 @@ const ApplicationReview = () => {
     };
 
     const handleDocumentDecision = (documentType, decision, remarks = '') => {
+        // For approvals, don't require remarks. For rejections, require remarks.
+        const finalRemarks = decision === 'approve' ? (remarks || 'Document approved') : remarks;
         setDocumentDecisions(prev => ({
             ...prev,
-            [documentType]: { decision, remarks }
+            [documentType]: { decision, remarks: finalRemarks }
         }));
     };
 
@@ -179,10 +275,19 @@ const ApplicationReview = () => {
     const handleBulkDocumentVerification = async () => {
         if (!selectedApplication) return;
 
+        // Validate that rejected documents have remarks
+        const rejectedDecisions = Object.entries(documentDecisions).filter(([_, { decision }]) => decision === 'reject');
+        const rejectedWithoutRemarks = rejectedDecisions.filter(([_, { remarks }]) => !remarks || remarks.trim() === '');
+
+        if (rejectedWithoutRemarks.length > 0) {
+            showError('Please provide remarks for rejected documents');
+            return;
+        }
+
         const decisions = Object.entries(documentDecisions).map(([documentType, { decision, remarks }]) => ({
             documentType,
-            status: decision.toUpperCase(),
-            remarks: remarks || (decision === 'approve' ? 'Document approved' : 'Document rejected')
+            status: decision === 'approve' ? 'APPROVED' : 'REJECTED',
+            remarks: decision === 'approve' ? (remarks || 'Document approved') : remarks
         }));
 
         if (decisions.length === 0) {
@@ -190,14 +295,28 @@ const ApplicationReview = () => {
             return;
         }
 
+        // Generate mixed feedback summary
+        const approvedDocs = decisions.filter(d => d.status === 'APPROVED');
+        const rejectedDocs = decisions.filter(d => d.status === 'REJECTED');
+
+        let feedbackMessage = '';
+        if (approvedDocs.length > 0 && rejectedDocs.length > 0) {
+            feedbackMessage = `Mixed feedback: ${approvedDocs.map(d => d.documentType).join(', ')} approved, ${rejectedDocs.map(d => d.documentType).join(', ')} rejected`;
+        } else if (approvedDocs.length > 0) {
+            feedbackMessage = `All reviewed documents approved: ${approvedDocs.map(d => d.documentType).join(', ')}`;
+        } else if (rejectedDocs.length > 0) {
+            feedbackMessage = `All reviewed documents rejected: ${rejectedDocs.map(d => d.documentType).join(', ')}`;
+        }
+
         try {
             setVerifying(true);
             const response = await api.put(`/api/student-application/${selectedApplication.applicationId}/verify`, {
-                decisions
+                decisions,
+                feedbackSummary: feedbackMessage
             });
 
             if (response.data?.success) {
-                showSuccess('Documents reviewed successfully');
+                showSuccess(`Documents reviewed successfully. ${feedbackMessage}`);
                 setDocumentDecisions({});
                 await fetchApplicationDetails(selectedApplication.applicationId);
                 await fetchApplications();
@@ -210,45 +329,6 @@ const ApplicationReview = () => {
         }
     };
 
-    const handleApplicationApproval = async (action) => {
-        if (!selectedApplication) return;
-
-        setPendingAction(action);
-        setShowRemarksModal(true);
-    };
-
-    const confirmApplicationAction = async (remarks) => {
-        if (!selectedApplication || !pendingAction) return;
-
-        try {
-            setVerifying(true);
-            let response;
-
-            if (pendingAction === 'approve') {
-                response = await api.put(`/api/student-application/${selectedApplication.applicationId}/approve`, {
-                    remarks: remarks || 'Application approved by staff'
-                });
-            } else {
-                response = await api.put(`/api/student-application/${selectedApplication.applicationId}/reject`, {
-                    rejectionReason: 'Document verification failed',
-                    remarks: remarks || 'Application rejected due to document issues'
-                });
-            }
-
-            if (response.data?.success) {
-                showSuccess(response.data.message);
-                await fetchApplicationDetails(selectedApplication.applicationId);
-                await fetchApplications();
-            }
-        } catch (error) {
-            console.error('Error processing application:', error);
-            showError('Failed to process application');
-        } finally {
-            setVerifying(false);
-            setShowRemarksModal(false);
-            setPendingAction(null);
-        }
-    };
 
     const handleGeneratePDF = async () => {
         if (!selectedApplication) return;
@@ -388,10 +468,29 @@ const ApplicationReview = () => {
                     <ClockIcon className="h-4 w-4 mr-1" />
                     {new Date(application.submittedAt).toLocaleDateString()}
                 </div>
-                <button className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                    <EyeIcon className="h-4 w-4 mr-1" />
-                    Review
-                </button>
+                <div className="flex items-center space-x-2">
+                    {application.documentStats && (
+                        <div className="flex items-center space-x-1 text-xs">
+                            <span className="px-2 py-1 rounded bg-blue-100 text-blue-800">
+                                {application.documentStats.reviewed}/{application.documentStats.total} reviewed
+                            </span>
+                            {application.documentStats.approved > 0 && (
+                                <span className="px-2 py-1 rounded bg-green-100 text-green-800">
+                                    {application.documentStats.approved} approved
+                                </span>
+                            )}
+                            {application.documentStats.rejected > 0 && (
+                                <span className="px-2 py-1 rounded bg-red-100 text-red-800">
+                                    {application.documentStats.rejected} rejected
+                                </span>
+                            )}
+                        </div>
+                    )}
+                    <button className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                        <EyeIcon className="h-4 w-4 mr-1" />
+                        Review
+                    </button>
+                </div>
             </div>
         </motion.div>
     );
@@ -449,83 +548,6 @@ const ApplicationReview = () => {
         </AnimatePresence>
     );
 
-    const renderRemarksModal = () => (
-        <AnimatePresence>
-            {showRemarksModal && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
-                    onClick={() => setShowRemarksModal(false)}
-                >
-                    <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0.9, opacity: 0 }}
-                        className="bg-white dark:bg-gray-800 rounded-lg max-w-md w-full p-6"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                            {pendingAction === 'approve' ? 'Approve Application' : 'Reject Application'}
-                        </h3>
-
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Select Default Remark:
-                            </label>
-                            <select
-                                onChange={(e) => {
-                                    if (e.target.value) {
-                                        confirmApplicationAction(e.target.value);
-                                    }
-                                }}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                            >
-                                <option value="">Choose a remark...</option>
-                                {defaultRemarks[pendingAction]?.map((remark, index) => (
-                                    <option key={index} value={remark}>{remark}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Or enter custom remark:
-                            </label>
-                            <textarea
-                                id="customRemark"
-                                rows={3}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                placeholder="Enter your custom remark..."
-                            />
-                        </div>
-
-                        <div className="flex space-x-3">
-                            <button
-                                onClick={() => {
-                                    const customRemark = document.getElementById('customRemark').value;
-                                    confirmApplicationAction(customRemark);
-                                }}
-                                className={`flex-1 px-4 py-2 rounded-lg text-white ${pendingAction === 'approve'
-                                    ? 'bg-green-600 hover:bg-green-700'
-                                    : 'bg-red-600 hover:bg-red-700'
-                                    }`}
-                            >
-                                {pendingAction === 'approve' ? 'Approve' : 'Reject'}
-                            </button>
-                            <button
-                                onClick={() => setShowRemarksModal(false)}
-                                className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </motion.div>
-                </motion.div>
-            )}
-        </AnimatePresence>
-    );
 
     const renderVerificationStep = (step) => {
         if (!selectedApplication) return null;
@@ -616,7 +638,7 @@ const ApplicationReview = () => {
             {/* Tabs */}
             <div className="border-b border-gray-200 dark:border-gray-700">
                 <nav className="-mb-px flex space-x-8">
-                    {tabs.map((tab) => (
+                    {getTabs().map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
@@ -630,7 +652,7 @@ const ApplicationReview = () => {
                                 ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30'
                                 : 'bg-gray-100 text-gray-600 dark:bg-gray-700'
                                 }`}>
-                                {applications.length}
+                                {tab.count}
                             </span>
                         </button>
                     ))}
@@ -803,15 +825,24 @@ const ApplicationReview = () => {
                                                     {docStatus !== 'pending' && (
                                                         <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                                Remarks for {docStatus.toUpperCase()}:
+                                                                {docStatus === 'reject' ? 'Remarks for REJECTION (Required):' : 'Remarks for APPROVAL (Optional):'}
                                                             </label>
                                                             <textarea
                                                                 value={docRemarks}
                                                                 onChange={(e) => handleDocumentRemarksChange(item.documentType, e.target.value)}
                                                                 rows={2}
-                                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm"
-                                                                placeholder={`Enter remarks for ${docStatus}...`}
+                                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm ${docStatus === 'reject' && !docRemarks.trim()
+                                                                    ? 'border-red-300 dark:border-red-600'
+                                                                    : 'border-gray-300 dark:border-gray-600'
+                                                                    }`}
+                                                                placeholder={docStatus === 'reject' ? 'Please provide reason for rejection...' : 'Optional remarks for approval...'}
+                                                                required={docStatus === 'reject'}
                                                             />
+                                                            {docStatus === 'reject' && !docRemarks.trim() && (
+                                                                <p className="text-red-600 dark:text-red-400 text-xs mt-1">
+                                                                    Remarks are required for rejected documents
+                                                                </p>
+                                                            )}
                                                         </div>
                                                     )}
                                                 </div>
@@ -865,58 +896,95 @@ const ApplicationReview = () => {
                                     )}
 
                                     {/* Document Review Actions */}
-                                    {selectedApplication.documents && Object.keys(selectedApplication.documents).length > 0 && (
-                                        <div className="flex justify-end pt-4 border-t border-gray-200 dark:border-gray-600">
-                                            <button
-                                                onClick={handleBulkDocumentVerification}
-                                                disabled={verifying || Object.keys(documentDecisions).length === 0}
-                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                {verifying ? 'Processing...' : 'Submit Document Reviews'}
-                                            </button>
+                                    {selectedApplication.documents && (Array.isArray(selectedApplication.documents) ? selectedApplication.documents.length > 0 : Object.keys(selectedApplication.documents).length > 0) && (
+                                        <div className="space-y-4">
+                                            {/* Review Summary */}
+                                            {Object.keys(documentDecisions).length > 0 && (
+                                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                                                    <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Review Summary</h5>
+                                                    <div className="space-y-2">
+                                                        {Object.entries(documentDecisions).map(([docType, { decision, remarks }]) => (
+                                                            <div key={docType} className="flex items-center justify-between text-sm">
+                                                                <span className="text-blue-800 dark:text-blue-200">{docType}:</span>
+                                                                <div className="flex items-center space-x-2">
+                                                                    <span className={`px-2 py-1 rounded text-xs ${decision === 'approve'
+                                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+                                                                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                                                                        }`}>
+                                                                        {decision.toUpperCase()}
+                                                                    </span>
+                                                                    {remarks && (
+                                                                        <span className="text-blue-600 dark:text-blue-300 text-xs">
+                                                                            "{remarks}"
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            <div className="flex justify-between items-center">
+                                                <div className="text-sm text-gray-700 dark:text-gray-300">
+                                                    <span className="font-medium">Quick Actions:</span>
+                                                    <span className="ml-2">Approve All → </span>
+                                                    <button onClick={() => {
+                                                        // Approve all pending documents without remarks
+                                                        const pendingDocs = Object.keys(selectedApplication.documents || {});
+                                                        pendingDocs.forEach(docType => {
+                                                            if (!documentDecisions[docType]) {
+                                                                handleDocumentDecision(docType, 'approve');
+                                                            }
+                                                        });
+                                                    }} className="mx-1 px-2 py-1 text-xs rounded bg-green-100 text-green-800 hover:bg-green-200">
+                                                        Approve All
+                                                    </button>
+                                                    <span className="ml-4">Reject with Remarks → </span>
+                                                    {suggestedRejectRemarks.map((r) => (
+                                                        <button key={r} onClick={() => {
+                                                            // Apply to all pending documents
+                                                            const pendingDocs = Object.keys(selectedApplication.documents || {});
+                                                            pendingDocs.forEach(docType => {
+                                                                if (!documentDecisions[docType]) {
+                                                                    handleDocumentDecision(docType, 'reject', r);
+                                                                }
+                                                            });
+                                                        }} className="mx-1 px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">
+                                                            {r}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <div className="flex space-x-2">
+                                                    <button
+                                                        onClick={() => setDocumentDecisions({})}
+                                                        className="px-3 py-2 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                    >
+                                                        Clear All
+                                                    </button>
+                                                    <button
+                                                        onClick={handleBulkDocumentVerification}
+                                                        disabled={verifying || Object.keys(documentDecisions).length === 0}
+                                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    >
+                                                        {verifying ? 'Processing...' : 'Submit Document Reviews'}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {selectedApplication.reviewStatus?.documentCounts && (
+                                                <div className="flex items-center space-x-3 text-sm">
+                                                    <span className="px-2 py-1 rounded bg-green-100 text-green-800">Approved: {selectedApplication.reviewStatus.documentCounts.approved}</span>
+                                                    <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-800">Pending: {selectedApplication.reviewStatus.documentCounts.pending}</span>
+                                                    <span className="px-2 py-1 rounded bg-red-100 text-red-800">Rejected: {selectedApplication.reviewStatus.documentCounts.rejected}</span>
+                                                    <span className="px-2 py-1 rounded bg-gray-100 text-gray-800">Total: {selectedApplication.reviewStatus.documentCounts.total}</span>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
                             </div>
 
-                            {/* Application Status Actions */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                                    Application Status
-                                </h4>
-                                <div className="flex space-x-3">
-                                    <button
-                                        onClick={() => handleApplicationApproval('approve')}
-                                        disabled={verifying || selectedApplication.status === 'APPROVED'}
-                                        className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <CheckCircleIcon className="h-4 w-4 mr-2" />
-                                        Approve Application
-                                    </button>
-                                    <button
-                                        onClick={() => handleApplicationApproval('reject')}
-                                        disabled={verifying || selectedApplication.status === 'REJECTED'}
-                                        className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <XCircleIcon className="h-4 w-4 mr-2" />
-                                        Reject Application
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Comments */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                                    Add Comments
-                                </h4>
-                                <textarea
-                                    value={comments}
-                                    onChange={(e) => setComments(e.target.value)}
-                                    rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                    placeholder="Add your comments here..."
-                                />
-                            </div>
                         </div>
                     ) : (
                         <div className="text-center py-12">
@@ -934,7 +1002,6 @@ const ApplicationReview = () => {
 
             {/* Modals */}
             {renderDocumentViewer()}
-            {renderRemarksModal()}
         </div>
     );
 };

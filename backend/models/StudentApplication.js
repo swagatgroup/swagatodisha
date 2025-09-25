@@ -221,7 +221,12 @@ const studentApplicationSchema = new mongoose.Schema({
             enum: ['PENDING', 'APPROVED', 'REJECTED'],
             default: 'PENDING'
         },
-        remarks: String
+        remarks: String,
+        reviewedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        },
+        reviewedAt: Date
     }],
 
     // Application PDF
@@ -329,6 +334,19 @@ const studentApplicationSchema = new mongoose.Schema({
             type: Boolean,
             default: false
         },
+        // Overall document review status for the application
+        overallDocumentReviewStatus: {
+            type: String,
+            enum: ['NOT_VERIFIED', 'PARTIALLY_APPROVED', 'ALL_APPROVED', 'ALL_REJECTED'],
+            default: 'NOT_VERIFIED'
+        },
+        // Aggregated counts of document decisions
+        documentCounts: {
+            total: { type: Number, default: 0 },
+            approved: { type: Number, default: 0 },
+            rejected: { type: Number, default: 0 },
+            pending: { type: Number, default: 0 }
+        },
         personalDetailsVerified: {
             type: Boolean,
             default: false
@@ -354,6 +372,7 @@ const studentApplicationSchema = new mongoose.Schema({
             ref: 'User'
         },
         reviewedAt: Date,
+        feedbackSummary: String,
         comments: [{
             type: {
                 type: String

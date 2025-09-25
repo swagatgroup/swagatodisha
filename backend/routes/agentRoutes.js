@@ -617,12 +617,50 @@ router.get("/my-submitted-applications", async (req, res) => {
       .limit(limit * 1)
       .skip((page - 1) * limit);
 
+    // Add document review status information for each application
+    const applicationsWithReviewStatus = applications.map(app => {
+      const documents = app.documents || [];
+      const totalDocs = documents.length;
+      const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING' && doc.status !== 'NOT_VERIFIED').length;
+      const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
+      const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
+      const pendingDocs = documents.filter(doc => doc.status === 'PENDING').length;
+
+      let reviewStatus = 'not_reviewed';
+      if (totalDocs === 0) {
+        reviewStatus = 'no_documents';
+      } else if (reviewedDocs === totalDocs) {
+        if (rejectedDocs === 0) {
+          reviewStatus = 'all_approved';
+        } else if (approvedDocs === 0) {
+          reviewStatus = 'all_rejected';
+        } else {
+          reviewStatus = 'mixed_results';
+        }
+      } else if (reviewedDocs > 0) {
+        reviewStatus = 'partially_reviewed';
+      }
+
+      return {
+        ...app.toObject(),
+        documentStats: {
+          total: totalDocs,
+          reviewed: reviewedDocs,
+          approved: approvedDocs,
+          rejected: rejectedDocs,
+          pending: pendingDocs,
+          reviewProgress: totalDocs > 0 ? Math.round((reviewedDocs / totalDocs) * 100) : 0,
+          reviewStatus
+        }
+      };
+    });
+
     const total = await StudentApplication.countDocuments(query);
 
     res.status(200).json({
       success: true,
       data: {
-        applications,
+        applications: applicationsWithReviewStatus,
         pagination: {
           current: parseInt(page),
           pages: Math.ceil(total / limit),

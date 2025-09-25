@@ -270,10 +270,16 @@ class PerformanceOptimizer {
         // Only register service worker in production
         if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                if ('serviceWorker' in navigator) {
+                    try {
+                        navigator.serviceWorker.register('/sw.js');
+                    } catch (err) {
+                        console.warn('Service worker registration failed:', err);
+                    }
+                }
                     .then(registration => {
-                        // Service Worker registered
-                    })
+                    // Service Worker registered
+                })
                     .catch(registrationError => {
                         // Service Worker registration failed
                     });

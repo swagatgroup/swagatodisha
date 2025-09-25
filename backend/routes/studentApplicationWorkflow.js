@@ -14,6 +14,7 @@ const {
     approveApplication,
     rejectApplication,
     getWorkflowStats,
+    getDocumentReviewStats,
     getSubmittedApplications,
     verifyDocuments,
     generateCombinedPDF,
@@ -44,5 +45,6 @@ router.put('/:applicationId/reject', protect, rejectApplication);
 router.post('/:applicationId/combined-pdf', protect, generateCombinedPDF);
 router.post('/:applicationId/documents-zip', protect, generateDocumentsZIP);
 router.get('/stats', protect, getWorkflowStats);
+router.get('/document-review-stats', protect, getDocumentReviewStats);
 
 module.exports = router;

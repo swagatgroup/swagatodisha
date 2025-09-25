@@ -122,6 +122,13 @@ const EnhancedAgentDashboard = () => {
 
   useEffect(() => {
     loadDashboardData();
+
+    // Refresh data every 30 seconds to get updated application statuses
+    const interval = setInterval(() => {
+      loadDashboardData();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const loadDashboardData = async () => {
@@ -262,7 +269,7 @@ const EnhancedAgentDashboard = () => {
           <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />
         );
       case "applications":
-        return <AgentApplicationsTab applications={applications} />;
+        return <AgentApplicationsTab applications={applications} onRefresh={loadDashboardData} />;
       case "referrals":
         return <ReferralManagement />;
       default:

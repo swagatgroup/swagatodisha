@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const AgentApplicationsTab = ({ applications = [] }) => {
+const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
     const [selectedApplication, setSelectedApplication] = useState(null);
 
     const getStatusColor = (status) => {
@@ -285,8 +285,18 @@ const AgentApplicationsTab = ({ applications = [] }) => {
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                     My Submitted Applications
                 </h2>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
-                    Total: {Array.isArray(applications) ? applications.length : 0} applications
+                <div className="flex items-center space-x-4">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                        Total: {Array.isArray(applications) ? applications.length : 0} applications
+                    </div>
+                    {onRefresh && (
+                        <button
+                            onClick={onRefresh}
+                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                        >
+                            Refresh
+                        </button>
+                    )}
                 </div>
             </div>
 

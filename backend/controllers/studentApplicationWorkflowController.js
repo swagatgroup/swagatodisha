@@ -413,22 +413,132 @@ const downloadApplicationPDF = async (req, res) => {
 
 const getApplicationsByStatus = async (req, res) => {
     try {
-        const { status = 'SUBMITTED', page = 1, limit = 20 } = req.query;
+        const { status = 'SUBMITTED', page = 1, limit = 20, reviewFilter } = req.query;
 
-        const query = status === 'all' ? {} : { status: status.toUpperCase() };
+        console.log('getApplicationsByStatus called with:', { status, page, limit, reviewFilter });
 
-        const applications = await StudentApplication.find(query)
+        let query = status === 'all' ? {} : { status: status.toUpperCase() };
+
+        // Get all applications first, then filter by document review status
+        let applications = await StudentApplication.find(query)
             .populate('user', 'fullName email phoneNumber')
-            .sort({ createdAt: -1 })
-            .limit(limit * 1)
-            .skip((page - 1) * limit);
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode')
+            .populate('assignedAgent', 'firstName lastName referralCode')
+            .sort({ createdAt: -1 });
 
-        const total = await StudentApplication.countDocuments(query);
+        // Apply document review filtering (treat PENDING and NOT_VERIFIED as not reviewed)
+        if (reviewFilter) {
+            console.log(`Filtering applications by reviewFilter: ${reviewFilter}`);
+            console.log(`Total applications before filtering: ${applications.length}`);
+
+            applications = applications.filter(app => {
+                const documents = app.documents || [];
+                const totalDocs = documents.length;
+                const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING' && doc.status !== 'NOT_VERIFIED').length;
+                const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
+                const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
+
+                console.log(`Checking application ${app._id}:`, {
+                    totalDocs, reviewedDocs, approvedDocs, rejectedDocs,
+                    documents: documents.map(d => ({ type: d.documentType, status: d.status }))
+                });
+
+                let matches = false;
+                switch (reviewFilter) {
+                    case 'not_reviewed':
+                        matches = totalDocs > 0 && reviewedDocs === 0;
+                        break;
+                    case 'partially_reviewed':
+                        matches = totalDocs > 0 && reviewedDocs > 0 && reviewedDocs < totalDocs;
+                        break;
+                    case 'all_approved':
+                        matches = totalDocs > 0 && reviewedDocs === totalDocs && rejectedDocs === 0;
+                        break;
+                    case 'has_rejected':
+                        matches = rejectedDocs > 0;
+                        break;
+                    default:
+                        matches = true;
+                }
+
+                console.log(`Application ${app._id} ${matches ? 'MATCHES' : 'DOES NOT MATCH'} filter ${reviewFilter}`);
+
+                return matches;
+            });
+
+            console.log(`Total applications after filtering: ${applications.length}`);
+        }
+
+        // Apply pagination
+        const total = applications.length;
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        applications = applications.slice(startIndex, endIndex);
+
+        // Calculate document review statistics for each application
+        const applicationsWithStats = applications.map(app => {
+            const documents = app.documents || [];
+            const totalDocs = documents.length;
+            const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING' && doc.status !== 'NOT_VERIFIED').length;
+            const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
+            const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
+            const pendingDocs = documents.filter(doc => doc.status === 'PENDING').length;
+
+            // Determine review status and update application status
+            let reviewStatus = 'not_reviewed';
+            let applicationStatus = app.status;
+            let currentStage = app.currentStage;
+
+            if (totalDocs === 0) {
+                reviewStatus = 'no_documents';
+            } else if (reviewedDocs === totalDocs) {
+                if (rejectedDocs === 0) {
+                    reviewStatus = 'all_approved';
+                    // All documents approved - move to next stage
+                    if (app.status === 'UNDER_REVIEW') {
+                        applicationStatus = 'APPROVED';
+                        currentStage = 'APPROVED';
+                    }
+                } else if (approvedDocs === 0) {
+                    reviewStatus = 'all_rejected';
+                    // All documents rejected - keep under review but mark as rejected
+                    if (app.status === 'UNDER_REVIEW') {
+                        applicationStatus = 'REJECTED';
+                        currentStage = 'DOCUMENTS';
+                    }
+                } else {
+                    reviewStatus = 'mixed_results';
+                    // Mixed results - keep under review
+                    applicationStatus = 'UNDER_REVIEW';
+                    currentStage = 'DOCUMENTS';
+                }
+            } else if (reviewedDocs > 0) {
+                reviewStatus = 'partially_reviewed';
+                // Partially reviewed - keep under review
+                applicationStatus = 'UNDER_REVIEW';
+                currentStage = 'DOCUMENTS';
+            }
+
+            return {
+                ...app.toObject(),
+                status: applicationStatus,
+                currentStage: currentStage,
+                documentStats: {
+                    total: totalDocs,
+                    reviewed: reviewedDocs,
+                    approved: approvedDocs,
+                    rejected: rejectedDocs,
+                    pending: pendingDocs,
+                    reviewProgress: totalDocs > 0 ? Math.round((reviewedDocs / totalDocs) * 100) : 0,
+                    reviewStatus
+                }
+            };
+        });
 
         return res.status(200).json({
             success: true,
             data: {
-                applications,
+                applications: applicationsWithStats,
                 pagination: {
                     current: parseInt(page),
                     pages: Math.ceil(total / limit),
@@ -538,11 +648,81 @@ const getWorkflowStats = async (req, res) => {
     }
 };
 
+const getDocumentReviewStats = async (req, res) => {
+    try {
+        const applications = await StudentApplication.find({})
+            .select('documents status');
+
+        let totalApplications = applications.length;
+        let notReviewed = 0;
+        let partiallyReviewed = 0;
+        let allApproved = 0;
+        let hasRejected = 0;
+        let noDocuments = 0;
+
+        applications.forEach(app => {
+            const documents = app.documents || [];
+            const totalDocs = documents.length;
+            const reviewedDocs = documents.filter(doc => doc.status !== 'PENDING').length;
+            const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
+            const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
+
+            if (totalDocs === 0) {
+                noDocuments++;
+            } else if (reviewedDocs === 0) {
+                // No documents have been reviewed yet
+                notReviewed++;
+            } else if (reviewedDocs === totalDocs) {
+                // All documents have been reviewed
+                if (rejectedDocs === 0) {
+                    // All documents are approved
+                    allApproved++;
+                } else {
+                    // Has at least one rejected document
+                    hasRejected++;
+                }
+            } else {
+                // Some documents reviewed, some not
+                partiallyReviewed++;
+            }
+        });
+
+        console.log('Document Review Stats:', {
+            total: totalApplications,
+            notReviewed,
+            partiallyReviewed,
+            allApproved,
+            hasRejected,
+            noDocuments
+        });
+
+        return res.status(200).json({
+            success: true,
+            data: {
+                total: totalApplications,
+                notReviewed,
+                partiallyReviewed,
+                allApproved,
+                hasRejected,
+                noDocuments,
+                reviewProgress: totalApplications > 0 ? Math.round(((allApproved + hasRejected) / totalApplications) * 100) : 0
+            }
+        });
+    } catch (error) {
+        console.error('Get document review stats error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to get document review stats',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 
 const verifyDocuments = async (req, res) => {
     try {
         const { applicationId } = req.params;
-        const { decisions = [] } = req.body;
+        const { decisions = [], feedbackSummary } = req.body;
 
         const application = await StudentApplication.findOne({ applicationId });
         if (!application) {
@@ -554,12 +734,18 @@ const verifyDocuments = async (req, res) => {
         }
 
         // Update embedded documents by documentType
-        const docMap = new Map((application.documents || []).map((d) => [d.documentType, d]));
+        const documents = application.documents || [];
+        const docMap = new Map(documents.map((d) => [d.documentType, d]));
         decisions.forEach((d) => {
             const existing = docMap.get(d.documentType);
             if (existing) {
-                existing.status = (d.status || 'PENDING').toUpperCase();
-                if (d.remarks) existing.remarks = d.remarks;
+                existing.status = d.status || 'PENDING';
+                // For approvals, use default remark if none provided. For rejections, require remarks.
+                if (d.status === 'APPROVED') {
+                    existing.remarks = d.remarks || 'Document approved';
+                } else if (d.status === 'REJECTED') {
+                    existing.remarks = d.remarks || 'Document rejected - no reason provided';
+                }
                 existing.reviewedBy = req.user?._id;
                 existing.reviewedAt = new Date();
             }
@@ -568,20 +754,76 @@ const verifyDocuments = async (req, res) => {
         // Compute verification flags
         const allDocs = application.documents || [];
         const hasAny = allDocs.length > 0;
-        const allApproved = hasAny && allDocs.every((d) => d.status === 'APPROVED');
+        const counts = allDocs.reduce((acc, d) => {
+            acc.total += 1;
+            if (d.status === 'APPROVED') acc.approved += 1;
+            else if (d.status === 'REJECTED') acc.rejected += 1;
+            else acc.pending += 1;
+            return acc;
+        }, { approved: 0, rejected: 0, pending: 0, total: 0 });
+        const allApproved = hasAny && counts.approved === counts.total;
+        const allRejected = hasAny && counts.rejected === counts.total;
+        const anyReviewed = counts.approved + counts.rejected > 0;
+
+        // Store mixed feedback summary
+        if (feedbackSummary) {
+            application.reviewStatus.feedbackSummary = feedbackSummary;
+        }
 
         application.reviewStatus.documentsVerified = allApproved;
         application.reviewStatus.reviewedBy = req.user._id;
         application.reviewStatus.reviewedAt = new Date();
-        application.status = allApproved ? 'UNDER_REVIEW' : application.status;
-        application.currentStage = allApproved ? 'UNDER_REVIEW' : application.currentStage;
+        application.reviewStatus.documentCounts = counts;
+        // Set overall document review status
+        if (!hasAny || counts.pending === counts.total) {
+            application.reviewStatus.overallDocumentReviewStatus = 'NOT_VERIFIED';
+        } else if (allApproved) {
+            application.reviewStatus.overallDocumentReviewStatus = 'ALL_APPROVED';
+        } else if (allRejected) {
+            application.reviewStatus.overallDocumentReviewStatus = 'ALL_REJECTED';
+        } else if (anyReviewed) {
+            application.reviewStatus.overallDocumentReviewStatus = 'PARTIALLY_APPROVED';
+        } else {
+            application.reviewStatus.overallDocumentReviewStatus = 'NOT_VERIFIED';
+        }
+
+        // Update application status based on document review results
+        if (allApproved) {
+            application.status = 'UNDER_REVIEW';
+            application.currentStage = 'UNDER_REVIEW';
+        } else if (counts.rejected > 0) {
+            // If any documents are rejected, keep status as SUBMITTED but mark as needing attention
+            application.status = 'SUBMITTED';
+            application.currentStage = 'DOCUMENTS';
+        } else if (anyReviewed) {
+            // Partially reviewed but no rejections yet
+            application.status = 'UNDER_REVIEW';
+            application.currentStage = 'DOCUMENTS';
+        }
+        // If some are approved but not all, keep current status
 
         await application.save();
 
+        // Generate response message based on feedback type
+        let responseMessage = 'Documents reviewed successfully';
+        if (feedbackSummary) {
+            responseMessage = `Documents reviewed successfully. ${feedbackSummary}`;
+        } else if (counts.approved > 0 && counts.rejected > 0) {
+            responseMessage = `Mixed feedback: ${counts.approved} approved, ${counts.rejected} rejected`;
+        } else if (counts.approved > 0) {
+            responseMessage = `All documents approved (${counts.approved})`;
+        } else if (counts.rejected > 0) {
+            responseMessage = `All documents rejected (${counts.rejected})`;
+        }
+
         return res.status(200).json({
             success: true,
-            message: 'Documents reviewed successfully',
-            data: application
+            message: responseMessage,
+            data: {
+                application,
+                summary: counts,
+                feedbackSummary: feedbackSummary || null
+            }
         });
     } catch (error) {
         console.error('Verify documents error:', error);
@@ -701,6 +943,7 @@ module.exports = {
     approveApplication,
     rejectApplication,
     getWorkflowStats,
+    getDocumentReviewStats,
     verifyDocuments,
     generateCombinedPDF,
     generateDocumentsZIP,

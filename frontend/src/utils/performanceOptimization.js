@@ -104,10 +104,16 @@ class PerformanceOptimization {
     setupServiceWorker() {
         // Only register service worker in production
         if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
-            navigator.serviceWorker.register('/sw.js')
+            if ('serviceWorker' in navigator) {
+                try {
+                    navigator.serviceWorker.register('/sw.js');
+                } catch (err) {
+                    console.warn('Service worker registration failed:', err);
+                }
+            }
                 .then(registration => {
-                    console.log('Service Worker registered:', registration);
-                })
+                console.log('Service Worker registered:', registration);
+            })
                 .catch(error => {
                     console.log('Service Worker registration failed:', error);
                 });
