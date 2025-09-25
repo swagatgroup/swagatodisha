@@ -43,24 +43,6 @@ const SuperAdminDashboard = () => {
             )
         },
         {
-            id: 'tracking',
-            name: 'Real-Time Tracking',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-            )
-        },
-        {
-            id: 'website',
-            name: 'Website Management',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
-                </svg>
-            )
-        },
-        {
             id: 'students',
             name: 'Students',
             icon: (
@@ -309,10 +291,6 @@ const SuperAdminDashboard = () => {
                         </div>
                     </div>
                 );
-            case 'tracking':
-                return <div className="p-6 text-center text-gray-500">Real-time tracking removed - Socket.IO component</div>;
-            case 'website':
-                return <div className="p-6 text-center text-gray-500">Website management removed - Socket.IO component</div>;
             case 'students':
                 return (
                     <div className="dark:text-gray-100">

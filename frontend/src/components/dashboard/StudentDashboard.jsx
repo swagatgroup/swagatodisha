@@ -2,15 +2,10 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
-import EnhancedDocumentManagement from '../documents/EnhancedDocumentManagement';
 import ProfileCompletionModal from '../modals/ProfileCompletionModal';
 import InteractivePieChart from '../analytics/InteractivePieChart';
 import DetailModal from '../analytics/DetailModal';
-import StudentProfile from './tabs/StudentProfile';
 import StudentApplications from './tabs/StudentApplications';
-import StudentPayments from './tabs/StudentPayments';
-import StudentAcademic from './tabs/StudentAcademic';
-import ReferralDashboard from './tabs/ReferralDashboard';
 import api from '../../utils/api';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 
@@ -52,51 +47,6 @@ const StudentDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'academic',
-            name: 'Academic',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            )
-        },
-        {
-            id: 'documents',
-            name: 'Documents',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'payments',
-            name: 'Payments',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-            )
-        },
-        {
-            id: 'profile',
-            name: 'Profile',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-            )
-        },
-        {
-            id: 'referral',
-            name: 'Refer & Earn',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
             )
         }
@@ -317,23 +267,13 @@ const StudentDashboard = () => {
                                 </button>
 
                                 <button
-                                    onClick={() => setActiveSidebarItem('documents')}
+                                    onClick={() => setActiveSidebarItem('applications')}
                                     className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200"
                                 >
                                     <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
-                                    <span className="text-gray-600 dark:text-gray-300 font-medium">Upload Documents</span>
-                                </button>
-
-                                <button
-                                    onClick={() => setActiveSidebarItem('payments')}
-                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-purple-50 transition-colors duration-200"
-                                >
-                                    <svg className="h-8 w-8 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                                    </svg>
-                                    <span className="text-gray-600 dark:text-gray-300 font-medium">View Payments</span>
+                                    <span className="text-gray-600 dark:text-gray-300 font-medium">Track Progress</span>
                                 </button>
                             </div>
                         </motion.div>
@@ -453,16 +393,6 @@ const StudentDashboard = () => {
                 );
             case 'applications':
                 return <StudentApplications />;
-            case 'academic':
-                return <StudentAcademic />;
-            case 'documents':
-                return <EnhancedDocumentManagement />;
-            case 'payments':
-                return <StudentPayments />;
-            case 'referral':
-                return <ReferralDashboard />;
-            case 'profile':
-                return <StudentProfile />;
             default:
                 return null;
         }

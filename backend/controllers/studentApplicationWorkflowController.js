@@ -765,6 +765,11 @@ const verifyDocuments = async (req, res) => {
         const allRejected = hasAny && counts.rejected === counts.total;
         const anyReviewed = counts.approved + counts.rejected > 0;
 
+        // Initialize reviewStatus if it doesn't exist
+        if (!application.reviewStatus) {
+            application.reviewStatus = {};
+        }
+
         // Store mixed feedback summary
         if (feedbackSummary) {
             application.reviewStatus.feedbackSummary = feedbackSummary;
@@ -774,18 +779,30 @@ const verifyDocuments = async (req, res) => {
         application.reviewStatus.reviewedBy = req.user._id;
         application.reviewStatus.reviewedAt = new Date();
         application.reviewStatus.documentCounts = counts;
+
         // Set overall document review status
+        let overallStatus;
         if (!hasAny || counts.pending === counts.total) {
-            application.reviewStatus.overallDocumentReviewStatus = 'NOT_VERIFIED';
+            overallStatus = 'UNDER_REVIEW';
         } else if (allApproved) {
-            application.reviewStatus.overallDocumentReviewStatus = 'ALL_APPROVED';
+            overallStatus = 'ALL_APPROVED';
         } else if (allRejected) {
-            application.reviewStatus.overallDocumentReviewStatus = 'ALL_REJECTED';
+            overallStatus = 'ALL_REJECTED';
         } else if (anyReviewed) {
-            application.reviewStatus.overallDocumentReviewStatus = 'PARTIALLY_APPROVED';
+            overallStatus = 'PARTIALLY_APPROVED';
         } else {
-            application.reviewStatus.overallDocumentReviewStatus = 'NOT_VERIFIED';
+            overallStatus = 'UNDER_REVIEW';
         }
+
+        application.reviewStatus.overallDocumentReviewStatus = overallStatus;
+
+        console.log(`Setting overall status for ${application.applicationId}:`, {
+            counts,
+            overallStatus,
+            allApproved,
+            allRejected,
+            anyReviewed
+        });
 
         // Update application status based on document review results
         if (allApproved) {
@@ -831,6 +848,74 @@ const verifyDocuments = async (req, res) => {
             success: false,
             message: 'Failed to verify documents',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Fix document review status for existing applications
+const fixDocumentReviewStatus = async (req, res) => {
+    try {
+        console.log('Starting document review status fix...');
+
+        // Find all applications that have documents
+        const applications = await StudentApplication.find({
+            'documents.0': { $exists: true }
+        });
+
+        console.log(`Found ${applications.length} applications with documents`);
+
+        for (const application of applications) {
+            const documents = application.documents || [];
+            const hasAny = documents.length > 0;
+
+            const counts = documents.reduce((acc, d) => {
+                acc.total += 1;
+                if (d.status === 'APPROVED') acc.approved += 1;
+                else if (d.status === 'REJECTED') acc.rejected += 1;
+                else acc.pending += 1;
+                return acc;
+            }, { approved: 0, rejected: 0, pending: 0, total: 0 });
+
+            const allApproved = hasAny && counts.approved === counts.total;
+            const allRejected = hasAny && counts.rejected === counts.total;
+            const anyReviewed = counts.approved + counts.rejected > 0;
+
+            // Determine overall status
+            let overallStatus;
+            if (!hasAny || counts.pending === counts.total) {
+                overallStatus = 'UNDER_REVIEW';
+            } else if (allApproved) {
+                overallStatus = 'ALL_APPROVED';
+            } else if (allRejected) {
+                overallStatus = 'ALL_REJECTED';
+            } else if (anyReviewed) {
+                overallStatus = 'PARTIALLY_APPROVED';
+            } else {
+                overallStatus = 'UNDER_REVIEW';
+            }
+
+            // Update the application
+            application.reviewStatus = application.reviewStatus || {};
+            application.reviewStatus.documentCounts = counts;
+            application.reviewStatus.overallDocumentReviewStatus = overallStatus;
+            application.reviewStatus.documentsVerified = allApproved;
+
+            await application.save();
+
+            console.log(`Updated ${application.applicationId}: ${counts.approved} approved, ${counts.rejected} rejected, ${counts.pending} pending -> ${overallStatus}`);
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Fixed document review status for ${applications.length} applications`,
+            data: { fixedCount: applications.length }
+        });
+    } catch (error) {
+        console.error('Error fixing document review status:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fix document review status',
+            error: error.message
         });
     }
 };
@@ -945,6 +1030,7 @@ module.exports = {
     getWorkflowStats,
     getDocumentReviewStats,
     verifyDocuments,
+    fixDocumentReviewStatus,
     generateCombinedPDF,
     generateDocumentsZIP,
     getApplicationReview,

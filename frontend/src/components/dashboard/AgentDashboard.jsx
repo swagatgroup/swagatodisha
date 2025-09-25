@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
 import DashboardLayout from "./DashboardLayout";
 import StudentRegistrationWorkflow from "./tabs/StudentRegistrationWorkflow";
-import AgentStudentsTab from "./tabs/AgentStudentsTab";
 import AgentApplicationsTab from "./tabs/AgentApplicationsTab";
-import ReferralManagement from "../agents/ReferralManagement";
 import StudentTable from "./components/StudentTable";
 import api from "../../utils/api";
 
@@ -21,11 +19,12 @@ const EnhancedAgentDashboard = () => {
     completedStudents: 0,
     thisMonthRegistrations: 0,
   });
+  const isLoadingRef = useRef(false);
 
   const sidebarItems = [
     {
       id: "dashboard",
-      name: "Dashboard",
+      name: "Dashboard & Students",
       icon: (
         <svg
           className="mr-3 h-5 w-5"
@@ -43,27 +42,8 @@ const EnhancedAgentDashboard = () => {
       ),
     },
     {
-      id: "students",
-      name: "My Students",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-          />
-        </svg>
-      ),
-    },
-    {
       id: "registration",
-      name: "Register Student",
+      name: "New Registration",
       icon: (
         <svg
           className="mr-3 h-5 w-5"
@@ -79,83 +59,39 @@ const EnhancedAgentDashboard = () => {
           />
         </svg>
       ),
-    },
-    {
-      id: "applications",
-      name: "My Applications",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "referrals",
-      name: "Referrals",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-          />
-        </svg>
-      ),
-    },
+    }
   ];
 
   useEffect(() => {
     loadDashboardData();
-
-    // Refresh data every 30 seconds to get updated application statuses
-    const interval = setInterval(() => {
-      loadDashboardData();
-    }, 30000);
-
-    return () => clearInterval(interval);
   }, []);
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = async (showLoading = true) => {
+    // Prevent multiple simultaneous calls
+    if (isLoadingRef.current) {
+      return;
+    }
+
     try {
-      setLoading(true);
+      isLoadingRef.current = true;
+      if (showLoading) {
+        setLoading(true);
+      }
       const [studentsRes, statsRes, applicationsRes] = await Promise.all([
         api.get("/api/agents/my-students"),
         api.get("/api/agents/stats"),
         api.get("/api/agents/my-submitted-applications"),
       ]);
 
-      console.log("Students response:", studentsRes.data);
       if (studentsRes.data.success) {
         const list =
           studentsRes.data.data?.students ?? studentsRes.data.data ?? [];
-        console.log("Students data structure:", list);
-        console.log("Is students data an array?", Array.isArray(list));
-        console.log("Number of students:", Array.isArray(list) ? list.length : 0);
         setStudents(Array.isArray(list) ? list : []);
       }
 
-      console.log("Applications response:", applicationsRes.data);
       if (applicationsRes.data.success) {
         // The API returns { success: true, data: { applications: [...], pagination: {...} } }
         const applicationsData = applicationsRes.data.data?.applications || applicationsRes.data.data || [];
-        console.log("Applications data structure:", applicationsData);
-        console.log("Is applications data an array?", Array.isArray(applicationsData));
         setApplications(Array.isArray(applicationsData) ? applicationsData : []);
       }
 
@@ -166,6 +102,7 @@ const EnhancedAgentDashboard = () => {
       console.error("Error loading dashboard data:", error);
     } finally {
       setLoading(false);
+      isLoadingRef.current = false;
     }
   };
 
@@ -249,7 +186,7 @@ const EnhancedAgentDashboard = () => {
             >
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Students
+                  My Students
                 </h3>
               </div>
               <div className="p-6">
@@ -260,18 +197,29 @@ const EnhancedAgentDashboard = () => {
                 />
               </div>
             </motion.div>
+
+            {/* Applications Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow mt-6"
+            >
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Recent Applications
+                </h3>
+              </div>
+              <div className="p-6">
+                <AgentApplicationsTab applications={applications} onRefresh={() => loadDashboardData(false)} />
+              </div>
+            </motion.div>
           </>
         );
-      case "students":
-        return <AgentStudentsTab />;
       case "registration":
         return (
           <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />
         );
-      case "applications":
-        return <AgentApplicationsTab applications={applications} onRefresh={loadDashboardData} />;
-      case "referrals":
-        return <ReferralManagement />;
       default:
         return null;
     }

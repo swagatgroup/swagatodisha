@@ -4,9 +4,6 @@ import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
 import StudentRegistration from './tabs/StudentRegistration';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
-import DocumentVerification from './tabs/DocumentVerification';
-import ContentManagement from './tabs/ContentManagement';
-import AgentManagement from './tabs/AgentManagement';
 // StaffApplicationsReview removed - Socket.IO component
 import ApplicationReview from './tabs/ApplicationReview';
 // RealTimeStudentTracking removed - Socket.IO component
@@ -55,25 +52,7 @@ const EnhancedStaffDashboard = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
             )
-        },
-        {
-            id: 'verification',
-            name: 'Document Verification',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'content',
-            name: 'Content Management',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                </svg>
-            )
-        },
+        }
     ];
 
     useEffect(() => {
@@ -208,14 +187,10 @@ const EnhancedStaffDashboard = () => {
                         </motion.div>
                     </>
                 );
-            case 'verification':
-                return <DocumentVerification onStudentUpdate={handleStudentUpdate} />;
             case 'applications':
                 return <ApplicationReview />;
             case 'new-registration':
                 return <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />;
-            case 'content':
-                return <ContentManagement />;
             default:
                 return null;
         }
