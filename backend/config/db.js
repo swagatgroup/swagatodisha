@@ -52,7 +52,12 @@ const connectDB = async () => {
         }
 
         console.log('⚠️ Continuing without MongoDB connection...');
-        // process.exit(1); // Commented out for development
+
+        // In production, exit if database connection fails
+        if (process.env.NODE_ENV === 'production') {
+            console.log('🚨 Production environment detected - exiting due to database connection failure');
+            process.exit(1);
+        }
     }
 };
 

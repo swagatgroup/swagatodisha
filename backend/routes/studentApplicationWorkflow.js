@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const {
     createApplication,
     getApplication,
@@ -37,7 +37,7 @@ router.get('/:applicationId/download-pdf', protect, downloadApplicationPDF);
 router.get('/submitted-by-me', protect, getSubmittedApplications);
 
 // Staff/Admin routes
-router.get('/applications', protect, getApplicationsByStatus);
+router.get('/applications', protect, authorize('staff', 'super_admin'), getApplicationsByStatus);
 router.get('/submitted', protect, getSubmittedApplications);
 router.get('/:applicationId/review', protect, getApplicationReview);
 router.put('/:applicationId/verify', protect, verifyDocuments);

@@ -23,6 +23,7 @@ app.use((req, res, next) => {
     const allowedOrigins = [
         'https://www.swagatodisha.com',
         'https://swagatodisha.com',
+        'https://swagatodisha.vercel.app',
         'http://localhost:3000',
         'http://localhost:3001',
         'http://localhost:5173'
@@ -43,6 +44,9 @@ app.use((req, res, next) => {
 
     next();
 });
+
+// Import error handling middleware
+const { errorHandler, notFound } = require('./middleware/errorHandler');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -78,14 +82,10 @@ const {
 const performanceMonitor = require('./utils/performance');
 const databaseOptimization = require('./utils/databaseOptimization');
 
-// Import error handling middleware
-const { errorHandler, notFound } = require('./middleware/errorHandler');
-
-
 // Middleware
 app.use(securityHeaders);
 app.use(compression());
-app.use(morgan('tiny')); // Reduced logging
+app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'tiny'));
 // app.use(securityLogger); // Disabled verbose security logging
 app.use(performanceMonitor.performanceMiddleware());
 app.use(sanitizeInput);
@@ -629,7 +629,7 @@ app.post('/api/student-application/create-test', async (req, res) => {
         const User = require('./models/User');
 
         // Find existing test user
-        let testUser = await User.findOne({ email: 'test@example.com' });
+        let testUser = await User.findOne({ email: 'teststudent@example.com' });
 
         if (!testUser) {
             return res.status(404).json({
@@ -648,8 +648,8 @@ app.post('/api/student-application/create-test', async (req, res) => {
             currentStage: 'UNDER_REVIEW',
             personalDetails: {
                 fullName: 'Test Student',
-                email: 'test@example.com',
-                phoneNumber: '9876543210',
+                email: 'teststudent@example.com',
+                phoneNumber: '8888888888',
                 dateOfBirth: new Date('2000-01-01'),
                 gender: 'Male',
                 aadharNumber: '123456789012',
@@ -724,6 +724,96 @@ app.post('/api/student-application/create-test', async (req, res) => {
     }
 });
 
+// Debug endpoint to check document statuses
+app.get('/api/debug/document-statuses', async (req, res) => {
+    try {
+        const StudentApplication = require('./models/StudentApplication');
+
+        // Get all applications with documents
+        const applications = await StudentApplication.find({
+            documents: { $exists: true, $not: { $size: 0 } }
+        }).limit(10);
+
+        const statusAnalysis = applications.map(app => {
+            const documents = app.documents || [];
+            const statuses = documents.map(doc => doc.status);
+            const uniqueStatuses = [...new Set(statuses)];
+
+            return {
+                applicationId: app.applicationId,
+                fullName: app.personalDetails?.fullName || 'N/A',
+                totalDocs: documents.length,
+                statuses: statuses,
+                uniqueStatuses: uniqueStatuses,
+                documents: documents.map(d => ({
+                    type: d.documentType,
+                    status: d.status,
+                    fileName: d.fileName
+                }))
+            };
+        });
+
+        res.json({
+            success: true,
+            data: {
+                applicationsWithDocs: applications.length,
+                statusAnalysis: statusAnalysis,
+                allUniqueStatuses: [...new Set(applications.flatMap(app =>
+                    (app.documents || []).map(doc => doc.status)
+                ))]
+            }
+        });
+    } catch (error) {
+        console.error('Debug document statuses error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error checking document statuses',
+            error: error.message
+        });
+    }
+});
+
+// Debug endpoint to check applications count
+app.get('/api/debug/applications-count', async (req, res) => {
+    try {
+        const StudentApplication = require('./models/StudentApplication');
+        const User = require('./models/User');
+
+        const totalApplications = await StudentApplication.countDocuments();
+        const totalUsers = await User.countDocuments();
+
+        // Get a few sample applications
+        const sampleApplications = await StudentApplication.find({})
+            .populate('user', 'fullName email')
+            .limit(5)
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            data: {
+                totalApplications,
+                totalUsers,
+                sampleApplications: sampleApplications.map(app => ({
+                    id: app._id,
+                    applicationId: app.applicationId,
+                    status: app.status,
+                    fullName: app.personalDetails?.fullName || app.user?.fullName || 'N/A',
+                    email: app.personalDetails?.email || app.user?.email || 'N/A',
+                    documentsCount: app.documents?.length || 0,
+                    createdAt: app.createdAt
+                }))
+            }
+        });
+    } catch (error) {
+        console.error('Debug applications count error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error checking applications count',
+            error: error.message
+        });
+    }
+});
+
 // API Routes
 app.use('/api/auth', authRateLimit, authRoutes);
 app.use('/api/admin-auth', authRateLimit, adminAuthRoutes);
@@ -791,6 +881,21 @@ app.use('*', notFound);
 
 // Global error handler
 app.use(errorHandler);
+
+// Production error handling
+if (process.env.NODE_ENV === 'production') {
+    // Handle uncaught exceptions
+    process.on('uncaughtException', (err) => {
+        console.error('🚨 Uncaught Exception:', err);
+        process.exit(1);
+    });
+
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (err) => {
+        console.error('🚨 Unhandled Rejection:', err);
+        process.exit(1);
+    });
+}
 
 // Database connection initialization
 const initializeConnections = async () => {

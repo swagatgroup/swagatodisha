@@ -42,7 +42,8 @@ const ApplicationReview = () => {
         partiallyReviewed: 0,
         fullyReviewed: 0,
         allApproved: 0,
-        hasRejected: 0
+        hasRejected: 0,
+        noDocuments: 0
     });
 
     // Make tabs reactive to state changes
@@ -50,7 +51,8 @@ const ApplicationReview = () => {
         { id: 'submitted', name: 'Not Reviewed', count: documentReviewStats.notReviewed, color: 'blue' },
         { id: 'under_review', name: 'Partially Reviewed', count: documentReviewStats.partiallyReviewed, color: 'yellow' },
         { id: 'approved', name: 'All Approved', count: documentReviewStats.allApproved, color: 'green' },
-        { id: 'rejected', name: 'Has Rejected', count: documentReviewStats.hasRejected, color: 'red' }
+        { id: 'rejected', name: 'Has Rejected', count: documentReviewStats.hasRejected, color: 'red' },
+        { id: 'no_documents', name: 'No Documents', count: documentReviewStats.noDocuments, color: 'gray' }
     ];
 
     const verificationSteps = [
@@ -124,6 +126,7 @@ const ApplicationReview = () => {
             }
         } catch (error) {
             console.log('Stats endpoint not available, calculating from applications data');
+            console.error('Stats endpoint error:', error);
         }
 
         // Fallback: fetch all applications and calculate stats
@@ -144,16 +147,17 @@ const ApplicationReview = () => {
         let partiallyReviewed = 0;
         let allApproved = 0;
         let hasRejected = 0;
+        let noDocuments = 0;
 
         applicationsData.forEach(app => {
             const documents = app.documents || [];
             const totalDocs = documents.length;
-            const reviewedDocs = documents.filter(doc => doc.status !== 'PENDING').length;
+            const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING').length;
             const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
             const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
 
             if (totalDocs === 0) {
-                // No documents - skip
+                noDocuments++;
             } else if (reviewedDocs === 0) {
                 notReviewed++;
             } else if (reviewedDocs === totalDocs) {
@@ -167,7 +171,7 @@ const ApplicationReview = () => {
             }
         });
 
-        console.log('Calculated stats:', { notReviewed, partiallyReviewed, allApproved, hasRejected });
+        console.log('Calculated stats:', { notReviewed, partiallyReviewed, allApproved, hasRejected, noDocuments });
 
         setDocumentReviewStats(prev => {
             const newStats = {
@@ -175,7 +179,8 @@ const ApplicationReview = () => {
                 notReviewed,
                 partiallyReviewed,
                 allApproved,
-                hasRejected
+                hasRejected,
+                noDocuments
             };
             console.log('Setting document review stats:', newStats);
             return newStats;
@@ -191,7 +196,8 @@ const ApplicationReview = () => {
                 'submitted': 'not_reviewed',
                 'under_review': 'partially_reviewed',
                 'approved': 'all_approved',
-                'rejected': 'has_rejected'
+                'rejected': 'has_rejected',
+                'no_documents': 'no_documents'
             };
 
             const reviewFilter = reviewFilterMap[activeTab];
@@ -206,6 +212,7 @@ const ApplicationReview = () => {
             }
         } catch (error) {
             console.error('Error fetching applications:', error);
+            console.error('Error details:', error.response?.data);
             showError('Failed to fetch applications');
         } finally {
             setLoading(false);

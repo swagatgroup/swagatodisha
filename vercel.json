@@ -19,7 +19,11 @@
       "destination": "/backend/server.js"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/health",
+      "destination": "/backend/server.js"
+    },
+    {
+      "source": "/((?!api/|health).*)",
       "destination": "/index.html"
     }
   ],

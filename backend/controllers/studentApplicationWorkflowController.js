@@ -49,6 +49,13 @@ const createApplication = async (req, res) => {
             },
         };
 
+        // Generate applicationId if not provided
+        if (!applicationData.applicationId) {
+            const year = new Date().getFullYear().toString().substr(-2);
+            const random = Math.random().toString().substr(2, 6).toUpperCase();
+            applicationData.applicationId = `APP${year}${random}`;
+        }
+
         console.log(
             "Creating application with data:",
             JSON.stringify(applicationData, null, 2)
@@ -434,19 +441,22 @@ const getApplicationsByStatus = async (req, res) => {
             applications = applications.filter(app => {
                 const documents = app.documents || [];
                 const totalDocs = documents.length;
-                const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING' && doc.status !== 'NOT_VERIFIED').length;
+                const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING').length;
                 const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
                 const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
 
                 console.log(`Checking application ${app._id}:`, {
                     totalDocs, reviewedDocs, approvedDocs, rejectedDocs,
-                    documents: documents.map(d => ({ type: d.documentType, status: d.status }))
+                    documents: documents.map(d => ({ type: d.documentType, status: d.status })),
+                    allDocumentStatuses: documents.map(d => d.status),
+                    uniqueStatuses: [...new Set(documents.map(d => d.status))]
                 });
 
                 let matches = false;
                 switch (reviewFilter) {
                     case 'not_reviewed':
-                        matches = totalDocs > 0 && reviewedDocs === 0;
+                        // Include applications that haven't been reviewed (either no documents or documents not reviewed)
+                        matches = totalDocs === 0 || (totalDocs > 0 && reviewedDocs === 0);
                         break;
                     case 'partially_reviewed':
                         matches = totalDocs > 0 && reviewedDocs > 0 && reviewedDocs < totalDocs;
@@ -456,6 +466,9 @@ const getApplicationsByStatus = async (req, res) => {
                         break;
                     case 'has_rejected':
                         matches = rejectedDocs > 0;
+                        break;
+                    case 'no_documents':
+                        matches = totalDocs === 0;
                         break;
                     default:
                         matches = true;
@@ -561,7 +574,11 @@ const approveApplication = async (req, res) => {
         const { applicationId } = req.params;
         const { remarks } = req.body;
 
-        const application = await StudentApplication.findOne({ applicationId });
+        const application = await StudentApplication.findOne({ applicationId })
+            .populate('user', 'fullName email phoneNumber')
+            .populate('submittedBy', 'fullName email phoneNumber')
+            .populate('assignedAgent', 'fullName email phoneNumber');
+
         if (!application) {
             return res.status(404).json({ success: false, message: 'Application not found' });
         }
@@ -571,6 +588,9 @@ const approveApplication = async (req, res) => {
         application.reviewStatus.reviewedBy = req.user._id;
         application.reviewStatus.reviewedAt = new Date();
         await application.save();
+
+        // Send notifications to relevant parties
+        await sendApplicationStatusNotification(application, 'APPROVED', remarks || 'Application approved by staff');
 
         return res.status(200).json({
             success: true,
@@ -592,7 +612,11 @@ const rejectApplication = async (req, res) => {
         const { applicationId } = req.params;
         const { rejectionReason, remarks } = req.body;
 
-        const application = await StudentApplication.findOne({ applicationId });
+        const application = await StudentApplication.findOne({ applicationId })
+            .populate('user', 'fullName email phoneNumber')
+            .populate('submittedBy', 'fullName email phoneNumber')
+            .populate('assignedAgent', 'fullName email phoneNumber');
+
         if (!application) {
             return res.status(404).json({ success: false, message: 'Application not found' });
         }
@@ -602,6 +626,9 @@ const rejectApplication = async (req, res) => {
         application.reviewStatus.reviewedBy = req.user._id;
         application.reviewStatus.reviewedAt = new Date();
         await application.save();
+
+        // Send notifications to relevant parties
+        await sendApplicationStatusNotification(application, 'REJECTED', remarks || rejectionReason || 'Application rejected by staff');
 
         return res.status(200).json({
             success: true,
@@ -650,7 +677,8 @@ const getWorkflowStats = async (req, res) => {
 
 const getDocumentReviewStats = async (req, res) => {
     try {
-        const applications = await StudentApplication.find({})
+        // Only count SUBMITTED applications to match the filtered endpoints
+        const applications = await StudentApplication.find({ status: 'SUBMITTED' })
             .select('documents status');
 
         let totalApplications = applications.length;
@@ -669,6 +697,8 @@ const getDocumentReviewStats = async (req, res) => {
 
             if (totalDocs === 0) {
                 noDocuments++;
+                // Applications with no documents also count as "not reviewed"
+                notReviewed++;
             } else if (reviewedDocs === 0) {
                 // No documents have been reviewed yet
                 notReviewed++;
@@ -687,7 +717,7 @@ const getDocumentReviewStats = async (req, res) => {
             }
         });
 
-        console.log('Document Review Stats:', {
+        console.log('Document Review Stats (SUBMITTED only):', {
             total: totalApplications,
             notReviewed,
             partiallyReviewed,
@@ -820,6 +850,11 @@ const verifyDocuments = async (req, res) => {
         // If some are approved but not all, keep current status
 
         await application.save();
+
+        // Send notification about document review status
+        if (anyReviewed) {
+            await sendDocumentReviewNotification(application, counts, feedbackSummary);
+        }
 
         // Generate response message based on feedback type
         let responseMessage = 'Documents reviewed successfully';
@@ -1010,6 +1045,146 @@ const getApplicationReview = async (req, res) => {
             message: 'Failed to get application review data',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
+    }
+};
+
+// Helper function to send document review notifications
+const sendDocumentReviewNotification = async (application, counts, feedbackSummary) => {
+    try {
+        const Notification = require('../models/Notification');
+
+        let message = `Document review completed for application ${application.applicationId}. `;
+        if (counts.approved > 0 && counts.rejected > 0) {
+            message += `${counts.approved} documents approved, ${counts.rejected} documents rejected.`;
+        } else if (counts.approved > 0) {
+            message += `All ${counts.approved} documents approved.`;
+        } else if (counts.rejected > 0) {
+            message += `${counts.rejected} documents rejected.`;
+        }
+
+        if (feedbackSummary) {
+            message += ` ${feedbackSummary}`;
+        }
+
+        // Create notification for the student
+        if (application.user) {
+            const studentNotification = new Notification({
+                title: 'Document Review Update',
+                content: message,
+                shortDescription: 'Document Review Update',
+                type: 'document_review',
+                category: 'application',
+                targetAudience: 'student',
+                targetUsers: [application.user._id],
+                priority: counts.rejected > 0 ? 'high' : 'medium',
+                publishDate: new Date(),
+                status: 'published',
+                createdBy: application.reviewStatus.reviewedBy,
+                lastModified: new Date(),
+                modifiedBy: application.reviewStatus.reviewedBy
+            });
+            await studentNotification.save();
+        }
+
+        // Create notification for the agent (if different from student)
+        if (application.assignedAgent && application.assignedAgent._id.toString() !== application.user._id.toString()) {
+            const agentNotification = new Notification({
+                title: 'Student Document Review Update',
+                content: `Document review completed for student ${application.user?.fullName}'s application ${application.applicationId}. ${message}`,
+                shortDescription: 'Student Document Review Update',
+                type: 'document_review',
+                category: 'application',
+                targetAudience: 'agent',
+                targetUsers: [application.assignedAgent._id],
+                priority: counts.rejected > 0 ? 'high' : 'medium',
+                publishDate: new Date(),
+                status: 'published',
+                createdBy: application.reviewStatus.reviewedBy,
+                lastModified: new Date(),
+                modifiedBy: application.reviewStatus.reviewedBy
+            });
+            await agentNotification.save();
+        }
+
+        console.log(`Document review notifications sent for application ${application.applicationId}`);
+    } catch (error) {
+        console.error('Error sending document review notifications:', error);
+        // Don't throw error - notifications are not critical for the main flow
+    }
+};
+
+// Helper function to send application status notifications
+const sendApplicationStatusNotification = async (application, status, message) => {
+    try {
+        const Notification = require('../models/Notification');
+
+        // Create notification for the student
+        if (application.user) {
+            const studentNotification = new Notification({
+                title: `Application ${status}`,
+                content: `Your application ${application.applicationId} has been ${status.toLowerCase()}. ${message}`,
+                shortDescription: `Application ${status}`,
+                type: 'application_status',
+                category: 'application',
+                targetAudience: 'student',
+                targetUsers: [application.user._id],
+                priority: status === 'APPROVED' ? 'high' : 'medium',
+                publishDate: new Date(),
+                status: 'published',
+                createdBy: application.reviewStatus.reviewedBy,
+                lastModified: new Date(),
+                modifiedBy: application.reviewStatus.reviewedBy
+            });
+            await studentNotification.save();
+        }
+
+        // Create notification for the agent (if different from student)
+        if (application.assignedAgent && application.assignedAgent._id.toString() !== application.user._id.toString()) {
+            const agentNotification = new Notification({
+                title: `Student Application ${status}`,
+                content: `Application ${application.applicationId} for student ${application.user?.fullName} has been ${status.toLowerCase()}. ${message}`,
+                shortDescription: `Student Application ${status}`,
+                type: 'application_status',
+                category: 'application',
+                targetAudience: 'agent',
+                targetUsers: [application.assignedAgent._id],
+                priority: status === 'APPROVED' ? 'high' : 'medium',
+                publishDate: new Date(),
+                status: 'published',
+                createdBy: application.reviewStatus.reviewedBy,
+                lastModified: new Date(),
+                modifiedBy: application.reviewStatus.reviewedBy
+            });
+            await agentNotification.save();
+        }
+
+        // Create notification for the submitter (if different from student and agent)
+        if (application.submittedBy &&
+            application.submittedBy._id.toString() !== application.user._id.toString() &&
+            (!application.assignedAgent || application.submittedBy._id.toString() !== application.assignedAgent._id.toString())) {
+
+            const submitterNotification = new Notification({
+                title: `Submitted Application ${status}`,
+                content: `Application ${application.applicationId} that you submitted for ${application.user?.fullName} has been ${status.toLowerCase()}. ${message}`,
+                shortDescription: `Submitted Application ${status}`,
+                type: 'application_status',
+                category: 'application',
+                targetAudience: application.submitterRole,
+                targetUsers: [application.submittedBy._id],
+                priority: status === 'APPROVED' ? 'high' : 'medium',
+                publishDate: new Date(),
+                status: 'published',
+                createdBy: application.reviewStatus.reviewedBy,
+                lastModified: new Date(),
+                modifiedBy: application.reviewStatus.reviewedBy
+            });
+            await submitterNotification.save();
+        }
+
+        console.log(`Notifications sent for application ${application.applicationId} - Status: ${status}`);
+    } catch (error) {
+        console.error('Error sending application status notifications:', error);
+        // Don't throw error - notifications are not critical for the main flow
     }
 };
 
