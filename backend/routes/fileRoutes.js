@@ -32,6 +32,24 @@ router.get('/', getAllFiles);
 // @access  Public
 router.get('/stats', getStorageStats);
 
+// @route   GET /api/files/health
+// @desc    Health check for file routes
+// @access  Public
+router.get('/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'File routes are working',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+            upload: 'POST /api/files/upload',
+            uploadMultiple: 'POST /api/files/upload-multiple',
+            getFile: 'GET /api/files/:id',
+            getAllFiles: 'GET /api/files',
+            deleteFile: 'DELETE /api/files/:id'
+        }
+    });
+});
+
 // @route   GET /api/files/:id
 // @desc    Get file by ID
 // @access  Public

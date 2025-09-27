@@ -102,9 +102,13 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
 // @access  Protected
 const uploadMultipleFiles = asyncHandler(async (req, res) => {
     try {
-        console.log('Upload multiple files request received');
+        console.log('=== UPLOAD MULTIPLE FILES REQUEST ===');
+        console.log('Method:', req.method);
+        console.log('URL:', req.url);
+        console.log('Headers:', req.headers);
         console.log('User:', req.user ? req.user._id : 'No user');
         console.log('Files:', req.files ? req.files.length : 'No files');
+        console.log('Body:', req.body);
 
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({

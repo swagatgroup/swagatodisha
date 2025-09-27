@@ -23,7 +23,7 @@
       "destination": "/backend/server.js"
     },
     {
-      "source": "/((?!api/|health).*)",
+      "source": "/((?!api/|health|backend/).*)",
       "destination": "/index.html"
     }
   ],
@@ -46,6 +46,24 @@
         {
           "key": "Access-Control-Allow-Credentials",
           "value": "true"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.js)$",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.jsx)$",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
         }
       ]
     },

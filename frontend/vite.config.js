@@ -33,7 +33,7 @@ export default defineConfig({
           ]
         },
 
-        // Optimize chunk naming
+        // Optimize chunk naming - Force .js extension for all JS files
         chunkFileNames: (chunkInfo) => {
           const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop().replace('.jsx', '').replace('.js', '') : 'chunk';
           return `js/${facadeModuleId}-[hash].js`;
