@@ -237,6 +237,15 @@ app.get('/', (req, res) => {
     });
 });
 
+// Simple test endpoint for Vercel
+app.get('/test', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'Backend is working',
+        timestamp: new Date().toISOString()
+    });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
     res.status(200).json({

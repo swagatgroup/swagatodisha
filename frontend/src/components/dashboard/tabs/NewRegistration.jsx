@@ -1,9 +1,9 @@
 import React from 'react';
-import UniversalStudentRegistration from '../../shared/UniversalStudentRegistration';
+import SinglePageStudentRegistration from '../../shared/SinglePageStudentRegistration';
 
 const NewRegistration = ({ onStudentUpdate }) => {
     return (
-        <UniversalStudentRegistration
+        <SinglePageStudentRegistration
             onStudentUpdate={onStudentUpdate}
             userRole="staff"
             showTitle={true}

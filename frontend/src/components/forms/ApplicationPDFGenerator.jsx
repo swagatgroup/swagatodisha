@@ -3,7 +3,7 @@ import { DocumentIcon, EyeIcon, ArrowDownTrayIcon, PrinterIcon } from '@heroicon
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
-const ApplicationPDFGenerator = ({ formData, application }) => {
+const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [error, setError] = useState(null);
@@ -139,13 +139,11 @@ const ApplicationPDFGenerator = ({ formData, application }) => {
             pdf.setTextColor(0, 0, 0);
 
             const academicDetails = [
-                ['Selected Course:', pdfContent.courseDetails.selectedCourse || 'N/A'],
+                ['Institution Name:', pdfContent.courseDetails.institutionName || 'N/A'],
+                ['Course Name:', pdfContent.courseDetails.courseName || 'N/A'],
                 ['Stream:', pdfContent.courseDetails.stream || 'N/A']
             ];
 
-            if (pdfContent.courseDetails.customCourse) {
-                academicDetails.push(['Custom Course:', pdfContent.courseDetails.customCourse]);
-            }
 
             if (pdfContent.referralCode) {
                 academicDetails.push(['Referral Code:', pdfContent.referralCode]);
@@ -253,6 +251,11 @@ const ApplicationPDFGenerator = ({ formData, application }) => {
             const pdfBlob = pdf.output('blob');
             const url = URL.createObjectURL(pdfBlob);
             setPdfUrl(url);
+
+            // Call the callback if provided
+            if (onPDFGenerated) {
+                onPDFGenerated();
+            }
 
         } catch (err) {
             console.error('PDF generation error:', err);
@@ -484,19 +487,17 @@ const ApplicationPDFGenerator = ({ formData, application }) => {
             <div class="section">
                 <div class="section-title">Academic Details</div>
                 <div class="field-row">
-                    <span class="field-label">Selected Course:</span>
-                    <span class="field-value">${content.courseDetails.selectedCourse || 'N/A'}</span>
+                    <span class="field-label">Institution Name:</span>
+                    <span class="field-value">${content.courseDetails.institutionName || 'N/A'}</span>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">Course Name:</span>
+                    <span class="field-value">${content.courseDetails.courseName || 'N/A'}</span>
                 </div>
                 <div class="field-row">
                     <span class="field-label">Stream:</span>
                     <span class="field-value">${content.courseDetails.stream || 'N/A'}</span>
                 </div>
-                ${content.courseDetails.customCourse ? `
-                <div class="field-row">
-                    <span class="field-label">Custom Course:</span>
-                    <span class="field-value">${content.courseDetails.customCourse}</span>
-                </div>
-                ` : ''}
                 ${content.referralCode ? `
                 <div class="field-row">
                     <span class="field-label">Referral Code:</span>
@@ -610,6 +611,15 @@ const ApplicationPDFGenerator = ({ formData, application }) => {
                             <DocumentIcon className="w-4 h-4" />
                             <span>{isGenerating ? 'Generating...' : 'Generate PDF'}</span>
                         </button>
+                        {onCancel && (
+                            <button
+                                onClick={onCancel}
+                                disabled={isGenerating}
+                                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 flex items-center space-x-2"
+                            >
+                                <span>Cancel</span>
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -660,7 +670,10 @@ const ApplicationPDFGenerator = ({ formData, application }) => {
                                     <span className="font-medium">Name:</span> {formData.personalDetails.fullName || 'N/A'}
                                 </div>
                                 <div>
-                                    <span className="font-medium">Course:</span> {formData.courseDetails.selectedCourse || 'N/A'}
+                                    <span className="font-medium">Institution:</span> {formData.courseDetails.institutionName || 'N/A'}
+                                </div>
+                                <div>
+                                    <span className="font-medium">Course:</span> {formData.courseDetails.courseName || 'N/A'}
                                 </div>
                                 <div>
                                     <span className="font-medium">Email:</span> {formData.contactDetails.email || 'N/A'}

@@ -1,9 +1,9 @@
 import React from 'react';
-import UniversalStudentRegistration from '../../shared/UniversalStudentRegistration';
+import SinglePageStudentRegistration from '../../shared/SinglePageStudentRegistration';
 
 const StudentRegistrationWorkflow = ({ onStudentUpdate }) => {
     return (
-        <UniversalStudentRegistration
+        <SinglePageStudentRegistration
             onStudentUpdate={onStudentUpdate}
             userRole="student"
             showTitle={true}

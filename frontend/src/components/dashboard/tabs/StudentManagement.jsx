@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import UniversalStudentRegistration from '../../shared/UniversalStudentRegistration';
+import SinglePageStudentRegistration from '../../shared/SinglePageStudentRegistration';
 import DocumentsUpload from './DocumentsUpload';
 import StudentApplication from './StudentApplication';
 import SimpleFileTest from '../../forms/SimpleFileTest';
@@ -74,7 +74,7 @@ const StudentManagement = ({ onStudentUpdate }) => {
     const renderSubTabContent = () => {
         switch (activeSubTab) {
             case 'registration':
-                return <UniversalStudentRegistration onStudentUpdate={onStudentUpdate} userRole="staff" showTitle={false} />;
+                return <SinglePageStudentRegistration onStudentUpdate={onStudentUpdate} userRole="staff" showTitle={false} />;
             case 'documents':
                 return <DocumentsUpload onStudentUpdate={onStudentUpdate} />;
             case 'application':

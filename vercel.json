@@ -13,18 +13,18 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/server.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/server.js"
     },
     {
-      "source": "/health",
-      "destination": "/backend/server.js"
+      "src": "/health",
+      "dest": "/backend/server.js"
     },
     {
-      "source": "/((?!api/|health|backend/).*)",
-      "destination": "/index.html"
+      "src": "/((?!api|health|backend).*)",
+      "dest": "/index.html"
     }
   ],
   "headers": [

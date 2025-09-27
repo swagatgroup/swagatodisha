@@ -42,6 +42,10 @@ export default defineConfig({
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
           const ext = info[info.length - 1];
+          if (ext === 'jsx') {
+            // Force JSX files to have .js extension
+            return `js/[name]-[hash].js`;
+          }
           if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
             // Keep images at root level for easier referencing
             return `[name][extname]`;
