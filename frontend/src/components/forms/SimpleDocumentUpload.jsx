@@ -111,12 +111,18 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             const fileObject = {
                 documentType,
                 name: uploaded?.originalName || file.name,
+                fileName: uploaded?.originalName || file.name,
                 size: uploaded?.fileSize || file.size,
+                fileSize: uploaded?.fileSize || file.size,
                 type: uploaded?.mimeType || file.type,
+                mimeType: uploaded?.mimeType || file.type,
                 uploadedAt: new Date().toISOString(),
                 status: 'uploaded',
                 downloadUrl: uploaded?.downloadUrl || uploaded?.filePath,
+                url: uploaded?.downloadUrl || uploaded?.filePath,
+                filePath: uploaded?.downloadUrl || uploaded?.filePath,
                 cloudinaryPublicId: uploaded?.cloudinaryPublicId,
+                public_id: uploaded?.cloudinaryPublicId,
             };
 
             setDocuments(prev => ({

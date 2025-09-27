@@ -175,19 +175,33 @@ const saveDraft = async (req, res) => {
                 if (data[key] !== undefined) {
                     // Special handling: normalize documents from frontend SimpleDocumentUpload (Cloudinary-backed)
                     if (key === 'documents' && data.documents && typeof data.documents === 'object' && !Array.isArray(data.documents)) {
-                        const normalizedDocs = Object.entries(data.documents).map(([docType, doc]) => ({
-                            documentType: docType,
-                            fileName: doc.name || 'uploaded',
-                            filePath: doc.downloadUrl || doc.url || doc.filePath || '',
-                            storageType: 'cloudinary',
-                            cloudinaryPublicId: doc.cloudinaryPublicId || doc.public_id || undefined,
-                            fileSize: doc.size,
-                            mimeType: doc.type,
-                            status: 'PENDING',
-                            uploadedAt: new Date()
-                        })).filter(d => d.filePath);
+                        const normalizedDocs = Object.entries(data.documents).map(([docType, doc]) => {
+                            // Validate document data before processing
+                            if (!doc || (!doc.downloadUrl && !doc.url && !doc.filePath)) {
+                                console.warn(`Invalid document data for type ${docType}:`, doc);
+                                return null;
+                            }
 
-                        appDoc.documents = normalizedDocs;
+                            return {
+                                documentType: docType,
+                                fileName: doc.name || doc.fileName || 'uploaded',
+                                filePath: doc.downloadUrl || doc.url || doc.filePath || '',
+                                storageType: 'cloudinary',
+                                cloudinaryPublicId: doc.cloudinaryPublicId || doc.public_id || doc.cloudinaryPublicId || undefined,
+                                fileSize: doc.size || doc.fileSize || 0,
+                                mimeType: doc.type || doc.mimeType || 'application/octet-stream',
+                                status: 'PENDING',
+                                uploadedAt: new Date()
+                            };
+                        }).filter(d => d && d.filePath && d.filePath.trim() !== '');
+
+                        // Only update documents if we have valid ones
+                        if (normalizedDocs.length > 0) {
+                            appDoc.documents = normalizedDocs;
+                            console.log(`Updated ${normalizedDocs.length} documents for application ${applicationId}`);
+                        } else {
+                            console.warn(`No valid documents found for application ${applicationId}`);
+                        }
                     } else {
                         appDoc[key] = data[key];
                     }
@@ -236,13 +250,51 @@ const submitApplication = async (req, res) => {
             });
         }
 
+        // Validate that application is not already submitted
+        if (application.status === 'SUBMITTED' || application.status === 'UNDER_REVIEW' || application.status === 'APPROVED') {
+            return res.status(400).json({
+                success: false,
+                message: `Application is already ${application.status.toLowerCase()}`,
+            });
+        }
+
+        // Validate required fields before submission
+        const requiredFields = ['personalDetails', 'contactDetails', 'courseDetails', 'guardianDetails'];
+        const missingFields = requiredFields.filter(field => !application[field] || Object.keys(application[field]).length === 0);
+
+        if (missingFields.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: `Missing required fields: ${missingFields.join(', ')}`,
+            });
+        }
+
+        // Validate terms acceptance
+        if (!termsAccepted) {
+            return res.status(400).json({
+                success: false,
+                message: "You must accept the terms and conditions to submit the application",
+            });
+        }
+
         // Update application status
         application.status = "SUBMITTED";
         application.currentStage = "SUBMITTED";
         application.submittedAt = new Date();
-        application.termsAccepted = termsAccepted || false;
+        application.termsAccepted = termsAccepted;
         application.termsAcceptedAt = new Date();
 
+        // Add workflow history entry
+        application.workflowHistory.push({
+            stage: 'SUBMITTED',
+            status: 'SUBMITTED',
+            updatedBy: req.user._id,
+            action: 'SUBMIT',
+            remarks: 'Application submitted by student',
+            timestamp: new Date()
+        });
+
+        application.lastModified = new Date();
         await application.save();
 
         // Real-time updates removed (Socket.IO removed)
@@ -254,6 +306,7 @@ const submitApplication = async (req, res) => {
                 applicationId: application.applicationId,
                 status: application.status,
                 submittedAt: application.submittedAt,
+                documentsCount: application.documents?.length || 0
             },
         });
     } catch (error) {
@@ -504,21 +557,24 @@ const getApplicationsByStatus = async (req, res) => {
 
             if (totalDocs === 0) {
                 reviewStatus = 'no_documents';
+                // Applications without documents should not be approved
+                if (app.status === 'APPROVED') {
+                    applicationStatus = 'SUBMITTED';
+                    currentStage = 'DOCUMENTS';
+                }
             } else if (reviewedDocs === totalDocs) {
                 if (rejectedDocs === 0) {
                     reviewStatus = 'all_approved';
-                    // All documents approved - move to next stage
-                    if (app.status === 'UNDER_REVIEW') {
-                        applicationStatus = 'APPROVED';
-                        currentStage = 'APPROVED';
+                    // All documents approved - can move to UNDER_REVIEW for final approval
+                    if (app.status === 'SUBMITTED') {
+                        applicationStatus = 'UNDER_REVIEW';
+                        currentStage = 'UNDER_REVIEW';
                     }
                 } else if (approvedDocs === 0) {
                     reviewStatus = 'all_rejected';
-                    // All documents rejected - keep under review but mark as rejected
-                    if (app.status === 'UNDER_REVIEW') {
-                        applicationStatus = 'REJECTED';
-                        currentStage = 'DOCUMENTS';
-                    }
+                    // All documents rejected - keep as SUBMITTED, needs re-upload
+                    applicationStatus = 'SUBMITTED';
+                    currentStage = 'DOCUMENTS';
                 } else {
                     reviewStatus = 'mixed_results';
                     // Mixed results - keep under review
@@ -527,9 +583,20 @@ const getApplicationsByStatus = async (req, res) => {
                 }
             } else if (reviewedDocs > 0) {
                 reviewStatus = 'partially_reviewed';
-                // Partially reviewed - keep under review
+                // Partially reviewed - move to UNDER_REVIEW if no rejections
+                if (rejectedDocs === 0) {
+                    applicationStatus = 'UNDER_REVIEW';
+                    currentStage = 'DOCUMENTS';
+                } else {
+                    applicationStatus = 'SUBMITTED';
+                    currentStage = 'DOCUMENTS';
+                }
+            }
+
+            // Additional validation: Ensure APPROVED status only if all documents are approved
+            if (applicationStatus === 'APPROVED' && totalDocs > 0 && approvedDocs !== totalDocs) {
                 applicationStatus = 'UNDER_REVIEW';
-                currentStage = 'DOCUMENTS';
+                currentStage = 'UNDER_REVIEW';
             }
 
             return {
@@ -583,10 +650,76 @@ const approveApplication = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Application not found' });
         }
 
+        // Validate application status before approval
+        if (application.status === 'APPROVED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Application is already approved'
+            });
+        }
+
+        if (application.status === 'REJECTED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot approve a rejected application'
+            });
+        }
+
+        // Validate that application has required documents
+        const documents = application.documents || [];
+        if (documents.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot approve application: No documents uploaded'
+            });
+        }
+
+        // Check if all documents are approved
+        const documentCounts = application.reviewStatus?.documentCounts || { total: 0, approved: 0, rejected: 0, pending: 0 };
+        if (documentCounts.total > 0 && documentCounts.approved !== documentCounts.total) {
+            return res.status(400).json({
+                success: false,
+                message: `Cannot approve application: Only ${documentCounts.approved}/${documentCounts.total} documents are approved. All documents must be approved before final approval.`
+            });
+        }
+
+        // Validate that all required verification steps are completed
+        const reviewStatus = application.reviewStatus || {};
+        if (!reviewStatus.documentsVerified) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot approve application: Document verification not completed'
+            });
+        }
+
+        // Proceed with approval
         await application.approveApplication(req.user._id, remarks || 'Approved by staff');
+
+        // Update review status
+        if (!application.reviewStatus) {
+            application.reviewStatus = {};
+        }
         application.reviewStatus.overallApproved = true;
         application.reviewStatus.reviewedBy = req.user._id;
         application.reviewStatus.reviewedAt = new Date();
+        application.reviewStatus.finalApprovalRemarks = remarks || 'Application approved by staff';
+
+        // Add detailed review info
+        application.reviewInfo = {
+            reviewedBy: req.user._id,
+            reviewedAt: new Date(),
+            remarks: remarks || 'Application approved by staff',
+            documentCounts: documentCounts,
+            verificationStatus: {
+                documentsVerified: reviewStatus.documentsVerified,
+                personalDetailsVerified: reviewStatus.personalDetailsVerified || false,
+                academicDetailsVerified: reviewStatus.academicDetailsVerified || false,
+                guardianDetailsVerified: reviewStatus.guardianDetailsVerified || false,
+                financialDetailsVerified: reviewStatus.financialDetailsVerified || false
+            }
+        };
+
+        application.lastModified = new Date();
         await application.save();
 
         // Send notifications to relevant parties
@@ -595,7 +728,11 @@ const approveApplication = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Application approved successfully',
-            data: application
+            data: {
+                application,
+                reviewInfo: application.reviewInfo,
+                documentCounts: documentCounts
+            }
         });
     } catch (error) {
         console.error('Approve application error:', error);
@@ -621,10 +758,43 @@ const rejectApplication = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Application not found' });
         }
 
+        // Validate rejection reason
+        if (!rejectionReason || rejectionReason.trim() === '') {
+            return res.status(400).json({
+                success: false,
+                message: 'Rejection reason is required'
+            });
+        }
+
         await application.rejectApplication(req.user._id, rejectionReason || 'Insufficient/invalid documents', remarks);
+
+        // Update review status with detailed rejection info
+        if (!application.reviewStatus) {
+            application.reviewStatus = {};
+        }
         application.reviewStatus.overallApproved = false;
         application.reviewStatus.reviewedBy = req.user._id;
         application.reviewStatus.reviewedAt = new Date();
+        application.reviewStatus.rejectionReason = rejectionReason;
+        application.reviewStatus.rejectionRemarks = remarks || 'Application rejected by staff';
+
+        // Add detailed review info
+        application.reviewInfo = {
+            reviewedBy: req.user._id,
+            reviewedAt: new Date(),
+            remarks: remarks || 'Application rejected by staff',
+            rejectionReason: rejectionReason,
+            documentCounts: application.reviewStatus?.documentCounts || { total: 0, approved: 0, rejected: 0, pending: 0 },
+            verificationStatus: {
+                documentsVerified: false,
+                personalDetailsVerified: application.reviewStatus?.personalDetailsVerified || false,
+                academicDetailsVerified: application.reviewStatus?.academicDetailsVerified || false,
+                guardianDetailsVerified: application.reviewStatus?.guardianDetailsVerified || false,
+                financialDetailsVerified: application.reviewStatus?.financialDetailsVerified || false
+            }
+        };
+
+        application.lastModified = new Date();
         await application.save();
 
         // Send notifications to relevant parties
@@ -763,9 +933,19 @@ const verifyDocuments = async (req, res) => {
             return res.status(400).json({ success: false, message: 'No document decisions provided' });
         }
 
-        // Update embedded documents by documentType
+        // Validate that application has documents before allowing review
         const documents = application.documents || [];
+        if (documents.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot review documents: No documents uploaded for this application'
+            });
+        }
+
+        // Update embedded documents by documentType
         const docMap = new Map(documents.map((d) => [d.documentType, d]));
+        let updatedDocuments = 0;
+
         decisions.forEach((d) => {
             const existing = docMap.get(d.documentType);
             if (existing) {
@@ -778,8 +958,16 @@ const verifyDocuments = async (req, res) => {
                 }
                 existing.reviewedBy = req.user?._id;
                 existing.reviewedAt = new Date();
+                updatedDocuments++;
             }
         });
+
+        if (updatedDocuments === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No valid documents found to update'
+            });
+        }
 
         // Compute verification flags
         const allDocs = application.documents || [];
@@ -791,6 +979,7 @@ const verifyDocuments = async (req, res) => {
             else acc.pending += 1;
             return acc;
         }, { approved: 0, rejected: 0, pending: 0, total: 0 });
+
         const allApproved = hasAny && counts.approved === counts.total;
         const allRejected = hasAny && counts.rejected === counts.total;
         const anyReviewed = counts.approved + counts.rejected > 0;
@@ -813,7 +1002,7 @@ const verifyDocuments = async (req, res) => {
         // Set overall document review status
         let overallStatus;
         if (!hasAny || counts.pending === counts.total) {
-            overallStatus = 'UNDER_REVIEW';
+            overallStatus = 'NOT_VERIFIED';
         } else if (allApproved) {
             overallStatus = 'ALL_APPROVED';
         } else if (allRejected) {
@@ -821,7 +1010,7 @@ const verifyDocuments = async (req, res) => {
         } else if (anyReviewed) {
             overallStatus = 'PARTIALLY_APPROVED';
         } else {
-            overallStatus = 'UNDER_REVIEW';
+            overallStatus = 'NOT_VERIFIED';
         }
 
         application.reviewStatus.overallDocumentReviewStatus = overallStatus;
@@ -834,21 +1023,42 @@ const verifyDocuments = async (req, res) => {
             anyReviewed
         });
 
-        // Update application status based on document review results
+        // Update application status based on document review results with proper validation
+        const previousStatus = application.status;
+        const previousStage = application.currentStage;
+
         if (allApproved) {
+            // All documents approved - move to UNDER_REVIEW for final approval
             application.status = 'UNDER_REVIEW';
             application.currentStage = 'UNDER_REVIEW';
-        } else if (counts.rejected > 0) {
-            // If any documents are rejected, keep status as SUBMITTED but mark as needing attention
+        } else if (allRejected) {
+            // All documents rejected - keep as SUBMITTED but mark for re-upload
             application.status = 'SUBMITTED';
             application.currentStage = 'DOCUMENTS';
-        } else if (anyReviewed) {
-            // Partially reviewed but no rejections yet
+        } else if (counts.rejected > 0) {
+            // Some documents rejected - keep as SUBMITTED, needs attention
+            application.status = 'SUBMITTED';
+            application.currentStage = 'DOCUMENTS';
+        } else if (anyReviewed && counts.rejected === 0) {
+            // Partially reviewed but no rejections yet - move to UNDER_REVIEW
             application.status = 'UNDER_REVIEW';
             application.currentStage = 'DOCUMENTS';
         }
-        // If some are approved but not all, keep current status
+        // If no documents reviewed, keep current status
 
+        // Add workflow history entry for status change
+        if (previousStatus !== application.status || previousStage !== application.currentStage) {
+            application.workflowHistory.push({
+                stage: application.currentStage,
+                status: application.status,
+                updatedBy: req.user._id,
+                action: 'DOCUMENT_REVIEW',
+                remarks: `Document review completed: ${counts.approved} approved, ${counts.rejected} rejected, ${counts.pending} pending`,
+                timestamp: new Date()
+            });
+        }
+
+        application.lastModified = new Date();
         await application.save();
 
         // Send notification about document review status
@@ -874,7 +1084,8 @@ const verifyDocuments = async (req, res) => {
             data: {
                 application,
                 summary: counts,
-                feedbackSummary: feedbackSummary || null
+                feedbackSummary: feedbackSummary || null,
+                statusChanged: previousStatus !== application.status
             }
         });
     } catch (error) {

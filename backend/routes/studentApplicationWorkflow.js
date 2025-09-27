@@ -23,6 +23,8 @@ const {
     getApplicationReview
 } = require('../controllers/studentApplicationWorkflowController');
 
+const { fixApplicationDataIntegrity } = require('../scripts/fixApplicationDataIntegrity');
+
 // Student routes
 router.post('/create', protect, createApplication);
 router.get('/my-application', protect, getApplication);
@@ -48,5 +50,21 @@ router.post('/:applicationId/documents-zip', protect, generateDocumentsZIP);
 router.get('/stats', protect, getWorkflowStats);
 router.get('/document-review-stats', protect, getDocumentReviewStats);
 router.post('/fix-document-review-status', protect, fixDocumentReviewStatus);
+router.post('/fix-data-integrity', protect, authorize('super_admin'), async (req, res) => {
+    try {
+        await fixApplicationDataIntegrity();
+        res.status(200).json({
+            success: true,
+            message: 'Application data integrity fix completed successfully'
+        });
+    } catch (error) {
+        console.error('Data integrity fix error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fix data integrity',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
 
 module.exports = router;
