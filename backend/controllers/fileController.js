@@ -102,14 +102,6 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
 // @access  Protected
 const uploadMultipleFiles = asyncHandler(async (req, res) => {
     try {
-        console.log('=== UPLOAD MULTIPLE FILES REQUEST ===');
-        console.log('Method:', req.method);
-        console.log('URL:', req.url);
-        console.log('Headers:', req.headers);
-        console.log('User:', req.user ? req.user._id : 'No user');
-        console.log('Files:', req.files ? req.files.length : 'No files');
-        console.log('Body:', req.body);
-
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -118,13 +110,17 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
             });
         }
 
+        const incomingDocType = req.body?.documentType ? String(req.body.documentType) : undefined;
+        const isCustom = req.body?.isCustom === 'true';
+        const customLabel = req.body?.customLabel;
+
+        // Process files in parallel for better performance
         const uploadPromises = req.files.map(async (uploadedFile) => {
             const { originalname, buffer, mimetype, size } = uploadedFile;
             const category = getFileCategory(mimetype);
             const uniqueFileName = generateUniqueFileName(originalname);
-            const incomingDocType = (req.body && req.body.documentType) ? String(req.body.documentType) : undefined;
 
-            // Upload to Cloudinary
+            // Upload to Cloudinary with minimal settings for speed
             const cloudinaryResult = await new Promise((resolve, reject) => {
                 cloudinary.uploader.upload_stream(
                     {
@@ -132,16 +128,16 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
                         public_id: `swagat-odisha/${category}/${uniqueFileName}`,
                         folder: 'swagat-odisha',
                         use_filename: true,
-                        unique_filename: true,
+                        unique_filename: true
                     },
                     (error, result) => {
                         if (error) reject(error);
                         else resolve(result);
                     }
-                ).end(buffer);
+                ).end(buffer); // Use original buffer directly
             });
 
-            // Save file metadata to MongoDB
+            // Prepare file data
             const fileData = {
                 originalName: originalname,
                 fileName: uniqueFileName,
@@ -155,6 +151,8 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
                 uploadedBy: req.user?._id || null,
                 metadata: {
                     documentType: incomingDocType,
+                    isCustom: isCustom,
+                    customLabel: customLabel,
                     cloudinaryId: cloudinaryResult.public_id,
                     cloudinaryUrl: cloudinaryResult.secure_url,
                     cloudinaryVersion: cloudinaryResult.version,

@@ -2,6 +2,99 @@ const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
 const PDFGenerator = require('../utils/pdfGenerator');
 const path = require('path');
+const documentRequirements = require('../config/documentRequirements');
+
+// Document validation helper functions
+const validateDocumentRequirements = (documents) => {
+    const errors = [];
+    const warnings = [];
+
+    // Check required documents
+    const requiredDocs = documentRequirements.required;
+    const uploadedDocs = documents || [];
+
+    requiredDocs.forEach(reqDoc => {
+        const uploadedDoc = uploadedDocs.find(doc => doc.documentType === reqDoc.key);
+
+        if (!uploadedDoc) {
+            errors.push(`Missing required document: ${reqDoc.label}`);
+        } else {
+            // Validate file format
+            const fileExtension = uploadedDoc.fileName?.split('.').pop()?.toLowerCase();
+            if (!reqDoc.allowedFormats.includes(fileExtension)) {
+                errors.push(`${reqDoc.label}: Invalid file format. Allowed: ${reqDoc.allowedFormats.join(', ')}`);
+            }
+
+            // Validate file size
+            if (uploadedDoc.fileSize > reqDoc.maxSize) {
+                errors.push(`${reqDoc.label}: File size too large. Maximum: ${Math.round(reqDoc.maxSize / (1024 * 1024))}MB`);
+            }
+
+            // Check document age if required
+            if (reqDoc.validation.checkDate && reqDoc.validation.maxAge) {
+                const docDate = uploadedDoc.uploadedAt || new Date();
+                const ageInYears = (new Date() - new Date(docDate)) / (1000 * 60 * 60 * 24 * 365);
+                if (ageInYears > reqDoc.validation.maxAge) {
+                    warnings.push(`${reqDoc.label}: Document is older than ${reqDoc.validation.maxAge} year(s). Please ensure it's recent.`);
+                }
+            }
+        }
+    });
+
+    return { errors, warnings };
+};
+
+const calculateDocumentUploadStatus = (documents) => {
+    const uploadedDocs = documents || [];
+    const requiredDocs = documentRequirements.required;
+    const optionalDocs = documentRequirements.optional;
+
+    const status = {
+        required: {
+            total: requiredDocs.length,
+            uploaded: 0,
+            missing: []
+        },
+        optional: {
+            total: optionalDocs.length,
+            uploaded: 0,
+            available: []
+        },
+        custom: {
+            uploaded: uploadedDocs.filter(doc => doc.isCustom).length,
+            maxAllowed: documentRequirements.custom.maxCustomDocuments
+        },
+        overall: {
+            isComplete: false,
+            progress: 0
+        }
+    };
+
+    // Check required documents
+    requiredDocs.forEach(reqDoc => {
+        const uploaded = uploadedDocs.find(doc => doc.documentType === reqDoc.key);
+        if (uploaded) {
+            status.required.uploaded++;
+        } else {
+            status.required.missing.push(reqDoc.label);
+        }
+    });
+
+    // Check optional documents
+    optionalDocs.forEach(optDoc => {
+        const uploaded = uploadedDocs.find(doc => doc.documentType === optDoc.key);
+        if (uploaded) {
+            status.optional.uploaded++;
+            status.optional.available.push(optDoc.label);
+        }
+    });
+
+    // Calculate overall status
+    status.overall.isComplete = status.required.uploaded === status.required.total;
+    status.overall.progress = Math.round((status.required.uploaded / status.required.total) * 100);
+
+    return status;
+};
 
 // Create application
 const createApplication = async (req, res) => {
@@ -266,6 +359,17 @@ const submitApplication = async (req, res) => {
             return res.status(400).json({
                 success: false,
                 message: `Missing required fields: ${missingFields.join(', ')}`,
+            });
+        }
+
+        // Validate document requirements
+        const documentValidation = validateDocumentRequirements(application.documents);
+        if (documentValidation.errors.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Document validation failed',
+                errors: documentValidation.errors,
+                warnings: documentValidation.warnings
             });
         }
 
@@ -1399,6 +1503,56 @@ const sendApplicationStatusNotification = async (application, status, message) =
     }
 };
 
+// Get document requirements
+const getDocumentRequirements = async (req, res) => {
+    try {
+        res.status(200).json({
+            success: true,
+            data: {
+                requirements: documentRequirements,
+                uploadOrder: documentRequirements.uploadOrder,
+                helpText: documentRequirements.helpText
+            }
+        });
+    } catch (error) {
+        console.error('Get document requirements error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get document requirements',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Get document upload status for an application
+const getDocumentUploadStatus = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+
+        const application = await StudentApplication.findOne({ applicationId });
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        const status = calculateDocumentUploadStatus(application.documents);
+
+        res.status(200).json({
+            success: true,
+            data: status
+        });
+    } catch (error) {
+        console.error('Get document upload status error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get document upload status',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 module.exports = {
     createApplication,
     updateApplication,
@@ -1420,4 +1574,6 @@ module.exports = {
     generateCombinedPDF,
     generateDocumentsZIP,
     getApplicationReview,
+    getDocumentRequirements,
+    getDocumentUploadStatus,
 };

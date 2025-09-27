@@ -6,6 +6,7 @@ import SimpleDocumentUpload from "../forms/SimpleDocumentUpload";
 import ApplicationPDFGenerator from "../forms/ApplicationPDFGenerator";
 import TermsAndConditions from "../legal/TermsAndConditions";
 import { showSuccessToast, showErrorToast } from "../../utils/sweetAlert";
+import { formatDateForInput } from "../../utils/dateUtils";
 
 const UniversalStudentRegistration = ({
   onStudentUpdate,
@@ -655,7 +656,7 @@ const UniversalStudentRegistration = ({
           </label>
           <input
             type="date"
-            value={formData.personalDetails.dateOfBirth}
+            value={formatDateForInput(formData.personalDetails.dateOfBirth)}
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,

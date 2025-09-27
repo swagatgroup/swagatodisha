@@ -20,7 +20,9 @@ const {
     fixDocumentReviewStatus,
     generateCombinedPDF,
     generateDocumentsZIP,
-    getApplicationReview
+    getApplicationReview,
+    getDocumentRequirements,
+    getDocumentUploadStatus
 } = require('../controllers/studentApplicationWorkflowController');
 
 const { fixApplicationDataIntegrity } = require('../scripts/fixApplicationDataIntegrity');
@@ -50,6 +52,10 @@ router.post('/:applicationId/documents-zip', protect, generateDocumentsZIP);
 router.get('/stats', protect, getWorkflowStats);
 router.get('/document-review-stats', protect, getDocumentReviewStats);
 router.post('/fix-document-review-status', protect, fixDocumentReviewStatus);
+
+// Document requirements routes
+router.get('/document-requirements', protect, getDocumentRequirements);
+router.get('/:applicationId/document-status', protect, getDocumentUploadStatus);
 router.post('/fix-data-integrity', protect, authorize('super_admin'), async (req, res) => {
     try {
         await fixApplicationDataIntegrity();

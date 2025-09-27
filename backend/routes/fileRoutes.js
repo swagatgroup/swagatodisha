@@ -8,6 +8,8 @@ const {
     deleteFile,
     getStorageStats
 } = require('../controllers/fileController');
+
+const { uploadMultipleFilesSimple } = require('../controllers/fileControllerSimple');
 const { uploadSingle, uploadMultiple } = require('../middleware/upload');
 const { asyncHandler } = require('../middleware/errorHandler');
 const { protect } = require('../middleware/auth');
@@ -21,6 +23,11 @@ router.post('/upload', protect, uploadSingle('file'), uploadSingleFile);
 // @desc    Upload multiple files
 // @access  Protected
 router.post('/upload-multiple', protect, uploadMultiple('files', 10), uploadMultipleFiles);
+
+// @route   POST /api/files/upload-multiple-simple
+// @desc    Upload multiple files (simple version for speed)
+// @access  Protected
+router.post('/upload-multiple-simple', protect, uploadMultiple('files', 10), uploadMultipleFilesSimple);
 
 // @route   GET /api/files
 // @desc    Get all files with pagination and filtering
