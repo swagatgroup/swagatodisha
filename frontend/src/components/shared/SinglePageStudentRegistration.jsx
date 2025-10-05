@@ -15,6 +15,8 @@ const SinglePageStudentRegistration = ({
 }) => {
     const { user, token } = useAuth();
     const [pdfGenerated, setPdfGenerated] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [showPDFGenerator, setShowPDFGenerator] = useState(false);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
     const [application, setApplication] = useState(null);
@@ -257,17 +259,105 @@ const SinglePageStudentRegistration = ({
     };
 
     const handleGeneratePDF = async () => {
-        try {
-            setLoading(true);
-            // Simulate PDF generation
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            setPdfGenerated(true);
-            showSuccessToast("PDF generated successfully! You can now submit your application.");
-        } catch (error) {
-            showErrorToast("Failed to generate PDF. Please try again.");
-        } finally {
-            setLoading(false);
+        setShowPDFGenerator(true);
+    };
+
+    const handlePDFGenerated = (pdfBlobUrl) => {
+        setPdfUrl(pdfBlobUrl);
+        setPdfGenerated(true);
+        setShowPDFGenerator(false);
+        showSuccessToast("PDF generated successfully! You can now download or preview it.");
+    };
+
+    const downloadPDF = () => {
+        if (pdfUrl) {
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = `student-application-${formData.personalDetails.fullName || 'application'}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
+    };
+
+    const previewPDF = () => {
+        if (pdfUrl) {
+            window.open(pdfUrl, '_blank');
+        }
+    };
+
+    const handleRegeneratePDF = () => {
+        // Clear existing PDF data
+        setPdfUrl(null);
+        setPdfGenerated(false);
+        
+        // Show the PDF generator modal again
+        setShowPDFGenerator(true);
+        
+        showSuccessToast("Regenerating PDF with latest form data...");
+    };
+
+    const debugDocuments = () => {
+        console.log('=== DEBUG DOCUMENTS ===');
+        console.log('Current documents:', formData.documents);
+        console.log('Document count:', Object.keys(formData.documents || {}).length);
+        console.log('Document keys:', Object.keys(formData.documents || {}));
+        console.log('========================');
+    };
+
+    const fillMockData = () => {
+        const mockData = {
+            personalDetails: {
+                fullName: "John Doe",
+                dateOfBirth: "2000-01-15",
+                gender: "Male",
+                aadharNumber: "123456789012",
+                status: "OBC",
+                fathersName: "Robert Doe",
+                mothersName: "Mary Doe",
+            },
+            contactDetails: {
+                email: "john.doe@example.com",
+                primaryPhone: "9876543210",
+                whatsappNumber: "9876543210",
+                communicationMode: ["Email", "WhatsApp"],
+                permanentAddress: {
+                    street: "123 Main Street, Block A",
+                    city: "Mumbai",
+                    state: "Maharashtra",
+                    pincode: "400001",
+                },
+                presentAddress: {
+                    street: "123 Main Street, Block A",
+                    city: "Mumbai",
+                    state: "Maharashtra",
+                    pincode: "400001",
+                },
+            },
+            courseDetails: {
+                institutionName: "Sample College",
+                courseName: "Bachelor of Technology",
+                stream: "Computer Science",
+            },
+            guardianDetails: {
+                guardianName: "Robert Doe",
+                relationship: "Father",
+                guardianPhone: "9876543211",
+                guardianEmail: "robert.doe@example.com",
+            },
+            referralCode: "age87a25",
+            documents: {
+                passport_photo: { name: "passport-photo.jpg", size: 512000, downloadUrl: "http://example.com/passport-photo.jpg" },
+                aadhar_card: { name: "aadhar-card.pdf", size: 1024000, downloadUrl: "http://example.com/aadhar-card.pdf" },
+                caste_certificate: { name: "caste-certificate.pdf", size: 1536000, downloadUrl: "http://example.com/caste-certificate.pdf" },
+                income_certificate: { name: "income-certificate.pdf", size: 2048000, downloadUrl: "http://example.com/income-certificate.pdf" },
+                marksheet_10th: { name: "10th-marksheet.pdf", size: 1792000, downloadUrl: "http://example.com/10th-marksheet.pdf" },
+                resident_certificate: { name: "resident-certificate.pdf", size: 1280000, downloadUrl: "http://example.com/resident-certificate.pdf" },
+            },
+        };
+        
+        setFormData(mockData);
+        showSuccessToast("Mock data filled successfully! You can now test PDF generation.");
     };
 
     const handleSubmit = async () => {
@@ -302,15 +392,30 @@ const SinglePageStudentRegistration = ({
                     } else {
                         // Application exists, proceed with update
                         try {
+                            // Convert documents object to array format expected by backend
+                            const documentsArray = Object.entries(formData.documents || {}).map(([key, doc]) => ({
+                                documentType: key,
+                                fileName: doc.name || doc.fileName || 'unknown',
+                                filePath: doc.downloadUrl || doc.filePath || '',
+                                fileSize: doc.size || 0,
+                                mimeType: doc.type || doc.mimeType || 'application/octet-stream',
+                                status: 'uploaded'
+                            }));
+
                             await api.put(
                                 `/api/student-application/${appId}/save-draft`,
                                 {
                                     data: {
                                         personalDetails: formData.personalDetails,
                                         contactDetails: formData.contactDetails,
-                                        courseDetails: formData.courseDetails,
+                                        courseDetails: {
+                                            selectedCourse: formData.courseDetails?.courseName || formData.courseDetails?.selectedCourse || 'Bachelor of Technology',
+                                            customCourse: formData.courseDetails?.customCourse || '',
+                                            stream: formData.courseDetails?.stream || 'Computer Science',
+                                            campus: formData.courseDetails?.campus || 'Sargiguda'
+                                        },
                                         guardianDetails: formData.guardianDetails,
-                                        documents: formData.documents,
+                                        documents: documentsArray,
                                     },
                                     stage: "APPLICATION_PDF",
                                 }
@@ -346,10 +451,50 @@ const SinglePageStudentRegistration = ({
             // Use MongoDB endpoint directly
             let response;
             try {
-                response = await api.post("/api/application/create", {
+                // Convert documents object to array format expected by backend
+                const documentsArray = Object.entries(formData.documents || {}).map(([key, doc]) => ({
+                    documentType: key,
+                    fileName: doc.name || doc.fileName || 'unknown',
+                    filePath: doc.downloadUrl || doc.filePath || '',
+                    fileSize: doc.size || 0,
+                    mimeType: doc.type || doc.mimeType || 'application/octet-stream',
+                    status: 'uploaded'
+                }));
+
+                // Sanitize phone numbers (remove spaces, +, -, etc.)
+                const sanitizePhone = (phone) => {
+                    if (!phone) return phone;
+                    return phone.toString().replace(/[\s\+\-\(\)]/g, '').trim();
+                };
+
+                const submitData = {
                     ...formData,
+                    documents: documentsArray,
                     termsAccepted: true,
+                    courseDetails: {
+                        selectedCourse: formData.courseDetails?.courseName || formData.courseDetails?.selectedCourse || 'Bachelor of Technology',
+                        customCourse: formData.courseDetails?.customCourse || '',
+                        stream: formData.courseDetails?.stream || 'Computer Science',
+                        campus: formData.courseDetails?.campus || 'Sargiguda'
+                    },
+                    contactDetails: {
+                        ...formData.contactDetails,
+                        primaryPhone: sanitizePhone(formData.contactDetails?.primaryPhone),
+                        whatsappNumber: sanitizePhone(formData.contactDetails?.whatsappNumber)
+                    },
+                    guardianDetails: {
+                        ...formData.guardianDetails,
+                        guardianPhone: sanitizePhone(formData.guardianDetails?.guardianPhone)
+                    }
+                };
+                console.log('Submitting application with data:', submitData);
+                console.log('Guardian phone validation:', {
+                    phone: submitData.guardianDetails?.guardianPhone,
+                    length: submitData.guardianDetails?.guardianPhone?.length,
+                    regexTest: /^[6-9]\d{9}$/.test(submitData.guardianDetails?.guardianPhone || ''),
+                    match: submitData.guardianDetails?.guardianPhone?.match(/^[6-9]\d{9}$/)
                 });
+                response = await api.post("/api/application/create", submitData);
             } catch (error) {
                 if (error.response?.status === 400) {
                     const serverMsg = error.response?.data?.message || "";
@@ -367,15 +512,30 @@ const SinglePageStudentRegistration = ({
                                 setApplication(existing.data.data);
                                 // Save draft with latest data then submit
                                 try {
+                                    // Convert documents object to array format expected by backend
+                                    const documentsArray = Object.entries(formData.documents || {}).map(([key, doc]) => ({
+                                        documentType: key,
+                                        fileName: doc.name || doc.fileName || 'unknown',
+                                        filePath: doc.downloadUrl || doc.filePath || '',
+                                        fileSize: doc.size || 0,
+                                        mimeType: doc.type || doc.mimeType || 'application/octet-stream',
+                                        status: 'uploaded'
+                                    }));
+
                                     await api.put(
                                         `/api/student-application/${existing.data.data.applicationId}/save-draft`,
                                         {
                                             data: {
                                                 personalDetails: formData.personalDetails,
                                                 contactDetails: formData.contactDetails,
-                                                courseDetails: formData.courseDetails,
+                                                courseDetails: {
+                                                    selectedCourse: formData.courseDetails?.courseName || formData.courseDetails?.selectedCourse || 'Bachelor of Technology',
+                                                    customCourse: formData.courseDetails?.customCourse || '',
+                                                    stream: formData.courseDetails?.stream || 'Computer Science',
+                                                    campus: formData.courseDetails?.campus || 'Sargiguda'
+                                                },
                                                 guardianDetails: formData.guardianDetails,
-                                                documents: formData.documents,
+                                                documents: documentsArray,
                                             },
                                             stage: "APPLICATION_PDF",
                                         }
@@ -422,6 +582,8 @@ const SinglePageStudentRegistration = ({
             }
         } catch (error) {
             console.error("Submit error:", error);
+            console.error("Error response:", error?.response?.data);
+            console.error("Error status:", error?.response?.status);
             const serverMessage =
                 error?.response?.data?.message ||
                 error?.message ||
@@ -460,13 +622,32 @@ const SinglePageStudentRegistration = ({
                             <p className="text-gray-600 dark:text-gray-400">Click the button below to generate your application PDF document.</p>
                         </div>
 
-                        <button
-                            type="button"
-                            onClick={handleGeneratePDF}
-                            disabled={loading || !hasMinimumForCreate()}
-                            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center mx-auto"
-                        >
-                            {loading ? (
+                        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                            <button
+                                type="button"
+                                onClick={fillMockData}
+                                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 flex items-center"
+                            >
+                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2m0 0V5a2 2 0 012-2h4a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V7a2 2 0 012-2h4zM8 7h8M8 7v14M16 7v14" />
+                                </svg>
+                                Fill Mock Data
+                            </button>
+                            <button
+                                type="button"
+                                onClick={debugDocuments}
+                                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 flex items-center"
+                            >
+                                🐛 Debug Documents
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={handleGeneratePDF}
+                                disabled={loading || !hasMinimumForCreate()}
+                                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                            >
+                                {loading ? (
                                 <>
                                     <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -482,7 +663,8 @@ const SinglePageStudentRegistration = ({
                                     Generate PDF
                                 </>
                             )}
-                        </button>
+                            </button>
+                        </div>
                     </div>
                 </motion.div>
             );
@@ -526,9 +708,10 @@ const SinglePageStudentRegistration = ({
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <button
                                 type="button"
+                                onClick={previewPDF}
                                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
                             >
                                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -539,12 +722,23 @@ const SinglePageStudentRegistration = ({
                             </button>
                             <button
                                 type="button"
+                                onClick={downloadPDF}
                                 className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center"
                             >
                                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Download
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleRegeneratePDF}
+                                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center justify-center"
+                            >
+                                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Regenerate PDF
                             </button>
                             <button
                                 type="button"
@@ -1173,7 +1367,7 @@ const SinglePageStudentRegistration = ({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="space-y-6"
+                className="space-y-6 mb-12"
             >
                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
@@ -1183,16 +1377,22 @@ const SinglePageStudentRegistration = ({
                     <p className="text-gray-600 dark:text-gray-400 mt-1">Upload required documents</p>
                 </div>
 
-                <SimpleDocumentUpload
-                    onDocumentsChange={(documents) => {
-                        setFormData((prev) => ({
-                            ...prev,
-                            documents: documents,
-                        }));
-                    }}
-                    initialDocuments={formData.documents}
-                    isRequired={true}
-                />
+                <div className="pb-8">
+                    <SimpleDocumentUpload
+                        onDocumentsChange={(documents) => {
+                            console.log('📋 Form received documents update:', documents);
+                            console.log('📋 Document count:', Object.keys(documents).length);
+                            console.log('📋 Document keys:', Object.keys(documents));
+                            
+                            setFormData((prev) => ({
+                                ...prev,
+                                documents: documents,
+                            }));
+                        }}
+                        initialDocuments={formData.documents}
+                        isRequired={true}
+                    />
+                </div>
             </motion.div>
 
             {/* Terms and Conditions Section */}
@@ -1249,6 +1449,20 @@ const SinglePageStudentRegistration = ({
 
                 {/* PDF Section */}
                 {renderPDFSection()}
+
+                {/* PDF Generator Modal */}
+                {showPDFGenerator && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                            <ApplicationPDFGenerator
+                                formData={formData}
+                                application={application}
+                                onPDFGenerated={handlePDFGenerated}
+                                onCancel={() => setShowPDFGenerator(false)}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 {/* Action Buttons */}
                 <motion.div

@@ -25,176 +25,251 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // Set font
             pdf.setFont('helvetica');
 
-            // Header
-            pdf.setFontSize(20);
-            pdf.setTextColor(99, 102, 241); // Purple color
-            pdf.text('SWAGAT ODISHA', pageWidth / 2, yPosition, { align: 'center' });
-            yPosition += 10;
-
-            pdf.setFontSize(14);
-            pdf.setTextColor(102, 102, 102);
-            pdf.text('Student Application Form', pageWidth / 2, yPosition, { align: 'center' });
-            yPosition += 8;
-
-            pdf.setFontSize(10);
-            pdf.text(`Application ID: ${pdfContent.applicationId}`, pageWidth / 2, yPosition, { align: 'center' });
-            yPosition += 5;
-            pdf.text(`Date: ${pdfContent.generatedDate}`, pageWidth / 2, yPosition, { align: 'center' });
-            yPosition += 15;
-
-            // Draw line
-            pdf.setDrawColor(99, 102, 241);
-            pdf.setLineWidth(0.5);
-            pdf.line(20, yPosition, pageWidth - 20, yPosition);
-            yPosition += 10;
+            // Professional Header
+            pdf.setFillColor(99, 102, 241); // Purple background
+            pdf.rect(0, 0, pageWidth, 30, 'F');
+            
+            pdf.setTextColor(255, 255, 255); // White text
+            pdf.setFontSize(18);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('SWAGAT ODISHA', pageWidth / 2, 12, { align: 'center' });
+            
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text('Student Application Form', pageWidth / 2, 20, { align: 'center' });
+            
+            pdf.setFontSize(9);
+            pdf.text(`Application ID: ${pdfContent.applicationId}`, 20, 26);
+            pdf.text(`Date: ${pdfContent.generatedDate}`, pageWidth - 60, 26);
+            
+            yPosition = 40;
 
             // Personal Details Section
+            pdf.setFillColor(248, 250, 252); // Light gray background
+            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            
+            pdf.setTextColor(99, 102, 241); // Purple text
             pdf.setFontSize(12);
-            pdf.setTextColor(99, 102, 241);
-            pdf.text('PERSONAL DETAILS', 20, yPosition);
-            yPosition += 8;
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('1. Personal Details', 20, yPosition + 4);
+            yPosition += 10;
 
             pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'normal');
             pdf.setTextColor(0, 0, 0);
 
+            // Simple personal details list
             const personalDetails = [
-                ['Full Name:', pdfContent.personalDetails.fullName || 'N/A'],
-                ['Date of Birth:', pdfContent.personalDetails.dateOfBirth || 'N/A'],
-                ['Gender:', pdfContent.personalDetails.gender || 'N/A'],
-                ['Aadhar Number:', pdfContent.personalDetails.aadharNumber || 'N/A'],
-                ['Category:', pdfContent.personalDetails.category || 'N/A']
+                { label: 'Full Name:', value: pdfContent.personalDetails.fullName || 'N/A' },
+                { label: 'Date of Birth:', value: pdfContent.personalDetails.dateOfBirth || 'N/A' },
+                { label: 'Gender:', value: pdfContent.personalDetails.gender || 'N/A' },
+                { label: 'Aadhar Number:', value: pdfContent.personalDetails.aadharNumber || 'N/A' },
+                { label: 'Category:', value: pdfContent.personalDetails.status || pdfContent.personalDetails.category || 'N/A' },
+                { label: 'Father\'s Name:', value: pdfContent.personalDetails.fathersName || 'N/A' },
+                { label: 'Mother\'s Name:', value: pdfContent.personalDetails.mothersName || 'N/A' }
             ];
 
-            personalDetails.forEach(([label, value]) => {
+            personalDetails.forEach((item) => {
                 pdf.setFont('helvetica', 'bold');
-                pdf.text(label, 20, yPosition);
+                pdf.text(item.label, 20, yPosition);
                 pdf.setFont('helvetica', 'normal');
-                pdf.text(value, 60, yPosition);
+                pdf.text(item.value, 80, yPosition);
                 yPosition += 6;
             });
 
             yPosition += 5;
 
             // Contact Details Section
+            pdf.setFillColor(248, 250, 252); // Light gray background
+            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            
+            pdf.setTextColor(99, 102, 241); // Purple text
             pdf.setFontSize(12);
-            pdf.setTextColor(99, 102, 241);
-            pdf.text('CONTACT DETAILS', 20, yPosition);
-            yPosition += 8;
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('2. Contact Details', 20, yPosition + 4);
+            yPosition += 10;
 
             pdf.setFontSize(10);
             pdf.setTextColor(0, 0, 0);
 
             const contactDetails = [
-                ['Email:', pdfContent.contactDetails.email || 'N/A'],
-                ['Phone:', pdfContent.contactDetails.primaryPhone || 'N/A'],
-                ['WhatsApp:', pdfContent.contactDetails.whatsappNumber || 'N/A'],
-                ['Address:', pdfContent.contactDetails.permanentAddress?.street || 'N/A'],
-                ['City, State:', `${pdfContent.contactDetails.permanentAddress?.city || 'N/A'}, ${pdfContent.contactDetails.permanentAddress?.state || 'N/A'} - ${pdfContent.contactDetails.permanentAddress?.pincode || 'N/A'}`]
+                { label: 'Email:', value: pdfContent.contactDetails.email || 'N/A' },
+                { label: 'Primary Phone:', value: pdfContent.contactDetails.primaryPhone || 'N/A' },
+                { label: 'WhatsApp:', value: pdfContent.contactDetails.whatsappNumber || 'N/A' },
+                { label: 'Street Address:', value: pdfContent.contactDetails.permanentAddress?.street || 'N/A' },
+                { label: 'City:', value: pdfContent.contactDetails.permanentAddress?.city || 'N/A' },
+                { label: 'State:', value: pdfContent.contactDetails.permanentAddress?.state || 'N/A' },
+                { label: 'Pincode:', value: pdfContent.contactDetails.permanentAddress?.pincode || 'N/A' }
             ];
 
-            contactDetails.forEach(([label, value]) => {
+            contactDetails.forEach((item) => {
                 pdf.setFont('helvetica', 'bold');
-                pdf.text(label, 20, yPosition);
+                pdf.text(item.label, 20, yPosition);
                 pdf.setFont('helvetica', 'normal');
-                pdf.text(value, 60, yPosition);
+                pdf.text(item.value, 80, yPosition);
                 yPosition += 6;
             });
 
             yPosition += 5;
 
             // Family Details Section
+            pdf.setFillColor(248, 250, 252); // Light gray background
+            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            
+            pdf.setTextColor(99, 102, 241); // Purple text
             pdf.setFontSize(12);
-            pdf.setTextColor(99, 102, 241);
-            pdf.text('FAMILY DETAILS', 20, yPosition);
-            yPosition += 8;
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('3. Family & Academic Details', 20, yPosition + 4);
+            yPosition += 10;
 
             pdf.setFontSize(10);
             pdf.setTextColor(0, 0, 0);
 
             const familyDetails = [
-                ['Father\'s Name:', pdfContent.personalDetails.fathersName || 'N/A'],
-                ['Mother\'s Name:', pdfContent.personalDetails.mothersName || 'N/A'],
-                ['Guardian Name:', pdfContent.guardianDetails.guardianName || 'N/A'],
-                ['Relationship:', pdfContent.guardianDetails.relationship || 'N/A'],
-                ['Guardian Phone:', pdfContent.guardianDetails.guardianPhone || 'N/A']
+                { label: 'Father\'s Name:', value: pdfContent.personalDetails.fathersName || 'N/A' },
+                { label: 'Mother\'s Name:', value: pdfContent.personalDetails.mothersName || 'N/A' },
+                { label: 'Guardian Name:', value: pdfContent.guardianDetails.guardianName || 'N/A' },
+                { label: 'Relationship:', value: pdfContent.guardianDetails.relationship || 'N/A' },
+                { label: 'Guardian Phone:', value: pdfContent.guardianDetails.guardianPhone || 'N/A' },
+                { label: 'Guardian Email:', value: pdfContent.guardianDetails.guardianEmail || 'N/A' },
+                { label: 'Institution Name:', value: pdfContent.courseDetails.institutionName || 'N/A' },
+                { label: 'Course Name:', value: pdfContent.courseDetails.courseName || 'N/A' },
+                { label: 'Stream:', value: pdfContent.courseDetails.stream || 'N/A' }
             ];
 
-            familyDetails.forEach(([label, value]) => {
+            familyDetails.forEach((item) => {
                 pdf.setFont('helvetica', 'bold');
-                pdf.text(label, 20, yPosition);
+                pdf.text(item.label, 20, yPosition);
                 pdf.setFont('helvetica', 'normal');
-                pdf.text(value, 60, yPosition);
+                pdf.text(item.value, 80, yPosition);
                 yPosition += 6;
             });
 
             yPosition += 5;
 
-            // Academic Details Section
-            pdf.setFontSize(12);
-            pdf.setTextColor(99, 102, 241);
-            pdf.text('ACADEMIC DETAILS', 20, yPosition);
-            yPosition += 8;
-
-            pdf.setFontSize(10);
-            pdf.setTextColor(0, 0, 0);
-
-            const academicDetails = [
-                ['Institution Name:', pdfContent.courseDetails.institutionName || 'N/A'],
-                ['Course Name:', pdfContent.courseDetails.courseName || 'N/A'],
-                ['Stream:', pdfContent.courseDetails.stream || 'N/A']
-            ];
-
-
+            // Add referral code
             if (pdfContent.referralCode) {
-                academicDetails.push(['Referral Code:', pdfContent.referralCode]);
-            }
-
-            academicDetails.forEach(([label, value]) => {
                 pdf.setFont('helvetica', 'bold');
-                pdf.text(label, 20, yPosition);
+                pdf.text('Referral Code:', 20, yPosition);
                 pdf.setFont('helvetica', 'normal');
-                pdf.text(value, 60, yPosition);
+                pdf.text(pdfContent.referralCode, 80, yPosition);
                 yPosition += 6;
-            });
+            }
 
             yPosition += 5;
 
             // Documents Section
+            pdf.setFillColor(248, 250, 252); // Light gray background
+            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            
+            pdf.setTextColor(99, 102, 241); // Purple text
             pdf.setFontSize(12);
-            pdf.setTextColor(99, 102, 241);
-            pdf.text('UPLOADED DOCUMENTS', 20, yPosition);
-            yPosition += 8;
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('4. Uploaded Documents', 20, yPosition + 4);
+            yPosition += 10;
 
             pdf.setFontSize(10);
-            pdf.setTextColor(0, 0, 0);
+            pdf.setFont('helvetica', 'normal');
 
+            // Simple documents list with clickable links
             const documents = Object.entries(pdfContent.documents || {});
-            if (documents.length > 0) {
-                documents.forEach(([key, doc]) => {
-                    const docName = key.replace(/_/g, ' ').toUpperCase();
-                    const docInfo = `${doc.name || 'Uploaded'} ${doc.size ? '(' + (doc.size / 1024).toFixed(1) + ' KB)' : ''}`;
+            
+            // Debug: Log documents to console
+            console.log('PDF Generator - Documents received:', documents);
+            console.log('PDF Generator - pdfContent.documents:', pdfContent.documents);
+            
+            const documentNames = {
+                'passport_photo': 'Passport Size Photo',
+                'aadhar_card': 'Aadhar Card',
+                'birth_certificate': 'Birth Certificate',
+                'marksheet_10th': '10th Marksheet cum Certificate',
+                'marksheet_12th': '12th Marksheet cum Certificate',
+                'transfer_certificate': 'Transfer Certificate',
+                'caste_certificate': 'Caste Certificate',
+                'income_certificate': 'Income Certificate',
+                'resident_certificate': 'Resident Certificate',
+                'pm_kisan_enrollment': 'PM Kisan Enrollment',
+                'cm_kisan_enrollment': 'CM Kisan Enrollment'
+            };
 
+            if (documents.length > 0) {
+                console.log('Processing documents, count:', documents.length);
+                // Use optimized layout with two columns and reduced spacing
+                documents.forEach(([key, doc], index) => {
+                    console.log(`Document ${index + 1}: key="${key}", doc=`, doc);
+                    const docName = documentNames[key] || key.replace(/_/g, ' ').toUpperCase();
+                    const fileName = doc.name || doc.fileName || 'Not Uploaded';
+                    const fileSize = doc.size ? `${(doc.size / 1024).toFixed(1)} KB` : 'N/A';
+                    console.log(`  → docName: "${docName}", fileName: "${fileName}", fileSize: "${fileSize}"`);
+                    
+                    // Use two-column layout for space efficiency
+                    const col = index % 2; // 0 or 1 for column
+                    const row = Math.floor(index / 2); // 0, 1, 2 for row
+                    const xPos = 20 + (col * 95); // Two columns with margin
+                    let currentY = yPosition + (row * 10); // Reduced spacing: 10mm per row
+                    
+                    // Check if we need a new page before adding new row
+                    if (row > 0 && col === 0 && currentY > pageHeight - 80) {
+                        pdf.addPage();
+                        yPosition = 30; // Reset for new page
+                        currentY = yPosition + (row % 6 * 10); // Continue from new page, reset rows
+                    }
+                    
+                    // Document name
                     pdf.setFont('helvetica', 'bold');
-                    pdf.text(docName + ':', 20, yPosition);
+                    pdf.setFontSize(10); // Smaller font to fit better
+                    pdf.setTextColor(0, 0, 0);
+                    pdf.text(`${docName}:`, xPos, currentY);
+                    
+                    // File name as clickable link
                     pdf.setFont('helvetica', 'normal');
-                    pdf.text(docInfo, 20, yPosition + 4);
-                    yPosition += 8;
+                    pdf.setFontSize(9); // Smaller font for filenames
+                    if (doc.downloadUrl || doc.filePath) {
+                        // Add clickable link with blue color
+                        pdf.setTextColor(0, 0, 255); // Blue color for links
+                        const linkText = `• ${fileName} (${fileSize})`;
+                        pdf.text(linkText, xPos, currentY + 4);
+                        
+                        // Create clickable link
+                        const textWidth = pdf.getTextWidth(linkText);
+                        pdf.link(xPos, currentY, textWidth, 4, {
+                            url: doc.downloadUrl || doc.filePath
+                        });
+                        
+                        pdf.setTextColor(0, 0, 0); // Reset to black
+                    } else {
+                        pdf.setTextColor(0, 0, 0);
+                        pdf.text(`• ${fileName} (${fileSize})`, xPos, currentY + 4);
+                    }
                 });
+                
+                // Update yPosition for next section (after all documents)
+                const totalRows = Math.ceil(documents.length / 2);
+                yPosition += (totalRows * 10) + 10; // Space after documents section
+                
+                // Reset font size for next sections
+                pdf.setFontSize(12);
             } else {
-                pdf.text('No documents uploaded', 20, yPosition);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(0, 0, 0);
+                pdf.text('No documents uploaded yet', 20, yPosition);
                 yPosition += 6;
             }
 
             yPosition += 10;
 
             // Terms and Conditions Section
+            pdf.setFillColor(248, 250, 252); // Light gray background
+            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            
+            pdf.setTextColor(99, 102, 241); // Purple text
             pdf.setFontSize(12);
-            pdf.setTextColor(193, 86, 33); // Orange color
-            pdf.text('TERMS AND CONDITIONS', 20, yPosition);
-            yPosition += 8;
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('5. Terms and Conditions', 20, yPosition + 4);
+            yPosition += 10;
 
             pdf.setFontSize(9);
-            pdf.setTextColor(116, 66, 16);
+            pdf.setTextColor(0, 0, 0);
 
             const terms = [
                 '1. Application Submission: I hereby declare that all information provided in this application is true and correct to the best of my knowledge.',
@@ -237,15 +312,19 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             pdf.text('Date: _______________', 20, yPosition);
             pdf.text('Date: _______________', pageWidth / 2 + 20, yPosition);
 
-            // Footer
-            yPosition = pageHeight - 20;
-            pdf.setFontSize(8);
-            pdf.setTextColor(113, 128, 150);
-            pdf.text('Swagat Odisha - Educational Excellence', pageWidth / 2, yPosition, { align: 'center' });
-            yPosition += 4;
-            pdf.text('This application was generated electronically and is valid without physical signature.', pageWidth / 2, yPosition, { align: 'center' });
-            yPosition += 4;
-            pdf.text('For any queries, contact: support@swagatodisha.com | Phone: +91-XXX-XXXX-XXXX', pageWidth / 2, yPosition, { align: 'center' });
+            // Professional Footer
+            pdf.setFillColor(99, 102, 241); // Purple background
+            pdf.rect(0, pageHeight - 25, pageWidth, 25, 'F');
+            
+            pdf.setTextColor(255, 255, 255); // White text
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('SWAGAT ODISHA - Educational Excellence Platform', pageWidth / 2, pageHeight - 18, { align: 'center' });
+            
+            pdf.setFontSize(7);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(`Application ID: ${pdfContent.applicationId} | Generated: ${pdfContent.generatedDate}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
+            pdf.text('Website: www.swagatodisha.com | Email: contact@swagatodisha.com', pageWidth / 2, pageHeight - 6, { align: 'center' });
 
             // Generate PDF blob
             const pdfBlob = pdf.output('blob');
@@ -254,7 +333,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
 
             // Call the callback if provided
             if (onPDFGenerated) {
-                onPDFGenerated();
+                onPDFGenerated(url);
             }
 
         } catch (err) {
@@ -266,6 +345,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
     };
 
     const createPDFContent = (formData, application) => {
+        console.log('createPDFContent - formData.documents:', formData.documents);
+        console.log('createPDFContent - formData.documents keys:', Object.keys(formData.documents || {}));
+        console.log('createPDFContent - formData.documents count:', Object.keys(formData.documents || {}).length);
+        
         return {
             applicationId: application?.applicationId || 'DRAFT',
             generatedDate: new Date().toLocaleDateString(),

@@ -161,18 +161,25 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        console.log('🔐 Login attempt for email:', email.toLowerCase());
+        
         // First, try to find user in User model (students, agents, regular users)
         let user = await User.findOne({ email: email.toLowerCase() }).select('+password');
         let userType = 'user';
+        console.log('🔐 User found in User model:', !!user);
 
         // If not found in User model, try Admin model (staff, super_admin)
         if (!user) {
+            console.log('🔐 User not found, checking Admin model for:', email.toLowerCase());
             const Admin = require('../models/Admin');
             const adminUser = await Admin.findOne({ email: email.toLowerCase() }).select('+password');
 
             if (adminUser) {
                 user = adminUser;
                 userType = 'admin';
+                console.log('🔐 Admin found:', !!adminUser, 'Role:', adminUser.role);
+            } else {
+                console.log('🔐 Admin not found for:', email.toLowerCase());
             }
         }
 
@@ -184,7 +191,9 @@ router.post('/login', async (req, res) => {
         }
 
         // Check if user is active
+        console.log('🔐 User active status:', user.isActive);
         if (!user.isActive) {
+            console.log('🔐 Account is disabled');
             return res.status(401).json({
                 success: false,
                 message: 'Account is disabled. Please contact support.'
@@ -192,8 +201,11 @@ router.post('/login', async (req, res) => {
         }
 
         // Check password
+        console.log('🔐 Checking password for user type:', userType);
         const isPasswordValid = await user.comparePassword(password);
+        console.log('🔐 Password valid:', isPasswordValid);
         if (!isPasswordValid) {
+            console.log('🔐 Invalid password provided');
             return res.status(401).json({
                 success: false,
                 message: 'Invalid credentials'
@@ -887,8 +899,11 @@ router.get('/users', async (req, res) => {
 router.get('/me', async (req, res) => {
     try {
         const token = req.headers.authorization?.replace('Bearer ', '');
+        console.log('🔐 Backend /me - Token received:', token ? 'Token present' : 'No token');
+        console.log('🔐 Backend /me - JWT_SECRET exists:', !!process.env.JWT_SECRET);
 
         if (!token) {
+            console.log('🔐 Backend /me - No token provided');
             return res.status(401).json({
                 success: false,
                 message: 'No token provided'
@@ -896,27 +911,34 @@ router.get('/me', async (req, res) => {
         }
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'swagat_odisha_jwt_secret_key_2024_development');
+        console.log('🔐 Backend /me - Token decoded successfully:', decoded);
         const userId = decoded.id || decoded.userId;
+        console.log('🔐 Backend /me - Looking for user with ID:', userId);
 
         let user;
         let userType = 'user';
 
         // First try to find user in User model
         user = await User.findById(userId).select('-password');
+        console.log('🔐 Backend /me - User found in User model:', !!user);
 
         // If not found in User model, try Admin model
         if (!user) {
             const Admin = require('../models/Admin');
             user = await Admin.findById(userId).select('-password');
             userType = 'admin';
+            console.log('🔐 Backend /me - User found in Admin model:', !!user);
         }
 
         if (!user) {
+            console.log('🔐 Backend /me - User not found in any model');
             return res.status(401).json({
                 success: false,
                 message: 'User not found'
             });
         }
+
+        console.log('🔐 Backend /me - User found:', user.fullName, 'Type:', userType);
 
         // Check if user is active
         if (!user.isActive) {

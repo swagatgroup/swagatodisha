@@ -6,6 +6,16 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [categoryFilter, setCategoryFilter] = useState('all');
+    
+    // Debug logging for student data
+    console.log('📋 StudentTable received students:', students);
+    if (students && students.length > 0) {
+        console.log('📋 First student full data:', students[0]);
+        console.log('📋 Course field:', students[0].courseDetails?.selectedCourse);
+        console.log('📋 Status field:', students[0].status);
+        console.log('📋 Workflow status:', students[0].workflowStatus?.currentStage);
+        console.log('📋 Personal details:', students[0].personalDetails);
+    }
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -16,12 +26,17 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
     };
 
     const getStatusColor = (status) => {
-        switch (status) {
+        // Handle both uppercase and lowercase status values
+        const normalizedStatus = typeof status === 'string' ? status.toLowerCase() : 'unknown';
+        
+        switch (normalizedStatus) {
             case 'completed':
             case 'approved':
                 return 'bg-green-100 text-green-800';
             case 'pending':
+            case 'submitted':
             case 'under_review':
+            case 'in_progress':
                 return 'bg-yellow-100 text-yellow-800';
             case 'rejected':
             case 'failed':
@@ -32,21 +47,29 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
     };
 
     const getStatusText = (status) => {
-        switch (status) {
+        // Handle both uppercase and lowercase status values
+        const normalizedStatus = typeof status === 'string' ? status.toLowerCase() : 'unknown';
+        
+        switch (normalizedStatus) {
             case 'completed':
                 return 'Complete';
             case 'approved':
                 return 'Approved';
             case 'pending':
                 return 'Pending';
+            case 'submitted':
+                return 'Pending';
             case 'under_review':
                 return 'Under Review';
+            case 'in_progress':
+                return 'In Progress';
             case 'rejected':
                 return 'Rejected';
             case 'failed':
                 return 'Failed';
             default:
-                return 'Unknown';
+                console.log('❌ Unknown status in StudentTable:', status, 'normalized:', normalizedStatus);
+                return status || 'Unknown';
         }
     };
 
@@ -62,7 +85,8 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
             student.workflowStatus?.currentStage === statusFilter ||
             student.status === statusFilter;
 
-        const matchesCategory = categoryFilter === 'all' || (student.registrationCategory || 'A') === categoryFilter;
+        const studentCategory = student.personalDetails?.status || student.personalDetails?.category || student.registrationCategory || 'General';
+        const matchesCategory = categoryFilter === 'all' || studentCategory === categoryFilter;
 
         return matchesSearch && matchesStatus && matchesCategory;
     });
@@ -274,7 +298,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                     </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {student.registrationCategory || 'A'}
+                                    {student.personalDetails?.status || student.personalDetails?.category || 'General'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {new Date(student.createdAt).toLocaleDateString()}

@@ -14,6 +14,8 @@
         "debug:submission": "node scripts/debugSubmission.js",
         "test:current": "node scripts/testCurrentSystem.js",
         "test:fixed": "node scripts/testFixedSystem.js",
+        "test:server": "node test-server.js",
+        "test:endpoints": "echo 'Use test-endpoints.http with REST Client extension'",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
         "security:audit": "npm audit",
@@ -42,8 +44,7 @@
         "qrcode": "^1.5.4",
         "sharp": "^0.32.6",
         "streamifier": "^0.1.1",
-        "twilio": "^5.9.0",
-        "uuid": "^13.0.0"
+        "twilio": "^5.9.0"
     },
     "devDependencies": {
         "axios": "^1.12.2",

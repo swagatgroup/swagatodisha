@@ -426,10 +426,13 @@ router.get("/stats", async (req, res) => {
     console.log("Stats - Agent ID:", req.user._id);
 
     // Prefer stats from StudentApplication (new workflow) - include both assigned and referred
+    // Match the same query logic as /my-students endpoint
     const agentQuery = {
       $or: [
-        { assignedAgent: req.user._id },
-        { "referralInfo.referredBy": req.user._id },
+        { 'referralInfo.referredBy': new mongoose.Types.ObjectId(req.user._id) },
+        { 'assignedAgent': new mongoose.Types.ObjectId(req.user._id) },
+        { 'submittedBy': new mongoose.Types.ObjectId(req.user._id) },
+        { 'submittedBy._id': new mongoose.Types.ObjectId(req.user._id) }
       ],
     };
 
@@ -449,13 +452,21 @@ router.get("/stats", async (req, res) => {
       },
     });
 
+    // Debug logging
+    console.log("📊 Stats Debug - Agent ID:", req.user._id);
+    console.log("📊 Total students query:", agentQuery);
+    console.log("📊 Total students count:", totalStudents);
+    console.log("📊 Pending students count:", pendingStudents);
+    console.log("📊 Completed students count:", completedStudents);
+    console.log("📊 This month count:", thisMonthRegistrations);
+
     res.status(200).json({
       success: true,
       data: {
-        totalStudents,
-        pendingStudents,
-        completedStudents,
-        thisMonthRegistrations,
+        total: totalStudents,
+        pending: pendingStudents,
+        completed: completedStudents,
+        thisMonth: thisMonthRegistrations,
       },
     });
   } catch (error) {

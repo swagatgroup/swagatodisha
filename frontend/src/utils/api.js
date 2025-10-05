@@ -3,7 +3,7 @@ import { API_BASE_URL, API_TIMEOUT } from '../config/environment';
 
 // API Configuration
 const api = axios.create({
-    baseURL: API_BASE_URL || 'http://localhost:5000/',
+    baseURL: API_BASE_URL || '',
     timeout: API_TIMEOUT || 10000,
     headers: {
         'Content-Type': 'application/json',
@@ -14,8 +14,13 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
+        console.log('🌐 API Request - URL:', config.url);
+        console.log('🌐 API Request - Token:', token ? 'Present' : 'Missing');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+            console.log('🌐 API Request - Authorization header set');
+        } else {
+            console.log('🌐 API Request - No token, no Authorization header');
         }
         return config;
     },
@@ -26,10 +31,17 @@ api.interceptors.request.use(
 
 // Response interceptor for error handling
 api.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        console.log('🌐 API Response - URL:', response.config.url, 'Status:', response.status);
+        return response;
+    },
     (error) => {
+        console.log('🌐 API Error - URL:', error.config?.url, 'Status:', error.response?.status);
+        console.log('🌐 API Error - Message:', error.response?.data?.message || error.message);
+        
         // Handle 401 Unauthorized errors
         if (error.response?.status === 401) {
+            console.log('🌐 API Error - 401 Unauthorized, clearing token');
             // Only redirect if we're not already on login/register pages to avoid infinite loops
             const currentPath = window.location.pathname;
             const isAuthPage = currentPath === '/login' || currentPath === '/register';
