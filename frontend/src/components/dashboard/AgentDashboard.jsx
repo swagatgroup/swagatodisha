@@ -4,6 +4,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import DashboardLayout from "./DashboardLayout";
 import StudentRegistrationWorkflow from "./tabs/StudentRegistrationWorkflow";
 import AgentApplicationsTab from "./tabs/AgentApplicationsTab";
+import AgentApplicationStatus from "./tabs/AgentApplicationStatus";
 import StudentTable from "./components/StudentTable";
 import api from "../../utils/api";
 
@@ -59,6 +60,25 @@ const EnhancedAgentDashboard = () => {
           />
         </svg>
       ),
+    },
+    {
+      id: "application-status",
+      name: "Application Status",
+      icon: (
+        <svg
+          className="mr-3 h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
     }
   ];
 
@@ -96,7 +116,24 @@ const EnhancedAgentDashboard = () => {
       }
 
       if (statsRes.data.success) {
-        setStats(statsRes.data.data);
+        console.log('📊 AgentDashboard - Stats response:', statsRes.data.data);
+        const statsData = statsRes.data.data;
+        
+        // Map backend field names to frontend field names
+        setStats({
+          totalStudents: statsData.total || 0,
+          pendingStudents: statsData.pending || 0,
+          completedStudents: statsData.completed || 0,
+          thisMonthRegistrations: statsData.thisMonth || 0,
+        });
+        console.log('📊 AgentDashboard - Stats mapped:', {
+          totalStudents: statsData.total || 0,
+          pendingStudents: statsData.pending || 0,
+          completedStudents: statsData.completed || 0,
+          thisMonthRegistrations: statsData.thisMonth || 0,
+        });
+      } else {
+        console.error('📊 AgentDashboard - Stats not successful:', statsRes.data);
       }
     } catch (error) {
       console.error("Error loading dashboard data:", error);
@@ -219,6 +256,10 @@ const EnhancedAgentDashboard = () => {
       case "registration":
         return (
           <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />
+        );
+      case "application-status":
+        return (
+          <AgentApplicationStatus />
         );
       default:
         return null;

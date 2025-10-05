@@ -155,7 +155,8 @@ const Register = () => {
                 fullName: formData.fullName,
                 email: formData.email,
                 password: formData.password,
-                phoneNumber: formData.phoneNumber
+                phoneNumber: formData.phoneNumber,
+                role: 'student'
             });
 
             if (result.success) {

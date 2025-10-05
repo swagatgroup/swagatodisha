@@ -53,6 +53,7 @@ const authRoutes = require('./routes/auth');
 const studentRoutes = require('./routes/students');
 const adminRoutes = require('./routes/admin');
 const adminAuthRoutes = require('./routes/adminAuth');
+const adminStudentsRoutes = require('./routes/adminStudents');
 const dashboardRoutes = require('./routes/dashboard');
 const documentRoutes = require('./routes/documents');
 const referralRoutes = require('./routes/referral');
@@ -100,6 +101,9 @@ const corsOptions = {
         const allowedOrigins = [
             'https://www.swagatodisha.com',
             'http://localhost:3000',
+            'http://localhost:3001',
+            'http://127.0.0.1:3000',
+            'http://127.0.0.1:3001',
             'http://localhost:5173',
             'https://www.swagatodisha.com',
             'https://swagatodisha.com',
@@ -288,6 +292,7 @@ const galleryRoutes = require('./routes/gallery');
 const pdfRoutes = require('./routes/pdf');
 const documentTypesRoutes = require('./routes/documentTypes');
 const cmsRoutes = require('./routes/cms');
+const applicationVerificationRoutes = require('./routes/applicationVerification');
 
 // MongoDB Application Routes
 app.post('/api/application/create', protect, async (req, res) => {
@@ -320,6 +325,25 @@ app.post('/api/application/create', protect, async (req, res) => {
             req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
         }
 
+        // Handle referral code linking
+        let referralInfo = {};
+        if (req.body.referralCode) {
+            // Find the agent who owns this referral code
+            const User = require('./models/User');
+            const referrer = await User.findOne({ referralCode: req.body.referralCode });
+            if (referrer) {
+                referralInfo = {
+                    referredBy: referrer._id,
+                    referralCode: req.body.referralCode,
+                    referralType: referrer.role
+                };
+            } else {
+                referralInfo = {
+                    referralCode: req.body.referralCode
+                };
+            }
+        }
+
         // Create application in database
         const applicationData = {
             user: req.user._id, // Use authenticated user ID
@@ -342,9 +366,7 @@ app.post('/api/application/create', protect, async (req, res) => {
             termsAcceptedAt: new Date(),
             submittedBy: req.user._id,
             submitterRole: req.user.role,
-            referralInfo: req.body.referralCode ? {
-                referralCode: req.body.referralCode
-            } : {}
+            referralInfo: referralInfo
         };
 
         // Generate applicationId if not provided
@@ -844,6 +866,7 @@ app.use('/api/pdf', apiRateLimit, pdfRoutes);
 app.use('/api/workflow', apiRateLimit, workflowRoutes);
 app.use('/api/payments', apiRateLimit, paymentRoutes);
 app.use('/api/admin', apiRateLimit, adminRoutes);
+app.use('/api/admin/students', apiRateLimit, adminStudentsRoutes);
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
@@ -852,6 +875,7 @@ app.use('/api/files', uploadRateLimit, fileRoutes);
 app.use('/api/analytics', apiRateLimit, analyticsRoutes);
 app.use('/api/agents', apiRateLimit, agentRoutes);
 app.use('/api/staff', apiRateLimit, staffRoutes);
+app.use('/api/verification', apiRateLimit, applicationVerificationRoutes);
 
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {

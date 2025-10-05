@@ -309,7 +309,14 @@ const studentApplicationSchema = new mongoose.Schema({
         },
         reviewedAt: Date,
         remarks: String,
-        rejectionReason: String
+        rejectionReason: String,
+        rejectionMessage: String,
+        rejectionDetails: [{
+            section: String, // 'documents', 'personalDetails', 'academicDetails', etc.
+            issue: String,
+            message: String,
+            requiresResubmission: { type: Boolean, default: true }
+        }]
     },
 
     // Progress Tracking
@@ -391,7 +398,20 @@ const studentApplicationSchema = new mongoose.Schema({
 
     // Generated Files
     combinedPdfUrl: String,
-    documentsZipUrl: String
+    documentsZipUrl: String,
+
+    // Resubmission Tracking
+    resubmissionInfo: {
+        isResubmission: { type: Boolean, default: false },
+        originalApplicationId: String,
+        resubmissionCount: { type: Number, default: 0 },
+        resubmissionReason: String,
+        resubmittedAt: Date,
+        resubmittedBy: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    }
 }, {
     timestamps: true,
     toJSON: { virtuals: true },
@@ -486,14 +506,16 @@ studentApplicationSchema.methods.approveApplication = function (reviewedBy, rema
     return this.save();
 };
 
-studentApplicationSchema.methods.rejectApplication = function (reviewedBy, rejectionReason, remarks = '') {
+studentApplicationSchema.methods.rejectApplication = function (reviewedBy, rejectionReason, remarks = '', rejectionMessage = '', rejectionDetails = []) {
     this.status = 'REJECTED';
     this.currentStage = 'REJECTED';
     this.reviewInfo = {
         reviewedBy,
         reviewedAt: new Date(),
         remarks,
-        rejectionReason
+        rejectionReason,
+        rejectionMessage,
+        rejectionDetails
     };
 
     this.workflowHistory.push({
@@ -502,6 +524,8 @@ studentApplicationSchema.methods.rejectApplication = function (reviewedBy, rejec
         updatedBy: reviewedBy,
         action: 'REJECT',
         remarks,
+        rejectionReason,
+        rejectionMessage,
         timestamp: new Date()
     });
     this.lastModified = new Date();
@@ -515,6 +539,52 @@ studentApplicationSchema.methods.assignToAgent = function (agentId) {
 
 studentApplicationSchema.methods.assignToStaff = function (staffId) {
     this.assignedStaff = staffId;
+    return this.save();
+};
+
+studentApplicationSchema.methods.resubmitApplication = function (resubmittedBy, resubmissionReason = '') {
+    this.status = 'SUBMITTED';
+    this.currentStage = 'SUBMITTED';
+    this.submittedAt = new Date();
+    this.progress.submitted = true;
+    
+    // Update resubmission info
+    this.resubmissionInfo = {
+        isResubmission: true,
+        originalApplicationId: this.applicationId,
+        resubmissionCount: (this.resubmissionInfo?.resubmissionCount || 0) + 1,
+        resubmissionReason,
+        resubmittedAt: new Date(),
+        resubmittedBy
+    };
+
+    // Clear previous review info for fresh review
+    this.reviewInfo = {};
+    this.reviewStatus = {
+        documentsVerified: false,
+        overallDocumentReviewStatus: 'NOT_VERIFIED',
+        documentCounts: {
+            total: this.documents?.length || 0,
+            approved: 0,
+            rejected: 0,
+            pending: this.documents?.length || 0
+        },
+        personalDetailsVerified: false,
+        academicDetailsVerified: false,
+        guardianDetailsVerified: false,
+        financialDetailsVerified: false,
+        overallApproved: false
+    };
+
+    this.workflowHistory.push({
+        stage: 'SUBMITTED',
+        status: 'SUBMITTED',
+        updatedBy: resubmittedBy,
+        action: 'RESUBMIT',
+        remarks: `Application resubmitted. Reason: ${resubmissionReason}`,
+        timestamp: new Date()
+    });
+    this.lastModified = new Date();
     return this.save();
 };
 
@@ -563,4 +633,4 @@ studentApplicationSchema.index(
     }
 );
 
-module.exports = mongoose.model('StudentApplication', studentApplicationSchema);
+module.exports = mongoose.model('StudentApplication', studentApplicationSchema, 'studentapplications');

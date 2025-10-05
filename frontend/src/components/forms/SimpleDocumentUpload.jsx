@@ -58,13 +58,22 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             instructions: 'Both sides of the card'
         },
         {
-            id: 'birth_certificate',
-            name: 'Birth Certificate',
-            description: 'Birth certificate or equivalent',
+            id: 'caste_certificate',
+            name: 'Caste Certificate',
+            description: 'Caste certificate for reservation',
             isRequired: true,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: '5MB',
-            instructions: 'Clear copy of birth certificate'
+            instructions: 'Caste certificate not older than 5 years'
+        },
+        {
+            id: 'income_certificate',
+            name: 'Income Certificate',
+            description: 'Family income certificate',
+            isRequired: true,
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: '5MB',
+            instructions: 'Income certificate not older than 1 year'
         },
         {
             id: 'marksheet_10th',
@@ -76,13 +85,13 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             instructions: 'All pages of marksheet'
         },
         {
-            id: 'marksheet_12th',
-            name: '12th Marksheet',
-            description: 'Class 12th marksheet',
-            isRequired: true,
+            id: 'resident_certificate',
+            name: 'Resident Certificate',
+            description: 'Resident/Domicile certificate',
+            isRequired: false,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: '5MB',
-            instructions: 'All pages of marksheet'
+            instructions: 'Certificate of residence/domicile'
         },
         {
             id: 'transfer_certificate',
@@ -153,14 +162,20 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                 public_id: uploaded?.cloudinaryPublicId,
             };
 
-            setDocuments(prev => ({
-                ...prev,
-                [documentType]: fileObject
-            }));
-
-            onDocumentsChange({
-                ...documents,
-                [documentType]: fileObject
+            setDocuments(prev => {
+                const newDocs = {
+                    ...prev,
+                    [documentType]: fileObject
+                };
+                
+                console.log(`📄 Document uploaded: ${documentType}`, fileObject);
+                console.log('📄 Updated documents state:', newDocs);
+                console.log('📄 Document count:', Object.keys(newDocs).length);
+                
+                // Notify parent with the updated documents
+                onDocumentsChange(newDocs);
+                
+                return newDocs;
             });
 
         } catch (error) {
@@ -175,13 +190,12 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         setDocuments(prev => {
             const newDocs = { ...prev };
             delete newDocs[documentType];
+            
+            // Notify parent with the updated documents
+            onDocumentsChange(newDocs);
+            
             return newDocs;
         });
-
-        // Notify parent
-        const newDocs = { ...documents };
-        delete newDocs[documentType];
-        onDocumentsChange(newDocs);
     };
 
     const handleDrag = (e, documentType) => {
@@ -243,8 +257,68 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         );
     }
 
+    // Render uploaded documents section (always show if there are any)
+    const renderUploadedDocuments = () => {
+        const hasUploadedDocuments = Object.keys(documents).length > 0;
+        
+        if (!hasUploadedDocuments) return null;
+        
+        return (
+            <div className="space-y-4 mb-8">
+                <div className="text-center mb-4">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Uploaded Documents</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        Documents successfully uploaded ({Object.keys(documents).length})
+                    </p>
+                </div>
+
+                <div className="space-y-3">
+                    {Object.entries(documents).map(([docId, doc]) => {
+                        const docTypes = getDocumentTypes().length > 0 ? getDocumentTypes() : mockDocumentTypes;
+                        const docType = docTypes.find(dt => (dt.id || dt.key) === docId);
+                        const docName = docType?.name || docType?.label || docId.replace(/_/g, ' ').toUpperCase();
+                        const fileName = doc.name || doc.fileName;
+                        const fileSize = (doc.size / 1024).toFixed(1);
+                        
+                        return (
+                            <div key={docId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center space-x-3">
+                                    <DocumentIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white">{docName}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">{fileSize} KB</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-3">
+                                    <a 
+                                        href={doc.downloadUrl || doc.filePath || '#'} 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium underline"
+                                    >
+                                        {fileName}
+                                    </a>
+                                    <button
+                                        onClick={() => handleFileRemove(docId)}
+                                        className="text-red-600 hover:text-red-800 text-sm font-medium"
+                                        title="Remove document"
+                                    >
+                                        Remove
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="space-y-6">
+            {/* Show uploaded documents section */}
+            {renderUploadedDocuments()}
+            
             <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Document Upload</h3>
                 <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -260,15 +334,28 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                     const isUploading = uploading[docId];
 
                     return (
-                        <div key={docId} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                        <div key={docId} className={`border rounded-lg p-4 ${
+                            document ? 'border-green-300 bg-green-50 dark:bg-green-900/10 dark:border-green-700' : 'border-gray-200 dark:border-gray-700'
+                        }`}>
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex-1">
-                                    <h4 className="font-medium text-gray-900 dark:text-white">
-                                        {docType.name || docType.label}
-                                        {(docType.isRequired || docType.required) && (
-                                            <span className="text-red-500 ml-1">*</span>
+                                    <div className="flex items-center justify-between">
+                                        <h4 className="font-medium text-gray-900 dark:text-white">
+                                            {docType.name || docType.label}
+                                            {(docType.isRequired || docType.required) && (
+                                                <span className="text-red-500 ml-1">*</span>
+                                            )}
+                                        </h4>
+                                        {document ? (
+                                            <span className="text-xs px-2 py-1 bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400 rounded-full">
+                                                ✓ Uploaded
+                                            </span>
+                                        ) : (
+                                            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full">
+                                                Not Uploaded
+                                            </span>
                                         )}
-                                    </h4>
+                                    </div>
                                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                         {docType.description}
                                     </p>

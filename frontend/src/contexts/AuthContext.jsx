@@ -19,58 +19,67 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Initialize token from localStorage on mount
+    // Initialize authentication on mount - combined token loading and auth check
     useEffect(() => {
-        try {
-            const storedToken = localStorage.getItem('token');
-            if (storedToken) {
-                setToken(storedToken);
-                setIsAuthenticated(true);
-            }
-        } catch (error) {
-            console.warn('Error reading token from localStorage:', error);
-        }
-    }, []);
-
-    // Set default headers when token changes
-    useEffect(() => {
-        if (token) {
-            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            setIsAuthenticated(true);
-        } else {
-            delete api.defaults.headers.common['Authorization'];
-            setIsAuthenticated(false);
-        }
-    }, [token]);
-
-    // Check authentication status on load
-    useEffect(() => {
-        const checkAuth = async () => {
-            if (token) {
-                try {
-                    const response = await api.get('/api/auth/me');
-                    if (response.data.success) {
-                        setUser(response.data.data.user);
-                        setIsAuthenticated(true);
-                    } else {
-                        // Token is invalid
+        const initializeAuth = async () => {
+            try {
+                const storedToken = localStorage.getItem('token');
+                console.log('🔐 AuthContext - Checking stored token:', storedToken ? 'Token exists' : 'No token');
+                
+                if (storedToken) {
+                    // Set token and headers immediately
+                    setToken(storedToken);
+                    api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+                    console.log('🔐 AuthContext - Token loaded from localStorage');
+                    
+                    // Verify token with backend
+                    try {
+                        console.log('🔐 AuthContext - Calling /api/auth/me with token');
+                        const response = await api.get('/api/auth/me');
+                        console.log('🔐 AuthContext - /api/auth/me response:', response.data);
+                        
+                        if (response.data.success) {
+                            setUser(response.data.data.user);
+                            setIsAuthenticated(true);
+                            console.log('🔐 AuthContext - Authentication successful, user:', response.data.data.user.fullName);
+                        } else {
+                            // Token is invalid
+                            console.log('🔐 AuthContext - Token invalid, removing from localStorage');
+                            localStorage.removeItem('token');
+                            setToken(null);
+                            setIsAuthenticated(false);
+                            delete api.defaults.headers.common['Authorization'];
+                        }
+                    } catch (error) {
+                        console.error('🔐 AuthContext - Auth check failed:', error);
+                        console.error('🔐 AuthContext - Error response:', error.response?.data);
                         localStorage.removeItem('token');
                         setToken(null);
                         setIsAuthenticated(false);
+                        delete api.defaults.headers.common['Authorization'];
                     }
-                } catch (error) {
-                    console.error('Auth check failed:', error);
-                    localStorage.removeItem('token');
-                    setToken(null);
+                } else {
+                    console.log('🔐 AuthContext - No token found in localStorage');
                     setIsAuthenticated(false);
                 }
-            } else {
+            } catch (error) {
+                console.warn('🔐 AuthContext - Error reading token from localStorage:', error);
                 setIsAuthenticated(false);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
 
-        checkAuth();
+        initializeAuth();
+    }, []);
+
+    // Set default headers when token changes (for login/logout)
+    useEffect(() => {
+        if (token) {
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } else {
+            delete api.defaults.headers.common['Authorization'];
+        }
     }, [token]);
 
     const login = async (email, password) => {
@@ -87,12 +96,15 @@ export const AuthProvider = ({ children }) => {
 
             while (retryCount < maxRetries) {
                 try {
+                    console.log('🚀 Login attempt:', { email, password: password ? '***' : 'MISSING' });
                     response = await api.post('/api/auth/login', {
                         email: email,
                         password: password
                     });
+                    console.log('✅ Login response:', response.data);
                     break; // Success, exit retry loop
                 } catch (error) {
+                    console.log('❌ Login error:', error.response?.data || error.message);
                     retryCount++;
                     if (retryCount >= maxRetries || (error.response && error.response.status !== 500)) {
                         throw error; // Don't retry for client errors or after max retries
@@ -107,12 +119,17 @@ export const AuthProvider = ({ children }) => {
             if (response.data.success) {
                 const { token, user } = response.data;
 
+                console.log('🔐 AuthContext - Login successful, storing token:', token ? 'Token received' : 'No token');
+                console.log('🔐 AuthContext - User data:', user);
+
                 // Store token
                 localStorage.setItem('token', token);
                 setToken(token);
+                console.log('🔐 AuthContext - Token stored in localStorage and state');
 
                 // Set authorization header
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                console.log('🔐 AuthContext - Authorization header set');
 
                 setUser(user);
                 setIsAuthenticated(true);
@@ -142,15 +159,24 @@ export const AuthProvider = ({ children }) => {
             setError(null);
 
             // Frontend registration start
+            console.log('🚀 Registration request data:', {
+                fullName: userData.fullName,
+                email: userData.email,
+                password: userData.password ? '***' : 'MISSING',
+                phoneNumber: userData.phoneNumber,
+                role: userData.role || 'student'
+            });
 
             const response = await api.post('/api/auth/register', {
                 fullName: userData.fullName,
                 email: userData.email,
                 password: userData.password,
-                phoneNumber: userData.phoneNumber
+                phoneNumber: userData.phoneNumber,
+                role: userData.role || 'student'
             });
 
             // Registration response received
+            console.log('✅ Registration response:', response.data);
 
             const { user, message } = response.data;
 

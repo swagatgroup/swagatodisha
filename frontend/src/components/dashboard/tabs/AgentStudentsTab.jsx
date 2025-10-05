@@ -19,6 +19,11 @@ const AgentStudentsTab = () => {
     thisMonth: 0,
   });
 
+  // Debug stats state changes
+  useEffect(() => {
+    console.log('📊 Stats state updated:', stats);
+  }, [stats]);
+
   useEffect(() => {
     loadStudents();
     loadStats();
@@ -35,6 +40,8 @@ const AgentStudentsTab = () => {
         },
       });
       if (response.data.success) {
+        console.log('📊 Agent students data:', response.data.data.students);
+        console.log('📊 First student:', response.data.data.students?.[0]);
         setStudents(response.data.data.students || []);
       }
     } catch (error) {
@@ -46,22 +53,31 @@ const AgentStudentsTab = () => {
 
   const loadStats = async () => {
     try {
+      console.log('📊 Loading agent stats...');
       const response = await api.get("/api/agents/stats");
+      console.log('📊 Stats response:', response.data);
       if (response.data.success) {
         setStats(response.data.data);
+        console.log('📊 Stats set:', response.data.data);
+      } else {
+        console.error('📊 Stats response not successful:', response.data);
       }
     } catch (error) {
-      console.error("Error loading stats:", error);
+      console.error("📊 Error loading stats:", error);
+      console.error("📊 Error response:", error.response?.data);
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "PENDING":
+      case "SUBMITTED":
         return "bg-yellow-100 text-yellow-800";
       case "IN_PROGRESS":
+      case "UNDER_REVIEW":
         return "bg-blue-100 text-blue-800";
       case "COMPLETED":
+      case "APPROVED":
         return "bg-green-100 text-green-800";
       case "REJECTED":
         return "bg-red-100 text-red-800";
@@ -71,17 +87,22 @@ const AgentStudentsTab = () => {
   };
 
   const getStatusText = (status) => {
+    console.log('🏷️ Converting status:', status, 'type:', typeof status);
     switch (status) {
       case "PENDING":
+      case "SUBMITTED":
         return "Pending";
       case "IN_PROGRESS":
+      case "UNDER_REVIEW":
         return "In Progress";
       case "COMPLETED":
+      case "APPROVED":
         return "Completed";
       case "REJECTED":
         return "Rejected";
       default:
-        return status;
+        console.log('❌ Unknown status found:', status);
+        return status || "Unknown";
     }
   };
 
