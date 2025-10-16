@@ -25,7 +25,15 @@ const StudentManagement = () => {
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editData, setEditData] = useState({});
-    const [statusData, setStatusData] = useState({ status: '', notes: '' });
+    const [statusData, setStatusData] = useState({ 
+        status: '', 
+        notes: '', 
+        rejectionReason: '', 
+        rejectionMessage: '', 
+        rejectionDetails: [] 
+    });
+    const [rejectionReasons, setRejectionReasons] = useState({});
+    const [showRejectionForm, setShowRejectionForm] = useState(false);
     const [filters, setFilters] = useState({
         statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
         courses: ['Bachelor of Technology', 'Bachelor of Commerce', 'Bachelor of Arts', 'Bachelor of Science'],
@@ -34,7 +42,19 @@ const StudentManagement = () => {
 
     useEffect(() => {
         fetchStudents();
+        fetchRejectionReasons();
     }, [currentPage, searchTerm, filterStatus, filterCourse, filterCategory, filterSubmitterRole]);
+
+    const fetchRejectionReasons = async () => {
+        try {
+            const response = await api.get('/api/admin/students/rejection-reasons');
+            if (response.data.success) {
+                setRejectionReasons(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching rejection reasons:', error);
+        }
+    };
 
     const fetchStudents = async () => {
         try {
@@ -97,6 +117,18 @@ const StudentManagement = () => {
             return;
         }
 
+        // If rejecting, check for required rejection fields
+        if (statusData.status === 'REJECTED') {
+            if (!statusData.rejectionReason) {
+                showError('Please select a rejection reason');
+                return;
+            }
+            if (!statusData.rejectionMessage) {
+                showError('Please provide a rejection message');
+                return;
+            }
+        }
+
         try {
             showLoading('Updating application status...');
 
@@ -105,7 +137,14 @@ const StudentManagement = () => {
             console.log('✅ Update response:', response.data);
 
             setShowStatusModal(false);
-            setStatusData({ status: '', notes: '' });
+            setStatusData({ 
+                status: '', 
+                notes: '', 
+                rejectionReason: '', 
+                rejectionMessage: '', 
+                rejectionDetails: [] 
+            });
+            setShowRejectionForm(false);
             setSelectedStudent(null);
             closeLoading();
             showSuccess(`Application status updated to ${statusData.status}!`);
@@ -117,6 +156,39 @@ const StudentManagement = () => {
             closeLoading();
             handleApiError(error);
         }
+    };
+
+    const addRejectionDetail = () => {
+        setStatusData({
+            ...statusData,
+            rejectionDetails: [
+                ...statusData.rejectionDetails,
+                {
+                    issue: '',
+                    documentType: '',
+                    actionRequired: '',
+                    priority: 'High',
+                    specificFeedback: ''
+                }
+            ]
+        });
+    };
+
+    const removeRejectionDetail = (index) => {
+        const newDetails = statusData.rejectionDetails.filter((_, i) => i !== index);
+        setStatusData({
+            ...statusData,
+            rejectionDetails: newDetails
+        });
+    };
+
+    const updateRejectionDetail = (index, field, value) => {
+        const newDetails = [...statusData.rejectionDetails];
+        newDetails[index] = { ...newDetails[index], [field]: value };
+        setStatusData({
+            ...statusData,
+            rejectionDetails: newDetails
+        });
     };
 
     const handleAcceptApplication = async (student) => {
@@ -141,35 +213,6 @@ const StudentManagement = () => {
         }
     };
 
-    const handleRejectApplication = async (student) => {
-        const confirmed = await showConfirm(
-            'Reject Application',
-            `Are you sure you want to reject ${student.fullName}'s application?`,
-            'warning'
-        );
-
-        if (!confirmed) return;
-
-        try {
-            showLoading('Rejecting application...');
-            
-            console.log(' ❌ Rejecting application:', student._id);
-            const response = await api.put(`/api/admin/students/${student._id}/status`, {
-                status: 'REJECTED',
-                notes: 'Application rejected by admin'
-            });
-            
-            console.log(' ❌ Reject response:', response.data);
-            closeLoading();
-            showSuccess(`${student.fullName}'s application has been rejected!`);
-            
-            fetchStudents(); // Refresh the list
-        } catch (error) {
-            console.error('❌ Error rejecting application:', error);
-            closeLoading();
-            handleApiError(error);
-        }
-    };
 
     const handleEdit = async () => {
         try {
@@ -373,13 +416,46 @@ const StudentManagement = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        {students.map((student) => (
-                            <motion.tr
-                                key={student._id}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                            >
+                        {students.length === 0 ? (
+                            <tr>
+                                <td colSpan="8" className="px-6 py-12 text-center">
+                                    <div className="flex flex-col items-center justify-center">
+                                        <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                                        </svg>
+                                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                            No students found
+                                        </h3>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                            {searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || filterSubmitterRole !== 'all' 
+                                                ? 'Try adjusting your search criteria or filters.' 
+                                                : 'No student applications have been submitted yet.'}
+                                        </p>
+                                        {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || filterSubmitterRole !== 'all') && (
+                                            <button
+                                                onClick={() => {
+                                                    setSearchTerm('');
+                                                    setFilterStatus('all');
+                                                    setFilterCourse('all');
+                                                    setFilterCategory('all');
+                                                    setFilterSubmitterRole('all');
+                                                }}
+                                                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                                            >
+                                                Clear Filters
+                                            </button>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ) : (
+                            students.map((student) => (
+                                <motion.tr
+                                    key={student._id}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-10 w-10">
@@ -455,7 +531,18 @@ const StudentManagement = () => {
                                         {/* Reject Button - Only for SUBMITTED and UNDER_REVIEW */}
                                         {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
                                             <button
-                                                onClick={() => handleRejectApplication(student)}
+                                                onClick={() => {
+                                                    setSelectedStudent(student);
+                                                    setStatusData({ 
+                                                        status: 'REJECTED', 
+                                                        notes: '', 
+                                                        rejectionReason: '', 
+                                                        rejectionMessage: '', 
+                                                        rejectionDetails: [] 
+                                                    });
+                                                    setShowRejectionForm(true);
+                                                    setShowStatusModal(true);
+                                                }}
                                                 className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
                                                 title="Reject Application"
                                             >
@@ -508,7 +595,8 @@ const StudentManagement = () => {
                                     </div>
                                 </td>
                             </motion.tr>
-                        ))}
+                            ))
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -605,7 +693,7 @@ const StudentManagement = () => {
             {/* Status Update Modal */}
             {showStatusModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                 Update Status - {selectedStudent.fullName}
@@ -618,9 +706,20 @@ const StudentManagement = () => {
                                     </label>
                                     <select
                                         value={statusData.status}
-                                        onChange={(e) => setStatusData({ ...statusData, status: e.target.value })}
+                                        onChange={(e) => {
+                                            const newStatus = e.target.value;
+                                            setStatusData({ 
+                                                ...statusData, 
+                                                status: newStatus,
+                                                rejectionReason: '',
+                                                rejectionMessage: '',
+                                                rejectionDetails: []
+                                            });
+                                            setShowRejectionForm(newStatus === 'REJECTED');
+                                        }}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     >
+                                        <option value="">Select Status</option>
                                         <option value="DRAFT">Draft</option>
                                         <option value="SUBMITTED">Submitted</option>
                                         <option value="UNDER_REVIEW">Under Review</option>
@@ -629,6 +728,154 @@ const StudentManagement = () => {
                                         <option value="CANCELLED">Cancelled</option>
                                     </select>
                                 </div>
+
+                                {/* Rejection Form */}
+                                {showRejectionForm && (
+                                    <div className="border border-red-200 dark:border-red-800 rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
+                                        <h4 className="text-md font-semibold text-red-800 dark:text-red-200 mb-4">
+                                            Rejection Details
+                                        </h4>
+                                        
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                    Rejection Reason *
+                                                </label>
+                                                <select
+                                                    value={statusData.rejectionReason}
+                                                    onChange={(e) => setStatusData({ ...statusData, rejectionReason: e.target.value })}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                >
+                                                    <option value="">Select Rejection Reason</option>
+                                                    {Object.values(rejectionReasons).map((category) => (
+                                                        <optgroup key={category.category} label={category.category}>
+                                                            {category.reasons.map((reason) => (
+                                                                <option key={reason.id} value={reason.id}>
+                                                                    {reason.title}
+                                                                </option>
+                                                            ))}
+                                                        </optgroup>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                    Rejection Message *
+                                                </label>
+                                                <textarea
+                                                    value={statusData.rejectionMessage}
+                                                    onChange={(e) => setStatusData({ ...statusData, rejectionMessage: e.target.value })}
+                                                    rows={3}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                    placeholder="Explain what the student needs to do to fix the issues..."
+                                                />
+                                            </div>
+
+                                            {/* Rejection Details */}
+                                            <div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Specific Issues
+                                                    </label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={addRejectionDetail}
+                                                        className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                                    >
+                                                        + Add Issue
+                                                    </button>
+                                                </div>
+                                                
+                                                {statusData.rejectionDetails.map((detail, index) => (
+                                                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 mb-3 bg-white dark:bg-gray-800">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                Issue #{index + 1}
+                                                            </h5>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeRejectionDetail(index)}
+                                                                className="text-red-600 hover:text-red-800 text-sm"
+                                                            >
+                                                                Remove
+                                                            </button>
+                                                        </div>
+                                                        
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Issue Description
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.issue}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'issue', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., Certificate is too old"
+                                                                />
+                                                            </div>
+                                                            
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Document Type
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.documentType}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'documentType', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., 10th Grade Certificate"
+                                                                />
+                                                            </div>
+                                                            
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Action Required
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.actionRequired}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'actionRequired', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., Provide recent certificate"
+                                                                />
+                                                            </div>
+                                                            
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Priority
+                                                                </label>
+                                                                <select
+                                                                    value={detail.priority}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'priority', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                >
+                                                                    <option value="High">High</option>
+                                                                    <option value="Medium">Medium</option>
+                                                                    <option value="Low">Low</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        <div className="mt-2">
+                                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                Specific Feedback
+                                                            </label>
+                                                            <textarea
+                                                                value={detail.specificFeedback}
+                                                                onChange={(e) => updateRejectionDetail(index, 'specificFeedback', e.target.value)}
+                                                                rows={2}
+                                                                className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                placeholder="Additional specific feedback for this issue..."
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                                 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -646,16 +893,30 @@ const StudentManagement = () => {
 
                             <div className="flex justify-end space-x-3 mt-6">
                                 <button
-                                    onClick={() => setShowStatusModal(false)}
+                                    onClick={() => {
+                                        setShowStatusModal(false);
+                                        setShowRejectionForm(false);
+                                        setStatusData({ 
+                                            status: '', 
+                                            notes: '', 
+                                            rejectionReason: '', 
+                                            rejectionMessage: '', 
+                                            rejectionDetails: [] 
+                                        });
+                                    }}
                                     className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleStatusUpdate}
-                                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 ${
+                                        statusData.status === 'REJECTED' 
+                                            ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500' 
+                                            : 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500'
+                                    }`}
                                 >
-                                    Update Status
+                                    {statusData.status === 'REJECTED' ? 'Reject Application' : 'Update Status'}
                                 </button>
                             </div>
                         </div>

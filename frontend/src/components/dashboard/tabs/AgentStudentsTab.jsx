@@ -2,11 +2,15 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../../contexts/AuthContext";
 import api from "../../../utils/api";
+import { showSuccess, showError, showLoading, closeLoading } from "../../../utils/sweetAlert";
 
 const AgentStudentsTab = () => {
   const { user } = useAuth();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
+  const [editData, setEditData] = useState({});
   const [filters, setFilters] = useState({
     search: "",
     status: "",
@@ -65,6 +69,61 @@ const AgentStudentsTab = () => {
     } catch (error) {
       console.error("📊 Error loading stats:", error);
       console.error("📊 Error response:", error.response?.data);
+    }
+  };
+
+  const handleEditStudent = (student) => {
+    setSelectedStudent(student);
+    setEditData({
+      personalDetails: {
+        fullName: student.personalDetails?.fullName || '',
+        fathersName: student.personalDetails?.fathersName || '',
+        mothersName: student.personalDetails?.mothersName || '',
+        gender: student.personalDetails?.gender || '',
+        dateOfBirth: student.personalDetails?.dateOfBirth || '',
+        aadharNumber: student.personalDetails?.aadharNumber || '',
+        status: student.personalDetails?.status || ''
+      },
+      contactDetails: {
+        primaryPhone: student.contactDetails?.primaryPhone || '',
+        secondaryPhone: student.contactDetails?.secondaryPhone || '',
+        email: student.contactDetails?.email || '',
+        address: student.contactDetails?.address || '',
+        city: student.contactDetails?.city || '',
+        state: student.contactDetails?.state || '',
+        pincode: student.contactDetails?.pincode || ''
+      },
+      courseDetails: {
+        selectedCourse: student.courseDetails?.selectedCourse || '',
+        preferredLanguage: student.courseDetails?.preferredLanguage || ''
+      },
+      guardianDetails: {
+        guardianName: student.guardianDetails?.guardianName || '',
+        guardianPhone: student.guardianDetails?.guardianPhone || '',
+        guardianRelation: student.guardianDetails?.guardianRelation || ''
+      }
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      showLoading('Updating student...');
+      
+      const response = await api.put(`/api/agents/students/${selectedStudent._id}`, editData);
+      
+      if (response.data.success) {
+        showSuccess('Student updated successfully!');
+        setShowEditModal(false);
+        setSelectedStudent(null);
+        setEditData({});
+        loadStudents(); // Refresh the list
+      }
+    } catch (error) {
+      console.error('Error updating student:', error);
+      showError('Failed to update student');
+    } finally {
+      closeLoading();
     }
   };
 
@@ -429,9 +488,7 @@ const AgentStudentsTab = () => {
                         View
                       </button>
                       <button
-                        onClick={() => {
-                          /* TODO: Implement edit student functionality */
-                        }}
+                        onClick={() => handleEditStudent(student)}
                         className="text-green-600 hover:text-green-900"
                       >
                         Edit
@@ -444,6 +501,311 @@ const AgentStudentsTab = () => {
           </table>
         </div>
       </div>
+
+      {/* Edit Student Modal */}
+      {showEditModal && selectedStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Edit Student: {selectedStudent.personalDetails?.fullName}
+                </h3>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Personal Details */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">Personal Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <input
+                        type="text"
+                        value={editData.personalDetails?.fullName || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: { ...editData.personalDetails, fullName: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
+                      <input
+                        type="text"
+                        value={editData.personalDetails?.fathersName || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
+                      <input
+                        type="text"
+                        value={editData.personalDetails?.mothersName || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                      <select
+                        value={editData.personalDetails?.gender || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: { ...editData.personalDetails, gender: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                      <input
+                        type="date"
+                        value={editData.personalDetails?.dateOfBirth || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Aadhaar Number</label>
+                      <input
+                        type="text"
+                        value={editData.personalDetails?.aadharNumber || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Details */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">Contact Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Primary Phone</label>
+                      <input
+                        type="tel"
+                        value={editData.contactDetails?.primaryPhone || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Secondary Phone</label>
+                      <input
+                        type="tel"
+                        value={editData.contactDetails?.secondaryPhone || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          contactDetails: { ...editData.contactDetails, secondaryPhone: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <input
+                        type="email"
+                        value={editData.contactDetails?.email || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          contactDetails: { ...editData.contactDetails, email: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                      <textarea
+                        value={editData.contactDetails?.address || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          contactDetails: { ...editData.contactDetails, address: e.target.value }
+                        })}
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                      <input
+                        type="text"
+                        value={editData.contactDetails?.city || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          contactDetails: { ...editData.contactDetails, city: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                      <input
+                        type="text"
+                        value={editData.contactDetails?.state || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          contactDetails: { ...editData.contactDetails, state: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                      <input
+                        type="text"
+                        value={editData.contactDetails?.pincode || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          contactDetails: { ...editData.contactDetails, pincode: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Course Details */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">Course Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Selected Course</label>
+                      <select
+                        value={editData.courseDetails?.selectedCourse || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          courseDetails: { ...editData.courseDetails, selectedCourse: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Course</option>
+                        <option value="B.Tech">B.Tech</option>
+                        <option value="M.Tech">M.Tech</option>
+                        <option value="MBA">MBA</option>
+                        <option value="BBA">BBA</option>
+                        <option value="BCA">BCA</option>
+                        <option value="MCA">MCA</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Language</label>
+                      <select
+                        value={editData.courseDetails?.preferredLanguage || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          courseDetails: { ...editData.courseDetails, preferredLanguage: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Language</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Odia">Odia</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Guardian Details */}
+                <div className="border border-gray-200 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">Guardian Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Name</label>
+                      <input
+                        type="text"
+                        value={editData.guardianDetails?.guardianName || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Phone</label>
+                      <input
+                        type="tel"
+                        value={editData.guardianDetails?.guardianPhone || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          guardianDetails: { ...editData.guardianDetails, guardianPhone: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Relation</label>
+                      <select
+                        value={editData.guardianDetails?.guardianRelation || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          guardianDetails: { ...editData.guardianDetails, guardianRelation: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Relation</option>
+                        <option value="Father">Father</option>
+                        <option value="Mother">Mother</option>
+                        <option value="Guardian">Guardian</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

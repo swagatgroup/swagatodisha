@@ -752,4 +752,224 @@ router.get("/referral-info", async (req, res) => {
   }
 });
 
+// Get rejection details for agent's students
+router.get('/students/:id/rejection-details', async (req, res) => {
+    try {
+        const applicationId = req.params.id;
+        const agentId = req.user._id;
+
+        // Check if this application belongs to the agent
+        const application = await StudentApplication.findOne({
+            _id: applicationId,
+            $or: [
+                { 'referralInfo.referredBy': agentId },
+                { 'assignedAgent': agentId },
+                { 'submittedBy': agentId }
+            ]
+        });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found or you do not have access to this application'
+            });
+        }
+
+        // Check if application is rejected
+        if (application.status !== 'REJECTED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Application is not rejected'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                rejectionReason: application.reviewInfo?.rejectionReason,
+                rejectionMessage: application.reviewInfo?.rejectionMessage,
+                rejectionDetails: application.reviewInfo?.rejectionDetails || [],
+                rejectedAt: application.reviewInfo?.reviewedAt,
+                rejectedBy: application.reviewInfo?.reviewedBy,
+                adminNotes: application.adminNotes?.filter(note => note.type !== 'RESUBMISSION') || []
+            }
+        });
+
+    } catch (error) {
+        console.error('Get rejection details error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get rejection details',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// Resubmit rejected application for agent's students
+router.post('/students/:id/resubmit', async (req, res) => {
+    try {
+        const applicationId = req.params.id;
+        const agentId = req.user._id;
+
+        // Check if this application belongs to the agent
+        const application = await StudentApplication.findOne({
+            _id: applicationId,
+            $or: [
+                { 'referralInfo.referredBy': agentId },
+                { 'assignedAgent': agentId },
+                { 'submittedBy': agentId }
+            ]
+        });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found or you do not have access to this application'
+            });
+        }
+
+        // Check if application is rejected
+        if (application.status !== 'REJECTED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only rejected applications can be resubmitted'
+            });
+        }
+
+        // Reset status to SUBMITTED for review
+        application.status = 'SUBMITTED';
+        application.currentStage = 'SUBMITTED';
+        application.submittedAt = new Date();
+        
+        // Add resubmission note
+        if (!application.adminNotes) {
+            application.adminNotes = [];
+        }
+        application.adminNotes.push({
+            note: 'Application resubmitted by agent after addressing rejection feedback',
+            addedBy: agentId,
+            addedAt: new Date(),
+            type: 'RESUBMISSION'
+        });
+
+        // Add to workflow history
+        application.workflowHistory.push({
+            stage: 'SUBMITTED',
+            status: 'SUBMITTED',
+            updatedBy: agentId,
+            action: 'RESUBMIT',
+            remarks: 'Application resubmitted after addressing rejection feedback',
+            timestamp: new Date()
+        });
+
+        await application.save();
+
+        res.json({
+            success: true,
+            message: 'Application resubmitted successfully',
+            data: {
+                status: application.status,
+                currentStage: application.currentStage,
+                submittedAt: application.submittedAt,
+                resubmittedAt: new Date()
+            }
+        });
+
+    } catch (error) {
+        console.error('Resubmit application error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to resubmit application',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// Update student application for agent's students
+router.put('/students/:id', async (req, res) => {
+    try {
+        const applicationId = req.params.id;
+        const agentId = req.user._id;
+
+        // Check if this application belongs to the agent
+        const application = await StudentApplication.findOne({
+            _id: applicationId,
+            $or: [
+                { 'referralInfo.referredBy': agentId },
+                { 'assignedAgent': agentId },
+                { 'submittedBy': agentId }
+            ]
+        });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found or you do not have access to this application'
+            });
+        }
+
+        // Check if application can be edited (not approved or rejected)
+        if (application.status === 'APPROVED' || application.status === 'REJECTED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot edit approved or rejected applications'
+            });
+        }
+
+        const updateData = req.body;
+
+        // Update personal details
+        if (updateData.personalDetails) {
+            Object.assign(application.personalDetails, updateData.personalDetails);
+        }
+
+        // Update contact details
+        if (updateData.contactDetails) {
+            Object.assign(application.contactDetails, updateData.contactDetails);
+        }
+
+        // Update course details
+        if (updateData.courseDetails) {
+            Object.assign(application.courseDetails, updateData.courseDetails);
+        }
+
+        // Update guardian details
+        if (updateData.guardianDetails) {
+            Object.assign(application.guardianDetails, updateData.guardianDetails);
+        }
+
+        // Update financial details
+        if (updateData.financialDetails) {
+            Object.assign(application.financialDetails, updateData.financialDetails);
+        }
+
+        // Add edit note
+        if (!application.adminNotes) {
+            application.adminNotes = [];
+        }
+        application.adminNotes.push({
+            note: 'Application edited by agent',
+            addedBy: agentId,
+            addedAt: new Date(),
+            type: 'EDIT'
+        });
+
+        await application.save();
+
+        res.json({
+            success: true,
+            message: 'Application updated successfully',
+            data: application
+        });
+
+    } catch (error) {
+        console.error('Update application error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update application',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
 module.exports = router;
