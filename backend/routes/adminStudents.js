@@ -43,7 +43,7 @@ router.get('/test', async (req, res) => {
 // @desc    Get all student applications for admin management
 // @route   GET /api/admin/students
 // @access  Private - Staff/Super Admin only
-router.get('/', async (req, res) => {
+router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         console.log('👤 Request user:', req.user?.email, 'Role:', req.user?.role);
         
@@ -59,6 +59,7 @@ router.get('/', async (req, res) => {
             status,
             course,
             category,
+            submitterRole,
             sortBy = 'createdAt',
             sortOrder = 'desc'
         } = req.query;
@@ -90,6 +91,11 @@ router.get('/', async (req, res) => {
         // Filter by category
         if (category && category !== 'all') {
             filter['personalDetails.status'] = category;
+        }
+
+        // Filter by submitter role
+        if (submitterRole && submitterRole !== 'all') {
+            filter.submitterRole = submitterRole;
         }
 
         // Build sort query
@@ -187,10 +193,143 @@ router.get('/', async (req, res) => {
     }
 });
 
+// @desc    Get available rejection reasons
+// @route   GET /api/admin/students/rejection-reasons
+// @access  Private - Staff/Super Admin only
+router.get('/rejection-reasons', protect, authorize('staff', 'super_admin'), async (req, res) => {
+    try {
+        const rejectionReasons = {
+            documentIssues: {
+                category: "Document Issues",
+                reasons: [
+                    {
+                        id: "MISSING_DOCUMENT",
+                        title: "Missing Document",
+                        description: "Required document is not uploaded",
+                        examples: ["10th Grade Certificate not uploaded", "Aadhar Card missing"]
+                    },
+                    {
+                        id: "DOCUMENT_EXPIRED",
+                        title: "Document Expired",
+                        description: "Document has expired and needs renewal",
+                        examples: ["Medical certificate expired", "Income certificate expired"]
+                    },
+                    {
+                        id: "DOCUMENT_OLD",
+                        title: "Document Too Old",
+                        description: "Document is too old, need recent/current version",
+                        examples: ["Birth certificate too old", "Address proof outdated"]
+                    },
+                    {
+                        id: "DOCUMENT_BLURRY",
+                        title: "Document Not Clear",
+                        description: "Document image is blurry or unclear",
+                        examples: ["Certificate image is blurry", "Document not readable"]
+                    },
+                    {
+                        id: "DOCUMENT_CUT_OFF",
+                        title: "Document Cut Off",
+                        description: "Document image is incomplete or cut off",
+                        examples: ["Certificate edges cut off", "Document partially visible"]
+                    },
+                    {
+                        id: "WRONG_DOCUMENT",
+                        title: "Wrong Document Type",
+                        description: "Uploaded document is not the required type",
+                        examples: ["Uploaded mark sheet instead of certificate", "Wrong document uploaded"]
+                    },
+                    {
+                        id: "DOCUMENT_DAMAGED",
+                        title: "Document Damaged",
+                        description: "Document is damaged or torn",
+                        examples: ["Certificate is torn", "Document has stains"]
+                    }
+                ]
+            },
+            personalInfoIssues: {
+                category: "Personal Information Issues",
+                reasons: [
+                    {
+                        id: "NAME_MISMATCH",
+                        title: "Name Mismatch",
+                        description: "Name in documents doesn't match application",
+                        examples: ["Name spelling different", "Name format mismatch"]
+                    },
+                    {
+                        id: "DATE_MISMATCH",
+                        title: "Date Mismatch",
+                        description: "Date of birth or other dates don't match",
+                        examples: ["DOB mismatch", "Certificate date mismatch"]
+                    },
+                    {
+                        id: "INCOMPLETE_INFO",
+                        title: "Incomplete Information",
+                        description: "Required personal information is missing",
+                        examples: ["Father's name missing", "Address incomplete"]
+                    }
+                ]
+            },
+            academicIssues: {
+                category: "Academic Issues",
+                reasons: [
+                    {
+                        id: "GRADE_INSUFFICIENT",
+                        title: "Insufficient Grades",
+                        description: "Academic performance doesn't meet requirements",
+                        examples: ["Marks below minimum requirement", "Grade not eligible"]
+                    },
+                    {
+                        id: "COURSE_MISMATCH",
+                        title: "Course Mismatch",
+                        description: "Selected course doesn't match qualifications",
+                        examples: ["Course not suitable for qualification", "Wrong course selected"]
+                    }
+                ]
+            },
+            otherIssues: {
+                category: "Other Issues",
+                reasons: [
+                    {
+                        id: "FRAUD_DETECTED",
+                        title: "Fraud Detected",
+                        description: "Suspected fraudulent documents",
+                        examples: ["Fake certificate detected", "Forged document"]
+                    },
+                    {
+                        id: "INCOMPLETE_APPLICATION",
+                        title: "Incomplete Application",
+                        description: "Application form is incomplete",
+                        examples: ["Required fields missing", "Form not fully filled"]
+                    },
+                    {
+                        id: "DUPLICATE_APPLICATION",
+                        title: "Duplicate Application",
+                        description: "Multiple applications found",
+                        examples: ["Already applied", "Duplicate submission"]
+                    }
+                ]
+            }
+        };
+
+        res.json({
+            success: true,
+            data: rejectionReasons
+        });
+
+    } catch (error) {
+        console.error('Get rejection reasons error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get rejection reasons',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
 // @desc    Get single student application details
 // @route   GET /api/admin/students/:id
 // @access  Private - Staff/Super Admin only
-router.get('/:id', protect, authorize(['staff', 'super_admin']), async (req, res) => {
+router.get('/:id', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const application = await StudentApplication.findById(req.params.id)
             .populate('user', 'firstName lastName email phoneNumber')
@@ -222,9 +361,15 @@ router.get('/:id', protect, authorize(['staff', 'super_admin']), async (req, res
 // @desc    Update student application status
 // @route   PUT /api/admin/students/:id/status
 // @access  Private - Staff/Super Admin only
-router.put('/:id/status', protect, authorize(['staff', 'super_admin']), async (req, res) => {
+router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
-        const { status, notes } = req.body;
+        const { 
+            status, 
+            notes, 
+            rejectionReason, 
+            rejectionMessage, 
+            rejectionDetails = [] 
+        } = req.body;
 
         if (!status || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status)) {
             return res.status(400).json({
@@ -241,7 +386,61 @@ router.put('/:id/status', protect, authorize(['staff', 'super_admin']), async (r
             });
         }
 
-        // Update status and add notes
+        // Handle rejection with specific reasons
+        if (status === 'REJECTED') {
+            if (!rejectionReason) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Rejection reason is required'
+                });
+            }
+
+            // Enhanced rejection details with document-specific feedback
+            const enhancedRejectionDetails = rejectionDetails.map(detail => {
+                if (typeof detail === 'string') {
+                    return {
+                        issue: detail,
+                        documentType: 'General',
+                        actionRequired: 'Please address the mentioned issue',
+                        priority: 'High'
+                    };
+                }
+                return {
+                    issue: detail.issue || detail,
+                    documentType: detail.documentType || 'General',
+                    actionRequired: detail.actionRequired || 'Please provide correct document',
+                    priority: detail.priority || 'High',
+                    specificFeedback: detail.specificFeedback || ''
+                };
+            });
+
+            // Use the model's rejectApplication method
+            await application.rejectApplication(
+                req.user._id,
+                rejectionReason,
+                notes || '',
+                rejectionMessage || '',
+                enhancedRejectionDetails
+            );
+
+            res.json({
+                success: true,
+                message: 'Application rejected successfully',
+                data: {
+                    status: application.status,
+                    currentStage: application.currentStage,
+                    rejectionReason,
+                    rejectionMessage,
+                    rejectionDetails: enhancedRejectionDetails,
+                    rejectedAt: application.reviewInfo?.reviewedAt,
+                    rejectedBy: req.user._id,
+                    canResubmit: true
+                }
+            });
+            return;
+        }
+
+        // Handle other status updates
         application.status = status;
         application.currentStage = status;
         
@@ -260,9 +459,6 @@ router.put('/:id/status', protect, authorize(['staff', 'super_admin']), async (r
         if (status === 'APPROVED') {
             application.approvedAt = new Date();
             application.approvedBy = req.user._id;
-        } else if (status === 'REJECTED') {
-            application.rejectedAt = new Date();
-            application.rejectedBy = req.user._id;
         }
 
         await application.save();
@@ -290,7 +486,7 @@ router.put('/:id/status', protect, authorize(['staff', 'super_admin']), async (r
 // @desc    Update student application details
 // @route   PUT /api/admin/students/:id
 // @access  Private - Staff/Super Admin only
-router.put('/:id', protect, authorize(['staff', 'super_admin']), async (req, res) => {
+router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const application = await StudentApplication.findById(req.params.id);
         if (!application) {
@@ -348,7 +544,7 @@ router.put('/:id', protect, authorize(['staff', 'super_admin']), async (req, res
 // @desc    Delete student application
 // @route   DELETE /api/admin/students/:id
 // @access  Private - Staff/Super Admin only  
-router.delete('/:id', protect, authorize(['staff', 'super_admin']), async (req, res) => {
+router.delete('/:id', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const application = await StudentApplication.findById(req.params.id);
         if (!application) {
@@ -378,7 +574,7 @@ router.delete('/:id', protect, authorize(['staff', 'super_admin']), async (req, 
 // @desc    Get student statistics for admin dashboard
 // @route   GET /api/admin/students/stats
 // @access  Private - Staff/Super Admin only
-router.get('/stats/overview', protect, authorize(['staff', 'super_admin']), async (req, res) => {
+router.get('/stats/overview', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const stats = await StudentApplication.aggregate([
             {
@@ -440,6 +636,135 @@ router.get('/stats/overview', protect, authorize(['staff', 'super_admin']), asyn
         res.status(500).json({
             success: false,
             message: 'Failed to fetch student statistics',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// @desc    Get rejection details for student
+// @route   GET /api/admin/students/:id/rejection-details
+// @access  Private - Student only
+router.get('/:id/rejection-details', protect, async (req, res) => {
+    try {
+        const application = await StudentApplication.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student application not found'
+            });
+        }
+
+        // Check if user owns this application
+        if (application.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: 'You can only view your own application details'
+            });
+        }
+
+        // Check if application is rejected
+        if (application.status !== 'REJECTED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Application is not rejected'
+            });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                rejectionReason: application.reviewInfo?.rejectionReason,
+                rejectionMessage: application.reviewInfo?.rejectionMessage,
+                rejectionDetails: application.reviewInfo?.rejectionDetails || [],
+                rejectedAt: application.reviewInfo?.reviewedAt,
+                rejectedBy: application.reviewInfo?.reviewedBy,
+                adminNotes: application.adminNotes?.filter(note => note.type !== 'RESUBMISSION') || []
+            }
+        });
+
+    } catch (error) {
+        console.error('Get rejection details error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get rejection details',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// @desc    Resubmit rejected application
+// @route   POST /api/admin/students/:id/resubmit
+// @access  Private - Student only
+router.post('/:id/resubmit', protect, async (req, res) => {
+    try {
+        const application = await StudentApplication.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student application not found'
+            });
+        }
+
+        // Check if user owns this application
+        if (application.user.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: 'You can only resubmit your own applications'
+            });
+        }
+
+        // Check if application is rejected
+        if (application.status !== 'REJECTED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Only rejected applications can be resubmitted'
+            });
+        }
+
+        // Reset status to SUBMITTED for review
+        application.status = 'SUBMITTED';
+        application.currentStage = 'SUBMITTED';
+        application.submittedAt = new Date();
+        
+        // Add resubmission note
+        if (!application.adminNotes) {
+            application.adminNotes = [];
+        }
+        application.adminNotes.push({
+            note: 'Application resubmitted by student after addressing rejection feedback',
+            addedBy: req.user._id,
+            addedAt: new Date(),
+            type: 'RESUBMISSION'
+        });
+
+        // Add to workflow history
+        application.workflowHistory.push({
+            stage: 'SUBMITTED',
+            status: 'SUBMITTED',
+            updatedBy: req.user._id,
+            action: 'RESUBMIT',
+            remarks: 'Application resubmitted after addressing rejection feedback',
+            timestamp: new Date()
+        });
+
+        await application.save();
+
+        res.json({
+            success: true,
+            message: 'Application resubmitted successfully',
+            data: {
+                status: application.status,
+                currentStage: application.currentStage,
+                submittedAt: application.submittedAt,
+                resubmittedAt: new Date()
+            }
+        });
+
+    } catch (error) {
+        console.error('Resubmit application error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to resubmit application',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }

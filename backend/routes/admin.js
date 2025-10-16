@@ -40,8 +40,8 @@ const upload = multer({
 // Dashboard Statistics
 router.get('/dashboard/stats', protect, authorize('staff', 'super_admin'), getDashboardStats);
 
-// Student Management
-router.get('/students', protect, authorize('staff', 'super_admin'), getAllStudents);
+// Student Management - moved to dedicated adminStudents.js file
+// router.get('/students', protect, authorize('staff', 'super_admin'), getAllStudents);
 router.put('/students/:studentId', protect, authorize('staff', 'super_admin'), updateStudent);
 router.delete('/students/:studentId', protect, authorize('super_admin'), deleteStudent);
 
