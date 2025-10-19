@@ -1,0 +1,12 @@
+# Vercel ignore file
+node_modules
+.git
+.gitignore
+README.md
+.env.local
+.env.development
+src
+vite.config.js
+eslint.config.js
+postcss.config.js
+tailwind.config.js
