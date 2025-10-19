@@ -1,7 +1,11 @@
-# Vercel ignore file - only ignore unnecessary files
-node_modules
-.git
-.gitignore
-README.md
+# Frontend .vercelignore
+node_modules/
 .env.local
 .env.development
+*.log
+.DS_Store
+src/
+vite.config.js
+eslint.config.js
+postcss.config.js
+tailwind.config.js
