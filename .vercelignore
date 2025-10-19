@@ -1,12 +1,23 @@
-# Root level .vercelignore
+# Professional Monorepo .vercelignore
+# Only ignore what we don't need for frontend deployment
+
+# Backend (we're not deploying backend to Vercel)
 backend/
-node_modules/
-.git/
-*.md
+
+# Development files
 .env.local
 .env.development
+*.log
+.DS_Store
+
+# Test files
 test*.js
 *.test.js
-uploads/
-scripts/
 test/
+__tests__/
+
+# Documentation (optional - can keep for reference)
+# *.md
+
+# Build artifacts (will be regenerated)
+node_modules/
