@@ -1,0 +1,12 @@
+# Root level .vercelignore
+backend/
+node_modules/
+.git/
+*.md
+.env.local
+.env.development
+test*.js
+*.test.js
+uploads/
+scripts/
+test/
