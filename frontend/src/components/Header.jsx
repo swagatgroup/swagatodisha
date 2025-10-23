@@ -48,9 +48,9 @@ const Header = () => {
       {/* HEADER */}
       <header
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-50 shadow-sm bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm"
+        className="fixed w-full top-0 left-0 right-0 z-50 shadow-sm bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm"
       >
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto">
           <div className="flex justify-between items-center py-4">
             {/* Logo */}
             <div className="w-36">
