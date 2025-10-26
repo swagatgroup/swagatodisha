@@ -60,19 +60,19 @@ const AboutUsPage = () => {
         {
             name: 'Mr. G. Meher',
             position: 'Chairman',
-            image: '/chairman.jpg',
+            image: "../src/assets/images/chairman.jpg",
             description: 'Visionary leader with over 20 years of experience in education'
         },
         {
             name: 'Mr. R.K. Meher',
             position: 'Trustee',
-            image: '/chairman_rk.jpg',
+            image: '../src/assets/images/chairman-rk.jpg',
             description: 'Dedicated trustee committed to educational excellence'
         },
         {
             name: 'Mrs. Manjula Meher',
             position: 'Principal',
-            image: '/mnt_003.jpg',
+            image: '../src/assets/images/mnt003.jpg',
             description: 'Experienced educator focused on student success'
         }
     ]
