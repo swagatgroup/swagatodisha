@@ -258,7 +258,7 @@ const studentApplicationSchema = new mongoose.Schema({
         remarks: String,
         action: {
             type: String,
-            enum: ['SAVE_DRAFT', 'SUBMIT', 'APPROVE', 'REJECT', 'REQUEST_MODIFICATION']
+            enum: ['SAVE_DRAFT', 'SUBMIT', 'APPROVE', 'REJECT', 'REQUEST_MODIFICATION', 'RESUBMIT']
         }
     }],
 

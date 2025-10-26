@@ -610,6 +610,67 @@ router.post("/submit-application", async (req, res) => {
   }
 });
 
+// Get specific application submitted by this agent
+router.get("/submitted-applications/:id", async (req, res) => {
+  try {
+    const applicationId = req.params.id;
+    const agentId = req.user._id;
+
+    console.log('🔍 Fetching application details for:', applicationId);
+    console.log('👤 Agent ID:', agentId);
+
+    // Build query - always search by applicationId first, never cast _id
+    let application;
+    
+    // Try to find by applicationId (string)
+    application = await StudentApplication.findOne({
+      submittedBy: agentId,
+      applicationId: applicationId
+    })
+      .populate("user", "fullName email phoneNumber")
+      .populate("submittedBy", "fullName email")
+      .populate("referralInfo.referredBy", "fullName email")
+      .populate("assignedAgent", "fullName email");
+
+    // If not found and the ID looks like an ObjectId, try that
+    if (!application && mongoose.Types.ObjectId.isValid(applicationId)) {
+      console.log('📝 Trying with _id as ObjectId');
+      application = await StudentApplication.findOne({
+        submittedBy: agentId,
+        _id: new mongoose.Types.ObjectId(applicationId)
+      })
+        .populate("user", "fullName email phoneNumber")
+        .populate("submittedBy", "fullName email")
+        .populate("referralInfo.referredBy", "fullName email")
+        .populate("assignedAgent", "fullName email");
+    }
+
+    console.log('📝 Found application:', application ? 'Yes' : 'No');
+
+    if (!application) {
+      console.warn('❌ Application not found');
+      return res.status(404).json({
+        success: false,
+        message: 'Application not found or you do not have access'
+      });
+    }
+
+    console.log('✅ Application found:', application._id);
+
+    res.status(200).json({
+      success: true,
+      data: application
+    });
+  } catch (error) {
+    console.error("❌ Get application details error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to get application details",
+      error: process.env.NODE_ENV === "development" ? error.message : 'Internal server error'
+    });
+  }
+});
+
 // Get applications submitted by this agent
 router.get("/my-submitted-applications", async (req, res) => {
   try {
@@ -758,6 +819,18 @@ router.get('/students/:id/rejection-details', async (req, res) => {
         const applicationId = req.params.id;
         const agentId = req.user._id;
 
+        console.log('🔍 Fetching rejection details for application:', applicationId);
+        console.log('👤 Agent ID:', agentId);
+
+        // Validate applicationId format
+        if (!mongoose.Types.ObjectId.isValid(applicationId)) {
+            console.warn('❌ Invalid application ID format:', applicationId);
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid application ID format'
+            });
+        }
+
         // Check if this application belongs to the agent
         const application = await StudentApplication.findOne({
             _id: applicationId,
@@ -769,19 +842,25 @@ router.get('/students/:id/rejection-details', async (req, res) => {
         });
 
         if (!application) {
+            console.warn('❌ Application not found or agent does not have access');
             return res.status(404).json({
                 success: false,
                 message: 'Application not found or you do not have access to this application'
             });
         }
 
+        console.log('✅ Application found - Status:', application.status);
+
         // Check if application is rejected
         if (application.status !== 'REJECTED') {
+            console.warn('⚠️ Application is not rejected - Current status:', application.status);
             return res.status(400).json({
                 success: false,
                 message: 'Application is not rejected'
             });
         }
+
+        console.log('✅ Rejection details found, sending response');
 
         res.json({
             success: true,
@@ -796,7 +875,7 @@ router.get('/students/:id/rejection-details', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Get rejection details error:', error);
+        console.error('❌ Get rejection details error:', error);
         res.status(500).json({
             success: false,
             message: 'Failed to get rejection details',
@@ -811,6 +890,9 @@ router.post('/students/:id/resubmit', async (req, res) => {
         const applicationId = req.params.id;
         const agentId = req.user._id;
 
+        console.log('📤 Resubmitting application:', applicationId);
+        console.log('👤 Agent ID:', agentId);
+
         // Check if this application belongs to the agent
         const application = await StudentApplication.findOne({
             _id: applicationId,
@@ -822,24 +904,38 @@ router.post('/students/:id/resubmit', async (req, res) => {
         });
 
         if (!application) {
+            console.warn('❌ Application not found or agent does not have access');
             return res.status(404).json({
                 success: false,
                 message: 'Application not found or you do not have access to this application'
             });
         }
 
+        console.log('✅ Application found - Status:', application.status);
+
         // Check if application is rejected
         if (application.status !== 'REJECTED') {
+            console.warn('⚠️ Application is not rejected - Current status:', application.status);
             return res.status(400).json({
                 success: false,
-                message: 'Only rejected applications can be resubmitted'
+                message: `This application cannot be resubmitted. Current status: ${application.status}`
             });
         }
+
+        console.log('✅ Application is rejected, proceeding with resubmission');
 
         // Reset status to SUBMITTED for review
         application.status = 'SUBMITTED';
         application.currentStage = 'SUBMITTED';
         application.submittedAt = new Date();
+        
+        // Clear review info fields to allow fresh review
+        application.reviewInfo.reviewedBy = undefined;
+        application.reviewInfo.reviewedAt = undefined;
+        application.reviewInfo.remarks = '';
+        application.reviewInfo.rejectionReason = '';
+        application.reviewInfo.rejectionMessage = '';
+        application.reviewInfo.rejectionDetails = [];
         
         // Add resubmission note
         if (!application.adminNotes) {
@@ -853,6 +949,9 @@ router.post('/students/:id/resubmit', async (req, res) => {
         });
 
         // Add to workflow history
+        if (!application.workflowHistory) {
+            application.workflowHistory = [];
+        }
         application.workflowHistory.push({
             stage: 'SUBMITTED',
             status: 'SUBMITTED',
@@ -863,10 +962,11 @@ router.post('/students/:id/resubmit', async (req, res) => {
         });
 
         await application.save();
+        console.log('✅ Application resubmitted successfully');
 
         res.json({
             success: true,
-            message: 'Application resubmitted successfully',
+            message: 'Application resubmitted successfully! It will be reviewed by admin again.',
             data: {
                 status: application.status,
                 currentStage: application.currentStage,

@@ -55,41 +55,61 @@ const AgentApplicationStatus = () => {
 
     const fetchApplicationDetails = async (applicationId) => {
         try {
-            const response = await api.get(`/api/verification/${applicationId}`);
+            console.log('🔍 Fetching application details for:', applicationId);
+            // Try agent-specific endpoint first
+            const response = await api.get(`/api/agents/submitted-applications/${applicationId}`);
             if (response.data?.success) {
                 setSelectedApplication(response.data.data);
+                console.log('✅ Application details loaded');
             }
         } catch (error) {
-            console.error('Error fetching application details:', error);
-            showError('Failed to fetch application details');
+            console.error('❌ Error fetching application details:', error);
+            // Fallback: Use the applications we already have in state
+            const application = applications.find(app => app.applicationId === applicationId);
+            if (application) {
+                setSelectedApplication(application);
+                console.log('✅ Using cached application data');
+            } else {
+                showError('Failed to fetch application details');
+            }
         }
     };
 
     const handleResubmit = async () => {
         if (!selectedApplication) return;
 
+        // Check if already submitted
+        if (selectedApplication.status === 'SUBMITTED' || selectedApplication.status === 'UNDER_REVIEW' || selectedApplication.status === 'APPROVED') {
+            showError('This application is already submitted and under review');
+            return;
+        }
+
         const result = await showConfirm(
             'Resubmit Application',
-            `Are you sure you want to resubmit ${selectedApplication.personalDetails?.fullName}'s application?`,
-            'Yes, Resubmit',
+            `Have you made all the necessary corrections? This will resubmit ${selectedApplication.personalDetails?.fullName}'s application for admin approval.`,
+            'Yes, I\'ve Fixed Everything',
             'Cancel'
         );
 
         if (result.isConfirmed) {
             try {
                 setResubmitting(true);
-                const response = await api.put(`/api/verification/${selectedApplication.applicationId}/resubmit`, {
-                    resubmissionReason: 'Application resubmitted after addressing rejection issues'
-                });
+                console.log('📤 Resubmitting application:', selectedApplication._id);
+                
+                // Use agent-specific endpoint
+                const response = await api.post(`/api/agents/students/${selectedApplication._id}/resubmit`);
+                console.log('✅ Resubmit response:', response.data);
 
                 if (response.data?.success) {
-                    showSuccess('Application resubmitted successfully');
-                    await fetchApplicationDetails(selectedApplication.applicationId);
+                    showSuccess('Application resubmitted successfully! It will be reviewed by admin again.');
                     await fetchApplications();
+                    // Clear selected application to show updated list
+                    setSelectedApplication(null);
                 }
             } catch (error) {
-                console.error('Error resubmitting application:', error);
-                showError('Failed to resubmit application');
+                console.error('❌ Error resubmitting application:', error);
+                const errorMsg = error.response?.data?.message || 'Failed to resubmit application';
+                showError(errorMsg);
             } finally {
                 setResubmitting(false);
             }
@@ -294,14 +314,30 @@ const AgentApplicationStatus = () => {
                                             )}
                                         </div>
 
-                                        <button
-                                            onClick={handleResubmit}
-                                            disabled={resubmitting}
-                                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                                        >
-                                            <ArrowPathIcon className="h-4 w-4 mr-2" />
-                                            {resubmitting ? 'Resubmitting...' : 'Resubmit Application'}
-                                        </button>
+                                        <div className="flex space-x-2">
+                                            <button
+                                                onClick={handleResubmit}
+                                                disabled={resubmitting}
+                                                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                                            >
+                                                <ArrowPathIcon className="h-4 w-4 mr-2" />
+                                                {resubmitting ? 'Resubmitting...' : 'Resubmit Application'}
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    showConfirm(
+                                                        'Edit Application',
+                                                        'To edit the application details and upload new documents, please:\n\n1. Go to the "My Students" tab\n2. Find this application\n3. Click "Edit & Resubmit"\n4. Make your changes and save\n5. The system will ask if you want to resubmit\n\nThis will allow you to update all fields and upload new documents.',
+                                                        'Got It',
+                                                        'Cancel'
+                                                    );
+                                                }}
+                                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                            >
+                                                <DocumentTextIcon className="h-4 w-4 mr-2" />
+                                                Need to Edit?
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
 
@@ -405,5 +441,6 @@ const AgentApplicationStatus = () => {
 };
 
 export default AgentApplicationStatus;
+
 
 
