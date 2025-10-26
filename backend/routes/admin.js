@@ -43,28 +43,28 @@ router.get('/dashboard/stats', protect, authorize('staff', 'super_admin'), getDa
 // Student Management - moved to dedicated adminStudents.js file
 // router.get('/students', protect, authorize('staff', 'super_admin'), getAllStudents);
 router.put('/students/:studentId', protect, authorize('staff', 'super_admin'), updateStudent);
-router.delete('/students/:studentId', protect, authorize('super_admin'), deleteStudent);
+router.delete('/students/:studentId', protect, authorize('staff', 'super_admin'), deleteStudent); // Staff can now delete
 
 // Agent Management
 router.get('/agents', protect, authorize('staff', 'super_admin'), getAllAgents);
-router.post('/agents', protect, authorize('super_admin'), createAgent);
+router.post('/agents', protect, authorize('super_admin'), createAgent); // Only super_admin can create
 router.put('/agents/:agentId', protect, authorize('staff', 'super_admin'), updateAgent);
-router.delete('/agents/:agentId', protect, authorize('super_admin'), deleteAgent);
+router.delete('/agents/:agentId', protect, authorize('staff', 'super_admin'), deleteAgent); // Staff can now delete
 
 // Staff Management
-router.get('/staff', protect, authorize('super_admin'), getAllStaff);
+router.get('/staff', protect, authorize('staff', 'super_admin'), getAllStaff); // Staff can now view
 router.get('/staff/for-assignment', protect, authorize('staff', 'super_admin'), getStaffForAssignment);
-router.post('/staff', protect, authorize('super_admin'), createStaff);
-router.put('/staff/:staffId', protect, authorize('super_admin'), updateStaff);
-router.delete('/staff/:staffId', protect, authorize('super_admin'), deleteStaff);
+router.post('/staff', protect, authorize('super_admin'), createStaff); // Only super_admin can create
+router.put('/staff/:staffId', protect, authorize('staff', 'super_admin'), updateStaff); // Staff can now update
+router.delete('/staff/:staffId', protect, authorize('staff', 'super_admin'), deleteStaff); // Staff can now delete
 
 // Password Management
-router.post('/reset-password', protect, authorize('super_admin'), resetPassword);
+router.post('/reset-password', protect, authorize('staff', 'super_admin'), resetPassword); // Staff can now reset passwords
 
 // Website Settings Management
-router.get('/website-settings', protect, authorize('super_admin'), getWebsiteSettings);
-router.put('/website-settings', protect, authorize('super_admin'), updateWebsiteSettings);
-router.post('/upload-website-image', protect, authorize('super_admin'), upload.single('image'), uploadWebsiteImage);
+router.get('/website-settings', protect, authorize('staff', 'super_admin'), getWebsiteSettings); // Staff can now view
+router.put('/website-settings', protect, authorize('staff', 'super_admin'), updateWebsiteSettings); // Staff can now update
+router.post('/upload-website-image', protect, authorize('staff', 'super_admin'), upload.single('image'), uploadWebsiteImage); // Staff can now upload
 
 // Submit application for a student (admin can submit multiple applications)
 router.post('/submit-application', protect, authorize('staff', 'super_admin'), async (req, res) => {

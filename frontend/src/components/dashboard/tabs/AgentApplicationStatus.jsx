@@ -8,10 +8,12 @@ import {
     ExclamationTriangleIcon,
     ArrowPathIcon,
     ChatBubbleLeftRightIcon,
-    DocumentTextIcon
+    DocumentTextIcon,
+    CloudArrowUpIcon,
+    TrashIcon
 } from '@heroicons/react/24/outline';
 import api from '../../../utils/api';
-import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
+import { showSuccess, showError, showConfirm, showLoading, closeLoading } from '../../../utils/sweetAlert';
 
 const AgentApplicationStatus = () => {
     const [applications, setApplications] = useState([]);
@@ -19,6 +21,12 @@ const AgentApplicationStatus = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('all');
     const [resubmitting, setResubmitting] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editData, setEditData] = useState({});
+    const [documentRequirements, setDocumentRequirements] = useState(null);
+    const [uploadingDocs, setUploadingDocs] = useState({});
+    const [uploadProgress, setUploadProgress] = useState({});
+    const [visibleDocFields, setVisibleDocFields] = useState([]);
 
     const tabs = [
         { id: 'all', name: 'All Applications', color: 'gray' },
@@ -29,7 +37,19 @@ const AgentApplicationStatus = () => {
 
     useEffect(() => {
         fetchApplications();
+        fetchDocumentRequirements();
     }, [activeTab]);
+
+    const fetchDocumentRequirements = async () => {
+        try {
+            const response = await api.get('/api/student-application/document-requirements');
+            if (response.data?.success) {
+                setDocumentRequirements(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching document requirements:', error);
+        }
+    };
 
     const fetchApplications = async () => {
         try {
@@ -113,6 +133,181 @@ const AgentApplicationStatus = () => {
             } finally {
                 setResubmitting(false);
             }
+        }
+    };
+
+    const handleEditApplication = (application) => {
+        console.log('📝 Editing application:', application);
+        setEditData({
+            personalDetails: {
+                fullName: application.personalDetails?.fullName || '',
+                fathersName: application.personalDetails?.fathersName || '',
+                mothersName: application.personalDetails?.mothersName || '',
+                gender: application.personalDetails?.gender || '',
+                dateOfBirth: application.personalDetails?.dateOfBirth || '',
+                aadharNumber: application.personalDetails?.aadharNumber || '',
+                status: application.personalDetails?.status || ''
+            },
+            contactDetails: {
+                primaryPhone: application.contactDetails?.primaryPhone || '',
+                secondaryPhone: application.contactDetails?.secondaryPhone || '',
+                email: application.contactDetails?.email || '',
+                address: application.contactDetails?.address || '',
+                city: application.contactDetails?.city || '',
+                state: application.contactDetails?.state || '',
+                pincode: application.contactDetails?.pincode || ''
+            },
+            courseDetails: {
+                selectedCourse: application.courseDetails?.selectedCourse || '',
+                preferredLanguage: application.courseDetails?.preferredLanguage || ''
+            },
+            guardianDetails: {
+                guardianName: application.guardianDetails?.guardianName || '',
+                guardianPhone: application.guardianDetails?.guardianPhone || '',
+                guardianRelation: application.guardianDetails?.guardianRelation || ''
+            },
+            documents: application.documents || {}
+        });
+        
+        // Initialize with first required document only
+        if (documentRequirements?.requirements?.required?.length > 0) {
+            setVisibleDocFields([documentRequirements.requirements.required[0].key]);
+        } else {
+            setVisibleDocFields([]);
+        }
+        
+        setShowEditModal(true);
+    };
+
+    const addDocumentField = () => {
+        if (!documentRequirements) return;
+        
+        const allDocs = [
+            ...(documentRequirements.requirements?.required || []),
+            ...(documentRequirements.requirements?.optional || [])
+        ];
+        
+        const nextDoc = allDocs.find(doc => !visibleDocFields.includes(doc.key));
+        if (nextDoc) {
+            setVisibleDocFields([...visibleDocFields, nextDoc.key]);
+        }
+    };
+
+    const removeDocumentField = (docKey) => {
+        setVisibleDocFields(visibleDocFields.filter(key => key !== docKey));
+        // Also remove the document data if not uploaded
+        if (!editData.documents?.[docKey]) {
+            return;
+        }
+    };
+
+    const handleDocumentUpload = async (docKey, file) => {
+        if (!file || !selectedApplication) {
+            console.log('❌ Upload cancelled: file or application missing');
+            return;
+        }
+
+        try {
+            console.log('📤 Starting upload:', {
+                docKey,
+                fileName: file.name,
+                fileSize: file.size,
+                applicationId: selectedApplication._id,
+                applicationIdString: selectedApplication.applicationId
+            });
+
+            setUploadingDocs(prev => ({ ...prev, [docKey]: true }));
+            setUploadProgress(prev => ({ ...prev, [docKey]: 0 }));
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('documentType', docKey);
+            formData.append('studentId', selectedApplication._id);
+
+            console.log('📤 FormData prepared, sending to /api/documents/upload');
+
+            const response = await api.post('/api/documents/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (progressEvent) => {
+                    const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    setUploadProgress(prev => ({ ...prev, [docKey]: percentCompleted }));
+                }
+            });
+
+            console.log('✅ Upload response:', response.data);
+
+            if (response.data?.success) {
+                setEditData(prev => ({
+                    ...prev,
+                    documents: {
+                        ...prev.documents,
+                        [docKey]: {
+                            url: response.data.data?.url || response.data.url,
+                            uploadedAt: new Date().toISOString(),
+                            status: 'uploaded'
+                        }
+                    }
+                }));
+                showSuccess('Document uploaded successfully!');
+                console.log('✅ Document saved to state');
+            }
+        } catch (error) {
+            console.error('❌ Error uploading document:', error);
+            console.error('❌ Error response:', error.response?.data);
+            showError('Failed to upload document');
+        } finally {
+            setUploadingDocs(prev => ({ ...prev, [docKey]: false }));
+            setUploadProgress(prev => ({ ...prev, [docKey]: 0 }));
+        }
+    };
+
+    const handleDocumentDelete = (docKey) => {
+        setEditData(prev => ({
+            ...prev,
+            documents: {
+                ...prev.documents,
+                [docKey]: null
+            }
+        }));
+        showSuccess('Document removed');
+    };
+
+    const handleSaveEdit = async () => {
+        try {
+            console.log('💾 Saving edits for application:', selectedApplication._id);
+            const response = await api.put(`/api/agents/students/${selectedApplication._id}`, editData);
+            
+            if (response.data.success) {
+                showSuccess('Application updated successfully!');
+                setShowEditModal(false);
+                setEditData({});
+                
+                // Refresh applications list
+                await fetchApplications();
+                
+                // Update selected application
+                const updatedApp = applications.find(app => app._id === selectedApplication._id);
+                if (updatedApp) {
+                    setSelectedApplication({ ...selectedApplication, ...editData });
+                }
+                
+                // Ask if they want to resubmit
+                if (selectedApplication.status === 'REJECTED') {
+                    const shouldResubmit = await showConfirm(
+                        'Resubmit Application?',
+                        'Application updated successfully! Would you like to resubmit it for admin review?',
+                        'Yes, Resubmit',
+                        'No, Later'
+                    );
+                    
+                    if (shouldResubmit) {
+                        await handleResubmit();
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('❌ Error updating application:', error);
+            showError('Failed to update application');
         }
     };
 
@@ -316,26 +511,19 @@ const AgentApplicationStatus = () => {
 
                                         <div className="flex space-x-2">
                                             <button
+                                                onClick={() => handleEditApplication(selectedApplication)}
+                                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                            >
+                                                <DocumentTextIcon className="h-4 w-4 mr-2" />
+                                                Edit Application
+                                            </button>
+                                            <button
                                                 onClick={handleResubmit}
                                                 disabled={resubmitting}
                                                 className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
                                             >
                                                 <ArrowPathIcon className="h-4 w-4 mr-2" />
                                                 {resubmitting ? 'Resubmitting...' : 'Resubmit Application'}
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    showConfirm(
-                                                        'Edit Application',
-                                                        'To edit the application details and upload new documents, please:\n\n1. Go to the "My Students" tab\n2. Find this application\n3. Click "Edit & Resubmit"\n4. Make your changes and save\n5. The system will ask if you want to resubmit\n\nThis will allow you to update all fields and upload new documents.',
-                                                        'Got It',
-                                                        'Cancel'
-                                                    );
-                                                }}
-                                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                            >
-                                                <DocumentTextIcon className="h-4 w-4 mr-2" />
-                                                Need to Edit?
                                             </button>
                                         </div>
                                     </div>
@@ -436,6 +624,431 @@ const AgentApplicationStatus = () => {
                     )}
                 </div>
             </div>
+
+            {/* Edit Modal */}
+            {showEditModal && selectedApplication && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                    Edit Application - {selectedApplication.personalDetails?.fullName || 'Student'}
+                                </h3>
+                                <button
+                                    onClick={() => setShowEditModal(false)}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <div className="space-y-6">
+                                {/* Personal Details */}
+                                <div>
+                                    <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">Personal Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.fullName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, fullName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Father's Name</label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.fathersName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mother's Name</label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.mothersName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gender</label>
+                                            <select
+                                                value={editData.personalDetails?.gender || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, gender: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            >
+                                                <option value="">Select Gender</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date of Birth</label>
+                                            <input
+                                                type="date"
+                                                value={editData.personalDetails?.dateOfBirth || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aadhar Number</label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.aadharNumber || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Contact Details */}
+                                <div>
+                                    <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">Contact Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Primary Phone</label>
+                                            <input
+                                                type="text"
+                                                value={editData.contactDetails?.primaryPhone || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                            <input
+                                                type="email"
+                                                value={editData.contactDetails?.email || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, email: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+                                            <textarea
+                                                value={editData.contactDetails?.address || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, address: e.target.value }
+                                                })}
+                                                rows="2"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                                            <input
+                                                type="text"
+                                                value={editData.contactDetails?.city || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, city: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                                            <input
+                                                type="text"
+                                                value={editData.contactDetails?.state || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, state: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pincode</label>
+                                            <input
+                                                type="text"
+                                                value={editData.contactDetails?.pincode || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, pincode: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Course Details */}
+                                <div>
+                                    <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">Course Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Selected Course</label>
+                                            <input
+                                                type="text"
+                                                value={editData.courseDetails?.selectedCourse || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    courseDetails: { ...editData.courseDetails, selectedCourse: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred Language</label>
+                                            <input
+                                                type="text"
+                                                value={editData.courseDetails?.preferredLanguage || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    courseDetails: { ...editData.courseDetails, preferredLanguage: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Guardian Details */}
+                                <div>
+                                    <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">Guardian Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guardian Name</label>
+                                            <input
+                                                type="text"
+                                                value={editData.guardianDetails?.guardianName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guardian Phone</label>
+                                            <input
+                                                type="text"
+                                                value={editData.guardianDetails?.guardianPhone || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    guardianDetails: { ...editData.guardianDetails, guardianPhone: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Relation</label>
+                                            <select
+                                                value={editData.guardianDetails?.guardianRelation || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    guardianDetails: { ...editData.guardianDetails, guardianRelation: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                            >
+                                                <option value="">Select Relation</option>
+                                                <option value="Father">Father</option>
+                                                <option value="Mother">Mother</option>
+                                                <option value="Guardian">Guardian</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Document Upload Section */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                                            <CloudArrowUpIcon className="h-5 w-5 mr-2" />
+                                            Document Uploads
+                                        </h4>
+                                        <button
+                                            onClick={addDocumentField}
+                                            type="button"
+                                            className="flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                            disabled={!documentRequirements || visibleDocFields.length >= (documentRequirements?.requirements?.required?.length || 0) + (documentRequirements?.requirements?.optional?.length || 0)}
+                                        >
+                                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                                            </svg>
+                                            Add More
+                                        </button>
+                                    </div>
+                                    {documentRequirements ? (
+                                        <div className="space-y-3">
+                                            {visibleDocFields.map((docKey) => {
+                                                const allDocs = [
+                                                    ...(documentRequirements.requirements?.required || []),
+                                                    ...(documentRequirements.requirements?.optional || [])
+                                                ];
+                                                const doc = allDocs.find(d => d.key === docKey);
+                                                if (!doc) return null;
+                                                
+                                                return (
+                                                            <div key={doc.key} className="border border-gray-300 dark:border-gray-600 rounded-lg p-3 relative">
+                                                                <div className="flex items-center justify-between mb-2">
+                                                                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                        {doc.label}
+                                                                        {doc.required && <span className="text-red-500 ml-1">*</span>}
+                                                                    </label>
+                                                                    <div className="flex items-center space-x-2">
+                                                                        {editData.documents?.[doc.key] && (
+                                                                            <button
+                                                                                onClick={() => handleDocumentDelete(doc.key)}
+                                                                                type="button"
+                                                                                className="text-red-500 hover:text-red-700"
+                                                                                title="Remove uploaded document"
+                                                                            >
+                                                                                <TrashIcon className="h-4 w-4" />
+                                                                            </button>
+                                                                        )}
+                                                                        {visibleDocFields.length > 1 && (
+                                                                            <button
+                                                                                onClick={() => removeDocumentField(doc.key)}
+                                                                                type="button"
+                                                                                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                                                                                title="Remove this field"
+                                                                            >
+                                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                                                </svg>
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                                {doc.description && (
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                                        {doc.description}
+                                                                    </p>
+                                                                )}
+
+                                                                {editData.documents?.[doc.key] ? (
+                                                                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded p-2">
+                                                                        <div className="flex items-center text-sm text-green-700 dark:text-green-300">
+                                                                            <CheckCircleIcon className="h-4 w-4 mr-2" />
+                                                                            <span>Document uploaded</span>
+                                                                        </div>
+                                                                        {editData.documents[doc.key].url && (
+                                                                            <a
+                                                                                href={editData.documents[doc.key].url}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                className="text-xs text-blue-600 hover:underline mt-1 block"
+                                                                            >
+                                                                                View document
+                                                                            </a>
+                                                                        )}
+                                                                    </div>
+                                                                ) : (
+                                                                    <div>
+                                                                        <input
+                                                                            type="file"
+                                                                            accept={doc.acceptedFormats?.join(',') || '.pdf,.jpg,.jpeg,.png'}
+                                                                            onChange={(e) => {
+                                                                                const file = e.target.files[0];
+                                                                                if (file) handleDocumentUpload(doc.key, file);
+                                                                            }}
+                                                                            disabled={uploadingDocs[doc.key]}
+                                                                            className="block w-full text-sm text-gray-500 dark:text-gray-400
+                                                                                file:mr-4 file:py-2 file:px-4
+                                                                                file:rounded-md file:border-0
+                                                                                file:text-sm file:font-semibold
+                                                                                file:bg-blue-50 file:text-blue-700
+                                                                                hover:file:bg-blue-100
+                                                                                dark:file:bg-blue-900/20 dark:file:text-blue-300
+                                                                                disabled:opacity-50"
+                                                                        />
+                                                                        {uploadingDocs[doc.key] && (
+                                                                            <div className="mt-2">
+                                                                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                                                                    <div
+                                                                                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                                                                        style={{ width: `${uploadProgress[doc.key] || 0}%` }}
+                                                                                    />
+                                                                                </div>
+                                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                                    Uploading... {uploadProgress[doc.key] || 0}%
+                                                                                </p>
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+
+                                                                {doc.maxSize && (
+                                                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                                                        Max size: {doc.maxSize}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                );
+                                            })}
+                                            
+                                            {visibleDocFields.length === 0 && (
+                                                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                    <CloudArrowUpIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                                    <p>Click "Add More" to add document fields</p>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                                            Loading document requirements...
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Modal Actions */}
+                            <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <button
+                                    onClick={() => setShowEditModal(false)}
+                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleSaveEdit}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

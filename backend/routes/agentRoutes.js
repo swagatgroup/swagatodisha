@@ -1008,11 +1008,12 @@ router.put('/students/:id', async (req, res) => {
             });
         }
 
-        // Check if application can be edited (not approved or rejected)
-        if (application.status === 'APPROVED' || application.status === 'REJECTED') {
+        // Check if application can be edited (not approved)
+        // Allow editing REJECTED applications so agents can fix issues and resubmit
+        if (application.status === 'APPROVED') {
             return res.status(400).json({
                 success: false,
-                message: 'Cannot edit approved or rejected applications'
+                message: 'Cannot edit approved applications'
             });
         }
 

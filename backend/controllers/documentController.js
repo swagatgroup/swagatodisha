@@ -43,7 +43,7 @@ const upload = multer({
 // Upload document
 const uploadDocument = async (req, res) => {
     try {
-        const { documentType } = req.body;
+        const { documentType, studentId } = req.body;
         const file = req.file;
 
         if (!file) {
@@ -60,7 +60,85 @@ const uploadDocument = async (req, res) => {
             });
         }
 
-        // Create document record
+        // If studentId is provided, attach to StudentApplication
+        if (studentId) {
+            console.log('📄 Uploading document to application:', studentId);
+            console.log('📝 Document type:', documentType);
+            console.log('👤 Uploader role:', req.user.role);
+            console.log('👤 Uploader ID:', req.user._id);
+            
+            const StudentApplication = require('../models/StudentApplication');
+            const application = await StudentApplication.findById(studentId);
+            
+            if (!application) {
+                console.log('❌ Application not found:', studentId);
+                return res.status(404).json({
+                    success: false,
+                    message: 'Student application not found'
+                });
+            }
+            
+            console.log('✅ Application found:', application._id);
+            console.log('📋 Current documents count:', application.documents?.length || 0);
+
+            // Check if user has permission to upload for this application
+            if (req.user.role === 'agent') {
+                const agentId = req.user._id.toString();
+                const isAssignedAgent = application.assignedAgent && 
+                    application.assignedAgent.toString() === agentId;
+                const isSubmitter = application.submittedBy && 
+                    application.submittedBy.toString() === agentId;
+                const isReferrer = application.referralInfo?.referredBy && 
+                    application.referralInfo.referredBy.toString() === agentId;
+
+                if (!isAssignedAgent && !isSubmitter && !isReferrer) {
+                    return res.status(403).json({
+                        success: false,
+                        message: 'You do not have permission to upload documents for this application'
+                    });
+                }
+            }
+
+            // Generate public URL (relative path)
+            const publicUrl = `/uploads/documents/${file.filename}`;
+
+            // Add document to application
+            const documentData = {
+                documentType: documentType,
+                fileName: file.originalname,
+                filePath: publicUrl,
+                storageType: 'local',
+                fileSize: file.size,
+                mimeType: file.mimetype,
+                status: 'PENDING',
+                uploadedAt: new Date()
+            };
+
+            // Remove existing document of same type if exists
+            application.documents = application.documents || [];
+            const beforeCount = application.documents.length;
+            application.documents = application.documents.filter(
+                doc => doc.documentType !== documentType
+            );
+            
+            application.documents.push(documentData);
+            await application.save();
+            
+            console.log('✅ Document saved! Before:', beforeCount, 'After:', application.documents.length);
+            console.log('📄 Document data:', documentData);
+
+            return res.status(201).json({
+                success: true,
+                message: 'Document uploaded successfully',
+                data: {
+                    url: publicUrl,
+                    fileName: file.originalname,
+                    documentType: documentType
+                }
+            });
+        }
+
+        // Otherwise, create standalone document record
         const document = new Document({
             fileName: file.originalname,
             filePath: file.path,

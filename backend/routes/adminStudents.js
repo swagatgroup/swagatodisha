@@ -144,7 +144,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             // Use default values if distinct queries fail
         }
 
-        // Transform data for frontend
+        // Transform data for frontend (include ALL details for modal view)
         const transformedStudents = applications.map(app => ({
             _id: app._id,
             applicationId: app.applicationId,
@@ -166,7 +166,17 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             createdAt: app.createdAt,
             submittedAt: app.submittedAt,
             user: app.user,
-            submittedBy: app.submittedBy
+            submittedBy: app.submittedBy,
+            // Include full details for modal view
+            personalDetails: app.personalDetails,
+            contactDetails: app.contactDetails,
+            courseDetails: app.courseDetails,
+            guardianDetails: app.guardianDetails,
+            financialDetails: app.financialDetails,
+            documents: app.documents,
+            reviewInfo: app.reviewInfo,
+            workflowHistory: app.workflowHistory,
+            referralInfo: app.referralInfo
         }));
 
         res.json({
