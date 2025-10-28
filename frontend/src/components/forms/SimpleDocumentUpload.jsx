@@ -154,7 +154,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                 type: uploaded?.mimeType || file.type,
                 mimeType: uploaded?.mimeType || file.type,
                 uploadedAt: new Date().toISOString(),
-                status: 'uploaded',
+                status: 'PENDING', // Valid enum: PENDING, APPROVED, REJECTED
                 downloadUrl: uploaded?.downloadUrl || uploaded?.filePath,
                 url: uploaded?.downloadUrl || uploaded?.filePath,
                 filePath: uploaded?.downloadUrl || uploaded?.filePath,

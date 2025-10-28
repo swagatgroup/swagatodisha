@@ -1050,9 +1050,12 @@ const verifyDocuments = async (req, res) => {
         const docMap = new Map(documents.map((d) => [d.documentType, d]));
         let updatedDocuments = 0;
 
+        console.log('📝 Processing', decisions.length, 'document decisions');
+
         decisions.forEach((d) => {
             const existing = docMap.get(d.documentType);
             if (existing) {
+                console.log(`  - Updating ${d.documentType}: ${existing.status} → ${d.status}`);
                 existing.status = d.status || 'PENDING';
                 // For approvals, use default remark if none provided. For rejections, require remarks.
                 if (d.status === 'APPROVED') {
@@ -1063,6 +1066,8 @@ const verifyDocuments = async (req, res) => {
                 existing.reviewedBy = req.user?._id;
                 existing.reviewedAt = new Date();
                 updatedDocuments++;
+            } else {
+                console.warn(`  - Document type ${d.documentType} not found in application`);
             }
         });
 
@@ -1072,6 +1077,11 @@ const verifyDocuments = async (req, res) => {
                 message: 'No valid documents found to update'
             });
         }
+
+        console.log(`✅ Updated ${updatedDocuments} documents`);
+        
+        // CRITICAL: Mark documents array as modified so Mongoose saves it
+        application.markModified('documents');
 
         // Compute verification flags
         const allDocs = application.documents || [];
@@ -1150,20 +1160,30 @@ const verifyDocuments = async (req, res) => {
         }
         // If no documents reviewed, keep current status
 
-        // Add workflow history entry for status change
-        if (previousStatus !== application.status || previousStage !== application.currentStage) {
-            application.workflowHistory.push({
-                stage: application.currentStage,
-                status: application.status,
-                updatedBy: req.user._id,
-                action: 'DOCUMENT_REVIEW',
-                remarks: `Document review completed: ${counts.approved} approved, ${counts.rejected} rejected, ${counts.pending} pending`,
-                timestamp: new Date()
-            });
-        }
+        // Add workflow history entry for document review
+        // Use REQUEST_MODIFICATION if any docs rejected, otherwise APPROVE if all approved
+        const workflowAction = counts.rejected > 0 ? 'REQUEST_MODIFICATION' : 'APPROVE';
+        
+        application.workflowHistory.push({
+            stage: application.currentStage,
+            status: application.status,
+            updatedBy: req.user._id,
+            action: workflowAction,
+            remarks: `Document review completed: ${counts.approved} approved, ${counts.rejected} rejected, ${counts.pending} pending`,
+            timestamp: new Date()
+        });
 
         application.lastModified = new Date();
+        
+        console.log('💾 Saving application with updated document statuses...');
         await application.save();
+        console.log('✅ Application saved successfully to database');
+        
+        // Verify the save by logging final document statuses
+        console.log('📋 Final document statuses after save:');
+        application.documents.forEach(doc => {
+            console.log(`  - ${doc.documentType}: ${doc.status} ${doc.remarks ? `(${doc.remarks.substring(0, 50)})` : ''}`);
+        });
 
         // Send notification about document review status
         if (anyReviewed) {
@@ -1181,6 +1201,8 @@ const verifyDocuments = async (req, res) => {
         } else if (counts.rejected > 0) {
             responseMessage = `All documents rejected (${counts.rejected})`;
         }
+
+        console.log(`✅ ${responseMessage}`);
 
         return res.status(200).json({
             success: true,

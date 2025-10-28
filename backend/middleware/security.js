@@ -56,7 +56,7 @@ const uploadRateLimit = createRateLimit(
 
 const apiRateLimit = createRateLimit(
     15 * 60 * 1000, // 15 minutes
-    100, // 100 requests per 15 minutes
+    500, // 500 requests per 15 minutes (increased from 100 for active users)
     'Too many requests, please slow down'
 );
 

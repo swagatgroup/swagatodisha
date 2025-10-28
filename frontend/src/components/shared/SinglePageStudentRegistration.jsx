@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import api from "../../utils/api";
 import SimpleDocumentUpload from "../forms/SimpleDocumentUpload";
@@ -14,6 +15,7 @@ const SinglePageStudentRegistration = ({
     showTitle = true,
 }) => {
     const { user, token } = useAuth();
+    const navigate = useNavigate();
     const [pdfGenerated, setPdfGenerated] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [showPDFGenerator, setShowPDFGenerator] = useState(false);
@@ -399,7 +401,7 @@ const SinglePageStudentRegistration = ({
                                 filePath: doc.downloadUrl || doc.filePath || '',
                                 fileSize: doc.size || 0,
                                 mimeType: doc.type || doc.mimeType || 'application/octet-stream',
-                                status: 'uploaded'
+                                status: 'PENDING' // Valid enum: PENDING, APPROVED, REJECTED
                             }));
 
                             await api.put(
@@ -436,8 +438,13 @@ const SinglePageStudentRegistration = ({
                         );
 
                         if (submitRes.data.success) {
-                            showSuccessToast("Application submitted successfully!");
+                            showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
                             if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+                            
+                            // Redirect to dashboard after brief delay
+                            setTimeout(() => {
+                                navigate('/dashboard');
+                            }, 1500);
                         }
                         return;
                     }
@@ -458,7 +465,7 @@ const SinglePageStudentRegistration = ({
                     filePath: doc.downloadUrl || doc.filePath || '',
                     fileSize: doc.size || 0,
                     mimeType: doc.type || doc.mimeType || 'application/octet-stream',
-                    status: 'uploaded'
+                    status: 'PENDING' // Valid enum: PENDING, APPROVED, REJECTED
                 }));
 
                 // Sanitize phone numbers (remove spaces, +, -, etc.)
@@ -519,7 +526,7 @@ const SinglePageStudentRegistration = ({
                                         filePath: doc.downloadUrl || doc.filePath || '',
                                         fileSize: doc.size || 0,
                                         mimeType: doc.type || doc.mimeType || 'application/octet-stream',
-                                        status: 'uploaded'
+                                        status: 'PENDING' // Valid enum: PENDING, APPROVED, REJECTED
                                     }));
 
                                     await api.put(
@@ -548,8 +555,13 @@ const SinglePageStudentRegistration = ({
                                     }
                                 );
                                 if (submitRes.data.success) {
-                                    showSuccessToast("Application submitted successfully!");
+                                    showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
                                     if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+                                    
+                                    // Redirect to dashboard after brief delay
+                                    setTimeout(() => {
+                                        navigate('/dashboard');
+                                    }, 1500);
                                 }
                                 return;
                             }
@@ -568,12 +580,17 @@ const SinglePageStudentRegistration = ({
 
             if (response.data.success) {
                 setApplication(response.data.data);
-                showSuccessToast("Application submitted successfully!");
+                showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
 
                 // Call the update callback if provided
                 if (onStudentUpdate) {
                     onStudentUpdate(response.data.data);
                 }
+                
+                // Redirect to dashboard after brief delay
+                setTimeout(() => {
+                    navigate('/dashboard');
+                }, 1500);
             } else {
                 console.error("Application creation failed:", response.data);
                 showErrorToast(
