@@ -1,0 +1,7 @@
+# Minimal .vercelignore - only ignore what's absolutely necessary
+backend/
+node_modules/
+.env.local
+.env.development
+*.log
+.DS_Store

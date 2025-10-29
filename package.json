@@ -6,7 +6,9 @@
   "scripts": {
     "test:production": "node production-test.js",
     "test:quick": "node quick-production-test.js",
-    "test:all": "npm run test:quick && npm run test:production"
+    "test:all": "npm run test:quick && npm run test:production",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "vercel-build": "npm run build:frontend"
   },
   "dependencies": {
     "axios": "^1.11.0",

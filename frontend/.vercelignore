@@ -1,0 +1,11 @@
+# Frontend .vercelignore - only ignore what we don't need for build
+node_modules/
+.env.local
+.env.development
+*.log
+.DS_Store
+# Keep src/ directory - it's needed for the build!
+# Keep vite.config.js - it's needed for the build!
+# Keep eslint.config.js - it's needed for the build!
+# Keep postcss.config.js - it's needed for the build!
+# Keep tailwind.config.js - it's needed for the build!
