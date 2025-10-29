@@ -219,8 +219,33 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 
-// Static files
-app.use('/uploads', express.static('uploads'));
+// Static files - Enhanced with CORS and proper headers
+app.use('/uploads', (req, res, next) => {
+    // Add CORS headers for static files
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.header('Cross-Origin-Embedder-Policy', 'unsafe-none');
+    next();
+}, express.static('uploads', {
+    // Enable directory indexing for debugging (disable in production)
+    index: false,
+    // Set proper content-type headers
+    setHeaders: (res, path) => {
+        // Force download for certain file types if needed
+        if (path.endsWith('.pdf')) {
+            res.set('Content-Type', 'application/pdf');
+            // Uncomment to force download instead of inline view
+            // res.set('Content-Disposition', 'attachment');
+        }
+        if (path.endsWith('.jpg') || path.endsWith('.jpeg')) {
+            res.set('Content-Type', 'image/jpeg');
+        }
+        if (path.endsWith('.png')) {
+            res.set('Content-Type', 'image/png');
+        }
+    }
+}));
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -344,6 +369,42 @@ app.post('/api/application/create', protect, async (req, res) => {
             }
         }
 
+        // Process documents if provided
+        let processedDocuments = [];
+        let documentsComplete = false;
+        
+        if (req.body.documents && typeof req.body.documents === 'object') {
+            if (Array.isArray(req.body.documents)) {
+                // Already in array format
+                processedDocuments = req.body.documents.filter(doc => 
+                    doc && (doc.filePath || doc.url || doc.downloadUrl)
+                );
+            } else {
+                // Convert from object format to array
+                processedDocuments = Object.entries(req.body.documents)
+                    .map(([docType, doc]) => {
+                        if (!doc || (!doc.downloadUrl && !doc.url && !doc.filePath)) {
+                            return null;
+                        }
+                        return {
+                            documentType: docType,
+                            fileName: doc.name || doc.fileName || 'uploaded',
+                            filePath: doc.downloadUrl || doc.url || doc.filePath || '',
+                            storageType: doc.cloudinaryPublicId ? 'cloudinary' : 'local',
+                            cloudinaryPublicId: doc.cloudinaryPublicId || doc.public_id,
+                            fileSize: doc.size || doc.fileSize || 0,
+                            mimeType: doc.type || doc.mimeType || 'application/octet-stream',
+                            status: 'PENDING',
+                            uploadedAt: new Date()
+                        };
+                    })
+                    .filter(doc => doc && doc.filePath && doc.filePath.trim() !== '');
+            }
+            
+            // Mark documents as complete if we have at least some documents
+            documentsComplete = processedDocuments.length > 0;
+        }
+
         // Create application in database
         const applicationData = {
             user: req.user._id, // Use authenticated user ID
@@ -352,11 +413,12 @@ app.post('/api/application/create', protect, async (req, res) => {
             courseDetails: req.body.courseDetails || {},
             guardianDetails: req.body.guardianDetails || {},
             financialDetails: req.body.financialDetails || {},
+            documents: processedDocuments, // Add processed documents
             status: 'SUBMITTED',
             currentStage: 'SUBMITTED',
             progress: {
                 registrationComplete: true,
-                documentsComplete: true,
+                documentsComplete: documentsComplete, // Based on actual documents
                 applicationPdfGenerated: false,
                 termsAccepted: true,
                 submissionComplete: true
@@ -799,6 +861,28 @@ app.get('/api/debug/document-statuses', async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error checking document statuses',
+            error: error.message
+        });
+    }
+});
+
+// Fix document complete flag anomaly endpoint
+app.post('/api/debug/fix-document-complete-flag', protect, async (req, res) => {
+    try {
+        const { fixDocumentCompleteFlag } = require('./scripts/fixDocumentCompleteFlagAnomaly');
+        
+        console.log('🔧 Running document complete flag fix...');
+        await fixDocumentCompleteFlag();
+        
+        res.json({
+            success: true,
+            message: 'Document complete flag anomaly fix completed successfully'
+        });
+    } catch (error) {
+        console.error('Error fixing document complete flag:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fixing document complete flag',
             error: error.message
         });
     }

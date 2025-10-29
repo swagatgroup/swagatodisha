@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline';
 import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm, showLoading, closeLoading } from '../../../utils/sweetAlert';
+import { getDocumentUrl } from '../../../utils/documentUtils';
 
 const AgentApplicationStatus = () => {
     const [applications, setApplications] = useState([]);
@@ -79,8 +80,19 @@ const AgentApplicationStatus = () => {
             // Try agent-specific endpoint first
             const response = await api.get(`/api/agents/submitted-applications/${applicationId}`);
             if (response.data?.success) {
-                setSelectedApplication(response.data.data);
+                const appData = response.data.data;
                 console.log('✅ Application details loaded');
+                console.log('📄 Documents:', appData.documents);
+                console.log('📊 Review Status:', appData.reviewStatus);
+                setSelectedApplication(appData);
+                
+                // Log document statuses for debugging
+                if (appData.documents && appData.documents.length > 0) {
+                    console.log('📋 Document Statuses:');
+                    appData.documents.forEach(doc => {
+                        console.log(`  - ${doc.documentType}: ${doc.status || 'PENDING'} ${doc.remarks ? `(${doc.remarks})` : ''}`);
+                    });
+                }
             }
         } catch (error) {
             console.error('❌ Error fetching application details:', error);
@@ -237,19 +249,31 @@ const AgentApplicationStatus = () => {
             console.log('✅ Upload response:', response.data);
 
             if (response.data?.success) {
+                const uploadedDocData = response.data.data;
+                console.log('📄 Uploaded document data:', uploadedDocData);
+                
                 setEditData(prev => ({
                     ...prev,
                     documents: {
                         ...prev.documents,
                         [docKey]: {
-                            url: response.data.data?.url || response.data.url,
+                            url: uploadedDocData?.filePath || uploadedDocData?.url || response.data.url,
                             uploadedAt: new Date().toISOString(),
-                            status: 'uploaded'
+                            status: 'PENDING' // Valid enum: PENDING, APPROVED, REJECTED
                         }
                     }
                 }));
-                showSuccess('Document uploaded successfully!');
-                console.log('✅ Document saved to state');
+                
+                showSuccess(`✅ ${docKey} uploaded successfully! Previous document replaced. Status: PENDING (awaiting review)`);
+                console.log(`✅ ${docKey} saved - Status reset to PENDING`);
+                
+                // Refresh application details to get updated document status
+                // Use a single combined refresh with slight delay to avoid rate limiting
+                console.log('🔄 Refreshing data after upload (with delay to avoid rate limit)...');
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+                
+                await fetchApplicationDetails(selectedApplication.applicationId);
+                console.log('✅ Upload complete - UI refreshed with latest data');
             }
         } catch (error) {
             console.error('❌ Error uploading document:', error);
@@ -462,7 +486,7 @@ const AgentApplicationStatus = () => {
                             {/* Application Header */}
                             <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <div className="flex justify-between items-start mb-4">
-                                    <div>
+                                    <div className="flex-1">
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                             {selectedApplication.personalDetails?.fullName}
                                         </h3>
@@ -473,11 +497,25 @@ const AgentApplicationStatus = () => {
                                             Application ID: {selectedApplication.applicationId}
                                         </p>
                                     </div>
-                                    <div className="flex items-center space-x-2">
-                                        {getStatusIcon(selectedApplication.status)}
-                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedApplication.status)}`}>
-                                            {selectedApplication.status}
-                                        </span>
+                                    <div className="flex items-center space-x-3">
+                                        <button
+                                            onClick={() => {
+                                                console.log('🔄 Refreshing application data...');
+                                                fetchApplicationDetails(selectedApplication.applicationId);
+                                                showSuccess('Application data refreshed');
+                                            }}
+                                            className="flex items-center px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 border border-blue-300 dark:border-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                                            title="Refresh to see latest document review status"
+                                        >
+                                            <ArrowPathIcon className="h-4 w-4 mr-1" />
+                                            Refresh
+                                        </button>
+                                        <div className="flex items-center space-x-2">
+                                            {getStatusIcon(selectedApplication.status)}
+                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedApplication.status)}`}>
+                                                {selectedApplication.status}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -592,20 +630,146 @@ const AgentApplicationStatus = () => {
                                 {/* Documents Status */}
                                 {selectedApplication.documents && selectedApplication.documents.length > 0 && (
                                     <div className="mt-6">
-                                        <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Documents Status</h5>
-                                        <div className="space-y-2">
-                                            {selectedApplication.documents.map((doc, index) => (
-                                                <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                                                    <span className="text-sm text-gray-900 dark:text-gray-100">{doc.documentType}</span>
-                                                    <span className={`px-2 py-1 rounded text-xs ${
-                                                        doc.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                                                        doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                                                        'bg-yellow-100 text-yellow-800'
-                                                    }`}>
-                                                        {doc.status || 'PENDING'}
-                                                    </span>
-                                                </div>
-                                            ))}
+                                        <div className="flex items-center justify-between mb-3">
+                                            <h5 className="font-medium text-gray-900 dark:text-gray-100">Documents Status</h5>
+                                            {selectedApplication.documents.some(doc => doc.status === 'REJECTED') && (
+                                                <span className="px-2 py-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded">
+                                                    ⚠️ Action Required
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="space-y-3">
+                                            {selectedApplication.documents.map((doc, index) => {
+                                                const documentUrl = getDocumentUrl(doc.filePath || doc.url);
+                                                const hasUrl = doc.filePath || doc.url;
+                                                const isRejected = doc.status === 'REJECTED';
+                                                const isApproved = doc.status === 'APPROVED';
+                                                const isPending = !doc.status || doc.status === 'PENDING';
+                                                
+                                                return (
+                                                    <div 
+                                                        key={index} 
+                                                        className={`p-3 rounded-lg border ${
+                                                            isRejected ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30' :
+                                                            isApproved ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30' :
+                                                            'bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600'
+                                                        } hover:shadow-sm transition-all`}
+                                                    >
+                                                        <div className="flex items-start justify-between">
+                                                            <div className="flex-1">
+                                                                <div className="flex items-center space-x-2 mb-1">
+                                                                    {hasUrl ? (
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                console.log('📄 Opening document:', {
+                                                                                    type: doc.documentType,
+                                                                                    url: documentUrl,
+                                                                                    fileName: doc.fileName
+                                                                                });
+                                                                                window.open(documentUrl, '_blank', 'noopener,noreferrer');
+                                                                            }}
+                                                                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline cursor-pointer"
+                                                                            title={`Click to view ${doc.documentType}`}
+                                                                        >
+                                                                            {doc.documentType}
+                                                                        </button>
+                                                                    ) : (
+                                                                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType}</span>
+                                                                    )}
+                                                                    {hasUrl && (
+                                                                        <EyeIcon className="h-4 w-4 text-gray-400" />
+                                                                    )}
+                                                                </div>
+                                                                
+                                                                {/* Upload timestamp */}
+                                                                {doc.uploadedAt && (
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                        📅 Uploaded: {new Date(doc.uploadedAt).toLocaleString()}
+                                                                    </p>
+                                                                )}
+                                                                
+                                                                {/* Document remarks */}
+                                                                {doc.remarks && (
+                                                                    <div className={`mt-2 p-2 rounded text-xs ${
+                                                                        isRejected ? 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300' :
+                                                                        isApproved ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' :
+                                                                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300'
+                                                                    }`}>
+                                                                        <strong>
+                                                                            {isRejected ? '⚠️ Rejection Reason: ' : 
+                                                                             isApproved ? '✓ Approval Note: ' : 
+                                                                             'Review Note: '}
+                                                                        </strong>
+                                                                        {doc.remarks}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                            
+                                                            <div className="flex flex-col items-end space-y-2">
+                                                                {/* Status Badge - More Prominent */}
+                                                                <div className="flex flex-col items-end space-y-1">
+                                                                    <span className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide shadow-sm ${
+                                                                        isApproved ? 'bg-green-500 text-white dark:bg-green-600' :
+                                                                        isRejected ? 'bg-red-500 text-white dark:bg-red-600' :
+                                                                        'bg-yellow-500 text-white dark:bg-yellow-600'
+                                                                    }`}>
+                                                                        {isApproved ? '✓ APPROVED' : isRejected ? '✗ REJECTED' : '⏳ PENDING'}
+                                                                    </span>
+                                                                    
+                                                                    {/* Review timestamp */}
+                                                                    {doc.reviewedAt && (
+                                                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                            {new Date(doc.reviewedAt).toLocaleDateString()}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                
+                                                                {/* Reupload button for rejected documents */}
+                                                                {isRejected && (
+                                                                    <div className="relative">
+                                                                        <input
+                                                                            type="file"
+                                                                            id={`reupload-${doc.documentType}-${index}`}
+                                                                            accept=".pdf,.jpg,.jpeg,.png"
+                                                                            onChange={(e) => {
+                                                                                const file = e.target.files[0];
+                                                                                if (file) handleDocumentUpload(doc.documentType, file);
+                                                                            }}
+                                                                            className="hidden"
+                                                                        />
+                                                                        <label
+                                                                            htmlFor={`reupload-${doc.documentType}-${index}`}
+                                                                            className="cursor-pointer inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded transition-colors"
+                                                                            title="Upload a new version of this document"
+                                                                        >
+                                                                            <CloudArrowUpIcon className="h-4 w-4 mr-1" />
+                                                                            Reupload
+                                                                        </label>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        
+                                        {/* Summary counts */}
+                                        <div className="mt-4 flex items-center justify-between text-xs">
+                                            <div className="flex items-center space-x-3">
+                                                <span className="text-gray-600 dark:text-gray-400">
+                                                    Total: {selectedApplication.documents.length}
+                                                </span>
+                                                <span className="text-green-600 dark:text-green-400">
+                                                    ✓ {selectedApplication.documents.filter(d => d.status === 'APPROVED').length} Approved
+                                                </span>
+                                                <span className="text-red-600 dark:text-red-400">
+                                                    ✗ {selectedApplication.documents.filter(d => d.status === 'REJECTED').length} Rejected
+                                                </span>
+                                                <span className="text-yellow-600 dark:text-yellow-400">
+                                                    ⏳ {selectedApplication.documents.filter(d => !d.status || d.status === 'PENDING').length} Pending
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -962,7 +1126,7 @@ const AgentApplicationStatus = () => {
                                                                         </div>
                                                                         {editData.documents[doc.key].url && (
                                                                             <a
-                                                                                href={editData.documents[doc.key].url}
+                                                                                href={getDocumentUrl(editData.documents[doc.key].url)}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
                                                                                 className="text-xs text-blue-600 hover:underline mt-1 block"

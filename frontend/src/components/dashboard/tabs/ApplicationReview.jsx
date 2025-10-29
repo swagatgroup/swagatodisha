@@ -20,6 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
+import { getDocumentUrl } from '../../../utils/documentUtils';
 
 const ApplicationReview = () => {
     const [applications, setApplications] = useState([]);
@@ -110,6 +111,9 @@ const ApplicationReview = () => {
         fetchAllApplicationsForStats();
         fetchApplications();
     }, [activeTab]);
+    
+    // Note: Auto-refresh removed to prevent rate limiting issues
+    // Staff can use the manual "Refresh" button to get latest data
 
     // Debug: Log when documentReviewStats changes
     useEffect(() => {
@@ -221,13 +225,28 @@ const ApplicationReview = () => {
 
     const fetchApplicationDetails = async (applicationId) => {
         try {
+            console.log('🔍 Fetching latest application details for:', applicationId);
             const response = await api.get(`/api/student-application/${applicationId}/review`);
 
             if (response.data?.success) {
-                setSelectedApplication(response.data.data);
+                const appData = response.data.data;
+                console.log('✅ Application details loaded');
+                console.log('📄 Documents count:', appData.documents?.length || 0);
+                console.log('📊 Review Status:', appData.reviewStatus);
+                
+                // Log each document's current status
+                if (appData.documents && appData.documents.length > 0) {
+                    console.log('📋 Document Statuses:');
+                    appData.documents.forEach(doc => {
+                        console.log(`  - ${doc.documentType}: ${doc.status || 'PENDING'}${doc.uploadedAt ? ` (Uploaded: ${new Date(doc.uploadedAt).toLocaleString()})` : ''}${doc.remarks ? ` - "${doc.remarks.substring(0, 50)}"` : ''}`);
+                    });
+                }
+                
+                setSelectedApplication(appData);
             }
         } catch (error) {
-            console.error('Error fetching application details:', error);
+            console.error('❌ Error fetching application details:', error);
+            console.error('❌ Error response:', error.response?.data);
             showError('Failed to fetch application details');
         }
     };
@@ -267,6 +286,17 @@ const ApplicationReview = () => {
             ...prev,
             [documentType]: { decision, remarks: finalRemarks }
         }));
+        
+        // Show visual feedback with toast
+        if (decision === 'approve') {
+            console.log(`✅ Marked ${documentType} for APPROVAL`);
+            // Short success message
+            showSuccess(`✓ Marked for approval`);
+        } else {
+            console.log(`⚠️ Marked ${documentType} for REJECTION - Add remarks and click "Submit Document Reviews"`);
+            // Warning message with instructions
+            showError(`⚠️ Marked for rejection - Add remarks below, then click "Submit Document Reviews"`);
+        }
     };
 
     const handleDocumentRemarksChange = (documentType, remarks) => {
@@ -287,7 +317,7 @@ const ApplicationReview = () => {
         const rejectedWithoutRemarks = rejectedDecisions.filter(([_, { remarks }]) => !remarks || remarks.trim() === '');
 
         if (rejectedWithoutRemarks.length > 0) {
-            showError('Please provide remarks for rejected documents');
+            showError('Please provide remarks for all rejected documents before submitting');
             return;
         }
 
@@ -298,7 +328,7 @@ const ApplicationReview = () => {
         }));
 
         if (decisions.length === 0) {
-            showError('Please review at least one document');
+            showError('Please review at least one document before submitting');
             return;
         }
 
@@ -308,29 +338,62 @@ const ApplicationReview = () => {
 
         let feedbackMessage = '';
         if (approvedDocs.length > 0 && rejectedDocs.length > 0) {
-            feedbackMessage = `Mixed feedback: ${approvedDocs.map(d => d.documentType).join(', ')} approved, ${rejectedDocs.map(d => d.documentType).join(', ')} rejected`;
+            feedbackMessage = `${approvedDocs.length} approved, ${rejectedDocs.length} rejected`;
         } else if (approvedDocs.length > 0) {
-            feedbackMessage = `All reviewed documents approved: ${approvedDocs.map(d => d.documentType).join(', ')}`;
+            feedbackMessage = `${approvedDocs.length} documents approved`;
         } else if (rejectedDocs.length > 0) {
-            feedbackMessage = `All reviewed documents rejected: ${rejectedDocs.map(d => d.documentType).join(', ')}`;
+            feedbackMessage = `${rejectedDocs.length} documents rejected`;
+        }
+
+        // Show confirmation dialog
+        const confirmed = await showConfirm(
+            'Confirm Document Review',
+            `Are you sure you want to submit these document reviews?\n\n${feedbackMessage}\n\nThis will notify the agent/student about the review results.`,
+            'Yes, Submit Review',
+            'Cancel'
+        );
+
+        if (!confirmed) {
+            console.log('❌ User cancelled document review submission');
+            return;
         }
 
         try {
             setVerifying(true);
+            
+            console.log('📤 Submitting document reviews:', {
+                applicationId: selectedApplication.applicationId,
+                decisions,
+                feedbackSummary: feedbackMessage
+            });
+            
             const response = await api.put(`/api/student-application/${selectedApplication.applicationId}/verify`, {
                 decisions,
                 feedbackSummary: feedbackMessage
             });
 
+            console.log('✅ Verification response:', response.data);
+
             if (response.data?.success) {
-                showSuccess(`Documents reviewed successfully. ${feedbackMessage}`);
+                showSuccess(`✅ Documents reviewed successfully! ${feedbackMessage}`);
                 setDocumentDecisions({});
+                
+                console.log('🔄 Refreshing application details...');
                 await fetchApplicationDetails(selectedApplication.applicationId);
+                
+                console.log('🔄 Refreshing applications list...');
                 await fetchApplications();
+                
+                console.log('✅ All data refreshed - changes persisted');
+            } else {
+                console.error('❌ Verification failed:', response.data);
+                showError(response.data?.message || 'Failed to review documents');
             }
         } catch (error) {
-            console.error('Error reviewing documents:', error);
-            showError('Failed to review documents');
+            console.error('❌ Error reviewing documents:', error);
+            console.error('❌ Error response:', error.response?.data);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to review documents';
+            showError(`Failed to review documents: ${errorMessage}`);
         } finally {
             setVerifying(false);
         }
@@ -535,17 +598,29 @@ const ApplicationReview = () => {
                                 <div className="w-full h-96">
                                     {selectedDocument.mimeType?.includes('image') ? (
                                         <img
-                                            src={selectedDocument.filePath.startsWith('http') ? selectedDocument.filePath : selectedDocument.filePath}
+                                            src={selectedDocument.filePath} // Already converted to full URL
                                             alt={selectedDocument.fileName}
                                             className="w-full h-full object-contain"
+                                            onError={(e) => {
+                                                console.error('❌ Failed to load image:', selectedDocument.filePath);
+                                                e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><text x="10" y="50">Failed to load</text></svg>';
+                                            }}
                                         />
                                     ) : (
                                         <iframe
-                                            src={selectedDocument.filePath.startsWith('http') ? selectedDocument.filePath : selectedDocument.filePath}
+                                            src={selectedDocument.filePath} // Already converted to full URL
                                             className="w-full h-full"
                                             title={selectedDocument.fileName}
+                                            onError={(e) => {
+                                                console.error('❌ Failed to load document in iframe:', selectedDocument.filePath);
+                                            }}
                                         />
                                     )}
+                                </div>
+                            )}
+                            {!selectedDocument.filePath && (
+                                <div className="text-center text-gray-500 py-8">
+                                    <p>Document preview not available</p>
                                 </div>
                             )}
                         </div>
@@ -709,6 +784,21 @@ const ApplicationReview = () => {
                                 {/* Action Buttons */}
                                 <div className="flex space-x-3">
                                     <button
+                                        onClick={async () => {
+                                            console.log('🔄 Manually refreshing application details...');
+                                            await fetchApplicationDetails(selectedApplication.applicationId);
+                                            await fetchApplications();
+                                            showSuccess('✅ Application data refreshed!');
+                                        }}
+                                        className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                                        title="Refresh to see latest document updates"
+                                    >
+                                        <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                        </svg>
+                                        Refresh
+                                    </button>
+                                    <button
                                         onClick={handleGeneratePDF}
                                         className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                                     >
@@ -741,7 +831,11 @@ const ApplicationReview = () => {
                                                 size: doc.fileSize,
                                                 type: doc.mimeType,
                                                 url: doc.filePath || doc.url,
-                                                publicId: doc.cloudinaryPublicId
+                                                publicId: doc.cloudinaryPublicId,
+                                                status: doc.status, // Add actual database status
+                                                uploadedAt: doc.uploadedAt,
+                                                reviewedAt: doc.reviewedAt,
+                                                remarks: doc.remarks
                                             }))
                                             : Object.entries(selectedApplication.documents).map(([docType, d]) => ({
                                                 key: docType,
@@ -752,17 +846,32 @@ const ApplicationReview = () => {
                                                 url: d.downloadUrl || d.filePath || d.url,
                                                 publicId: d.cloudinaryPublicId
                                             }))
-                                        ).map((item) => {
+                                                        ).map((item) => {
                                             const docStatus = documentDecisions[item.documentType]?.decision || 'pending';
                                             const docRemarks = documentDecisions[item.documentType]?.remarks || '';
                                             const label = formatDocumentLabel(item.documentType, item.name, item.publicId);
+                                            const documentUrl = getDocumentUrl(item.url);
+                                            
+                                            // Use actual database status for display
+                                            const actualStatus = item.status || 'PENDING';
+                                            const isApproved = actualStatus === 'APPROVED';
+                                            const isRejected = actualStatus === 'REJECTED';
+                                            const isPending = actualStatus === 'PENDING';
 
                                             return (
-                                                <div key={item.key} className="flex flex-col p-4 border border-gray-200 dark:border-gray-600 rounded-lg">
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center space-x-3">
-                                                            <DocumentIcon className="h-8 w-8 text-blue-600" />
-                                                            <div>
+                                                <div key={item.key} className={`flex flex-col p-4 border rounded-lg ${
+                                                    isRejected ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30' :
+                                                    isApproved ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30' :
+                                                    'border-gray-200 dark:border-gray-600'
+                                                }`}>
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="flex items-center space-x-3 flex-1">
+                                                            <DocumentIcon className={`h-8 w-8 ${
+                                                                isApproved ? 'text-green-600' :
+                                                                isRejected ? 'text-red-600' :
+                                                                'text-blue-600'
+                                                            }`} />
+                                                            <div className="flex-1">
                                                                 <p className="font-medium text-gray-900 dark:text-gray-100">
                                                                     {label}
                                                                 </p>
@@ -772,38 +881,91 @@ const ApplicationReview = () => {
                                                                 <p className="text-xs text-gray-500">
                                                                     {item.size ? `${(item.size / 1024).toFixed(1)} KB` : ''} {item.type ? `• ${item.type}` : ''}
                                                                 </p>
-                                                                <span className={`inline-block px-2 py-1 text-xs rounded-full mt-1 ${docStatus === 'approve' ? 'bg-green-100 text-green-800' : docStatus === 'reject' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                                                                    {docStatus === 'approve' ? 'APPROVED' : docStatus === 'reject' ? 'REJECTED' : 'PENDING'}
-                                                                </span>
+                                                                
+                                                                {/* Upload timestamp */}
+                                                                {item.uploadedAt && (
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                        📅 Uploaded: {new Date(item.uploadedAt).toLocaleString()}
+                                                                    </p>
+                                                                )}
+                                                                
+                                                                {/* Current database status badge - PROMINENT */}
+                                                                <div className="mt-2">
+                                                                    <span className={`inline-block px-3 py-1.5 text-xs font-bold uppercase tracking-wide rounded-lg shadow-sm ${
+                                                                        isApproved ? 'bg-green-500 text-white' :
+                                                                        isRejected ? 'bg-red-500 text-white' :
+                                                                        'bg-yellow-500 text-white'
+                                                                    }`}>
+                                                                        {isApproved ? '✓ APPROVED' : isRejected ? '✗ REJECTED' : '⏳ PENDING'}
+                                                                    </span>
+                                                                    {item.reviewedAt && (
+                                                                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                                                                            • Reviewed: {new Date(item.reviewedAt).toLocaleDateString()}
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                                
+                                                                {/* Existing remarks from database */}
+                                                                {item.remarks && (
+                                                                    <div className={`mt-2 p-2 rounded text-xs ${
+                                                                        isRejected ? 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300' :
+                                                                        isApproved ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' :
+                                                                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300'
+                                                                    }`}>
+                                                                        <strong>
+                                                                            {isRejected ? '⚠️ Previous Rejection: ' :
+                                                                             isApproved ? '✓ Approval Note: ' :
+                                                                             'Review Note: '}
+                                                                        </strong>
+                                                                        {item.remarks}
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center space-x-2">
                                                             <button
-                                                                onClick={() => handleDocumentView({
-                                                                    documentType: label,
-                                                                    fileName: item.name,
-                                                                    filePath: item.url,
-                                                                    mimeType: item.type
-                                                                })}
+                                                                onClick={() => {
+                                                                    const fullUrl = getDocumentUrl(item.url);
+                                                                    console.log('👁️ Previewing document:', {
+                                                                        label,
+                                                                        originalUrl: item.url,
+                                                                        fullUrl: fullUrl,
+                                                                        fileName: item.name,
+                                                                        mimeType: item.type
+                                                                    });
+                                                                    handleDocumentView({
+                                                                        documentType: label,
+                                                                        fileName: item.name,
+                                                                        filePath: fullUrl, // Use full URL
+                                                                        mimeType: item.type
+                                                                    });
+                                                                }}
                                                                 className="flex items-center px-3 py-1 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                                                                title="Preview document in modal"
                                                             >
                                                                 <EyeIcon className="h-4 w-4 mr-1" />
                                                                 Preview
                                                             </button>
                                                             <button
                                                                 onClick={() => {
-                                                                    if (item.url) {
-                                                                        window.open(item.url, '_blank', 'noopener,noreferrer');
+                                                                    const fullUrl = getDocumentUrl(item.url);
+                                                                    console.log('📄 Opening document in new tab:', {
+                                                                        label,
+                                                                        originalUrl: item.url,
+                                                                        fullUrl: fullUrl,
+                                                                        documentUrl: documentUrl,
+                                                                        mimeType: item.type
+                                                                    });
+                                                                    
+                                                                    if (fullUrl) {
+                                                                        window.open(fullUrl, '_blank', 'noopener,noreferrer');
                                                                     } else {
-                                                                        handleDocumentView({
-                                                                            documentType: label,
-                                                                            fileName: item.name,
-                                                                            filePath: item.url,
-                                                                            mimeType: item.type
-                                                                        });
+                                                                        showError('Document URL not available');
+                                                                        console.error('❌ Unable to construct document URL from:', item.url);
                                                                     }
                                                                 }}
                                                                 className="flex items-center px-3 py-1 text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                                title="Open document in new tab"
                                                             >
                                                                 <EyeIcon className="h-4 w-4 mr-1" />
                                                                 View
@@ -811,7 +973,8 @@ const ApplicationReview = () => {
                                                             {docStatus !== 'approve' && (
                                                                 <button
                                                                     onClick={() => handleDocumentDecision(item.documentType, 'approve')}
-                                                                    className="flex items-center px-3 py-1 text-green-600 hover:text-green-800 dark:text-green-400"
+                                                                    className="flex items-center px-3 py-1 text-green-600 hover:text-green-800 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 rounded transition-colors"
+                                                                    title="Click to mark for approval"
                                                                 >
                                                                     <CheckCircleIcon className="h-4 w-4 mr-1" />
                                                                     Approve
@@ -819,8 +982,19 @@ const ApplicationReview = () => {
                                                             )}
                                                             {docStatus !== 'reject' && (
                                                                 <button
-                                                                    onClick={() => handleDocumentDecision(item.documentType, 'reject')}
-                                                                    className="flex items-center px-3 py-1 text-red-600 hover:text-red-800 dark:text-red-400"
+                                                                    onClick={() => {
+                                                                        handleDocumentDecision(item.documentType, 'reject');
+                                                                        // Scroll to remarks field after clicking reject
+                                                                        setTimeout(() => {
+                                                                            const remarksField = document.querySelector(`textarea[placeholder*="rejection"]`);
+                                                                            if (remarksField) {
+                                                                                remarksField.focus();
+                                                                                remarksField.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                                                                            }
+                                                                        }, 100);
+                                                                    }}
+                                                                    className="flex items-center px-3 py-1 text-red-600 hover:text-red-800 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                                                                    title="Click to mark for rejection - then add remarks below"
                                                                 >
                                                                     <XCircleIcon className="h-4 w-4 mr-1" />
                                                                     Reject
@@ -880,7 +1054,7 @@ const ApplicationReview = () => {
                                             </div>
                                             <div className="flex items-center space-x-2">
                                                 <button
-                                                    onClick={() => window.open(selectedApplication.applicationPdfUrl, '_blank')}
+                                                    onClick={() => window.open(getDocumentUrl(selectedApplication.applicationPdfUrl), '_blank')}
                                                     className="flex items-center px-3 py-1 text-purple-600 hover:text-purple-800 dark:text-purple-400"
                                                 >
                                                     <EyeIcon className="h-4 w-4 mr-1" />
@@ -889,7 +1063,7 @@ const ApplicationReview = () => {
                                                 <button
                                                     onClick={() => {
                                                         const link = document.createElement('a');
-                                                        link.href = selectedApplication.applicationPdfUrl;
+                                                        link.href = getDocumentUrl(selectedApplication.applicationPdfUrl);
                                                         link.download = `application-${selectedApplication.personalDetails?.fullName || 'form'}.pdf`;
                                                         link.click();
                                                     }}
@@ -972,9 +1146,23 @@ const ApplicationReview = () => {
                                                     <button
                                                         onClick={handleBulkDocumentVerification}
                                                         disabled={verifying || Object.keys(documentDecisions).length === 0}
-                                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+                                                        title={Object.keys(documentDecisions).length === 0 ? 'Review at least one document first' : 'Click to save all document reviews to database'}
                                                     >
-                                                        {verifying ? 'Processing...' : 'Submit Document Reviews'}
+                                                        {verifying ? (
+                                                            <span className="flex items-center">
+                                                                <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                                </svg>
+                                                                Saving Reviews...
+                                                            </span>
+                                                        ) : (
+                                                            <span className="flex items-center">
+                                                                <CheckBadgeIcon className="h-5 w-5 mr-2" />
+                                                                Submit Document Reviews ({Object.keys(documentDecisions).length})
+                                                            </span>
+                                                        )}
                                                     </button>
                                                 </div>
                                             </div>

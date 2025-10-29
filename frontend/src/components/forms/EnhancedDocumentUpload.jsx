@@ -87,7 +87,7 @@ const EnhancedDocumentUpload = ({
                     type: uploaded?.mimeType || file.type,
                     mimeType: uploaded?.mimeType || file.type,
                     uploadedAt: new Date().toISOString(),
-                    status: 'uploaded',
+                    status: 'PENDING', // Valid enum: PENDING, APPROVED, REJECTED
                     downloadUrl: uploaded?.downloadUrl || uploaded?.filePath,
                     url: uploaded?.downloadUrl || uploaded?.filePath,
                     filePath: uploaded?.downloadUrl || uploaded?.filePath,
@@ -203,7 +203,7 @@ const EnhancedDocumentUpload = ({
                                 {docInfo.label}
                                 {isRequired && <span className="text-red-500 ml-1">*</span>}
                             </h3>
-                            {status === 'uploaded' && (
+                            {(status === 'uploaded' || (documents[docType]?.url || documents[docType]?.filePath || documents[docType]?.downloadUrl)) && (
                                 <CheckCircleIcon className="h-5 w-5 text-green-500" />
                             )}
                         </div>
@@ -260,7 +260,7 @@ const EnhancedDocumentUpload = ({
 
                     {!disabled && (
                         <div className="ml-4">
-                            {status === 'uploaded' ? (
+                            {(status === 'uploaded' || (documents[docType]?.url || documents[docType]?.filePath || documents[docType]?.downloadUrl)) ? (
                                 <button
                                     onClick={() => handleFileRemove(docType)}
                                     className="px-3 py-1 text-sm text-red-600 hover:text-red-800 border border-red-300 rounded"

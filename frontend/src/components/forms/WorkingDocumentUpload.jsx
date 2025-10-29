@@ -132,7 +132,7 @@ const WorkingDocumentUpload = ({
                 fileSize: file.size,
                 fileType: file.type,
                 uploadedAt: new Date().toISOString(),
-                status: 'uploaded',
+                status: 'PENDING', // Valid enum: PENDING, APPROVED, REJECTED
                 url: URL.createObjectURL(file) // For preview
             };
 
@@ -161,7 +161,8 @@ const WorkingDocumentUpload = ({
     const getDocumentStatus = (documentType) => {
         const doc = documents[documentType];
         if (!doc) return 'missing';
-        if (doc.status === 'uploaded') return 'uploaded';
+        // Check if document is uploaded (has URL/filePath, regardless of review status)
+        if (doc.url || doc.filePath || doc.downloadUrl) return 'uploaded';
         return 'pending';
     };
 
@@ -336,7 +337,7 @@ const WorkingDocumentUpload = ({
                                                     fileSize: customDocumentFile.size,
                                                     fileType: customDocumentFile.type,
                                                     uploadedAt: new Date().toISOString(),
-                                                    status: 'uploaded',
+                                                    status: 'PENDING', // Valid enum: PENDING, APPROVED, REJECTED
                                                     url: URL.createObjectURL(customDocumentFile)
                                                 };
                                                 setCustomDocuments(prev => [...prev, newDoc]);

@@ -4,6 +4,14 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Configure multer for file uploads
 const storage = multer.diskStorage({
@@ -99,23 +107,55 @@ const uploadDocument = async (req, res) => {
                 }
             }
 
-            // Generate public URL (relative path)
-            const publicUrl = `/uploads/documents/${file.filename}`;
+            // Find and delete old Cloudinary document if it exists
+            application.documents = application.documents || [];
+            const oldDocument = application.documents.find(doc => doc.documentType === documentType);
+            if (oldDocument && oldDocument.cloudinaryPublicId) {
+                console.log('🗑️ Deleting old Cloudinary document:', oldDocument.cloudinaryPublicId);
+                try {
+                    await cloudinary.uploader.destroy(oldDocument.cloudinaryPublicId);
+                    console.log('✅ Old document deleted from Cloudinary');
+                } catch (deleteError) {
+                    console.warn('⚠️ Failed to delete old Cloudinary document:', deleteError.message);
+                }
+            }
 
-            // Add document to application
+            // Upload to Cloudinary
+            console.log('☁️ Uploading to Cloudinary...');
+            let cloudinaryResult;
+            try {
+                cloudinaryResult = await cloudinary.uploader.upload(file.path, {
+                    folder: `swagat-odisha/documents/${application.applicationId}`,
+                    resource_type: 'auto', // Supports images and PDFs
+                    public_id: `${documentType.replace(/\s+/g, '_')}_${Date.now()}`
+                });
+                console.log('✅ Uploaded to Cloudinary:', cloudinaryResult.secure_url);
+                
+                // Delete local file after successful Cloudinary upload
+                fs.unlinkSync(file.path);
+            } catch (cloudinaryError) {
+                console.error('❌ Cloudinary upload failed:', cloudinaryError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to upload document to cloud storage',
+                    error: cloudinaryError.message
+                });
+            }
+
+            // Add document to application with Cloudinary data
             const documentData = {
                 documentType: documentType,
                 fileName: file.originalname,
-                filePath: publicUrl,
-                storageType: 'local',
-                fileSize: file.size,
+                filePath: cloudinaryResult.secure_url,
+                storageType: 'cloudinary',
+                cloudinaryPublicId: cloudinaryResult.public_id,
+                fileSize: cloudinaryResult.bytes || file.size,
                 mimeType: file.mimetype,
                 status: 'PENDING',
                 uploadedAt: new Date()
             };
 
-            // Remove existing document of same type if exists
-            application.documents = application.documents || [];
+            // Remove existing document of same type
             const beforeCount = application.documents.length;
             application.documents = application.documents.filter(
                 doc => doc.documentType !== documentType
@@ -129,11 +169,17 @@ const uploadDocument = async (req, res) => {
 
             return res.status(201).json({
                 success: true,
-                message: 'Document uploaded successfully',
+                message: 'Document uploaded successfully to cloud storage',
                 data: {
-                    url: publicUrl,
+                    url: cloudinaryResult.secure_url,
+                    filePath: cloudinaryResult.secure_url,
                     fileName: file.originalname,
-                    documentType: documentType
+                    documentType: documentType,
+                    fileSize: cloudinaryResult.bytes || file.size,
+                    mimeType: file.mimetype,
+                    status: 'PENDING',
+                    cloudinaryPublicId: cloudinaryResult.public_id,
+                    storageType: 'cloudinary'
                 }
             });
         }
