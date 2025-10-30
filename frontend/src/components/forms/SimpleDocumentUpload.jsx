@@ -45,7 +45,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             description: 'Recent passport size photograph',
             isRequired: true,
             allowedFormats: ['jpg', 'jpeg', 'png'],
-            maxSize: '2MB',
+            maxSize: '10MB',
             instructions: 'Photo should be clear and recent'
         },
         {
@@ -54,7 +54,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             description: 'Front and back of Aadhar card',
             isRequired: true,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: '5MB',
+            maxSize: '10MB',
             instructions: 'Both sides of the card'
         },
         {
@@ -63,7 +63,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             description: 'Caste certificate for reservation',
             isRequired: true,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: '5MB',
+            maxSize: '10MB',
             instructions: 'Caste certificate not older than 5 years'
         },
         {
@@ -72,7 +72,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             description: 'Family income certificate',
             isRequired: true,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: '5MB',
+            maxSize: '10MB',
             instructions: 'Income certificate not older than 1 year'
         },
         {
@@ -81,7 +81,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             description: 'Class 10th marksheet',
             isRequired: true,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: '5MB',
+            maxSize: '10MB',
             instructions: 'All pages of marksheet'
         },
         {
@@ -90,7 +90,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             description: 'Resident/Domicile certificate',
             isRequired: false,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: '5MB',
+            maxSize: '10MB',
             instructions: 'Certificate of residence/domicile'
         },
         {
@@ -99,7 +99,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             description: 'Transfer certificate from previous institution',
             isRequired: false,
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: '5MB',
+            maxSize: '10MB',
             instructions: 'If available'
         }
     ];
@@ -139,7 +139,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                 timeout: 30000, // 30 second timeout
                 onUploadProgress: (progressEvent) => {
                     const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    // You can add progress tracking here if needed
+                    console.log(`📤 Upload progress: ${percentCompleted}%`);
                 }
             });
 
@@ -167,14 +167,14 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                     ...prev,
                     [documentType]: fileObject
                 };
-                
+
                 console.log(`📄 Document uploaded: ${documentType}`, fileObject);
                 console.log('📄 Updated documents state:', newDocs);
                 console.log('📄 Document count:', Object.keys(newDocs).length);
-                
+
                 // Notify parent with the updated documents
                 onDocumentsChange(newDocs);
-                
+
                 return newDocs;
             });
 
@@ -190,10 +190,10 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         setDocuments(prev => {
             const newDocs = { ...prev };
             delete newDocs[documentType];
-            
+
             // Notify parent with the updated documents
             onDocumentsChange(newDocs);
-            
+
             return newDocs;
         });
     };
@@ -260,9 +260,9 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
     // Render uploaded documents section (always show if there are any)
     const renderUploadedDocuments = () => {
         const hasUploadedDocuments = Object.keys(documents).length > 0;
-        
+
         if (!hasUploadedDocuments) return null;
-        
+
         return (
             <div className="space-y-4 mb-8">
                 <div className="text-center mb-4">
@@ -279,7 +279,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                         const docName = docType?.name || docType?.label || docId.replace(/_/g, ' ').toUpperCase();
                         const fileName = doc.name || doc.fileName;
                         const fileSize = (doc.size / 1024).toFixed(1);
-                        
+
                         return (
                             <div key={docId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center space-x-3">
@@ -290,9 +290,9 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-3">
-                                    <a 
-                                        href={doc.downloadUrl || doc.filePath || '#'} 
-                                        target="_blank" 
+                                    <a
+                                        href={doc.downloadUrl || doc.filePath || '#'}
+                                        target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium underline"
                                     >
@@ -318,7 +318,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         <div className="space-y-6">
             {/* Show uploaded documents section */}
             {renderUploadedDocuments()}
-            
+
             <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Document Upload</h3>
                 <p className="text-gray-600 dark:text-gray-400 mt-2">
@@ -334,9 +334,8 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                     const isUploading = uploading[docId];
 
                     return (
-                        <div key={docId} className={`border rounded-lg p-4 ${
-                            document ? 'border-green-300 bg-green-50 dark:bg-green-900/10 dark:border-green-700' : 'border-gray-200 dark:border-gray-700'
-                        }`}>
+                        <div key={docId} className={`border rounded-lg p-4 ${document ? 'border-green-300 bg-green-50 dark:bg-green-900/10 dark:border-green-700' : 'border-gray-200 dark:border-gray-700'
+                            }`}>
                             <div className="flex items-start justify-between mb-3">
                                 <div className="flex-1">
                                     <div className="flex items-center justify-between">

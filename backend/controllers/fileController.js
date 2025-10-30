@@ -28,7 +28,7 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
         const category = getFileCategory(mimetype);
         const uniqueFileName = generateUniqueFileName(originalname);
 
-        // Upload to Cloudinary
+        // Upload to Cloudinary with compression and optimization settings
         const cloudinaryResult = await new Promise((resolve, reject) => {
             cloudinary.uploader.upload_stream(
                 {
@@ -37,6 +37,14 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
                     folder: 'swagat-odisha',
                     use_filename: true,
                     unique_filename: true,
+                    transformation: [
+                        { quality: 'auto:good' }, // Cloudinary's auto quality optimization
+                        { fetch_format: 'auto' },  // Auto-optimize format
+                        { flags: 'progressive' }   // Progressive JPEG for images
+                    ],
+                    eager: [
+                        { quality: 'auto:good', fetch_format: 'auto' }
+                    ]
                 },
                 (error, result) => {
                     if (error) reject(error);
@@ -63,7 +71,7 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
                 cloudinaryVersion: cloudinaryResult.version,
                 cloudinaryFormat: cloudinaryResult.format,
                 cloudinaryWidth: cloudinaryResult.width,
-                cloudinaryHeight: cloudinaryResult.height,
+                cloudinaryHeight: cloudinaryResult.height
             }
         };
 
@@ -120,7 +128,7 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
             const category = getFileCategory(mimetype);
             const uniqueFileName = generateUniqueFileName(originalname);
 
-            // Upload to Cloudinary with minimal settings for speed
+            // Upload to Cloudinary with compression and optimization settings
             const cloudinaryResult = await new Promise((resolve, reject) => {
                 cloudinary.uploader.upload_stream(
                     {
@@ -128,13 +136,21 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
                         public_id: `swagat-odisha/${category}/${uniqueFileName}`,
                         folder: 'swagat-odisha',
                         use_filename: true,
-                        unique_filename: true
+                        unique_filename: true,
+                        transformation: [
+                            { quality: 'auto:good' }, // Cloudinary's auto quality optimization
+                            { fetch_format: 'auto' },  // Auto-optimize format
+                            { flags: 'progressive' }   // Progressive JPEG for images
+                        ],
+                        eager: [
+                            { quality: 'auto:good', fetch_format: 'auto' }
+                        ]
                     },
                     (error, result) => {
                         if (error) reject(error);
                         else resolve(result);
                     }
-                ).end(buffer); // Use original buffer directly
+                ).end(buffer); // Use original buffer - Cloudinary will optimize
             });
 
             // Prepare file data
@@ -143,7 +159,7 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
                 fileName: uniqueFileName,
                 filePath: cloudinaryResult.secure_url,
                 fileUrl: cloudinaryResult.secure_url,
-                fileSize: size,
+                fileSize: size, // Store original size
                 mimeType: mimetype,
                 category: category,
                 storageType: 'cloudinary',
@@ -158,7 +174,7 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
                     cloudinaryVersion: cloudinaryResult.version,
                     cloudinaryFormat: cloudinaryResult.format,
                     cloudinaryWidth: cloudinaryResult.width,
-                    cloudinaryHeight: cloudinaryResult.height,
+                    cloudinaryHeight: cloudinaryResult.height
                 }
             };
 

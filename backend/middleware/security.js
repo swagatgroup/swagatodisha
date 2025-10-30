@@ -50,7 +50,7 @@ const authRateLimit = createRateLimit(
 
 const uploadRateLimit = createRateLimit(
     60 * 60 * 1000, // 1 hour
-    20, // 20 uploads per hour
+    1000, // 1000 uploads per hour (increased for high-volume agents doing 200+ applications/day)
     'Upload limit exceeded, please try again later'
 );
 
