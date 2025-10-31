@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSession } from '../../contexts/SessionContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
 import StudentManagement from '../admin/StudentManagement';
+import RecentStudentsTable from './components/RecentStudentsTable';
 import ErrorBoundary from '../common/ErrorBoundary';
 // RealTimeStudentTracking removed - Socket.IO component
 // WebsiteManagementSystem removed - Socket.IO component
@@ -27,8 +29,6 @@ const SuperAdminDashboard = () => {
     const { selectedSession } = useSession();
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
     const [loading, setLoading] = useState(true);
-    const [students, setStudents] = useState([]);
-    const [categoryCounts, setCategoryCounts] = useState({ A: 0, B1: 0, B2: 0, B3: 0, B4: 0, C1: 0, C2: 0, C3: 0 });
     const [stats, setStats] = useState({
         totalStudents: 0,
         totalAgents: 0,
@@ -107,24 +107,10 @@ const SuperAdminDashboard = () => {
         const fetchAdminData = async (session = selectedSession) => {
             try {
                 setLoading(true);
-                const [statsRes, studentsRes] = await Promise.all([
-                    api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(session)}`),
-                    api.get(`/api/admin/students?limit=100&session=${encodeURIComponent(session)}`)
-                ]);
+                const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(session)}`);
 
                 if (statsRes.data?.success) {
                     setStats(statsRes.data.data);
-                }
-
-                if (studentsRes.data?.success) {
-                    const list = studentsRes.data.data.students || studentsRes.data.data || [];
-                    setStudents(list);
-                    const counts = { A: 0, B1: 0, B2: 0, B3: 0, B4: 0, C1: 0, C2: 0, C3: 0 };
-                    list.forEach(s => {
-                        const cat = s.registrationCategory || 'A';
-                        if (counts[cat] !== undefined) counts[cat] += 1;
-                    });
-                    setCategoryCounts(counts);
                 }
             } catch (error) {
                 console.error('Error fetching admin data:', error);
@@ -135,11 +121,6 @@ const SuperAdminDashboard = () => {
 
         fetchAdminData(selectedSession);
     }, [selectedSession]);
-
-    const handleStudentUpdate = () => {
-        // Refresh the dashboard data when a student is updated
-        fetchAdminData(selectedSession);
-    };
 
 
     const renderSidebarContent = () => {
@@ -211,99 +192,20 @@ const SuperAdminDashboard = () => {
                             </div>
                         </div>
 
-                        {/* Category Breakdown */}
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Registration Categories</h3>
-                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
-                                {[
-                                    { key: 'A', label: 'A - Direct' },
-                                    { key: 'B1', label: 'B1 - Student Ref' },
-                                    { key: 'B2', label: 'B2 - Agent Ref' },
-                                    { key: 'B3', label: 'B3 - Staff Ref' },
-                                    { key: 'B4', label: 'B4 - SA Ref' },
-                                    { key: 'C1', label: 'C1 - Agent Dash' },
-                                    { key: 'C2', label: 'C2 - Staff Dash' },
-                                    { key: 'C3', label: 'C3 - SA Dash' }
-                                ].map(item => (
-                                    <div key={item.key} className="text-center border border-gray-200 dark:border-gray-600 rounded p-3 bg-gray-50 dark:bg-gray-700">
-                                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">{item.label}</div>
-                                        <div className="text-xl font-semibold text-gray-900 dark:text-gray-100">{categoryCounts[item.key] || 0}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Students Current Status */}
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                        {/* Recent Students */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="bg-white dark:bg-gray-800 rounded-lg shadow"
+                        >
                             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Students - Current Status</h3>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Students</h3>
                             </div>
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                    <thead className="bg-gray-50 dark:bg-gray-700">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Student</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Category</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Current Stage</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Assigned Agent</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Assigned Staff</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Updated</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                        {Array.isArray(students) ? students.map(s => (
-                                            <tr key={s._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                                <td className="px-6 py-4 text-sm">
-                                                    <div className="font-medium text-gray-900 dark:text-gray-100">{s.personalDetails?.fullName || s.user?.fullName || 'N/A'}</div>
-                                                    <div className="text-gray-500 dark:text-gray-400 text-xs">{s.studentId}</div>
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.registrationCategory || 'A'}</td>
-                                                <td className="px-6 py-4 text-sm">
-                                                    <span className="inline-flex px-2 py-1 text-xs rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">{s.workflowStatus?.currentStage || 'N/A'}</span>
-                                                </td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.workflowStatus?.assignedAgent?.fullName || '—'}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">{s.workflowStatus?.assignedStaff?.fullName || '—'}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{s.updatedAt ? new Date(s.updatedAt).toLocaleDateString() : '—'}</td>
-                                            </tr>
-                                        )) : (
-                                            <tr>
-                                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                                                    No students found
-                                                </td>
-                                            </tr>
-                                        )}
-                                    </tbody>
-                                </table>
+                            <div className="p-6">
+                                <RecentStudentsTable />
                             </div>
-                        </div>
-
-                        {/* Recent Activity */}
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Recent Activity</h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                    <div>
-                                        <h5 className="font-medium text-gray-900 dark:text-gray-100">New Student Registration</h5>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">Rahul Kumar registered for Class 12 Science</p>
-                                    </div>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">2 hours ago</span>
-                                </div>
-                                <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                    <div>
-                                        <h5 className="font-medium text-gray-900 dark:text-gray-100">Agent Performance Update</h5>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">Priya Sharma completed 5 successful referrals</p>
-                                    </div>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">4 hours ago</span>
-                                </div>
-                                <div className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700">
-                                    <div>
-                                        <h5 className="font-medium text-gray-900 dark:text-gray-100">Staff Login</h5>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">Dr. Amit Singh logged in</p>
-                                    </div>
-                                    <span className="text-xs text-gray-500 dark:text-gray-400">6 hours ago</span>
-                                </div>
-                            </div>
-                        </div>
+                        </motion.div>
                     </div>
                 );
             case 'students':
