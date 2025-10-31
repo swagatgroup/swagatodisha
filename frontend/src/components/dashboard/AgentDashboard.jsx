@@ -98,7 +98,14 @@ const EnhancedAgentDashboard = () => {
         setLoading(true);
       }
       const [studentsRes, statsRes, applicationsRes] = await Promise.all([
-        api.get("/api/agents/my-students"),
+        api.get("/api/agents/my-students", {
+          params: {
+            page: 1,
+            limit: 1000, // Get all students (increase limit to show all submissions)
+            sortBy: 'createdAt',
+            sortOrder: 'desc'
+          }
+        }),
         api.get("/api/agents/stats"),
         api.get("/api/agents/my-submitted-applications"),
       ]);
