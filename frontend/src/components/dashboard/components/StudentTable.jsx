@@ -6,7 +6,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [categoryFilter, setCategoryFilter] = useState('all');
-    
+
     // Debug logging for student data
     console.log('📋 StudentTable received students:', students);
     if (students && students.length > 0) {
@@ -28,7 +28,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
     const getStatusColor = (status) => {
         // Handle both uppercase and lowercase status values
         const normalizedStatus = typeof status === 'string' ? status.toLowerCase() : 'unknown';
-        
+
         switch (normalizedStatus) {
             case 'completed':
             case 'approved':
@@ -49,7 +49,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
     const getStatusText = (status) => {
         // Handle both uppercase and lowercase status values
         const normalizedStatus = typeof status === 'string' ? status.toLowerCase() : 'unknown';
-        
+
         switch (normalizedStatus) {
             case 'completed':
                 return 'Complete';
@@ -113,15 +113,6 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
         return 0;
     });
 
-    const maskAadhaar = (aadhaar) => {
-        if (!aadhaar) return '';
-        return aadhaar.replace(/(\d{4})\d{4}(\d{4})/, '$1****$2');
-    };
-
-    const maskPhone = (phone) => {
-        if (!phone) return '';
-        return phone.replace(/(\d{3})\d{4}(\d{3})/, '$1****$2');
-    };
 
     return (
         <div className="space-y-4">
@@ -277,9 +268,6 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                     <div className="text-sm font-medium text-gray-900">
                                         {student.personalDetails?.fullName || 'N/A'}
                                     </div>
-                                    <div className="text-sm text-gray-500">
-                                        {student.studentId || 'N/A'}
-                                    </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="text-sm text-gray-900">
@@ -287,10 +275,10 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {maskPhone(student.contactDetails?.primaryPhone)}
+                                    {student.contactDetails?.primaryPhone || 'N/A'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    {maskAadhaar(student.personalDetails?.aadharNumber)}
+                                    {student.personalDetails?.aadharNumber || 'N/A'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(student.workflowStatus?.currentStage || student.status)}`}>
