@@ -400,7 +400,7 @@ const StudentDashboard = () => {
 
     if (loading) {
         return (
-            <DashboardLayout title="Student Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
+            <DashboardLayout title="Student Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem} showSessionSelector={false}>
                 <div className="flex items-center justify-center h-64">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
                 </div>
@@ -410,7 +410,7 @@ const StudentDashboard = () => {
 
     return (
         <>
-            <DashboardLayout title="Student Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem}>
+            <DashboardLayout title="Student Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem} showSessionSelector={false}>
                 {renderSidebarContent()}
             </DashboardLayout>
 

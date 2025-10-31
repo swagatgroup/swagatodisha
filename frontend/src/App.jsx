@@ -228,7 +228,9 @@ function App() {
                                 path="/dashboard/student"
                                 element={
                                     <ProtectedRoute allowedRoles={['user', 'student']}>
-                                        <StudentDashboard />
+                                        <SessionProvider>
+                                            <StudentDashboard />
+                                        </SessionProvider>
                                     </ProtectedRoute>
                                 }
                             />
@@ -236,7 +238,9 @@ function App() {
                                 path="/dashboard/agent"
                                 element={
                                     <ProtectedRoute allowedRoles={['agent']}>
-                                        <AgentDashboard />
+                                        <SessionProvider>
+                                            <AgentDashboard />
+                                        </SessionProvider>
                                     </ProtectedRoute>
                                 }
                             />

@@ -118,7 +118,7 @@ const EnhancedAgentDashboard = () => {
       if (statsRes.data.success) {
         console.log('📊 AgentDashboard - Stats response:', statsRes.data.data);
         const statsData = statsRes.data.data;
-        
+
         // Map backend field names to frontend field names
         setStats({
           totalStudents: statsData.total || 0,
@@ -272,6 +272,7 @@ const EnhancedAgentDashboard = () => {
         title="Agent Dashboard"
         sidebarItems={sidebarItems}
         activeItem={activeTab}
+        showSessionSelector={false}
         onItemClick={setActiveTab}
       >
         <div className="flex items-center justify-center h-64">
@@ -286,6 +287,7 @@ const EnhancedAgentDashboard = () => {
       title="Agent Dashboard"
       sidebarItems={sidebarItems}
       activeItem={activeTab}
+      showSessionSelector={false}
       onItemClick={setActiveTab}
     >
       {renderDashboardContent()}
