@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSession } from '../../contexts/SessionContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 // NotificationCenter removed - Socket.IO component
 // RealTimeStatus removed - Socket.IO component
 import DarkModeToggle from '../shared/DarkModeToggle';
 
-const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick }) => {
+const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick, showSessionSelector = true }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const { user, logout } = useAuth();
+    const { selectedSession, setSelectedSession, availableSessions } = useSession();
     const navigate = useNavigate();
     const location = useLocation();
     const userMenuRef = useRef(null);
@@ -106,8 +108,29 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             </div>
                         </div>
 
-                        {/* Right side - User Menu */}
+                        {/* Right side - Session Selector and User Menu */}
                         <div className="flex items-center space-x-4">
+                            {/* Session Selector */}
+                            {showSessionSelector && (
+                                <div className="flex items-center gap-2">
+                                    <label htmlFor="session-selector" className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block">
+                                        Session:
+                                    </label>
+                                    <select
+                                        id="session-selector"
+                                        value={selectedSession}
+                                        onChange={(e) => setSelectedSession(e.target.value)}
+                                        className="px-3 py-1.5 text-sm rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                                    >
+                                        {availableSessions.map(session => (
+                                            <option key={session} value={session} className="bg-gray-800 text-white">
+                                                {session}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
                             {/* Dark Mode Toggle */}
                             <DarkModeToggle />
 

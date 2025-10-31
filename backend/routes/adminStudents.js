@@ -10,15 +10,15 @@ const router = express.Router();
 router.get('/test', async (req, res) => {
     try {
         console.log('🧪 Testing database connection...');
-        
+
         // Test direct collection access
         const totalCount = await StudentApplication.countDocuments({});
         console.log('📊 Total count:', totalCount);
-        
+
         // Get sample documents
         const samples = await StudentApplication.find({}).limit(3).lean();
         console.log('📊 Sample docs:', samples.length);
-        
+
         res.json({
             success: true,
             message: 'Database test',
@@ -46,12 +46,12 @@ router.get('/test', async (req, res) => {
 router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         console.log('👤 Request user:', req.user?.email, 'Role:', req.user?.role);
-        
+
         // Test database connection
         console.log('🔍 Testing MongoDB connection...');
         const dbStatus = await StudentApplication.db.readyState;
         console.log('📊 Database state:', dbStatus === 1 ? 'Connected' : 'Disconnected/Connecting');
-        
+
         const {
             page = 1,
             limit = 20,
@@ -60,12 +60,40 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             course,
             category,
             submitterRole,
+            session: sessionParam,
             sortBy = 'createdAt',
             sortOrder = 'desc'
         } = req.query;
 
         // Build filter query
         const filter = {};
+
+        // SESSION IS REQUIRED - Always filter by session
+        if (!sessionParam) {
+            return res.status(400).json({
+                success: false,
+                message: 'Session parameter is required',
+                error: 'Missing session parameter'
+            });
+        }
+
+        // Add session filter - REQUIRED
+        const { getSessionDateRange } = require('../utils/sessionHelper');
+        try {
+            const { startDate, endDate } = getSessionDateRange(sessionParam);
+            console.log(`📅 Filtering by session ${sessionParam}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+            filter.createdAt = {
+                $gte: startDate,
+                $lte: endDate
+            };
+        } catch (error) {
+            console.error('❌ Session date range error:', error);
+            return res.status(400).json({
+                success: false,
+                message: `Invalid session format: ${error.message}`,
+                error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+            });
+        }
 
         // Search functionality
         if (search) {
@@ -104,7 +132,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Debug filter
         console.log('🔍 Query filter:', JSON.stringify(filter, null, 2));
-        
+
         // Execute query with pagination
         const applications = await StudentApplication.find(filter)
             .populate('user', 'firstName lastName email phoneNumber')
@@ -114,28 +142,28 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             .limit(limit * 1)
             .skip((page - 1) * limit)
             .exec();
-            
+
         console.log(`📊 Found ${applications.length} applications`);;
 
         // Get total count for pagination
         const total = await StudentApplication.countDocuments(filter);
         const totalInCollection = await StudentApplication.countDocuments({});
-        
+
         console.log(`📊 Total with filter: ${total}, Total in collection: ${totalInCollection}`);
-        
+
         // Debug: Check first few documents to verify structure
         if (totalInCollection > 0) {
             const sampleDocs = await StudentApplication.find({}).limit(2).lean();
             console.log('📊 Sample documents:', JSON.stringify(sampleDocs, null, 2));
         }
-        
+
         // Get filter options with error handling
         let filterOptions = {
             statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
             courses: [],
             categories: []
         };
-        
+
         try {
             filterOptions.courses = await StudentApplication.distinct('courseDetails.selectedCourse');
             filterOptions.categories = await StudentApplication.distinct('personalDetails.status');
@@ -159,7 +187,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             guardianName: app.guardianDetails?.guardianName || 'N/A',
             guardianPhone: app.guardianDetails?.guardianPhone || 'N/A',
             referralCode: app.referralInfo?.referralCode || 'N/A',
-            referredBy: app.submittedBy ? 
+            referredBy: app.submittedBy ?
                 `${app.submittedBy.firstName || ''} ${app.submittedBy.lastName || ''}`.trim() || 'Unknown' : 'Direct',
             submitterRole: app.submitterRole || 'student',
             documentsCount: app.documents?.length || 0,
@@ -373,12 +401,12 @@ router.get('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 // @access  Private - Staff/Super Admin only
 router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
-        const { 
-            status, 
-            notes, 
-            rejectionReason, 
-            rejectionMessage, 
-            rejectionDetails = [] 
+        const {
+            status,
+            notes,
+            rejectionReason,
+            rejectionMessage,
+            rejectionDetails = []
         } = req.body;
 
         if (!status || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status)) {
@@ -453,7 +481,7 @@ router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req
         // Handle other status updates
         application.status = status;
         application.currentStage = status;
-        
+
         if (notes) {
             if (!application.adminNotes) {
                 application.adminNotes = [];
@@ -735,7 +763,7 @@ router.post('/:id/resubmit', protect, async (req, res) => {
         application.status = 'SUBMITTED';
         application.currentStage = 'SUBMITTED';
         application.submittedAt = new Date();
-        
+
         // Add resubmission note
         if (!application.adminNotes) {
             application.adminNotes = [];

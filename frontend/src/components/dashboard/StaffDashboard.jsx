@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSession } from '../../contexts/SessionContext';
 import DashboardLayout from './DashboardLayout';
 import StudentRegistration from './tabs/StudentRegistration';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
@@ -10,19 +11,21 @@ import ApplicationReview from './tabs/ApplicationReview';
 import StudentTable from './components/StudentTable';
 import ProcessingStats from './components/ProcessingStats';
 import StudentManagement from '../admin/StudentManagement';
+import RecentStudentsTable from './components/RecentStudentsTable';
 import api from '../../utils/api';
 
 const EnhancedStaffDashboard = () => {
     const { user } = useAuth();
+    const { selectedSession } = useSession();
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('dashboard');
     const [students, setStudents] = useState([]);
     const [processingStats, setProcessingStats] = useState({
         totalStudents: 0,
         pendingVerification: 0,
-        approvedToday: 0,
-        rejectedToday: 0,
-        averageProcessingTime: 0
+        approvedInSession: 0,
+        rejectedInSession: 0,
+        session: 'Current'
     });
     const [agents, setAgents] = useState([]);
 
@@ -65,16 +68,32 @@ const EnhancedStaffDashboard = () => {
         }
     ];
 
-    useEffect(() => {
-        loadDashboardData();
-    }, []);
+    const refreshStats = async (session = selectedSession) => {
+        try {
+            console.log('🔄 Fetching stats for session:', session);
+            const statsRes = await api.get(`/api/staff/processing-stats?session=${encodeURIComponent(session)}`);
+            console.log('📊 Stats API Response:', statsRes.data);
+            if (statsRes.data.success) {
+                console.log('✅ Stats data:', statsRes.data.data);
+                setProcessingStats(statsRes.data.data);
+            } else {
+                console.error('❌ Stats API returned success=false:', statsRes.data);
+            }
+        } catch (error) {
+            console.error('❌ Error refreshing stats:', error);
+            if (error.response) {
+                console.error('Response data:', error.response.data);
+                console.error('Response status:', error.response.status);
+            }
+        }
+    };
 
-    const loadDashboardData = async () => {
+    const loadDashboardData = async (session = selectedSession) => {
         try {
             setLoading(true);
             const [studentsRes, statsRes, agentsRes] = await Promise.all([
-                api.get('/api/staff/students'),
-                api.get('/api/staff/processing-stats'),
+                api.get(`/api/staff/students?session=${encodeURIComponent(session)}`),
+                api.get(`/api/staff/processing-stats?session=${encodeURIComponent(session)}`),
                 api.get('/api/staff/agents')
             ]);
 
@@ -104,7 +123,23 @@ const EnhancedStaffDashboard = () => {
                 student._id === updatedStudent._id ? updatedStudent : student
             );
         });
+
+        // Refresh stats when student is updated
+        refreshStats();
     };
+
+    useEffect(() => {
+        loadDashboardData(selectedSession);
+    }, [selectedSession]);
+
+    // Refresh stats when switching back to dashboard tab
+    useEffect(() => {
+        if (activeTab === 'dashboard') {
+            refreshStats(selectedSession);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab, selectedSession]);
+
 
     const renderDashboardContent = () => {
         switch (activeTab) {
@@ -117,12 +152,14 @@ const EnhancedStaffDashboard = () => {
                             animate={{ opacity: 1, y: 0 }}
                             className="bg-gradient-to-r from-green-600 to-blue-600 rounded-lg p-6 text-white mb-6"
                         >
-                            <h2 className="text-2xl font-bold mb-2">
-                                Welcome back, {user?.fullName}! 👋
-                            </h2>
-                            <p className="text-green-100">
-                                Process student applications, verify documents, and manage academic content.
-                            </p>
+                            <div>
+                                <h2 className="text-2xl font-bold mb-2">
+                                    Welcome back, {user?.fullName}! 👋
+                                </h2>
+                                <p className="text-green-100">
+                                    Process student applications, verify documents, and manage academic content.
+                                </p>
+                            </div>
                         </motion.div>
 
                         {/* Processing Stats */}
@@ -146,10 +183,8 @@ const EnhancedStaffDashboard = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Students</h3>
                             </div>
                             <div className="p-6">
-                                <StudentTable
-                                    students={Array.isArray(students) ? students.slice(0, 10) : []}
+                                <RecentStudentsTable
                                     onStudentUpdate={handleStudentUpdate}
-                                    showActions={true}
                                 />
                             </div>
                         </motion.div>

@@ -6,6 +6,7 @@ const StudentApplication = require("../models/StudentApplication");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 const Document = require("../models/Document");
+const { getSessionDateRange, getCurrentSession } = require("../utils/sessionHelper");
 
 // All routes are protected
 router.use(protect);
@@ -13,9 +14,35 @@ router.use(protect);
 // Get students for staff processing
 router.get("/students", async (req, res) => {
   try {
-    const { page = 1, limit = 20, status, search } = req.query;
+    const { page = 1, limit = 20, status, search, session: sessionParam } = req.query;
+
+    // SESSION IS REQUIRED - Always filter by session
+    if (!sessionParam) {
+      return res.status(400).json({
+        success: false,
+        message: 'Session parameter is required',
+        error: 'Missing session parameter'
+      });
+    }
 
     let query = {};
+
+    // Add session filter - REQUIRED
+    try {
+      const { startDate, endDate } = getSessionDateRange(sessionParam);
+      console.log(`📅 Staff route - Filtering by session ${sessionParam}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+      query.createdAt = {
+        $gte: startDate,
+        $lte: endDate
+      };
+    } catch (error) {
+      console.error('❌ Session date range error:', error);
+      return res.status(400).json({
+        success: false,
+        message: `Invalid session format: ${error.message}`,
+        error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+      });
+    }
 
     if (status && status !== "all") {
       query["workflowStatus.currentStage"] = status;
@@ -24,7 +51,7 @@ router.get("/students", async (req, res) => {
     if (search) {
       query.$or = [
         { "personalDetails.fullName": { $regex: search, $options: "i" } },
-        { studentId: { $regex: search, $options: "i" } },
+        { applicationId: { $regex: search, $options: "i" } },
         { "personalDetails.aadharNumber": { $regex: search, $options: "i" } },
       ];
     }
@@ -64,34 +91,167 @@ router.get("/students", async (req, res) => {
 // Get processing statistics
 router.get("/processing-stats", async (req, res) => {
   try {
-    const totalStudents = await Student.countDocuments();
+    // Get session from query parameter, default to current session
+    const sessionParam = req.query.session || getCurrentSession();
+    console.log('📊 Processing stats requested for session:', sessionParam);
 
-    const pendingVerification = await Student.countDocuments({
-      "workflowStatus.currentStage": "pending_verification",
+    // Get date range for the session
+    let sessionDateRange;
+    try {
+      sessionDateRange = getSessionDateRange(sessionParam);
+    } catch (error) {
+      console.error('❌ Session date range error:', error);
+      return res.status(400).json({
+        success: false,
+        message: `Invalid session format: ${error.message}`,
+        error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+      });
+    }
+
+    const { startDate, endDate } = sessionDateRange;
+    console.log('📅 Session date range:', { startDate, endDate });
+
+    // Base query for session-based filtering
+    const sessionQuery = {
+      createdAt: {
+        $gte: startDate,
+        $lte: endDate
+      }
+    };
+
+    console.log('🔍 Query filter:', JSON.stringify(sessionQuery, null, 2));
+
+    // Total applications/students in this session
+    const totalStudents = await StudentApplication.countDocuments(sessionQuery);
+    console.log('👥 Total students in session:', totalStudents);
+
+    // Also check total without session filter for debugging
+    const totalAllStudents = await StudentApplication.countDocuments({});
+    console.log('👥 Total students (all time):', totalAllStudents);
+
+    // Pending verification - applications that are submitted but not yet approved/rejected (in this session)
+    const pendingVerification = await StudentApplication.countDocuments({
+      ...sessionQuery,
+      $or: [
+        { status: 'SUBMITTED' },
+        { status: 'UNDER_REVIEW' }
+      ]
+    });
+    console.log('⏳ Pending verification:', pendingVerification);
+
+    // Approved in this session - applications approved within session date range
+    const approvedInSession = await StudentApplication.countDocuments({
+      ...sessionQuery,
+      status: 'APPROVED'
+    });
+    console.log('✅ Approved:', approvedInSession);
+
+    // Rejected in this session - applications rejected within session date range
+    const rejectedInSession = await StudentApplication.countDocuments({
+      ...sessionQuery,
+      status: 'REJECTED'
+    });
+    console.log('❌ Rejected:', rejectedInSession);
+
+    // Calculate average processing time from workflow history (for this session)
+    // Get all approved applications with workflow history in this session
+    const approvedApplications = await StudentApplication.find({
+      ...sessionQuery,
+      status: 'APPROVED',
+      'workflowHistory': { $exists: true, $ne: [] },
+      submittedAt: { $exists: true }
+    }).select('submittedAt workflowHistory reviewInfo createdAt');
+
+    let totalProcessingTime = 0;
+    let validApplications = 0;
+
+    approvedApplications.forEach(app => {
+      // Find when application was submitted
+      const submittedAt = app.submittedAt || app.createdAt;
+
+      // Find when application was approved (from reviewInfo or workflowHistory)
+      let approvedAt = null;
+
+      if (app.reviewInfo?.reviewedAt) {
+        approvedAt = app.reviewInfo.reviewedAt;
+      } else if (app.workflowHistory && app.workflowHistory.length > 0) {
+        // Find the APPROVED entry in workflow history
+        const approvedEntry = app.workflowHistory
+          .slice()
+          .reverse()
+          .find(entry => entry.action === 'APPROVE' || entry.stage === 'APPROVED');
+
+        if (approvedEntry && approvedEntry.timestamp) {
+          approvedAt = approvedEntry.timestamp;
+        }
+      }
+
+      // If we have both dates, calculate processing time in hours
+      if (submittedAt && approvedAt) {
+        const timeDiff = approvedAt.getTime() - submittedAt.getTime();
+        const hours = timeDiff / (1000 * 60 * 60); // Convert milliseconds to hours
+
+        // Only count if processing time is reasonable (not negative and less than 1 year)
+        if (hours >= 0 && hours < 8760) {
+          totalProcessingTime += hours;
+          validApplications++;
+        }
+      }
     });
 
-    const approvedToday = await Student.countDocuments({
-      "workflowStatus.currentStage": "approved",
-      "workflowStatus.stageHistory.0.timestamp": {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-      },
-    });
+    // Calculate average processing time (in hours)
+    const averageProcessingTime = validApplications > 0
+      ? Math.round(totalProcessingTime / validApplications)
+      : 0;
 
-    const rejectedToday = await Student.countDocuments({
-      "workflowStatus.currentStage": "rejected",
-      "workflowStatus.stageHistory.0.timestamp": {
-        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
-      },
-    });
+    // If no valid applications, use a default based on recent processing if available
+    let finalAverageProcessingTime = averageProcessingTime;
+
+    if (averageProcessingTime === 0 && approvedApplications.length > 0) {
+      // Fallback: calculate from creation to now for pending applications in this session
+      const recentPending = await StudentApplication.find({
+        ...sessionQuery,
+        status: { $in: ['SUBMITTED', 'UNDER_REVIEW'] },
+        submittedAt: { $exists: true }
+      })
+        .select('submittedAt createdAt')
+        .limit(100);
+
+      if (recentPending.length > 0) {
+        const now = new Date();
+        let totalPendingTime = 0;
+        recentPending.forEach(app => {
+          const submittedAt = app.submittedAt || app.createdAt;
+          if (submittedAt) {
+            const hours = (now.getTime() - submittedAt.getTime()) / (1000 * 60 * 60);
+            if (hours >= 0 && hours < 8760) {
+              totalPendingTime += hours;
+            }
+          }
+        });
+
+        if (recentPending.length > 0) {
+          finalAverageProcessingTime = Math.round(totalPendingTime / recentPending.length);
+        }
+      }
+    }
+
+    // Ensure we have a reasonable default if still 0
+    if (finalAverageProcessingTime === 0) {
+      finalAverageProcessingTime = 24; // Default 24 hours
+    }
 
     res.status(200).json({
       success: true,
       data: {
         totalStudents,
         pendingVerification,
-        approvedToday,
-        rejectedToday,
-        averageProcessingTime: 24, // This would be calculated from actual data
+        approvedInSession,
+        rejectedInSession,
+        averageProcessingTime: finalAverageProcessingTime,
+        session: sessionParam,
+        sessionStartDate: startDate,
+        sessionEndDate: endDate
       },
     });
   } catch (error) {

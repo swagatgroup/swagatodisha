@@ -2,12 +2,28 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const ProcessingStats = ({ data }) => {
-    const { totalStudents, pendingVerification, approvedToday, rejectedToday, averageProcessingTime } = data;
+    // Safely extract data with defaults to prevent errors
+    const {
+        totalStudents = 0,
+        pendingVerification = 0,
+        approvedInSession = 0,
+        rejectedInSession = 0,
+        session = 'Current'
+    } = data || {};
+
+    // Debug logging
+    console.log('ProcessingStats received data:', data);
+
+    // Ensure all values are numbers
+    const total = Number(totalStudents) || 0;
+    const pending = Number(pendingVerification) || 0;
+    const approved = Number(approvedInSession) || 0;
+    const rejected = Number(rejectedInSession) || 0;
 
     const stats = [
         {
             title: 'Total Students',
-            value: totalStudents,
+            value: total,
             icon: (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -20,7 +36,7 @@ const ProcessingStats = ({ data }) => {
         },
         {
             title: 'Pending Verification',
-            value: pendingVerification,
+            value: pending,
             icon: (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -32,8 +48,8 @@ const ProcessingStats = ({ data }) => {
             iconBg: 'bg-yellow-100'
         },
         {
-            title: 'Approved Today',
-            value: approvedToday,
+            title: 'Approved',
+            value: approved,
             icon: (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -45,8 +61,8 @@ const ProcessingStats = ({ data }) => {
             iconBg: 'bg-green-100'
         },
         {
-            title: 'Rejected Today',
-            value: rejectedToday,
+            title: 'Rejected',
+            value: rejected,
             icon: (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -61,7 +77,29 @@ const ProcessingStats = ({ data }) => {
 
     return (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Processing Statistics</h3>
+            <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Processing Statistics</h3>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Session: {session || 'Current'}</span>
+            </div>
+
+            {/* No Data Message for Session */}
+            {total === 0 && pending === 0 && approved === 0 && rejected === 0 && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
+                    <div className="flex items-center">
+                        <svg className="h-6 w-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <h4 className="text-sm font-medium text-blue-900 dark:text-blue-200">
+                                No admissions found for {session || 'this'} session
+                            </h4>
+                            <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                                Select a different academic session to view statistics.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 {stats.map((stat, index) => (
@@ -86,78 +124,6 @@ const ProcessingStats = ({ data }) => {
                     </motion.div>
                 ))}
             </div>
-
-            {/* Average Processing Time */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4"
-            >
-                <div className="flex items-center justify-between">
-                    <div>
-                        <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">Average Processing Time</h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Time taken to process student applications</p>
-                    </div>
-                    <div className="text-right">
-                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                            {averageProcessingTime}h
-                        </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {averageProcessingTime < 24 ? 'Excellent' : averageProcessingTime < 48 ? 'Good' : 'Needs Improvement'}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="mt-4">
-                    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
-                        <motion.div
-                            className={`h-2 rounded-full ${averageProcessingTime < 24 ? 'bg-green-500' :
-                                averageProcessingTime < 48 ? 'bg-yellow-500' : 'bg-red-500'
-                                }`}
-                            initial={{ width: 0 }}
-                            animate={{ width: `${Math.min((averageProcessingTime / 72) * 100, 100)}%` }}
-                            transition={{ duration: 1, ease: "easeOut" }}
-                        />
-                    </div>
-                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        <span>0h</span>
-                        <span>24h (Target)</span>
-                        <span>48h</span>
-                        <span>72h+</span>
-                    </div>
-                </div>
-            </motion.div>
-
-            {/* Performance Indicators */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-                className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
-            >
-                <div className="text-center p-4 bg-blue-50 dark:bg-gray-700 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                        {totalStudents > 0 ? Math.round((approvedToday / totalStudents) * 100) : 0}%
-                    </div>
-                    <div className="text-sm text-blue-800 dark:text-blue-300">Approval Rate</div>
-                </div>
-
-                <div className="text-center p-4 bg-green-50 dark:bg-gray-700 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {pendingVerification > 0 ? Math.round((approvedToday / (approvedToday + rejectedToday)) * 100) : 0}%
-                    </div>
-                    <div className="text-sm text-green-800 dark:text-green-300">Success Rate</div>
-                </div>
-
-                <div className="text-center p-4 bg-purple-50 dark:bg-gray-700 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                        {totalStudents > 0 ? Math.round((pendingVerification / totalStudents) * 100) : 0}%
-                    </div>
-                    <div className="text-sm text-purple-800 dark:text-purple-300">Pending Rate</div>
-                </div>
-            </motion.div>
         </div>
     );
 };

@@ -1,15 +1,40 @@
 const User = require('../models/User');
 const Student = require('../models/Student');
+const StudentApplication = require('../models/StudentApplication');
 const Admin = require('../models/Admin');
 const WebsiteSettings = require('../models/WebsiteSettings');
 const bcrypt = require('bcryptjs');
 const { uploadToCloudinary } = require('../utils/cloudinary');
 const { mockStaff, mockAgents } = require('./mockData');
+const { getSessionDateRange, getCurrentSession } = require('../utils/sessionHelper');
 
 // Dashboard Statistics
 exports.getDashboardStats = async (req, res) => {
     try {
-        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        // Get session from query parameter, default to current session
+        const sessionParam = req.query.session || getCurrentSession();
+
+        // Get date range for the session
+        let sessionDateRange;
+        try {
+            sessionDateRange = getSessionDateRange(sessionParam);
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid session format: ${error.message}`,
+                error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+            });
+        }
+
+        const { startDate, endDate } = sessionDateRange;
+
+        // Base query for session-based filtering
+        const sessionQuery = {
+            createdAt: {
+                $gte: startDate,
+                $lte: endDate
+            }
+        };
 
         // Calculating dashboard stats
 
@@ -17,97 +42,50 @@ exports.getDashboardStats = async (req, res) => {
             totalStudents,
             totalAgents,
             totalStaff,
-            newStudents,
-            newAgents,
             pendingApplications,
             approvedApplications,
-            agentStats,
-            recentStudents,
-            recentAgents
+            recentStudents
         ] = await Promise.all([
-            // Total Students
-            Student.countDocuments({ status: 'active' }),
+            // Total Students in this session
+            StudentApplication.countDocuments(sessionQuery),
 
-            // Total Agents
+            // Total Agents (not session-dependent)
             User.countDocuments({ role: 'agent', isActive: true }),
 
-            // Total Staff
+            // Total Staff (not session-dependent)
             Admin.countDocuments({ role: 'staff', isActive: true }),
 
-            // New Students in last 30 days
-            Student.countDocuments({
-                createdAt: { $gte: thirtyDaysAgo },
-                status: 'active'
+            // Pending Applications in this session
+            StudentApplication.countDocuments({
+                ...sessionQuery,
+                status: { $in: ['SUBMITTED', 'UNDER_REVIEW'] }
             }),
 
-            // New Agents in last 30 days
-            User.countDocuments({
-                role: 'agent',
-                isActive: true,
-                createdAt: { $gte: thirtyDaysAgo }
+            // Approved Applications in this session
+            StudentApplication.countDocuments({
+                ...sessionQuery,
+                status: 'APPROVED'
             }),
 
-            // Pending Applications
-            Student.countDocuments({ status: 'pending' }),
-
-            // Approved Applications
-            Student.countDocuments({ status: 'approved' }),
-
-            // Agent Performance Stats
-            User.aggregate([
-                { $match: { role: 'agent', isActive: true } },
-                {
-                    $group: {
-                        _id: null,
-                        totalReferrals: { $sum: '$referralStats.totalReferrals' },
-                        successfulReferrals: { $sum: '$referralStats.successfulReferrals' },
-                        totalCommission: { $sum: '$referralStats.totalCommission' }
-                    }
-                }
-            ]),
-
-            // Recent Students
-            Student.find({ status: 'active' })
-                .populate('user', 'firstName lastName email phone')
-                .populate('agentReferral.agent', 'firstName lastName referralCode')
-                .sort({ createdAt: -1 })
-                .limit(5),
-
-            // Recent Agents
-            User.find({ role: 'agent', isActive: true })
-                .select('firstName lastName email phone referralCode referralStats createdAt')
+            // Recent Students in this session
+            StudentApplication.find(sessionQuery)
+                .populate('user', 'fullName email phoneNumber')
                 .sort({ createdAt: -1 })
                 .limit(5)
         ]);
 
-        const agentStatsData = agentStats[0] || {
-            totalReferrals: 0,
-            successfulReferrals: 0,
-            totalCommission: 0
-        };
-
         res.json({
             success: true,
             data: {
-                overview: {
-                    totalStudents,
-                    totalAgents,
-                    totalStaff,
-                    newStudents,
-                    newAgents,
-                    pendingApplications,
-                    approvedApplications
-                },
-                agentPerformance: {
-                    totalReferrals: agentStatsData.totalReferrals,
-                    successfulReferrals: agentStatsData.successfulReferrals,
-                    totalCommission: agentStatsData.totalCommission,
-                    successRate: agentStatsData.totalReferrals > 0
-                        ? Math.round((agentStatsData.successfulReferrals / agentStatsData.totalReferrals) * 100)
-                        : 0
-                },
-                recentStudents,
-                recentAgents
+                totalStudents,
+                totalAgents,
+                totalStaff,
+                totalApplications: totalStudents,
+                pendingApplications,
+                approvedApplications,
+                session: sessionParam,
+                sessionStartDate: startDate,
+                sessionEndDate: endDate
             }
         });
     } catch (error) {

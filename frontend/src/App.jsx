@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
+import { SessionProvider } from './contexts/SessionContext'
 // Socket.IO removed - using simple state management
 import { DarkModeProvider } from './contexts/DarkModeContextSimple'
 // NotificationToast removed - Socket.IO component
@@ -243,7 +244,9 @@ function App() {
                                 path="/dashboard/staff"
                                 element={
                                     <ProtectedRoute allowedRoles={['staff']}>
-                                        <StaffDashboard />
+                                        <SessionProvider>
+                                            <StaffDashboard />
+                                        </SessionProvider>
                                     </ProtectedRoute>
                                 }
                             />
@@ -251,7 +254,9 @@ function App() {
                                 path="/dashboard/admin"
                                 element={
                                     <ProtectedRoute allowedRoles={['super_admin']}>
-                                        <SuperAdminDashboard />
+                                        <SessionProvider>
+                                            <SuperAdminDashboard />
+                                        </SessionProvider>
                                     </ProtectedRoute>
                                 }
                             />

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useSession } from '../../contexts/SessionContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
 import StudentManagement from '../admin/StudentManagement';
@@ -23,6 +24,7 @@ import api from '../../utils/api';
 
 const SuperAdminDashboard = () => {
     const { user } = useAuth();
+    const { selectedSession } = useSession();
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
     const [loading, setLoading] = useState(true);
     const [students, setStudents] = useState([]);
@@ -102,12 +104,12 @@ const SuperAdminDashboard = () => {
     ];
 
     useEffect(() => {
-        const fetchAdminData = async () => {
+        const fetchAdminData = async (session = selectedSession) => {
             try {
                 setLoading(true);
                 const [statsRes, studentsRes] = await Promise.all([
-                    api.get('/api/admin/dashboard/stats'),
-                    api.get('/api/admin/students?limit=100')
+                    api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(session)}`),
+                    api.get(`/api/admin/students?limit=100&session=${encodeURIComponent(session)}`)
                 ]);
 
                 if (statsRes.data?.success) {
@@ -131,13 +133,14 @@ const SuperAdminDashboard = () => {
             }
         };
 
-        fetchAdminData();
-    }, []);
+        fetchAdminData(selectedSession);
+    }, [selectedSession]);
 
     const handleStudentUpdate = () => {
         // Refresh the dashboard data when a student is updated
-        fetchAdminData();
+        fetchAdminData(selectedSession);
     };
+
 
     const renderSidebarContent = () => {
         switch (activeSidebarItem) {
