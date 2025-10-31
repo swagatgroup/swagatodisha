@@ -121,9 +121,16 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             filter['personalDetails.status'] = category;
         }
 
-        // Filter by submitter role
+        // Filter by submitter role or specific submitter
         if (submitterRole && submitterRole !== 'all') {
-            filter.submitterRole = submitterRole;
+            // Check if it's a submitter ID (ObjectId format) or role
+            if (submitterRole.match(/^[0-9a-fA-F]{24}$/)) {
+                // It's an ObjectId - filter by specific submitter
+                filter.submittedBy = submitterRole;
+            } else {
+                // It's a role - filter by role
+                filter.submitterRole = submitterRole;
+            }
         }
 
         // Build sort query
@@ -133,14 +140,15 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         // Debug filter
         console.log('🔍 Query filter:', JSON.stringify(filter, null, 2));
 
-        // Execute query with pagination
+        // Execute query with pagination - don't populate submittedBy yet as it might be Admin
         const applications = await StudentApplication.find(filter)
-            .populate('user', 'firstName lastName email phoneNumber')
-            .populate('referralInfo.referredBy', 'firstName lastName referralCode')
-            .populate('submittedBy', 'firstName lastName email phoneNumber')
+            .populate('user', 'fullName email phoneNumber')
+            .populate('referralInfo.referredBy', 'fullName email phoneNumber referralCode')
+            .select('+submittedBy') // Ensure submittedBy is included even if populate fails
             .sort(sort)
             .limit(limit * 1)
             .skip((page - 1) * limit)
+            .lean(false) // Keep as Mongoose documents to access raw _doc
             .exec();
 
         console.log(`📊 Found ${applications.length} applications`);;
@@ -161,50 +169,286 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         let filterOptions = {
             statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
             courses: [],
-            categories: []
+            categories: [],
+            submitters: []
         };
 
         try {
             filterOptions.courses = await StudentApplication.distinct('courseDetails.selectedCourse');
             filterOptions.categories = await StudentApplication.distinct('personalDetails.status');
+
+            // Get unique submitters (agents and staff) with their names and submission counts
+            // Apply session filter if provided
+            const submitterMatch = {
+                submitterRole: { $in: ['agent', 'staff'] },
+                submittedBy: { $exists: true, $ne: null }
+            };
+
+            // Add session filter to submitter aggregation
+            if (sessionParam && filter.createdAt) {
+                submitterMatch.createdAt = filter.createdAt;
+            }
+
+            const submitterPipeline = [
+                {
+                    $match: submitterMatch
+                },
+                {
+                    $group: {
+                        _id: '$submittedBy',
+                        role: { $first: '$submitterRole' },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'users',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'userInfo'
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'admins',
+                        localField: '_id',
+                        foreignField: '_id',
+                        as: 'adminInfo'
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$userInfo',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $unwind: {
+                        path: '$adminInfo',
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        role: 1,
+                        count: 1,
+                        name: {
+                            $cond: {
+                                if: { $ne: [{ $ifNull: ['$userInfo.fullName', ''] }, ''] },
+                                then: '$userInfo.fullName',
+                                else: {
+                                    $cond: {
+                                        if: {
+                                            $or: [
+                                                { $ne: [{ $ifNull: ['$adminInfo.firstName', ''] }, ''] },
+                                                { $ne: [{ $ifNull: ['$adminInfo.lastName', ''] }, ''] }
+                                            ]
+                                        },
+                                        then: {
+                                            $concat: [
+                                                { $ifNull: ['$adminInfo.firstName', ''] },
+                                                ' ',
+                                                { $ifNull: ['$adminInfo.lastName', ''] }
+                                            ]
+                                        },
+                                        else: 'Unknown'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $sort: { count: -1, name: 1 }
+                }
+            ];
+
+            const submitters = await StudentApplication.aggregate(submitterPipeline);
+
+            // Post-process to handle any remaining missing names by checking Admin model
+            const submittersWithNames = await Promise.all(submitters.map(async (s) => {
+                let name = s.name?.trim() || 'Unknown';
+
+                // If name is still Unknown, try fetching from Admin model
+                if (name === 'Unknown' && s._id) {
+                    try {
+                        const Admin = require('../models/Admin');
+                        const admin = await Admin.findById(s._id).select('firstName lastName').lean();
+                        if (admin && (admin.firstName || admin.lastName)) {
+                            name = `${admin.firstName || ''} ${admin.lastName || ''}`.trim();
+                        }
+                    } catch (err) {
+                        // Ignore errors
+                    }
+                }
+
+                return {
+                    id: s._id.toString(),
+                    name: name || 'Unknown',
+                    role: s.role,
+                    count: s.count
+                };
+            }));
+
+            filterOptions.submitters = submittersWithNames;
         } catch (filterError) {
             console.error('Error getting filter options:', filterError);
             // Use default values if distinct queries fail
         }
 
         // Transform data for frontend (include ALL details for modal view)
-        const transformedStudents = applications.map(app => ({
-            _id: app._id,
-            applicationId: app.applicationId,
-            fullName: app.personalDetails?.fullName || 'N/A',
-            email: app.contactDetails?.email || app.user?.email || 'N/A',
-            phone: app.contactDetails?.primaryPhone || app.user?.phoneNumber || 'N/A',
-            aadharNumber: app.personalDetails?.aadharNumber || 'N/A',
-            course: app.courseDetails?.selectedCourse || 'N/A',
-            category: app.personalDetails?.status || 'N/A',
-            status: app.status,
-            currentStage: app.currentStage,
-            guardianName: app.guardianDetails?.guardianName || 'N/A',
-            guardianPhone: app.guardianDetails?.guardianPhone || 'N/A',
-            referralCode: app.referralInfo?.referralCode || 'N/A',
-            referredBy: app.submittedBy ?
-                `${app.submittedBy.firstName || ''} ${app.submittedBy.lastName || ''}`.trim() || 'Unknown' : 'Direct',
-            submitterRole: app.submitterRole || 'student',
-            documentsCount: app.documents?.length || 0,
-            createdAt: app.createdAt,
-            submittedAt: app.submittedAt,
-            user: app.user,
-            submittedBy: app.submittedBy,
-            // Include full details for modal view
-            personalDetails: app.personalDetails,
-            contactDetails: app.contactDetails,
-            courseDetails: app.courseDetails,
-            guardianDetails: app.guardianDetails,
-            financialDetails: app.financialDetails,
-            documents: app.documents,
-            reviewInfo: app.reviewInfo,
-            workflowHistory: app.workflowHistory,
-            referralInfo: app.referralInfo
+        const transformedStudents = await Promise.all(applications.map(async (app) => {
+            // Extract submitter name properly - User model uses fullName, not firstName/lastName
+            let submitterName = 'Direct';
+
+            // Get the raw submittedBy ID from the Mongoose document BEFORE converting to object
+            // This is critical because populate might fail for Admin users, but the raw ObjectId is still there
+            let submitterId = null;
+            let submittedByObj = null;
+
+            // Try multiple ways to get the raw ObjectId
+            if (app._doc && app._doc.submittedBy) {
+                // Raw document before any transformations
+                submitterId = app._doc.submittedBy.toString ? app._doc.submittedBy.toString() : String(app._doc.submittedBy);
+            } else if (app.submittedBy) {
+                // Might be populated (object) or raw ObjectId
+                if (typeof app.submittedBy === 'object') {
+                    if (app.submittedBy._id) {
+                        // Populated object
+                        submittedByObj = app.submittedBy.toObject ? app.submittedBy.toObject() : app.submittedBy;
+                        submitterId = app.submittedBy._id.toString ? app.submittedBy._id.toString() : String(app.submittedBy._id);
+                    } else if (app.submittedBy.toString) {
+                        // Raw ObjectId
+                        submitterId = app.submittedBy.toString();
+                    }
+                } else if (typeof app.submittedBy === 'string') {
+                    submitterId = app.submittedBy;
+                }
+            }
+
+            // Convert Mongoose document to plain object for other fields
+            const appObj = app.toObject ? app.toObject() : app;
+
+            // Store submitter details for response object
+            let submitterDetails = null;
+
+            // Debug logging
+            console.log('🔍 Processing app:', appObj._id);
+            console.log('   submittedBy type:', typeof appObj.submittedBy);
+            console.log('   submittedBy value:', appObj.submittedBy ? (appObj.submittedBy.toString ? appObj.submittedBy.toString() : JSON.stringify(appObj.submittedBy)) : 'null');
+            console.log('   submitterRole:', appObj.submitterRole);
+            console.log('   Raw _doc.submittedBy:', app._doc ? (app._doc.submittedBy ? app._doc.submittedBy.toString() : 'null') : 'no _doc');
+            console.log('   submitterId extracted:', submitterId);
+            console.log('   submittedByObj:', submittedByObj);
+
+            // If we have a populated object with fullName, use it
+            if (submittedByObj && submittedByObj.fullName) {
+                // Already populated and has fullName (from User model)
+                submitterName = submittedByObj.fullName.trim();
+                submitterDetails = {
+                    _id: submittedByObj._id ? submittedByObj._id.toString() : null,
+                    fullName: submitterName,
+                    email: submittedByObj.email || '',
+                    phoneNumber: submittedByObj.phoneNumber || ''
+                };
+                console.log('   ✅ Found fullName from populated User:', submitterName);
+            } else if (submitterId) {
+                // Not populated but we have an ID - fetch from User model first
+                try {
+                    const User = require('../models/User');
+                    const mongoose = require('mongoose');
+                    const ObjectId = mongoose.Types.ObjectId;
+
+                    // Ensure submitterId is a valid ObjectId
+                    let validId = submitterId;
+                    if (!ObjectId.isValid(submitterId)) {
+                        console.log('   ⚠️ Invalid ObjectId:', submitterId);
+                    } else {
+                        validId = new ObjectId(submitterId);
+                    }
+
+                    let submitter = await User.findById(validId).select('fullName email phoneNumber').lean();
+
+                    if (submitter && submitter.fullName) {
+                        submitterName = submitter.fullName.trim();
+                        submitterDetails = {
+                            _id: submitter._id ? submitter._id.toString() : null,
+                            fullName: submitterName,
+                            email: submitter.email || '',
+                            phoneNumber: submitter.phoneNumber || ''
+                        };
+                        console.log('   ✅ Fetched fullName from User model:', submitterName);
+                    } else {
+                        // If not found in User model, try Admin model (staff might be in Admin model)
+                        const Admin = require('../models/Admin');
+                        const adminSubmitter = await Admin.findById(validId).select('firstName lastName email phone').lean();
+
+                        if (adminSubmitter && (adminSubmitter.firstName || adminSubmitter.lastName)) {
+                            submitterName = `${adminSubmitter.firstName || ''} ${adminSubmitter.lastName || ''}`.trim();
+                            submitterDetails = {
+                                _id: adminSubmitter._id ? adminSubmitter._id.toString() : null,
+                                fullName: submitterName,
+                                email: adminSubmitter.email || '',
+                                phoneNumber: adminSubmitter.phone || ''
+                            };
+                            console.log('   ✅ Fetched name from Admin model:', submitterName);
+                        } else {
+                            console.log('   ⚠️ Submitter not found in User or Admin models with ID:', submitterId);
+                        }
+                    }
+                } catch (fetchError) {
+                    console.error('   ❌ Error fetching submitter:', fetchError.message);
+                    console.error('   Stack:', fetchError.stack);
+                }
+            } else {
+                console.log('   ⚠️ submittedBy is null/undefined - no ID to fetch');
+            }
+
+            // Don't override if we have a valid name and it's not a student
+            if (!submitterName || submitterName === 'Unknown' || submitterName.trim() === '') {
+                if (appObj.submitterRole === 'student') {
+                    submitterName = 'Direct';
+                } else {
+                    // For non-student roles, keep trying to get the name
+                    submitterName = submitterName || 'Direct';
+                }
+            }
+
+            console.log('   📝 Final submitterName:', submitterName, 'Role:', appObj.submitterRole);
+
+            return {
+                _id: appObj._id,
+                applicationId: appObj.applicationId,
+                fullName: appObj.personalDetails?.fullName || 'N/A',
+                email: appObj.contactDetails?.email || appObj.user?.email || 'N/A',
+                phone: appObj.contactDetails?.primaryPhone || appObj.user?.phoneNumber || 'N/A',
+                aadharNumber: appObj.personalDetails?.aadharNumber || 'N/A',
+                course: appObj.courseDetails?.selectedCourse || 'N/A',
+                category: appObj.personalDetails?.status || 'N/A',
+                status: appObj.status,
+                currentStage: appObj.currentStage,
+                guardianName: appObj.guardianDetails?.guardianName || 'N/A',
+                guardianPhone: appObj.guardianDetails?.guardianPhone || 'N/A',
+                referralCode: appObj.referralInfo?.referralCode || 'N/A',
+                referredBy: submitterName,
+                submitterRole: appObj.submitterRole || 'student',
+                documentsCount: appObj.documents?.length || 0,
+                createdAt: appObj.createdAt,
+                submittedAt: appObj.submittedAt,
+                user: appObj.user,
+                submittedBy: submitterDetails,
+                // Include full details for modal view
+                personalDetails: appObj.personalDetails,
+                contactDetails: appObj.contactDetails,
+                courseDetails: appObj.courseDetails,
+                guardianDetails: appObj.guardianDetails,
+                financialDetails: appObj.financialDetails,
+                documents: appObj.documents,
+                reviewInfo: appObj.referralInfo,
+                workflowHistory: appObj.workflowHistory,
+                referralInfo: appObj.referralInfo
+            };
         }));
 
         res.json({

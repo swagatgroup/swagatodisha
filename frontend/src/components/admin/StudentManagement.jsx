@@ -39,7 +39,8 @@ const StudentManagement = () => {
     const [showRejectionForm, setShowRejectionForm] = useState(false);
     const [filters, setFilters] = useState({
         statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
-        courses: ['Bachelor of Technology', 'Bachelor of Commerce', 'Bachelor of Arts', 'Bachelor of Science']
+        courses: ['Bachelor of Technology', 'Bachelor of Commerce', 'Bachelor of Arts', 'Bachelor of Science'],
+        submitters: []
     });
 
     useEffect(() => {
@@ -106,7 +107,8 @@ const StudentManagement = () => {
                 setFilters(response.data.data.filters || {
                     statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
                     courses: [],
-                    categories: []
+                    categories: [],
+                    submitters: []
                 });
                 console.log('✅ Real data loaded:', response.data.data.students?.length || 0, 'students');
             } else {
@@ -402,8 +404,24 @@ const StudentManagement = () => {
                 >
                     <option value="all">All Submitters</option>
                     <option value="student">Student</option>
-                    <option value="agent">Agent</option>
-                    <option value="staff">Staff</option>
+                    <optgroup label="Agents">
+                        {(filters.submitters || [])
+                            .filter(s => s.role === 'agent')
+                            .map(submitter => (
+                                <option key={submitter.id} value={submitter.id}>
+                                    {submitter.name} ({submitter.count} submissions)
+                                </option>
+                            ))}
+                    </optgroup>
+                    <optgroup label="Staff">
+                        {(filters.submitters || [])
+                            .filter(s => s.role === 'staff')
+                            .map(submitter => (
+                                <option key={submitter.id} value={submitter.id}>
+                                    {submitter.name} ({submitter.count} submissions)
+                                </option>
+                            ))}
+                    </optgroup>
                     <option value="super_admin">Super Admin</option>
                 </select>
             </div>
@@ -519,8 +537,25 @@ const StudentManagement = () => {
                                             {student.course}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            <div className="text-sm">{student.referredBy || 'Direct'}</div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">{student.submitterRole || 'student'}</div>
+                                            <div className="text-sm">
+                                                {(() => {
+                                                    // Use referredBy (already computed correctly in backend) or submittedBy object
+                                                    let submitterName = 'Direct';
+
+                                                    if (student.referredBy && student.referredBy !== 'Direct' && student.referredBy !== 'Unknown' && student.referredBy.trim() !== '') {
+                                                        submitterName = student.referredBy.trim();
+                                                    } else if (student.submittedBy && student.submittedBy.fullName) {
+                                                        submitterName = student.submittedBy.fullName.trim();
+                                                    }
+
+                                                    const role = student.submitterRole || 'student';
+                                                    const roleCapitalized = role.charAt(0).toUpperCase() + role.slice(1);
+
+                                                    return submitterName && submitterName !== 'Direct' && submitterName !== 'Unknown' && submitterName.trim() !== ''
+                                                        ? `${submitterName} (${roleCapitalized})`
+                                                        : `Direct (${roleCapitalized})`;
+                                                })()}
+                                            </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
                                             {student.aadharNumber}
