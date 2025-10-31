@@ -32,17 +32,17 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
         switch (normalizedStatus) {
             case 'completed':
             case 'approved':
-                return 'bg-green-100 text-green-800';
+                return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
             case 'pending':
             case 'submitted':
             case 'under_review':
             case 'in_progress':
-                return 'bg-yellow-100 text-yellow-800';
+                return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
             case 'rejected':
             case 'failed':
-                return 'bg-red-100 text-red-800';
+                return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -124,14 +124,14 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                         placeholder="Search by name, phone, or Aadhaar..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                     />
                 </div>
                 <div className="sm:w-48">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                     >
                         <option value="all">All Status</option>
                         <option value="pending">Pending</option>
@@ -145,7 +145,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                     >
                         <option value="all">All Categories</option>
                         <option value="A">A - Direct (No Referral)</option>
@@ -162,11 +162,11 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
 
             {/* Table */}
             <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead className="bg-gray-50 dark:bg-gray-800">
                         <tr>
                             <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                                 onClick={() => handleSort('personalDetails.fullName')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -177,7 +177,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                                 onClick={() => handleSort('personalDetails.fullName')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -188,7 +188,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                                 onClick={() => handleSort('courseDetails.selectedCourse')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -199,7 +199,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                                 onClick={() => handleSort('contactDetails.primaryPhone')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -209,11 +209,11 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                     )}
                                 </div>
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Aadhaar
                             </th>
                             <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                                 onClick={() => handleSort('workflowStatus.currentStage')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -224,7 +224,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                                 onClick={() => handleSort('registrationCategory')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -235,7 +235,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                 </div>
                             </th>
                             <th
-                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
                                 onClick={() => handleSort('createdAt')}
                             >
                                 <div className="flex items-center space-x-1">
@@ -246,38 +246,38 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                 </div>
                             </th>
                             {showActions && (
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Actions
                                 </th>
                             )}
                         </tr>
                     </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {sortedStudents.map((student, index) => (
                             <motion.tr
                                 key={student._id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="hover:bg-gray-50"
+                                className="hover:bg-gray-50 dark:hover:bg-gray-700"
                             >
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {index + 1}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm font-medium text-gray-900">
+                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                         {student.personalDetails?.fullName || 'N/A'}
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-900">
+                                    <div className="text-sm text-gray-900 dark:text-gray-100">
                                         {student.courseDetails?.selectedCourse || 'N/A'}
                                     </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {student.contactDetails?.primaryPhone || 'N/A'}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {student.personalDetails?.aadharNumber || 'N/A'}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -285,22 +285,22 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                                         {getStatusText(student.workflowStatus?.currentStage || student.status)}
                                     </span>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {student.personalDetails?.status || student.personalDetails?.category || 'General'}
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                     {new Date(student.createdAt).toLocaleDateString()}
                                 </td>
                                 {showActions && (
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex space-x-2">
-                                            <button className="text-blue-600 hover:text-blue-900">
+                                            <button className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
                                                 View
                                             </button>
-                                            <button className="text-green-600 hover:text-green-900">
+                                            <button className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
                                                 Edit
                                             </button>
-                                            <button className="text-purple-600 hover:text-purple-900">
+                                            <button className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">
                                                 Contact
                                             </button>
                                         </div>
@@ -315,11 +315,11 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
             {/* Empty State */}
             {sortedStudents.length === 0 && (
                 <div className="text-center py-8">
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                     </svg>
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">No students found</h3>
-                    <p className="mt-1 text-sm text-gray-500">
+                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No students found</h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         {searchTerm || statusFilter !== 'all'
                             ? 'Try adjusting your search or filter criteria.'
                             : 'Get started by registering your first student.'
@@ -330,18 +330,18 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
 
             {/* Export Options */}
             {sortedStudents.length > 0 && (
-                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
-                    <div className="text-sm text-gray-500">
+                <div className="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
                         Showing {sortedStudents.length} of {students.length} students
                     </div>
                     <div className="flex space-x-2">
-                        <button className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700">
+                        <button className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700">
                             Export CSV
                         </button>
-                        <button className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">
+                        <button className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
                             Export Excel
                         </button>
-                        <button className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                        <button className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700">
                             Export PDF
                         </button>
                     </div>

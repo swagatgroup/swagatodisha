@@ -60,8 +60,8 @@ const ProcessingStats = ({ data }) => {
     ];
 
     return (
-        <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Processing Statistics</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Processing Statistics</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 {stats.map((stat, index) => (
@@ -70,16 +70,16 @@ const ProcessingStats = ({ data }) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className={`${stat.bgColor} rounded-lg p-4`}
+                        className={`${stat.bgColor} dark:bg-gray-700 rounded-lg p-4`}
                     >
                         <div className="flex items-center">
-                            <div className={`p-3 ${stat.iconBg} rounded-full`}>
+                            <div className={`p-3 ${stat.iconBg} dark:bg-gray-600 rounded-full`}>
                                 <div className={stat.textColor}>
                                     {stat.icon}
                                 </div>
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm font-medium text-gray-600">{stat.title}</p>
+                                <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
                                 <p className={`text-2xl font-semibold ${stat.textColor}`}>{stat.value}</p>
                             </div>
                         </div>
@@ -92,18 +92,18 @@ const ProcessingStats = ({ data }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-gray-50 rounded-lg p-4"
+                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4"
             >
                 <div className="flex items-center justify-between">
                     <div>
-                        <h4 className="text-md font-medium text-gray-900">Average Processing Time</h4>
-                        <p className="text-sm text-gray-600">Time taken to process student applications</p>
+                        <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">Average Processing Time</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Time taken to process student applications</p>
                     </div>
                     <div className="text-right">
-                        <div className="text-2xl font-bold text-gray-900">
+                        <div className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             {averageProcessingTime}h
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
                             {averageProcessingTime < 24 ? 'Excellent' : averageProcessingTime < 48 ? 'Good' : 'Needs Improvement'}
                         </div>
                     </div>
@@ -111,17 +111,17 @@ const ProcessingStats = ({ data }) => {
 
                 {/* Progress Bar */}
                 <div className="mt-4">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                         <motion.div
                             className={`h-2 rounded-full ${averageProcessingTime < 24 ? 'bg-green-500' :
-                                    averageProcessingTime < 48 ? 'bg-yellow-500' : 'bg-red-500'
+                                averageProcessingTime < 48 ? 'bg-yellow-500' : 'bg-red-500'
                                 }`}
                             initial={{ width: 0 }}
                             animate={{ width: `${Math.min((averageProcessingTime / 72) * 100, 100)}%` }}
                             transition={{ duration: 1, ease: "easeOut" }}
                         />
                     </div>
-                    <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
                         <span>0h</span>
                         <span>24h (Target)</span>
                         <span>48h</span>
@@ -137,25 +137,25 @@ const ProcessingStats = ({ data }) => {
                 transition={{ delay: 0.5 }}
                 className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
             >
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
+                <div className="text-center p-4 bg-blue-50 dark:bg-gray-700 rounded-lg">
+                    <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {totalStudents > 0 ? Math.round((approvedToday / totalStudents) * 100) : 0}%
                     </div>
-                    <div className="text-sm text-blue-800">Approval Rate</div>
+                    <div className="text-sm text-blue-800 dark:text-blue-300">Approval Rate</div>
                 </div>
 
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
+                <div className="text-center p-4 bg-green-50 dark:bg-gray-700 rounded-lg">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                         {pendingVerification > 0 ? Math.round((approvedToday / (approvedToday + rejectedToday)) * 100) : 0}%
                     </div>
-                    <div className="text-sm text-green-800">Success Rate</div>
+                    <div className="text-sm text-green-800 dark:text-green-300">Success Rate</div>
                 </div>
 
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <div className="text-2xl font-bold text-purple-600">
+                <div className="text-center p-4 bg-purple-50 dark:bg-gray-700 rounded-lg">
+                    <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                         {totalStudents > 0 ? Math.round((pendingVerification / totalStudents) * 100) : 0}%
                     </div>
-                    <div className="text-sm text-purple-800">Pending Rate</div>
+                    <div className="text-sm text-purple-800 dark:text-purple-300">Pending Rate</div>
                 </div>
             </motion.div>
         </div>
