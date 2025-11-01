@@ -73,28 +73,6 @@ const documentRequirements = {
             }
         },
         {
-            key: 'pm_kisan_enrollment',
-            label: 'PM Kisan Enrollment',
-            description: 'PM Kisan enrollment certificate (for OBC free education)',
-            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: 10 * 1024 * 1024, // 10MB
-            validation: {
-                required: false,
-                category: 'obc_benefit'
-            }
-        },
-        {
-            key: 'cm_kisan_enrollment',
-            label: 'CM Kisan Enrollment',
-            description: 'CM Kisan enrollment certificate (for OBC free education)',
-            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: 10 * 1024 * 1024, // 10MB
-            validation: {
-                required: false,
-                category: 'obc_benefit'
-            }
-        },
-        {
             key: 'twelfth_marksheet',
             label: '+2 Marksheet',
             description: '12th standard marksheet (optional)',
@@ -132,6 +110,28 @@ const documentRequirements = {
             maxSize: 10 * 1024 * 1024, // 10MB
             validation: {
                 required: false
+            }
+        },
+        {
+            key: 'pm_kisan_enrollment',
+            label: 'PM Kisan Enrollment',
+            description: 'PM Kisan enrollment certificate (for OBC free education)',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: 10 * 1024 * 1024, // 10MB
+            validation: {
+                required: false,
+                category: 'obc_benefit'
+            }
+        },
+        {
+            key: 'cm_kisan_enrollment',
+            label: 'CM Kisan Enrollment',
+            description: 'CM Kisan enrollment certificate (for OBC free education)',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: 10 * 1024 * 1024, // 10MB
+            validation: {
+                required: false,
+                category: 'obc_benefit'
             }
         }
     ],
@@ -189,12 +189,12 @@ const documentRequirements = {
         'caste_certificate',
         'income_certificate',
         'resident_certificate',
-        'pm_kisan_enrollment',
-        'cm_kisan_enrollment',
         'twelfth_marksheet',
         'twelfth_certificate',
         'graduation_marksheet',
-        'graduation_certificate'
+        'graduation_certificate',
+        'pm_kisan_enrollment',
+        'cm_kisan_enrollment'
     ],
 
     // Help text for users

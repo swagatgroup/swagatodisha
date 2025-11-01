@@ -180,14 +180,6 @@ const EnhancedAgentDashboard = () => {
     });
   };
 
-  const handleStudentDelete = (studentId) => {
-    setStudents((prev) => {
-      if (!Array.isArray(prev)) return [];
-      return prev.filter((student) => student._id !== studentId);
-    });
-    // Refresh dashboard data
-    loadDashboardData(selectedSession, false);
-  };
 
   const renderDashboardContent = () => {
     switch (activeTab) {
@@ -285,7 +277,6 @@ const EnhancedAgentDashboard = () => {
                 <StudentTable
                   students={students}
                   onStudentUpdate={handleStudentUpdate}
-                  onStudentDelete={user?.role === 'super_admin' ? handleStudentDelete : undefined}
                   showActions={true}
                   initialFilter={studentTableFilter}
                 />

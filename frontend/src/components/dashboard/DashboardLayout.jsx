@@ -289,7 +289,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                 <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
                     <main className="flex-1 relative overflow-y-auto focus:outline-none">
                         <div className="py-6">
-                            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                            <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
                                 <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">{title}</h1>
                                 {children}
                             </div>
