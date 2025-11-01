@@ -58,9 +58,19 @@ const StudentApplications = () => {
   const fetchApplications = async () => {
     try {
       setLoading(true);
-      const response = await api.get("/api/students/applications");
-      const list = response.data.data?.applications ?? response.data.data ?? [];
-      setApplications(Array.isArray(list) ? list : []);
+      // Use the same endpoint as agent dashboard but for student's own applications
+      const response = await api.get("/api/student-application/my-applications");
+
+      if (response.data?.success) {
+        // The API returns { success: true, data: [...] }
+        const applicationsData = response.data.data || [];
+        setApplications(Array.isArray(applicationsData) ? applicationsData : []);
+      } else {
+        // Fallback to old endpoint if the new one doesn't work
+        const fallbackResponse = await api.get("/api/students/applications");
+        const list = fallbackResponse.data.data?.applications ?? fallbackResponse.data.data ?? [];
+        setApplications(Array.isArray(list) ? list : []);
+      }
     } catch (error) {
       console.error("Error fetching applications:", error);
       // Degrade gracefully: show empty state instead of modal
@@ -145,16 +155,21 @@ const StudentApplications = () => {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case "pending":
+    if (!status) return "bg-gray-100 text-gray-800";
+    const normalizedStatus = typeof status === 'string' ? status.toUpperCase() : status;
+
+    switch (normalizedStatus) {
+      case "DRAFT":
+      case "PENDING":
         return "bg-yellow-100 text-yellow-800";
-      case "under_review":
+      case "SUBMITTED":
+      case "UNDER_REVIEW":
         return "bg-blue-100 text-blue-800";
-      case "approved":
+      case "APPROVED":
         return "bg-green-100 text-green-800";
-      case "rejected":
+      case "REJECTED":
         return "bg-red-100 text-red-800";
-      case "withdrawn":
+      case "WITHDRAWN":
         return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -162,16 +177,22 @@ const StudentApplications = () => {
   };
 
   const getStatusIcon = (status) => {
-    switch (status) {
-      case "pending":
+    if (!status) return "❓";
+    const normalizedStatus = typeof status === 'string' ? status.toUpperCase() : status;
+
+    switch (normalizedStatus) {
+      case "DRAFT":
+        return "📝";
+      case "SUBMITTED":
+      case "PENDING":
         return "⏳";
-      case "under_review":
+      case "UNDER_REVIEW":
         return "👀";
-      case "approved":
+      case "APPROVED":
         return "✅";
-      case "rejected":
+      case "REJECTED":
         return "❌";
-      case "withdrawn":
+      case "WITHDRAWN":
         return "🚫";
       default:
         return "❓";
@@ -188,7 +209,7 @@ const StudentApplications = () => {
 
   // Show different tabs based on user role
   const tabs = userRole === 'student'
-    ? [{ id: 'my-applications', name: 'My Applications' }]
+    ? [{ id: 'my-applications', name: 'My Application' }]
     : [
       { id: 'my-applications', name: 'My Applications' },
       { id: 'submitted-applications', name: 'My Submitted Applications' }
@@ -205,11 +226,11 @@ const StudentApplications = () => {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold text-gray-900">
-              {userRole === 'student' ? 'My Applications' : 'Applications Management'}
+              {userRole === 'student' ? 'My Application' : 'Applications Management'}
             </h2>
             <p className="text-gray-600">
               {userRole === 'student'
-                ? 'Track and manage your course applications'
+                ? 'Track and manage your course application'
                 : 'Manage and submit applications for students'
               }
             </p>
@@ -273,8 +294,8 @@ const StudentApplications = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab.id
-                    ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
               >
                 {tab.name}
@@ -293,60 +314,100 @@ const StudentApplications = () => {
           className="bg-white rounded-lg shadow"
         >
           {applications.length > 0 ? (
-            <div className="divide-y divide-gray-200">
-              {applications.map((application, index) => (
-                <motion.div
-                  key={application._id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-6 hover:bg-gray-50"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {application.course}
-                        </h3>
-                        <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                            application.status
-                          )}`}
-                        >
-                          <span className="mr-1">
-                            {getStatusIcon(application.status)}
+            // For students, show single application (not a list)
+            userRole === 'student' ? (
+              (() => {
+                const application = applications[0]; // Only show the first/only application
+                return (
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="p-6"
+                  >
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-3">
+                          <h3 className="text-xl font-bold text-gray-900">
+                            {application.personalDetails?.fullName || application.user?.fullName || 'Student'}
+                          </h3>
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
+                              application.workflowStatus?.currentStage || application.status
+                            )}`}
+                          >
+                            <span className="mr-2">
+                              {getStatusIcon(application.workflowStatus?.currentStage || application.status)}
+                            </span>
+                            {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
                           </span>
-                          {application.status.replace("_", " ").toUpperCase()}
-                        </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          {(application.workflowStatus?.currentStage === "SUBMITTED" || application.status === "pending") && (
+                            <button
+                              onClick={() =>
+                                handleWithdrawApplication(application._id)
+                              }
+                              className="px-4 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg border border-red-200"
+                            >
+                              Withdraw
+                            </button>
+                          )}
+                          <button
+                            onClick={() => openApplicationPdf(application._id)}
+                            className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-lg"
+                          >
+                            View PDF
+                          </button>
+                        </div>
                       </div>
-                      <p className="text-gray-600 mb-2">
-                        {application.institution}
-                      </p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span>
-                          Applied:{" "}
-                          {new Date(
-                            application.applicationDate
-                          ).toLocaleDateString()}
-                        </span>
-                        {application.preferredStartDate && (
-                          <span>
-                            Preferred Start:{" "}
-                            {new Date(
-                              application.preferredStartDate
-                            ).toLocaleDateString()}
-                          </span>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">Course</p>
+                          <p className="text-base font-semibold text-gray-900">
+                            {application.courseDetails?.selectedCourse || 'N/A'}
+                          </p>
+                        </div>
+                        {application.courseDetails?.campus && (
+                          <div>
+                            <p className="text-sm text-gray-600 mb-1">Campus</p>
+                            <p className="text-base font-semibold text-gray-900">
+                              {application.courseDetails.campus}
+                            </p>
+                          </div>
                         )}
-                        <span>Application ID: {application.applicationId}</span>
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">Application ID</p>
+                          <p className="text-base font-semibold text-gray-900">
+                            {application.applicationId || 'N/A'}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-600 mb-1">Submitted On</p>
+                          <p className="text-base font-semibold text-gray-900">
+                            {new Date(
+                              application.createdAt || application.applicationDate
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
                       </div>
-                      {application.notes && (
-                        <p className="text-sm text-gray-600 mt-2 italic">
-                          "{application.notes}"
+
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <p className="text-sm text-gray-600">
+                          {application.submittedBy && application.submittedBy._id !== application.user?._id ? (
+                            <>Form submitted by <span className="font-semibold text-gray-900">{application.submittedBy?.fullName || 'Agent/Staff'}</span></>
+                          ) : (
+                            <>Form submitted by <span className="font-semibold text-gray-900">Student</span></>
+                          )}
                         </p>
-                      )}
+                      </div>
+                    </div>
+
+                    {/* Application Details */}
+                    <div className="space-y-4">
                       {application.reviewNotes && (
-                        <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                          <p className="text-sm font-medium text-blue-900">
+                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                          <p className="text-sm font-medium text-blue-900 mb-2">
                             Review Notes:
                           </p>
                           <p className="text-sm text-blue-800">
@@ -354,29 +415,115 @@ const StudentApplications = () => {
                           </p>
                         </div>
                       )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {application.status === "pending" && (
-                        <button
-                          onClick={() =>
-                            handleWithdrawApplication(application._id)
-                          }
-                          className="px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg"
-                        >
-                          Withdraw
-                        </button>
+
+                      {application.notes && (
+                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                          <p className="text-sm font-medium text-gray-900 mb-2">
+                            Notes:
+                          </p>
+                          <p className="text-sm text-gray-700 italic">
+                            "{application.notes}"
+                          </p>
+                        </div>
                       )}
-                      <button
-                        onClick={() => openApplicationPdf(application._id)}
-                        className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
-                      >
-                        View PDF
-                      </button>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  </motion.div>
+                );
+              })()
+            ) : (
+              // For non-students (agents/staff), show list view
+              <div className="divide-y divide-gray-200">
+                {applications.map((application, index) => (
+                  <motion.div
+                    key={application._id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-6 hover:bg-gray-50"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h3 className="text-lg font-semibold text-gray-900">
+                            {application.courseDetails?.selectedCourse || application.personalDetails?.fullName || 'Application'}
+                          </h3>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                              application.workflowStatus?.currentStage || application.status
+                            )}`}
+                          >
+                            <span className="mr-1">
+                              {getStatusIcon(application.workflowStatus?.currentStage || application.status)}
+                            </span>
+                            {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
+                          </span>
+                        </div>
+                        <p className="text-gray-600 mb-2">
+                          {application.personalDetails?.fullName || application.user?.fullName || 'Student'}
+                          {application.submittedBy && application.submittedBy !== application.user?._id && (
+                            <span className="text-sm text-gray-500 ml-2">
+                              (Form submitted by {application.submittedBy?.fullName || 'Agent/Staff'})
+                            </span>
+                          )}
+                          {!application.submittedBy && (
+                            <span className="text-sm text-gray-500 ml-2">
+                              (Form submitted by Student)
+                            </span>
+                          )}
+                        </p>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          <span>
+                            Applied:{" "}
+                            {new Date(
+                              application.createdAt || application.applicationDate
+                            ).toLocaleDateString()}
+                          </span>
+                          {application.applicationId && (
+                            <span>Application ID: {application.applicationId}</span>
+                          )}
+                          {application.courseDetails?.campus && (
+                            <span>Campus: {application.courseDetails.campus}</span>
+                          )}
+                        </div>
+                        {application.notes && (
+                          <p className="text-sm text-gray-600 mt-2 italic">
+                            "{application.notes}"
+                          </p>
+                        )}
+                        {application.reviewNotes && (
+                          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                            <p className="text-sm font-medium text-blue-900">
+                              Review Notes:
+                            </p>
+                            <p className="text-sm text-blue-800">
+                              {application.reviewNotes}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {(application.workflowStatus?.currentStage === "SUBMITTED" || application.status === "pending") && (
+                          <button
+                            onClick={() =>
+                              handleWithdrawApplication(application._id)
+                            }
+                            className="px-3 py-1 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg"
+                          >
+                            Withdraw
+                          </button>
+                        )}
+                        <button
+                          onClick={() => openApplicationPdf(application._id)}
+                          className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
+                        >
+                          View PDF
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )
           ) : (
             <div className="text-center py-12">
               <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
@@ -395,10 +542,12 @@ const StudentApplications = () => {
                 </svg>
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No applications yet
+                {userRole === 'student' ? 'No application yet' : 'No applications yet'}
               </h3>
               <p className="text-gray-500 mb-6">
-                Get started by creating your first application.
+                {userRole === 'student'
+                  ? 'Get started by creating your application.'
+                  : 'Get started by creating your first application.'}
               </p>
               <button
                 onClick={() => setShowNewApplicationModal(true)}
@@ -417,7 +566,7 @@ const StudentApplications = () => {
                     d="M12 6v6m0 0v6m0-6h6m-6 0H6"
                   />
                 </svg>
-                New Application
+                {userRole === 'student' ? 'Create Application' : 'New Application'}
               </button>
             </div>
           )}

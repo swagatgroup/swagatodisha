@@ -461,6 +461,7 @@ const getUserApplications = async (req, res) => {
             user: req.user._id,
         })
             .populate("user", "fullName email phoneNumber")
+            .populate("submittedBy", "fullName email role")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
