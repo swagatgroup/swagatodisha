@@ -22,12 +22,12 @@ import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
 
-const ApplicationReview = () => {
+const ApplicationReview = ({ initialTab = 'submitted' }) => {
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [loading, setLoading] = useState(true);
     const [verifying, setVerifying] = useState(false);
-    const [activeTab, setActiveTab] = useState('submitted');
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [showDocumentViewer, setShowDocumentViewer] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState(null);
     const [documentDecisions, setDocumentDecisions] = useState({});

@@ -14,15 +14,23 @@ const EnhancedAgentDashboard = () => {
   const { selectedSession } = useSession();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [studentTableFilter, setStudentTableFilter] = useState("all");
   const [students, setStudents] = useState([]);
   const [applications, setApplications] = useState([]);
   const [stats, setStats] = useState({
     totalStudents: 0,
     pendingStudents: 0,
-    completedStudents: 0,
-    thisMonthRegistrations: 0,
+    underReviewStudents: 0,
+    approvedStudents: 0,
+    rejectedStudents: 0,
   });
   const isLoadingRef = useRef(false);
+
+  const handleStatClick = (filterKey) => {
+    // Stay on dashboard and set the student table filter
+    setStudentTableFilter(filterKey);
+    setActiveTab("dashboard");
+  };
 
   const sidebarItems = [
     {
@@ -141,14 +149,16 @@ const EnhancedAgentDashboard = () => {
         setStats({
           totalStudents: statsData.total || 0,
           pendingStudents: statsData.pending || 0,
-          completedStudents: statsData.completed || 0,
-          thisMonthRegistrations: statsData.thisMonth || 0,
+          underReviewStudents: statsData.underReview || 0,
+          approvedStudents: statsData.approved || 0,
+          rejectedStudents: statsData.rejected || 0,
         });
         console.log('📊 AgentDashboard - Stats mapped:', {
           totalStudents: statsData.total || 0,
           pendingStudents: statsData.pending || 0,
-          completedStudents: statsData.completed || 0,
-          thisMonthRegistrations: statsData.thisMonth || 0,
+          underReviewStudents: statsData.underReview || 0,
+          approvedStudents: statsData.approved || 0,
+          rejectedStudents: statsData.rejected || 0,
         });
       } else {
         console.error('📊 AgentDashboard - Stats not successful:', statsRes.data);
@@ -189,44 +199,62 @@ const EnhancedAgentDashboard = () => {
               </p>
             </motion.div>
 
-            {/* Stats Overview */}
+            {/* Processing Statistics */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6"
             >
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Total Students
-                </p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                  {stats.totalStudents}
-                </p>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Processing Statistics</h3>
               </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Pending
-                </p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                  {stats.pendingStudents}
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Completed
-                </p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                  {stats.completedStudents}
-                </p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  This Month
-                </p>
-                <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                  {stats.thisMonthRegistrations}
-                </p>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                {/* Total Students - Clickable */}
+                <div
+                  className={`bg-blue-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
+                  onClick={() => handleStatClick('all')}
+                >
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Students</p>
+                  <p className="text-2xl font-semibold text-blue-600 dark:text-blue-400">{stats.totalStudents}</p>
+                </div>
+
+                {/* Pending - Clickable */}
+                <div
+                  className={`bg-yellow-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'SUBMITTED' ? 'ring-2 ring-yellow-500' : ''}`}
+                  onClick={() => handleStatClick('SUBMITTED')}
+                >
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
+                  <p className="text-2xl font-semibold text-yellow-600 dark:text-yellow-400">{stats.pendingStudents}</p>
+                </div>
+
+                {/* Under Review - Clickable */}
+                <div
+                  className={`bg-orange-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'UNDER_REVIEW' ? 'ring-2 ring-orange-500' : ''}`}
+                  onClick={() => handleStatClick('UNDER_REVIEW')}
+                >
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Under Review</p>
+                  <p className="text-2xl font-semibold text-orange-600 dark:text-orange-400">{stats.underReviewStudents}</p>
+                </div>
+
+                {/* Approved - Clickable */}
+                <div
+                  className={`bg-green-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'APPROVED' ? 'ring-2 ring-green-500' : ''}`}
+                  onClick={() => handleStatClick('APPROVED')}
+                >
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Approved</p>
+                  <p className="text-2xl font-semibold text-green-600 dark:text-green-400">{stats.approvedStudents}</p>
+                </div>
+
+                {/* Rejected - Clickable */}
+                <div
+                  className={`bg-red-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'REJECTED' ? 'ring-2 ring-red-500' : ''}`}
+                  onClick={() => handleStatClick('REJECTED')}
+                >
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Rejected</p>
+                  <p className="text-2xl font-semibold text-red-600 dark:text-red-400">{stats.rejectedStudents}</p>
+                </div>
               </div>
             </motion.div>
 
@@ -249,6 +277,7 @@ const EnhancedAgentDashboard = () => {
                   students={students}
                   onStudentUpdate={handleStudentUpdate}
                   showActions={true}
+                  initialFilter={studentTableFilter}
                 />
               </div>
             </motion.div>

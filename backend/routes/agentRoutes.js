@@ -497,34 +497,38 @@ router.get("/stats", async (req, res) => {
     const totalStudents = await StudentApplication.countDocuments(agentQuery);
     const pendingStudents = await StudentApplication.countDocuments({
       ...agentQuery,
-      status: { $in: ["SUBMITTED", "UNDER_REVIEW"] },
+      status: "SUBMITTED",
     });
-    const completedStudents = await StudentApplication.countDocuments({
+    const underReviewStudents = await StudentApplication.countDocuments({
+      ...agentQuery,
+      status: "UNDER_REVIEW",
+    });
+    const approvedStudents = await StudentApplication.countDocuments({
       ...agentQuery,
       status: "APPROVED",
     });
-    const thisMonthRegistrations = await StudentApplication.countDocuments({
+    const rejectedStudents = await StudentApplication.countDocuments({
       ...agentQuery,
-      createdAt: {
-        $gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
-      },
+      status: "REJECTED",
     });
 
     // Debug logging
     console.log("📊 Stats Debug - Agent ID:", req.user._id);
     console.log("📊 Total students query:", agentQuery);
     console.log("📊 Total students count:", totalStudents);
-    console.log("📊 Pending students count:", pendingStudents);
-    console.log("📊 Completed students count:", completedStudents);
-    console.log("📊 This month count:", thisMonthRegistrations);
+    console.log("📊 Pending (SUBMITTED) count:", pendingStudents);
+    console.log("📊 Under Review count:", underReviewStudents);
+    console.log("📊 Approved count:", approvedStudents);
+    console.log("📊 Rejected count:", rejectedStudents);
 
     res.status(200).json({
       success: true,
       data: {
         total: totalStudents,
         pending: pendingStudents,
-        completed: completedStudents,
-        thisMonth: thisMonthRegistrations,
+        underReview: underReviewStudents,
+        approved: approvedStudents,
+        rejected: rejectedStudents,
       },
     });
   } catch (error) {

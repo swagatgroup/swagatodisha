@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
+const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFilter = 'all' }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [searchTerm, setSearchTerm] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState(initialFilter);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+    useEffect(() => {
+        // Update filter when initialFilter prop changes
+        if (initialFilter !== statusFilter) {
+            setStatusFilter(initialFilter);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialFilter]);
 
     // Debug logging for student data
     console.log('📋 StudentTable received students:', students);
@@ -131,12 +139,12 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true }) => {
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                     >
-                        <option value="all">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="under_review">Under Review</option>
-                        <option value="approved">Approved</option>
-                        <option value="completed">Completed</option>
-                        <option value="rejected">Rejected</option>
+                        <option value="all">Total Students</option>
+                        <option value="DRAFT">Draft</option>
+                        <option value="SUBMITTED">Submitted</option>
+                        <option value="UNDER_REVIEW">Under Review</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="REJECTED">Rejected</option>
                     </select>
                 </div>
             </div>

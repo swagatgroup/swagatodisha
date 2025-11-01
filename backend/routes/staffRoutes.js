@@ -153,6 +153,27 @@ router.get("/processing-stats", async (req, res) => {
     });
     console.log('❌ Rejected:', rejectedInSession);
 
+    // Draft applications in this session
+    const draftInSession = await StudentApplication.countDocuments({
+      ...sessionQuery,
+      status: 'DRAFT'
+    });
+    console.log('📝 Draft:', draftInSession);
+
+    // Submitted applications in this session (separate from pending)
+    const submittedInSession = await StudentApplication.countDocuments({
+      ...sessionQuery,
+      status: 'SUBMITTED'
+    });
+    console.log('📤 Submitted:', submittedInSession);
+
+    // Under Review applications in this session
+    const underReviewInSession = await StudentApplication.countDocuments({
+      ...sessionQuery,
+      status: 'UNDER_REVIEW'
+    });
+    console.log('🔍 Under Review:', underReviewInSession);
+
     // Calculate average processing time from workflow history (for this session)
     // Get all approved applications with workflow history in this session
     const approvedApplications = await StudentApplication.find({
@@ -248,6 +269,9 @@ router.get("/processing-stats", async (req, res) => {
         pendingVerification,
         approvedInSession,
         rejectedInSession,
+        draftInSession,
+        submittedInSession,
+        underReviewInSession,
         averageProcessingTime: finalAverageProcessingTime,
         session: sessionParam,
         sessionStartDate: startDate,

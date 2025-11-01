@@ -16,11 +16,11 @@ import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm, showLoading, closeLoading } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
 
-const AgentApplicationStatus = () => {
+const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState('all');
+    const [activeTab, setActiveTab] = useState(initialTab);
     const [resubmitting, setResubmitting] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [editData, setEditData] = useState({});

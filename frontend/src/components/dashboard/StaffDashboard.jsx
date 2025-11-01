@@ -20,12 +20,16 @@ const EnhancedStaffDashboard = () => {
     const { selectedSession } = useSession();
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('dashboard');
+    const [studentTableFilter, setStudentTableFilter] = useState('all');
     const [students, setStudents] = useState([]);
     const [processingStats, setProcessingStats] = useState({
         totalStudents: 0,
         pendingVerification: 0,
         approvedInSession: 0,
         rejectedInSession: 0,
+        draftInSession: 0,
+        submittedInSession: 0,
+        underReviewInSession: 0,
         session: 'Current'
     });
     const [agents, setAgents] = useState([]);
@@ -77,6 +81,12 @@ const EnhancedStaffDashboard = () => {
             )
         }
     ];
+
+    const handleStatClick = (filterKey) => {
+        // Stay on dashboard and set the student table filter
+        setStudentTableFilter(filterKey);
+        setActiveTab('dashboard');
+    };
 
     const refreshStats = async (session = selectedSession) => {
         try {
@@ -179,7 +189,7 @@ const EnhancedStaffDashboard = () => {
                             transition={{ delay: 0.1 }}
                             className="mb-8"
                         >
-                            <ProcessingStats data={processingStats} />
+                            <ProcessingStats data={processingStats} onStatClick={handleStatClick} />
                         </motion.div>
 
                         {/* Recent Students */}
@@ -195,6 +205,7 @@ const EnhancedStaffDashboard = () => {
                             <div className="p-6">
                                 <RecentStudentsTable
                                     onStudentUpdate={handleStudentUpdate}
+                                    initialFilter={studentTableFilter}
                                 />
                             </div>
                         </motion.div>

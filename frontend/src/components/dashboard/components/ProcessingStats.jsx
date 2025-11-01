@@ -1,13 +1,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const ProcessingStats = ({ data }) => {
+const ProcessingStats = ({ data, onStatClick }) => {
     // Safely extract data with defaults to prevent errors
     const {
         totalStudents = 0,
         pendingVerification = 0,
         approvedInSession = 0,
         rejectedInSession = 0,
+        draftInSession = 0,
+        submittedInSession = 0,
+        underReviewInSession = 0,
         session = 'Current'
     } = data || {};
 
@@ -19,6 +22,9 @@ const ProcessingStats = ({ data }) => {
     const pending = Number(pendingVerification) || 0;
     const approved = Number(approvedInSession) || 0;
     const rejected = Number(rejectedInSession) || 0;
+    const draft = Number(draftInSession) || 0;
+    const submitted = Number(submittedInSession) || 0;
+    const underReview = Number(underReviewInSession) || 0;
 
     const stats = [
         {
@@ -32,11 +38,40 @@ const ProcessingStats = ({ data }) => {
             color: 'blue',
             bgColor: 'bg-blue-50',
             textColor: 'text-blue-600',
-            iconBg: 'bg-blue-100'
+            iconBg: 'bg-blue-100',
+            filterKey: 'all' // Total shows all students
         },
         {
-            title: 'Pending Verification',
-            value: pending,
+            title: 'Draft',
+            value: draft,
+            icon: (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+            ),
+            color: 'gray',
+            bgColor: 'bg-gray-50',
+            textColor: 'text-gray-600',
+            iconBg: 'bg-gray-100',
+            filterKey: 'DRAFT'
+        },
+        {
+            title: 'Submitted',
+            value: submitted,
+            icon: (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            ),
+            color: 'blue',
+            bgColor: 'bg-blue-50',
+            textColor: 'text-blue-600',
+            iconBg: 'bg-blue-100',
+            filterKey: 'SUBMITTED'
+        },
+        {
+            title: 'Under Review',
+            value: underReview,
             icon: (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -45,7 +80,8 @@ const ProcessingStats = ({ data }) => {
             color: 'yellow',
             bgColor: 'bg-yellow-50',
             textColor: 'text-yellow-600',
-            iconBg: 'bg-yellow-100'
+            iconBg: 'bg-yellow-100',
+            filterKey: 'UNDER_REVIEW'
         },
         {
             title: 'Approved',
@@ -58,7 +94,8 @@ const ProcessingStats = ({ data }) => {
             color: 'green',
             bgColor: 'bg-green-50',
             textColor: 'text-green-600',
-            iconBg: 'bg-green-100'
+            iconBg: 'bg-green-100',
+            filterKey: 'APPROVED'
         },
         {
             title: 'Rejected',
@@ -71,7 +108,8 @@ const ProcessingStats = ({ data }) => {
             color: 'red',
             bgColor: 'bg-red-50',
             textColor: 'text-red-600',
-            iconBg: 'bg-red-100'
+            iconBg: 'bg-red-100',
+            filterKey: 'REJECTED'
         }
     ];
 
@@ -101,14 +139,15 @@ const ProcessingStats = ({ data }) => {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 {stats.map((stat, index) => (
                     <motion.div
                         key={stat.title}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className={`${stat.bgColor} dark:bg-gray-700 rounded-lg p-4`}
+                        className={`${stat.bgColor} dark:bg-gray-700 rounded-lg p-4 ${onStatClick && stat.filterKey ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
+                        onClick={() => onStatClick && stat.filterKey && onStatClick(stat.filterKey)}
                     >
                         <div className="flex items-center">
                             <div className={`p-3 ${stat.iconBg} dark:bg-gray-600 rounded-full`}>
@@ -116,7 +155,7 @@ const ProcessingStats = ({ data }) => {
                                     {stat.icon}
                                 </div>
                             </div>
-                            <div className="ml-4">
+                            <div className="ml-4 flex-1">
                                 <p className="text-sm font-medium text-gray-600 dark:text-gray-300">{stat.title}</p>
                                 <p className={`text-2xl font-semibold ${stat.textColor}`}>{stat.value}</p>
                             </div>
