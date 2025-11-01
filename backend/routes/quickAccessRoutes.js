@@ -9,13 +9,23 @@ const {
 } = require('../controllers/quickAccessController');
 const { protect, authorize } = require('../middleware/auth');
 const { upload } = require('../middleware/quickAccessUpload');
+const { asyncHandler } = require('../middleware/errorHandler');
 
 // Public route - Get active documents for homepage
-router.get('/public', async (req, res) => {
-    // Override query to only get active documents
-    req.query.isActive = 'true';
-    return getQuickAccessDocs(req, res);
-});
+router.get('/public', asyncHandler(async (req, res) => {
+    const QuickAccess = require('../models/QuickAccess');
+
+    // Only get active documents
+    const documents = await QuickAccess.find({ isActive: true })
+        .sort({ type: 1, order: 1, createdAt: -1 })
+        .select('-createdBy -updatedBy'); // Exclude populated fields for public access
+
+    res.status(200).json({
+        success: true,
+        count: documents.length,
+        data: documents
+    });
+}));
 
 // All other routes require authentication
 router.use(protect);

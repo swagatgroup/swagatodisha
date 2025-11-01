@@ -25,41 +25,111 @@ const ContactUs = () => {
     // Load Google reCAPTCHA v3
     useEffect(() => {
         const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY';
-        const script = document.createElement('script')
-        script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`
-        script.async = true
-        script.defer = true
-        script.onload = () => {
-            setRecaptchaLoaded(true)
+
+        // Skip if no key configured
+        if (!recaptchaSiteKey || recaptchaSiteKey === 'YOUR_RECAPTCHA_SITE_KEY') {
+            console.warn('reCAPTCHA site key not configured');
+            setRecaptchaLoaded(false);
+            return;
         }
-        document.body.appendChild(script)
+
+        // Check if script already exists
+        const existingScript = document.querySelector(`script[src*="recaptcha"]`);
+        if (existingScript) {
+            // Script already loaded
+            if (window.grecaptcha) {
+                setRecaptchaLoaded(true);
+            }
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`;
+        script.async = true;
+        script.defer = true;
+        script.onload = () => {
+            if (window.grecaptcha) {
+                window.grecaptcha.ready(() => {
+                    setRecaptchaLoaded(true);
+                    console.log('✅ reCAPTCHA v3 loaded successfully');
+                });
+            }
+        };
+        script.onerror = () => {
+            console.error('❌ Failed to load reCAPTCHA');
+            setRecaptchaLoaded(false);
+        };
+
+        document.body.appendChild(script);
 
         return () => {
-            // Cleanup
-            const existingScript = document.querySelector(`script[src*="recaptcha"]`)
-            if (existingScript) {
-                existingScript.remove()
-            }
-        }
+            // Cleanup on unmount (but don't remove script as it might be used elsewhere)
+        };
     }, [])
 
-    // Get reCAPTCHA token
+    // Get reCAPTCHA token with timeout
     const getRecaptchaToken = () => {
         return new Promise((resolve) => {
             const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY';
-            if (window.grecaptcha && recaptchaLoaded) {
-                window.grecaptcha.ready(() => {
-                    window.grecaptcha.execute(
-                        recaptchaSiteKey,
-                        { action: 'contact_form' }
-                    ).then((token) => {
-                        resolve(token)
-                    }).catch(() => {
-                        resolve(null) // Fail gracefully
-                    })
-                })
-            } else {
-                resolve(null) // Fail gracefully if not loaded
+
+            // If no key configured, skip reCAPTCHA
+            if (!recaptchaSiteKey || recaptchaSiteKey === 'YOUR_RECAPTCHA_SITE_KEY') {
+                console.log('reCAPTCHA not configured, skipping');
+                resolve(null);
+                return;
+            }
+
+            // Set timeout of 5 seconds
+            const timeout = setTimeout(() => {
+                console.warn('reCAPTCHA token generation timed out');
+                resolve(null); // Fail gracefully
+            }, 5000);
+
+            try {
+                if (window.grecaptcha && recaptchaLoaded) {
+                    window.grecaptcha.ready(() => {
+                        window.grecaptcha.execute(
+                            recaptchaSiteKey,
+                            { action: 'contact_form' }
+                        ).then((token) => {
+                            clearTimeout(timeout);
+                            resolve(token);
+                        }).catch((error) => {
+                            console.warn('reCAPTCHA execution failed:', error);
+                            clearTimeout(timeout);
+                            resolve(null); // Fail gracefully
+                        });
+                    });
+                } else {
+                    clearTimeout(timeout);
+                    // If not loaded yet, wait a bit more, but not indefinitely
+                    const retryTimeout = setTimeout(() => {
+                        console.warn('reCAPTCHA not loaded after retry');
+                        resolve(null);
+                    }, 2000);
+
+                    // Try to wait for it to load
+                    if (window.grecaptcha) {
+                        window.grecaptcha.ready(() => {
+                            clearTimeout(retryTimeout);
+                            window.grecaptcha.execute(
+                                recaptchaSiteKey,
+                                { action: 'contact_form' }
+                            ).then((token) => {
+                                resolve(token);
+                            }).catch(() => {
+                                resolve(null);
+                            });
+                        });
+                    } else {
+                        clearTimeout(retryTimeout);
+                        resolve(null); // Fail gracefully if not loaded
+                    }
+                }
+            } catch (error) {
+                clearTimeout(timeout);
+                console.error('reCAPTCHA error:', error);
+                resolve(null); // Fail gracefully
             }
         })
     }
@@ -164,8 +234,17 @@ const ContactUs = () => {
         showLoading('Sending Message...', 'Please wait while we send your message');
 
         try {
-            // Get reCAPTCHA token
-            const recaptchaToken = await getRecaptchaToken()
+            // Get reCAPTCHA token (non-blocking with timeout)
+            let recaptchaToken = null;
+            try {
+                recaptchaToken = await Promise.race([
+                    getRecaptchaToken(),
+                    new Promise((resolve) => setTimeout(() => resolve(null), 3000)) // 3 second max wait
+                ]);
+            } catch (error) {
+                console.warn('reCAPTCHA token generation error:', error);
+                // Continue without reCAPTCHA if it fails
+            }
 
             // Create FormData for file uploads
             const formDataToSend = new FormData()
@@ -175,7 +254,7 @@ const ContactUs = () => {
             formDataToSend.append('subject', formData.subject.trim())
             formDataToSend.append('message', formData.message.trim())
 
-            // Add reCAPTCHA token
+            // Add reCAPTCHA token (only if we have one)
             if (recaptchaToken) {
                 formDataToSend.append('recaptcha_token', recaptchaToken)
             }
@@ -190,7 +269,8 @@ const ContactUs = () => {
             const response = await api.post('/api/contact/submit', formDataToSend, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
-                }
+                },
+                timeout: 60000 // 60 second timeout for file uploads
             })
 
             closeLoading();
@@ -219,7 +299,31 @@ const ContactUs = () => {
         } catch (error) {
             console.error('Form submission error:', error)
             closeLoading();
-            handleApiError(error, 'Failed to send message. Please try again later.');
+
+            // Provide more specific error messages
+            if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
+                showError('Timeout Error', 'The request took too long. Please try again with smaller files or check your connection.');
+            } else if (error.response) {
+                // Server responded with error
+                const errorMsg = error.response.data?.message || error.response.data?.error || 'Failed to send message';
+                const errorDetails = error.response.data?.errors;
+
+                if (errorDetails && Array.isArray(errorDetails)) {
+                    // File validation errors
+                    const fileErrors = errorDetails.map(e =>
+                        `${e.filename || 'File'}: ${e.errors?.join(', ') || 'Invalid file'}`
+                    ).join('\n');
+                    showError('File Validation Failed', fileErrors);
+                } else {
+                    showError('Submission Failed', errorMsg);
+                }
+            } else if (error.request) {
+                // Request made but no response
+                showError('Network Error', 'Could not reach the server. Please check your internet connection and try again.');
+            } else {
+                // Something else happened
+                handleApiError(error, 'Failed to send message. Please try again later.');
+            }
         } finally {
             setIsSubmitting(false)
         }
@@ -387,14 +491,11 @@ const ContactUs = () => {
                                             value={formData.phone}
                                             onChange={handleInputChange}
                                             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            placeholder="Enter 10-digit mobile number"
+                                            placeholder="Enter your phone number"
                                             maxLength="10"
                                             pattern="[6-9]\d{9}"
                                             required
                                         />
-                                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                            Must be exactly 10 digits starting with 6, 7, 8, or 9
-                                        </p>
                                     </div>
 
                                     <div>
@@ -472,6 +573,7 @@ const ContactUs = () => {
                                             aria-hidden="true"
                                         />
                                     </div>
+
 
                                     <button
                                         type="submit"

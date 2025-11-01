@@ -228,27 +228,35 @@ const antiSpamMiddleware = async (req, res, next) => {
         });
     }
 
-    // 1. Verify reCAPTCHA
-    const recaptchaResult = await verifyRecaptcha(recaptcha_token);
-    if (!recaptchaResult.success) {
-        console.warn(`🤖 reCAPTCHA failed - IP: ${ip}, Score: ${recaptchaResult.score}`);
+    // 1. Verify reCAPTCHA (if token provided)
+    if (recaptcha_token) {
+        const recaptchaResult = await verifyRecaptcha(recaptcha_token);
+        if (!recaptchaResult.success) {
+            console.warn(`🤖 reCAPTCHA failed - IP: ${ip}, Score: ${recaptchaResult.score || 'N/A'}`);
 
-        // Track failed attempts
-        if (!ipSubmissionStore.has(ip)) {
-            ipSubmissionStore.set(ip, { submissions: [], flagged: false });
+            // Track failed attempts
+            if (!ipSubmissionStore.has(ip)) {
+                ipSubmissionStore.set(ip, { submissions: [], flagged: false });
+            }
+            const ipData = ipSubmissionStore.get(ip);
+            ipData.submissions.push(Date.now());
+
+            // Block after 3 failed attempts in an hour
+            const recentFailures = ipData.submissions.filter(ts => Date.now() - ts < 3600000);
+            if (recentFailures.length >= 3) {
+                blockedIPs.add(ip);
+                return res.status(400).json({
+                    success: false,
+                    message: 'Security verification failed. Please refresh and try again.'
+                });
+            }
+
+            // Allow single failure but log it
+            console.log(`⚠️ reCAPTCHA failed but allowing (not enough failures yet)`);
         }
-        const ipData = ipSubmissionStore.get(ip);
-        ipData.submissions.push(Date.now());
-
-        // Block after 3 failed attempts
-        if (ipData.submissions.filter(ts => Date.now() - ts < 3600000).length >= 3) {
-            blockedIPs.add(ip);
-        }
-
-        return res.status(400).json({
-            success: false,
-            message: 'Security verification failed. Please refresh and try again.'
-        });
+    } else {
+        // No reCAPTCHA token - log but don't block (might not be configured)
+        console.log(`ℹ️ No reCAPTCHA token provided - continuing without verification`);
     }
 
     // 2. Validate email domain

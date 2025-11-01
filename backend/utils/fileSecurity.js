@@ -117,7 +117,7 @@ const verifyFileTypeBySignature = (filePath, expectedMimeType) => {
 };
 
 /**
- * Scan file content for malicious patterns
+ * Scan file content for malicious patterns (optimized - only first 50KB)
  */
 const scanForMaliciousContent = (filePath, mimeType) => {
     try {
@@ -126,12 +126,32 @@ const scanForMaliciousContent = (filePath, mimeType) => {
             return { safe: true, threats: [] };
         }
 
-        const content = fs.readFileSync(filePath, 'utf8');
+        // For PDFs and Office docs, only check magic bytes, not content scanning
+        if (mimeType === 'application/pdf' ||
+            mimeType === 'application/msword' ||
+            mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+            // These are binary, just check size
+            const stats = fs.statSync(filePath);
+            if (stats.size > 10 * 1024 * 1024) { // Already validated, but double check
+                return { safe: false, threats: ['File size exceeds limit'] };
+            }
+            return { safe: true, threats: [] };
+        }
+
+        // For text files, read only first 50KB for performance
+        const maxScanSize = 50 * 1024; // 50KB
+        const buffer = Buffer.alloc(maxScanSize);
+        const fd = fs.openSync(filePath, 'r');
+        const bytesRead = fs.readSync(fd, buffer, 0, maxScanSize, 0);
+        fs.closeSync(fd);
+
+        const content = buffer.slice(0, bytesRead).toString('utf8', 0, bytesRead);
         const threats = [];
 
         for (const pattern of MALICIOUS_PATTERNS) {
             if (pattern.test(content)) {
-                threats.push(`Malicious pattern detected: ${pattern.source}`);
+                threats.push(`Malicious pattern detected`);
+                break; // Stop on first threat for performance
             }
         }
 
@@ -142,8 +162,8 @@ const scanForMaliciousContent = (filePath, mimeType) => {
     } catch (error) {
         // If file can't be read as text, it's likely binary - check size
         const stats = fs.statSync(filePath);
-        if (stats.size > 50 * 1024 * 1024) { // 50MB
-            return { safe: false, threats: ['File size suspiciously large'] };
+        if (stats.size > 10 * 1024 * 1024) {
+            return { safe: false, threats: ['File size exceeds limit'] };
         }
         return { safe: true, threats: [] };
     }

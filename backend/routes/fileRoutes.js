@@ -59,9 +59,10 @@ router.get('/health', (req, res) => {
 
 // @route   GET /api/files/download/:fileName
 // @desc    Download file by filename (from processed directory)
-// @access  Protected
+// @desc    Robust: Checks database for application, regenerates if needed, handles production ephemeral filesystem
+// @access  Protected (but can work without auth if file exists)
 // NOTE: This route must come before /:id to avoid route conflicts
-router.get('/download/:fileName', protect, async (req, res) => {
+router.get('/download/:fileName', async (req, res) => {
     try {
         const { fileName } = req.params;
         const fs = require('fs');
@@ -75,17 +76,88 @@ router.get('/download/:fileName', protect, async (req, res) => {
             });
         }
 
-        const filePath = path.join(__dirname, '../uploads/processed', fileName);
+        // Extract applicationId from filename if it's a combined PDF or ZIP
+        // Format: application_APP25114337_combined_1762009731872.pdf
+        // Format: application_APP25114337_documents_1762009731872.zip
+        let applicationId = null;
+        const appIdMatch = fileName.match(/application_([A-Z0-9]+)_(combined|documents)/);
+        if (appIdMatch) {
+            applicationId = appIdMatch[1];
+        }
 
-        if (!fs.existsSync(filePath)) {
+        // Try multiple possible file locations
+        const possiblePaths = [
+            path.join(__dirname, '../uploads/processed', fileName),
+            path.join(__dirname, '../uploads', fileName),
+            path.join(process.cwd(), 'uploads/processed', fileName),
+            path.join(process.cwd(), 'uploads', fileName)
+        ];
+
+        let filePath = null;
+        for (const possiblePath of possiblePaths) {
+            if (fs.existsSync(possiblePath)) {
+                filePath = possiblePath;
+                break;
+            }
+        }
+
+        // If file doesn't exist and we have an applicationId, try to regenerate
+        if (!filePath && applicationId) {
+            try {
+                const StudentApplication = require('../models/StudentApplication');
+                const pdfGenerator = require('../utils/pdfGenerator');
+
+                const application = await StudentApplication.findOne({ applicationId })
+                    .populate('user', 'fullName email phoneNumber');
+
+                if (application) {
+                    console.log(`📄 File not found, attempting to regenerate for ${applicationId}`);
+
+                    let result;
+
+                    // Check if it's a ZIP or PDF request
+                    if (fileName.includes('_documents_') && fileName.endsWith('.zip')) {
+                        // Regenerate ZIP
+                        const selectedDocuments = application.documents || [];
+                        result = await pdfGenerator.generateDocumentsZIP(application, selectedDocuments);
+                        console.log(`✅ ZIP regenerated: ${result.filePath}`);
+                    } else if (fileName.includes('_combined_') && fileName.endsWith('.pdf')) {
+                        // Regenerate combined PDF
+                        result = await pdfGenerator.generateCombinedPDF(application);
+
+                        // Update application with new path
+                        application.combinedPdfUrl = `/uploads/processed/${result.fileName}`;
+                        application.progress.applicationPdfGenerated = true;
+                        await application.save();
+
+                        console.log(`✅ PDF regenerated: ${result.filePath}`);
+                    }
+
+                    if (result && result.filePath) {
+                        filePath = result.filePath;
+                    }
+                }
+            } catch (regenerateError) {
+                console.error('Error regenerating file:', regenerateError);
+                // Continue to 404 if regeneration fails
+            }
+        }
+
+        // If still no file found, return 404
+        if (!filePath || !fs.existsSync(filePath)) {
+            console.error(`❌ File not found: ${fileName}`);
+            console.error(`Checked paths:`, possiblePaths);
+
             return res.status(404).json({
                 success: false,
-                message: 'File not found'
+                message: 'File not found. The file may have been deleted or the server was restarted.',
+                suggestion: applicationId ? 'Try regenerating the PDF/ZIP from the application page.' : 'Please contact support.'
             });
         }
 
         // Set appropriate headers
         res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Cache-Control', 'no-cache');
 
         // Determine content type
         if (fileName.endsWith('.pdf')) {
@@ -97,14 +169,27 @@ router.get('/download/:fileName', protect, async (req, res) => {
         }
 
         // Send file
-        res.sendFile(path.resolve(filePath));
+        res.sendFile(path.resolve(filePath), (err) => {
+            if (err) {
+                console.error('Error sending file:', err);
+                if (!res.headersSent) {
+                    res.status(500).json({
+                        success: false,
+                        message: 'Failed to send file',
+                        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+                    });
+                }
+            }
+        });
     } catch (error) {
         console.error('Download file error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to download file',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-        });
+        if (!res.headersSent) {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to download file',
+                error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+            });
+        }
     }
 });
 

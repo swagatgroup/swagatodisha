@@ -10,13 +10,23 @@ const {
 } = require('../controllers/sliderController');
 const { protect, authorize } = require('../middleware/auth');
 const { upload, optimizeSliderImage } = require('../middleware/sliderUpload');
+const { asyncHandler } = require('../middleware/errorHandler');
 
 // Public route - Get active sliders for homepage
-router.get('/public', async (req, res) => {
-    // Override query to only get active sliders
-    req.query.isActive = 'true';
-    return getSliders(req, res);
-});
+router.get('/public', asyncHandler(async (req, res) => {
+    const Slider = require('../models/Slider');
+
+    // Only get active sliders
+    const sliders = await Slider.find({ isActive: true })
+        .sort({ order: 1, createdAt: -1 })
+        .select('-createdBy -updatedBy'); // Exclude populated fields for public access
+
+    res.status(200).json({
+        success: true,
+        count: sliders.length,
+        data: sliders
+    });
+}));
 
 // All other routes require authentication
 router.use(protect);
