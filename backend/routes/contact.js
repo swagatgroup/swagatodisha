@@ -37,7 +37,10 @@ const buildTransporter = () => {
     return null;
 };
 
-// Configure multer for file uploads
+// Import file security utilities
+const { sanitizeFilename, validateFileSecurity } = require('../utils/fileSecurity');
+
+// Configure multer for file uploads with enhanced security
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         const uploadDir = process.env.CONTACT_UPLOAD_DIR || 'uploads/contact-documents';
@@ -47,8 +50,12 @@ const storage = multer.diskStorage({
         cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
+        // Sanitize filename to prevent path traversal and XSS
+        const sanitized = sanitizeFilename(file.originalname);
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        const ext = path.extname(sanitized);
+        const name = path.basename(sanitized, ext);
+        cb(null, `${name}-${uniqueSuffix}${ext}`);
     }
 });
 
@@ -59,17 +66,106 @@ const upload = multer({
         files: 5 // Maximum 5 files
     },
     fileFilter: (req, file, cb) => {
-        const allowedTypes = /pdf|doc|docx|jpg|jpeg|png|txt/;
-        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-        const mimetype = allowedTypes.test(file.mimetype);
+        // Allowed MIME types
+        const allowedMimeTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'image/jpeg',
+            'image/jpg',
+            'image/png',
+            'text/plain'
+        ];
 
-        if (mimetype && extname) {
-            return cb(null, true);
-        } else {
-            cb(new Error('Invalid file type. Only PDF, DOC, DOCX, JPG, PNG, TXT files are allowed.'));
+        // Allowed extensions
+        const allowedExtensions = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.txt'];
+        const ext = path.extname(file.originalname).toLowerCase();
+
+        // Check extension
+        if (!allowedExtensions.includes(ext)) {
+            return cb(new Error(`File extension ${ext} is not allowed. Only PDF, DOC, DOCX, JPG, PNG, TXT files are allowed.`));
         }
+
+        // Check MIME type
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+            return cb(new Error(`File type ${file.mimetype} is not allowed. Only PDF, DOC, DOCX, JPG, PNG, TXT files are allowed.`));
+        }
+
+        cb(null, true);
     }
 });
+
+// Middleware to validate uploaded files after multer processes them
+const validateUploadedFiles = async (req, res, next) => {
+    if (!req.files || req.files.length === 0) {
+        return next(); // No files, continue
+    }
+
+    const validationErrors = [];
+    const validatedFiles = [];
+
+    for (const file of req.files) {
+        try {
+            // Comprehensive security validation
+            const validation = await validateFileSecurity(
+                file.path,
+                file.originalname,
+                file.mimetype
+            );
+
+            if (!validation.safe) {
+                validationErrors.push({
+                    filename: file.originalname,
+                    errors: validation.errors
+                });
+
+                // Clean up unsafe file
+                try {
+                    await fsp.unlink(file.path);
+                } catch (unlinkError) {
+                    console.error('Error deleting unsafe file:', unlinkError);
+                }
+            } else {
+                validatedFiles.push(file);
+            }
+        } catch (error) {
+            console.error('Error validating file:', error);
+            validationErrors.push({
+                filename: file.originalname,
+                errors: ['File validation error: ' + error.message]
+            });
+
+            // Clean up file on error
+            try {
+                await fsp.unlink(file.path);
+            } catch (unlinkError) {
+                console.error('Error deleting file:', unlinkError);
+            }
+        }
+    }
+
+    // If any files failed validation, reject the entire request
+    if (validationErrors.length > 0) {
+        // Clean up any remaining validated files
+        for (const file of validatedFiles) {
+            try {
+                await fsp.unlink(file.path);
+            } catch (error) {
+                console.error('Error cleaning up file:', error);
+            }
+        }
+
+        return res.status(400).json({
+            success: false,
+            message: 'File validation failed',
+            errors: validationErrors
+        });
+    }
+
+    // Replace req.files with validated files
+    req.files = validatedFiles;
+    next();
+};
 
 // @desc    Submit contact form with optional document uploads
 // @route   POST /api/contact/submit
@@ -77,6 +173,7 @@ const upload = multer({
 router.post('/submit', [
     contactFormRateLimit, // Stricter rate limiting (3 per hour)
     upload.array('documents', 5), // Maximum 5 files - MUST come first to parse multipart form
+    validateUploadedFiles, // Validate file security after upload - MUST come after multer
     checkHoneypot, // Check honeypot field (after multer parses body)
     antiSpamMiddleware, // Comprehensive anti-spam checks (after multer parses body)
     body('name')
@@ -90,8 +187,9 @@ router.post('/submit', [
         .withMessage('Valid email is required'),
     body('phone')
         .customSanitizer((value) => (value || '').replace(/\D/g, ''))
-        .isLength({ min: 10, max: 15 })
-        .withMessage('Phone number must contain at least 10 digits'),
+        .isLength({ min: 10, max: 10 })
+        .matches(/^[6-9]\d{9}$/)
+        .withMessage('Phone number must be exactly 10 digits starting with 6, 7, 8, or 9 (Indian mobile number)'),
     body('subject')
         .trim()
         .isLength({ min: 3, max: 200 })

@@ -103,7 +103,7 @@ class PerformanceOptimization {
 
     setupServiceWorker() {
         // Only register service worker in production
-        if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+        if ('serviceWorker' in navigator && (import.meta.env.PROD || import.meta.env.MODE === 'production')) {
             if ('serviceWorker' in navigator) {
                 try {
                     navigator.serviceWorker.register('/sw.js');
@@ -117,7 +117,7 @@ class PerformanceOptimization {
                 .catch(error => {
                     console.log('Service Worker registration failed:', error);
                 });
-        } else if (process.env.NODE_ENV === 'development') {
+        } else if (import.meta.env.DEV || import.meta.env.MODE === 'development') {
             console.log('Service Worker disabled in development mode');
         }
     }

@@ -1,8 +1,9 @@
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CONTACT_INFO } from '../utils/constants'
+import api from '../utils/api'
 
 // Register ScrollTrigger only on client side
 if (typeof window !== 'undefined') {
@@ -23,87 +24,85 @@ const QuickLinks = () => {
     const scrollContainerRef = useRef(null)
     const careerModalTimeoutRef = useRef(null)
 
-    // Document categories with multiple links for each category
-    const documentSections = {
+    // Default document sections (fallback)
+    const defaultDocumentSections = {
         timetable: {
             title: "📅 Time Tables & Schedules",
             description: "Academic schedules from different universities",
-            documents: [
-                {
-                    name: "Main University Time Table",
-                    file: "Date-Sheet.pdf",
-                    type: "pdf",
-                    description: "Primary academic schedule"
-                },
-                {
-                    name: "OSBME Information Booklet",
-                    file: "OSBME-Information-Booklet.pdf",
-                    type: "pdf",
-                    description: "Complete OSBME program schedule"
-                },
-                {
-                    name: "Semester Schedule",
-                    file: "Date-Sheet.pdf",
-                    type: "pdf",
-                    description: "Detailed semester-wise schedule"
-                }
-            ]
+            documents: []
         },
         notifications: {
             title: "📢 Important Notifications",
             description: "Latest updates and announcements",
-            documents: [
-                {
-                    name: "Declaration for No Minimum Qualification",
-                    file: "Declaration for no  minimum qualification.pdf",
-                    type: "pdf",
-                    description: "Important declaration regarding admission criteria"
-                },
-                {
-                    name: "Declaration for Document Genuineness",
-                    file: "Declaration For The Genuineness of Documents.pdf",
-                    type: "pdf",
-                    description: "Document verification requirements"
-                },
-                {
-                    name: "NOC for New Institution",
-                    file: "NOC for opening of new institution to impart DMLT.pdf",
-                    type: "pdf",
-                    description: "No Objection Certificate for new programs"
-                },
-                {
-                    name: "Board Affiliation DMLT",
-                    file: "Board affiliation concerning the DMLTDMRT.pdf",
-                    type: "pdf",
-                    description: "Board affiliation details for DMLT program"
-                }
-            ]
+            documents: []
         },
         results: {
             title: "📊 Results & Admissions",
             description: "Academic results and admission information",
-            documents: [
-                {
-                    name: "OSBME DEP Admission Form",
-                    file: "OSBME-DEP-Admission-Form.pdf",
-                    type: "pdf",
-                    description: "Admission form for OSBME DEP program"
-                },
-                {
-                    name: "AI Center Affiliation",
-                    file: "Affilation of AI center of Patrachar Siksha Parishad.jpg",
-                    type: "jpg",
-                    description: "Affiliation certificate for AI center"
-                },
-                {
-                    name: "University Results Portal",
-                    file: "OSBME-Information-Booklet.pdf",
-                    type: "pdf",
-                    description: "Access to results and grades"
-                }
-            ]
+            documents: []
         }
-    }
+    };
+
+    const [documentSections, setDocumentSections] = useState(defaultDocumentSections);
+
+    // Fetch documents from API
+    useEffect(() => {
+        const fetchDocuments = async () => {
+            try {
+                const response = await api.get('/api/admin/quick-access/public?isActive=true');
+                if (response.data.success && response.data.data) {
+                    const docs = response.data.data;
+
+                    // Group documents by type
+                    const sections = {
+                        timetable: {
+                            title: "📅 Time Tables & Schedules",
+                            description: "Academic schedules from different universities",
+                            documents: []
+                        },
+                        notifications: {
+                            title: "📢 Important Notifications",
+                            description: "Latest updates and announcements",
+                            documents: []
+                        },
+                        results: {
+                            title: "📊 Results & Admissions",
+                            description: "Academic results and admission information",
+                            documents: []
+                        }
+                    };
+
+                    docs
+                        .sort((a, b) => (a.order || 0) - (b.order || 0))
+                        .forEach(doc => {
+                            if (sections[doc.type]) {
+                                // Handle file path
+                                let filePath = doc.file;
+                                if (!filePath.startsWith('http') && !filePath.startsWith('/')) {
+                                    filePath = `/api${filePath}`;
+                                } else if (!filePath.startsWith('http') && filePath.startsWith('/')) {
+                                    filePath = filePath;
+                                }
+
+                                sections[doc.type].documents.push({
+                                    name: doc.title,
+                                    file: filePath,
+                                    type: "pdf",
+                                    description: doc.description || ''
+                                });
+                            }
+                        });
+
+                    setDocumentSections(sections);
+                }
+            } catch (error) {
+                console.error('Error fetching quick access documents:', error);
+                // Keep default empty sections
+            }
+        };
+
+        fetchDocuments();
+    }, []);
 
     // Blinking animation for links
     const startBlinking = (documentName) => {

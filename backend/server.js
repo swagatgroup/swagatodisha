@@ -318,6 +318,8 @@ const pdfRoutes = require('./routes/pdf');
 const documentTypesRoutes = require('./routes/documentTypes');
 const cmsRoutes = require('./routes/cms');
 const applicationVerificationRoutes = require('./routes/applicationVerification');
+const sliderRoutes = require('./routes/sliderRoutes');
+const quickAccessRoutes = require('./routes/quickAccessRoutes');
 
 // MongoDB Application Routes
 app.post('/api/application/create', protect, async (req, res) => {
@@ -961,6 +963,8 @@ app.use('/api/analytics', apiRateLimit, analyticsRoutes);
 app.use('/api/agents', apiRateLimit, agentRoutes);
 app.use('/api/staff', apiRateLimit, staffRoutes);
 app.use('/api/verification', apiRateLimit, applicationVerificationRoutes);
+app.use('/api/admin/sliders', apiRateLimit, sliderRoutes);
+app.use('/api/admin/quick-access', apiRateLimit, quickAccessRoutes);
 
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {

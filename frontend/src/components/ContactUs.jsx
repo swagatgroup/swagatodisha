@@ -24,8 +24,9 @@ const ContactUs = () => {
 
     // Load Google reCAPTCHA v3
     useEffect(() => {
+        const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY';
         const script = document.createElement('script')
-        script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY'}`
+        script.src = `https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`
         script.async = true
         script.defer = true
         script.onload = () => {
@@ -45,10 +46,11 @@ const ContactUs = () => {
     // Get reCAPTCHA token
     const getRecaptchaToken = () => {
         return new Promise((resolve) => {
+            const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || import.meta.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY';
             if (window.grecaptcha && recaptchaLoaded) {
                 window.grecaptcha.ready(() => {
                     window.grecaptcha.execute(
-                        process.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY',
+                        recaptchaSiteKey,
                         { action: 'contact_form' }
                     ).then((token) => {
                         resolve(token)
@@ -64,10 +66,21 @@ const ContactUs = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
+
+        // Special handling for phone number - only allow digits, max 10
+        if (name === 'phone') {
+            // Remove all non-digits and limit to 10 digits
+            const digitsOnly = value.replace(/\D/g, '').slice(0, 10);
+            setFormData(prev => ({
+                ...prev,
+                [name]: digitsOnly
+            }))
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                [name]: value
+            }))
+        }
     }
 
     const handleFileChange = (e) => {
@@ -119,6 +132,16 @@ const ContactUs = () => {
         }
         if (!formData.phone.trim()) {
             showError('Phone Number Required', 'Please enter your phone number');
+            return false
+        }
+        // Validate 10-digit Indian mobile number (starts with 6-9)
+        const phoneDigits = formData.phone.replace(/\D/g, '');
+        if (phoneDigits.length !== 10) {
+            showError('Invalid Phone Number', 'Phone number must be exactly 10 digits');
+            return false
+        }
+        if (!/^[6-9]\d{9}$/.test(phoneDigits)) {
+            showError('Invalid Phone Number', 'Phone number must start with 6, 7, 8, or 9 (Indian mobile number)');
             return false
         }
         if (!formData.subject.trim()) {
@@ -364,9 +387,14 @@ const ContactUs = () => {
                                             value={formData.phone}
                                             onChange={handleInputChange}
                                             className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            placeholder="Enter your phone number"
+                                            placeholder="Enter 10-digit mobile number"
+                                            maxLength="10"
+                                            pattern="[6-9]\d{9}"
                                             required
                                         />
+                                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                            Must be exactly 10 digits starting with 6, 7, 8, or 9
+                                        </p>
                                     </div>
 
                                     <div>

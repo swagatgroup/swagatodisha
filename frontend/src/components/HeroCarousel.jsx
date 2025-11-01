@@ -1,19 +1,53 @@
-import {useState, useEffect} from 'react';
-import { CAROUSEL_IMAGES } from '../utils/constants'
+import { useState, useEffect } from 'react';
+import { CAROUSEL_IMAGES } from '../utils/constants';
+import api from '../utils/api';
 
 const HeroCarousel = () => {
-    const [currentSlide, setCurrentSlide] = useState(0)
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [slides, setSlides] = useState(CAROUSEL_IMAGES); // Fallback to constants
+    const [loading, setLoading] = useState(true);
 
-    // Use images from constants for consistency
-    const slides = CAROUSEL_IMAGES
+    // Fetch sliders from API
+    useEffect(() => {
+        const fetchSliders = async () => {
+            try {
+                const response = await api.get('/api/admin/sliders/public?isActive=true');
+                if (response.data.success && response.data.data && response.data.data.length > 0) {
+                    // Map API response to image URLs
+                    const apiSlides = response.data.data
+                        .sort((a, b) => (a.order || 0) - (b.order || 0))
+                        .map(slider => {
+                            // Handle both absolute and relative paths
+                            if (slider.image.startsWith('http')) {
+                                return slider.image;
+                            } else if (slider.image.startsWith('/')) {
+                                return slider.image;
+                            } else {
+                                return `/api${slider.image}`;
+                            }
+                        });
+                    setSlides(apiSlides);
+                }
+                // If API fails or returns empty, keep using constants as fallback
+            } catch (error) {
+                console.error('Error fetching sliders:', error);
+                // Keep using constants as fallback
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSliders();
+    }, []);
 
     // Auto-advance slides every 3 seconds
     useEffect(() => {
+        if (slides.length === 0) return;
         const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length)
-        }, 3000)
+            setCurrentSlide((prev) => (prev + 1) % slides.length);
+        }, 3000);
 
-        return () => clearInterval(timer)
+        return () => clearInterval(timer);
     }, [slides.length])
 
     // Go to specific slide
