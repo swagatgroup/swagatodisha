@@ -112,6 +112,29 @@ const SuperAdminDashboard = () => {
         fetchAdminData(selectedSession);
     }, [selectedSession]);
 
+    const handleStudentUpdate = (updatedStudent) => {
+        // Refresh dashboard stats when a new student is registered
+        if (updatedStudent) {
+            showSuccessToast('Student registered successfully!');
+
+            // Refresh stats
+            const fetchAdminData = async () => {
+                try {
+                    const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+                    if (statsRes.data?.success) {
+                        setStats(statsRes.data.data);
+                    }
+                } catch (error) {
+                    console.error('Error refreshing admin data:', error);
+                }
+            };
+
+            fetchAdminData();
+
+            // Optionally switch to students tab to see the new registration
+            // setActiveSidebarItem('students');
+        }
+    };
 
     const renderSidebarContent = () => {
         switch (activeSidebarItem) {
@@ -228,7 +251,11 @@ const SuperAdminDashboard = () => {
                     </div>
                 );
             case 'new-registration':
-                return <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />;
+                return (
+                    <ErrorBoundary>
+                        <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />
+                    </ErrorBoundary>
+                );
             case 'application-review':
                 return <ApplicationReview />;
             default:
