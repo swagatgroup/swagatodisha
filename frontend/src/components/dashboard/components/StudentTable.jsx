@@ -1,12 +1,19 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../../contexts/AuthContext';
+import api from '../../../utils/api';
+import { showSuccess, showError, showConfirm, showLoading, closeLoading, handleApiError } from '../../../utils/sweetAlert';
 
-const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFilter = 'all' }) => {
+const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFilter = 'all', onStudentDelete }) => {
+    const { user } = useAuth();
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState(initialFilter);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+    // Only Super Admin can delete
+    const canDelete = user?.role === 'super_admin';
 
     useEffect(() => {
         // Update filter when initialFilter prop changes
@@ -32,6 +39,36 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
             direction = 'desc';
         }
         setSortConfig({ key, direction });
+    };
+
+    const handleDelete = async (studentId) => {
+        const confirmed = await showConfirm(
+            'Delete Student Application',
+            'Are you sure you want to delete this student application? This action cannot be undone.',
+            'warning'
+        );
+
+        if (!confirmed) return;
+
+        try {
+            showLoading('Deleting student application...');
+
+            console.log('🗑️ Deleting student:', studentId);
+            await api.delete(`/api/admin/students/${studentId}`);
+
+            closeLoading();
+            showSuccess('Student application deleted successfully!');
+
+            // Call the parent's onStudentDelete if provided, otherwise just update local state
+            if (onStudentDelete) {
+                onStudentDelete(studentId);
+            }
+        } catch (error) {
+            console.error('❌ Error deleting student:', error);
+            console.error('❌ Error response:', error.response?.data);
+            closeLoading();
+            handleApiError(error, 'Failed to delete student application');
+        }
     };
 
     const getStatusColor = (status) => {
@@ -288,6 +325,17 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                             <button className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300">
                                                 Contact
                                             </button>
+                                            {canDelete && (
+                                                <button
+                                                    onClick={() => handleDelete(student._id)}
+                                                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                    title="Delete"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            )}
                                         </div>
                                     </td>
                                 )}
