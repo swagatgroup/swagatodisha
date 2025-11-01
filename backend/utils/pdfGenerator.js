@@ -42,7 +42,7 @@ class PDFGenerator {
             const downloadFile = (url) => {
                 return new Promise((resolve, reject) => {
                     const protocol = url.startsWith('https') ? https : http;
-                    const timeout = 30000; // 30 seconds timeout
+                    const timeout = 90000; // 90 seconds timeout for large files
 
                     const request = protocol.get(url, (res) => {
                         if (res.statusCode !== 200) {
@@ -58,7 +58,7 @@ class PDFGenerator {
                     request.on('error', reject);
                     request.setTimeout(timeout, () => {
                         request.destroy();
-                        reject(new Error('Download timeout after 30 seconds'));
+                        reject(new Error('Download timeout after 90 seconds'));
                     });
                 });
             };
@@ -148,12 +148,7 @@ class PDFGenerator {
                     console.log(`📄 Processing document for PDF: ${doc.documentType} from ${docUrl}`);
 
                     // Download the document with timeout
-                    const fileBuffer = await Promise.race([
-                        downloadFile(docUrl),
-                        new Promise((_, reject) =>
-                            setTimeout(() => reject(new Error('Download timeout after 30 seconds')), 30000)
-                        )
-                    ]);
+                    const fileBuffer = await downloadFile(docUrl);
 
                     if (!fileBuffer || fileBuffer.length === 0) {
                         console.warn(`⚠️ Empty file buffer for ${doc.documentType}, skipping`);
@@ -194,12 +189,52 @@ class PDFGenerator {
             const pdfBytes = await mergedPdf.save();
             fs.writeFileSync(filePath, pdfBytes);
 
-            console.log(`✅ Combined PDF generated successfully: ${fileName} (${addedCount} documents)`);
+            // Verify file was written successfully
+            if (!fs.existsSync(filePath)) {
+                throw new Error(`Failed to write PDF file to ${filePath}`);
+            }
+
+            const stats = fs.statSync(filePath);
+            if (stats.size === 0) {
+                throw new Error(`PDF file was created but is empty: ${filePath}`);
+            }
+
+            console.log(`✅ Combined PDF generated successfully: ${fileName} (${addedCount} documents, ${stats.size} bytes)`);
+
+            // Upload to Cloudinary if configured
+            let cloudinaryUrl = null;
+            if (cloudinary.config().cloud_name) {
+                try {
+                    console.log('☁️ Uploading PDF to Cloudinary...');
+                    const cloudinaryResult = await cloudinary.uploader.upload(filePath, {
+                        folder: `swagat-odisha/processed-pdfs`,
+                        resource_type: 'raw', // PDFs are raw files
+                        type: 'upload', // Public upload type for direct access
+                        public_id: fileName.replace('.pdf', ''),
+                        use_filename: false,
+                        unique_filename: false
+                    });
+                    cloudinaryUrl = cloudinaryResult.secure_url;
+                    console.log('✅ PDF uploaded to Cloudinary:', cloudinaryUrl);
+
+                    // Optionally delete local file after Cloudinary upload in production
+                    if (process.env.NODE_ENV === 'production') {
+                        fs.unlinkSync(filePath);
+                        console.log('🗑️ Deleted local PDF file');
+                    }
+                } catch (cloudinaryError) {
+                    console.error('❌ Cloudinary upload failed:', cloudinaryError);
+                    // Continue with local file fallback
+                }
+            }
 
             return {
                 fileName,
                 filePath,
-                url: `/api/files/download/${fileName}`
+                url: cloudinaryUrl || `/api/files/download/${fileName}`,
+                cloudinaryUrl: cloudinaryUrl,
+                storageType: cloudinaryUrl ? 'cloudinary' : 'local',
+                size: stats.size
             };
 
         } catch (error) {
@@ -411,30 +446,88 @@ class PDFGenerator {
             const output = fs.createWriteStream(filePath);
             const archive = archiver('zip', { zlib: { level: 9 } });
 
-            // Helper function to download file
+            // Helper function to download file with timeout
             const downloadFile = (url) => {
                 return new Promise((resolve, reject) => {
                     const protocol = url.startsWith('https') ? https : http;
-                    protocol.get(url, (res) => {
+                    const timeout = 90000; // 90 seconds timeout for large files
+
+                    const request = protocol.get(url, (res) => {
+                        if (res.statusCode !== 200) {
+                            reject(new Error(`Failed to download: ${res.statusCode}`));
+                            return;
+                        }
                         const chunks = [];
                         res.on('data', (chunk) => chunks.push(chunk));
                         res.on('end', () => resolve(Buffer.concat(chunks)));
                         res.on('error', reject);
-                    }).on('error', reject);
+                    });
+
+                    request.on('error', reject);
+                    request.setTimeout(timeout, () => {
+                        request.destroy();
+                        reject(new Error('Download timeout after 90 seconds'));
+                    });
                 });
             };
 
             return new Promise(async (resolve, reject) => {
-                output.on('close', () => {
+                output.on('close', async () => {
+                    // Verify file was written successfully
+                    if (!fs.existsSync(filePath)) {
+                        reject(new Error(`Failed to write ZIP file to ${filePath}`));
+                        return;
+                    }
+
+                    const stats = fs.statSync(filePath);
+                    if (stats.size === 0) {
+                        reject(new Error(`ZIP file was created but is empty: ${filePath}`));
+                        return;
+                    }
+
+                    console.log(`✅ ZIP file written successfully: ${filePath} (${stats.size} bytes)`);
+
+                    // Upload to Cloudinary if configured
+                    let cloudinaryUrl = null;
+                    if (cloudinary.config().cloud_name) {
+                        try {
+                            console.log('☁️ Uploading ZIP to Cloudinary...');
+                            const cloudinaryResult = await cloudinary.uploader.upload(filePath, {
+                                folder: `swagat-odisha/processed-zips`,
+                                resource_type: 'raw', // ZIPs are raw files
+                                type: 'upload', // Public upload type for direct access
+                                public_id: fileName.replace('.zip', ''),
+                                use_filename: false,
+                                unique_filename: false
+                            });
+                            cloudinaryUrl = cloudinaryResult.secure_url;
+                            console.log('✅ ZIP uploaded to Cloudinary:', cloudinaryUrl);
+
+                            // Optionally delete local file after Cloudinary upload in production
+                            if (process.env.NODE_ENV === 'production') {
+                                fs.unlinkSync(filePath);
+                                console.log('🗑️ Deleted local ZIP file');
+                            }
+                        } catch (cloudinaryError) {
+                            console.error('❌ Cloudinary upload failed:', cloudinaryError);
+                            // Continue with local file fallback
+                        }
+                    }
+
                     resolve({
                         fileName,
                         filePath,
-                        url: `/api/files/download/${fileName}`,
-                        size: archive.pointer()
+                        url: cloudinaryUrl || `/api/files/download/${fileName}`,
+                        cloudinaryUrl: cloudinaryUrl,
+                        storageType: cloudinaryUrl ? 'cloudinary' : 'local',
+                        size: stats.size
                     });
                 });
 
-                archive.on('error', reject);
+                archive.on('error', (err) => {
+                    console.error('❌ Archive error:', err);
+                    reject(err);
+                });
                 archive.pipe(output);
 
                 // Helper function to get document URL (handles Cloudinary and local files)
@@ -486,12 +579,7 @@ class PDFGenerator {
                         console.log(`📎 Adding to ZIP: ${doc.documentType} from ${docUrl}`);
 
                         // Download the document with timeout
-                        const fileBuffer = await Promise.race([
-                            downloadFile(docUrl),
-                            new Promise((_, reject) =>
-                                setTimeout(() => reject(new Error('Download timeout after 30 seconds')), 30000)
-                            )
-                        ]);
+                        const fileBuffer = await downloadFile(docUrl);
 
                         if (!fileBuffer || fileBuffer.length === 0) {
                             console.warn(`⚠️ Empty file buffer for ${doc.documentType}, skipping`);

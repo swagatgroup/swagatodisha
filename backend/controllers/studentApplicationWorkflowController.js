@@ -1328,18 +1328,58 @@ const generateCombinedPDF = async (req, res) => {
         }
 
         const result = await PDFGenerator.generateCombinedPDF(application, documentsToMerge);
-        application.combinedPdfUrl = `/api/files/download/${result.fileName}`;
+
+        // Update application record with the generated URL (Cloudinary or local)
+        application.combinedPdfUrl = result.url || `/api/files/download/${result.fileName}`;
         application.progress.applicationPdfGenerated = true;
         await application.save();
 
-        return res.status(200).json({
-            success: true,
-            message: 'Combined PDF generated successfully',
-            data: {
-                fileName: result.fileName,
-                filePath: result.filePath,
-                url: application.combinedPdfUrl,
-                pdfUrl: application.combinedPdfUrl
+        // If Cloudinary URL, return metadata for frontend to download directly
+        if (result.cloudinaryUrl) {
+            return res.status(200).json({
+                success: true,
+                message: 'Combined PDF generated successfully',
+                data: {
+                    fileName: result.fileName,
+                    filePath: result.filePath,
+                    url: result.cloudinaryUrl,
+                    pdfUrl: result.cloudinaryUrl,
+                    size: result.size,
+                    storageType: 'cloudinary'
+                }
+            });
+        }
+
+        // For local files, verify existence and send directly
+        const fs = require('fs');
+        if (!fs.existsSync(result.filePath)) {
+            console.error(`❌ Generated file not found at: ${result.filePath}`);
+            return res.status(500).json({
+                success: false,
+                message: 'PDF was generated but file not found. Please try again.'
+            });
+        }
+
+        // Return file directly instead of just URL
+        const fileName = result.fileName.replace(/['"]/g, '');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Content-Length', result.size);
+        res.setHeader('Cache-Control', 'no-cache');
+
+        // Send file directly (need absolute path)
+        const path = require('path');
+        const absoluteFilePath = path.resolve(result.filePath);
+        return res.sendFile(absoluteFilePath, (err) => {
+            if (err) {
+                console.error('Error sending PDF file:', err);
+                if (!res.headersSent) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Failed to send PDF file',
+                        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+                    });
+                }
             }
         });
     } catch (error) {
@@ -1387,18 +1427,57 @@ const generateDocumentsZIP = async (req, res) => {
         }
 
         const result = await PDFGenerator.generateDocumentsZIP(application, documentsToZip);
-        application.documentsZipUrl = `/api/files/download/${result.fileName}`;
+
+        // Update application record with the generated URL (Cloudinary or local)
+        application.documentsZipUrl = result.url || `/api/files/download/${result.fileName}`;
         await application.save();
 
-        return res.status(200).json({
-            success: true,
-            message: 'Documents ZIP generated successfully',
-            data: {
-                fileName: result.fileName,
-                filePath: result.filePath,
-                url: application.documentsZipUrl,
-                zipUrl: application.documentsZipUrl,
-                size: result.size
+        // If Cloudinary URL, return metadata for frontend to download directly
+        if (result.cloudinaryUrl) {
+            return res.status(200).json({
+                success: true,
+                message: 'Documents ZIP generated successfully',
+                data: {
+                    fileName: result.fileName,
+                    filePath: result.filePath,
+                    url: result.cloudinaryUrl,
+                    zipUrl: result.cloudinaryUrl,
+                    size: result.size,
+                    storageType: 'cloudinary'
+                }
+            });
+        }
+
+        // For local files, verify existence and send directly
+        const fs = require('fs');
+        if (!fs.existsSync(result.filePath)) {
+            console.error(`❌ Generated ZIP file not found at: ${result.filePath}`);
+            return res.status(500).json({
+                success: false,
+                message: 'ZIP was generated but file not found. Please try again.'
+            });
+        }
+
+        // Return file directly instead of just URL
+        const fileName = result.fileName.replace(/['"]/g, '');
+        res.setHeader('Content-Type', 'application/zip');
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        res.setHeader('Content-Length', result.size);
+        res.setHeader('Cache-Control', 'no-cache');
+
+        // Send file directly (need absolute path)
+        const path = require('path');
+        const absoluteFilePath = path.resolve(result.filePath);
+        return res.sendFile(absoluteFilePath, (err) => {
+            if (err) {
+                console.error('Error sending ZIP file:', err);
+                if (!res.headersSent) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Failed to send ZIP file',
+                        error: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+                    });
+                }
             }
         });
     } catch (error) {

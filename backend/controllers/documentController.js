@@ -74,10 +74,10 @@ const uploadDocument = async (req, res) => {
             console.log('📝 Document type:', documentType);
             console.log('👤 Uploader role:', req.user.role);
             console.log('👤 Uploader ID:', req.user._id);
-            
+
             const StudentApplication = require('../models/StudentApplication');
             const application = await StudentApplication.findById(studentId);
-            
+
             if (!application) {
                 console.log('❌ Application not found:', studentId);
                 return res.status(404).json({
@@ -85,18 +85,18 @@ const uploadDocument = async (req, res) => {
                     message: 'Student application not found'
                 });
             }
-            
+
             console.log('✅ Application found:', application._id);
             console.log('📋 Current documents count:', application.documents?.length || 0);
 
             // Check if user has permission to upload for this application
             if (req.user.role === 'agent') {
                 const agentId = req.user._id.toString();
-                const isAssignedAgent = application.assignedAgent && 
+                const isAssignedAgent = application.assignedAgent &&
                     application.assignedAgent.toString() === agentId;
-                const isSubmitter = application.submittedBy && 
+                const isSubmitter = application.submittedBy &&
                     application.submittedBy.toString() === agentId;
-                const isReferrer = application.referralInfo?.referredBy && 
+                const isReferrer = application.referralInfo?.referredBy &&
                     application.referralInfo.referredBy.toString() === agentId;
 
                 if (!isAssignedAgent && !isSubmitter && !isReferrer) {
@@ -127,10 +127,11 @@ const uploadDocument = async (req, res) => {
                 cloudinaryResult = await cloudinary.uploader.upload(file.path, {
                     folder: `swagat-odisha/documents/${application.applicationId}`,
                     resource_type: 'auto', // Supports images and PDFs
+                    type: 'upload', // Public upload type for direct access
                     public_id: `${documentType.replace(/\s+/g, '_')}_${Date.now()}`
                 });
                 console.log('✅ Uploaded to Cloudinary:', cloudinaryResult.secure_url);
-                
+
                 // Delete local file after successful Cloudinary upload
                 fs.unlinkSync(file.path);
             } catch (cloudinaryError) {
@@ -160,10 +161,10 @@ const uploadDocument = async (req, res) => {
             application.documents = application.documents.filter(
                 doc => doc.documentType !== documentType
             );
-            
+
             application.documents.push(documentData);
             await application.save();
-            
+
             console.log('✅ Document saved! Before:', beforeCount, 'After:', application.documents.length);
             console.log('📄 Document data:', documentData);
 

@@ -38,6 +38,7 @@ const uploadMultipleFilesSimple = asyncHandler(async (req, res) => {
                 cloudinary.uploader.upload_stream(
                     {
                         resource_type: 'auto',
+                        type: 'upload', // Public upload type for direct access
                         public_id: `swagat-odisha/${category}/${uniqueFileName}`,
                         folder: 'swagat-odisha',
                         use_filename: true,

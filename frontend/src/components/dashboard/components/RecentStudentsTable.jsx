@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '../../../contexts/SessionContext';
 import api from '../../../utils/api';
+import { showSuccess, showError } from '../../../utils/sweetAlert';
 
 const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const { selectedSession } = useSession();
@@ -83,61 +84,122 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                 ? `/api/student-application/${applicationId}/combined-pdf`
                 : `/api/student-application/${applicationId}/documents-zip`;
 
+            // Make request with responseType blob to handle file download directly
+            // Set extended timeout for PDF/ZIP generation (120 seconds)
             const response = await api.post(endpoint, {
                 selectedDocuments: selectedDocumentsForGeneration
+            }, {
+                responseType: 'blob', // Important: tell axios to handle as blob
+                timeout: 120000 // 120 seconds for file generation and Cloudinary upload
             });
 
-            if (response.data?.success) {
-                showSuccess(`${generationType.toUpperCase()} generated successfully!`);
+            // Check if response is actually a blob (file) or JSON error
+            if (response.data instanceof Blob) {
+                const contentType = response.headers['content-type'] || '';
 
-                // Download the file using fetch with authentication to prevent session loss
-                const fileUrl = response.data.data.url || response.data.data.pdfUrl || response.data.data.zipUrl;
-                if (fileUrl) {
-                    // Use API base URL if available, otherwise fallback to window.location.origin
-                    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-                    const baseUrl = API_BASE_URL || window.location.origin;
-                    const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${baseUrl}${fileUrl}`;
+                // Check if it's application/json (meaning backend returned JSON as blob)
+                if (contentType.includes('application/json')) {
+                    // Backend returned JSON as blob - parse it
+                    const text = await response.data.text();
+                    const jsonData = JSON.parse(text);
 
-                    try {
-                        // Fetch with credentials to include auth token
-                        const fileResponse = await fetch(fullUrl, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            },
-                            credentials: 'include'
-                        });
+                    if (jsonData.success && jsonData.data) {
+                        // Cloudinary URL response
+                        const { url, pdfUrl, zipUrl, fileName: responseFileName, storageType } = jsonData.data;
+                        const fileUrl = url || pdfUrl || zipUrl;
 
-                        if (!fileResponse.ok) {
-                            throw new Error(`Download failed: ${fileResponse.status}`);
+                        if (fileUrl && storageType === 'cloudinary') {
+                            // Cloudinary URL - download directly
+                            console.log('☁️ Downloading from Cloudinary:', fileUrl);
+
+                            try {
+                                // Fetch the file from Cloudinary
+                                const fileResponse = await fetch(fileUrl);
+
+                                if (!fileResponse.ok) {
+                                    throw new Error(`Download failed: ${fileResponse.status}`);
+                                }
+
+                                // Create blob and download
+                                const blob = await fileResponse.blob();
+                                const blobUrl = window.URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = blobUrl;
+                                link.download = responseFileName || `application_${selectedStudent?.applicationId || 'document'}_${generationType}.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(blobUrl);
+
+                                showSuccess(`${generationType.toUpperCase()} generated and downloaded successfully!`);
+
+                                setShowDocumentSelectionModal(false);
+                                setSelectedDocumentsForGeneration([]);
+                                setGenerationType(null);
+                            } catch (downloadError) {
+                                console.error('Download error:', downloadError);
+                                showError('File generated but download failed. You can try accessing it directly.');
+                                // Fallback: open in new tab
+                                window.open(fileUrl, '_blank');
+                            }
+                        } else {
+                            showError(`Unexpected response format: ${storageType}`);
                         }
-
-                        // Create blob and download
-                        const blob = await fileResponse.blob();
-                        const blobUrl = window.URL.createObjectURL(blob);
-                        const link = document.createElement('a');
-                        link.href = blobUrl;
-                        link.download = fullUrl.split('/').pop() || `file.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                        window.URL.revokeObjectURL(blobUrl);
-                    } catch (downloadError) {
-                        console.error('Download error:', downloadError);
-                        showError('File generated but download failed. You can try accessing it directly.');
-                        // Fallback: open in new tab
-                        window.open(fullUrl, '_blank');
+                    } else if (jsonData.message) {
+                        showError(jsonData.message);
+                    } else {
+                        showError(`Failed to generate ${generationType.toUpperCase()}. Please try again.`);
                     }
-                }
+                } else {
+                    // Actual file was returned - download it
+                    const actualContentType = contentType ||
+                        (generationType === 'pdf' ? 'application/pdf' : 'application/zip');
 
-                setShowDocumentSelectionModal(false);
-                setSelectedDocumentsForGeneration([]);
-                setGenerationType(null);
+                    // Extract filename from Content-Disposition header if available
+                    const contentDisposition = response.headers['content-disposition'] || '';
+                    const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                    const fileName = fileNameMatch
+                        ? fileNameMatch[1]
+                        : `application_${selectedStudent?.applicationId || 'document'}_${generationType}.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
+
+                    console.log(`📥 Downloading file: ${fileName}, size: ${response.data.size} bytes`);
+
+                    // Create blob URL and download
+                    const blobUrl = window.URL.createObjectURL(response.data);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(blobUrl);
+
+                    showSuccess(`${generationType.toUpperCase()} generated and downloaded successfully!`);
+
+                    setShowDocumentSelectionModal(false);
+                    setSelectedDocumentsForGeneration([]);
+                    setGenerationType(null);
+                }
+            } else {
+                // Response is not a blob (shouldn't happen with responseType: 'blob')
+                showError(`Failed to generate ${generationType.toUpperCase()}. Unexpected response type.`);
             }
         } catch (error) {
             console.error(`Error generating ${generationType}:`, error);
-            const errorMessage = error.response?.data?.message || error.message || `Failed to generate ${generationType.toUpperCase()}`;
-            showError(errorMessage);
+
+            // Handle blob response errors - axios returns blob even for error responses
+            if (error.response && error.response.data instanceof Blob) {
+                try {
+                    const text = await error.response.data.text();
+                    const errorData = JSON.parse(text);
+                    showError(errorData.message || `Failed to generate ${generationType.toUpperCase()}`);
+                } catch (parseError) {
+                    showError(`Failed to generate ${generationType.toUpperCase()}. Status: ${error.response.status}`);
+                }
+            } else {
+                const errorMessage = error.response?.data?.message || error.message || `Failed to generate ${generationType.toUpperCase()}`;
+                showError(errorMessage);
+            }
         } finally {
             setGenerating(false);
         }

@@ -47,6 +47,7 @@ class CloudinaryService {
             const uploadOptions = {
                 folder: folder,
                 resource_type: 'image',
+                type: 'upload', // Public upload type for direct access
                 transformation: [
                     { quality: 'auto:low' },
                     { fetch_format: 'auto' },

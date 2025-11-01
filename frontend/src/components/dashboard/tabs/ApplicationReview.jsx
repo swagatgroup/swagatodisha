@@ -424,50 +424,109 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
     };
 
     const handleGeneratePDF = async () => {
-        if (!selectedApplication) return;
+        console.log('🖨️ Generate PDF clicked');
 
-        // Check if all documents are approved
-        if (!areAllDocumentsApproved()) {
-            showError('Please approve all documents before generating PDF');
+        if (!selectedApplication) {
+            console.error('❌ No application selected');
+            showError('Please select an application first');
             return;
         }
 
-        // Initialize with all approved documents selected
+        console.log('📋 Selected application:', selectedApplication.applicationId);
+
+        // Get all documents
         const documents = Array.isArray(selectedApplication.documents)
             ? selectedApplication.documents
             : Object.values(selectedApplication.documents || {});
+
+        console.log('📄 Total documents:', documents.length);
+
+        // Filter approved documents
         const approvedDocs = documents.filter(doc => doc.status === 'APPROVED');
-        setSelectedDocumentsForGeneration(approvedDocs.map(doc => doc._id?.toString() || doc.documentType));
+        console.log('✅ Approved documents:', approvedDocs.length);
+
+        if (approvedDocs.length === 0) {
+            console.warn('⚠️ No approved documents available');
+            showError('No approved documents available. Please approve at least one document before generating PDF.');
+            return;
+        }
+
+        // Warn if not all documents are approved (but allow proceeding)
+        if (!areAllDocumentsApproved()) {
+            console.warn('⚠️ Not all documents are approved. Will generate PDF with approved documents only.');
+            // Note: We'll proceed anyway, just log it
+        }
+
+        // Initialize with all approved documents selected
+        const selectedDocIds = approvedDocs.map(doc => doc._id?.toString() || doc.documentType);
+        console.log('📝 Selected document IDs:', selectedDocIds);
+        setSelectedDocumentsForGeneration(selectedDocIds);
 
         // Show document selection modal
+        console.log('🪟 Opening document selection modal');
         setGenerationType('pdf');
         setShowDocumentSelectionModal(true);
     };
 
     const handleGenerateZIP = async () => {
-        if (!selectedApplication) return;
+        console.log('📦 Generate ZIP clicked');
 
-        // Check if all documents are approved
-        if (!areAllDocumentsApproved()) {
-            showError('Please approve all documents before generating ZIP');
+        if (!selectedApplication) {
+            console.error('❌ No application selected');
+            showError('Please select an application first');
             return;
         }
 
-        // Initialize with all approved documents selected
+        console.log('📋 Selected application:', selectedApplication.applicationId);
+
+        // Get all documents
         const documents = Array.isArray(selectedApplication.documents)
             ? selectedApplication.documents
             : Object.values(selectedApplication.documents || {});
+
+        console.log('📄 Total documents:', documents.length);
+
+        // Filter approved documents
         const approvedDocs = documents.filter(doc => doc.status === 'APPROVED');
-        setSelectedDocumentsForGeneration(approvedDocs.map(doc => doc._id?.toString() || doc.documentType));
+        console.log('✅ Approved documents:', approvedDocs.length);
+
+        if (approvedDocs.length === 0) {
+            console.warn('⚠️ No approved documents available');
+            showError('No approved documents available. Please approve at least one document before generating ZIP.');
+            return;
+        }
+
+        // Warn if not all documents are approved
+        if (!areAllDocumentsApproved()) {
+            console.warn('⚠️ Not all documents are approved. Will generate ZIP with approved documents only.');
+            showError(`Only ${approvedDocs.length} of ${documents.length} documents are approved. ZIP will include only approved documents.`);
+        }
+
+        // Initialize with all approved documents selected
+        const selectedDocIds = approvedDocs.map(doc => doc._id?.toString() || doc.documentType);
+        console.log('📝 Selected document IDs:', selectedDocIds);
+        setSelectedDocumentsForGeneration(selectedDocIds);
 
         // Show document selection modal
+        console.log('🪟 Opening document selection modal');
         setGenerationType('zip');
         setShowDocumentSelectionModal(true);
     };
 
     const handleConfirmGeneration = async () => {
+        console.log('✅ Confirm generation clicked');
+        console.log('📋 Generation type:', generationType);
+        console.log('📝 Selected documents:', selectedDocumentsForGeneration);
+
         if (selectedDocumentsForGeneration.length === 0) {
+            console.warn('⚠️ No documents selected');
             showError('Please select at least one document');
+            return;
+        }
+
+        if (!selectedApplication || !selectedApplication.applicationId) {
+            console.error('❌ No application selected');
+            showError('Application not found');
             return;
         }
 
@@ -477,30 +536,121 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
                 ? `/api/student-application/${selectedApplication.applicationId}/combined-pdf`
                 : `/api/student-application/${selectedApplication.applicationId}/documents-zip`;
 
+            console.log('🌐 API endpoint:', endpoint);
+            console.log('📤 Request payload:', { selectedDocuments: selectedDocumentsForGeneration });
+
+            // Make request with responseType blob to handle file download directly
+            // Set extended timeout for PDF/ZIP generation (120 seconds)
             const response = await api.post(endpoint, {
                 selectedDocuments: selectedDocumentsForGeneration
+            }, {
+                responseType: 'blob', // Important: tell axios to handle as blob
+                timeout: 120000 // 120 seconds for file generation and Cloudinary upload
             });
 
-            if (response.data?.success) {
-                showSuccess(`${generationType.toUpperCase()} generated successfully!`);
+            console.log('✅ API response type:', response.data instanceof Blob ? 'Blob (file)' : 'JSON');
+            console.log('✅ Content-Type:', response.headers['content-type']);
+            console.log('✅ Blob size:', response.data instanceof Blob ? response.data.size : 'N/A');
 
-                // Download the file using fetch with authentication to prevent session loss
-                const fileUrl = response.data.data.url || response.data.data.pdfUrl || response.data.data.zipUrl;
-                if (fileUrl) {
-                    // Use API base URL if available, otherwise fallback to window.location.origin
-                    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
-                    const baseUrl = API_BASE_URL || window.location.origin;
-                    const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${baseUrl}${fileUrl}`;
+            // Check if response is actually a blob (file) or JSON
+            if (response.data instanceof Blob) {
+                const contentType = response.headers['content-type'] || '';
+
+                // Check if it's application/json (meaning backend returned JSON error as blob)
+                if (contentType.includes('application/json')) {
+                    // Backend returned JSON as blob - parse it
+                    const text = await response.data.text();
+                    const jsonData = JSON.parse(text);
+
+                    if (jsonData.success && jsonData.data) {
+                        // Cloudinary URL response
+                        const { url, pdfUrl, zipUrl, fileName: responseFileName, storageType } = jsonData.data;
+                        const fileUrl = url || pdfUrl || zipUrl;
+
+                        if (fileUrl && storageType === 'cloudinary') {
+                            // Cloudinary URL - download directly
+                            console.log('☁️ Downloading from Cloudinary:', fileUrl);
+
+                            try {
+                                // Fetch the file from Cloudinary
+                                const fileResponse = await fetch(fileUrl);
+
+                                if (!fileResponse.ok) {
+                                    throw new Error(`Download failed: ${fileResponse.status}`);
+                                }
+
+                                // Create blob and download
+                                const blob = await fileResponse.blob();
+                                const blobUrl = window.URL.createObjectURL(blob);
+                                const link = document.createElement('a');
+                                link.href = blobUrl;
+                                link.download = responseFileName || `application_${selectedApplication?.applicationId || 'document'}_${generationType}.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(blobUrl);
+
+                                showSuccess(`${generationType.toUpperCase()} generated and downloaded successfully!`);
+
+                                setShowDocumentSelectionModal(false);
+                                setSelectedDocumentsForGeneration([]);
+                                setGenerationType(null);
+                            } catch (downloadError) {
+                                console.error('Download error:', downloadError);
+                                showError('File generated but download failed. You can try accessing it directly.');
+                                // Fallback: open in new tab
+                                window.open(fileUrl, '_blank');
+                            }
+                        } else {
+                            showError(`Unexpected response format: ${storageType}`);
+                        }
+                    } else if (jsonData.message) {
+                        showError(jsonData.message);
+                    } else {
+                        showError(`Failed to generate ${generationType.toUpperCase()}. Please try again.`);
+                    }
+                } else {
+                    // Actual file was returned - download it
+                    const actualContentType = contentType ||
+                        (generationType === 'pdf' ? 'application/pdf' : 'application/zip');
+
+                    // Extract filename from Content-Disposition header if available
+                    const contentDisposition = response.headers['content-disposition'] || '';
+                    const fileNameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+                    const fileName = fileNameMatch
+                        ? fileNameMatch[1]
+                        : `application_${selectedApplication?.applicationId || 'document'}_${generationType}.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
+
+                    console.log(`📥 Downloading file: ${fileName}, size: ${response.data.size} bytes, type: ${actualContentType}`);
+
+                    // Create blob URL and download
+                    const blobUrl = window.URL.createObjectURL(response.data);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(blobUrl);
+
+                    showSuccess(`${generationType.toUpperCase()} generated and downloaded successfully!`);
+
+                    setShowDocumentSelectionModal(false);
+                    setSelectedDocumentsForGeneration([]);
+                    setGenerationType(null);
+                }
+            } else if (response.data?.success && response.data?.data) {
+                // Cloudinary URL response
+                const { url, pdfUrl, zipUrl, fileName: responseFileName, storageType } = response.data.data;
+                const fileUrl = url || pdfUrl || zipUrl;
+
+                if (fileUrl && storageType === 'cloudinary') {
+                    // Cloudinary URL - download directly
+                    console.log('☁️ Downloading from Cloudinary:', fileUrl);
 
                     try {
-                        // Fetch with credentials to include auth token
-                        const fileResponse = await fetch(fullUrl, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                            },
-                            credentials: 'include'
-                        });
+                        // Fetch the file from Cloudinary
+                        const fileResponse = await fetch(fileUrl);
 
                         if (!fileResponse.ok) {
                             throw new Error(`Download failed: ${fileResponse.status}`);
@@ -511,27 +661,50 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
                         const blobUrl = window.URL.createObjectURL(blob);
                         const link = document.createElement('a');
                         link.href = blobUrl;
-                        link.download = fullUrl.split('/').pop() || `file.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
+                        link.download = responseFileName || `application_${selectedApplication?.applicationId || 'document'}_${generationType}.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
                         document.body.appendChild(link);
                         link.click();
                         document.body.removeChild(link);
                         window.URL.revokeObjectURL(blobUrl);
+
+                        showSuccess(`${generationType.toUpperCase()} generated and downloaded successfully!`);
+
+                        setShowDocumentSelectionModal(false);
+                        setSelectedDocumentsForGeneration([]);
+                        setGenerationType(null);
                     } catch (downloadError) {
                         console.error('Download error:', downloadError);
                         showError('File generated but download failed. You can try accessing it directly.');
                         // Fallback: open in new tab
-                        window.open(fullUrl, '_blank');
+                        window.open(fileUrl, '_blank');
                     }
+                } else {
+                    showError(`Unexpected response format: ${storageType}`);
                 }
-
-                setShowDocumentSelectionModal(false);
-                setSelectedDocumentsForGeneration([]);
-                setGenerationType(null);
+            } else {
+                // Response is JSON error or unexpected format
+                if (response.data?.message) {
+                    showError(response.data.message);
+                } else {
+                    showError(`Failed to generate ${generationType.toUpperCase()}. Please try again.`);
+                }
             }
         } catch (error) {
             console.error(`Error generating ${generationType}:`, error);
-            const errorMessage = error.response?.data?.message || error.message || `Failed to generate ${generationType.toUpperCase()}`;
-            showError(errorMessage);
+
+            // Handle blob response errors - axios returns blob even for error responses
+            if (error.response && error.response.data instanceof Blob) {
+                try {
+                    const text = await error.response.data.text();
+                    const errorData = JSON.parse(text);
+                    showError(errorData.message || `Failed to generate ${generationType.toUpperCase()}`);
+                } catch (parseError) {
+                    showError(`Failed to generate ${generationType.toUpperCase()}. Status: ${error.response.status}`);
+                }
+            } else {
+                const errorMessage = error.response?.data?.message || error.message || `Failed to generate ${generationType.toUpperCase()}`;
+                showError(errorMessage);
+            }
 
             // Check if it's an authentication error
             if (error.response?.status === 401) {
@@ -932,24 +1105,16 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
                                     </button>
                                     <button
                                         onClick={handleGeneratePDF}
-                                        disabled={!areAllDocumentsApproved()}
-                                        className={`flex items-center px-4 py-2 rounded-lg transition-colors ${areAllDocumentsApproved()
-                                            ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                            : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                                            }`}
-                                        title={areAllDocumentsApproved() ? 'Generate combined PDF of selected documents' : 'Please approve all documents first'}
+                                        className="flex items-center px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                                        title="Generate combined PDF of approved documents"
                                     >
                                         <DocumentTextIcon className="h-4 w-4 mr-2" />
                                         Generate PDF
                                     </button>
                                     <button
                                         onClick={handleGenerateZIP}
-                                        disabled={!areAllDocumentsApproved()}
-                                        className={`flex items-center px-4 py-2 rounded-lg transition-colors ${areAllDocumentsApproved()
-                                            ? 'bg-purple-600 text-white hover:bg-purple-700'
-                                            : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                                            }`}
-                                        title={areAllDocumentsApproved() ? 'Generate ZIP of selected documents' : 'Please approve all documents first'}
+                                        className="flex items-center px-4 py-2 rounded-lg transition-colors bg-purple-600 text-white hover:bg-purple-700"
+                                        title="Generate ZIP of approved documents"
                                     >
                                         <ArchiveBoxIcon className="h-4 w-4 mr-2" />
                                         Generate ZIP

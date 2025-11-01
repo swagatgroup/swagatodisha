@@ -135,39 +135,85 @@ router.get('/download/:fileName', async (req, res) => {
                             });
                         }
 
-                        console.log(`📦 Regenerating ZIP with ${selectedDocuments.length} documents for ${applicationId}`);
-                        result = await pdfGenerator.generateDocumentsZIP(application, selectedDocuments);
+                        // Filter to only approved documents for regeneration
+                        const approvedDocs = selectedDocuments.filter(doc => doc.status === 'APPROVED');
+                        console.log(`📦 Regenerating ZIP with ${approvedDocs.length} approved documents for ${applicationId}`);
+
+                        if (approvedDocs.length === 0) {
+                            console.error(`❌ No approved documents found for application ${applicationId}`);
+                            return res.status(404).json({
+                                success: false,
+                                message: 'No approved documents available to generate ZIP',
+                                suggestion: 'Please ensure documents are uploaded and approved for this application'
+                            });
+                        }
+
+                        result = await pdfGenerator.generateDocumentsZIP(application, approvedDocs);
 
                         // Update application with new ZIP URL if needed
                         if (result && result.fileName) {
-                            application.documentsZipUrl = `/uploads/processed/${result.fileName}`;
+                            application.documentsZipUrl = `/api/files/download/${result.fileName}`;
                             await application.save();
                         }
 
                         console.log(`✅ ZIP regenerated: ${result?.filePath || 'unknown path'}`);
                     } else if (fileName.includes('_combined_') && fileName.endsWith('.pdf')) {
-                        // Regenerate combined PDF
+                        // Regenerate combined PDF - get all approved documents
                         console.log(`📄 Regenerating combined PDF for ${applicationId}`);
-                        result = await pdfGenerator.generateCombinedPDF(application);
+
+                        // Get all approved documents for regeneration
+                        const allDocuments = Array.isArray(application.documents)
+                            ? application.documents
+                            : Object.values(application.documents || {});
+                        const approvedDocs = allDocuments.filter(doc => doc.status === 'APPROVED');
+
+                        console.log(`📋 Found ${approvedDocs.length} approved documents for regeneration`);
+
+                        if (approvedDocs.length === 0) {
+                            console.error(`❌ No approved documents found for application ${applicationId}`);
+                            return res.status(404).json({
+                                success: false,
+                                message: 'No approved documents available to generate PDF',
+                                suggestion: 'Please ensure documents are uploaded and approved for this application'
+                            });
+                        }
+
+                        result = await pdfGenerator.generateCombinedPDF(application, approvedDocs);
 
                         // Update application with new path
-                        application.combinedPdfUrl = `/uploads/processed/${result.fileName}`;
-                        application.progress.applicationPdfGenerated = true;
-                        await application.save();
+                        if (result && result.fileName) {
+                            application.combinedPdfUrl = `/api/files/download/${result.fileName}`;
+                            application.progress.applicationPdfGenerated = true;
+                            await application.save();
+                        }
 
-                        console.log(`✅ PDF regenerated: ${result.filePath}`);
+                        console.log(`✅ PDF regenerated: ${result?.filePath || 'unknown path'}`);
                     }
 
                     if (result && result.filePath) {
-                        // Verify the file was actually created
+                        // Verify the file was actually created and wait a moment for file system to sync
+                        await new Promise(resolve => setTimeout(resolve, 100)); // Small delay for file system sync
+
                         if (fs.existsSync(result.filePath)) {
                             filePath = result.filePath;
-                            console.log(`✅ Verified regenerated file exists: ${filePath}`);
+                            const stats = fs.statSync(filePath);
+                            console.log(`✅ Verified regenerated file exists: ${filePath} (${stats.size} bytes)`);
                         } else {
                             console.error(`❌ Regenerated file not found at: ${result.filePath}`);
+                            console.error(`📁 Checking if directory exists: ${path.dirname(result.filePath)}`);
+                            console.error(`📁 Directory exists: ${fs.existsSync(path.dirname(result.filePath))}`);
+
+                            // Retry once after a short delay
+                            await new Promise(resolve => setTimeout(resolve, 500));
+                            if (fs.existsSync(result.filePath)) {
+                                filePath = result.filePath;
+                                const stats = fs.statSync(filePath);
+                                console.log(`✅ File found on retry: ${filePath} (${stats.size} bytes)`);
+                            }
                         }
                     } else {
                         console.error(`❌ No result from regeneration for ${applicationId}`);
+                        console.error(`Result object:`, result);
                     }
                 }
             } catch (regenerateError) {
