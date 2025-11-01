@@ -107,22 +107,47 @@ router.get('/download/:fileName', async (req, res) => {
                 const StudentApplication = require('../models/StudentApplication');
                 const pdfGenerator = require('../utils/pdfGenerator');
 
+                console.log(`🔍 Looking for application ${applicationId} to regenerate file ${fileName}`);
+
                 const application = await StudentApplication.findOne({ applicationId })
                     .populate('user', 'fullName email phoneNumber');
 
-                if (application) {
+                if (!application) {
+                    console.error(`❌ Application ${applicationId} not found in database`);
+                } else {
                     console.log(`📄 File not found, attempting to regenerate for ${applicationId}`);
 
                     let result;
 
                     // Check if it's a ZIP or PDF request
                     if (fileName.includes('_documents_') && fileName.endsWith('.zip')) {
-                        // Regenerate ZIP
+                        // Regenerate ZIP - ensure documents are available
                         const selectedDocuments = application.documents || [];
+
+                        console.log(`📋 Found ${selectedDocuments?.length || 0} documents for application`);
+
+                        if (!selectedDocuments || selectedDocuments.length === 0) {
+                            console.error(`❌ No documents found for application ${applicationId}`);
+                            return res.status(404).json({
+                                success: false,
+                                message: 'No documents available to generate ZIP',
+                                suggestion: 'Please ensure documents are uploaded for this application'
+                            });
+                        }
+
+                        console.log(`📦 Regenerating ZIP with ${selectedDocuments.length} documents for ${applicationId}`);
                         result = await pdfGenerator.generateDocumentsZIP(application, selectedDocuments);
-                        console.log(`✅ ZIP regenerated: ${result.filePath}`);
+
+                        // Update application with new ZIP URL if needed
+                        if (result && result.fileName) {
+                            application.documentsZipUrl = `/uploads/processed/${result.fileName}`;
+                            await application.save();
+                        }
+
+                        console.log(`✅ ZIP regenerated: ${result?.filePath || 'unknown path'}`);
                     } else if (fileName.includes('_combined_') && fileName.endsWith('.pdf')) {
                         // Regenerate combined PDF
+                        console.log(`📄 Regenerating combined PDF for ${applicationId}`);
                         result = await pdfGenerator.generateCombinedPDF(application);
 
                         // Update application with new path
@@ -134,11 +159,20 @@ router.get('/download/:fileName', async (req, res) => {
                     }
 
                     if (result && result.filePath) {
-                        filePath = result.filePath;
+                        // Verify the file was actually created
+                        if (fs.existsSync(result.filePath)) {
+                            filePath = result.filePath;
+                            console.log(`✅ Verified regenerated file exists: ${filePath}`);
+                        } else {
+                            console.error(`❌ Regenerated file not found at: ${result.filePath}`);
+                        }
+                    } else {
+                        console.error(`❌ No result from regeneration for ${applicationId}`);
                     }
                 }
             } catch (regenerateError) {
-                console.error('Error regenerating file:', regenerateError);
+                console.error('❌ Error regenerating file:', regenerateError);
+                console.error('Stack:', regenerateError.stack);
                 // Continue to 404 if regeneration fails
             }
         }

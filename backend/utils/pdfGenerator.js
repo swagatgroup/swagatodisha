@@ -7,11 +7,21 @@ const { promisify } = require('util');
 const https = require('https');
 const http = require('http');
 const sharp = require('sharp');
+const cloudinary = require('cloudinary').v2;
 
 class PDFGenerator {
     constructor() {
         this.outputDir = path.join(__dirname, '../uploads/processed');
         this.ensureOutputDir();
+
+        // Initialize Cloudinary if credentials are available
+        if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+            cloudinary.config({
+                cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+                api_key: process.env.CLOUDINARY_API_KEY,
+                api_secret: process.env.CLOUDINARY_API_SECRET
+            });
+        }
     }
 
     ensureOutputDir() {
@@ -362,40 +372,91 @@ class PDFGenerator {
                 archive.on('error', reject);
                 archive.pipe(output);
 
+                // Helper function to get document URL (handles Cloudinary and local files)
+                const getDocumentUrl = (doc) => {
+                    // If already a full HTTP/HTTPS URL, return as-is
+                    if (doc.filePath && (doc.filePath.startsWith('http://') || doc.filePath.startsWith('https://'))) {
+                        return doc.filePath;
+                    }
+
+                    // If stored in Cloudinary, generate Cloudinary URL
+                    if (doc.storageType === 'cloudinary' || doc.cloudinaryPublicId) {
+                        const publicId = doc.cloudinaryPublicId || doc.filePath?.replace(/^.*\//, '').replace(/\.[^.]+$/, '');
+                        if (publicId) {
+                            return cloudinary.url(publicId, {
+                                secure: true,
+                                fetch_format: 'auto'
+                            });
+                        }
+                    }
+
+                    // If local file path, construct full URL
+                    if (doc.filePath) {
+                        const baseUrl = process.env.BASE_URL || process.env.BACKEND_URL || 'https://swagat-odisha-backend.onrender.com';
+                        if (doc.filePath.startsWith('/')) {
+                            return `${baseUrl}${doc.filePath}`;
+                        }
+                        return `${baseUrl}/uploads/${doc.filePath}`;
+                    }
+
+                    // Fallback to doc.url or doc.downloadUrl
+                    return doc.url || doc.downloadUrl || null;
+                };
+
                 // Process each selected document
+                let addedCount = 0;
                 for (const doc of selectedDocuments) {
                     try {
-                        const docUrl = doc.filePath || doc.url || doc.downloadUrl;
+                        const docUrl = getDocumentUrl(doc);
                         if (!docUrl) {
-                            console.warn(`Document ${doc.documentType} has no URL, skipping`);
+                            console.warn(`⚠️ Document ${doc.documentType} has no URL, skipping. Doc:`, JSON.stringify({
+                                filePath: doc.filePath,
+                                storageType: doc.storageType,
+                                cloudinaryPublicId: doc.cloudinaryPublicId
+                            }));
                             continue;
                         }
 
-                        // Get full URL
-                        const fullUrl = docUrl.startsWith('http') ? docUrl :
-                            docUrl.startsWith('/') ? `${process.env.BASE_URL || 'http://localhost:5000'}${docUrl}` :
-                                `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/${docUrl}`;
+                        console.log(`📎 Adding to ZIP: ${doc.documentType} from ${docUrl}`);
 
-                        console.log(`Adding to ZIP: ${doc.documentType} from ${fullUrl}`);
+                        // Download the document with timeout
+                        const fileBuffer = await Promise.race([
+                            downloadFile(docUrl),
+                            new Promise((_, reject) =>
+                                setTimeout(() => reject(new Error('Download timeout')), 30000)
+                            )
+                        ]);
 
-                        // Download the document
-                        const fileBuffer = await downloadFile(fullUrl);
+                        if (!fileBuffer || fileBuffer.length === 0) {
+                            console.warn(`⚠️ Empty file buffer for ${doc.documentType}, skipping`);
+                            continue;
+                        }
 
-                        // Get file extension from mime type or filename
+                        // Get file extension from mime type, filename, or URL
                         const mimeType = doc.mimeType || doc.type || 'application/pdf';
                         let ext = 'pdf';
                         if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
                         else if (mimeType.includes('png')) ext = 'png';
                         else if (mimeType.includes('pdf')) ext = 'pdf';
+                        else if (docUrl.includes('.jpg') || docUrl.includes('.jpeg')) ext = 'jpg';
+                        else if (docUrl.includes('.png')) ext = 'png';
 
                         const safeDocType = (doc.documentType || 'document').replace(/[^a-zA-Z0-9]/g, '_');
                         const zipFileName = `${safeDocType}_${application.applicationId}.${ext}`;
 
                         archive.append(fileBuffer, { name: zipFileName });
+                        addedCount++;
+                        console.log(`✅ Added ${doc.documentType} to ZIP`);
                     } catch (docError) {
-                        console.error(`Error adding document ${doc.documentType} to ZIP:`, docError);
-                        // Continue with other documents
+                        console.error(`❌ Error adding document ${doc.documentType} to ZIP:`, docError.message);
+                        // Continue with other documents - don't fail entire ZIP generation
                     }
+                }
+
+                if (addedCount === 0) {
+                    console.warn('⚠️ No documents were successfully added to ZIP');
+                    // Still create ZIP even if empty, or throw error?
+                    // For now, we'll create it but it will be empty
                 }
 
                 // Add application PDF if exists
