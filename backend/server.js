@@ -372,11 +372,11 @@ app.post('/api/application/create', protect, async (req, res) => {
         // Process documents if provided
         let processedDocuments = [];
         let documentsComplete = false;
-        
+
         if (req.body.documents && typeof req.body.documents === 'object') {
             if (Array.isArray(req.body.documents)) {
                 // Already in array format
-                processedDocuments = req.body.documents.filter(doc => 
+                processedDocuments = req.body.documents.filter(doc =>
                     doc && (doc.filePath || doc.url || doc.downloadUrl)
                 );
             } else {
@@ -400,7 +400,7 @@ app.post('/api/application/create', protect, async (req, res) => {
                     })
                     .filter(doc => doc && doc.filePath && doc.filePath.trim() !== '');
             }
-            
+
             // Mark documents as complete if we have at least some documents
             documentsComplete = processedDocuments.length > 0;
         }
@@ -870,10 +870,10 @@ app.get('/api/debug/document-statuses', async (req, res) => {
 app.post('/api/debug/fix-document-complete-flag', protect, async (req, res) => {
     try {
         const { fixDocumentCompleteFlag } = require('./scripts/fixDocumentCompleteFlagAnomaly');
-        
+
         console.log('🔧 Running document complete flag fix...');
         await fixDocumentCompleteFlag();
-        
+
         res.json({
             success: true,
             message: 'Document complete flag anomaly fix completed successfully'
@@ -954,7 +954,8 @@ app.use('/api/admin/students', apiRateLimit, adminStudentsRoutes);
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
-app.use('/api/contact', apiRateLimit, contactRoutes);
+// Contact routes use stricter rate limiting defined in the route itself
+app.use('/api/contact', contactRoutes);
 app.use('/api/files', uploadRateLimit, fileRoutes);
 app.use('/api/analytics', apiRateLimit, analyticsRoutes);
 app.use('/api/agents', apiRateLimit, agentRoutes);

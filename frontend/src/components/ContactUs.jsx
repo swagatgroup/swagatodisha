@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
 import { SOCIAL_LINKS, CONTACT_INFO } from '../utils/constants'
 import {
@@ -20,6 +20,47 @@ const ContactUs = () => {
         documents: null
     })
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [recaptchaLoaded, setRecaptchaLoaded] = useState(false)
+
+    // Load Google reCAPTCHA v3
+    useEffect(() => {
+        const script = document.createElement('script')
+        script.src = `https://www.google.com/recaptcha/api.js?render=${process.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY'}`
+        script.async = true
+        script.defer = true
+        script.onload = () => {
+            setRecaptchaLoaded(true)
+        }
+        document.body.appendChild(script)
+
+        return () => {
+            // Cleanup
+            const existingScript = document.querySelector(`script[src*="recaptcha"]`)
+            if (existingScript) {
+                existingScript.remove()
+            }
+        }
+    }, [])
+
+    // Get reCAPTCHA token
+    const getRecaptchaToken = () => {
+        return new Promise((resolve) => {
+            if (window.grecaptcha && recaptchaLoaded) {
+                window.grecaptcha.ready(() => {
+                    window.grecaptcha.execute(
+                        process.env.REACT_APP_RECAPTCHA_SITE_KEY || 'YOUR_RECAPTCHA_SITE_KEY',
+                        { action: 'contact_form' }
+                    ).then((token) => {
+                        resolve(token)
+                    }).catch(() => {
+                        resolve(null) // Fail gracefully
+                    })
+                })
+            } else {
+                resolve(null) // Fail gracefully if not loaded
+            }
+        })
+    }
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
@@ -100,13 +141,21 @@ const ContactUs = () => {
         showLoading('Sending Message...', 'Please wait while we send your message');
 
         try {
+            // Get reCAPTCHA token
+            const recaptchaToken = await getRecaptchaToken()
+
             // Create FormData for file uploads
             const formDataToSend = new FormData()
-            formDataToSend.append('name', formData.name)
-            formDataToSend.append('email', formData.email)
-            formDataToSend.append('phone', formData.phone)
-            formDataToSend.append('subject', formData.subject)
-            formDataToSend.append('message', formData.message)
+            formDataToSend.append('name', formData.name.trim())
+            formDataToSend.append('email', formData.email.trim())
+            formDataToSend.append('phone', formData.phone.trim())
+            formDataToSend.append('subject', formData.subject.trim())
+            formDataToSend.append('message', formData.message.trim())
+
+            // Add reCAPTCHA token
+            if (recaptchaToken) {
+                formDataToSend.append('recaptcha_token', recaptchaToken)
+            }
 
             // Add documents if any
             if (formData.documents && formData.documents.length > 0) {
@@ -381,6 +430,19 @@ const ContactUs = () => {
                                                 </div>
                                             )}
                                         </div>
+                                    </div>
+
+                                    {/* Honeypot field - hidden from users but bots will fill it */}
+                                    <div style={{ display: 'none', visibility: 'hidden', position: 'absolute', left: '-9999px' }}>
+                                        <label htmlFor="website_url">Website URL (Leave empty)</label>
+                                        <input
+                                            type="text"
+                                            id="website_url"
+                                            name="website_url"
+                                            tabIndex="-1"
+                                            autoComplete="off"
+                                            aria-hidden="true"
+                                        />
                                     </div>
 
                                     <button

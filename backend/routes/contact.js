@@ -6,6 +6,7 @@ const fsp = fs.promises;
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const { sendEmail } = require('../utils/sendgrid');
+const { contactFormRateLimit, checkHoneypot, antiSpamMiddleware } = require('../middleware/antiSpam');
 const router = express.Router();
 
 // Helper: build a robust SMTP transporter from env
@@ -74,11 +75,15 @@ const upload = multer({
 // @route   POST /api/contact/submit
 // @access  Public
 router.post('/submit', [
-    upload.array('documents', 5), // Maximum 5 files
+    contactFormRateLimit, // Stricter rate limiting (3 per hour)
+    upload.array('documents', 5), // Maximum 5 files - MUST come first to parse multipart form
+    checkHoneypot, // Check honeypot field (after multer parses body)
+    antiSpamMiddleware, // Comprehensive anti-spam checks (after multer parses body)
     body('name')
         .trim()
-        .isLength({ min: 2 })
-        .withMessage('Name must be at least 2 characters'),
+        .isLength({ min: 2, max: 100 })
+        .matches(/^[a-zA-Z\s]+$/)
+        .withMessage('Name must be 2-100 characters and contain only letters and spaces'),
     body('email')
         .isEmail()
         .normalizeEmail()
@@ -89,12 +94,12 @@ router.post('/submit', [
         .withMessage('Phone number must contain at least 10 digits'),
     body('subject')
         .trim()
-        .isLength({ min: 3 })
-        .withMessage('Subject must be at least 3 characters'),
+        .isLength({ min: 3, max: 200 })
+        .withMessage('Subject must be 3-200 characters'),
     body('message')
         .trim()
-        .isLength({ min: 5 })
-        .withMessage('Message must be at least 5 characters')
+        .isLength({ min: 10, max: 5000 })
+        .withMessage('Message must be 10-5000 characters')
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
