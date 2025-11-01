@@ -135,7 +135,10 @@ const SuperAdminDashboard = () => {
 
                         {/* Stats Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                            <div
+                                onClick={() => setActiveSidebarItem('students')}
+                                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200"
+                            >
                                 <div className="flex items-center">
                                     <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                                         <svg className="h-6 w-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -149,7 +152,10 @@ const SuperAdminDashboard = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                            <div
+                                onClick={() => setActiveSidebarItem('agents')}
+                                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg hover:border-green-300 dark:hover:border-green-600 transition-all duration-200"
+                            >
                                 <div className="flex items-center">
                                     <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                                         <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,7 +169,10 @@ const SuperAdminDashboard = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                            <div
+                                onClick={() => setActiveSidebarItem('staff')}
+                                className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200"
+                            >
                                 <div className="flex items-center">
                                     <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                                         <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
