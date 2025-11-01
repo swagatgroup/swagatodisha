@@ -57,6 +57,57 @@ router.get('/health', (req, res) => {
     });
 });
 
+// @route   GET /api/files/download/:fileName
+// @desc    Download file by filename (from processed directory)
+// @access  Protected
+// NOTE: This route must come before /:id to avoid route conflicts
+router.get('/download/:fileName', protect, async (req, res) => {
+    try {
+        const { fileName } = req.params;
+        const fs = require('fs');
+        const path = require('path');
+
+        // Security: prevent path traversal
+        if (fileName.includes('..') || fileName.includes('/') || fileName.includes('\\')) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid filename'
+            });
+        }
+
+        const filePath = path.join(__dirname, '../uploads/processed', fileName);
+
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({
+                success: false,
+                message: 'File not found'
+            });
+        }
+
+        // Set appropriate headers
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+
+        // Determine content type
+        if (fileName.endsWith('.pdf')) {
+            res.setHeader('Content-Type', 'application/pdf');
+        } else if (fileName.endsWith('.zip')) {
+            res.setHeader('Content-Type', 'application/zip');
+        } else {
+            res.setHeader('Content-Type', 'application/octet-stream');
+        }
+
+        // Send file
+        res.sendFile(path.resolve(filePath));
+    } catch (error) {
+        console.error('Download file error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to download file',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
 // @route   GET /api/files/:id
 // @desc    Get file by ID
 // @access  Public

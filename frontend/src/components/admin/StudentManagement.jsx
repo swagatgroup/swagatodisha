@@ -42,6 +42,10 @@ const StudentManagement = () => {
         courses: ['Bachelor of Technology', 'Bachelor of Commerce', 'Bachelor of Arts', 'Bachelor of Science'],
         submitters: []
     });
+    const [showDocumentSelectionModal, setShowDocumentSelectionModal] = useState(false);
+    const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
+    const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
+    const [generating, setGenerating] = useState(false);
 
     useEffect(() => {
         // Reset to page 1 when session changes (but not on initial mount)
@@ -64,6 +68,130 @@ const StudentManagement = () => {
         } catch (error) {
             console.error('Error fetching rejection reasons:', error);
         }
+    };
+
+    // Document selection and generation handlers
+    const toggleDocumentSelection = (documentId) => {
+        setSelectedDocumentsForGeneration(prev =>
+            prev.includes(documentId)
+                ? prev.filter(id => id !== documentId)
+                : [...prev, documentId]
+        );
+    };
+
+    const selectAllDocuments = () => {
+        if (!selectedStudent || !selectedStudent.documents) return;
+        const approvedDocs = selectedStudent.documents.filter(doc => doc.status === 'APPROVED');
+        setSelectedDocumentsForGeneration(approvedDocs.map((doc, idx) => doc._id?.toString() || doc.documentType || `doc_${idx}`));
+    };
+
+    const clearDocumentSelection = () => {
+        setSelectedDocumentsForGeneration([]);
+    };
+
+    const handleConfirmGeneration = async () => {
+        if (!selectedStudent || selectedDocumentsForGeneration.length === 0) {
+            showError('Please select at least one document');
+            return;
+        }
+
+        try {
+            setGenerating(true);
+            const applicationId = selectedStudent.applicationId || selectedStudent._id;
+            if (!applicationId) {
+                showError('Application ID not found');
+                return;
+            }
+
+            const endpoint = generationType === 'pdf'
+                ? `/api/student-application/${applicationId}/combined-pdf`
+                : `/api/student-application/${applicationId}/documents-zip`;
+
+            const response = await api.post(endpoint, {
+                selectedDocuments: selectedDocumentsForGeneration
+            });
+
+            if (response.data?.success) {
+                showSuccess(`${generationType.toUpperCase()} generated successfully!`);
+
+                // Download the file using fetch with authentication to prevent session loss
+                const fileUrl = response.data.data.url || response.data.data.pdfUrl || response.data.data.zipUrl;
+                if (fileUrl) {
+                    const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${window.location.origin}${fileUrl}`;
+
+                    try {
+                        // Fetch with credentials to include auth token
+                        const fileResponse = await fetch(fullUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            },
+                            credentials: 'include'
+                        });
+
+                        if (!fileResponse.ok) {
+                            throw new Error(`Download failed: ${fileResponse.status}`);
+                        }
+
+                        // Create blob and download
+                        const blob = await fileResponse.blob();
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = fullUrl.split('/').pop() || `file.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(blobUrl);
+                    } catch (downloadError) {
+                        console.error('Download error:', downloadError);
+                        showError('File generated but download failed. You can try accessing it directly.');
+                        // Fallback: open in new tab
+                        window.open(fullUrl, '_blank');
+                    }
+                }
+
+                setShowDocumentSelectionModal(false);
+                setSelectedDocumentsForGeneration([]);
+                setGenerationType(null);
+            }
+        } catch (error) {
+            console.error(`Error generating ${generationType}:`, error);
+            const errorMessage = error.response?.data?.message || error.message || `Failed to generate ${generationType.toUpperCase()}`;
+            showError(errorMessage);
+        } finally {
+            setGenerating(false);
+        }
+    };
+
+    const formatDocumentLabel = (docType = '', fileName = '') => {
+        const type = (docType || '').toString().toLowerCase();
+        const name = (fileName || '').toString().toLowerCase();
+        const source = `${type} ${name}`;
+
+        const patterns = [
+            { re: /(aadhar|aadhaar)/, label: 'Aadhar Card' },
+            { re: /(passport).*photo|\bphoto\b/, label: 'Passport Photo' },
+            { re: /(10th|tenth).*marksheet/, label: '10th Marksheet' },
+            { re: /(12th|twelfth).*marksheet/, label: '12th Marksheet' },
+            { re: /(marksheet|grade|result)/, label: 'Marksheet' },
+            { re: /(transfer).*certificate|\btc\b/, label: 'Transfer Certificate' },
+            { re: /(migration).*certificate/, label: 'Migration Certificate' },
+            { re: /(character).*certificate/, label: 'Character Certificate' },
+            { re: /(income).*certificate/, label: 'Income Certificate' },
+            { re: /(caste).*certificate/, label: 'Caste Certificate' },
+        ];
+
+        for (const p of patterns) {
+            if (p.re.test(source)) return p.label;
+        }
+
+        const fromType = docType ? docType.replace(/_/g, ' ').replace(/\s+/g, ' ').trim() : '';
+        if (fromType && fromType !== 'pdf document') {
+            return fromType.replace(/\b\w/g, c => c.toUpperCase());
+        }
+
+        return fileName || 'Uploaded Document';
     };
 
     const fetchStudents = async () => {
@@ -948,6 +1076,60 @@ const StudentManagement = () => {
                                                 </div>
                                             ))}
                                         </div>
+
+                                        {/* Generate PDF/ZIP Buttons */}
+                                        {selectedStudent.documents && selectedStudent.documents.length > 0 && (
+                                            <div className="mt-4 flex space-x-3">
+                                                <button
+                                                    onClick={() => {
+                                                        const allApproved = selectedStudent.documents.every(doc => doc.status === 'APPROVED');
+                                                        if (!allApproved) {
+                                                            showError('Please approve all documents before generating PDF');
+                                                            return;
+                                                        }
+                                                        const approvedDocs = selectedStudent.documents.filter(doc => doc.status === 'APPROVED');
+                                                        setSelectedDocumentsForGeneration(approvedDocs.map((doc, idx) => doc._id?.toString() || doc.documentType || `doc_${idx}`));
+                                                        setGenerationType('pdf');
+                                                        setShowDocumentSelectionModal(true);
+                                                    }}
+                                                    disabled={!selectedStudent.documents.every(doc => doc.status === 'APPROVED')}
+                                                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${selectedStudent.documents.every(doc => doc.status === 'APPROVED')
+                                                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                                        }`}
+                                                    title={selectedStudent.documents.every(doc => doc.status === 'APPROVED') ? 'Generate combined PDF' : 'Please approve all documents first'}
+                                                >
+                                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    Generate PDF
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const allApproved = selectedStudent.documents.every(doc => doc.status === 'APPROVED');
+                                                        if (!allApproved) {
+                                                            showError('Please approve all documents before generating ZIP');
+                                                            return;
+                                                        }
+                                                        const approvedDocs = selectedStudent.documents.filter(doc => doc.status === 'APPROVED');
+                                                        setSelectedDocumentsForGeneration(approvedDocs.map((doc, idx) => doc._id?.toString() || doc.documentType || `doc_${idx}`));
+                                                        setGenerationType('zip');
+                                                        setShowDocumentSelectionModal(true);
+                                                    }}
+                                                    disabled={!selectedStudent.documents.every(doc => doc.status === 'APPROVED')}
+                                                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${selectedStudent.documents.every(doc => doc.status === 'APPROVED')
+                                                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                                        }`}
+                                                    title={selectedStudent.documents.every(doc => doc.status === 'APPROVED') ? 'Generate ZIP' : 'Please approve all documents first'}
+                                                >
+                                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                                    </svg>
+                                                    Generate ZIP
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -1369,6 +1551,145 @@ const StudentManagement = () => {
                                     Save Changes
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Document Selection Modal */}
+            {showDocumentSelectionModal && selectedStudent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+                        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                            <div>
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                    Select Documents for {generationType === 'pdf' ? 'PDF' : 'ZIP'}
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    Choose which documents to include in the {generationType === 'pdf' ? 'combined PDF' : 'ZIP file'}
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => !generating && setShowDocumentSelectionModal(false)}
+                                disabled={generating}
+                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+                            >
+                                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div className="p-6 overflow-y-auto max-h-[60vh]">
+                            {(() => {
+                                const approvedDocs = selectedStudent.documents.filter(doc => doc.status === 'APPROVED');
+
+                                if (approvedDocs.length === 0) {
+                                    return (
+                                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                            <svg className="h-12 w-12 mx-auto mb-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                                            </svg>
+                                            <p>No approved documents available</p>
+                                        </div>
+                                    );
+                                }
+
+                                return (
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center mb-4">
+                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                {approvedDocs.length} approved document{approvedDocs.length !== 1 ? 's' : ''} available
+                                            </span>
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={selectAllDocuments}
+                                                    className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                >
+                                                    Select All
+                                                </button>
+                                                <button
+                                                    onClick={clearDocumentSelection}
+                                                    className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400"
+                                                >
+                                                    Clear All
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {approvedDocs.map((doc, idx) => {
+                                            const label = formatDocumentLabel(doc.documentType, doc.fileName);
+                                            const docId = doc._id?.toString() || doc.documentType || `doc_${idx}`;
+                                            const isSelected = selectedDocumentsForGeneration.includes(docId);
+
+                                            return (
+                                                <div
+                                                    key={docId}
+                                                    className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${isSelected
+                                                        ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
+                                                        : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                        }`}
+                                                    onClick={() => toggleDocumentSelection(docId)}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={isSelected}
+                                                        onChange={() => toggleDocumentSelection(docId)}
+                                                        className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    />
+                                                    <div className="ml-4 flex-1">
+                                                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                                                            {label}
+                                                        </p>
+                                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                            {doc.fileName || doc.documentType}
+                                                        </p>
+                                                        <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                                            APPROVED
+                                                        </span>
+                                                    </div>
+                                                    {isSelected && (
+                                                        <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                );
+                            })()}
+                        </div>
+
+                        <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                            <button
+                                onClick={() => !generating && setShowDocumentSelectionModal(false)}
+                                disabled={generating}
+                                className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleConfirmGeneration}
+                                disabled={generating || selectedDocumentsForGeneration.length === 0}
+                                className={`px-6 py-2 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed ${generationType === 'pdf'
+                                    ? 'bg-blue-600 hover:bg-blue-700'
+                                    : 'bg-purple-600 hover:bg-purple-700'
+                                    }`}
+                            >
+                                {generating ? (
+                                    <span className="flex items-center">
+                                        <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Generating...
+                                    </span>
+                                ) : (
+                                    `Generate ${generationType === 'pdf' ? 'PDF' : 'ZIP'} (${selectedDocumentsForGeneration.length})`
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>

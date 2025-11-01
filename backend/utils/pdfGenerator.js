@@ -1,8 +1,12 @@
 const PDFDocument = require('pdfkit');
+const { PDFDocument: PDFLib } = require('pdf-lib');
 const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
 const { promisify } = require('util');
+const https = require('https');
+const http = require('http');
+const sharp = require('sharp');
 
 class PDFGenerator {
     constructor() {
@@ -16,50 +20,112 @@ class PDFGenerator {
         }
     }
 
-    async generateCombinedPDF(application) {
+    async generateCombinedPDF(application, selectedDocuments = []) {
         try {
-            const doc = new PDFDocument({ margin: 50 });
-            const fileName = `application_${application.applicationId}_combined.pdf`;
+            const fileName = `application_${application.applicationId}_combined_${Date.now()}.pdf`;
             const filePath = path.join(this.outputDir, fileName);
 
-            // Create write stream
-            const stream = fs.createWriteStream(filePath);
-            doc.pipe(stream);
+            // Create a new PDF document using pdf-lib for merging
+            const mergedPdf = await PDFLib.create();
 
-            // Add application header
-            this.addApplicationHeader(doc, application);
-
-            // Add personal details
-            this.addPersonalDetails(doc, application);
-
-            // Add academic details
-            this.addAcademicDetails(doc, application);
-
-            // Add guardian details
-            this.addGuardianDetails(doc, application);
-
-            // Add financial details
-            this.addFinancialDetails(doc, application);
-
-            // Add documents section
-            this.addDocumentsSection(doc, application);
-
-            // Add terms and conditions
-            this.addTermsAndConditions(doc);
-
-            // Finalize PDF
-            doc.end();
-
-            return new Promise((resolve, reject) => {
-                stream.on('finish', () => {
-                    resolve({
-                        fileName,
-                        filePath,
-                        url: `/api/files/download/${fileName}`
-                    });
+            // Helper function to download file
+            const downloadFile = (url) => {
+                return new Promise((resolve, reject) => {
+                    const protocol = url.startsWith('https') ? https : http;
+                    protocol.get(url, (res) => {
+                        const chunks = [];
+                        res.on('data', (chunk) => chunks.push(chunk));
+                        res.on('end', () => resolve(Buffer.concat(chunks)));
+                        res.on('error', reject);
+                    }).on('error', reject);
                 });
-                stream.on('error', reject);
-            });
+            };
+
+            // Helper function to convert image to PDF bytes
+            const imageToPdf = async (imageBuffer, imageType) => {
+                const pdfDoc = await PDFLib.create();
+                const page = pdfDoc.addPage([612, 792]); // Letter size
+
+                let image;
+                if (imageType === 'image/jpeg' || imageType === 'image/jpg') {
+                    image = await pdfDoc.embedJpg(imageBuffer);
+                } else if (imageType === 'image/png') {
+                    image = await pdfDoc.embedPng(imageBuffer);
+                } else {
+                    throw new Error(`Unsupported image type: ${imageType}`);
+                }
+
+                // Scale image to fit page while maintaining aspect ratio
+                const { width, height } = image.scale(1);
+                const pageWidth = page.getWidth();
+                const pageHeight = page.getHeight();
+                const scaleX = pageWidth / width;
+                const scaleY = pageHeight / height;
+                const scale = Math.min(scaleX, scaleY);
+                const scaledWidth = width * scale;
+                const scaledHeight = height * scale;
+                const x = (pageWidth - scaledWidth) / 2;
+                const y = (pageHeight - scaledHeight) / 2;
+
+                page.drawImage(image, {
+                    x,
+                    y,
+                    width: scaledWidth,
+                    height: scaledHeight,
+                });
+
+                return await pdfDoc.save();
+            };
+
+            // Process each selected document
+            for (const doc of selectedDocuments) {
+                try {
+                    const docUrl = doc.filePath || doc.url || doc.downloadUrl;
+                    if (!docUrl) {
+                        console.warn(`Document ${doc.documentType} has no URL, skipping`);
+                        continue;
+                    }
+
+                    // Get full URL
+                    const fullUrl = docUrl.startsWith('http') ? docUrl :
+                        docUrl.startsWith('/') ? `${process.env.BASE_URL || 'http://localhost:5000'}${docUrl}` :
+                            `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/${docUrl}`;
+
+                    console.log(`Processing document: ${doc.documentType} from ${fullUrl}`);
+
+                    // Download the document
+                    const fileBuffer = await downloadFile(fullUrl);
+                    const mimeType = doc.mimeType || doc.type || 'application/pdf';
+
+                    if (mimeType === 'application/pdf') {
+                        // Embed PDF directly
+                        const pdfBytes = await PDFLib.load(fileBuffer);
+                        const pages = await mergedPdf.copyPages(pdfBytes, pdfBytes.getPageIndices());
+                        pages.forEach(page => mergedPdf.addPage(page));
+                    } else if (mimeType.startsWith('image/')) {
+                        // Convert image to PDF and embed
+                        const imagePdfBytes = await imageToPdf(fileBuffer, mimeType);
+                        const imagePdf = await PDFLib.load(imagePdfBytes);
+                        const pages = await mergedPdf.copyPages(imagePdf, imagePdf.getPageIndices());
+                        pages.forEach(page => mergedPdf.addPage(page));
+                    } else {
+                        console.warn(`Unsupported file type for ${doc.documentType}: ${mimeType}, skipping`);
+                    }
+                } catch (docError) {
+                    console.error(`Error processing document ${doc.documentType}:`, docError);
+                    // Continue with other documents instead of failing completely
+                }
+            }
+
+            // Save merged PDF
+            const pdfBytes = await mergedPdf.save();
+            fs.writeFileSync(filePath, pdfBytes);
+
+            return {
+                fileName,
+                filePath,
+                url: `/api/files/download/${fileName}`
+            };
 
         } catch (error) {
             console.error('Error generating combined PDF:', error);
@@ -262,15 +328,28 @@ class PDFGenerator {
         });
     }
 
-    async generateDocumentsZIP(application) {
+    async generateDocumentsZIP(application, selectedDocuments = []) {
         try {
-            const fileName = `application_${application.applicationId}_documents.zip`;
+            const fileName = `application_${application.applicationId}_documents_${Date.now()}.zip`;
             const filePath = path.join(this.outputDir, fileName);
 
             const output = fs.createWriteStream(filePath);
             const archive = archiver('zip', { zlib: { level: 9 } });
 
-            return new Promise((resolve, reject) => {
+            // Helper function to download file
+            const downloadFile = (url) => {
+                return new Promise((resolve, reject) => {
+                    const protocol = url.startsWith('https') ? https : http;
+                    protocol.get(url, (res) => {
+                        const chunks = [];
+                        res.on('data', (chunk) => chunks.push(chunk));
+                        res.on('end', () => resolve(Buffer.concat(chunks)));
+                        res.on('error', reject);
+                    }).on('error', reject);
+                });
+            };
+
+            return new Promise(async (resolve, reject) => {
                 output.on('close', () => {
                     resolve({
                         fileName,
@@ -283,18 +362,53 @@ class PDFGenerator {
                 archive.on('error', reject);
                 archive.pipe(output);
 
-                // Add individual documents
-                const documents = application.documents || {};
-                Object.entries(documents).forEach(([key, doc]) => {
-                    if (doc && doc.url) {
-                        const fileName = `${key}_${application.applicationId}.${doc.fileType || 'pdf'}`;
-                        archive.file(doc.url, { name: fileName });
+                // Process each selected document
+                for (const doc of selectedDocuments) {
+                    try {
+                        const docUrl = doc.filePath || doc.url || doc.downloadUrl;
+                        if (!docUrl) {
+                            console.warn(`Document ${doc.documentType} has no URL, skipping`);
+                            continue;
+                        }
+
+                        // Get full URL
+                        const fullUrl = docUrl.startsWith('http') ? docUrl :
+                            docUrl.startsWith('/') ? `${process.env.BASE_URL || 'http://localhost:5000'}${docUrl}` :
+                                `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/${docUrl}`;
+
+                        console.log(`Adding to ZIP: ${doc.documentType} from ${fullUrl}`);
+
+                        // Download the document
+                        const fileBuffer = await downloadFile(fullUrl);
+
+                        // Get file extension from mime type or filename
+                        const mimeType = doc.mimeType || doc.type || 'application/pdf';
+                        let ext = 'pdf';
+                        if (mimeType.includes('jpeg') || mimeType.includes('jpg')) ext = 'jpg';
+                        else if (mimeType.includes('png')) ext = 'png';
+                        else if (mimeType.includes('pdf')) ext = 'pdf';
+
+                        const safeDocType = (doc.documentType || 'document').replace(/[^a-zA-Z0-9]/g, '_');
+                        const zipFileName = `${safeDocType}_${application.applicationId}.${ext}`;
+
+                        archive.append(fileBuffer, { name: zipFileName });
+                    } catch (docError) {
+                        console.error(`Error adding document ${doc.documentType} to ZIP:`, docError);
+                        // Continue with other documents
                     }
-                });
+                }
 
                 // Add application PDF if exists
                 if (application.applicationPdfUrl) {
-                    archive.file(application.applicationPdfUrl, { name: `application_${application.applicationId}.pdf` });
+                    try {
+                        const appPdfUrl = application.applicationPdfUrl.startsWith('http')
+                            ? application.applicationPdfUrl
+                            : `${process.env.BASE_URL || 'http://localhost:5000'}${application.applicationPdfUrl}`;
+                        const pdfBuffer = await downloadFile(appPdfUrl);
+                        archive.append(pdfBuffer, { name: `application_${application.applicationId}.pdf` });
+                    } catch (err) {
+                        console.warn('Could not add application PDF to ZIP:', err);
+                    }
                 }
 
                 archive.finalize();

@@ -46,6 +46,10 @@ const ApplicationReview = () => {
         hasRejected: 0,
         noDocuments: 0
     });
+    const [showDocumentSelectionModal, setShowDocumentSelectionModal] = useState(false);
+    const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
+    const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
+    const [generating, setGenerating] = useState(false);
 
     // Make tabs reactive to state changes
     const getTabs = () => [
@@ -111,7 +115,7 @@ const ApplicationReview = () => {
         fetchAllApplicationsForStats();
         fetchApplications();
     }, [activeTab]);
-    
+
     // Note: Auto-refresh removed to prevent rate limiting issues
     // Staff can use the manual "Refresh" button to get latest data
 
@@ -233,7 +237,7 @@ const ApplicationReview = () => {
                 console.log('✅ Application details loaded');
                 console.log('📄 Documents count:', appData.documents?.length || 0);
                 console.log('📊 Review Status:', appData.reviewStatus);
-                
+
                 // Log each document's current status
                 if (appData.documents && appData.documents.length > 0) {
                     console.log('📋 Document Statuses:');
@@ -241,7 +245,7 @@ const ApplicationReview = () => {
                         console.log(`  - ${doc.documentType}: ${doc.status || 'PENDING'}${doc.uploadedAt ? ` (Uploaded: ${new Date(doc.uploadedAt).toLocaleString()})` : ''}${doc.remarks ? ` - "${doc.remarks.substring(0, 50)}"` : ''}`);
                     });
                 }
-                
+
                 setSelectedApplication(appData);
             }
         } catch (error) {
@@ -286,7 +290,7 @@ const ApplicationReview = () => {
             ...prev,
             [documentType]: { decision, remarks: finalRemarks }
         }));
-        
+
         // Show visual feedback with toast
         if (decision === 'approve') {
             console.log(`✅ Marked ${documentType} for APPROVAL`);
@@ -360,13 +364,13 @@ const ApplicationReview = () => {
 
         try {
             setVerifying(true);
-            
+
             console.log('📤 Submitting document reviews:', {
                 applicationId: selectedApplication.applicationId,
                 decisions,
                 feedbackSummary: feedbackMessage
             });
-            
+
             const response = await api.put(`/api/student-application/${selectedApplication.applicationId}/verify`, {
                 decisions,
                 feedbackSummary: feedbackMessage
@@ -377,13 +381,13 @@ const ApplicationReview = () => {
             if (response.data?.success) {
                 showSuccess(`✅ Documents reviewed successfully! ${feedbackMessage}`);
                 setDocumentDecisions({});
-                
+
                 console.log('🔄 Refreshing application details...');
                 await fetchApplicationDetails(selectedApplication.applicationId);
-                
+
                 console.log('🔄 Refreshing applications list...');
                 await fetchApplications();
-                
+
                 console.log('✅ All data refreshed - changes persisted');
             } else {
                 console.error('❌ Verification failed:', response.data);
@@ -400,38 +404,157 @@ const ApplicationReview = () => {
     };
 
 
+    // Check if all documents are approved
+    const areAllDocumentsApproved = () => {
+        if (!selectedApplication || !selectedApplication.documents) return false;
+
+        const documents = Array.isArray(selectedApplication.documents)
+            ? selectedApplication.documents
+            : Object.values(selectedApplication.documents);
+
+        if (documents.length === 0) return false;
+
+        return documents.every(doc => doc.status === 'APPROVED');
+    };
+
     const handleGeneratePDF = async () => {
         if (!selectedApplication) return;
 
-        try {
-            const response = await api.post(`/api/student-application/${selectedApplication.applicationId}/combined-pdf`);
-
-            if (response.data?.success) {
-                showSuccess('Combined PDF generation initiated');
-                // In a real implementation, you would download the PDF
-                window.open(response.data.data.pdfUrl, '_blank');
-            }
-        } catch (error) {
-            console.error('Error generating PDF:', error);
-            showError('Failed to generate PDF');
+        // Check if all documents are approved
+        if (!areAllDocumentsApproved()) {
+            showError('Please approve all documents before generating PDF');
+            return;
         }
+
+        // Initialize with all approved documents selected
+        const documents = Array.isArray(selectedApplication.documents)
+            ? selectedApplication.documents
+            : Object.values(selectedApplication.documents || {});
+        const approvedDocs = documents.filter(doc => doc.status === 'APPROVED');
+        setSelectedDocumentsForGeneration(approvedDocs.map(doc => doc._id?.toString() || doc.documentType));
+
+        // Show document selection modal
+        setGenerationType('pdf');
+        setShowDocumentSelectionModal(true);
     };
 
     const handleGenerateZIP = async () => {
         if (!selectedApplication) return;
 
+        // Check if all documents are approved
+        if (!areAllDocumentsApproved()) {
+            showError('Please approve all documents before generating ZIP');
+            return;
+        }
+
+        // Initialize with all approved documents selected
+        const documents = Array.isArray(selectedApplication.documents)
+            ? selectedApplication.documents
+            : Object.values(selectedApplication.documents || {});
+        const approvedDocs = documents.filter(doc => doc.status === 'APPROVED');
+        setSelectedDocumentsForGeneration(approvedDocs.map(doc => doc._id?.toString() || doc.documentType));
+
+        // Show document selection modal
+        setGenerationType('zip');
+        setShowDocumentSelectionModal(true);
+    };
+
+    const handleConfirmGeneration = async () => {
+        if (selectedDocumentsForGeneration.length === 0) {
+            showError('Please select at least one document');
+            return;
+        }
+
         try {
-            const response = await api.post(`/api/student-application/${selectedApplication.applicationId}/documents-zip`);
+            setGenerating(true);
+            const endpoint = generationType === 'pdf'
+                ? `/api/student-application/${selectedApplication.applicationId}/combined-pdf`
+                : `/api/student-application/${selectedApplication.applicationId}/documents-zip`;
+
+            const response = await api.post(endpoint, {
+                selectedDocuments: selectedDocumentsForGeneration
+            });
 
             if (response.data?.success) {
-                showSuccess('Documents ZIP generation initiated');
-                // In a real implementation, you would download the ZIP
-                window.open(response.data.data.zipUrl, '_blank');
+                showSuccess(`${generationType.toUpperCase()} generated successfully!`);
+
+                // Download the file using fetch with authentication to prevent session loss
+                const fileUrl = response.data.data.url || response.data.data.pdfUrl || response.data.data.zipUrl;
+                if (fileUrl) {
+                    const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${window.location.origin}${fileUrl}`;
+
+                    try {
+                        // Fetch with credentials to include auth token
+                        const fileResponse = await fetch(fullUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                            },
+                            credentials: 'include'
+                        });
+
+                        if (!fileResponse.ok) {
+                            throw new Error(`Download failed: ${fileResponse.status}`);
+                        }
+
+                        // Create blob and download
+                        const blob = await fileResponse.blob();
+                        const blobUrl = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = blobUrl;
+                        link.download = fullUrl.split('/').pop() || `file.${generationType === 'pdf' ? 'pdf' : 'zip'}`;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(blobUrl);
+                    } catch (downloadError) {
+                        console.error('Download error:', downloadError);
+                        showError('File generated but download failed. You can try accessing it directly.');
+                        // Fallback: open in new tab
+                        window.open(fullUrl, '_blank');
+                    }
+                }
+
+                setShowDocumentSelectionModal(false);
+                setSelectedDocumentsForGeneration([]);
+                setGenerationType(null);
             }
         } catch (error) {
-            console.error('Error generating ZIP:', error);
-            showError('Failed to generate ZIP');
+            console.error(`Error generating ${generationType}:`, error);
+            const errorMessage = error.response?.data?.message || error.message || `Failed to generate ${generationType.toUpperCase()}`;
+            showError(errorMessage);
+
+            // Check if it's an authentication error
+            if (error.response?.status === 401) {
+                console.error('Authentication error - session may have expired');
+                // Don't redirect, just show error - let user stay on page
+            }
+        } finally {
+            setGenerating(false);
         }
+    };
+
+    const toggleDocumentSelection = (documentId) => {
+        setSelectedDocumentsForGeneration(prev =>
+            prev.includes(documentId)
+                ? prev.filter(id => id !== documentId)
+                : [...prev, documentId]
+        );
+    };
+
+    const selectAllDocuments = () => {
+        if (!selectedApplication || !selectedApplication.documents) return;
+
+        const documents = Array.isArray(selectedApplication.documents)
+            ? selectedApplication.documents
+            : Object.values(selectedApplication.documents);
+
+        const approvedDocs = documents.filter(doc => doc.status === 'APPROVED');
+        setSelectedDocumentsForGeneration(approvedDocs.map(doc => doc._id || doc.documentType));
+    };
+
+    const clearDocumentSelection = () => {
+        setSelectedDocumentsForGeneration([]);
     };
 
     const getStatusColor = (status) => {
@@ -800,14 +923,24 @@ const ApplicationReview = () => {
                                     </button>
                                     <button
                                         onClick={handleGeneratePDF}
-                                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                        disabled={!areAllDocumentsApproved()}
+                                        className={`flex items-center px-4 py-2 rounded-lg transition-colors ${areAllDocumentsApproved()
+                                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                            : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                            }`}
+                                        title={areAllDocumentsApproved() ? 'Generate combined PDF of selected documents' : 'Please approve all documents first'}
                                     >
                                         <DocumentTextIcon className="h-4 w-4 mr-2" />
                                         Generate PDF
                                     </button>
                                     <button
                                         onClick={handleGenerateZIP}
-                                        className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                                        disabled={!areAllDocumentsApproved()}
+                                        className={`flex items-center px-4 py-2 rounded-lg transition-colors ${areAllDocumentsApproved()
+                                            ? 'bg-purple-600 text-white hover:bg-purple-700'
+                                            : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                                            }`}
+                                        title={areAllDocumentsApproved() ? 'Generate ZIP of selected documents' : 'Please approve all documents first'}
                                     >
                                         <ArchiveBoxIcon className="h-4 w-4 mr-2" />
                                         Generate ZIP
@@ -846,12 +979,12 @@ const ApplicationReview = () => {
                                                 url: d.downloadUrl || d.filePath || d.url,
                                                 publicId: d.cloudinaryPublicId
                                             }))
-                                                        ).map((item) => {
+                                        ).map((item) => {
                                             const docStatus = documentDecisions[item.documentType]?.decision || 'pending';
                                             const docRemarks = documentDecisions[item.documentType]?.remarks || '';
                                             const label = formatDocumentLabel(item.documentType, item.name, item.publicId);
                                             const documentUrl = getDocumentUrl(item.url);
-                                            
+
                                             // Use actual database status for display
                                             const actualStatus = item.status || 'PENDING';
                                             const isApproved = actualStatus === 'APPROVED';
@@ -859,18 +992,16 @@ const ApplicationReview = () => {
                                             const isPending = actualStatus === 'PENDING';
 
                                             return (
-                                                <div key={item.key} className={`flex flex-col p-4 border rounded-lg ${
-                                                    isRejected ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30' :
+                                                <div key={item.key} className={`flex flex-col p-4 border rounded-lg ${isRejected ? 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-900/30' :
                                                     isApproved ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30' :
-                                                    'border-gray-200 dark:border-gray-600'
-                                                }`}>
+                                                        'border-gray-200 dark:border-gray-600'
+                                                    }`}>
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex items-center space-x-3 flex-1">
-                                                            <DocumentIcon className={`h-8 w-8 ${
-                                                                isApproved ? 'text-green-600' :
+                                                            <DocumentIcon className={`h-8 w-8 ${isApproved ? 'text-green-600' :
                                                                 isRejected ? 'text-red-600' :
-                                                                'text-blue-600'
-                                                            }`} />
+                                                                    'text-blue-600'
+                                                                }`} />
                                                             <div className="flex-1">
                                                                 <p className="font-medium text-gray-900 dark:text-gray-100">
                                                                     {label}
@@ -881,21 +1012,20 @@ const ApplicationReview = () => {
                                                                 <p className="text-xs text-gray-500">
                                                                     {item.size ? `${(item.size / 1024).toFixed(1)} KB` : ''} {item.type ? `• ${item.type}` : ''}
                                                                 </p>
-                                                                
+
                                                                 {/* Upload timestamp */}
                                                                 {item.uploadedAt && (
                                                                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                                                         📅 Uploaded: {new Date(item.uploadedAt).toLocaleString()}
                                                                     </p>
                                                                 )}
-                                                                
+
                                                                 {/* Current database status badge - PROMINENT */}
                                                                 <div className="mt-2">
-                                                                    <span className={`inline-block px-3 py-1.5 text-xs font-bold uppercase tracking-wide rounded-lg shadow-sm ${
-                                                                        isApproved ? 'bg-green-500 text-white' :
+                                                                    <span className={`inline-block px-3 py-1.5 text-xs font-bold uppercase tracking-wide rounded-lg shadow-sm ${isApproved ? 'bg-green-500 text-white' :
                                                                         isRejected ? 'bg-red-500 text-white' :
-                                                                        'bg-yellow-500 text-white'
-                                                                    }`}>
+                                                                            'bg-yellow-500 text-white'
+                                                                        }`}>
                                                                         {isApproved ? '✓ APPROVED' : isRejected ? '✗ REJECTED' : '⏳ PENDING'}
                                                                     </span>
                                                                     {item.reviewedAt && (
@@ -904,18 +1034,17 @@ const ApplicationReview = () => {
                                                                         </span>
                                                                     )}
                                                                 </div>
-                                                                
+
                                                                 {/* Existing remarks from database */}
                                                                 {item.remarks && (
-                                                                    <div className={`mt-2 p-2 rounded text-xs ${
-                                                                        isRejected ? 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300' :
+                                                                    <div className={`mt-2 p-2 rounded text-xs ${isRejected ? 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300' :
                                                                         isApproved ? 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300' :
-                                                                        'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300'
-                                                                    }`}>
+                                                                            'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300'
+                                                                        }`}>
                                                                         <strong>
                                                                             {isRejected ? '⚠️ Previous Rejection: ' :
-                                                                             isApproved ? '✓ Approval Note: ' :
-                                                                             'Review Note: '}
+                                                                                isApproved ? '✓ Approval Note: ' :
+                                                                                    'Review Note: '}
                                                                         </strong>
                                                                         {item.remarks}
                                                                     </div>
@@ -956,7 +1085,7 @@ const ApplicationReview = () => {
                                                                         documentUrl: documentUrl,
                                                                         mimeType: item.type
                                                                     });
-                                                                    
+
                                                                     if (fullUrl) {
                                                                         window.open(fullUrl, '_blank', 'noopener,noreferrer');
                                                                     } else {
@@ -1197,6 +1326,160 @@ const ApplicationReview = () => {
 
             {/* Modals */}
             {renderDocumentViewer()}
+
+            {/* Document Selection Modal */}
+            <AnimatePresence>
+                {showDocumentSelectionModal && selectedApplication && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+                        onClick={() => !generating && setShowDocumentSelectionModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
+                                <div>
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+                                        Select Documents for {generationType === 'pdf' ? 'PDF' : 'ZIP'}
+                                    </h3>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                        Choose which documents to include in the {generationType === 'pdf' ? 'combined PDF' : 'ZIP file'}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => !generating && setShowDocumentSelectionModal(false)}
+                                    disabled={generating}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+                                >
+                                    <XCircleIcon className="h-6 w-6" />
+                                </button>
+                            </div>
+
+                            <div className="p-6 overflow-y-auto max-h-[60vh]">
+                                {(() => {
+                                    const documents = Array.isArray(selectedApplication.documents)
+                                        ? selectedApplication.documents
+                                        : Object.entries(selectedApplication.documents || {}).map(([docType, d]) => ({
+                                            _id: docType,
+                                            documentType: docType,
+                                            fileName: d.name || d.fileName,
+                                            status: d.status || 'PENDING'
+                                        }));
+
+                                    const approvedDocs = documents.filter(doc => doc.status === 'APPROVED');
+
+                                    if (approvedDocs.length === 0) {
+                                        return (
+                                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                <ExclamationTriangleIcon className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
+                                                <p>No approved documents available</p>
+                                            </div>
+                                        );
+                                    }
+
+                                    return (
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                    {approvedDocs.length} approved document{approvedDocs.length !== 1 ? 's' : ''} available
+                                                </span>
+                                                <div className="flex space-x-2">
+                                                    <button
+                                                        onClick={selectAllDocuments}
+                                                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                    >
+                                                        Select All
+                                                    </button>
+                                                    <button
+                                                        onClick={clearDocumentSelection}
+                                                        className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400"
+                                                    >
+                                                        Clear All
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {approvedDocs.map((doc) => {
+                                                const label = formatDocumentLabel(doc.documentType, doc.fileName);
+                                                const docId = doc._id || doc.documentType;
+                                                const isSelected = selectedDocumentsForGeneration.includes(docId);
+
+                                                return (
+                                                    <div
+                                                        key={docId}
+                                                        className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${isSelected
+                                                            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
+                                                            : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                                            }`}
+                                                        onClick={() => toggleDocumentSelection(docId)}
+                                                    >
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={isSelected}
+                                                            onChange={() => toggleDocumentSelection(docId)}
+                                                            className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                        />
+                                                        <div className="ml-4 flex-1">
+                                                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                                                                {label}
+                                                            </p>
+                                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                                {doc.fileName || doc.documentType}
+                                                            </p>
+                                                            <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                                                APPROVED
+                                                            </span>
+                                                        </div>
+                                                        <CheckCircleIcon className={`h-6 w-6 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`} />
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+
+                            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                                <button
+                                    onClick={() => !generating && setShowDocumentSelectionModal(false)}
+                                    disabled={generating}
+                                    className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleConfirmGeneration}
+                                    disabled={generating || selectedDocumentsForGeneration.length === 0}
+                                    className={`px-6 py-2 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed ${generationType === 'pdf'
+                                        ? 'bg-blue-600 hover:bg-blue-700'
+                                        : 'bg-purple-600 hover:bg-purple-700'
+                                        }`}
+                                >
+                                    {generating ? (
+                                        <span className="flex items-center">
+                                            <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Generating...
+                                        </span>
+                                    ) : (
+                                        `Generate ${generationType === 'pdf' ? 'PDF' : 'ZIP'} (${selectedDocumentsForGeneration.length})`
+                                    )}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

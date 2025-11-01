@@ -1079,7 +1079,7 @@ const verifyDocuments = async (req, res) => {
         }
 
         console.log(`✅ Updated ${updatedDocuments} documents`);
-        
+
         // CRITICAL: Mark documents array as modified so Mongoose saves it
         application.markModified('documents');
 
@@ -1163,7 +1163,7 @@ const verifyDocuments = async (req, res) => {
         // Add workflow history entry for document review
         // Use REQUEST_MODIFICATION if any docs rejected, otherwise APPROVE if all approved
         const workflowAction = counts.rejected > 0 ? 'REQUEST_MODIFICATION' : 'APPROVE';
-        
+
         application.workflowHistory.push({
             stage: application.currentStage,
             status: application.status,
@@ -1174,11 +1174,11 @@ const verifyDocuments = async (req, res) => {
         });
 
         application.lastModified = new Date();
-        
+
         console.log('💾 Saving application with updated document statuses...');
         await application.save();
         console.log('✅ Application saved successfully to database');
-        
+
         // Verify the save by logging final document statuses
         console.log('📋 Final document statuses after save:');
         application.documents.forEach(doc => {
@@ -1295,14 +1295,39 @@ const fixDocumentReviewStatus = async (req, res) => {
 const generateCombinedPDF = async (req, res) => {
     try {
         const { applicationId } = req.params;
+        const { selectedDocuments } = req.body || {};
 
         const application = await StudentApplication.findOne({ applicationId });
         if (!application) {
             return res.status(404).json({ success: false, message: 'Application not found' });
         }
 
-        const result = await PDFGenerator.generateCombinedPDF(application);
-        application.combinedPdfUrl = `/uploads/processed/${result.fileName}`;
+        // Get selected documents - if not provided, use all approved documents
+        let documentsToMerge = [];
+        const allDocuments = Array.isArray(application.documents)
+            ? application.documents
+            : Object.values(application.documents || {});
+
+        if (selectedDocuments && selectedDocuments.length > 0) {
+            // Filter documents based on selected IDs
+            documentsToMerge = allDocuments.filter(doc =>
+                selectedDocuments.includes(doc._id?.toString()) ||
+                selectedDocuments.includes(doc.documentType)
+            ).filter(doc => doc.status === 'APPROVED'); // Only approved documents
+        } else {
+            // Use all approved documents if none specified
+            documentsToMerge = allDocuments.filter(doc => doc.status === 'APPROVED');
+        }
+
+        if (documentsToMerge.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No approved documents selected for PDF generation'
+            });
+        }
+
+        const result = await PDFGenerator.generateCombinedPDF(application, documentsToMerge);
+        application.combinedPdfUrl = `/api/files/download/${result.fileName}`;
         application.progress.applicationPdfGenerated = true;
         await application.save();
 
@@ -1312,7 +1337,8 @@ const generateCombinedPDF = async (req, res) => {
             data: {
                 fileName: result.fileName,
                 filePath: result.filePath,
-                url: application.combinedPdfUrl
+                url: application.combinedPdfUrl,
+                pdfUrl: application.combinedPdfUrl
             }
         });
     } catch (error) {
@@ -1328,14 +1354,39 @@ const generateCombinedPDF = async (req, res) => {
 const generateDocumentsZIP = async (req, res) => {
     try {
         const { applicationId } = req.params;
+        const { selectedDocuments } = req.body || {};
 
         const application = await StudentApplication.findOne({ applicationId });
         if (!application) {
             return res.status(404).json({ success: false, message: 'Application not found' });
         }
 
-        const result = await PDFGenerator.generateDocumentsZIP(application);
-        application.documentsZipUrl = `/uploads/processed/${result.fileName}`;
+        // Get selected documents - if not provided, use all approved documents
+        let documentsToZip = [];
+        const allDocuments = Array.isArray(application.documents)
+            ? application.documents
+            : Object.values(application.documents || {});
+
+        if (selectedDocuments && selectedDocuments.length > 0) {
+            // Filter documents based on selected IDs
+            documentsToZip = allDocuments.filter(doc =>
+                selectedDocuments.includes(doc._id?.toString()) ||
+                selectedDocuments.includes(doc.documentType)
+            ).filter(doc => doc.status === 'APPROVED'); // Only approved documents
+        } else {
+            // Use all approved documents if none specified
+            documentsToZip = allDocuments.filter(doc => doc.status === 'APPROVED');
+        }
+
+        if (documentsToZip.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No approved documents selected for ZIP generation'
+            });
+        }
+
+        const result = await PDFGenerator.generateDocumentsZIP(application, documentsToZip);
+        application.documentsZipUrl = `/api/files/download/${result.fileName}`;
         await application.save();
 
         return res.status(200).json({
@@ -1345,6 +1396,7 @@ const generateDocumentsZIP = async (req, res) => {
                 fileName: result.fileName,
                 filePath: result.filePath,
                 url: application.documentsZipUrl,
+                zipUrl: application.documentsZipUrl,
                 size: result.size
             }
         });
