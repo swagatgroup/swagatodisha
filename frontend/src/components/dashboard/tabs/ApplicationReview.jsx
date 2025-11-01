@@ -350,17 +350,23 @@ const ApplicationReview = () => {
         }
 
         // Show confirmation dialog
-        const confirmed = await showConfirm(
+        const result = await showConfirm(
             'Confirm Document Review',
             `Are you sure you want to submit these document reviews?\n\n${feedbackMessage}\n\nThis will notify the agent/student about the review results.`,
-            'Yes, Submit Review',
-            'Cancel'
+            {
+                confirmButtonText: 'Yes, Submit Review',
+                cancelButtonText: 'No, Cancel'
+            }
         );
 
-        if (!confirmed) {
-            console.log('❌ User cancelled document review submission');
-            return;
+        // Check if user confirmed (clicked Yes) - SweetAlert2 returns { isConfirmed: true } on confirm
+        // Explicitly check that user clicked "Yes" - if they clicked "No" or dismissed, isConfirmed will be false
+        if (!result || result.isConfirmed !== true) {
+            console.log('❌ User cancelled document review submission', { result });
+            return; // Exit early - do not submit
         }
+
+        console.log('✅ User confirmed document review submission', { result });
 
         try {
             setVerifying(true);
