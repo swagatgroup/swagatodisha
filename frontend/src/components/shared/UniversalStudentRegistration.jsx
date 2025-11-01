@@ -43,8 +43,9 @@ const UniversalStudentRegistration = ({
       fathersName: "",
       mothersName: "",
       dateOfBirth: "",
-      gender: "",
       aadharNumber: "",
+      gender: "",
+      category: "",
     },
     contactDetails: {
       primaryPhone: "",
@@ -177,6 +178,9 @@ const UniversalStudentRegistration = ({
         ) {
           newErrors["personalDetails.aadharNumber"] =
             "Valid 12-digit Aadhar number is required";
+        }
+        if (!formData.personalDetails.category) {
+          newErrors["personalDetails.category"] = "Category is required";
         }
         break;
 
@@ -677,6 +681,33 @@ const UniversalStudentRegistration = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Aadhar Number *
+          </label>
+          <input
+            type="text"
+            value={formData.personalDetails.aadharNumber}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                personalDetails: {
+                  ...prev.personalDetails,
+                  aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12),
+                },
+              }))
+            }
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Enter 12-digit Aadhar number"
+            maxLength="12"
+          />
+          {errors["personalDetails.aadharNumber"] && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors["personalDetails.aadharNumber"]}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Gender *
           </label>
           <select
@@ -706,27 +737,31 @@ const UniversalStudentRegistration = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Aadhar Number *
+            Category *
           </label>
-          <input
-            type="text"
-            value={formData.personalDetails.aadharNumber}
+          <select
+            value={formData.personalDetails.category}
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,
                 personalDetails: {
                   ...prev.personalDetails,
-                  aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12),
+                  category: e.target.value,
                 },
               }))
             }
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            placeholder="Enter 12-digit Aadhar number"
-            maxLength="12"
-          />
-          {errors["personalDetails.aadharNumber"] && (
+          >
+            <option value="">Select Category</option>
+            <option value="General">General</option>
+            <option value="OBC">OBC</option>
+            <option value="SC">SC</option>
+            <option value="ST">ST</option>
+            <option value="PwD">PwD</option>
+          </select>
+          {errors["personalDetails.category"] && (
             <p className="text-red-500 text-sm mt-1">
-              {errors["personalDetails.aadharNumber"]}
+              {errors["personalDetails.category"]}
             </p>
           )}
         </div>
@@ -1192,6 +1227,10 @@ const UniversalStudentRegistration = ({
             <div>
               <strong className="text-gray-900 dark:text-white">Aadhar:</strong>{" "}
               {formData.personalDetails.aadharNumber}
+            </div>
+            <div>
+              <strong className="text-gray-900 dark:text-white">Category:</strong>{" "}
+              {formData.personalDetails.category}
             </div>
           </div>
         </div>

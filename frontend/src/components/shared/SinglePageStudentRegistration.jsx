@@ -45,11 +45,12 @@ const SinglePageStudentRegistration = ({
     const [formData, setFormData] = useState({
         personalDetails: {
             fullName: "",
-            dateOfBirth: "",
-            gender: "",
-            aadharNumber: "",
             fathersName: "",
             mothersName: "",
+            dateOfBirth: "",
+            aadharNumber: "",
+            gender: "",
+            category: "",
         },
         contactDetails: {
             email: "",
@@ -135,6 +136,9 @@ const SinglePageStudentRegistration = ({
         }
         if (!formData.personalDetails.mothersName.trim()) {
             newErrors["personalDetails.mothersName"] = "Mother's name is required";
+        }
+        if (!formData.personalDetails.category) {
+            newErrors["personalDetails.category"] = "Category is required";
         }
 
         // Contact Details validation
@@ -292,10 +296,10 @@ const SinglePageStudentRegistration = ({
         // Clear existing PDF data
         setPdfUrl(null);
         setPdfGenerated(false);
-        
+
         // Show the PDF generator modal again
         setShowPDFGenerator(true);
-        
+
         showSuccessToast("Regenerating PDF with latest form data...");
     };
 
@@ -314,7 +318,7 @@ const SinglePageStudentRegistration = ({
                 dateOfBirth: "2000-01-15",
                 gender: "Male",
                 aadharNumber: "123456789012",
-                status: "OBC",
+                category: "OBC",
                 fathersName: "Robert Doe",
                 mothersName: "Mary Doe",
             },
@@ -357,7 +361,7 @@ const SinglePageStudentRegistration = ({
                 resident_certificate: { name: "resident-certificate.pdf", size: 1280000, downloadUrl: "http://example.com/resident-certificate.pdf" },
             },
         };
-        
+
         setFormData(mockData);
         showSuccessToast("Mock data filled successfully! You can now test PDF generation.");
     };
@@ -440,7 +444,7 @@ const SinglePageStudentRegistration = ({
                         if (submitRes.data.success) {
                             showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
                             if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
-                            
+
                             // Redirect to dashboard after brief delay
                             setTimeout(() => {
                                 navigate('/dashboard');
@@ -557,7 +561,7 @@ const SinglePageStudentRegistration = ({
                                 if (submitRes.data.success) {
                                     showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
                                     if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
-                                    
+
                                     // Redirect to dashboard after brief delay
                                     setTimeout(() => {
                                         navigate('/dashboard');
@@ -586,7 +590,7 @@ const SinglePageStudentRegistration = ({
                 if (onStudentUpdate) {
                     onStudentUpdate(response.data.data);
                 }
-                
+
                 // Redirect to dashboard after brief delay
                 setTimeout(() => {
                     navigate('/dashboard');
@@ -665,21 +669,21 @@ const SinglePageStudentRegistration = ({
                                 className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                             >
                                 {loading ? (
-                                <>
-                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Generating PDF...
-                                </>
-                            ) : (
-                                <>
-                                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Generate PDF
-                                </>
-                            )}
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Generating PDF...
+                                    </>
+                                ) : (
+                                    <>
+                                        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                        </svg>
+                                        Generate PDF
+                                    </>
+                                )}
                             </button>
                         </div>
                     </div>
@@ -818,87 +822,6 @@ const SinglePageStudentRegistration = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Date of Birth *
-                        </label>
-                        <input
-                            type="date"
-                            value={formatDateForInput(formData.personalDetails.dateOfBirth)}
-                            onChange={(e) =>
-                                setFormData((prev) => ({
-                                    ...prev,
-                                    personalDetails: {
-                                        ...prev.personalDetails,
-                                        dateOfBirth: e.target.value,
-                                    },
-                                }))
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                        {errors["personalDetails.dateOfBirth"] && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors["personalDetails.dateOfBirth"]}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Gender *
-                        </label>
-                        <select
-                            value={formData.personalDetails.gender}
-                            onChange={(e) =>
-                                setFormData((prev) => ({
-                                    ...prev,
-                                    personalDetails: {
-                                        ...prev.personalDetails,
-                                        gender: e.target.value,
-                                    },
-                                }))
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        >
-                            <option value="">Select Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                            <option value="Other">Other</option>
-                        </select>
-                        {errors["personalDetails.gender"] && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors["personalDetails.gender"]}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Aadhar Number *
-                        </label>
-                        <input
-                            type="text"
-                            value={formData.personalDetails.aadharNumber}
-                            onChange={(e) =>
-                                setFormData((prev) => ({
-                                    ...prev,
-                                    personalDetails: {
-                                        ...prev.personalDetails,
-                                        aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12),
-                                    },
-                                }))
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            placeholder="Enter 12-digit Aadhar number"
-                            maxLength="12"
-                        />
-                        {errors["personalDetails.aadharNumber"] && (
-                            <p className="text-red-500 text-sm mt-1">
-                                {errors["personalDetails.aadharNumber"]}
-                            </p>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Father's Name *
                         </label>
                         <input
@@ -945,6 +868,118 @@ const SinglePageStudentRegistration = ({
                         {errors["personalDetails.mothersName"] && (
                             <p className="text-red-500 text-sm mt-1">
                                 {errors["personalDetails.mothersName"]}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Date of Birth *
+                        </label>
+                        <input
+                            type="date"
+                            value={formatDateForInput(formData.personalDetails.dateOfBirth)}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    personalDetails: {
+                                        ...prev.personalDetails,
+                                        dateOfBirth: e.target.value,
+                                    },
+                                }))
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        {errors["personalDetails.dateOfBirth"] && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors["personalDetails.dateOfBirth"]}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Aadhar Number *
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.personalDetails.aadharNumber}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    personalDetails: {
+                                        ...prev.personalDetails,
+                                        aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12),
+                                    },
+                                }))
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            placeholder="Enter 12-digit Aadhar number"
+                            maxLength="12"
+                        />
+                        {errors["personalDetails.aadharNumber"] && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors["personalDetails.aadharNumber"]}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Gender *
+                        </label>
+                        <select
+                            value={formData.personalDetails.gender}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    personalDetails: {
+                                        ...prev.personalDetails,
+                                        gender: e.target.value,
+                                    },
+                                }))
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        {errors["personalDetails.gender"] && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors["personalDetails.gender"]}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Category *
+                        </label>
+                        <select
+                            value={formData.personalDetails.category}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    personalDetails: {
+                                        ...prev.personalDetails,
+                                        category: e.target.value,
+                                    },
+                                }))
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                            <option value="">Select Category</option>
+                            <option value="General">General</option>
+                            <option value="OBC">OBC</option>
+                            <option value="SC">SC</option>
+                            <option value="ST">ST</option>
+                            <option value="PwD">PwD</option>
+                        </select>
+                        {errors["personalDetails.category"] && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors["personalDetails.category"]}
                             </p>
                         )}
                     </div>
@@ -1400,7 +1435,7 @@ const SinglePageStudentRegistration = ({
                             console.log('📋 Form received documents update:', documents);
                             console.log('📋 Document count:', Object.keys(documents).length);
                             console.log('📋 Document keys:', Object.keys(documents));
-                            
+
                             setFormData((prev) => ({
                                 ...prev,
                                 documents: documents,

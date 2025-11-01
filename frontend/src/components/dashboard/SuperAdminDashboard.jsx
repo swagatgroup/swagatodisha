@@ -11,7 +11,6 @@ import ErrorBoundary from '../common/ErrorBoundary';
 // WebsiteManagementSystem removed - Socket.IO component
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ApplicationReview from './tabs/ApplicationReview';
-import ApplicationVerification from './tabs/ApplicationVerification';
 import {
     showSuccess,
     showError,
@@ -86,15 +85,6 @@ const SuperAdminDashboard = () => {
         {
             id: 'application-review',
             name: 'Application Review',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'application-verification',
-            name: 'Agent Verification',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -241,8 +231,6 @@ const SuperAdminDashboard = () => {
                 return <StudentRegistrationWorkflow onStudentUpdate={handleStudentUpdate} />;
             case 'application-review':
                 return <ApplicationReview />;
-            case 'application-verification':
-                return <ApplicationVerification />;
             default:
                 return <div>Coming Soon...</div>;
         }
