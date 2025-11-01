@@ -62,6 +62,36 @@ const WorkingDocumentUpload = ({
             instructions: 'Must be attested if required'
         },
         {
+            id: 'twelfth_certificate',
+            name: '+2 Certificate',
+            description: '12th standard certificate (optional)',
+            category: 'academic',
+            isRequired: false,
+            maxSize: '5MB',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            instructions: 'Upload if you have completed 12th standard'
+        },
+        {
+            id: 'graduation_marksheet',
+            name: 'Graduation Marksheet',
+            description: 'Graduation marksheet (optional)',
+            category: 'academic',
+            isRequired: false,
+            maxSize: '5MB',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            instructions: 'Upload if you have completed graduation'
+        },
+        {
+            id: 'graduation_certificate',
+            name: 'Graduation Certificate',
+            description: 'Graduation certificate (optional)',
+            category: 'academic',
+            isRequired: false,
+            maxSize: '5MB',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            instructions: 'Upload if you have completed graduation'
+        },
+        {
             id: 'transfer_certificate',
             name: 'Transfer Certificate',
             description: 'Transfer certificate from previous institution',

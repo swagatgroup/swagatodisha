@@ -93,6 +93,46 @@ const documentRequirements = {
                 required: false,
                 category: 'obc_benefit'
             }
+        },
+        {
+            key: 'twelfth_marksheet',
+            label: '+2 Marksheet',
+            description: '12th standard marksheet (optional)',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: 10 * 1024 * 1024, // 10MB
+            validation: {
+                required: false
+            }
+        },
+        {
+            key: 'twelfth_certificate',
+            label: '+2 Certificate',
+            description: '12th standard certificate (optional)',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: 10 * 1024 * 1024, // 10MB
+            validation: {
+                required: false
+            }
+        },
+        {
+            key: 'graduation_marksheet',
+            label: 'Graduation Marksheet',
+            description: 'Graduation marksheet (optional)',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: 10 * 1024 * 1024, // 10MB
+            validation: {
+                required: false
+            }
+        },
+        {
+            key: 'graduation_certificate',
+            label: 'Graduation Certificate',
+            description: 'Graduation certificate (optional)',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: 10 * 1024 * 1024, // 10MB
+            validation: {
+                required: false
+            }
         }
     ],
 
@@ -150,7 +190,11 @@ const documentRequirements = {
         'income_certificate',
         'resident_certificate',
         'pm_kisan_enrollment',
-        'cm_kisan_enrollment'
+        'cm_kisan_enrollment',
+        'twelfth_marksheet',
+        'twelfth_certificate',
+        'graduation_marksheet',
+        'graduation_certificate'
     ],
 
     // Help text for users
@@ -162,7 +206,11 @@ const documentRequirements = {
         income_certificate: 'Upload income certificate issued within the last 1 year',
         resident_certificate: 'Upload resident certificate if available',
         pm_kisan_enrollment: 'Upload PM Kisan enrollment certificate for OBC free education benefit',
-        cm_kisan_enrollment: 'Upload CM Kisan enrollment certificate for OBC free education benefit'
+        cm_kisan_enrollment: 'Upload CM Kisan enrollment certificate for OBC free education benefit',
+        twelfth_marksheet: 'Upload 12th standard marksheet if available',
+        twelfth_certificate: 'Upload 12th standard certificate if available',
+        graduation_marksheet: 'Upload graduation marksheet if available',
+        graduation_certificate: 'Upload graduation certificate if available'
     }
 };
 

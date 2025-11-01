@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../../utils/api';
 
@@ -20,7 +20,7 @@ const EnhancedDocumentManagement = () => {
 
     const documentTypes = {
         educational: [
-            '10th Certificate', '12th Certificate', 'Graduation Certificate',
+            '10th Certificate', '12th Certificate', '+2 Marksheet', '+2 Certificate', 'Graduation Marksheet', 'Graduation Certificate',
             'Post Graduation Certificate', 'Diploma Certificate', 'Other Educational'
         ],
         identity: [

@@ -101,6 +101,42 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: '10MB',
             instructions: 'If available'
+        },
+        {
+            id: 'twelfth_marksheet',
+            name: '+2 Marksheet',
+            description: '12th standard marksheet (optional)',
+            isRequired: false,
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: '10MB',
+            instructions: 'Upload if you have completed 12th standard'
+        },
+        {
+            id: 'twelfth_certificate',
+            name: '+2 Certificate',
+            description: '12th standard certificate (optional)',
+            isRequired: false,
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: '10MB',
+            instructions: 'Upload if you have completed 12th standard'
+        },
+        {
+            id: 'graduation_marksheet',
+            name: 'Graduation Marksheet',
+            description: 'Graduation marksheet (optional)',
+            isRequired: false,
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: '10MB',
+            instructions: 'Upload if you have completed graduation'
+        },
+        {
+            id: 'graduation_certificate',
+            name: 'Graduation Certificate',
+            description: 'Graduation certificate (optional)',
+            isRequired: false,
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: '10MB',
+            instructions: 'Upload if you have completed graduation'
         }
     ];
 

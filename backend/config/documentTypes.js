@@ -130,8 +130,22 @@ const documentTypes = {
         },
         {
             id: 'twelfth_marksheet',
-            name: '12th Marksheet',
+            name: '+2 Marksheet',
             description: '12th standard marksheet (if available)',
+            category: 'academic',
+            isRequired: false,
+            maxSize: '5MB',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            validationRules: {
+                minPages: 1,
+                maxPages: 4
+            },
+            instructions: 'Upload if you have completed 12th standard'
+        },
+        {
+            id: 'twelfth_certificate',
+            name: '+2 Certificate',
+            description: '12th standard certificate (if available)',
             category: 'academic',
             isRequired: false,
             maxSize: '5MB',
@@ -146,6 +160,20 @@ const documentTypes = {
             id: 'graduation_marksheet',
             name: 'Graduation Marksheet',
             description: 'Graduation marksheet (if available)',
+            category: 'academic',
+            isRequired: false,
+            maxSize: '5MB',
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            validationRules: {
+                minPages: 1,
+                maxPages: 4
+            },
+            instructions: 'Upload if you have completed graduation'
+        },
+        {
+            id: 'graduation_certificate',
+            name: 'Graduation Certificate',
+            description: 'Graduation certificate (if available)',
             category: 'academic',
             isRequired: false,
             maxSize: '5MB',

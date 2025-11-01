@@ -18,6 +18,10 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
         { id: 'resident', name: 'Resident Certificate', required: false, maxFiles: 1 },
         { id: 'pm_kisan', name: 'PM-Kisan Enrollment (OBC Free Education)', required: false, maxFiles: 1 },
         { id: 'cm_kisan', name: 'CM-Kisan Enrollment (OBC Free Education)', required: false, maxFiles: 1 },
+        { id: 'twelfth_marksheet', name: '+2 Marksheet', required: false, maxFiles: 1 },
+        { id: 'twelfth_certificate', name: '+2 Certificate', required: false, maxFiles: 1 },
+        { id: 'graduation_marksheet', name: 'Graduation Marksheet', required: false, maxFiles: 1 },
+        { id: 'graduation_certificate', name: 'Graduation Certificate', required: false, maxFiles: 1 },
         { id: 'custom', name: 'Custom Documents', required: false, maxFiles: 10 }
     ];
 
@@ -30,6 +34,10 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
         resident: ['Resident Certificate'],
         pm_kisan: ['PM-Kisan Enrollment Proof'],
         cm_kisan: ['CM-Kisan Enrollment Proof'],
+        twelfth_marksheet: ['+2 Marksheet', '12th Marksheet'],
+        twelfth_certificate: ['+2 Certificate', '12th Certificate'],
+        graduation_marksheet: ['Graduation Marksheet'],
+        graduation_certificate: ['Graduation Certificate'],
         custom: ['Custom']
     };
 

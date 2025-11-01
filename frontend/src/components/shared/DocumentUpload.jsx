@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import api from '../../utils/api';
 
@@ -10,6 +10,10 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
     const documentTypes = [
         '10th Mark Sheet',
         '12th Mark Sheet',
+        '+2 Marksheet',
+        '+2 Certificate',
+        'Graduation Marksheet',
+        'Graduation Certificate',
         'Aadhaar Card',
         'Passport Size Photo',
         'Signature',
@@ -101,8 +105,8 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
             {/* Upload Area */}
             <div
                 className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 hover:border-gray-400'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-300 hover:border-gray-400'
                     }`}
                 onDragEnter={handleDrag}
                 onDragLeave={handleDrag}
@@ -166,8 +170,8 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
 
                                 <div className="flex items-center space-x-2">
                                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${doc.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                                            doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                                                'bg-yellow-100 text-yellow-800'
+                                        doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                                            'bg-yellow-100 text-yellow-800'
                                         }`}>
                                         {doc.status || 'PENDING'}
                                     </span>

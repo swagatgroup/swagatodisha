@@ -97,7 +97,11 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
         { key: 'transferCertificate', label: 'Transfer Certificate', required: true, accept: 'image/*,.pdf' },
         { key: 'migrationCertificate', label: 'Migration Certificate', required: false, accept: 'image/*,.pdf' },
         { key: 'casteCertificate', label: 'Caste Certificate', required: false, accept: 'image/*,.pdf' },
-        { key: 'incomeCertificate', label: 'Income Certificate', required: false, accept: 'image/*,.pdf' }
+        { key: 'incomeCertificate', label: 'Income Certificate', required: false, accept: 'image/*,.pdf' },
+        { key: 'twelfthMarksheet', label: '+2 Marksheet', required: false, accept: 'image/*,.pdf' },
+        { key: 'twelfthCertificate', label: '+2 Certificate', required: false, accept: 'image/*,.pdf' },
+        { key: 'graduationMarksheet', label: 'Graduation Marksheet', required: false, accept: 'image/*,.pdf' },
+        { key: 'graduationCertificate', label: 'Graduation Certificate', required: false, accept: 'image/*,.pdf' }
     ];
 
     const validateStep = (step) => {

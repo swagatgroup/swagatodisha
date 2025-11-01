@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../utils/api';
@@ -15,6 +15,12 @@ const EnhancedDocumentManagement = () => {
 
     const documentCategories = [
         'Academic Certificates',
+        '10th Marksheet',
+        '12th Marksheet',
+        '+2 Marksheet',
+        '+2 Certificate',
+        'Graduation Marksheet',
+        'Graduation Certificate',
         'Identity Proof (Aadhar Card)',
         'Address Proof',
         'Income Certificate',
