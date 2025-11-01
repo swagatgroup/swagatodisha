@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../../contexts/AuthContext";
+import { useSession } from "../../contexts/SessionContext";
 import DashboardLayout from "./DashboardLayout";
 import StudentRegistrationWorkflow from "./tabs/StudentRegistrationWorkflow";
 import AgentApplicationsTab from "./tabs/AgentApplicationsTab";
@@ -10,6 +11,7 @@ import api from "../../utils/api";
 
 const EnhancedAgentDashboard = () => {
   const { user } = useAuth();
+  const { selectedSession } = useSession();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [students, setStudents] = useState([]);
@@ -83,10 +85,10 @@ const EnhancedAgentDashboard = () => {
   ];
 
   useEffect(() => {
-    loadDashboardData();
-  }, []);
+    loadDashboardData(selectedSession);
+  }, [selectedSession]);
 
-  const loadDashboardData = async (showLoading = true) => {
+  const loadDashboardData = async (session = selectedSession, showLoading = true) => {
     // Prevent multiple simultaneous calls
     if (isLoadingRef.current) {
       return;
@@ -103,11 +105,20 @@ const EnhancedAgentDashboard = () => {
             page: 1,
             limit: 1000, // Get all students (increase limit to show all submissions)
             sortBy: 'createdAt',
-            sortOrder: 'desc'
+            sortOrder: 'desc',
+            session: session // Pass session parameter
           }
         }),
-        api.get("/api/agents/stats"),
-        api.get("/api/agents/my-submitted-applications"),
+        api.get("/api/agents/stats", {
+          params: {
+            session: session // Pass session parameter
+          }
+        }),
+        api.get("/api/agents/my-submitted-applications", {
+          params: {
+            session: session // Pass session parameter
+          }
+        }),
       ]);
 
       if (studentsRes.data.success) {
@@ -279,7 +290,7 @@ const EnhancedAgentDashboard = () => {
         title="Agent Dashboard"
         sidebarItems={sidebarItems}
         activeItem={activeTab}
-        showSessionSelector={false}
+        showSessionSelector={true}
         onItemClick={setActiveTab}
       >
         <div className="flex items-center justify-center h-64">
@@ -294,7 +305,7 @@ const EnhancedAgentDashboard = () => {
       title="Agent Dashboard"
       sidebarItems={sidebarItems}
       activeItem={activeTab}
-      showSessionSelector={false}
+      showSessionSelector={true}
       onItemClick={setActiveTab}
     >
       {renderDashboardContent()}

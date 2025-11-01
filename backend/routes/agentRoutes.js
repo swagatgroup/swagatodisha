@@ -108,6 +108,7 @@ router.get("/my-students", async (req, res) => {
       status,
       currentClass,
       academicYear,
+      session: sessionParam,
       sortBy = 'createdAt',
       sortOrder = 'desc'
     } = req.query;
@@ -117,6 +118,7 @@ router.get("/my-students", async (req, res) => {
 
     // Import StudentApplication model (temporary fix)
     const StudentApplication = require('../models/StudentApplication');
+    const { getSessionDateRange } = require('../utils/sessionHelper');
 
     // Build filter query - applications either referred by this agent, assigned to this agent, or submitted by this agent
     const filter = {
@@ -127,30 +129,48 @@ router.get("/my-students", async (req, res) => {
       ]
     };
 
-    console.log("🔍 Filter query:", JSON.stringify(filter, null, 2));
-
-    // Check total count before query
-    const totalCount = await StudentApplication.countDocuments(filter);
-    console.log("🔍 Total applications found for agent:", totalCount);
-
     // Add search filter
     if (search) {
-      filter.$and = [
-        {
-          $or: [
-            { 'personalDetails.fullName': { $regex: search, $options: 'i' } },
-            { 'personalDetails.aadharNumber': { $regex: search, $options: 'i' } },
-            { 'contactDetails.primaryPhone': { $regex: search, $options: 'i' } },
-            { applicationId: { $regex: search, $options: 'i' } }
-          ]
-        }
-      ];
+      filter.$and = filter.$and || [];
+      filter.$and.push({
+        $or: [
+          { 'personalDetails.fullName': { $regex: search, $options: 'i' } },
+          { 'personalDetails.aadharNumber': { $regex: search, $options: 'i' } },
+          { 'contactDetails.primaryPhone': { $regex: search, $options: 'i' } },
+          { applicationId: { $regex: search, $options: 'i' } }
+        ]
+      });
     }
 
     // Add status filter
     if (status) filter.status = status;
     if (currentClass) filter.currentClass = currentClass;
     if (academicYear) filter.academicYear = academicYear;
+
+    // Add session filter if provided (after other filters to avoid conflicts)
+    if (sessionParam) {
+      try {
+        const { startDate, endDate } = getSessionDateRange(sessionParam);
+        console.log(`📅 Agent route - Filtering by session ${sessionParam}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+        filter.createdAt = {
+          $gte: startDate,
+          $lte: endDate
+        };
+      } catch (error) {
+        console.error('❌ Session date range error:', error);
+        return res.status(400).json({
+          success: false,
+          message: `Invalid session format: ${error.message}`,
+          error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+        });
+      }
+    }
+
+    console.log("🔍 Filter query:", JSON.stringify(filter, null, 2));
+
+    // Check total count before query
+    const totalCount = await StudentApplication.countDocuments(filter);
+    console.log("🔍 Total applications found for agent:", totalCount);
 
     // Build sort query
     const sort = {};
@@ -441,6 +461,7 @@ router.get("/student-stats", async (req, res) => {
 router.get("/stats", async (req, res) => {
   try {
     console.log("Stats - Agent ID:", req.user._id);
+    const { session: sessionParam } = req.query;
 
     // Prefer stats from StudentApplication (new workflow) - include both assigned and referred
     // Match the same query logic as /my-students endpoint
@@ -452,6 +473,26 @@ router.get("/stats", async (req, res) => {
         { 'submittedBy._id': new mongoose.Types.ObjectId(req.user._id) }
       ],
     };
+
+    // Add session filter if provided
+    if (sessionParam) {
+      try {
+        const { getSessionDateRange } = require('../utils/sessionHelper');
+        const { startDate, endDate } = getSessionDateRange(sessionParam);
+        console.log(`📅 Agent stats - Filtering by session ${sessionParam}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+        agentQuery.createdAt = {
+          $gte: startDate,
+          $lte: endDate
+        };
+      } catch (error) {
+        console.error('❌ Session date range error:', error);
+        return res.status(400).json({
+          success: false,
+          message: `Invalid session format: ${error.message}`,
+          error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+        });
+      }
+    }
 
     const totalStudents = await StudentApplication.countDocuments(agentQuery);
     const pendingStudents = await StudentApplication.countDocuments({
@@ -691,12 +732,32 @@ router.get("/submitted-applications/:id", async (req, res) => {
 // Get applications submitted by this agent
 router.get("/my-submitted-applications", async (req, res) => {
   try {
-    const { page = 1, limit = 20, status } = req.query;
+    const { page = 1, limit = 20, status, session: sessionParam } = req.query;
     const agentId = req.user._id;
 
     let query = { submittedBy: agentId };
     if (status && status !== "all") {
       query.status = status.toUpperCase();
+    }
+
+    // Add session filter if provided
+    if (sessionParam) {
+      try {
+        const { getSessionDateRange } = require('../utils/sessionHelper');
+        const { startDate, endDate } = getSessionDateRange(sessionParam);
+        console.log(`📅 Agent applications - Filtering by session ${sessionParam}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+        query.createdAt = {
+          $gte: startDate,
+          $lte: endDate
+        };
+      } catch (error) {
+        console.error('❌ Session date range error:', error);
+        return res.status(400).json({
+          success: false,
+          message: `Invalid session format: ${error.message}`,
+          error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+        });
+      }
     }
 
     const applications = await StudentApplication.find(query)
