@@ -38,16 +38,28 @@ class PDFGenerator {
             // Create a new PDF document using pdf-lib for merging
             const mergedPdf = await PDFLib.create();
 
-            // Helper function to download file
+            // Helper function to download file with timeout
             const downloadFile = (url) => {
                 return new Promise((resolve, reject) => {
                     const protocol = url.startsWith('https') ? https : http;
-                    protocol.get(url, (res) => {
+                    const timeout = 30000; // 30 seconds timeout
+
+                    const request = protocol.get(url, (res) => {
+                        if (res.statusCode !== 200) {
+                            reject(new Error(`Failed to download: ${res.statusCode}`));
+                            return;
+                        }
                         const chunks = [];
                         res.on('data', (chunk) => chunks.push(chunk));
                         res.on('end', () => resolve(Buffer.concat(chunks)));
                         res.on('error', reject);
-                    }).on('error', reject);
+                    });
+
+                    request.on('error', reject);
+                    request.setTimeout(timeout, () => {
+                        request.destroy();
+                        reject(new Error('Download timeout after 30 seconds'));
+                    });
                 });
             };
 
@@ -87,24 +99,67 @@ class PDFGenerator {
                 return await pdfDoc.save();
             };
 
+            // Helper function to get document URL (handles Cloudinary and local files) - same as ZIP generation
+            const getDocumentUrl = (doc) => {
+                // If already a full HTTP/HTTPS URL, return as-is
+                if (doc.filePath && (doc.filePath.startsWith('http://') || doc.filePath.startsWith('https://'))) {
+                    return doc.filePath;
+                }
+
+                // If stored in Cloudinary, generate Cloudinary URL
+                if (doc.storageType === 'cloudinary' || doc.cloudinaryPublicId) {
+                    const publicId = doc.cloudinaryPublicId || doc.filePath?.replace(/^.*\//, '').replace(/\.[^.]+$/, '');
+                    if (publicId) {
+                        return cloudinary.url(publicId, {
+                            secure: true,
+                            fetch_format: 'auto'
+                        });
+                    }
+                }
+
+                // If local file path, construct full URL
+                if (doc.filePath) {
+                    const baseUrl = process.env.BASE_URL || process.env.BACKEND_URL ||
+                        (process.env.NODE_ENV === 'production' ? 'https://swagat-odisha-backend.onrender.com' : 'http://localhost:5000');
+                    if (doc.filePath.startsWith('/')) {
+                        return `${baseUrl}${doc.filePath}`;
+                    }
+                    return `${baseUrl}/uploads/${doc.filePath}`;
+                }
+
+                // Fallback to doc.url or doc.downloadUrl
+                return doc.url || doc.downloadUrl || null;
+            };
+
             // Process each selected document
+            let addedCount = 0;
             for (const doc of selectedDocuments) {
                 try {
-                    const docUrl = doc.filePath || doc.url || doc.downloadUrl;
+                    const docUrl = getDocumentUrl(doc);
                     if (!docUrl) {
-                        console.warn(`Document ${doc.documentType} has no URL, skipping`);
+                        console.warn(`⚠️ Document ${doc.documentType} has no URL, skipping. Doc:`, JSON.stringify({
+                            filePath: doc.filePath,
+                            storageType: doc.storageType,
+                            cloudinaryPublicId: doc.cloudinaryPublicId
+                        }));
                         continue;
                     }
 
-                    // Get full URL
-                    const fullUrl = docUrl.startsWith('http') ? docUrl :
-                        docUrl.startsWith('/') ? `${process.env.BASE_URL || 'http://localhost:5000'}${docUrl}` :
-                            `${process.env.BASE_URL || 'http://localhost:5000'}/uploads/${docUrl}`;
+                    console.log(`📄 Processing document for PDF: ${doc.documentType} from ${docUrl}`);
 
-                    console.log(`Processing document: ${doc.documentType} from ${fullUrl}`);
+                    // Download the document with timeout
+                    const fileBuffer = await Promise.race([
+                        downloadFile(docUrl),
+                        new Promise((_, reject) =>
+                            setTimeout(() => reject(new Error('Download timeout after 30 seconds')), 30000)
+                        )
+                    ]);
 
-                    // Download the document
-                    const fileBuffer = await downloadFile(fullUrl);
+                    if (!fileBuffer || fileBuffer.length === 0) {
+                        console.warn(`⚠️ Empty file buffer for ${doc.documentType}, skipping`);
+                        continue;
+                    }
+
                     const mimeType = doc.mimeType || doc.type || 'application/pdf';
 
                     if (mimeType === 'application/pdf') {
@@ -112,24 +167,34 @@ class PDFGenerator {
                         const pdfBytes = await PDFLib.load(fileBuffer);
                         const pages = await mergedPdf.copyPages(pdfBytes, pdfBytes.getPageIndices());
                         pages.forEach(page => mergedPdf.addPage(page));
+                        addedCount++;
+                        console.log(`✅ Added ${doc.documentType} to PDF`);
                     } else if (mimeType.startsWith('image/')) {
                         // Convert image to PDF and embed
                         const imagePdfBytes = await imageToPdf(fileBuffer, mimeType);
                         const imagePdf = await PDFLib.load(imagePdfBytes);
                         const pages = await mergedPdf.copyPages(imagePdf, imagePdf.getPageIndices());
                         pages.forEach(page => mergedPdf.addPage(page));
+                        addedCount++;
+                        console.log(`✅ Added ${doc.documentType} (image) to PDF`);
                     } else {
-                        console.warn(`Unsupported file type for ${doc.documentType}: ${mimeType}, skipping`);
+                        console.warn(`⚠️ Unsupported file type for ${doc.documentType}: ${mimeType}, skipping`);
                     }
                 } catch (docError) {
-                    console.error(`Error processing document ${doc.documentType}:`, docError);
+                    console.error(`❌ Error processing document ${doc.documentType}:`, docError.message);
                     // Continue with other documents instead of failing completely
                 }
+            }
+
+            if (addedCount === 0) {
+                throw new Error('No documents were successfully added to PDF. Please check document URLs and availability.');
             }
 
             // Save merged PDF
             const pdfBytes = await mergedPdf.save();
             fs.writeFileSync(filePath, pdfBytes);
+
+            console.log(`✅ Combined PDF generated successfully: ${fileName} (${addedCount} documents)`);
 
             return {
                 fileName,
@@ -138,7 +203,7 @@ class PDFGenerator {
             };
 
         } catch (error) {
-            console.error('Error generating combined PDF:', error);
+            console.error('❌ Error generating combined PDF:', error);
             throw error;
         }
     }
@@ -392,7 +457,8 @@ class PDFGenerator {
 
                     // If local file path, construct full URL
                     if (doc.filePath) {
-                        const baseUrl = process.env.BASE_URL || process.env.BACKEND_URL || 'https://swagat-odisha-backend.onrender.com';
+                        const baseUrl = process.env.BASE_URL || process.env.BACKEND_URL ||
+                            (process.env.NODE_ENV === 'production' ? 'https://swagat-odisha-backend.onrender.com' : 'http://localhost:5000');
                         if (doc.filePath.startsWith('/')) {
                             return `${baseUrl}${doc.filePath}`;
                         }
@@ -423,7 +489,7 @@ class PDFGenerator {
                         const fileBuffer = await Promise.race([
                             downloadFile(docUrl),
                             new Promise((_, reject) =>
-                                setTimeout(() => reject(new Error('Download timeout')), 30000)
+                                setTimeout(() => reject(new Error('Download timeout after 30 seconds')), 30000)
                             )
                         ]);
 
@@ -455,20 +521,24 @@ class PDFGenerator {
 
                 if (addedCount === 0) {
                     console.warn('⚠️ No documents were successfully added to ZIP');
-                    // Still create ZIP even if empty, or throw error?
-                    // For now, we'll create it but it will be empty
+                    throw new Error('No documents were successfully added to ZIP. Please check document URLs and availability.');
                 }
+
+                console.log(`✅ ZIP generation complete with ${addedCount} documents`);
 
                 // Add application PDF if exists
                 if (application.applicationPdfUrl) {
                     try {
+                        const baseUrl = process.env.BASE_URL || process.env.BACKEND_URL ||
+                            (process.env.NODE_ENV === 'production' ? 'https://swagat-odisha-backend.onrender.com' : 'http://localhost:5000');
                         const appPdfUrl = application.applicationPdfUrl.startsWith('http')
                             ? application.applicationPdfUrl
-                            : `${process.env.BASE_URL || 'http://localhost:5000'}${application.applicationPdfUrl}`;
+                            : `${baseUrl}${application.applicationPdfUrl}`;
                         const pdfBuffer = await downloadFile(appPdfUrl);
                         archive.append(pdfBuffer, { name: `application_${application.applicationId}.pdf` });
+                        console.log(`✅ Added application PDF to ZIP`);
                     } catch (err) {
-                        console.warn('Could not add application PDF to ZIP:', err);
+                        console.warn('⚠️ Could not add application PDF to ZIP:', err.message);
                     }
                 }
 

@@ -117,7 +117,10 @@ const StudentManagement = () => {
                 // Download the file using fetch with authentication to prevent session loss
                 const fileUrl = response.data.data.url || response.data.data.pdfUrl || response.data.data.zipUrl;
                 if (fileUrl) {
-                    const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${window.location.origin}${fileUrl}`;
+                    // Use API base URL if available, otherwise fallback to window.location.origin
+                    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+                    const baseUrl = API_BASE_URL || window.location.origin;
+                    const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${baseUrl}${fileUrl}`;
 
                     try {
                         // Fetch with credentials to include auth token
