@@ -965,7 +965,7 @@ const StudentManagement = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Primary Phone</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Secondary Phone</label>
@@ -973,34 +973,111 @@ const StudentManagement = () => {
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">WhatsApp Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.whatsappNumber || 'N/A'}</p>
                                         </div>
-                                        <div className="md:col-span-2">
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Address</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.address || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.city || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.state || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.pincode || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.district || 'N/A'}</p>
-                                        </div>
                                     </div>
                                 </div>
+
+                                {/* Address Information */}
+                                {(selectedStudent.contactDetails?.permanentAddress || selectedStudent.contactDetails?.currentAddress || selectedStudent.contactDetails?.address) && (
+                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                        <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                                            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            Address Information
+                                        </h4>
+                                        <div className="space-y-4">
+                                            {/* Permanent Address */}
+                                            {(selectedStudent.contactDetails?.permanentAddress || (selectedStudent.contactDetails?.address && selectedStudent.contactDetails?.city)) && (
+                                                <div>
+                                                    <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Permanent Address</h5>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="md:col-span-2">
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.permanentAddress?.street || selectedStudent.contactDetails?.address || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.permanentAddress?.city || selectedStudent.contactDetails?.city || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.permanentAddress?.state || selectedStudent.contactDetails?.state || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.permanentAddress?.pincode || selectedStudent.contactDetails?.pincode || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.district || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.permanentAddress?.country || 'India'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {/* Current Address */}
+                                            {selectedStudent.contactDetails?.currentAddress?.street && (
+                                                <div>
+                                                    <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Current Address</h5>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                        <div className="md:col-span-2">
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails.currentAddress.street || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails.currentAddress.city || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails.currentAddress.state || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails.currentAddress.pincode || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails.currentAddress.country || 'India'}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
 
                                 {/* Course Information */}
                                 <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
