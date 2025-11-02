@@ -33,8 +33,13 @@ const SuperAdminDashboard = () => {
         totalAgents: 0,
         totalStaff: 0,
         totalApplications: 0,
-        pendingApplications: 0
+        pendingApplications: 0,
+        draftApplications: 0,
+        submittedApplications: 0,
+        underReviewApplications: 0,
+        rejectedApplications: 0
     });
+    const [studentTableFilter, setStudentTableFilter] = useState('all');
 
     const sidebarItems = [
         {
@@ -136,6 +141,10 @@ const SuperAdminDashboard = () => {
         }
     };
 
+    const handleStatClick = (filter) => {
+        setStudentTableFilter(filter);
+    };
+
     const renderSidebarContent = () => {
         switch (activeSidebarItem) {
             case 'dashboard':
@@ -214,6 +223,74 @@ const SuperAdminDashboard = () => {
                             </div>
                         </div>
 
+                        {/* Filter Buttons */}
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+                            <button
+                                onClick={() => handleStatClick('DRAFT')}
+                                className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 ${studentTableFilter === 'DRAFT'
+                                        ? 'bg-gray-600 text-white shadow-lg'
+                                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                    }`}
+                            >
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xs font-medium mb-1">Draft</span>
+                                    <span className="text-lg font-semibold">{stats.draftApplications || 0}</span>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => handleStatClick('SUBMITTED')}
+                                className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 ${studentTableFilter === 'SUBMITTED'
+                                        ? 'bg-blue-600 text-white shadow-lg'
+                                        : 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-gray-600'
+                                    }`}
+                            >
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xs font-medium mb-1">Submitted</span>
+                                    <span className="text-lg font-semibold">{stats.submittedApplications || 0}</span>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => handleStatClick('UNDER_REVIEW')}
+                                className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 ${studentTableFilter === 'UNDER_REVIEW'
+                                        ? 'bg-yellow-600 text-white shadow-lg'
+                                        : 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600'
+                                    }`}
+                            >
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xs font-medium mb-1">Under Review</span>
+                                    <span className="text-lg font-semibold">{stats.underReviewApplications || 0}</span>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => handleStatClick('APPROVED')}
+                                className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 ${studentTableFilter === 'APPROVED'
+                                        ? 'bg-green-600 text-white shadow-lg'
+                                        : 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-gray-600'
+                                    }`}
+                            >
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xs font-medium mb-1">Approved</span>
+                                    <span className="text-lg font-semibold">{stats.approvedApplications || 0}</span>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => handleStatClick('REJECTED')}
+                                className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 ${studentTableFilter === 'REJECTED'
+                                        ? 'bg-red-600 text-white shadow-lg'
+                                        : 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-gray-600'
+                                    }`}
+                            >
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xs font-medium mb-1">Rejected</span>
+                                    <span className="text-lg font-semibold">{stats.rejectedApplications || 0}</span>
+                                </div>
+                            </button>
+                        </div>
+
                         {/* Recent Students */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -225,7 +302,7 @@ const SuperAdminDashboard = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Students</h3>
                             </div>
                             <div className="p-6">
-                                <RecentStudentsTable />
+                                <RecentStudentsTable initialFilter={studentTableFilter} />
                             </div>
                         </motion.div>
                     </div>

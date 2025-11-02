@@ -484,6 +484,12 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             </p>
                                                         </div>
                                                         <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.district || selectedStudent.contactDetails?.permanentAddress?.district || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
                                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.permanentAddress.country || 'India'}
@@ -522,6 +528,12 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             </p>
                                                         </div>
                                                         <div>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                                {selectedStudent.contactDetails?.currentAddress?.district || 'N/A'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
                                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.country || 'India'}
@@ -544,8 +556,16 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Selected Course</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.selectedCourse || 'N/A'}</p>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName || 'Swagat Group of Institutions'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.selectedCourse || selectedStudent.course || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Stream</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.stream || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>

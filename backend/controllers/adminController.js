@@ -44,6 +44,10 @@ exports.getDashboardStats = async (req, res) => {
             totalStaff,
             pendingApplications,
             approvedApplications,
+            draftApplications,
+            submittedApplications,
+            underReviewApplications,
+            rejectedApplications,
             recentStudents
         ] = await Promise.all([
             // Total Students in this session
@@ -67,6 +71,30 @@ exports.getDashboardStats = async (req, res) => {
                 status: 'APPROVED'
             }),
 
+            // Draft Applications in this session
+            StudentApplication.countDocuments({
+                ...sessionQuery,
+                status: 'DRAFT'
+            }),
+
+            // Submitted Applications in this session
+            StudentApplication.countDocuments({
+                ...sessionQuery,
+                status: 'SUBMITTED'
+            }),
+
+            // Under Review Applications in this session
+            StudentApplication.countDocuments({
+                ...sessionQuery,
+                status: 'UNDER_REVIEW'
+            }),
+
+            // Rejected Applications in this session
+            StudentApplication.countDocuments({
+                ...sessionQuery,
+                status: 'REJECTED'
+            }),
+
             // Recent Students in this session
             StudentApplication.find(sessionQuery)
                 .populate('user', 'fullName email phoneNumber')
@@ -83,6 +111,10 @@ exports.getDashboardStats = async (req, res) => {
                 totalApplications: totalStudents,
                 pendingApplications,
                 approvedApplications,
+                draftApplications,
+                submittedApplications,
+                underReviewApplications,
+                rejectedApplications,
                 session: sessionParam,
                 sessionStartDate: startDate,
                 sessionEndDate: endDate
