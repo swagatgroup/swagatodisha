@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useSession } from '../../contexts/SessionContext';
+import { useAuth } from '../../contexts/AuthContext';
 import api from '../../utils/api';
 import {
     showSuccess,
@@ -13,6 +14,7 @@ import {
 
 const StudentManagement = () => {
     const { selectedSession } = useSession();
+    const { user } = useAuth();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -46,6 +48,8 @@ const StudentManagement = () => {
     const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
     const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
     const [generating, setGenerating] = useState(false);
+    const [selectedStudents, setSelectedStudents] = useState([]); // For bulk delete
+    const isSuperAdmin = user?.role === 'super_admin';
 
     useEffect(() => {
         // Reset to page 1 when session changes (but not on initial mount)
@@ -454,6 +458,57 @@ const StudentManagement = () => {
         }
     };
 
+    // Bulk delete handlers (Super Admin only)
+    const handleSelectAll = (checked) => {
+        if (checked) {
+            setSelectedStudents(students.map(student => student._id));
+        } else {
+            setSelectedStudents([]);
+        }
+    };
+
+    const handleSelectStudent = (studentId, checked) => {
+        if (checked) {
+            setSelectedStudents([...selectedStudents, studentId]);
+        } else {
+            setSelectedStudents(selectedStudents.filter(id => id !== studentId));
+        }
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedStudents.length === 0) {
+            showError('Please select at least one student to delete');
+            return;
+        }
+
+        const confirmed = await showConfirm(
+            'Delete Students',
+            `Are you sure you want to delete ${selectedStudents.length} student${selectedStudents.length > 1 ? 's' : ''}? This action cannot be undone.`,
+            'warning'
+        );
+
+        if (!confirmed) return;
+
+        try {
+            showLoading('Deleting...', `Deleting ${selectedStudents.length} student${selectedStudents.length > 1 ? 's' : ''}...`);
+            
+            const response = await api.delete('/api/admin/students/bulk', {
+                data: { studentIds: selectedStudents }
+            });
+
+            if (response.data.success) {
+                closeLoading();
+                showSuccess(`Successfully deleted ${response.data.deletedCount} student${response.data.deletedCount > 1 ? 's' : ''}!`);
+                setSelectedStudents([]);
+                fetchStudents(); // Refresh the list
+            }
+        } catch (error) {
+            closeLoading();
+            console.error('Error bulk deleting students:', error);
+            handleApiError(error);
+        }
+    };
+
 
     const getStatusColor = (status) => {
         switch (status) {
@@ -596,11 +651,40 @@ const StudentManagement = () => {
                 </select>
             </div>
 
+            {/* Bulk Delete Button (Super Admin Only) */}
+            {isSuperAdmin && selectedStudents.length > 0 && (
+                <div className="mb-4 flex items-center justify-between bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+                    <div className="flex items-center space-x-2">
+                        <i className="fa-solid fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+                        <span className="text-sm font-medium text-red-900 dark:text-red-100">
+                            {selectedStudents.length} student{selectedStudents.length > 1 ? 's' : ''} selected
+                        </span>
+                    </div>
+                    <button
+                        onClick={handleBulkDelete}
+                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2"
+                    >
+                        <i className="fa-solid fa-trash"></i>
+                        <span>Delete Selected</span>
+                    </button>
+                </div>
+            )}
+
             {/* Students Table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-gray-700">
                         <tr>
+                            {isSuperAdmin && (
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedStudents.length === students.length && students.length > 0}
+                                        onChange={(e) => handleSelectAll(e.target.checked)}
+                                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                    />
+                                </th>
+                            )}
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 S.No
                             </th>
@@ -633,7 +717,7 @@ const StudentManagement = () => {
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {students.length === 0 ? (
                             <tr>
-                                <td colSpan="9" className="px-6 py-12 text-center">
+                                <td colSpan={isSuperAdmin ? "10" : "9"} className="px-6 py-12 text-center">
                                     <div className="flex flex-col items-center justify-center">
                                         <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -675,6 +759,16 @@ const StudentManagement = () => {
                                         animate={{ opacity: 1 }}
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700"
                                     >
+                                        {isSuperAdmin && (
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedStudents.includes(student._id)}
+                                                    onChange={(e) => handleSelectStudent(student._id, e.target.checked)}
+                                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                                />
+                                            </td>
+                                        )}
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                                             {serialNumber}
                                         </td>

@@ -18,11 +18,15 @@ const quickAccessSchema = new mongoose.Schema({
     },
     file: {
         type: String,
-        required: true // PDF file path
+        required: true // Cloudinary URL or local PDF file path
     },
     fileName: {
         type: String,
         trim: true // Original filename
+    },
+    cloudinaryPublicId: {
+        type: String,
+        default: null // Cloudinary public ID for deletion
     },
     isActive: {
         type: Boolean,

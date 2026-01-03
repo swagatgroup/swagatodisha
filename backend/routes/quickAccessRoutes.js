@@ -8,7 +8,7 @@ const {
     deleteQuickAccessDoc
 } = require('../controllers/quickAccessController');
 const { protect, authorize } = require('../middleware/auth');
-const { upload } = require('../middleware/quickAccessUpload');
+const { upload, uploadToCloudinary } = require('../middleware/quickAccessUpload');
 const { asyncHandler } = require('../middleware/errorHandler');
 
 // Public route - Get active documents for homepage
@@ -54,12 +54,14 @@ router.post(
     '/',
     isSuperAdminOrStaff,
     upload.single('file'),
+    uploadToCloudinary,
     createQuickAccessDoc
 );
 router.put(
     '/:id',
     isSuperAdminOrStaff,
     upload.single('file'),
+    uploadToCloudinary,
     updateQuickAccessDoc
 );
 router.delete('/:id', isSuperAdminOrStaff, deleteQuickAccessDoc);

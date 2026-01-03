@@ -12,7 +12,11 @@ const sliderSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        required: true // Will store WebP image path
+        required: true // Will store Cloudinary URL or local path
+    },
+    cloudinaryPublicId: {
+        type: String,
+        default: null // Cloudinary public ID for deletion
     },
     order: {
         type: Number,
