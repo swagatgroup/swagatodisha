@@ -9,6 +9,7 @@ import DarkModeToggle from '../shared/DarkModeToggle';
 
 const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick, showSessionSelector = true }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const { user, logout } = useAuth();
     const { selectedSession, setSelectedSession, availableSessions } = useSession();
@@ -255,11 +256,26 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                 </AnimatePresence>
 
                 {/* Desktop Sidebar */}
-                <div className="hidden lg:flex lg:flex-shrink-0">
-                    <div className="flex flex-col w-64">
-                        <div className="flex flex-col h-0 flex-1 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+                <div className={`hidden lg:flex lg:flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
+                    <div className="flex flex-col w-full">
+                        <div className="flex flex-col h-0 flex-1 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 relative">
+                            {/* Collapse Toggle Button */}
+                            <button
+                                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                                className="absolute top-2 left-2 p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 z-10"
+                                title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                            >
+                                <svg
+                                    className={`h-5 w-5 transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                                </svg>
+                            </button>
                             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
-                                <nav className="mt-5 flex-1 px-2 space-y-1">
+                                <nav className="mt-8 flex-1 px-2 space-y-1">
                                     {sidebarItems.map((item) => (
                                         <button
                                             key={item.name}
@@ -270,13 +286,14 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                     navigate(item.href);
                                                 }
                                             }}
-                                            className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md ${activeItem === item.id
+                                            className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-all ${activeItem === item.id
                                                 ? 'bg-purple-100 dark:bg-purple-900 text-purple-900 dark:text-purple-100'
                                                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
                                                 }`}
+                                            title={sidebarCollapsed ? item.name : ''}
                                         >
-                                            {item.icon}
-                                            {item.name}
+                                            <span className="flex-shrink-0">{item.icon}</span>
+                                            {!sidebarCollapsed && <span className="ml-3">{item.name}</span>}
                                         </button>
                                     ))}
                                 </nav>
@@ -286,7 +303,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900">
+                <div className={`flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900 transition-all duration-300`}>
                     <main className="flex-1 relative overflow-y-auto focus:outline-none">
                         <div className="py-6">
                             <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">

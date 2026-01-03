@@ -352,6 +352,24 @@ app.post('/api/application/create', protect, async (req, res) => {
             req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
         }
 
+        // Validate phone number - maximum 2 students per phone number
+        if (req.body.contactDetails && req.body.contactDetails.primaryPhone) {
+            const phoneNumber = req.body.contactDetails.primaryPhone.replace(/\D/g, ''); // Remove non-digits
+            if (phoneNumber.length === 10) {
+                const existingApplications = await StudentApplication.countDocuments({
+                    'contactDetails.primaryPhone': phoneNumber,
+                    status: { $ne: 'REJECTED' } // Count only non-rejected applications
+                });
+                
+                if (existingApplications >= 2) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'This phone number has already been used by 2 students. Each phone number can only be used by a maximum of 2 students.'
+                    });
+                }
+            }
+        }
+
         // Handle referral code linking
         let referralInfo = {};
         if (req.body.referralCode) {
@@ -541,6 +559,24 @@ app.post('/api/student-application/create', protect, async (req, res) => {
         // Convert date string to Date object
         if (req.body.personalDetails && req.body.personalDetails.dateOfBirth) {
             req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
+        }
+
+        // Validate phone number - maximum 2 students per phone number
+        if (req.body.contactDetails && req.body.contactDetails.primaryPhone) {
+            const phoneNumber = req.body.contactDetails.primaryPhone.replace(/\D/g, ''); // Remove non-digits
+            if (phoneNumber.length === 10) {
+                const existingApplications = await StudentApplication.countDocuments({
+                    'contactDetails.primaryPhone': phoneNumber,
+                    status: { $ne: 'REJECTED' } // Count only non-rejected applications
+                });
+                
+                if (existingApplications >= 2) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'This phone number has already been used by 2 students. Each phone number can only be used by a maximum of 2 students.'
+                    });
+                }
+            }
         }
 
         // Create application in database

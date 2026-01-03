@@ -861,10 +861,11 @@ const SinglePageStudentRegistration = ({
                                     ...prev,
                                     personalDetails: {
                                         ...prev.personalDetails,
-                                        fullName: e.target.value,
+                                        fullName: e.target.value.toUpperCase(),
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'uppercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter your full name"
                         />
@@ -887,10 +888,11 @@ const SinglePageStudentRegistration = ({
                                     ...prev,
                                     personalDetails: {
                                         ...prev.personalDetails,
-                                        fathersName: e.target.value,
+                                        fathersName: e.target.value.toUpperCase(),
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'uppercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter father's name"
                         />
@@ -913,10 +915,11 @@ const SinglePageStudentRegistration = ({
                                     ...prev,
                                     personalDetails: {
                                         ...prev.personalDetails,
-                                        mothersName: e.target.value,
+                                        mothersName: e.target.value.toUpperCase(),
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'uppercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter mother's name"
                         />
@@ -1118,10 +1121,12 @@ const SinglePageStudentRegistration = ({
                                     ...prev,
                                     contactDetails: {
                                         ...prev.contactDetails,
-                                        email: e.target.value,
+                                        email: e.target.value.toLowerCase(),
                                     },
                                 }))
                             }
+                            required
+                            style={{ textTransform: 'lowercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter email address"
                         />
@@ -1146,11 +1151,12 @@ const SinglePageStudentRegistration = ({
                                         ...prev.contactDetails,
                                         permanentAddress: {
                                             ...prev.contactDetails.permanentAddress,
-                                            street: e.target.value,
+                                            street: e.target.value.toUpperCase(),
                                         },
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'uppercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter street address"
                         />
@@ -1175,11 +1181,12 @@ const SinglePageStudentRegistration = ({
                                         ...prev.contactDetails,
                                         permanentAddress: {
                                             ...prev.contactDetails.permanentAddress,
-                                            city: e.target.value,
+                                            city: e.target.value.toUpperCase(),
                                         },
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'uppercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter city"
                         />
@@ -1204,11 +1211,12 @@ const SinglePageStudentRegistration = ({
                                         ...prev.contactDetails,
                                         permanentAddress: {
                                             ...prev.contactDetails.permanentAddress,
-                                            state: e.target.value,
+                                            state: e.target.value.toUpperCase(),
                                         },
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'uppercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter state"
                         />
@@ -1400,10 +1408,11 @@ const SinglePageStudentRegistration = ({
                                     ...prev,
                                     guardianDetails: {
                                         ...prev.guardianDetails,
-                                        guardianName: e.target.value,
+                                        guardianName: e.target.value.toUpperCase(),
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'uppercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter guardian name"
                         />
@@ -1488,10 +1497,11 @@ const SinglePageStudentRegistration = ({
                                     ...prev,
                                     guardianDetails: {
                                         ...prev.guardianDetails,
-                                        guardianEmail: e.target.value,
+                                        guardianEmail: e.target.value.toLowerCase(),
                                     },
                                 }))
                             }
+                            style={{ textTransform: 'lowercase' }}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter guardian email (optional)"
                         />
