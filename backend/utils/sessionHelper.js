@@ -85,15 +85,24 @@ const getCurrentSession = () => {
 };
 
 /**
- * Get list of available sessions (default: last 5 years including current)
+ * Get list of available sessions (default: last 5 years including current, plus 2 years forward)
  * @param {number} yearsBack - Number of years to go back (default: 5)
+ * @param {number} yearsForward - Number of years to go forward (default: 2)
  * @returns {Array<string>} - Array of session strings
  */
-const getAvailableSessions = (yearsBack = 5) => {
+const getAvailableSessions = (yearsBack = 5, yearsForward = 2) => {
     const currentSession = getCurrentSession();
     const currentStartYear = parseInt(currentSession.split('-')[0], 10);
     const sessions = [];
 
+    // Add future sessions first (newest first)
+    for (let i = yearsForward; i > 0; i--) {
+        const startYear = currentStartYear + i;
+        const endYearShort = (startYear + 1).toString().slice(-2);
+        sessions.push(`${startYear}-${endYearShort}`);
+    }
+
+    // Add current and past sessions
     for (let i = 0; i < yearsBack; i++) {
         const startYear = currentStartYear - i;
         const endYearShort = (startYear + 1).toString().slice(-2);

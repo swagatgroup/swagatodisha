@@ -26,7 +26,7 @@ export const SessionProvider = ({ children }) => {
         }
     };
 
-    // Generate available sessions (current year and last 5 years)
+    // Generate available sessions (current year, last 5 years, and 2 years forward)
     const getAvailableSessions = () => {
         const now = new Date();
         const currentYear = now.getFullYear();
@@ -41,8 +41,15 @@ export const SessionProvider = ({ children }) => {
             currentStartYear = currentYear;
         }
 
-        // Generate last 6 sessions
-        for (let i = 0; i < 6; i++) {
+        // Generate future sessions first (newest first)
+        for (let i = 2; i > 0; i--) {
+            const startYear = currentStartYear + i;
+            const endYearShort = (startYear + 1).toString().slice(-2);
+            sessions.push(`${startYear}-${endYearShort}`);
+        }
+
+        // Generate current and past sessions
+        for (let i = 0; i < 5; i++) {
             const startYear = currentStartYear - i;
             const endYearShort = (startYear + 1).toString().slice(-2);
             sessions.push(`${startYear}-${endYearShort}`);
