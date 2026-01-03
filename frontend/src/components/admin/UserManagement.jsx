@@ -260,7 +260,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
             'warning'
         );
 
-        if (!confirmed) {
+        if (!confirmed || !confirmed.isConfirmed) {
             return;
         }
 

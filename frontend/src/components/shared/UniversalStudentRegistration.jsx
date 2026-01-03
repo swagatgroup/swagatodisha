@@ -623,10 +623,11 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 personalDetails: {
                   ...prev.personalDetails,
-                  fullName: e.target.value,
+                  fullName: e.target.value.toUpperCase(),
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter your full name"
           />
@@ -649,10 +650,11 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 personalDetails: {
                   ...prev.personalDetails,
-                  fathersName: e.target.value,
+                  fathersName: e.target.value.toUpperCase(),
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter father's name"
           />
@@ -675,10 +677,11 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 personalDetails: {
                   ...prev.personalDetails,
-                  mothersName: e.target.value,
+                  mothersName: e.target.value.toUpperCase(),
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter mother's name"
           />
@@ -868,10 +871,12 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 contactDetails: {
                   ...prev.contactDetails,
-                  email: e.target.value,
+                  email: e.target.value.toLowerCase(),
                 },
               }))
             }
+            style={{ textTransform: 'lowercase' }}
+            required
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter email address"
           />
@@ -896,11 +901,12 @@ const UniversalStudentRegistration = ({
                   ...prev.contactDetails,
                   permanentAddress: {
                     ...prev.contactDetails.permanentAddress,
-                    street: e.target.value,
+                    street: e.target.value.toUpperCase(),
                   },
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter street address"
           />
@@ -925,11 +931,12 @@ const UniversalStudentRegistration = ({
                   ...prev.contactDetails,
                   permanentAddress: {
                     ...prev.contactDetails.permanentAddress,
-                    city: e.target.value,
+                    city: e.target.value.toUpperCase(),
                   },
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter city"
           />
@@ -954,11 +961,12 @@ const UniversalStudentRegistration = ({
                   ...prev.contactDetails,
                   permanentAddress: {
                     ...prev.contactDetails.permanentAddress,
-                    state: e.target.value,
+                    state: e.target.value.toUpperCase(),
                   },
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter state"
           />
@@ -1094,10 +1102,11 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 courseDetails: {
                   ...prev.courseDetails,
-                  stream: e.target.value,
+                  stream: e.target.value.toUpperCase(),
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             placeholder="Enter stream (optional)"
           />
@@ -1121,10 +1130,11 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 guardianDetails: {
                   ...prev.guardianDetails,
-                  guardianName: e.target.value,
+                  guardianName: e.target.value.toUpperCase(),
                 },
               }))
             }
+            style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter guardian name"
           />
@@ -1209,10 +1219,11 @@ const UniversalStudentRegistration = ({
                 ...prev,
                 guardianDetails: {
                   ...prev.guardianDetails,
-                  guardianEmail: e.target.value,
+                  guardianEmail: e.target.value.toLowerCase(),
                 },
               }))
             }
+            style={{ textTransform: 'lowercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter guardian email (optional)"
           />

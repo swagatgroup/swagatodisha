@@ -23,7 +23,8 @@ const studentApplicationSchema = new mongoose.Schema({
             'UNDER_REVIEW',
             'APPROVED',
             'REJECTED',
-            'CANCELLED'
+            'CANCELLED',
+            'COMPLETE'
         ],
         default: 'DRAFT'
     },

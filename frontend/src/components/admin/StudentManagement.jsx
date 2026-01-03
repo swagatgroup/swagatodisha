@@ -40,7 +40,7 @@ const StudentManagement = () => {
     const [rejectionReasons, setRejectionReasons] = useState({});
     const [showRejectionForm, setShowRejectionForm] = useState(false);
     const [filters, setFilters] = useState({
-        statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
+        statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
         courses: ['Bachelor of Technology', 'Bachelor of Commerce', 'Bachelor of Arts', 'Bachelor of Science'],
         submitters: []
     });
@@ -487,7 +487,7 @@ const StudentManagement = () => {
             'warning'
         );
 
-        if (!confirmed) return;
+        if (!confirmed || !confirmed.isConfirmed) return;
 
         try {
             showLoading('Deleting...', `Deleting ${selectedStudents.length} student${selectedStudents.length > 1 ? 's' : ''}...`);
@@ -517,9 +517,35 @@ const StudentManagement = () => {
     };
 
     // Export to Excel (CSV format that Excel can open) - Complete Data Export
-    const handleExportToExcel = () => {
+    const handleExportToExcel = async () => {
         try {
-            if (students.length === 0) {
+            // Show loading while fetching all data
+            showLoading('Preparing export...', 'Fetching all filtered student data...');
+
+            // Session is REQUIRED - always include it
+            if (!selectedSession) {
+                closeLoading();
+                showError('No session selected');
+                return;
+            }
+
+            // Fetch ALL students matching current filters (no pagination)
+            const params = new URLSearchParams({
+                page: 1,
+                limit: 10000, // Large limit to get all records
+                session: selectedSession, // REQUIRED - always pass session
+                ...(searchTerm && { search: searchTerm }),
+                ...(filterStatus !== 'all' && { status: filterStatus }),
+                ...(filterCourse !== 'all' && { course: filterCourse }),
+                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+            });
+
+            const response = await api.get(`/api/admin/students?${params}`);
+            closeLoading();
+
+            const allStudents = response.data.success ? (response.data.data.students || []) : [];
+
+            if (allStudents.length === 0) {
                 showError('No students to export');
                 return;
             }
@@ -599,7 +625,7 @@ const StudentManagement = () => {
 
             // Collect all unique document types from all students to create dynamic columns
             const allDocumentTypes = new Set();
-            students.forEach(student => {
+            allStudents.forEach(student => {
                 if (student.documents && student.documents.length > 0) {
                     student.documents.forEach(doc => {
                         const docType = doc.documentType || doc.fileName || 'Other';
@@ -619,6 +645,8 @@ const StudentManagement = () => {
                 'Current Stage',
                 // Personal Details
                 'Full Name',
+                "Father's Name",
+                "Mother's Name",
                 'Date of Birth',
                 'Gender',
                 'Aadhar Number',
@@ -646,7 +674,7 @@ const StudentManagement = () => {
 
             const csvRows = [headers.join(',')];
 
-            students.forEach((student, index) => {
+            allStudents.forEach((student, index) => {
                 // Format address (combine street, city, state, pincode)
                 const address = [
                     student.contactDetails?.permanentAddress?.street,
@@ -696,6 +724,8 @@ const StudentManagement = () => {
                     escapeCSV(student.currentStage),
                     // Personal Details
                     escapeCSV(student.personalDetails?.fullName),
+                    escapeCSV(student.personalDetails?.fathersName),
+                    escapeCSV(student.personalDetails?.mothersName),
                     formatDate(student.personalDetails?.dateOfBirth),
                     escapeCSV(student.personalDetails?.gender),
                     formatAsText(student.personalDetails?.aadharNumber),
@@ -740,7 +770,7 @@ const StudentManagement = () => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            showSuccess(`Exported ${students.length} student(s) to Excel file with essential details and document links!`);
+            showSuccess(`Exported ${allStudents.length} student(s) to Excel file with essential details and document links!`);
         } catch (error) {
             console.error('Error exporting to Excel:', error);
             showError('Failed to export data to Excel');
@@ -756,6 +786,7 @@ const StudentManagement = () => {
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
             case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
             case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+            case 'COMPLETE': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
             default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
         }
     };
