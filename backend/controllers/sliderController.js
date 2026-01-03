@@ -65,6 +65,16 @@ const createSlider = asyncHandler(async (req, res) => {
     const imageUrl = req.file.cloudinaryUrl || `/uploads/sliders/${req.file.filename}`;
     const cloudinaryPublicId = req.file.cloudinaryPublicId || null;
 
+    // Properly parse isActive boolean (FormData sends strings)
+    let activeStatus = true; // Default to true
+    if (isActive !== undefined && isActive !== null) {
+        if (typeof isActive === 'string') {
+            activeStatus = isActive === 'true' || isActive === '1';
+        } else if (typeof isActive === 'boolean') {
+            activeStatus = isActive;
+        }
+    }
+
     const slider = await Slider.create({
         title,
         description,
@@ -72,7 +82,7 @@ const createSlider = asyncHandler(async (req, res) => {
         cloudinaryPublicId: cloudinaryPublicId,
         link,
         order: order || 0,
-        isActive: isActive !== 'false',
+        isActive: activeStatus,
         createdBy: req.user._id,
         updatedBy: req.user._id
     });
@@ -108,13 +118,23 @@ const updateSlider = asyncHandler(async (req, res) => {
 
     const { title, description, link, order, isActive } = req.body;
 
+    // Properly parse isActive boolean (FormData sends strings)
+    let activeStatus = slider.isActive; // Keep existing value by default
+    if (isActive !== undefined && isActive !== null) {
+        if (typeof isActive === 'string') {
+            activeStatus = isActive === 'true' || isActive === '1';
+        } else if (typeof isActive === 'boolean') {
+            activeStatus = isActive;
+        }
+    }
+
     // Prepare update data
     const updateData = {
         title: title !== undefined ? title : slider.title,
         description: description !== undefined ? description : slider.description,
         link: link !== undefined ? link : slider.link,
         order: order !== undefined ? order : slider.order,
-        isActive: isActive !== undefined ? isActive === 'true' : slider.isActive,
+        isActive: activeStatus,
         updatedBy: req.user._id
     };
 
