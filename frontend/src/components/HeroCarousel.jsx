@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { CAROUSEL_IMAGES } from '../utils/constants';
 import api from '../utils/api';
+import { normalizeImageUrl } from '../utils/imageUtils';
 
 const HeroCarousel = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -13,27 +14,45 @@ const HeroCarousel = () => {
     useEffect(() => {
         const fetchSliders = async () => {
             try {
-                const response = await api.get('/api/admin/sliders/public?isActive=true');
+                // Use public endpoint (no auth required)
+                const response = await api.get('/api/sliders/public');
+                console.log('📸 Sliders API Response:', response.data);
+                
                 if (response.data.success && response.data.data && response.data.data.length > 0) {
                     const apiSlides = response.data.data
+                        .filter(slider => slider.isActive !== false) // Only active sliders
                         .sort((a, b) => (a.order || 0) - (b.order || 0))
                         .map(slider => {
-                            if (slider.image.startsWith('http')) {
-                                return slider.image;
-                            } else if (slider.image.startsWith('/')) {
-                                return slider.image;
-                            } else {
-                                return `/api${slider.image}`;
+                            // Use utility function to normalize image URL
+                            if (slider.image) {
+                                return normalizeImageUrl(slider.image);
                             }
-                        });
-                    setSlides(apiSlides);
+                            return null;
+                        })
+                        .filter(Boolean); // Remove null values
+                    
+                    console.log('📸 Processed slides:', apiSlides);
+                    
+                    if (apiSlides.length > 0) {
+                        setSlides(apiSlides);
+                    } else {
+                        console.warn('⚠️ No active sliders found, using default images');
+                    }
+                } else {
+                    console.warn('⚠️ No sliders returned from API, using default images');
                 }
             } catch (error) {
-                console.error('Error fetching sliders:', error);
+                console.error('❌ Error fetching sliders:', error);
+                console.error('❌ Error details:', error.response?.data || error.message);
+                // Fallback to default images if API fails
             }
         };
 
         fetchSliders();
+        
+        // Refresh sliders every 30 seconds to pick up new uploads
+        const interval = setInterval(fetchSliders, 30000);
+        return () => clearInterval(interval);
     }, []);
 
     // Preload images to prevent glitches

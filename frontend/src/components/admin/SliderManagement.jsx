@@ -10,6 +10,7 @@ import {
     showSuccessToast,
     showErrorToast
 } from '../../utils/sweetAlert';
+import { normalizeImageUrl } from '../../utils/imageUtils';
 
 const SliderManagement = () => {
     const [sliders, setSliders] = useState([]);
@@ -93,7 +94,8 @@ const SliderManagement = () => {
             formDataToSend.append('description', formData.description || '');
             formDataToSend.append('link', formData.link || '');
             formDataToSend.append('order', formData.order || 0);
-            formDataToSend.append('isActive', formData.isActive);
+            // Ensure isActive is sent as a string boolean (FormData converts to string)
+            formDataToSend.append('isActive', formData.isActive ? 'true' : 'false');
 
             let response;
             if (editingSlider) {
@@ -134,7 +136,8 @@ const SliderManagement = () => {
             order: slider.order || 0,
             isActive: slider.isActive !== false
         });
-        setPreviewImage(slider.image?.startsWith('/') ? slider.image : `/api${slider.image}`);
+        // Use utility function to normalize image URL
+        setPreviewImage(normalizeImageUrl(slider.image));
         setSelectedFile(null);
     };
 
@@ -354,7 +357,7 @@ const SliderManagement = () => {
                             >
                                 <div className="relative">
                                     <img
-                                        src={slider.image?.startsWith('/') ? slider.image : `/api${slider.image}`}
+                                        src={normalizeImageUrl(slider.image)}
                                         alt={slider.title}
                                         className="w-full h-48 object-cover"
                                         onError={(e) => {

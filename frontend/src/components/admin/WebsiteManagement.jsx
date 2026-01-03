@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import SliderManagement from './SliderManagement';
-import QuickAccessManagement from './QuickAccessManagement';
-import CollegeManagement from './CollegeManagement';
+import SimpleNotificationManagement from './SimpleNotificationManagement';
+import SimpleQuickAccessManagement from './SimpleQuickAccessManagement';
 
 const WebsiteManagement = () => {
-    const [activeTab, setActiveTab] = useState('colleges');
+    const [activeTab, setActiveTab] = useState('sliders');
 
     const tabs = [
-        { id: 'colleges', name: 'Colleges & Courses', icon: 'fa-solid fa-building' },
-        { id: 'sliders', name: 'Slider Management', icon: 'fa-solid fa-images' },
-        { id: 'quick-access', name: 'Quick Access Documents', icon: 'fa-solid fa-file-lines' }
+        { id: 'sliders', name: 'Slider Images', icon: 'fa-solid fa-images' },
+        { id: 'quick-access', name: 'Quick Access Documents', icon: 'fa-solid fa-file-lines' },
+        { id: 'notifications', name: 'Notifications', icon: 'fa-solid fa-bell' }
     ];
 
     return (
@@ -18,7 +18,7 @@ const WebsiteManagement = () => {
             <div>
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Website Management</h1>
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Manage homepage sliders and quick access documents
+                    Manage slider images and notifications for your website
                 </p>
             </div>
 
@@ -43,9 +43,9 @@ const WebsiteManagement = () => {
                 </div>
 
                 <div className="p-6">
-                    {activeTab === 'colleges' && <CollegeManagement />}
                     {activeTab === 'sliders' && <SliderManagement />}
-                    {activeTab === 'quick-access' && <QuickAccessManagement />}
+                    {activeTab === 'quick-access' && <SimpleQuickAccessManagement />}
+                    {activeTab === 'notifications' && <SimpleNotificationManagement />}
                 </div>
             </div>
         </div>

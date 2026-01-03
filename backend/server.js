@@ -1001,8 +1001,13 @@ app.use('/api/analytics', apiRateLimit, analyticsRoutes);
 app.use('/api/agents', apiRateLimit, agentRoutes);
 app.use('/api/staff', apiRateLimit, staffRoutes);
 app.use('/api/verification', apiRateLimit, applicationVerificationRoutes);
+// Public routes for sliders and quick-access (must be before admin routes)
+app.use('/api/sliders', apiRateLimit, sliderRoutes);
+app.use('/api/quick-access', apiRateLimit, quickAccessRoutes);
+// Admin routes for sliders and quick-access
 app.use('/api/admin/sliders', apiRateLimit, sliderRoutes);
 app.use('/api/admin/quick-access', apiRateLimit, quickAccessRoutes);
+// College routes
 app.use('/api/admin/colleges', apiRateLimit, require('./routes/collegeRoutes'));
 app.use('/api/colleges', apiRateLimit, require('./routes/collegeRoutes'));
 

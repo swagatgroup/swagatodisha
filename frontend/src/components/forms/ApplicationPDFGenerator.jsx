@@ -131,7 +131,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             yPosition += 15;
             
             // Premium content container - start position
-            const personalStartY = yPosition;
+            let personalStartY = yPosition;
             yPosition += 5;
 
             // Beautiful personal details with better formatting
@@ -240,7 +240,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             
             yPosition += 15;
             
-            const contactStartY = yPosition;
+            let contactStartY = yPosition;
 
             pdf.setFontSize(10);
             pdf.setTextColor(0, 0, 0);
@@ -355,7 +355,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             
             yPosition += 15;
             
-            const familyStartY = yPosition;
+            let familyStartY = yPosition;
 
             pdf.setFontSize(10);
             pdf.setTextColor(0, 0, 0);
