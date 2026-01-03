@@ -49,9 +49,30 @@ const Header = () => {
       <header
         ref={headerRef}
         className="fixed top-0 left-0 right-0 z-50 shadow-sm bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm"
+        style={{
+          transform: 'translateX(0) translateY(0) translateZ(0)',
+          willChange: 'auto',
+          isolation: 'isolate',
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0
+        }}
       >
-        <div className="container mx-auto px-6">
-          <div className="flex justify-between items-center py-4">
+        <div 
+          className="container mx-auto px-6"
+          style={{
+            transform: 'none',
+            willChange: 'auto'
+          }}
+        >
+          <div 
+            className="flex justify-between items-center py-4"
+            style={{
+              transform: 'none',
+              willChange: 'auto'
+            }}
+          >
             {/* Logo */}
             <div className="w-36">
               <img
@@ -62,7 +83,13 @@ const Header = () => {
             </div>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center space-x-8">
+            <nav 
+              className="hidden lg:flex items-center space-x-8"
+              style={{
+                transform: 'none',
+                willChange: 'auto'
+              }}
+            >
               {NAV_ITEMS.map((item, index) =>
                 item.href.startsWith("#") ? (
                   <button
@@ -108,6 +135,12 @@ const Header = () => {
               onClick={toggleNav}
               aria-label={isNavOpen ? "Close menu" : "Open menu"}
               className="lg:hidden w-12 h-12  rounded-xl flex items-center justify-center dark:bg-indigo-300 text-white shadow-lg"
+              style={{
+                transform: 'none',
+                willChange: 'auto',
+                position: 'relative',
+                zIndex: 1
+              }}
             >
               <div className="flex flex-col justify-center w-6 h-6">
                 {[0, 1, 2].map((i) => (
