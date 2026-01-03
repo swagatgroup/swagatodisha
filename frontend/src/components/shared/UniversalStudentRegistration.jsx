@@ -19,6 +19,8 @@ const UniversalStudentRegistration = ({
   const [saving, setSaving] = useState(false);
   const [application, setApplication] = useState(null);
   const [errors, setErrors] = useState({});
+  const [colleges, setColleges] = useState([]);
+  const [loadingColleges, setLoadingColleges] = useState(false);
   // Generate unique draft key for proper isolation
   const generateDraftKey = () => {
     const userId = user?._id || `anonymous_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -60,6 +62,7 @@ const UniversalStudentRegistration = ({
       },
     },
     courseDetails: {
+      selectedCollege: "",
       selectedCourse: "",
       customCourse: "",
       stream: "",
@@ -116,7 +119,34 @@ const UniversalStudentRegistration = ({
   useEffect(() => {
     loadExistingApplication();
     loadDraftData();
+    fetchColleges();
   }, []);
+
+  const fetchColleges = async () => {
+    try {
+      setLoadingColleges(true);
+      const response = await api.get('/api/colleges/public');
+      if (response.data.success) {
+        setColleges(response.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching colleges:', error);
+      // Don't show error to user, just log it
+    } finally {
+      setLoadingColleges(false);
+    }
+  };
+
+  // Get courses for selected college
+  const getCoursesForCollege = () => {
+    if (!formData.courseDetails.selectedCollege) {
+      return [];
+    }
+    const selectedCollegeData = colleges.find(
+      (college) => college._id === formData.courseDetails.selectedCollege
+    );
+    return selectedCollegeData?.courses || [];
+  };
 
   const loadExistingApplication = async () => {
     // Only try to load from server if user is authenticated
@@ -220,6 +250,10 @@ const UniversalStudentRegistration = ({
         break;
 
       case 3: // Course Selection
+        if (!formData.courseDetails.selectedCollege) {
+          newErrors["courseDetails.selectedCollege"] =
+            "College selection is required";
+        }
         if (!formData.courseDetails.selectedCourse.trim()) {
           newErrors["courseDetails.selectedCourse"] =
             "Course selection is required";
@@ -366,6 +400,7 @@ const UniversalStudentRegistration = ({
     return (
       formData.personalDetails.fullName &&
       formData.contactDetails.email &&
+      formData.courseDetails.selectedCollege &&
       formData.courseDetails.selectedCourse
     );
   };
@@ -967,64 +1002,85 @@ const UniversalStudentRegistration = ({
     </div>
   );
 
-  const renderCourseSelection = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Select Course *
-          </label>
-          <select
-            value={formData.courseDetails.selectedCourse}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                courseDetails: {
-                  ...prev.courseDetails,
-                  selectedCourse: e.target.value,
-                },
-              }))
-            }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          >
-            <option value="">Select Course</option>
-            <option value="B.Tech">B.Tech</option>
-            <option value="BBA">BBA</option>
-            <option value="BCA">BCA</option>
-            <option value="MBA">MBA</option>
-            <option value="MCA">MCA</option>
-            <option value="M.Tech">M.Tech</option>
-            <option value="Other">Other</option>
-          </select>
-          {errors["courseDetails.selectedCourse"] && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors["courseDetails.selectedCourse"]}
-            </p>
-          )}
-        </div>
+  const renderCourseSelection = () => {
+    const availableCourses = getCoursesForCollege();
 
-        {formData.courseDetails.selectedCourse === "Other" && (
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Custom Course Name
+              Select College * 
             </label>
-            <input
-              type="text"
-              value={formData.courseDetails.customCourse}
+            <select
+              value={formData.courseDetails.selectedCollege}
               onChange={(e) =>
                 setFormData((prev) => ({
                   ...prev,
                   courseDetails: {
                     ...prev.courseDetails,
-                    customCourse: e.target.value,
+                    selectedCollege: e.target.value,
+                    selectedCourse: "", // Reset course when college changes
                   },
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              placeholder="Enter course name"
-            />
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              required
+              disabled={loadingColleges}
+            >
+              <option value="">{loadingColleges ? "Loading colleges..." : "Select College"}</option>
+              {colleges.map((college) => (
+                <option key={college._id} value={college._id}>
+                  {college.name} {college.code ? `(${college.code})` : ""}
+                </option>
+              ))}
+            </select>
+            {errors["courseDetails.selectedCollege"] && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors["courseDetails.selectedCollege"]}
+              </p>
+            )}
           </div>
-        )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Select Course * 
+            </label>
+            <select
+              value={formData.courseDetails.selectedCourse}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  courseDetails: {
+                    ...prev.courseDetails,
+                    selectedCourse: e.target.value,
+                  },
+                }))
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              required
+              disabled={!formData.courseDetails.selectedCollege || availableCourses.length === 0}
+            >
+              <option value="">
+                {!formData.courseDetails.selectedCollege
+                  ? "Select college first"
+                  : availableCourses.length === 0
+                  ? "No courses available"
+                  : "Select Course"}
+              </option>
+              {availableCourses.map((course) => (
+                <option key={course._id} value={course.courseName}>
+                  {course.courseName} {course.courseCode ? `(${course.courseCode})` : ""}
+                </option>
+              ))}
+            </select>
+            {errors["courseDetails.selectedCourse"] && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors["courseDetails.selectedCourse"]}
+              </p>
+            )}
+          </div>
+        </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -1042,13 +1098,13 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             placeholder="Enter stream (optional)"
           />
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderGuardianDetails = () => (
     <div className="space-y-6">
@@ -1267,6 +1323,12 @@ const UniversalStudentRegistration = ({
             Course Information
           </h4>
           <div className="text-sm text-gray-700 dark:text-gray-300">
+            {formData.courseDetails.selectedCollege && (
+              <div>
+                <strong className="text-gray-900 dark:text-white">College:</strong>{" "}
+                {colleges.find(c => c._id === formData.courseDetails.selectedCollege)?.name || "N/A"}
+              </div>
+            )}
             <div>
               <strong className="text-gray-900 dark:text-white">Course:</strong>{" "}
               {formData.courseDetails.selectedCourse}

@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import SliderManagement from './SliderManagement';
 import QuickAccessManagement from './QuickAccessManagement';
+import CollegeManagement from './CollegeManagement';
 
 const WebsiteManagement = () => {
-    const [activeTab, setActiveTab] = useState('sliders');
+    const [activeTab, setActiveTab] = useState('colleges');
 
     const tabs = [
+        { id: 'colleges', name: 'Colleges & Courses', icon: 'fa-solid fa-building' },
         { id: 'sliders', name: 'Slider Management', icon: 'fa-solid fa-images' },
         { id: 'quick-access', name: 'Quick Access Documents', icon: 'fa-solid fa-file-lines' }
     ];
@@ -41,6 +43,7 @@ const WebsiteManagement = () => {
                 </div>
 
                 <div className="p-6">
+                    {activeTab === 'colleges' && <CollegeManagement />}
                     {activeTab === 'sliders' && <SliderManagement />}
                     {activeTab === 'quick-access' && <QuickAccessManagement />}
                 </div>

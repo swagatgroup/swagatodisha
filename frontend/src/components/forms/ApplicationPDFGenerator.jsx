@@ -1,12 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DocumentIcon, EyeIcon, ArrowDownTrayIcon, PrinterIcon } from '@heroicons/react/24/outline';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import api from '../../utils/api';
 
 const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [error, setError] = useState(null);
+    const [colleges, setColleges] = useState([]);
+
+    // Fetch colleges for display
+    useEffect(() => {
+        const fetchColleges = async () => {
+            try {
+                const response = await api.get('/api/colleges/public');
+                if (response.data.success) {
+                    setColleges(response.data.data || []);
+                }
+            } catch (error) {
+                console.error('Error fetching colleges:', error);
+            }
+        };
+        fetchColleges();
+    }, []);
 
     const generatePDF = async () => {
         setIsGenerating(true);
@@ -16,157 +33,481 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // Create a comprehensive PDF content
             const pdfContent = createPDFContent(formData, application);
 
-            // Generate actual PDF using jsPDF
+            // Generate premium PDF using jsPDF
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
-            let yPosition = 20;
+            let yPosition = 0;
 
-            // Set font
+            // Set premium fonts
             pdf.setFont('helvetica');
 
-            // Professional Header
-            pdf.setFillColor(99, 102, 241); // Purple background
-            pdf.rect(0, 0, pageWidth, 30, 'F');
+            // ============================================
+            // PREMIUM PROFESSIONAL HEADER DESIGN
+            // ============================================
             
-            pdf.setTextColor(255, 255, 255); // White text
-            pdf.setFontSize(18);
+            // Main header with premium gradient effect (simulated with layered rectangles)
+            pdf.setFillColor(79, 70, 229); // Deep indigo
+            pdf.rect(0, 0, pageWidth, 45, 'F');
+            
+            // Gradient effect layers
+            pdf.setFillColor(99, 102, 241); // Medium purple
+            pdf.rect(0, 0, pageWidth, 42, 'F');
+            
+            pdf.setFillColor(139, 92, 246); // Light purple
+            pdf.rect(0, 0, pageWidth, 38, 'F');
+            
+            // Premium decorative top border
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(0, 0, pageWidth, 2, 'F');
+            
+            // Main logo/title area
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(28);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('SWAGAT ODISHA', pageWidth / 2, 12, { align: 'center' });
+            pdf.text('SWAGAT ODISHA', pageWidth / 2, 16, { align: 'center' });
             
-            pdf.setFontSize(12);
+            // Subtitle with elegant spacing
+            pdf.setFontSize(11);
             pdf.setFont('helvetica', 'normal');
-            pdf.text('Student Application Form', pageWidth / 2, 20, { align: 'center' });
+            pdf.setTextColor(255, 255, 255, 0.9);
+            pdf.text('Educational Excellence Platform', pageWidth / 2, 23, { align: 'center' });
             
-            pdf.setFontSize(9);
-            pdf.text(`Application ID: ${pdfContent.applicationId}`, 20, 26);
-            pdf.text(`Date: ${pdfContent.generatedDate}`, pageWidth - 60, 26);
-            
-            yPosition = 40;
-
-            // Personal Details Section
-            pdf.setFillColor(248, 250, 252); // Light gray background
-            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
-            
-            pdf.setTextColor(99, 102, 241); // Purple text
-            pdf.setFontSize(12);
+            // Form title with premium styling
+            pdf.setFontSize(13);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('1. Personal Details', 20, yPosition + 4);
-            yPosition += 10;
+            pdf.setTextColor(255, 255, 255);
+            pdf.text('STUDENT APPLICATION FORM', pageWidth / 2, 30, { align: 'center' });
+            
+            // Premium info badges
+            pdf.setFillColor(255, 255, 255, 0.2);
+            pdf.rect(15, 34, 85, 8, 'F');
+            pdf.rect(pageWidth - 100, 34, 85, 8, 'F');
+            
+            // Border for badges
+            pdf.setDrawColor(255, 255, 255, 0.4);
+            pdf.setLineWidth(0.5);
+            pdf.rect(15, 34, 85, 8, 'D');
+            pdf.rect(pageWidth - 100, 34, 85, 8, 'D');
+            
+            pdf.setFontSize(8);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(255, 255, 255);
+            pdf.text(`Application ID: ${pdfContent.applicationId}`, 20, 38.5);
+            pdf.text(`Generated: ${pdfContent.generatedDate}`, pageWidth - 20, 38.5, { align: 'right' });
+            
+            // Premium decorative bottom border
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(0, 45, pageWidth, 1, 'F');
+            
+            yPosition = 55;
 
+            // ============================================
+            // PREMIUM SECTION 1: PERSONAL DETAILS
+            // ============================================
+            
+            // Premium section header with elegant design
+            pdf.setFillColor(79, 70, 229); // Deep indigo
+            pdf.rect(15, yPosition - 3, pageWidth - 30, 12, 'F');
+            
+            // Premium accent stripe
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(15, yPosition - 3, 5, 12, 'F');
+            
+            // Section number badge
+            pdf.setFillColor(255, 255, 255);
+            pdf.circle(20, yPosition + 3, 4, 'F');
+            pdf.setTextColor(79, 70, 229);
             pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'normal');
-            pdf.setTextColor(0, 0, 0);
-
-            // Simple personal details list
-            const personalDetails = [
-                { label: 'Full Name:', value: pdfContent.personalDetails.fullName || 'N/A' },
-                { label: 'Date of Birth:', value: pdfContent.personalDetails.dateOfBirth || 'N/A' },
-                { label: 'Gender:', value: pdfContent.personalDetails.gender || 'N/A' },
-                { label: 'Aadhar Number:', value: pdfContent.personalDetails.aadharNumber || 'N/A' },
-                { label: 'Category:', value: pdfContent.personalDetails.status || pdfContent.personalDetails.category || 'N/A' },
-                { label: 'Father\'s Name:', value: pdfContent.personalDetails.fathersName || 'N/A' },
-                { label: 'Mother\'s Name:', value: pdfContent.personalDetails.mothersName || 'N/A' }
-            ];
-
-            personalDetails.forEach((item) => {
-                pdf.setFont('helvetica', 'bold');
-                pdf.text(item.label, 20, yPosition);
-                pdf.setFont('helvetica', 'normal');
-                pdf.text(item.value, 80, yPosition);
-                yPosition += 6;
-            });
-
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('1', 20, yPosition + 4.5, { align: 'center' });
+            
+            // Section title
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(15);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('PERSONAL DETAILS', 30, yPosition + 5);
+            
+            yPosition += 15;
+            
+            // Premium content container - start position
+            const personalStartY = yPosition;
             yPosition += 5;
 
-            // Contact Details Section
-            pdf.setFillColor(248, 250, 252); // Light gray background
-            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            // Beautiful personal details with better formatting
+            const personalDetails = [
+                { label: 'Full Name', value: pdfContent.personalDetails.fullName || 'N/A', icon: '👤' },
+                { label: 'Date of Birth', value: pdfContent.personalDetails.dateOfBirth || 'N/A', icon: '📅' },
+                { label: 'Gender', value: pdfContent.personalDetails.gender || 'N/A', icon: '⚧' },
+                { label: 'Aadhar Number', value: pdfContent.personalDetails.aadharNumber || 'N/A', icon: '🆔' },
+                { label: 'Category', value: pdfContent.personalDetails.status || pdfContent.personalDetails.category || 'N/A', icon: '📋' },
+                { label: 'Father\'s Name', value: pdfContent.personalDetails.fathersName || 'N/A', icon: '👨' },
+                { label: 'Mother\'s Name', value: pdfContent.personalDetails.mothersName || 'N/A', icon: '👩' }
+            ];
+
+            personalDetails.forEach((item, index) => {
+                // Check if we need a new page
+                if (yPosition > pageHeight - 25) {
+                    pdf.addPage();
+                    yPosition = 20;
+                    personalStartY = yPosition;
+                }
+                
+                // Premium row design with subtle background
+                const rowHeight = 9;
+                if (index % 2 === 0) {
+                    pdf.setFillColor(255, 255, 255);
+                } else {
+                    pdf.setFillColor(249, 250, 251);
+                }
+                pdf.rect(18, yPosition, pageWidth - 36, rowHeight, 'F');
+                
+                // Premium left accent bar
+                pdf.setFillColor(79, 70, 229);
+                pdf.rect(18, yPosition, 2, rowHeight, 'F');
+                
+                // Icon circle
+                pdf.setFillColor(99, 102, 241);
+                pdf.circle(24, yPosition + 4.5, 2.5, 'F');
+                
+                // Label with premium typography
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(30, 30, 30);
+                pdf.setFontSize(10);
+                pdf.text(item.label, 30, yPosition + 4);
+                
+                // Value with text wrapping and premium styling
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(60, 60, 60);
+                pdf.setFontSize(10);
+                const valueX = 80;
+                const maxWidth = pageWidth - valueX - 25;
+                
+                // Split long text into multiple lines
+                const valueLines = pdf.splitTextToSize(item.value || 'N/A', maxWidth);
+                valueLines.forEach((line, lineIndex) => {
+                    pdf.text(line, valueX, yPosition + 4 + (lineIndex * 5));
+                });
+                
+                // Premium divider line
+                pdf.setDrawColor(230, 230, 230);
+                pdf.setLineWidth(0.3);
+                pdf.line(20, yPosition + rowHeight, pageWidth - 20, yPosition + rowHeight);
+                
+                // Adjust yPosition based on number of lines
+                yPosition += Math.max(rowHeight, valueLines.length * 5 + 1);
+            });
+
+            // Close premium content box - draw border only (no fill to avoid covering content)
+            const personalHeight = yPosition - personalStartY + 5;
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setLineWidth(1);
+            pdf.rect(15, personalStartY, pageWidth - 30, personalHeight, 'D');
             
-            pdf.setTextColor(99, 102, 241); // Purple text
-            pdf.setFontSize(12);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('2. Contact Details', 20, yPosition + 4);
             yPosition += 10;
+
+            // ============================================
+            // PREMIUM SECTION 2: CONTACT DETAILS
+            // ============================================
+            
+            // Check if we need a new page
+            if (yPosition > pageHeight - 100) {
+                pdf.addPage();
+                yPosition = 20;
+            }
+
+            // Premium section header
+            pdf.setFillColor(5, 150, 105); // Premium green
+            pdf.rect(15, yPosition - 3, pageWidth - 30, 12, 'F');
+            
+            // Premium accent stripe
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(15, yPosition - 3, 5, 12, 'F');
+            
+            // Section number badge
+            pdf.setFillColor(255, 255, 255);
+            pdf.circle(20, yPosition + 3, 4, 'F');
+            pdf.setTextColor(5, 150, 105);
+            pdf.setFontSize(10);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('2', 20, yPosition + 4.5, { align: 'center' });
+            
+            // Section title
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(15);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('CONTACT DETAILS', 30, yPosition + 5);
+            
+            yPosition += 15;
+            
+            const contactStartY = yPosition;
 
             pdf.setFontSize(10);
             pdf.setTextColor(0, 0, 0);
+            yPosition += 5;
 
             const contactDetails = [
-                { label: 'Email:', value: pdfContent.contactDetails.email || 'N/A' },
-                { label: 'Primary Phone:', value: pdfContent.contactDetails.primaryPhone || 'N/A' },
-                { label: 'WhatsApp:', value: pdfContent.contactDetails.whatsappNumber || 'N/A' },
-                { label: 'Street Address:', value: pdfContent.contactDetails.permanentAddress?.street || 'N/A' },
-                { label: 'City:', value: pdfContent.contactDetails.permanentAddress?.city || 'N/A' },
-                { label: 'State:', value: pdfContent.contactDetails.permanentAddress?.state || 'N/A' },
-                { label: 'Pincode:', value: pdfContent.contactDetails.permanentAddress?.pincode || 'N/A' }
+                { label: 'Email', value: pdfContent.contactDetails.email || 'N/A', icon: '📧' },
+                { label: 'Primary Phone', value: pdfContent.contactDetails.primaryPhone || 'N/A', icon: '📱' },
+                { label: 'WhatsApp', value: pdfContent.contactDetails.whatsappNumber || 'N/A', icon: '💬' },
+                { label: 'Street Address', value: pdfContent.contactDetails.permanentAddress?.street || 'N/A', icon: '📍' },
+                { label: 'City', value: pdfContent.contactDetails.permanentAddress?.city || 'N/A', icon: '🏙️' },
+                { label: 'State', value: pdfContent.contactDetails.permanentAddress?.state || 'N/A', icon: '🗺️' },
+                { label: 'Pincode', value: pdfContent.contactDetails.permanentAddress?.pincode || 'N/A', icon: '📮' }
             ];
 
-            contactDetails.forEach((item) => {
+            contactDetails.forEach((item, index) => {
+                // Check if we need a new page
+                if (yPosition > pageHeight - 25) {
+                    pdf.addPage();
+                    yPosition = 20;
+                    contactStartY = yPosition;
+                }
+                
+                // Premium row design
+                const rowHeight = 9;
+                if (index % 2 === 0) {
+                    pdf.setFillColor(255, 255, 255);
+                } else {
+                    pdf.setFillColor(240, 253, 250);
+                }
+                pdf.rect(18, yPosition, pageWidth - 36, rowHeight, 'F');
+                
+                // Premium left accent bar
+                pdf.setFillColor(5, 150, 105);
+                pdf.rect(18, yPosition, 2, rowHeight, 'F');
+                
+                // Icon circle
+                pdf.setFillColor(16, 185, 129);
+                pdf.circle(24, yPosition + 4.5, 2.5, 'F');
+                
+                // Label
                 pdf.setFont('helvetica', 'bold');
-                pdf.text(item.label, 20, yPosition);
+                pdf.setTextColor(30, 30, 30);
+                pdf.setFontSize(10);
+                pdf.text(item.label, 30, yPosition + 4);
+                
+                // Value with wrapping
                 pdf.setFont('helvetica', 'normal');
-                pdf.text(item.value, 80, yPosition);
-                yPosition += 6;
+                pdf.setTextColor(60, 60, 60);
+                pdf.setFontSize(10);
+                const valueX = 80;
+                const maxWidth = pageWidth - valueX - 25;
+                
+                const valueLines = pdf.splitTextToSize(item.value || 'N/A', maxWidth);
+                valueLines.forEach((line, lineIndex) => {
+                    pdf.text(line, valueX, yPosition + 4 + (lineIndex * 5));
+                });
+                
+                // Premium divider
+                pdf.setDrawColor(230, 230, 230);
+                pdf.setLineWidth(0.3);
+                pdf.line(20, yPosition + rowHeight, pageWidth - 20, yPosition + rowHeight);
+                
+                yPosition += Math.max(rowHeight, valueLines.length * 5 + 1);
             });
 
-            yPosition += 5;
-
-            // Family Details Section
-            pdf.setFillColor(248, 250, 252); // Light gray background
-            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            // Close premium content box - draw border only
+            const contactHeight = yPosition - contactStartY + 5;
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setLineWidth(1);
+            pdf.rect(15, contactStartY, pageWidth - 30, contactHeight, 'D');
             
-            pdf.setTextColor(99, 102, 241); // Purple text
-            pdf.setFontSize(12);
+            yPosition += 15;
+
+            // Check if we need a new page
+            if (yPosition > pageHeight - 100) {
+                pdf.addPage();
+                yPosition = 30;
+            }
+
+            // ============================================
+            // PREMIUM SECTION 3: FAMILY & ACADEMIC DETAILS
+            // ============================================
+            
+            // Check if we need a new page
+            if (yPosition > pageHeight - 100) {
+                pdf.addPage();
+                yPosition = 20;
+            }
+
+            // Premium section header
+            pdf.setFillColor(234, 88, 12); // Premium orange
+            pdf.rect(15, yPosition - 3, pageWidth - 30, 12, 'F');
+            
+            // Premium accent stripe
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(15, yPosition - 3, 5, 12, 'F');
+            
+            // Section number badge
+            pdf.setFillColor(255, 255, 255);
+            pdf.circle(20, yPosition + 3, 4, 'F');
+            pdf.setTextColor(234, 88, 12);
+            pdf.setFontSize(10);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('3. Family & Academic Details', 20, yPosition + 4);
-            yPosition += 10;
+            pdf.text('3', 20, yPosition + 4.5, { align: 'center' });
+            
+            // Section title
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(15);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('FAMILY & ACADEMIC DETAILS', 30, yPosition + 5);
+            
+            yPosition += 15;
+            
+            const familyStartY = yPosition;
 
             pdf.setFontSize(10);
             pdf.setTextColor(0, 0, 0);
-
-            const familyDetails = [
-                { label: 'Father\'s Name:', value: pdfContent.personalDetails.fathersName || 'N/A' },
-                { label: 'Mother\'s Name:', value: pdfContent.personalDetails.mothersName || 'N/A' },
-                { label: 'Guardian Name:', value: pdfContent.guardianDetails.guardianName || 'N/A' },
-                { label: 'Relationship:', value: pdfContent.guardianDetails.relationship || 'N/A' },
-                { label: 'Guardian Phone:', value: pdfContent.guardianDetails.guardianPhone || 'N/A' },
-                { label: 'Guardian Email:', value: pdfContent.guardianDetails.guardianEmail || 'N/A' },
-                { label: 'Institution Name:', value: pdfContent.courseDetails.institutionName || 'N/A' },
-                { label: 'Course Name:', value: pdfContent.courseDetails.courseName || 'N/A' },
-                { label: 'Stream:', value: pdfContent.courseDetails.stream || 'N/A' }
-            ];
-
-            familyDetails.forEach((item) => {
-                pdf.setFont('helvetica', 'bold');
-                pdf.text(item.label, 20, yPosition);
-                pdf.setFont('helvetica', 'normal');
-                pdf.text(item.value, 80, yPosition);
-                yPosition += 6;
-            });
-
             yPosition += 5;
 
-            // Add referral code
-            if (pdfContent.referralCode) {
+            // Get college name if available
+            const collegeName = pdfContent.courseDetails.selectedCollege 
+                ? (colleges?.find(c => c._id === pdfContent.courseDetails.selectedCollege)?.name || 'N/A')
+                : (pdfContent.courseDetails.institutionName || 'N/A');
+
+            const familyDetails = [
+                { label: 'Father\'s Name', value: pdfContent.personalDetails.fathersName || 'N/A', icon: '👨' },
+                { label: 'Mother\'s Name', value: pdfContent.personalDetails.mothersName || 'N/A', icon: '👩' },
+                { label: 'Guardian Name', value: pdfContent.guardianDetails.guardianName || 'N/A', icon: '👤' },
+                { label: 'Relationship', value: pdfContent.guardianDetails.relationship || 'N/A', icon: '🔗' },
+                { label: 'Guardian Phone', value: pdfContent.guardianDetails.guardianPhone || 'N/A', icon: '📞' },
+                { label: 'Guardian Email', value: pdfContent.guardianDetails.guardianEmail || 'N/A', icon: '✉️' },
+                { label: 'College Name', value: collegeName, icon: '🏫' },
+                { label: 'Course Name', value: pdfContent.courseDetails.selectedCourse || pdfContent.courseDetails.courseName || 'N/A', icon: '📚' },
+                { label: 'Stream', value: pdfContent.courseDetails.stream || 'N/A', icon: '📖' }
+            ];
+
+            familyDetails.forEach((item, index) => {
+                // Check if we need a new page
+                if (yPosition > pageHeight - 25) {
+                    pdf.addPage();
+                    yPosition = 20;
+                    familyStartY = yPosition;
+                }
+                
+                // Premium row design
+                const rowHeight = 9;
+                if (index % 2 === 0) {
+                    pdf.setFillColor(255, 255, 255);
+                } else {
+                    pdf.setFillColor(255, 247, 237);
+                }
+                pdf.rect(18, yPosition, pageWidth - 36, rowHeight, 'F');
+                
+                // Premium left accent bar
+                pdf.setFillColor(234, 88, 12);
+                pdf.rect(18, yPosition, 2, rowHeight, 'F');
+                
+                // Icon circle
+                pdf.setFillColor(251, 146, 60);
+                pdf.circle(24, yPosition + 4.5, 2.5, 'F');
+                
+                // Label
                 pdf.setFont('helvetica', 'bold');
-                pdf.text('Referral Code:', 20, yPosition);
+                pdf.setTextColor(30, 30, 30);
+                pdf.setFontSize(10);
+                pdf.text(item.label, 30, yPosition + 4);
+                
+                // Value with wrapping
                 pdf.setFont('helvetica', 'normal');
-                pdf.text(pdfContent.referralCode, 80, yPosition);
-                yPosition += 6;
+                pdf.setTextColor(60, 60, 60);
+                pdf.setFontSize(10);
+                const valueX = 80;
+                const maxWidth = pageWidth - valueX - 25;
+                
+                const valueLines = pdf.splitTextToSize(item.value || 'N/A', maxWidth);
+                valueLines.forEach((line, lineIndex) => {
+                    pdf.text(line, valueX, yPosition + 4 + (lineIndex * 5));
+                });
+                
+                // Premium divider
+                pdf.setDrawColor(230, 230, 230);
+                pdf.setLineWidth(0.3);
+                pdf.line(20, yPosition + rowHeight, pageWidth - 20, yPosition + rowHeight);
+                
+                yPosition += Math.max(rowHeight, valueLines.length * 5 + 1);
+            });
+
+            // Close premium content box - draw border only
+            const familyHeight = yPosition - familyStartY + 5;
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setLineWidth(1);
+            pdf.rect(15, familyStartY, pageWidth - 30, familyHeight, 'D');
+            
+            yPosition += 15;
+
+            // Premium Referral Code Badge
+            if (pdfContent.referralCode) {
+                if (yPosition > pageHeight - 20) {
+                    pdf.addPage();
+                    yPosition = 20;
+                }
+                
+                yPosition += 5;
+                // Premium badge design
+                pdf.setFillColor(168, 85, 247); // Purple
+                pdf.rect(15, yPosition, pageWidth - 30, 10, 'F');
+                
+                // Decorative left border
+                pdf.setFillColor(192, 132, 252);
+                pdf.rect(15, yPosition, 4, 10, 'F');
+                
+                // Icon and label
+                pdf.setFont('helvetica', 'bold');
+                pdf.setTextColor(255, 255, 255);
+                pdf.setFontSize(11);
+                pdf.text('🎁 Referral Code', 22, yPosition + 6);
+                
+                // Code value in premium style
+                pdf.setFontSize(12);
+                pdf.setFont('helvetica', 'bold');
+                pdf.text(pdfContent.referralCode, 80, yPosition + 6);
+                
+                yPosition += 12;
             }
 
             yPosition += 5;
 
-            // Documents Section
-            pdf.setFillColor(248, 250, 252); // Light gray background
-            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            // Check if we need a new page
+            if (yPosition > pageHeight - 80) {
+                pdf.addPage();
+                yPosition = 30;
+            }
+
+            // ============================================
+            // PREMIUM SECTION 4: UPLOADED DOCUMENTS
+            // ============================================
             
-            pdf.setTextColor(99, 102, 241); // Purple text
-            pdf.setFontSize(12);
+            // Check if we need a new page
+            if (yPosition > pageHeight - 80) {
+                pdf.addPage();
+                yPosition = 20;
+            }
+
+            // Premium section header
+            pdf.setFillColor(37, 99, 235); // Premium blue
+            pdf.rect(15, yPosition - 3, pageWidth - 30, 12, 'F');
+            
+            // Premium accent stripe
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(15, yPosition - 3, 5, 12, 'F');
+            
+            // Section number badge
+            pdf.setFillColor(255, 255, 255);
+            pdf.circle(20, yPosition + 3, 4, 'F');
+            pdf.setTextColor(37, 99, 235);
+            pdf.setFontSize(10);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('4. Uploaded Documents', 20, yPosition + 4);
-            yPosition += 10;
+            pdf.text('4', 20, yPosition + 4.5, { align: 'center' });
+            
+            // Section title
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(15);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('UPLOADED DOCUMENTS', 30, yPosition + 5);
+            
+            yPosition += 15;
 
             pdf.setFontSize(10);
             pdf.setFont('helvetica', 'normal');
@@ -194,7 +535,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
 
             if (documents.length > 0) {
                 console.log('Processing documents, count:', documents.length);
-                // Use optimized layout with two columns and reduced spacing
+                yPosition += 5;
+                const docsStartY = yPosition;
+                
+                // Use beautiful grid layout with boxes
                 documents.forEach(([key, doc], index) => {
                     console.log(`Document ${index + 1}: key="${key}", doc=`, doc);
                     const docName = documentNames[key] || key.replace(/_/g, ' ').toUpperCase();
@@ -202,129 +546,317 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     const fileSize = doc.size ? `${(doc.size / 1024).toFixed(1)} KB` : 'N/A';
                     console.log(`  → docName: "${docName}", fileName: "${fileName}", fileSize: "${fileSize}"`);
                     
-                    // Use two-column layout for space efficiency
-                    const col = index % 2; // 0 or 1 for column
-                    const row = Math.floor(index / 2); // 0, 1, 2 for row
-                    const xPos = 20 + (col * 95); // Two columns with margin
-                    let currentY = yPosition + (row * 10); // Reduced spacing: 10mm per row
+                    // Two-column layout
+                    const col = index % 2;
+                    const row = Math.floor(index / 2);
+                    const boxWidth = (pageWidth - 50) / 2;
+                    const boxHeight = 12;
+                    const xPos = 20 + (col * (boxWidth + 10));
+                    let currentY = yPosition + (row * 15);
                     
-                    // Check if we need a new page before adding new row
-                    if (row > 0 && col === 0 && currentY > pageHeight - 80) {
+                    // Check if we need a new page
+                    if (row > 0 && col === 0 && currentY + boxHeight > pageHeight - 80) {
                         pdf.addPage();
-                        yPosition = 30; // Reset for new page
-                        currentY = yPosition + (row % 6 * 10); // Continue from new page, reset rows
+                        yPosition = 30;
+                        currentY = yPosition + (row % 5 * 15);
                     }
                     
-                    // Document name
-                    pdf.setFont('helvetica', 'bold');
-                    pdf.setFontSize(10); // Smaller font to fit better
-                    pdf.setTextColor(0, 0, 0);
-                    pdf.text(`${docName}:`, xPos, currentY);
+                    // Premium document card design
+                    pdf.setDrawColor(200, 200, 200);
+                    pdf.setLineWidth(0.6);
+                    pdf.setFillColor(240, 248, 255); // Light blue background
+                    pdf.rect(xPos, currentY, boxWidth, boxHeight, 'FD');
                     
-                    // File name as clickable link
+                    // Premium left accent bar
+                    pdf.setFillColor(37, 99, 235);
+                    pdf.rect(xPos, currentY, 3, boxHeight, 'F');
+                    
+                    // Premium document icon circle
+                    pdf.setFillColor(59, 130, 246);
+                    pdf.circle(xPos + 8, currentY + 6, 3.5, 'F');
+                    pdf.setFillColor(255, 255, 255);
+                    pdf.circle(xPos + 8, currentY + 6, 2, 'F');
+                    
+                    // Document name with premium typography
+                    pdf.setFont('helvetica', 'bold');
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(20, 20, 20);
+                    const docNameLines = pdf.splitTextToSize(docName, boxWidth - 20);
+                    docNameLines.forEach((line, idx) => {
+                        pdf.text(line, xPos + 14, currentY + 4 + (idx * 4));
+                    });
+                    
+                    // File name with elegant styling
                     pdf.setFont('helvetica', 'normal');
-                    pdf.setFontSize(9); // Smaller font for filenames
+                    pdf.setFontSize(7);
+                    pdf.setTextColor(80, 80, 80);
+                    const fileNameLines = pdf.splitTextToSize(fileName, boxWidth - 20);
+                    const startY = currentY + 4 + (docNameLines.length * 4);
+                    fileNameLines.forEach((line, idx) => {
+                        pdf.text(line, xPos + 14, startY + (idx * 3));
+                    });
+                    
+                    // Premium file size badge
+                    pdf.setFillColor(37, 99, 235);
+                    pdf.rect(xPos + boxWidth - 32, currentY + boxHeight - 6, 30, 5, 'F');
+                    pdf.setFontSize(6);
+                    pdf.setFont('helvetica', 'bold');
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.text(fileSize, xPos + boxWidth - 17, currentY + boxHeight - 3, { align: 'center' });
+                    
+                    // Clickable link if available
                     if (doc.downloadUrl || doc.filePath) {
-                        // Add clickable link with blue color
-                        pdf.setTextColor(0, 0, 255); // Blue color for links
-                        const linkText = `• ${fileName} (${fileSize})`;
-                        pdf.text(linkText, xPos, currentY + 4);
-                        
-                        // Create clickable link
-                        const textWidth = pdf.getTextWidth(linkText);
-                        pdf.link(xPos, currentY, textWidth, 4, {
+                        pdf.link(xPos, currentY, boxWidth, boxHeight, {
                             url: doc.downloadUrl || doc.filePath
                         });
-                        
-                        pdf.setTextColor(0, 0, 0); // Reset to black
-                    } else {
-                        pdf.setTextColor(0, 0, 0);
-                        pdf.text(`• ${fileName} (${fileSize})`, xPos, currentY + 4);
                     }
                 });
                 
-                // Update yPosition for next section (after all documents)
+                // Update yPosition for next section
                 const totalRows = Math.ceil(documents.length / 2);
-                yPosition += (totalRows * 10) + 10; // Space after documents section
-                
-                // Reset font size for next sections
-                pdf.setFontSize(12);
+                yPosition = docsStartY + (totalRows * 15) + 5;
             } else {
+                pdf.setFillColor(255, 250, 250);
+                pdf.setDrawColor(200, 200, 200);
+                pdf.setLineWidth(0.5);
+                pdf.rect(20, yPosition, pageWidth - 40, 10, 'FD');
                 pdf.setFont('helvetica', 'normal');
-                pdf.setTextColor(0, 0, 0);
-                pdf.text('No documents uploaded yet', 20, yPosition);
-                yPosition += 6;
+                pdf.setFontSize(10);
+                pdf.setTextColor(150, 150, 150);
+                pdf.text('No documents uploaded yet', pageWidth / 2, yPosition + 6, { align: 'center' });
+                yPosition += 12;
             }
 
             yPosition += 10;
 
-            // Terms and Conditions Section
-            pdf.setFillColor(248, 250, 252); // Light gray background
-            pdf.rect(15, yPosition - 2, pageWidth - 30, 12, 'F');
+            // Check if we need a new page
+            if (yPosition > pageHeight - 120) {
+                pdf.addPage();
+                yPosition = 30;
+            }
+
+            // ============================================
+            // PREMIUM SECTION 5: TERMS AND CONDITIONS
+            // ============================================
             
-            pdf.setTextColor(99, 102, 241); // Purple text
-            pdf.setFontSize(12);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('5. Terms and Conditions', 20, yPosition + 4);
-            yPosition += 10;
+            // Check if we need a new page
+            if (yPosition > pageHeight - 120) {
+                pdf.addPage();
+                yPosition = 20;
+            }
 
-            pdf.setFontSize(9);
-            pdf.setTextColor(0, 0, 0);
-
-            const terms = [
-                '1. Application Submission: I hereby declare that all information provided in this application is true and correct to the best of my knowledge.',
-                '2. Document Verification: I understand that all submitted documents will be verified and any false information may result in rejection of the application.',
-                '3. Fee Payment: I agree to pay all applicable fees as per the institution\'s fee structure and payment schedule.',
-                '4. Academic Performance: I understand that admission is subject to meeting the minimum academic requirements and availability of seats.',
-                '5. Code of Conduct: I agree to abide by the institution\'s rules, regulations, and code of conduct during my tenure.',
-                '6. Data Privacy: I consent to the collection, processing, and storage of my personal data for academic and administrative purposes.',
-                '7. Refund Policy: I understand the institution\'s refund policy and agree to the terms and conditions regarding fee refunds.',
-                '8. Medical Fitness: I declare that I am medically fit to pursue the selected course and will provide medical certificates if required.'
-            ];
-
-            terms.forEach(term => {
-                const lines = pdf.splitTextToSize(term, pageWidth - 40);
-                lines.forEach(line => {
-                    if (yPosition > pageHeight - 30) {
-                        pdf.addPage();
-                        yPosition = 20;
-                    }
-                    pdf.text(line, 20, yPosition);
-                    yPosition += 5;
-                });
-                yPosition += 2;
-            });
-
-            yPosition += 10;
-
-            // Signature Section
+            // Premium section header
+            pdf.setFillColor(147, 51, 234); // Deep purple
+            pdf.rect(15, yPosition - 3, pageWidth - 30, 12, 'F');
+            
+            // Premium accent stripe
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(15, yPosition - 3, 5, 12, 'F');
+            
+            // Section number badge
+            pdf.setFillColor(255, 255, 255);
+            pdf.circle(20, yPosition + 3, 4, 'F');
+            pdf.setTextColor(147, 51, 234);
             pdf.setFontSize(10);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text('Student Signature:', 20, yPosition);
-            pdf.text('Parent/Guardian Signature:', pageWidth / 2 + 20, yPosition);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('5', 20, yPosition + 4.5, { align: 'center' });
+            
+            // Section title
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(15);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('TERMS AND CONDITIONS', 30, yPosition + 5);
+            
             yPosition += 15;
 
-            pdf.line(20, yPosition, 100, yPosition);
-            pdf.line(pageWidth / 2 + 20, yPosition, pageWidth / 2 + 100, yPosition);
-            yPosition += 10;
+            // Premium terms content box
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setFillColor(250, 245, 255);
+            const termsStartY = yPosition;
+            yPosition += 8;
 
-            pdf.setFontSize(8);
-            pdf.text('Date: _______________', 20, yPosition);
-            pdf.text('Date: _______________', pageWidth / 2 + 20, yPosition);
-
-            // Professional Footer
-            pdf.setFillColor(99, 102, 241); // Purple background
-            pdf.rect(0, pageHeight - 25, pageWidth, 25, 'F');
-            
-            pdf.setTextColor(255, 255, 255); // White text
             pdf.setFontSize(9);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('SWAGAT ODISHA - Educational Excellence Platform', pageWidth / 2, pageHeight - 18, { align: 'center' });
+            pdf.setTextColor(30, 30, 30);
+
+            const terms = [
+                { num: '1', text: 'Application Submission: I hereby declare that all information provided in this application is true and correct to the best of my knowledge.' },
+                { num: '2', text: 'Document Verification: I understand that all submitted documents will be verified and any false information may result in rejection of the application.' },
+                { num: '3', text: 'Fee Payment: I agree to pay all applicable fees as per the institution\'s fee structure and payment schedule.' },
+                { num: '4', text: 'Academic Performance: I understand that admission is subject to meeting the minimum academic requirements and availability of seats.' },
+                { num: '5', text: 'Code of Conduct: I agree to abide by the institution\'s rules, regulations, and code of conduct during my tenure.' },
+                { num: '6', text: 'Data Privacy: I consent to the collection, processing, and storage of my personal data for academic and administrative purposes.' },
+                { num: '7', text: 'Refund Policy: I understand the institution\'s refund policy and agree to the terms and conditions regarding fee refunds.' },
+                { num: '8', text: 'Medical Fitness: I declare that I am medically fit to pursue the selected course and will provide medical certificates if required.' }
+            ];
+
+            terms.forEach((term, index) => {
+                if (yPosition > pageHeight - 50) {
+                    pdf.addPage();
+                    yPosition = 20;
+                }
+                
+                // Premium term number badge
+                pdf.setFillColor(147, 51, 234);
+                pdf.circle(25, yPosition + 1, 5, 'F');
+                pdf.setFillColor(255, 255, 255);
+                pdf.circle(25, yPosition + 1, 3.5, 'F');
+                pdf.setTextColor(147, 51, 234);
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(8);
+                pdf.text(term.num, 25, yPosition + 2.5, { align: 'center' });
+                
+                // Term text with premium styling
+                pdf.setTextColor(40, 40, 40);
+                pdf.setFont('helvetica', 'normal');
+                pdf.setFontSize(9);
+                const lines = pdf.splitTextToSize(term.text, pageWidth - 50);
+                lines.forEach((line, lineIndex) => {
+                    pdf.text(line, 35, yPosition + 2 + (lineIndex * 5));
+                });
+                
+                yPosition += (lines.length * 5) + 4;
+                
+                // Premium separator line
+                if (index < terms.length - 1) {
+                    pdf.setDrawColor(220, 220, 220);
+                    pdf.setLineWidth(0.3);
+                    pdf.line(25, yPosition, pageWidth - 25, yPosition);
+                    yPosition += 3;
+                }
+            });
+
+            // Close premium terms box - draw border only
+            const termsHeight = yPosition - termsStartY + 5;
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setLineWidth(1);
+            pdf.rect(15, termsStartY, pageWidth - 30, termsHeight, 'D');
             
-            pdf.setFontSize(7);
+            yPosition += 15;
+
+            // Check if we need a new page for signatures
+            if (yPosition > pageHeight - 60) {
+                pdf.addPage();
+                yPosition = 30;
+            }
+
+            // ============================================
+            // PREMIUM SIGNATURE SECTION
+            // ============================================
+            
+            // Check if we need a new page
+            if (yPosition > pageHeight - 70) {
+                pdf.addPage();
+                yPosition = 20;
+            }
+
+            yPosition += 10;
+            
+            // Premium signature boxes
+            const sigBoxWidth = (pageWidth - 50) / 2;
+            const sigBoxHeight = 30;
+            const gap = 10;
+            
+            // Student signature box - Premium design
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setFillColor(255, 255, 255);
+            pdf.setLineWidth(1);
+            pdf.rect(20, yPosition, sigBoxWidth, sigBoxHeight, 'FD');
+            
+            // Premium top accent
+            pdf.setFillColor(79, 70, 229);
+            pdf.rect(20, yPosition, sigBoxWidth, 3, 'F');
+            
+            pdf.setFontSize(11);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(30, 30, 30);
+            pdf.text('Student Signature', 20 + sigBoxWidth / 2, yPosition + 8, { align: 'center' });
+            
+            // Premium signature line
+            pdf.setDrawColor(150, 150, 150);
+            pdf.setLineWidth(0.8);
+            pdf.line(20 + 10, yPosition + 15, 20 + sigBoxWidth - 10, yPosition + 15);
+            
+            pdf.setFontSize(8);
             pdf.setFont('helvetica', 'normal');
-            pdf.text(`Application ID: ${pdfContent.applicationId} | Generated: ${pdfContent.generatedDate}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
-            pdf.text('Website: www.swagatodisha.com | Email: contact@swagatodisha.com', pageWidth / 2, pageHeight - 6, { align: 'center' });
+            pdf.setTextColor(100, 100, 100);
+            pdf.text('Date: _______________', 20 + sigBoxWidth / 2, yPosition + 22, { align: 'center' });
+            
+            // Parent/Guardian signature box - Premium design
+            pdf.setDrawColor(200, 200, 200);
+            pdf.setFillColor(255, 255, 255);
+            pdf.setLineWidth(1);
+            pdf.rect(30 + sigBoxWidth, yPosition, sigBoxWidth, sigBoxHeight, 'FD');
+            
+            // Premium top accent
+            pdf.setFillColor(79, 70, 229);
+            pdf.rect(30 + sigBoxWidth, yPosition, sigBoxWidth, 3, 'F');
+            
+            pdf.setFontSize(11);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(30, 30, 30);
+            pdf.text('Parent/Guardian Signature', 30 + sigBoxWidth + sigBoxWidth / 2, yPosition + 8, { align: 'center' });
+            
+            // Premium signature line
+            pdf.setDrawColor(150, 150, 150);
+            pdf.setLineWidth(0.8);
+            pdf.line(30 + sigBoxWidth + 10, yPosition + 15, 30 + sigBoxWidth + sigBoxWidth - 10, yPosition + 15);
+            
+            pdf.setFontSize(8);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(100, 100, 100);
+            pdf.text('Date: _______________', 30 + sigBoxWidth + sigBoxWidth / 2, yPosition + 22, { align: 'center' });
+            
+            yPosition += sigBoxHeight + 15;
+
+            // ============================================
+            // PREMIUM PROFESSIONAL FOOTER
+            // ============================================
+            
+            // Premium footer with elegant design
+            pdf.setFillColor(79, 70, 229); // Deep indigo
+            pdf.rect(0, pageHeight - 35, pageWidth, 35, 'F');
+            
+            // Premium gradient layers
+            pdf.setFillColor(99, 102, 241);
+            pdf.rect(0, pageHeight - 35, pageWidth, 32, 'F');
+            
+            pdf.setFillColor(139, 92, 246);
+            pdf.rect(0, pageHeight - 35, pageWidth, 28, 'F');
+            
+            // Premium top border
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(0, pageHeight - 35, pageWidth, 1, 'F');
+            
+            // Company name with premium styling
+            pdf.setTextColor(255, 255, 255);
+            pdf.setFontSize(12);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('SWAGAT ODISHA', pageWidth / 2, pageHeight - 28, { align: 'center' });
+            
+            // Tagline
+            pdf.setFontSize(9);
+            pdf.setFont('helvetica', 'normal');
+            pdf.setTextColor(255, 255, 255, 0.9);
+            pdf.text('Educational Excellence Platform', pageWidth / 2, pageHeight - 23, { align: 'center' });
+            
+            // Application info in premium style
+            pdf.setFontSize(7);
+            pdf.setTextColor(255, 255, 255, 0.8);
+            pdf.text(`Application ID: ${pdfContent.applicationId} | Generated: ${pdfContent.generatedDate}`, pageWidth / 2, pageHeight - 17, { align: 'center' });
+            
+            // Premium decorative divider
+            pdf.setDrawColor(255, 255, 255, 0.3);
+            pdf.setLineWidth(0.5);
+            pdf.line(20, pageHeight - 12, pageWidth - 20, pageHeight - 12);
+            
+            // Contact information
+            pdf.setFontSize(6);
+            pdf.setTextColor(255, 255, 255, 0.7);
+            pdf.text('Website: www.swagatodisha.com | Email: contact@swagatodisha.com | Phone: +91-XXX-XXXX-XXXX', pageWidth / 2, pageHeight - 7, { align: 'center' });
+            
+            // Premium bottom border
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(0, pageHeight - 1, pageWidth, 1, 'F');
 
             // Generate PDF blob
             const pdfBlob = pdf.output('blob');
@@ -345,19 +877,28 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
     };
 
     const createPDFContent = (formData, application) => {
-        console.log('createPDFContent - formData.documents:', formData.documents);
-        console.log('createPDFContent - formData.documents keys:', Object.keys(formData.documents || {}));
-        console.log('createPDFContent - formData.documents count:', Object.keys(formData.documents || {}).length);
+        console.log('createPDFContent - formData:', formData);
+        console.log('createPDFContent - application:', application);
+        console.log('createPDFContent - formData.personalDetails:', formData?.personalDetails);
+        console.log('createPDFContent - formData.contactDetails:', formData?.contactDetails);
+        console.log('createPDFContent - formData.documents:', formData?.documents);
+        console.log('createPDFContent - formData.documents keys:', Object.keys(formData?.documents || {}));
+        console.log('createPDFContent - formData.documents count:', Object.keys(formData?.documents || {}).length);
         
+        // Ensure all data is properly structured with fallbacks
         return {
-            applicationId: application?.applicationId || 'DRAFT',
-            generatedDate: new Date().toLocaleDateString(),
-            personalDetails: formData.personalDetails,
-            contactDetails: formData.contactDetails,
-            courseDetails: formData.courseDetails,
-            guardianDetails: formData.guardianDetails,
-            documents: formData.documents,
-            referralCode: formData.referralCode
+            applicationId: application?.applicationId || formData?.applicationId || 'DRAFT',
+            generatedDate: new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit' 
+            }),
+            personalDetails: formData?.personalDetails || {},
+            contactDetails: formData?.contactDetails || {},
+            courseDetails: formData?.courseDetails || {},
+            guardianDetails: formData?.guardianDetails || {},
+            documents: formData?.documents || {},
+            referralCode: formData?.referralCode || null
         };
     };
 

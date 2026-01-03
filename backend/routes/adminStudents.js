@@ -826,29 +826,99 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 // @desc    Bulk delete student applications (Super Admin only)
 // @route   DELETE /api/admin/students/bulk
 // @access  Private - Super Admin only
-router.delete('/bulk', protect, authorize('super_admin'), async (req, res) => {
+// IMPORTANT: This route must come before /:id to avoid route conflicts
+router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next) => {
     try {
-        const { studentIds } = req.body;
+        console.log('🗑️ ========== BULK DELETE ROUTE HIT ==========');
+        console.log('🗑️ Bulk delete request received');
+        console.log('📋 Request body:', JSON.stringify(req.body, null, 2));
+        console.log('📋 Request body type:', typeof req.body);
+        console.log('📋 Request body keys:', Object.keys(req.body || {}));
+        console.log('👤 User:', req.user?.email, 'Role:', req.user?.role);
+        console.log('📋 Request headers:', JSON.stringify(req.headers, null, 2));
+        console.log('📋 Request method:', req.method);
+        console.log('📋 Request URL:', req.url);
+        console.log('📋 Request originalUrl:', req.originalUrl);
+
+        // Handle both req.body and req.body.data (some clients send data nested)
+        let studentIds = req.body?.studentIds || req.body?.data?.studentIds || req.body?.ids || [];
+        
+        // If studentIds is not an array, try to parse it
+        if (!Array.isArray(studentIds)) {
+            console.warn('⚠️ studentIds is not an array, attempting to parse...');
+            if (typeof studentIds === 'string') {
+                try {
+                    studentIds = JSON.parse(studentIds);
+                } catch (e) {
+                    console.error('❌ Failed to parse studentIds as JSON:', e);
+                }
+            }
+        }
+
+        console.log('📊 Extracted studentIds:', studentIds);
+        console.log('📊 studentIds type:', typeof studentIds);
+        console.log('📊 studentIds is array:', Array.isArray(studentIds));
 
         if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
+            console.warn('⚠️ Invalid request: no studentIds provided');
+            console.warn('⚠️ Request body was:', req.body);
             return res.status(400).json({
                 success: false,
-                message: 'Please provide an array of student IDs to delete'
+                message: 'Please provide an array of student IDs to delete',
+                received: req.body
             });
         }
 
+        console.log(`📊 Received ${studentIds.length} student ID(s) to delete`);
+
         // Only super admin can bulk delete
         if (req.user.role !== 'super_admin') {
+            console.warn('⚠️ Unauthorized bulk delete attempt by:', req.user?.email);
             return res.status(403).json({
                 success: false,
                 message: 'Only Super Admin can perform bulk deletion'
             });
         }
 
+        // Validate ObjectIds
+        const validIds = [];
+        const invalidIds = [];
+        
+        for (const id of studentIds) {
+            const idString = String(id).trim();
+            if (idString && mongoose.Types.ObjectId.isValid(idString)) {
+                try {
+                    validIds.push(new mongoose.Types.ObjectId(idString));
+                } catch (err) {
+                    console.warn('⚠️ Error converting ID to ObjectId:', idString, err);
+                    invalidIds.push(idString);
+                }
+            } else {
+                invalidIds.push(idString);
+            }
+        }
+
+        console.log(`✅ Valid IDs: ${validIds.length}, ❌ Invalid IDs: ${invalidIds.length}`);
+
+        if (validIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'No valid student IDs provided',
+                invalidIds: invalidIds
+            });
+        }
+
+        if (invalidIds.length > 0) {
+            console.warn('⚠️ Invalid ObjectIds provided:', invalidIds);
+        }
+
         // Find all applications to delete
+        console.log('🔍 Finding applications to delete...');
         const applications = await StudentApplication.find({
-            _id: { $in: studentIds }
+            _id: { $in: validIds }
         });
+
+        console.log(`📋 Found ${applications.length} application(s) to delete`);
 
         if (applications.length === 0) {
             return res.status(404).json({
@@ -857,34 +927,80 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res) => {
             });
         }
 
-        // Get associated user IDs
-        const userIds = applications
-            .map(app => app.user)
-            .filter(userId => userId != null);
+        // Get associated user IDs - simplified handling
+        const userIds = [];
+        for (const app of applications) {
+            if (app.user) {
+                try {
+                    // Convert to string first, then validate and create ObjectId
+                    const userStr = app.user.toString ? app.user.toString() : String(app.user);
+                    if (userStr && mongoose.Types.ObjectId.isValid(userStr)) {
+                        userIds.push(new mongoose.Types.ObjectId(userStr));
+                    }
+                } catch (err) {
+                    console.warn('⚠️ Error processing user ID for application:', app._id, err.message);
+                }
+            }
+        }
 
-        // Delete associated user accounts
+        console.log(`👥 Found ${userIds.length} associated user account(s) to delete`);
+
+        // Delete associated user accounts (non-blocking - continue even if this fails)
         if (userIds.length > 0) {
-            await User.deleteMany({ _id: { $in: userIds } });
+            try {
+                console.log('🗑️ Deleting user accounts...');
+                const userDeleteResult = await User.deleteMany({ _id: { $in: userIds } });
+                console.log(`✅ Deleted ${userDeleteResult.deletedCount} associated user account(s)`);
+            } catch (userDeleteError) {
+                console.error('⚠️ Error deleting user accounts (continuing with application deletion):', userDeleteError.message);
+                // Continue with application deletion even if user deletion fails
+            }
         }
 
         // Delete student applications
+        console.log('🗑️ Deleting student applications...');
         const deleteResult = await StudentApplication.deleteMany({
-            _id: { $in: studentIds }
+            _id: { $in: validIds }
         });
+
+        console.log(`✅ Successfully deleted ${deleteResult.deletedCount} student application(s)`);
 
         res.json({
             success: true,
             message: `Successfully deleted ${deleteResult.deletedCount} student application(s)`,
-            deletedCount: deleteResult.deletedCount
+            deletedCount: deleteResult.deletedCount,
+            invalidIds: invalidIds.length > 0 ? invalidIds : undefined
         });
 
     } catch (error) {
-        console.error('Bulk delete student applications error:', error);
-        res.status(500).json({
+        console.error('❌ Bulk delete student applications error:', error);
+        console.error('❌ Error name:', error?.name || 'Unknown');
+        console.error('❌ Error message:', error?.message || 'Unknown error');
+        console.error('❌ Error code:', error?.code || 'No code');
+        if (error?.stack) {
+            console.error('❌ Error stack:', error.stack);
+        }
+        console.error('❌ Request body:', JSON.stringify(req.body, null, 2));
+        console.error('❌ Request method:', req.method);
+        console.error('❌ Request URL:', req.url);
+        console.error('❌ Request params:', JSON.stringify(req.params, null, 2));
+        console.error('❌ Request query:', JSON.stringify(req.query, null, 2));
+        
+        // Send detailed error response
+        const errorResponse = {
             success: false,
             message: 'Failed to delete student applications',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-        });
+            error: process.env.NODE_ENV === 'development' ? (error?.message || 'Unknown error') : 'Internal server error'
+        };
+        
+        if (process.env.NODE_ENV === 'development') {
+            errorResponse.errorName = error?.name;
+            errorResponse.errorCode = error?.code;
+            errorResponse.details = error?.stack || 'No stack trace available';
+            errorResponse.fullError = error;
+        }
+        
+        res.status(500).json(errorResponse);
     }
 });
 
