@@ -492,20 +492,229 @@ const StudentManagement = () => {
         try {
             showLoading('Deleting...', `Deleting ${selectedStudents.length} student${selectedStudents.length > 1 ? 's' : ''}...`);
             
+            // Ensure all IDs are strings
+            const studentIds = selectedStudents.map(id => String(id));
+            
             const response = await api.delete('/api/admin/students/bulk', {
-                data: { studentIds: selectedStudents }
+                data: { studentIds: studentIds }
             });
 
             if (response.data.success) {
                 closeLoading();
-                showSuccess(`Successfully deleted ${response.data.deletedCount} student${response.data.deletedCount > 1 ? 's' : ''}!`);
+                const message = response.data.invalidIds && response.data.invalidIds.length > 0
+                    ? `Deleted ${response.data.deletedCount} student(s). ${response.data.invalidIds.length} invalid ID(s) were skipped.`
+                    : `Successfully deleted ${response.data.deletedCount} student${response.data.deletedCount > 1 ? 's' : ''}!`;
+                showSuccess(message);
                 setSelectedStudents([]);
                 fetchStudents(); // Refresh the list
             }
         } catch (error) {
             closeLoading();
             console.error('Error bulk deleting students:', error);
-            handleApiError(error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to delete students';
+            showError(errorMessage);
+        }
+    };
+
+    // Export to Excel (CSV format that Excel can open) - Complete Data Export
+    const handleExportToExcel = () => {
+        try {
+            if (students.length === 0) {
+                showError('No students to export');
+                return;
+            }
+
+            // Helper function to escape CSV values
+            const escapeCSV = (value) => {
+                if (value === null || value === undefined || value === '') return 'N/A';
+                const str = String(value);
+                // Replace quotes with double quotes and wrap in quotes if contains comma, quote, or newline
+                if (str.includes(',') || str.includes('"') || str.includes('\n') || str.includes('\r')) {
+                    return `"${str.replace(/"/g, '""')}"`;
+                }
+                return str;
+            };
+
+            // Helper function to format numeric fields as text (prevents Excel scientific notation)
+            const formatAsText = (value) => {
+                if (value === null || value === undefined || value === '') return 'N/A';
+                const str = String(value).trim();
+                // Add a non-breaking space at the start (invisible but forces text format)
+                // This prevents Excel from converting to scientific notation
+                // The space is invisible in Excel but ensures the number displays correctly
+                return `"${'\u00A0'}${str}"`;
+            };
+
+            // Helper function to format date
+            const formatDate = (date) => {
+                if (!date) return 'N/A';
+                try {
+                    const d = new Date(date);
+                    return d.toLocaleDateString('en-GB', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric' 
+                    });
+                } catch {
+                    return String(date);
+                }
+            };
+
+            // Helper function to format datetime
+            const formatDateTime = (date) => {
+                if (!date) return 'N/A';
+                try {
+                    const d = new Date(date);
+                    return d.toLocaleString('en-GB', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                } catch {
+                    return String(date);
+                }
+            };
+
+            // Comprehensive headers with ALL data fields
+            const headers = [
+                'S.No',
+                'Application ID',
+                'Status',
+                'Current Stage',
+                // Personal Details
+                'Full Name',
+                'Date of Birth',
+                'Gender',
+                'Aadhar Number',
+                'Category/Status',
+                'Father\'s Name',
+                'Mother\'s Name',
+                // Contact Details
+                'Email',
+                'Primary Phone',
+                'WhatsApp Number',
+                'Street Address',
+                'City',
+                'State',
+                'Pincode',
+                'Country',
+                // Current Address (if different)
+                'Current Street',
+                'Current City',
+                'Current State',
+                'Current Pincode',
+                // Guardian Details
+                'Guardian Name',
+                'Guardian Relationship',
+                'Guardian Phone',
+                'Guardian Email',
+                // Course Details
+                'Selected Course',
+                'Custom Course',
+                'Stream',
+                'Campus',
+                'Academic Year',
+                'Semester',
+                // Financial Details
+                'Bank Account Number',
+                'IFSC Code',
+                'Account Holder Name',
+                'Bank Name',
+                // Additional Info
+                'Referral Code',
+                'Terms Accepted',
+                'Terms Accepted Date',
+                'Submitted By Name',
+                'Submitted By Email',
+                'Submitted By Role',
+                'Created Date',
+                'Created Time',
+                'Updated Date',
+                'Updated Time'
+            ];
+
+            const csvRows = [headers.join(',')];
+
+            students.forEach((student, index) => {
+                const row = [
+                    index + 1,
+                    escapeCSV(student.applicationId),
+                    escapeCSV(student.status),
+                    escapeCSV(student.currentStage),
+                    // Personal Details
+                    escapeCSV(student.personalDetails?.fullName),
+                    formatDate(student.personalDetails?.dateOfBirth),
+                    escapeCSV(student.personalDetails?.gender),
+                    formatAsText(student.personalDetails?.aadharNumber), // Format as text to prevent scientific notation
+                    escapeCSV(student.personalDetails?.status || student.personalDetails?.category),
+                    escapeCSV(student.personalDetails?.fathersName),
+                    escapeCSV(student.personalDetails?.mothersName),
+                    // Contact Details
+                    escapeCSV(student.contactDetails?.email),
+                    formatAsText(student.contactDetails?.primaryPhone), // Format as text
+                    formatAsText(student.contactDetails?.whatsappNumber), // Format as text
+                    escapeCSV(student.contactDetails?.permanentAddress?.street),
+                    escapeCSV(student.contactDetails?.permanentAddress?.city),
+                    escapeCSV(student.contactDetails?.permanentAddress?.state),
+                    formatAsText(student.contactDetails?.permanentAddress?.pincode), // Format as text
+                    escapeCSV(student.contactDetails?.permanentAddress?.country),
+                    // Current Address
+                    escapeCSV(student.contactDetails?.currentAddress?.street),
+                    escapeCSV(student.contactDetails?.currentAddress?.city),
+                    escapeCSV(student.contactDetails?.currentAddress?.state),
+                    formatAsText(student.contactDetails?.currentAddress?.pincode), // Format as text
+                    // Guardian Details
+                    escapeCSV(student.guardianDetails?.guardianName),
+                    escapeCSV(student.guardianDetails?.relationship),
+                    formatAsText(student.guardianDetails?.guardianPhone), // Format as text
+                    escapeCSV(student.guardianDetails?.guardianEmail),
+                    // Course Details
+                    escapeCSV(student.courseDetails?.selectedCourse),
+                    escapeCSV(student.courseDetails?.customCourse),
+                    escapeCSV(student.courseDetails?.stream),
+                    escapeCSV(student.courseDetails?.campus),
+                    escapeCSV(student.courseDetails?.academicYear),
+                    escapeCSV(student.courseDetails?.semester),
+                    // Financial Details
+                    formatAsText(student.financialDetails?.bankAccountNumber), // Format as text
+                    escapeCSV(student.financialDetails?.ifscCode),
+                    escapeCSV(student.financialDetails?.accountHolderName),
+                    escapeCSV(student.financialDetails?.bankName),
+                    // Additional Info
+                    escapeCSV(student.referralCode),
+                    student.termsAccepted ? 'Yes' : 'No',
+                    formatDateTime(student.termsAcceptedAt),
+                    escapeCSV(student.submittedBy?.name),
+                    escapeCSV(student.submittedBy?.email),
+                    escapeCSV(student.submittedBy?.role),
+                    formatDate(student.createdAt),
+                    student.createdAt ? new Date(student.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'N/A',
+                    formatDate(student.updatedAt),
+                    student.updatedAt ? new Date(student.updatedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'N/A'
+                ];
+                csvRows.push(row.join(','));
+            });
+
+            // Create blob and download
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' }); // BOM for Excel UTF-8
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            const sessionName = selectedSession || 'all';
+            const timestamp = new Date().toISOString().split('T')[0];
+            link.download = `students_complete_export_${sessionName}_${timestamp}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            showSuccess(`Exported complete data for ${students.length} student(s) to Excel file!`);
+        } catch (error) {
+            console.error('Error exporting to Excel:', error);
+            showError('Failed to export data to Excel');
         }
     };
 
@@ -651,24 +860,38 @@ const StudentManagement = () => {
                 </select>
             </div>
 
-            {/* Bulk Delete Button (Super Admin Only) */}
-            {isSuperAdmin && selectedStudents.length > 0 && (
-                <div className="mb-4 flex items-center justify-between bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                    <div className="flex items-center space-x-2">
-                        <i className="fa-solid fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
-                        <span className="text-sm font-medium text-red-900 dark:text-red-100">
-                            {selectedStudents.length} student{selectedStudents.length > 1 ? 's' : ''} selected
-                        </span>
-                    </div>
+            {/* Action Buttons */}
+            <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
+                {/* Export to Excel Button */}
+                {students.length > 0 && (
                     <button
-                        onClick={handleBulkDelete}
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2"
+                        onClick={handleExportToExcel}
+                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2"
                     >
-                        <i className="fa-solid fa-trash"></i>
-                        <span>Delete Selected</span>
+                        <i className="fa-solid fa-file-excel"></i>
+                        <span>Export to Excel</span>
                     </button>
-                </div>
-            )}
+                )}
+                
+                {/* Bulk Delete Button (Super Admin Only) */}
+                {isSuperAdmin && selectedStudents.length > 0 && (
+                    <div className="flex items-center justify-between bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex-1 min-w-[300px]">
+                        <div className="flex items-center space-x-2">
+                            <i className="fa-solid fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
+                            <span className="text-sm font-medium text-red-900 dark:text-red-100">
+                                {selectedStudents.length} student{selectedStudents.length > 1 ? 's' : ''} selected
+                            </span>
+                        </div>
+                        <button
+                            onClick={handleBulkDelete}
+                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2"
+                        >
+                            <i className="fa-solid fa-trash"></i>
+                            <span>Delete Selected</span>
+                        </button>
+                    </div>
+                )}
+            </div>
 
             {/* Students Table */}
             <div className="overflow-x-auto">

@@ -965,6 +965,8 @@ app.use('/api/staff', apiRateLimit, staffRoutes);
 app.use('/api/verification', apiRateLimit, applicationVerificationRoutes);
 app.use('/api/admin/sliders', apiRateLimit, sliderRoutes);
 app.use('/api/admin/quick-access', apiRateLimit, quickAccessRoutes);
+app.use('/api/admin/colleges', apiRateLimit, require('./routes/collegeRoutes'));
+app.use('/api/colleges', apiRateLimit, require('./routes/collegeRoutes'));
 
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {
