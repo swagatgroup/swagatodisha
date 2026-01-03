@@ -491,10 +491,10 @@ const StudentManagement = () => {
 
         try {
             showLoading('Deleting...', `Deleting ${selectedStudents.length} student${selectedStudents.length > 1 ? 's' : ''}...`);
-            
+
             // Ensure all IDs are strings
             const studentIds = selectedStudents.map(id => String(id));
-            
+
             const response = await api.delete('/api/admin/students/bulk', {
                 data: { studentIds: studentIds }
             });
@@ -566,7 +566,7 @@ const StudentManagement = () => {
             const formatAsLink = (url) => {
                 if (!url || url === 'N/A') return 'N/A';
                 const urlStr = String(url).trim();
-                
+
                 // If it's a valid URL, return it without escaping (Excel will make it clickable)
                 if (urlStr.startsWith('http://') || urlStr.startsWith('https://')) {
                     // Don't escape URLs - Excel needs them as plain text to recognize as links
@@ -576,7 +576,7 @@ const StudentManagement = () => {
                     }
                     return urlStr;
                 }
-                
+
                 // For non-URL values, escape normally
                 return escapeCSV(urlStr);
             };
@@ -596,10 +596,10 @@ const StudentManagement = () => {
                 if (!date) return 'N/A';
                 try {
                     const d = new Date(date);
-                    return d.toLocaleDateString('en-GB', { 
-                        day: '2-digit', 
-                        month: '2-digit', 
-                        year: 'numeric' 
+                    return d.toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
                     });
                 } catch {
                     return String(date);
@@ -611,9 +611,9 @@ const StudentManagement = () => {
                 if (!date) return 'N/A';
                 try {
                     const d = new Date(date);
-                    return d.toLocaleString('en-GB', { 
-                        day: '2-digit', 
-                        month: '2-digit', 
+                    return d.toLocaleString('en-GB', {
+                        day: '2-digit',
+                        month: '2-digit',
                         year: 'numeric',
                         hour: '2-digit',
                         minute: '2-digit'
@@ -633,10 +633,10 @@ const StudentManagement = () => {
                     });
                 }
             });
-            
+
             // Sort document types for consistent column order
             const sortedDocTypes = Array.from(allDocumentTypes).sort();
-            
+
             // Essential headers with necessary details and separate document link columns
             const headers = [
                 'S.No',
@@ -689,7 +689,7 @@ const StudentManagement = () => {
                     student.documents.forEach(doc => {
                         const docType = doc.documentType || doc.fileName || 'Other';
                         const docLink = doc.filePath || '';
-                        
+
                         if (docLink) {
                             // If multiple documents of same type, combine them with line break (Excel supports this)
                             if (documentMap[docType]) {
@@ -709,9 +709,9 @@ const StudentManagement = () => {
                         collegeName = student.courseDetails?.institutionName || 'N/A';
                     } else if (typeof student.courseDetails.selectedCollege === 'object') {
                         // It's a populated object
-                        collegeName = student.courseDetails.selectedCollege.name || 
-                                     student.courseDetails.selectedCollege.code || 
-                                     'N/A';
+                        collegeName = student.courseDetails.selectedCollege.name ||
+                            student.courseDetails.selectedCollege.code ||
+                            'N/A';
                     }
                 } else {
                     collegeName = student.courseDetails?.institutionName || 'N/A';
@@ -874,7 +874,8 @@ const StudentManagement = () => {
                             'SUBMITTED': 'Submitted',
                             'UNDER_REVIEW': 'Under Review',
                             'APPROVED': 'Approved',
-                            'REJECTED': 'Rejected'
+                            'REJECTED': 'Rejected',
+                            'COMPLETE': 'Complete'
                         };
                         return (
                             <option key={status} value={status}>{statusLabels[status] || status}</option>
@@ -932,7 +933,7 @@ const StudentManagement = () => {
                         <span>Export to Excel</span>
                     </button>
                 )}
-                
+
                 {/* Bulk Delete Button (Super Admin Only) */}
                 {isSuperAdmin && selectedStudents.length > 0 && (
                     <div className="flex items-center justify-between bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex-1 min-w-[300px]">
@@ -1762,6 +1763,7 @@ const StudentManagement = () => {
                                         <option value="UNDER_REVIEW">Under Review</option>
                                         <option value="APPROVED">Approved</option>
                                         <option value="REJECTED">Rejected</option>
+                                        <option value="COMPLETE">Complete (Graduated)</option>
                                         <option value="CANCELLED">Cancelled</option>
                                     </select>
                                 </div>

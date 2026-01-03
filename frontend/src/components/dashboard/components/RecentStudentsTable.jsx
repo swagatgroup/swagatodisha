@@ -19,7 +19,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [filters, setFilters] = useState({
-        statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
+        statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
         courses: [],
         submitters: []
     });
@@ -267,7 +267,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                 setTotalPages(pagination.totalPages || 1);
                 setTotalItems(pagination.totalItems || 0);
                 setFilters(response.data.data.filters || {
-                    statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
+                    statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
                     courses: [],
                     categories: [],
                     submitters: []

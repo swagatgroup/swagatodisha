@@ -9,9 +9,9 @@ const collegeSchema = new mongoose.Schema({
     },
     code: {
         type: String,
-        required: true,
+        required: false,
         trim: true,
-        unique: true,
+        sparse: true, // Allows multiple null values
         uppercase: true
     },
     description: {
@@ -21,10 +21,6 @@ const collegeSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
-    },
-    displayOrder: {
-        type: Number,
-        default: 0
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
@@ -39,8 +35,7 @@ const collegeSchema = new mongoose.Schema({
 });
 
 // Indexes
-collegeSchema.index({ isActive: 1, displayOrder: 1 });
-collegeSchema.index({ code: 1 });
+collegeSchema.index({ isActive: 1 });
 
 module.exports = mongoose.model('College', collegeSchema);
 

@@ -23,6 +23,8 @@ const SinglePageStudentRegistration = ({
     const [saving, setSaving] = useState(false);
     const [application, setApplication] = useState(null);
     const [errors, setErrors] = useState({});
+    const [colleges, setColleges] = useState([]);
+    const [loadingColleges, setLoadingColleges] = useState(false);
 
     // Generate unique draft key for proper isolation
     const generateDraftKey = () => {
@@ -72,9 +74,8 @@ const SinglePageStudentRegistration = ({
             },
         },
         courseDetails: {
-            institutionName: "",
-            courseName: "",
-            campus: "",
+            selectedCollege: "",
+            selectedCourse: "",
             stream: "",
         },
         guardianDetails: {
@@ -87,8 +88,53 @@ const SinglePageStudentRegistration = ({
         termsAccepted: false,
     });
 
+    // Fetch colleges on mount
+    const fetchColleges = async () => {
+        try {
+            setLoadingColleges(true);
+            const response = await api.get('/api/colleges/public');
+            if (response.data.success) {
+                setColleges(response.data.data || []);
+            }
+        } catch (error) {
+            console.error('Error fetching colleges:', error);
+        } finally {
+            setLoadingColleges(false);
+        }
+    };
+
+    // Get courses for selected college
+    const getCoursesForCollege = () => {
+        if (!formData.courseDetails.selectedCollege) {
+            return [];
+        }
+        const selectedCollegeData = colleges.find(
+            (college) => college._id === formData.courseDetails.selectedCollege
+        );
+        return selectedCollegeData?.courses || [];
+    };
+
+    // Get streams for selected course
+    const getStreamsForCourse = () => {
+        if (!formData.courseDetails.selectedCourse) {
+            return [];
+        }
+        const availableCourses = getCoursesForCollege();
+        const selectedCourse = availableCourses.find(
+            (course) => course.courseName === formData.courseDetails.selectedCourse
+        );
+        return selectedCourse?.streams || [];
+    };
+
     // Load existing application on mount
     useEffect(() => {
+        fetchColleges();
+
+        // Refresh colleges every 30 seconds to get latest updates
+        const interval = setInterval(() => {
+            fetchColleges();
+        }, 30000);
+
         const loadExistingApplication = async () => {
             if (user && token) {
                 try {
@@ -113,6 +159,10 @@ const SinglePageStudentRegistration = ({
         };
 
         loadExistingApplication();
+
+        return () => {
+            clearInterval(interval);
+        };
     }, [user, token]);
 
     const validateForm = () => {
@@ -164,11 +214,11 @@ const SinglePageStudentRegistration = ({
         }
 
         // Course Details validation
-        if (!formData.courseDetails.institutionName.trim()) {
-            newErrors["courseDetails.institutionName"] = "Institution name is required";
+        if (!formData.courseDetails.selectedCollege) {
+            newErrors["courseDetails.selectedCollege"] = "Institution selection is required";
         }
-        if (!formData.courseDetails.courseName.trim()) {
-            newErrors["courseDetails.courseName"] = "Course name is required";
+        if (!formData.courseDetails.selectedCourse.trim()) {
+            newErrors["courseDetails.selectedCourse"] = "Course selection is required";
         }
 
         // Guardian Details validation
@@ -195,8 +245,8 @@ const SinglePageStudentRegistration = ({
         return (
             formData.personalDetails.fullName &&
             formData.contactDetails.email &&
-            formData.courseDetails.institutionName &&
-            formData.courseDetails.courseName
+            formData.courseDetails.selectedCollege &&
+            formData.courseDetails.selectedCourse
         );
     };
 
@@ -415,10 +465,11 @@ const SinglePageStudentRegistration = ({
                                         personalDetails: formData.personalDetails,
                                         contactDetails: formData.contactDetails,
                                         courseDetails: {
-                                            selectedCourse: formData.courseDetails?.courseName || formData.courseDetails?.selectedCourse || 'Bachelor of Technology',
-                                            customCourse: formData.courseDetails?.customCourse || '',
-                                            stream: formData.courseDetails?.stream || 'Computer Science',
-                                            campus: formData.courseDetails?.campus || 'Sargiguda'
+                                            selectedCollege: formData.courseDetails?.selectedCollege || '',
+                                            selectedCourse: formData.courseDetails?.selectedCourse || '',
+                                            stream: formData.courseDetails?.stream || '',
+                                            institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
+                                            courseName: formData.courseDetails?.selectedCourse || ''
                                         },
                                         guardianDetails: formData.guardianDetails,
                                         documents: documentsArray,
@@ -478,15 +529,18 @@ const SinglePageStudentRegistration = ({
                     return phone.toString().replace(/[\s\+\-\(\)]/g, '').trim();
                 };
 
+                // Get college and course names for backend compatibility
+                const selectedCollegeData = colleges.find(c => c._id === formData.courseDetails?.selectedCollege);
                 const submitData = {
                     ...formData,
                     documents: documentsArray,
                     termsAccepted: true,
                     courseDetails: {
-                        selectedCourse: formData.courseDetails?.courseName || formData.courseDetails?.selectedCourse || 'Bachelor of Technology',
-                        customCourse: formData.courseDetails?.customCourse || '',
-                        stream: formData.courseDetails?.stream || 'Computer Science',
-                        campus: formData.courseDetails?.campus || 'Sargiguda'
+                        selectedCollege: formData.courseDetails?.selectedCollege || '',
+                        selectedCourse: formData.courseDetails?.selectedCourse || '',
+                        stream: formData.courseDetails?.stream || '',
+                        institutionName: selectedCollegeData?.name || '',
+                        courseName: formData.courseDetails?.selectedCourse || ''
                     },
                     contactDetails: {
                         ...formData.contactDetails,
@@ -540,10 +594,11 @@ const SinglePageStudentRegistration = ({
                                                 personalDetails: formData.personalDetails,
                                                 contactDetails: formData.contactDetails,
                                                 courseDetails: {
-                                                    selectedCourse: formData.courseDetails?.courseName || formData.courseDetails?.selectedCourse || 'Bachelor of Technology',
-                                                    customCourse: formData.courseDetails?.customCourse || '',
-                                                    stream: formData.courseDetails?.stream || 'Computer Science',
-                                                    campus: formData.courseDetails?.campus || 'Sargiguda'
+                                                    selectedCollege: formData.courseDetails?.selectedCollege || '',
+                                                    selectedCourse: formData.courseDetails?.selectedCourse || '',
+                                                    stream: formData.courseDetails?.stream || '',
+                                                    institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
+                                                    courseName: formData.courseDetails?.selectedCourse || ''
                                                 },
                                                 guardianDetails: formData.guardianDetails,
                                                 documents: documentsArray,
@@ -1216,24 +1271,33 @@ const SinglePageStudentRegistration = ({
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Institution Name *
                         </label>
-                        <input
-                            type="text"
-                            value={formData.courseDetails.institutionName}
+                        <select
+                            value={formData.courseDetails.selectedCollege}
                             onChange={(e) =>
                                 setFormData((prev) => ({
                                     ...prev,
                                     courseDetails: {
                                         ...prev.courseDetails,
-                                        institutionName: e.target.value,
+                                        selectedCollege: e.target.value,
+                                        selectedCourse: "", // Reset course when college changes
+                                        stream: "", // Reset stream when college changes
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            placeholder="Enter institution name"
-                        />
-                        {errors["courseDetails.institutionName"] && (
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            required
+                            disabled={loadingColleges}
+                        >
+                            <option value="">{loadingColleges ? "Loading institutions..." : "Select Institution"}</option>
+                            {colleges.map((college) => (
+                                <option key={college._id} value={college._id}>
+                                    {college.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors["courseDetails.selectedCollege"] && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors["courseDetails.institutionName"]}
+                                {errors["courseDetails.selectedCollege"]}
                             </p>
                         )}
                     </div>
@@ -1242,48 +1306,69 @@ const SinglePageStudentRegistration = ({
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Course Name *
                         </label>
-                        <input
-                            type="text"
-                            value={formData.courseDetails.courseName}
+                        <select
+                            value={formData.courseDetails.selectedCourse}
                             onChange={(e) =>
                                 setFormData((prev) => ({
                                     ...prev,
                                     courseDetails: {
                                         ...prev.courseDetails,
-                                        courseName: e.target.value,
+                                        selectedCourse: e.target.value,
+                                        stream: "", // Reset stream when course changes
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            placeholder="Enter course name"
-                        />
-                        {errors["courseDetails.courseName"] && (
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            required
+                            disabled={!formData.courseDetails.selectedCollege || getCoursesForCollege().length === 0}
+                        >
+                            <option value="">
+                                {!formData.courseDetails.selectedCollege
+                                    ? "Select institution first"
+                                    : getCoursesForCollege().length === 0
+                                        ? "No courses available"
+                                        : "Select Course"}
+                            </option>
+                            {getCoursesForCollege().map((course) => (
+                                <option key={course._id} value={course.courseName}>
+                                    {course.courseName}
+                                </option>
+                            ))}
+                        </select>
+                        {errors["courseDetails.selectedCourse"] && (
                             <p className="text-red-500 text-sm mt-1">
-                                {errors["courseDetails.courseName"]}
+                                {errors["courseDetails.selectedCourse"]}
                             </p>
                         )}
                     </div>
 
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Stream (Optional)
-                        </label>
-                        <input
-                            type="text"
-                            value={formData.courseDetails.stream}
-                            onChange={(e) =>
-                                setFormData((prev) => ({
-                                    ...prev,
-                                    courseDetails: {
-                                        ...prev.courseDetails,
-                                        stream: e.target.value,
-                                    },
-                                }))
-                            }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                            placeholder="Enter stream (optional)"
-                        />
-                    </div>
+                    {getStreamsForCourse().length > 0 && (
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Stream (Optional)
+                            </label>
+                            <select
+                                value={formData.courseDetails.stream}
+                                onChange={(e) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        courseDetails: {
+                                            ...prev.courseDetails,
+                                            stream: e.target.value,
+                                        },
+                                    }))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            >
+                                <option value="">Select Stream (Optional)</option>
+                                {getStreamsForCourse().map((stream, index) => (
+                                    <option key={index} value={stream}>
+                                        {stream}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
                 </div>
             </motion.div>
 

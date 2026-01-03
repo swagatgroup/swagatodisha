@@ -20,17 +20,15 @@ const CollegeManagement = () => {
     const [editingCourse, setEditingCourse] = useState(null);
     const [collegeFormData, setCollegeFormData] = useState({
         name: '',
-        code: '',
-        description: '',
-        displayOrder: 0,
         isActive: true
     });
     const [courseFormData, setCourseFormData] = useState({
         courseName: '',
         courseCode: '',
-        displayOrder: 0,
+        streams: [],
         isActive: true
     });
+    const [newStreamName, setNewStreamName] = useState('');
 
     useEffect(() => {
         fetchColleges();
@@ -135,9 +133,6 @@ const CollegeManagement = () => {
         setEditingCollege(college);
         setCollegeFormData({
             name: college.name || '',
-            code: college.code || '',
-            description: college.description || '',
-            displayOrder: college.displayOrder || 0,
             isActive: college.isActive !== false
         });
     };
@@ -146,8 +141,7 @@ const CollegeManagement = () => {
         setEditingCourse(course);
         setCourseFormData({
             courseName: course.courseName || '',
-            courseCode: course.courseCode || '',
-            displayOrder: course.displayOrder || 0,
+            streams: course.streams || [],
             isActive: course.isActive !== false
         });
     };
@@ -186,7 +180,7 @@ const CollegeManagement = () => {
             'warning'
         );
 
-        if (!confirmed) return;
+        if (!confirmed || !confirmed.isConfirmed) return;
 
         try {
             showLoading('Deleting...', 'Removing course...');
@@ -206,9 +200,6 @@ const CollegeManagement = () => {
     const resetCollegeForm = () => {
         setCollegeFormData({
             name: '',
-            code: '',
-            description: '',
-            displayOrder: 0,
             isActive: true
         });
         setEditingCollege(null);
@@ -217,11 +208,42 @@ const CollegeManagement = () => {
     const resetCourseForm = () => {
         setCourseFormData({
             courseName: '',
-            courseCode: '',
-            displayOrder: 0,
+            streams: [],
             isActive: true
         });
         setEditingCourse(null);
+        setNewStreamName('');
+    };
+
+    const addStream = () => {
+        if (!newStreamName.trim()) {
+            showError('Error', 'Please enter a stream name');
+            return;
+        }
+        setCourseFormData({
+            ...courseFormData,
+            streams: [...courseFormData.streams, { name: newStreamName.trim(), isActive: true }]
+        });
+        setNewStreamName('');
+    };
+
+    const removeStream = (index) => {
+        setCourseFormData({
+            ...courseFormData,
+            streams: courseFormData.streams.filter((_, i) => i !== index)
+        });
+    };
+
+    const toggleStreamActive = (index) => {
+        const updatedStreams = [...courseFormData.streams];
+        updatedStreams[index] = {
+            ...updatedStreams[index],
+            isActive: !updatedStreams[index].isActive
+        };
+        setCourseFormData({
+            ...courseFormData,
+            streams: updatedStreams
+        });
     };
 
     if (loading) {
@@ -237,77 +259,35 @@ const CollegeManagement = () => {
             {/* College Management */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                    {editingCollege ? 'Edit College' : 'Add New College'}
+                    {editingCollege ? 'Edit Institution' : 'Add New Institution'}
                 </h2>
 
                 <form onSubmit={handleCollegeSubmit} className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                College Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={collegeFormData.name}
-                                onChange={(e) => setCollegeFormData({ ...collegeFormData, name: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                required
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                College Code <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                                type="text"
-                                value={collegeFormData.code}
-                                onChange={(e) => setCollegeFormData({ ...collegeFormData, code: e.target.value.toUpperCase() })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                required
-                                placeholder="e.g., COE, CSE"
-                            />
-                        </div>
-                    </div>
-
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Description
+                            Institution Name <span className="text-red-500">*</span>
                         </label>
-                        <textarea
-                            value={collegeFormData.description}
-                            onChange={(e) => setCollegeFormData({ ...collegeFormData, description: e.target.value })}
-                            rows="3"
+                        <input
+                            type="text"
+                            value={collegeFormData.name}
+                            onChange={(e) => setCollegeFormData({ ...collegeFormData, name: e.target.value })}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            required
+                            placeholder="Enter institution name"
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Display Order
-                            </label>
-                            <input
-                                type="number"
-                                value={collegeFormData.displayOrder}
-                                onChange={(e) => setCollegeFormData({ ...collegeFormData, displayOrder: parseInt(e.target.value) || 0 })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                min="0"
-                            />
-                        </div>
-
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="collegeIsActive"
-                                checked={collegeFormData.isActive}
-                                onChange={(e) => setCollegeFormData({ ...collegeFormData, isActive: e.target.checked })}
-                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="collegeIsActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                                Active
-                            </label>
-                        </div>
+                    <div className="flex items-center">
+                        <input
+                            type="checkbox"
+                            id="collegeIsActive"
+                            checked={collegeFormData.isActive}
+                            onChange={(e) => setCollegeFormData({ ...collegeFormData, isActive: e.target.checked })}
+                            className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="collegeIsActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                            Active
+                        </label>
                     </div>
 
                     <div className="flex space-x-3">
@@ -315,7 +295,7 @@ const CollegeManagement = () => {
                             type="submit"
                             className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {editingCollege ? 'Update College' : 'Create College'}
+                            {editingCollege ? 'Update Institution' : 'Create Institution'}
                         </button>
                         {editingCollege && (
                             <button
@@ -333,12 +313,12 @@ const CollegeManagement = () => {
             {/* Colleges List */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                    Colleges ({colleges.length})
+                    Institutions ({colleges.length})
                 </h2>
 
                 {colleges.length === 0 ? (
                     <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                        No colleges found. Create your first college above.
+                        No institutions found. Create your first institution above.
                     </p>
                 ) : (
                     <div className="space-y-3">
@@ -347,12 +327,14 @@ const CollegeManagement = () => {
                                 key={college._id}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className={`border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer ${
-                                    selectedCollege?._id === college._id
-                                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
-                                        : 'border-gray-200 dark:border-gray-700'
-                                }`}
-                                onClick={() => setSelectedCollege(college)}
+                                className={`border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer ${selectedCollege?._id === college._id
+                                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                                    : 'border-gray-200 dark:border-gray-700'
+                                    }`}
+                                onClick={() => {
+                                    setSelectedCollege(college);
+                                    fetchCourses(college._id);
+                                }}
                             >
                                 <div className="flex items-start justify-between">
                                     <div className="flex-1">
@@ -360,22 +342,13 @@ const CollegeManagement = () => {
                                             <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                                                 {college.name}
                                             </h3>
-                                            <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded">
-                                                {college.code}
-                                            </span>
                                             {!college.isActive && (
                                                 <span className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded text-xs">
                                                     Inactive
                                                 </span>
                                             )}
                                         </div>
-                                        {college.description && (
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                                                {college.description}
-                                            </p>
-                                        )}
                                         <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                                            <span>Order: {college.displayOrder}</span>
                                         </div>
                                     </div>
                                     <div className="flex space-x-2 ml-4">
@@ -406,69 +379,113 @@ const CollegeManagement = () => {
             </div>
 
             {/* Course Management - Only show if college is selected */}
-            {selectedCollege && (
+            {selectedCollege ? (
                 <>
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
-                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                            {editingCourse ? 'Edit Course' : `Add Course to ${selectedCollege.name}`}
-                        </h2>
+                        <div className="mb-4 flex items-center justify-between">
+                            <div>
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                                    {editingCourse ? 'Edit Course' : `Add Course to ${selectedCollege.name}`}
+                                </h2>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Manage courses and streams for this institution
+                                </p>
+                            </div>
+                            <button
+                                onClick={() => setSelectedCollege(null)}
+                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded"
+                            >
+                                Clear Selection
+                            </button>
+                        </div>
 
                         <form onSubmit={handleCourseSubmit} className="space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Course Name <span className="text-red-500">*</span>
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={courseFormData.courseName}
-                                        onChange={(e) => setCourseFormData({ ...courseFormData, courseName: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                        required
-                                        placeholder="e.g., B.Tech Computer Science"
-                                    />
-                                </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Course Name <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={courseFormData.courseName}
+                                    onChange={(e) => setCourseFormData({ ...courseFormData, courseName: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    required
+                                    placeholder="e.g., B.Tech Computer Science, B.Sc, B.Com"
+                                />
+                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Course Code
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={courseFormData.courseCode}
-                                        onChange={(e) => setCourseFormData({ ...courseFormData, courseCode: e.target.value })}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                        placeholder="e.g., BTECH-CS"
-                                    />
+                            {/* Streams Management */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Streams/Branches (Optional)
+                                </label>
+                                <div className="space-y-2">
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={newStreamName}
+                                            onChange={(e) => setNewStreamName(e.target.value)}
+                                            onKeyPress={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    addStream();
+                                                }
+                                            }}
+                                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                            placeholder="Enter stream name (e.g., Physics, Chemistry, Biology)"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={addStream}
+                                            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+                                        >
+                                            Add Stream
+                                        </button>
+                                    </div>
+                                    {courseFormData.streams.length > 0 && (
+                                        <div className="mt-2 space-y-1">
+                                            {courseFormData.streams.map((stream, index) => (
+                                                <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded">
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-sm text-gray-700 dark:text-gray-300">{stream.name}</span>
+                                                        <span className={`text-xs px-2 py-1 rounded ${stream.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' : 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400'}`}>
+                                                            {stream.isActive ? 'Active' : 'Inactive'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex gap-2">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => toggleStreamActive(index)}
+                                                            className={`text-xs px-2 py-1 rounded ${stream.isActive ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' : 'bg-green-100 text-green-800 hover:bg-green-200'}`}
+                                                        >
+                                                            {stream.isActive ? 'Deactivate' : 'Activate'}
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeStream(index)}
+                                                            className="text-xs px-2 py-1 rounded bg-red-100 text-red-800 hover:bg-red-200"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Display Order
-                                    </label>
-                                    <input
-                                        type="number"
-                                        value={courseFormData.displayOrder}
-                                        onChange={(e) => setCourseFormData({ ...courseFormData, displayOrder: parseInt(e.target.value) || 0 })}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                        min="0"
-                                    />
-                                </div>
-
-                                <div className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        id="courseIsActive"
-                                        checked={courseFormData.isActive}
-                                        onChange={(e) => setCourseFormData({ ...courseFormData, isActive: e.target.checked })}
-                                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                                    />
-                                    <label htmlFor="courseIsActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
-                                        Active
-                                    </label>
-                                </div>
+                            <div className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    id="courseIsActive"
+                                    checked={courseFormData.isActive}
+                                    onChange={(e) => setCourseFormData({ ...courseFormData, isActive: e.target.checked })}
+                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                />
+                                <label htmlFor="courseIsActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                    Active
+                                </label>
                             </div>
 
                             <div className="flex space-x-3">
@@ -516,20 +533,24 @@ const CollegeManagement = () => {
                                                     <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                                                         {course.courseName}
                                                     </h3>
-                                                    {course.courseCode && (
-                                                        <span className="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded">
-                                                            {course.courseCode}
-                                                        </span>
-                                                    )}
                                                     {!course.isActive && (
                                                         <span className="bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300 px-2 py-1 rounded text-xs">
                                                             Inactive
                                                         </span>
                                                     )}
                                                 </div>
-                                                <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                                                    <span>Order: {course.displayOrder}</span>
-                                                </div>
+                                                {course.streams && course.streams.length > 0 && (
+                                                    <div className="mt-2">
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Streams:</p>
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {course.streams.filter(s => s.isActive).map((stream, idx) => (
+                                                                <span key={idx} className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400 px-2 py-1 rounded">
+                                                                    {stream.name}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
                                             <div className="flex space-x-2 ml-4">
                                                 <button
@@ -552,6 +573,17 @@ const CollegeManagement = () => {
                         )}
                     </div>
                 </>
+            ) : (
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="text-center py-8">
+                        <p className="text-gray-500 dark:text-gray-400 mb-2">
+                            Select an institution from above to manage courses and streams
+                        </p>
+                        <p className="text-sm text-gray-400 dark:text-gray-500">
+                            Click on any institution to view and add courses
+                        </p>
+                    </div>
+                </div>
             )}
         </div>
     );

@@ -122,6 +122,13 @@ const UniversalStudentRegistration = ({
     fetchColleges();
   }, []);
 
+  // Refresh colleges when user navigates to course selection step
+  useEffect(() => {
+    if (currentStep === 3) {
+      fetchColleges();
+    }
+  }, [currentStep]);
+
   const fetchColleges = async () => {
     try {
       setLoadingColleges(true);
@@ -146,6 +153,18 @@ const UniversalStudentRegistration = ({
       (college) => college._id === formData.courseDetails.selectedCollege
     );
     return selectedCollegeData?.courses || [];
+  };
+
+  // Get streams for selected course
+  const getStreamsForCourse = () => {
+    if (!formData.courseDetails.selectedCourse) {
+      return [];
+    }
+    const availableCourses = getCoursesForCollege();
+    const selectedCourse = availableCourses.find(
+      (course) => course.courseName === formData.courseDetails.selectedCourse
+    );
+    return selectedCourse?.streams || [];
   };
 
   const loadExistingApplication = async () => {
@@ -1012,13 +1031,15 @@ const UniversalStudentRegistration = ({
 
   const renderCourseSelection = () => {
     const availableCourses = getCoursesForCollege();
+    const availableStreams = getStreamsForCourse();
+    const hasStreams = availableStreams.length > 0;
 
     return (
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Select College * 
+              Institution Name *
             </label>
             <select
               value={formData.courseDetails.selectedCollege}
@@ -1029,6 +1050,7 @@ const UniversalStudentRegistration = ({
                     ...prev.courseDetails,
                     selectedCollege: e.target.value,
                     selectedCourse: "", // Reset course when college changes
+                    stream: "", // Reset stream when college changes
                   },
                 }))
               }
@@ -1036,10 +1058,10 @@ const UniversalStudentRegistration = ({
               required
               disabled={loadingColleges}
             >
-              <option value="">{loadingColleges ? "Loading colleges..." : "Select College"}</option>
+              <option value="">{loadingColleges ? "Loading institutions..." : "Select Institution"}</option>
               {colleges.map((college) => (
                 <option key={college._id} value={college._id}>
-                  {college.name} {college.code ? `(${college.code})` : ""}
+                  {college.name}
                 </option>
               ))}
             </select>
@@ -1052,7 +1074,7 @@ const UniversalStudentRegistration = ({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Select Course * 
+              Course Name *
             </label>
             <select
               value={formData.courseDetails.selectedCourse}
@@ -1062,6 +1084,7 @@ const UniversalStudentRegistration = ({
                   courseDetails: {
                     ...prev.courseDetails,
                     selectedCourse: e.target.value,
+                    stream: "", // Reset stream when course changes
                   },
                 }))
               }
@@ -1071,14 +1094,14 @@ const UniversalStudentRegistration = ({
             >
               <option value="">
                 {!formData.courseDetails.selectedCollege
-                  ? "Select college first"
+                  ? "Select institution first"
                   : availableCourses.length === 0
-                  ? "No courses available"
-                  : "Select Course"}
+                    ? "No courses available"
+                    : "Select Course"}
               </option>
               {availableCourses.map((course) => (
                 <option key={course._id} value={course.courseName}>
-                  {course.courseName} {course.courseCode ? `(${course.courseCode})` : ""}
+                  {course.courseName}
                 </option>
               ))}
             </select>
@@ -1090,27 +1113,33 @@ const UniversalStudentRegistration = ({
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Stream (Optional)
-          </label>
-          <input
-            type="text"
-            value={formData.courseDetails.stream}
-            onChange={(e) =>
-              setFormData((prev) => ({
-                ...prev,
-                courseDetails: {
-                  ...prev.courseDetails,
-                  stream: e.target.value.toUpperCase(),
-                },
-              }))
-            }
-            style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            placeholder="Enter stream (optional)"
-          />
-        </div>
+        {hasStreams && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Stream (Optional)
+            </label>
+            <select
+              value={formData.courseDetails.stream}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  courseDetails: {
+                    ...prev.courseDetails,
+                    stream: e.target.value,
+                  },
+                }))
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+            >
+              <option value="">Select Stream (Optional)</option>
+              {availableStreams.map((stream, index) => (
+                <option key={index} value={stream}>
+                  {stream}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
       </div>
     );
   };
