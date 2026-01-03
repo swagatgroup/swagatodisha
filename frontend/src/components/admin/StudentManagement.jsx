@@ -535,6 +535,26 @@ const StudentManagement = () => {
                 return str;
             };
 
+            // Helper function to format URLs for Excel (ensures they're clickable)
+            // Excel automatically converts URLs starting with http:// or https:// to hyperlinks
+            const formatAsLink = (url) => {
+                if (!url || url === 'N/A') return 'N/A';
+                const urlStr = String(url).trim();
+                
+                // If it's a valid URL, return it without escaping (Excel will make it clickable)
+                if (urlStr.startsWith('http://') || urlStr.startsWith('https://')) {
+                    // Don't escape URLs - Excel needs them as plain text to recognize as links
+                    // Only escape if URL contains commas or quotes (which is rare for URLs)
+                    if (urlStr.includes(',') || urlStr.includes('"')) {
+                        return `"${urlStr.replace(/"/g, '""')}"`;
+                    }
+                    return urlStr;
+                }
+                
+                // For non-URL values, escape normally
+                return escapeCSV(urlStr);
+            };
+
             // Helper function to format numeric fields as text (prevents Excel scientific notation)
             const formatAsText = (value) => {
                 if (value === null || value === undefined || value === '') return 'N/A';
@@ -577,7 +597,21 @@ const StudentManagement = () => {
                 }
             };
 
-            // Essential headers with necessary details and document links
+            // Collect all unique document types from all students to create dynamic columns
+            const allDocumentTypes = new Set();
+            students.forEach(student => {
+                if (student.documents && student.documents.length > 0) {
+                    student.documents.forEach(doc => {
+                        const docType = doc.documentType || doc.fileName || 'Other';
+                        allDocumentTypes.add(docType);
+                    });
+                }
+            });
+            
+            // Sort document types for consistent column order
+            const sortedDocTypes = Array.from(allDocumentTypes).sort();
+            
+            // Essential headers with necessary details and separate document link columns
             const headers = [
                 'S.No',
                 'Application ID',
@@ -606,8 +640,8 @@ const StudentManagement = () => {
                 // Additional Info
                 'Referral Code',
                 'Created Date',
-                // Document Links
-                'Document Links'
+                // Document Links - separate column for each document type
+                ...sortedDocTypes.map(docType => `Document: ${docType}`)
             ];
 
             const csvRows = [headers.join(',')];
@@ -621,21 +655,22 @@ const StudentManagement = () => {
                     student.contactDetails?.permanentAddress?.pincode
                 ].filter(Boolean).join(', ');
 
-                // Format document links - create clickable links
-                let documentLinks = 'N/A';
+                // Create a map of document types to their file paths
+                const documentMap = {};
                 if (student.documents && student.documents.length > 0) {
-                    const links = student.documents
-                        .map((doc, idx) => {
-                            const docName = doc.documentType || doc.fileName || `Document ${idx + 1}`;
-                            const docLink = doc.filePath || '';
-                            if (docLink) {
-                                // Format as: DocumentName: URL
-                                return `${docName}: ${docLink}`;
+                    student.documents.forEach(doc => {
+                        const docType = doc.documentType || doc.fileName || 'Other';
+                        const docLink = doc.filePath || '';
+                        
+                        if (docLink) {
+                            // If multiple documents of same type, combine them with line break (Excel supports this)
+                            if (documentMap[docType]) {
+                                documentMap[docType] += '\n' + docLink;
+                            } else {
+                                documentMap[docType] = docLink;
                             }
-                            return null;
-                        })
-                        .filter(Boolean);
-                    documentLinks = links.length > 0 ? links.join(' | ') : 'N/A';
+                        }
+                    });
                 }
 
                 // Get college name if available - handle both ObjectId and populated object
@@ -682,8 +717,11 @@ const StudentManagement = () => {
                     // Additional Info
                     escapeCSV(student.referralCode || student.referralInfo?.referralCode),
                     formatDate(student.createdAt),
-                    // Document Links
-                    escapeCSV(documentLinks)
+                    // Document Links - one column per document type (formatted as clickable links)
+                    ...sortedDocTypes.map(docType => {
+                        const link = documentMap[docType] || 'N/A';
+                        return formatAsLink(link);
+                    })
                 ];
                 csvRows.push(row.join(','));
             });
