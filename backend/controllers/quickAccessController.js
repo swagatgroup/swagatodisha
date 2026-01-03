@@ -2,6 +2,14 @@ const QuickAccess = require('../models/QuickAccess');
 const path = require('path');
 const fs = require('fs').promises;
 const { asyncHandler } = require('../middleware/errorHandler');
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // @desc    Get all quick access documents
 // @route   GET /api/admin/quick-access
@@ -61,16 +69,15 @@ const createQuickAccessDoc = asyncHandler(async (req, res) => {
 
     // Validate type
     if (!['timetable', 'notification', 'result'].includes(type)) {
-        // Clean up uploaded file
-        await fs.unlink(req.file.path);
         return res.status(400).json({
             success: false,
             message: 'Invalid document type. Must be timetable, notification, or result'
         });
     }
 
-    // Create file URL
-    const fileUrl = `/uploads/quick-access/${req.file.filename}`;
+    // Use Cloudinary URL if available, otherwise fallback to local path
+    const fileUrl = req.file.cloudinaryUrl || `/uploads/quick-access/${req.file.filename}`;
+    const cloudinaryPublicId = req.file.cloudinaryPublicId || null;
 
     const doc = await QuickAccess.create({
         type,
@@ -78,6 +85,7 @@ const createQuickAccessDoc = asyncHandler(async (req, res) => {
         description,
         file: fileUrl,
         fileName: req.file.originalname,
+        cloudinaryPublicId: cloudinaryPublicId,
         publishDate: publishDate || Date.now(),
         order: order || 0,
         isActive: isActive !== 'false',
@@ -104,10 +112,6 @@ const updateQuickAccessDoc = asyncHandler(async (req, res) => {
     let doc = await QuickAccess.findById(req.params.id);
 
     if (!doc) {
-        // Clean up uploaded file if any
-        if (req.file) {
-            await fs.unlink(req.file.path);
-        }
         return res.status(404).json({
             success: false,
             message: 'Document not found'
@@ -129,18 +133,29 @@ const updateQuickAccessDoc = asyncHandler(async (req, res) => {
 
     // If new file is uploaded
     if (req.file) {
-        // Delete old file
-        const oldFilePath = path.join(__dirname, '..', doc.file);
-        try {
-            await fs.unlink(oldFilePath);
-            console.log('🗑️ Old file deleted:', oldFilePath);
-        } catch (error) {
-            console.log('⚠️ Old file not found or already deleted');
+        // Delete old file from Cloudinary if it exists
+        if (doc.cloudinaryPublicId) {
+            try {
+                await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: 'raw' });
+                console.log('🗑️ Old file deleted from Cloudinary:', doc.cloudinaryPublicId);
+            } catch (error) {
+                console.log('⚠️ Failed to delete old file from Cloudinary:', error.message);
+            }
+        } else {
+            // Delete old local file if it exists
+            const oldFilePath = path.join(__dirname, '..', doc.file);
+            try {
+                await fs.unlink(oldFilePath);
+                console.log('🗑️ Old file deleted:', oldFilePath);
+            } catch (error) {
+                console.log('⚠️ Old file not found or already deleted');
+            }
         }
 
-        // Update with new file
-        updateData.file = `/uploads/quick-access/${req.file.filename}`;
+        // Update with new file (Cloudinary URL or local path)
+        updateData.file = req.file.cloudinaryUrl || `/uploads/quick-access/${req.file.filename}`;
         updateData.fileName = req.file.originalname;
+        updateData.cloudinaryPublicId = req.file.cloudinaryPublicId || null;
     }
 
     doc = await QuickAccess.findByIdAndUpdate(
@@ -172,13 +187,23 @@ const deleteQuickAccessDoc = asyncHandler(async (req, res) => {
         });
     }
 
-    // Delete file
-    const filePath = path.join(__dirname, '..', doc.file);
-    try {
-        await fs.unlink(filePath);
-        console.log('🗑️ File deleted:', filePath);
-    } catch (error) {
-        console.log('⚠️ File not found or already deleted');
+    // Delete file from Cloudinary if it exists
+    if (doc.cloudinaryPublicId) {
+        try {
+            await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: 'raw' });
+            console.log('🗑️ File deleted from Cloudinary:', doc.cloudinaryPublicId);
+        } catch (error) {
+            console.log('⚠️ Failed to delete file from Cloudinary:', error.message);
+        }
+    } else {
+        // Delete local file if it exists
+        const filePath = path.join(__dirname, '..', doc.file);
+        try {
+            await fs.unlink(filePath);
+            console.log('🗑️ File deleted:', filePath);
+        } catch (error) {
+            console.log('⚠️ File not found or already deleted');
+        }
     }
 
     // Delete document from database

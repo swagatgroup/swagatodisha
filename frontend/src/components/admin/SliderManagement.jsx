@@ -206,11 +206,11 @@ const SliderManagement = () => {
                     <div>
                         <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Image Guidelines</h3>
                         <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                            <li>• Recommended dimensions: 1920 x 1080 pixels (Full HD)</li>
+                            <li>• Recommended dimensions: 1920 x 600 pixels</li>
                             <li>• Supported formats: JPG, PNG, WebP</li>
                             <li>• Maximum file size: 10MB</li>
-                            <li>• Images will be automatically converted to WebP and optimized</li>
-                            <li>• Images will be resized to 1920x1080 and compressed without quality loss</li>
+                            <li>• Images will be automatically resized to 1920x600 and optimized</li>
+                            <li>• Images will be uploaded to Cloudinary and auto-compressed</li>
                         </ul>
                     </div>
                 </div>

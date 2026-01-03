@@ -2,6 +2,7 @@ const Slider = require('../models/Slider');
 const path = require('path');
 const fs = require('fs').promises;
 const { asyncHandler } = require('../middleware/errorHandler');
+const CloudinaryService = require('../utils/cloudinary');
 
 // @desc    Get all sliders
 // @route   GET /api/admin/sliders
@@ -60,13 +61,15 @@ const createSlider = asyncHandler(async (req, res) => {
 
     const { title, description, link, order, isActive } = req.body;
 
-    // Create image URL
-    const imageUrl = `/uploads/sliders/${req.file.filename}`;
+    // Use Cloudinary URL if available, otherwise fallback to local path
+    const imageUrl = req.file.cloudinaryUrl || `/uploads/sliders/${req.file.filename}`;
+    const cloudinaryPublicId = req.file.cloudinaryPublicId || null;
 
     const slider = await Slider.create({
         title,
         description,
         image: imageUrl,
+        cloudinaryPublicId: cloudinaryPublicId,
         link,
         order: order || 0,
         isActive: isActive !== 'false',
@@ -117,17 +120,28 @@ const updateSlider = asyncHandler(async (req, res) => {
 
     // If new image is uploaded
     if (req.file) {
-        // Delete old image
-        const oldImagePath = path.join(__dirname, '..', slider.image);
-        try {
-            await fs.unlink(oldImagePath);
-            console.log('🗑️ Old image deleted:', oldImagePath);
-        } catch (error) {
-            console.log('⚠️ Old image not found or already deleted');
+        // Delete old image from Cloudinary if it exists
+        if (slider.cloudinaryPublicId) {
+            try {
+                await CloudinaryService.deleteImage(slider.cloudinaryPublicId);
+                console.log('🗑️ Old image deleted from Cloudinary:', slider.cloudinaryPublicId);
+            } catch (error) {
+                console.log('⚠️ Failed to delete old image from Cloudinary:', error.message);
+            }
+        } else {
+            // Delete old local file if it exists
+            const oldImagePath = path.join(__dirname, '..', slider.image);
+            try {
+                await fs.unlink(oldImagePath);
+                console.log('🗑️ Old image deleted:', oldImagePath);
+            } catch (error) {
+                console.log('⚠️ Old image not found or already deleted');
+            }
         }
 
-        // Update with new image
-        updateData.image = `/uploads/sliders/${req.file.filename}`;
+        // Update with new image (Cloudinary URL or local path)
+        updateData.image = req.file.cloudinaryUrl || `/uploads/sliders/${req.file.filename}`;
+        updateData.cloudinaryPublicId = req.file.cloudinaryPublicId || null;
     }
 
     slider = await Slider.findByIdAndUpdate(
@@ -159,13 +173,23 @@ const deleteSlider = asyncHandler(async (req, res) => {
         });
     }
 
-    // Delete image file
-    const imagePath = path.join(__dirname, '..', slider.image);
-    try {
-        await fs.unlink(imagePath);
-        console.log('🗑️ Image deleted:', imagePath);
-    } catch (error) {
-        console.log('⚠️ Image file not found or already deleted');
+    // Delete image from Cloudinary if it exists
+    if (slider.cloudinaryPublicId) {
+        try {
+            await CloudinaryService.deleteImage(slider.cloudinaryPublicId);
+            console.log('🗑️ Image deleted from Cloudinary:', slider.cloudinaryPublicId);
+        } catch (error) {
+            console.log('⚠️ Failed to delete image from Cloudinary:', error.message);
+        }
+    } else {
+        // Delete local file if it exists
+        const imagePath = path.join(__dirname, '..', slider.image);
+        try {
+            await fs.unlink(imagePath);
+            console.log('🗑️ Image deleted:', imagePath);
+        } catch (error) {
+            console.log('⚠️ Image file not found or already deleted');
+        }
     }
 
     // Delete slider from database

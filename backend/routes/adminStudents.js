@@ -823,6 +823,71 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
     }
 });
 
+// @desc    Bulk delete student applications (Super Admin only)
+// @route   DELETE /api/admin/students/bulk
+// @access  Private - Super Admin only
+router.delete('/bulk', protect, authorize('super_admin'), async (req, res) => {
+    try {
+        const { studentIds } = req.body;
+
+        if (!studentIds || !Array.isArray(studentIds) || studentIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide an array of student IDs to delete'
+            });
+        }
+
+        // Only super admin can bulk delete
+        if (req.user.role !== 'super_admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only Super Admin can perform bulk deletion'
+            });
+        }
+
+        // Find all applications to delete
+        const applications = await StudentApplication.find({
+            _id: { $in: studentIds }
+        });
+
+        if (applications.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'No student applications found to delete'
+            });
+        }
+
+        // Get associated user IDs
+        const userIds = applications
+            .map(app => app.user)
+            .filter(userId => userId != null);
+
+        // Delete associated user accounts
+        if (userIds.length > 0) {
+            await User.deleteMany({ _id: { $in: userIds } });
+        }
+
+        // Delete student applications
+        const deleteResult = await StudentApplication.deleteMany({
+            _id: { $in: studentIds }
+        });
+
+        res.json({
+            success: true,
+            message: `Successfully deleted ${deleteResult.deletedCount} student application(s)`,
+            deletedCount: deleteResult.deletedCount
+        });
+
+    } catch (error) {
+        console.error('Bulk delete student applications error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to delete student applications',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
 // @desc    Delete student application
 // @route   DELETE /api/admin/students/:id
 // @access  Private - Staff/Super Admin only  

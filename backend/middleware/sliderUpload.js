@@ -1,29 +1,9 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 const sharp = require('sharp');
+const CloudinaryService = require('../utils/cloudinary');
 
-// Create uploads directory if it doesn't exist
-const uploadsDir = path.join(__dirname, '../uploads');
-const slidersDir = path.join(uploadsDir, 'sliders');
-
-[uploadsDir, slidersDir].forEach(dir => {
-    if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-    }
-});
-
-// Storage configuration
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, slidersDir);
-    },
-    filename: function (req, file, cb) {
-        // Generate unique filename
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'slider-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// Use memory storage for Cloudinary upload
+const storage = multer.memoryStorage();
 
 // File filter - only images
 const fileFilter = (req, file, cb) => {
@@ -44,9 +24,9 @@ const upload = multer({
 });
 
 /**
- * Image Optimization Middleware
- * Converts images to WebP format and compresses them
- * Recommended dimensions for slider: 1920x1080 (Full HD)
+ * Image Optimization and Cloudinary Upload Middleware
+ * Resizes images to 1920x600 dimensions and uploads to Cloudinary
+ * Auto-compresses images using Cloudinary's optimization
  */
 const optimizeSliderImage = async (req, res, next) => {
     try {
@@ -54,15 +34,11 @@ const optimizeSliderImage = async (req, res, next) => {
             return next();
         }
 
-        const inputPath = req.file.path;
-        const outputFilename = req.file.filename.replace(path.extname(req.file.filename), '.webp');
-        const outputPath = path.join(path.dirname(inputPath), outputFilename);
+        console.log('🖼️ Processing slider image for Cloudinary upload...');
 
-        console.log('🖼️ Optimizing slider image:', inputPath);
-
-        // Convert to WebP and optimize
-        await sharp(inputPath)
-            .resize(1920, 1080, {
+        // Resize and optimize image to 1920x600 (as per requirements)
+        const optimizedBuffer = await sharp(req.file.buffer)
+            .resize(1920, 600, {
                 fit: 'cover', // Crop to fit
                 position: 'center'
             })
@@ -70,31 +46,36 @@ const optimizeSliderImage = async (req, res, next) => {
                 quality: 85, // High quality, good compression
                 effort: 6 // Higher effort = better compression (0-6)
             })
-            .toFile(outputPath);
+            .toBuffer();
 
-        // Delete original file
-        await fs.unlink(inputPath);
+        console.log('✅ Image resized to 1920x600 and optimized');
 
-        // Update req.file with new path
-        req.file.path = outputPath;
-        req.file.filename = outputFilename;
-        req.file.mimetype = 'image/webp';
+        // Upload to Cloudinary
+        const cloudinaryResult = await CloudinaryService.uploadImage(
+            optimizedBuffer,
+            'swagat-odisha/sliders',
+            {
+                public_id: `slider_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+                transformation: [
+                    { width: 1920, height: 600, crop: 'fill' },
+                    { quality: 'auto:good' },
+                    { fetch_format: 'auto' },
+                    { flags: 'progressive' }
+                ]
+            }
+        );
 
-        console.log('✅ Slider image optimized:', outputPath);
+        // Store Cloudinary info in req.file for controller access
+        req.file.cloudinaryUrl = cloudinaryResult.url;
+        req.file.cloudinaryPublicId = cloudinaryResult.public_id;
+
+        console.log('✅ Slider image uploaded to Cloudinary:', cloudinaryResult.url);
         next();
     } catch (error) {
-        console.error('❌ Image optimization error:', error);
-        // Clean up uploaded file if optimization fails
-        if (req.file && req.file.path) {
-            try {
-                await fs.unlink(req.file.path);
-            } catch (unlinkError) {
-                console.error('Error deleting file:', unlinkError);
-            }
-        }
+        console.error('❌ Image processing/upload error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error optimizing image',
+            message: 'Error processing and uploading image to Cloudinary',
             error: error.message
         });
     }

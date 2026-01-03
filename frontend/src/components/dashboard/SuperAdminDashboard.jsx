@@ -5,6 +5,7 @@ import { useSession } from '../../contexts/SessionContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
 import StudentManagement from '../admin/StudentManagement';
+import WebsiteManagement from '../admin/WebsiteManagement';
 import RecentStudentsTable from './components/RecentStudentsTable';
 import ErrorBoundary from '../common/ErrorBoundary';
 // RealTimeStudentTracking removed - Socket.IO component
@@ -93,6 +94,15 @@ const SuperAdminDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            )
+        },
+        {
+            id: 'website-management',
+            name: 'Website Management',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                 </svg>
             )
         }
@@ -335,6 +345,12 @@ const SuperAdminDashboard = () => {
                 );
             case 'application-review':
                 return <ApplicationReview />;
+            case 'website-management':
+                return (
+                    <ErrorBoundary>
+                        <WebsiteManagement />
+                    </ErrorBoundary>
+                );
             default:
                 return <div>Coming Soon...</div>;
         }
