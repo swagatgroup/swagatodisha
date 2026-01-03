@@ -577,7 +577,7 @@ const StudentManagement = () => {
                 }
             };
 
-            // Comprehensive headers with ALL data fields
+            // Essential headers with necessary details and document links
             const headers = [
                 'S.No',
                 'Application ID',
@@ -589,55 +589,71 @@ const StudentManagement = () => {
                 'Gender',
                 'Aadhar Number',
                 'Category/Status',
-                'Father\'s Name',
-                'Mother\'s Name',
                 // Contact Details
                 'Email',
                 'Primary Phone',
                 'WhatsApp Number',
-                'Street Address',
+                'Address',
                 'City',
                 'State',
                 'Pincode',
-                'Country',
-                // Current Address (if different)
-                'Current Street',
-                'Current City',
-                'Current State',
-                'Current Pincode',
-                // Guardian Details
-                'Guardian Name',
-                'Guardian Relationship',
-                'Guardian Phone',
-                'Guardian Email',
                 // Course Details
-                'Selected Course',
-                'Custom Course',
+                'College',
+                'Course',
                 'Stream',
-                'Campus',
                 'Academic Year',
                 'Semester',
-                // Financial Details
-                'Bank Account Number',
-                'IFSC Code',
-                'Account Holder Name',
-                'Bank Name',
                 // Additional Info
                 'Referral Code',
-                'Terms Accepted',
-                'Terms Accepted Date',
-                'Submitted By Name',
-                'Submitted By Email',
-                'Submitted By Role',
                 'Created Date',
-                'Created Time',
-                'Updated Date',
-                'Updated Time'
+                // Document Links
+                'Document Links'
             ];
 
             const csvRows = [headers.join(',')];
 
             students.forEach((student, index) => {
+                // Format address (combine street, city, state, pincode)
+                const address = [
+                    student.contactDetails?.permanentAddress?.street,
+                    student.contactDetails?.permanentAddress?.city,
+                    student.contactDetails?.permanentAddress?.state,
+                    student.contactDetails?.permanentAddress?.pincode
+                ].filter(Boolean).join(', ');
+
+                // Format document links - create clickable links
+                let documentLinks = 'N/A';
+                if (student.documents && student.documents.length > 0) {
+                    const links = student.documents
+                        .map((doc, idx) => {
+                            const docName = doc.documentType || doc.fileName || `Document ${idx + 1}`;
+                            const docLink = doc.filePath || '';
+                            if (docLink) {
+                                // Format as: DocumentName: URL
+                                return `${docName}: ${docLink}`;
+                            }
+                            return null;
+                        })
+                        .filter(Boolean);
+                    documentLinks = links.length > 0 ? links.join(' | ') : 'N/A';
+                }
+
+                // Get college name if available - handle both ObjectId and populated object
+                let collegeName = 'N/A';
+                if (student.courseDetails?.selectedCollege) {
+                    if (typeof student.courseDetails.selectedCollege === 'string') {
+                        // It's an ObjectId string - we can't resolve it here, use institutionName as fallback
+                        collegeName = student.courseDetails?.institutionName || 'N/A';
+                    } else if (typeof student.courseDetails.selectedCollege === 'object') {
+                        // It's a populated object
+                        collegeName = student.courseDetails.selectedCollege.name || 
+                                     student.courseDetails.selectedCollege.code || 
+                                     'N/A';
+                    }
+                } else {
+                    collegeName = student.courseDetails?.institutionName || 'N/A';
+                }
+
                 const row = [
                     index + 1,
                     escapeCSV(student.applicationId),
@@ -647,52 +663,27 @@ const StudentManagement = () => {
                     escapeCSV(student.personalDetails?.fullName),
                     formatDate(student.personalDetails?.dateOfBirth),
                     escapeCSV(student.personalDetails?.gender),
-                    formatAsText(student.personalDetails?.aadharNumber), // Format as text to prevent scientific notation
+                    formatAsText(student.personalDetails?.aadharNumber),
                     escapeCSV(student.personalDetails?.status || student.personalDetails?.category),
-                    escapeCSV(student.personalDetails?.fathersName),
-                    escapeCSV(student.personalDetails?.mothersName),
                     // Contact Details
                     escapeCSV(student.contactDetails?.email),
-                    formatAsText(student.contactDetails?.primaryPhone), // Format as text
-                    formatAsText(student.contactDetails?.whatsappNumber), // Format as text
-                    escapeCSV(student.contactDetails?.permanentAddress?.street),
+                    formatAsText(student.contactDetails?.primaryPhone),
+                    formatAsText(student.contactDetails?.whatsappNumber),
+                    escapeCSV(address),
                     escapeCSV(student.contactDetails?.permanentAddress?.city),
                     escapeCSV(student.contactDetails?.permanentAddress?.state),
-                    formatAsText(student.contactDetails?.permanentAddress?.pincode), // Format as text
-                    escapeCSV(student.contactDetails?.permanentAddress?.country),
-                    // Current Address
-                    escapeCSV(student.contactDetails?.currentAddress?.street),
-                    escapeCSV(student.contactDetails?.currentAddress?.city),
-                    escapeCSV(student.contactDetails?.currentAddress?.state),
-                    formatAsText(student.contactDetails?.currentAddress?.pincode), // Format as text
-                    // Guardian Details
-                    escapeCSV(student.guardianDetails?.guardianName),
-                    escapeCSV(student.guardianDetails?.relationship),
-                    formatAsText(student.guardianDetails?.guardianPhone), // Format as text
-                    escapeCSV(student.guardianDetails?.guardianEmail),
+                    formatAsText(student.contactDetails?.permanentAddress?.pincode),
                     // Course Details
-                    escapeCSV(student.courseDetails?.selectedCourse),
-                    escapeCSV(student.courseDetails?.customCourse),
+                    escapeCSV(collegeName),
+                    escapeCSV(student.courseDetails?.selectedCourse || student.courseDetails?.courseName),
                     escapeCSV(student.courseDetails?.stream),
-                    escapeCSV(student.courseDetails?.campus),
                     escapeCSV(student.courseDetails?.academicYear),
                     escapeCSV(student.courseDetails?.semester),
-                    // Financial Details
-                    formatAsText(student.financialDetails?.bankAccountNumber), // Format as text
-                    escapeCSV(student.financialDetails?.ifscCode),
-                    escapeCSV(student.financialDetails?.accountHolderName),
-                    escapeCSV(student.financialDetails?.bankName),
                     // Additional Info
-                    escapeCSV(student.referralCode),
-                    student.termsAccepted ? 'Yes' : 'No',
-                    formatDateTime(student.termsAcceptedAt),
-                    escapeCSV(student.submittedBy?.name),
-                    escapeCSV(student.submittedBy?.email),
-                    escapeCSV(student.submittedBy?.role),
+                    escapeCSV(student.referralCode || student.referralInfo?.referralCode),
                     formatDate(student.createdAt),
-                    student.createdAt ? new Date(student.createdAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'N/A',
-                    formatDate(student.updatedAt),
-                    student.updatedAt ? new Date(student.updatedAt).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : 'N/A'
+                    // Document Links
+                    escapeCSV(documentLinks)
                 ];
                 csvRows.push(row.join(','));
             });
@@ -705,13 +696,13 @@ const StudentManagement = () => {
             link.href = url;
             const sessionName = selectedSession || 'all';
             const timestamp = new Date().toISOString().split('T')[0];
-            link.download = `students_complete_export_${sessionName}_${timestamp}.csv`;
+            link.download = `students_export_${sessionName}_${timestamp}.csv`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            showSuccess(`Exported complete data for ${students.length} student(s) to Excel file!`);
+            showSuccess(`Exported ${students.length} student(s) to Excel file with essential details and document links!`);
         } catch (error) {
             console.error('Error exporting to Excel:', error);
             showError('Failed to export data to Excel');

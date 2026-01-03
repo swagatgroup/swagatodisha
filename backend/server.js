@@ -951,8 +951,10 @@ app.use('/api/referral', apiRateLimit, referralRoutes);
 app.use('/api/pdf', apiRateLimit, pdfRoutes);
 app.use('/api/workflow', apiRateLimit, workflowRoutes);
 app.use('/api/payments', apiRateLimit, paymentRoutes);
-app.use('/api/admin', apiRateLimit, adminRoutes);
+// IMPORTANT: adminStudentsRoutes must come BEFORE adminRoutes to avoid route conflicts
+// This ensures /api/admin/students/bulk matches before /api/admin/students/:studentId
 app.use('/api/admin/students', apiRateLimit, adminStudentsRoutes);
+app.use('/api/admin', apiRateLimit, adminRoutes);
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);

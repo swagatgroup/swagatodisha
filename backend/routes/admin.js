@@ -42,6 +42,8 @@ router.get('/dashboard/stats', protect, authorize('staff', 'super_admin'), getDa
 
 // Student Management - moved to dedicated adminStudents.js file
 // router.get('/students', protect, authorize('staff', 'super_admin'), getAllStudents);
+// IMPORTANT: Bulk routes must come before parameterized routes to avoid route conflicts
+// The bulk delete route is handled in adminStudentsRoutes at /api/admin/students/bulk
 router.put('/students/:studentId', protect, authorize('staff', 'super_admin'), updateStudent);
 router.delete('/students/:studentId', protect, authorize('staff', 'super_admin'), deleteStudent); // Staff can now delete
 

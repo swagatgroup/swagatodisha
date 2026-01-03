@@ -826,14 +826,19 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 // @desc    Bulk delete student applications (Super Admin only)
 // @route   DELETE /api/admin/students/bulk
 // @access  Private - Super Admin only
-router.delete('/bulk', protect, authorize('super_admin'), async (req, res) => {
+// IMPORTANT: This route must come before /:id to avoid route conflicts
+router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next) => {
     try {
+        console.log('🗑️ ========== BULK DELETE ROUTE HIT ==========');
         console.log('🗑️ Bulk delete request received');
         console.log('📋 Request body:', JSON.stringify(req.body, null, 2));
         console.log('📋 Request body type:', typeof req.body);
         console.log('📋 Request body keys:', Object.keys(req.body || {}));
         console.log('👤 User:', req.user?.email, 'Role:', req.user?.role);
         console.log('📋 Request headers:', JSON.stringify(req.headers, null, 2));
+        console.log('📋 Request method:', req.method);
+        console.log('📋 Request URL:', req.url);
+        console.log('📋 Request originalUrl:', req.originalUrl);
 
         // Handle both req.body and req.body.data (some clients send data nested)
         let studentIds = req.body?.studentIds || req.body?.data?.studentIds || req.body?.ids || [];
@@ -971,12 +976,15 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res) => {
         console.error('❌ Bulk delete student applications error:', error);
         console.error('❌ Error name:', error?.name || 'Unknown');
         console.error('❌ Error message:', error?.message || 'Unknown error');
+        console.error('❌ Error code:', error?.code || 'No code');
         if (error?.stack) {
             console.error('❌ Error stack:', error.stack);
         }
         console.error('❌ Request body:', JSON.stringify(req.body, null, 2));
         console.error('❌ Request method:', req.method);
         console.error('❌ Request URL:', req.url);
+        console.error('❌ Request params:', JSON.stringify(req.params, null, 2));
+        console.error('❌ Request query:', JSON.stringify(req.query, null, 2));
         
         // Send detailed error response
         const errorResponse = {
@@ -987,7 +995,9 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res) => {
         
         if (process.env.NODE_ENV === 'development') {
             errorResponse.errorName = error?.name;
+            errorResponse.errorCode = error?.code;
             errorResponse.details = error?.stack || 'No stack trace available';
+            errorResponse.fullError = error;
         }
         
         res.status(500).json(errorResponse);
