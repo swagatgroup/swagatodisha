@@ -16,13 +16,9 @@ const SimpleNotificationManagement = () => {
     const [showForm, setShowForm] = useState(false);
     const [editingNotification, setEditingNotification] = useState(null);
     const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-        type: 'General',
-        priority: 'Medium',
-        isActive: true,
-        publishDate: new Date().toISOString().split('T')[0]
+        title: ''
     });
+    const [selectedFile, setSelectedFile] = useState(null);
 
     useEffect(() => {
         fetchNotifications();
@@ -43,23 +39,62 @@ const SimpleNotificationManagement = () => {
         }
     };
 
+    const handleFileSelect = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file type - allow PDF and images
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Invalid File', 'Please select a PDF or image file (JPG, PNG, WebP)');
+                return;
+            }
+
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File Too Large', 'File size must be less than 10MB');
+                return;
+            }
+
+            setSelectedFile(file);
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             setSaving(true);
             showLoading('Saving notification...');
 
+            const formDataToSend = new FormData();
+
+            // Append file if selected
+            if (selectedFile) {
+                formDataToSend.append('file', selectedFile);
+            }
+
+            // Append form fields - only title is required
+            formDataToSend.append('title', formData.title);
+            formDataToSend.append('content', formData.title); // Use title as content
+            formDataToSend.append('type', 'General');
+            formDataToSend.append('priority', 'Medium');
+            formDataToSend.append('isActive', 'true');
+            formDataToSend.append('publishDate', new Date().toISOString().split('T')[0]);
+            formDataToSend.append('targetAudience', 'All');
+
             const url = editingNotification 
                 ? `/api/notifications/${editingNotification._id}`
                 : '/api/notifications';
             const method = editingNotification ? 'put' : 'post';
 
-            const response = await api[method](url, formData);
+            const response = await api[method](url, formDataToSend, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
             
             if (response.data.success) {
                 showSuccess('Success', editingNotification ? 'Notification updated successfully!' : 'Notification created successfully!');
                 setShowForm(false);
                 setEditingNotification(null);
+                setSelectedFile(null);
                 resetForm();
                 fetchNotifications();
             }
@@ -74,16 +109,10 @@ const SimpleNotificationManagement = () => {
 
     const handleEdit = (notification) => {
         setFormData({
-            title: notification.title || '',
-            content: notification.content || '',
-            type: notification.type || 'General',
-            priority: notification.priority || 'Medium',
-            isActive: notification.isActive !== undefined ? notification.isActive : true,
-            publishDate: notification.publishDate 
-                ? new Date(notification.publishDate).toISOString().split('T')[0]
-                : new Date().toISOString().split('T')[0]
+            title: notification.title || ''
         });
         setEditingNotification(notification);
+        setSelectedFile(null); // Clear file selection when editing
         setShowForm(true);
     };
 
@@ -113,14 +142,10 @@ const SimpleNotificationManagement = () => {
 
     const resetForm = () => {
         setFormData({
-            title: '',
-            content: '',
-            type: 'General',
-            priority: 'Medium',
-            isActive: true,
-            publishDate: new Date().toISOString().split('T')[0]
+            title: ''
         });
         setEditingNotification(null);
+        setSelectedFile(null);
     };
 
     if (loading) {
@@ -180,80 +205,28 @@ const SimpleNotificationManagement = () => {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                Content *
+                                {editingNotification ? 'Update File (optional)' : 'Upload File (optional)'}
                             </label>
-                            <textarea
-                                required
-                                rows={4}
-                                value={formData.content}
-                                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                placeholder="Enter notification content"
+                            <input
+                                type="file"
+                                onChange={handleFileSelect}
+                                accept=".pdf,.jpg,.jpeg,.png,.webp"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
                             />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Type
-                                </label>
-                                <select
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                >
-                                    <option value="General">General</option>
-                                    <option value="Academic">Academic</option>
-                                    <option value="Admission">Admission</option>
-                                    <option value="Exam">Exam</option>
-                                    <option value="Result">Result</option>
-                                    <option value="Event">Event</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Priority
-                                </label>
-                                <select
-                                    value={formData.priority}
-                                    onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                >
-                                    <option value="Low">Low</option>
-                                    <option value="Medium">Medium</option>
-                                    <option value="High">High</option>
-                                    <option value="Critical">Critical</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                    Publish Date
-                                </label>
-                                <input
-                                    type="date"
-                                    value={formData.publishDate}
-                                    onChange={(e) => setFormData({ ...formData, publishDate: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                />
-                            </div>
-
-                            <div className="flex items-end">
-                                <label className="flex items-center space-x-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={formData.isActive}
-                                        onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                        className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                                    />
-                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Active
-                                    </span>
-                                </label>
-                            </div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Supported formats: PDF, JPG, PNG, WebP (Max 10MB)
+                            </p>
+                            {selectedFile && (
+                                <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                                    <i className="fa-solid fa-check-circle mr-1"></i>
+                                    Selected: {selectedFile.name}
+                                </p>
+                            )}
+                            {editingNotification && (editingNotification.pdfDocument || editingNotification.image) && (
+                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                    Current: <a href={editingNotification.pdfDocument || editingNotification.image} target="_blank" rel="noopener noreferrer" className="underline">View current file</a>
+                                </p>
+                            )}
                         </div>
 
                         <div className="flex justify-end space-x-3 pt-4">
@@ -329,6 +302,17 @@ const SimpleNotificationManagement = () => {
                                                         <i className="fa-solid fa-calendar mr-1"></i>
                                                         {new Date(notification.publishDate).toLocaleDateString()}
                                                     </span>
+                                                )}
+                                                {(notification.pdfDocument || notification.image) && (
+                                                    <a
+                                                        href={notification.pdfDocument || notification.image}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                                                    >
+                                                        <i className="fa-solid fa-file mr-1"></i>
+                                                        View File
+                                                    </a>
                                                 )}
                                             </div>
                                         </div>

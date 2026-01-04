@@ -18,7 +18,7 @@ const fileFilter = (req, file, cb) => {
     if (allowedTypes.includes(file.mimetype)) {
         cb(null, true);
     } else {
-        cb(new Error('Only PDF and image files (JPG, PNG, WebP) are allowed for quick access documents!'), false);
+        cb(new Error('Only PDF and image files (JPG, PNG, WebP) are allowed!'), false);
     }
 };
 
@@ -32,7 +32,7 @@ const upload = multer({
 });
 
 /**
- * Upload PDF to Cloudinary
+ * Upload file to Cloudinary
  */
 const uploadToCloudinary = async (req, res, next) => {
     try {
@@ -40,7 +40,7 @@ const uploadToCloudinary = async (req, res, next) => {
             return next();
         }
 
-        console.log('📄 Uploading quick access file to Cloudinary...');
+        console.log('📄 Uploading notification file to Cloudinary...');
 
         // Determine resource type based on file type
         const isPDF = req.file.mimetype === 'application/pdf';
@@ -51,8 +51,8 @@ const uploadToCloudinary = async (req, res, next) => {
             const uploadStream = cloudinary.uploader.upload_stream(
                 {
                     resource_type: resourceType,
-                    folder: 'swagat-odisha/quick-access',
-                    public_id: `quickaccess_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+                    folder: isPDF ? 'swagat-odisha/notifications/documents' : 'swagat-odisha/notifications/images',
+                    public_id: `notification_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
                     use_filename: true,
                     unique_filename: true
                 },
@@ -74,13 +74,13 @@ const uploadToCloudinary = async (req, res, next) => {
         req.file.cloudinaryPublicId = cloudinaryResult.public_id;
         req.file.isPDF = isPDF;
 
-        console.log('✅ Quick access file uploaded to Cloudinary:', cloudinaryResult.secure_url);
+        console.log('✅ Notification file uploaded to Cloudinary:', cloudinaryResult.secure_url);
         next();
     } catch (error) {
         console.error('❌ Cloudinary upload error:', error);
         res.status(500).json({
             success: false,
-            message: 'Error uploading PDF to Cloudinary',
+            message: 'Error uploading file to Cloudinary',
             error: error.message
         });
     }
