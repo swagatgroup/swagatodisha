@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const ProcessingStats = ({ data, onStatClick }) => {
+const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
     // Safely extract data with defaults to prevent errors
     const {
         totalStudents = 0,
@@ -146,7 +146,14 @@ const ProcessingStats = ({ data, onStatClick }) => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className={`${stat.bgColor} dark:bg-gray-700 rounded-lg p-4 ${onStatClick && stat.filterKey ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''}`}
+                        className={`${stat.bgColor} dark:bg-gray-700 rounded-lg p-4 ${onStatClick && stat.filterKey ? 'cursor-pointer hover:shadow-lg transition-shadow' : ''} ${activeFilter === stat.filterKey
+                                ? stat.color === 'blue' ? 'ring-2 ring-blue-500 ring-offset-2' :
+                                    stat.color === 'green' ? 'ring-2 ring-green-500 ring-offset-2' :
+                                        stat.color === 'yellow' ? 'ring-2 ring-yellow-500 ring-offset-2' :
+                                            stat.color === 'red' ? 'ring-2 ring-red-500 ring-offset-2' :
+                                                stat.color === 'gray' ? 'ring-2 ring-gray-500 ring-offset-2' : 'ring-2 ring-blue-500 ring-offset-2'
+                                : ''
+                            }`}
                         onClick={() => onStatClick && stat.filterKey && onStatClick(stat.filterKey)}
                     >
                         <div className="flex items-center">

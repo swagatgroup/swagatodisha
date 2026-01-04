@@ -37,7 +37,9 @@ const SuperAdminDashboard = () => {
         draftApplications: 0,
         submittedApplications: 0,
         underReviewApplications: 0,
-        rejectedApplications: 0
+        approvedApplications: 0,
+        rejectedApplications: 0,
+        completeApplications: 0
     });
     const [studentTableFilter, setStudentTableFilter] = useState('all');
 
@@ -301,7 +303,11 @@ const SuperAdminDashboard = () => {
     };
 
     const handleStatClick = (filter) => {
-        setStudentTableFilter(filter);
+        // Toggle filter: if same filter is clicked, reset to 'all', otherwise set the new filter
+        const newFilter = filterStatus === filter ? 'all' : filter;
+        setStudentTableFilter(newFilter);
+        setFilterStatus(newFilter);
+        setCurrentPage(1); // Reset to first page when filter changes
     };
 
     const renderSidebarContent = () => {
@@ -386,7 +392,7 @@ const SuperAdminDashboard = () => {
                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-6">
                             <button
                                 onClick={() => handleStatClick('DRAFT')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${studentTableFilter === 'DRAFT'
+                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'DRAFT'
                                     ? 'bg-gray-600 text-white shadow-lg'
                                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                                     }`}
@@ -399,7 +405,7 @@ const SuperAdminDashboard = () => {
 
                             <button
                                 onClick={() => handleStatClick('SUBMITTED')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${studentTableFilter === 'SUBMITTED'
+                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'SUBMITTED'
                                     ? 'bg-blue-600 text-white shadow-lg'
                                     : 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-gray-600'
                                     }`}
@@ -412,7 +418,7 @@ const SuperAdminDashboard = () => {
 
                             <button
                                 onClick={() => handleStatClick('UNDER_REVIEW')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${studentTableFilter === 'UNDER_REVIEW'
+                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'UNDER_REVIEW'
                                     ? 'bg-yellow-600 text-white shadow-lg'
                                     : 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600'
                                     }`}
@@ -425,7 +431,7 @@ const SuperAdminDashboard = () => {
 
                             <button
                                 onClick={() => handleStatClick('APPROVED')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${studentTableFilter === 'APPROVED'
+                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'APPROVED'
                                     ? 'bg-green-600 text-white shadow-lg'
                                     : 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-gray-600'
                                     }`}
@@ -438,7 +444,7 @@ const SuperAdminDashboard = () => {
 
                             <button
                                 onClick={() => handleStatClick('REJECTED')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${studentTableFilter === 'REJECTED'
+                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'REJECTED'
                                     ? 'bg-red-600 text-white shadow-lg'
                                     : 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-gray-600'
                                     }`}
@@ -451,7 +457,7 @@ const SuperAdminDashboard = () => {
 
                             <button
                                 onClick={() => handleStatClick('COMPLETE')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${studentTableFilter === 'COMPLETE'
+                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'COMPLETE'
                                     ? 'bg-emerald-600 text-white shadow-lg'
                                     : 'bg-emerald-100 dark:bg-gray-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-gray-600'
                                     }`}
