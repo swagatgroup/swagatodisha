@@ -66,6 +66,7 @@ const UniversalStudentRegistration = ({
       selectedCourse: "",
       customCourse: "",
       stream: "",
+      campus: "",
     },
     guardianDetails: {
       guardianName: "",
@@ -165,6 +166,17 @@ const UniversalStudentRegistration = ({
       (course) => course.courseName === formData.courseDetails.selectedCourse
     );
     return selectedCourse?.streams || [];
+  };
+
+  // Get campuses for selected college
+  const getCampusesForCollege = () => {
+    if (!formData.courseDetails.selectedCollege) {
+      return [];
+    }
+    const selectedCollegeData = colleges.find(
+      (college) => college._id === formData.courseDetails.selectedCollege
+    );
+    return selectedCollegeData?.campuses || [];
   };
 
   const loadExistingApplication = async () => {
@@ -1032,7 +1044,9 @@ const UniversalStudentRegistration = ({
   const renderCourseSelection = () => {
     const availableCourses = getCoursesForCollege();
     const availableStreams = getStreamsForCourse();
+    const availableCampuses = getCampusesForCollege();
     const hasStreams = availableStreams.length > 0;
+    const hasCampuses = availableCampuses.length > 0;
 
     return (
       <div className="space-y-6">
@@ -1051,6 +1065,7 @@ const UniversalStudentRegistration = ({
                     selectedCollege: e.target.value,
                     selectedCourse: "", // Reset course when college changes
                     stream: "", // Reset stream when college changes
+                    campus: "", // Reset campus when college changes
                   },
                 }))
               }
@@ -1113,33 +1128,63 @@ const UniversalStudentRegistration = ({
           </div>
         </div>
 
-        {hasStreams && (
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Stream (Optional)
-            </label>
-            <select
-              value={formData.courseDetails.stream}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  courseDetails: {
-                    ...prev.courseDetails,
-                    stream: e.target.value,
-                  },
-                }))
-              }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-            >
-              <option value="">Select Stream (Optional)</option>
-              {availableStreams.map((stream, index) => (
-                <option key={index} value={stream}>
-                  {stream}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {hasStreams && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Stream (Optional)
+              </label>
+              <select
+                value={formData.courseDetails.stream}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    courseDetails: {
+                      ...prev.courseDetails,
+                      stream: e.target.value,
+                    },
+                  }))
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">Select Stream (Optional)</option>
+                {availableStreams.map((stream, index) => (
+                  <option key={index} value={stream}>
+                    {stream}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {hasCampuses && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Campus (Optional)
+              </label>
+              <select
+                value={formData.courseDetails.campus}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    courseDetails: {
+                      ...prev.courseDetails,
+                      campus: e.target.value,
+                    },
+                  }))
+                }
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              >
+                <option value="">Select Campus (Optional)</option>
+                {availableCampuses.map((campus, index) => (
+                  <option key={index} value={campus.name || campus}>
+                    {campus.name || campus}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
       </div>
     );
   };

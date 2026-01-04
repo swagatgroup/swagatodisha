@@ -149,8 +149,7 @@ const studentApplicationSchema = new mongoose.Schema({
         stream: String,
         campus: {
             type: String,
-            enum: ['Sargiguda', 'Ghantiguda', 'Online'],
-            default: 'Sargiguda'
+            trim: true
         }
     },
 
