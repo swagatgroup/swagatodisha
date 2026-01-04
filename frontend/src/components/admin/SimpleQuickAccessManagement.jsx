@@ -60,9 +60,9 @@ const SimpleQuickAccessManagement = () => {
         const file = e.target.files[0];
         if (file) {
             // Validate file type - allow PDF and images
-            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
             if (!allowedTypes.includes(file.type)) {
-                showError('Invalid File', 'Please select a PDF or image file (JPG, PNG)');
+                showError('Invalid File', 'Please select a PDF or image file (JPG, PNG, WebP)');
                 return;
             }
 

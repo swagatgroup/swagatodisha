@@ -12,6 +12,7 @@ const {
     getNotificationStats,
     incrementClickCount
 } = require('../controllers/notificationController');
+const { upload, uploadToCloudinary } = require('../middleware/notificationUpload');
 
 // Public routes
 router.get('/public', getPublicNotifications);
@@ -21,8 +22,8 @@ router.post('/:notificationId/click', incrementClickCount);
 
 // Protected routes (Admin only)
 router.get('/', protect, getNotifications);
-router.post('/', protect, createNotification);
-router.put('/:notificationId', protect, updateNotification);
+router.post('/', protect, upload.single('file'), uploadToCloudinary, createNotification);
+router.put('/:notificationId', protect, upload.single('file'), uploadToCloudinary, updateNotification);
 router.delete('/:notificationId', protect, deleteNotification);
 router.put('/:notificationId/status', protect, updateNotificationStatus);
 
