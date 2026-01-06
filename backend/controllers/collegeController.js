@@ -7,8 +7,17 @@ const { asyncHandler } = require('../middleware/errorHandler');
 // @route   GET /api/admin/colleges
 // @access  Private
 const getColleges = asyncHandler(async (req, res) => {
-    const colleges = await College.find({})
-        .sort({ name: 1 });
+    const { isActive } = req.query;
+
+    const filter = {};
+    if (isActive !== undefined) {
+        filter.isActive = isActive === 'true';
+    }
+
+    const colleges = await College.find(filter)
+        .sort({ name: 1 })
+        .populate('createdBy', 'fullName email')
+        .populate('updatedBy', 'fullName email');
 
     res.status(200).json({
         success: true,
@@ -21,7 +30,9 @@ const getColleges = asyncHandler(async (req, res) => {
 // @route   GET /api/admin/colleges/:id
 // @access  Private
 const getCollege = asyncHandler(async (req, res) => {
-    const college = await College.findById(req.params.id);
+    const college = await College.findById(req.params.id)
+        .populate('createdBy', 'fullName email')
+        .populate('updatedBy', 'fullName email');
 
     if (!college) {
         return res.status(404).json({
@@ -31,7 +42,7 @@ const getCollege = asyncHandler(async (req, res) => {
     }
 
     // Get courses for this college
-    const courses = await CollegeCourse.find({ college: college._id })
+    const courses = await CollegeCourse.find({ college: college._id, isActive: true })
         .sort({ courseName: 1 });
 
     res.status(200).json({
@@ -47,7 +58,7 @@ const getCollege = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/colleges
 // @access  Private (Super Admin, Staff)
 const createCollege = asyncHandler(async (req, res) => {
-    const { name, campuses, courses } = req.body;
+    const { name, code, description, isActive } = req.body;
 
     // Validate name
     if (!name || !name.trim()) {
@@ -69,36 +80,17 @@ const createCollege = asyncHandler(async (req, res) => {
         });
     }
 
-    // Process campuses
-    const processedCampuses = Array.isArray(campuses) ? campuses.map(campus => ({
-        name: campus.name?.trim() || campus.trim()
-    })) : [];
-
     const college = await College.create({
         name: name.trim(),
-        campuses: processedCampuses
+        code: code ? code.trim().toUpperCase() : undefined,
+        description: description ? description.trim() : undefined,
+        isActive: isActive !== 'false' && isActive !== false,
+        createdBy: req.user._id,
+        updatedBy: req.user._id
     });
 
-    // Create courses if provided
-    if (Array.isArray(courses) && courses.length > 0) {
-        for (const courseData of courses) {
-            if (courseData.name && courseData.name.trim()) {
-                const processedStreams = Array.isArray(courseData.streams)
-                    ? courseData.streams.map(stream => ({
-                        name: stream.name?.trim() || stream.trim(),
-                        isActive: true
-                    }))
-                    : [];
-
-                await CollegeCourse.create({
-                    college: college._id,
-                    courseName: courseData.name.trim(),
-                    streams: processedStreams,
-                    isActive: true
-                });
-            }
-        }
-    }
+    await college.populate('createdBy', 'fullName email');
+    await college.populate('updatedBy', 'fullName email');
 
     console.log('✅ College created:', college._id);
 
@@ -122,7 +114,7 @@ const updateCollege = asyncHandler(async (req, res) => {
         });
     }
 
-    const { name, campuses, courses } = req.body;
+    const { name, code, description, isActive } = req.body;
 
     // Check if another college with same name exists
     if (name) {
@@ -139,46 +131,20 @@ const updateCollege = asyncHandler(async (req, res) => {
         }
     }
 
-    // Process campuses
-    const processedCampuses = Array.isArray(campuses) ? campuses.map(campus => ({
-        name: campus.name?.trim() || campus.trim()
-    })) : [];
-
     const updateData = {
         name: name !== undefined ? name.trim() : college.name,
-        campuses: processedCampuses
+        code: code !== undefined ? (code.trim() ? code.trim().toUpperCase() : undefined) : college.code,
+        description: description !== undefined ? (description.trim() || undefined) : college.description,
+        isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : college.isActive,
+        updatedBy: req.user._id
     };
 
     college = await College.findByIdAndUpdate(
         req.params.id,
         updateData,
         { new: true, runValidators: true }
-    );
-
-    // Update courses if provided
-    if (Array.isArray(courses)) {
-        // Delete all existing courses for this college
-        await CollegeCourse.deleteMany({ college: college._id });
-
-        // Create new courses
-        for (const courseData of courses) {
-            if (courseData.name && courseData.name.trim()) {
-                const processedStreams = Array.isArray(courseData.streams)
-                    ? courseData.streams.map(stream => ({
-                        name: stream.name?.trim() || stream.trim(),
-                        isActive: true
-                    }))
-                    : [];
-
-                await CollegeCourse.create({
-                    college: college._id,
-                    courseName: courseData.name.trim(),
-                    streams: processedStreams,
-                    isActive: true
-                });
-            }
-        }
-    }
+    ).populate('createdBy', 'fullName email')
+        .populate('updatedBy', 'fullName email');
 
     console.log('✅ College updated:', college._id);
 
@@ -228,7 +194,12 @@ const getCollegeCourses = asyncHandler(async (req, res) => {
     const { collegeId } = req.params;
     const { isActive } = req.query;
 
-    const courses = await CollegeCourse.find({ college: collegeId })
+    const filter = { college: collegeId };
+    if (isActive !== undefined) {
+        filter.isActive = isActive === 'true';
+    }
+
+    const courses = await CollegeCourse.find(filter)
         .sort({ courseName: 1 })
         .populate('college', 'name code')
         .populate('createdBy', 'fullName email')
@@ -246,7 +217,7 @@ const getCollegeCourses = asyncHandler(async (req, res) => {
 // @access  Private (Super Admin, Staff)
 const createCollegeCourse = asyncHandler(async (req, res) => {
     const { collegeId } = req.params;
-    const { courseName, courseCode, streams } = req.body;
+    const { courseName, courseCode, streams, isActive } = req.body;
 
     // Check if college exists
     const college = await College.findById(collegeId);
@@ -280,7 +251,10 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
         college: collegeId,
         courseName: courseName.trim(),
         courseCode: courseCode ? courseCode.trim() : undefined,
-        streams: processedStreams
+        streams: processedStreams,
+        isActive: isActive !== 'false' && isActive !== false,
+        createdBy: req.user._id,
+        updatedBy: req.user._id
     });
 
     await course.populate('college', 'name code');
@@ -301,7 +275,7 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
 // @access  Private (Super Admin, Staff)
 const updateCollegeCourse = asyncHandler(async (req, res) => {
     const { collegeId, courseId } = req.params;
-    const { courseName, courseCode, streams } = req.body;
+    const { courseName, courseCode, streams, isActive } = req.body;
 
     let course = await CollegeCourse.findOne({
         _id: courseId,
@@ -343,7 +317,9 @@ const updateCollegeCourse = asyncHandler(async (req, res) => {
     const updateData = {
         courseName: courseName !== undefined ? courseName.trim() : course.courseName,
         courseCode: courseCode !== undefined ? (courseCode.trim() || undefined) : course.courseCode,
-        streams: processedStreams
+        streams: processedStreams,
+        isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : course.isActive,
+        updatedBy: req.user._id
     };
 
     course = await CollegeCourse.findByIdAndUpdate(
@@ -395,18 +371,19 @@ const deleteCollegeCourse = asyncHandler(async (req, res) => {
 // @route   GET /api/colleges/public
 // @access  Public
 const getPublicColleges = asyncHandler(async (req, res) => {
-    const colleges = await College.find({})
+    const colleges = await College.find({ isActive: true })
         .sort({ name: 1 })
-        .select('name campuses');
+        .select('name');
 
     // Get courses and campuses for each college
     const collegesWithCourses = await Promise.all(
         colleges.map(async (college) => {
             const courses = await CollegeCourse.find({
-                college: college._id
+                college: college._id,
+                isActive: true
             })
                 .sort({ courseName: 1 })
-                .select('courseName streams');
+                .select('courseName courseCode streams');
 
             const campuses = await Campus.find({
                 college: college._id,
@@ -418,7 +395,6 @@ const getPublicColleges = asyncHandler(async (req, res) => {
             return {
                 _id: college._id,
                 name: college.name,
-                campuses: college.campuses || [],
                 courses: courses.map(c => ({
                     _id: c._id,
                     courseName: c.courseName,
