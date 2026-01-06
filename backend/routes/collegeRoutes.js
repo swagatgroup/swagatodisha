@@ -51,5 +51,22 @@ router.post('/:collegeId/courses', isSuperAdminOrStaff, createCollegeCourse);
 router.put('/:collegeId/courses/:courseId', isSuperAdminOrStaff, updateCollegeCourse);
 router.delete('/:collegeId/courses/:courseId', isSuperAdminOrStaff, deleteCollegeCourse);
 
+// Campus routes for a college
+const {
+    getCampuses: getCollegeCampuses,
+    getCampus: getCollegeCampus,
+    createCampus: createCollegeCampus,
+    updateCampus: updateCollegeCampus,
+    deleteCampus: deleteCollegeCampus,
+    getPublicCampuses: getPublicCollegeCampuses
+} = require('../controllers/campusController');
+
+router.get('/:collegeId/campuses', getCollegeCampuses);
+router.get('/:collegeId/campuses/public', getPublicCollegeCampuses);
+router.get('/:collegeId/campuses/:campusId', getCollegeCampus);
+router.post('/:collegeId/campuses', isSuperAdminOrStaff, createCollegeCampus);
+router.put('/:collegeId/campuses/:campusId', isSuperAdminOrStaff, updateCollegeCampus);
+router.delete('/:collegeId/campuses/:campusId', isSuperAdminOrStaff, deleteCollegeCampus);
+
 module.exports = router;
 

@@ -1010,6 +1010,7 @@ app.use('/api/admin/quick-access', apiRateLimit, quickAccessRoutes);
 // College routes
 app.use('/api/admin/colleges', apiRateLimit, require('./routes/collegeRoutes'));
 app.use('/api/colleges', apiRateLimit, require('./routes/collegeRoutes'));
+app.use('/api/campuses', apiRateLimit, require('./routes/campusRoutes'));
 
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {
