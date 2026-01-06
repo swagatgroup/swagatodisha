@@ -145,6 +145,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         const applications = await StudentApplication.find(filter)
             .populate('user', 'fullName email phoneNumber')
             .populate('referralInfo.referredBy', 'fullName email phoneNumber referralCode')
+            .populate('courseDetails.campus', 'name code')
             .select('+submittedBy') // Ensure submittedBy is included even if populate fails
             .sort(sort)
             .limit(limit * 1)
@@ -617,6 +618,7 @@ router.get('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         const application = await StudentApplication.findById(req.params.id)
             .populate('user', 'firstName lastName email phoneNumber')
             .populate('referralInfo.referredBy', 'firstName lastName referralCode email phoneNumber')
+            .populate('courseDetails.campus', 'name code')
             .exec();
 
         if (!application) {

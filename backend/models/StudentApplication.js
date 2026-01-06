@@ -78,6 +78,19 @@ const studentApplicationSchema = new mongoose.Schema({
                 validator: function (v) { return /^\d{12}$/.test(v); },
                 message: 'Aadhar number must be 12 digits'
             }
+        },
+        category: {
+            type: String,
+            trim: true
+        },
+        religion: {
+            type: String,
+            trim: true
+        },
+        nationality: {
+            type: String,
+            default: 'Indian',
+            trim: true
         }
     },
 
@@ -101,6 +114,16 @@ const studentApplicationSchema = new mongoose.Schema({
                 message: 'WhatsApp number must be a valid 10-digit Indian mobile number'
             }
         },
+        secondaryPhone: {
+            type: String,
+            validate: {
+                validator: function (v) {
+                    if (!v) return true;
+                    return /^[6-9]\d{9}$/.test(v);
+                },
+                message: 'Secondary phone must be a valid 10-digit Indian mobile number'
+            }
+        },
         email: {
             type: String,
             required: true,
@@ -111,6 +134,7 @@ const studentApplicationSchema = new mongoose.Schema({
             street: { type: String, required: true },
             city: { type: String, required: true },
             state: { type: String, required: true },
+            district: { type: String, trim: true },
             pincode: {
                 type: String,
                 required: true,
@@ -125,6 +149,7 @@ const studentApplicationSchema = new mongoose.Schema({
             street: String,
             city: String,
             state: String,
+            district: { type: String, trim: true },
             pincode: {
                 type: String,
                 validate: {
