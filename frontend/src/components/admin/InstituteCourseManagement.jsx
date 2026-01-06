@@ -882,67 +882,67 @@ const InstituteCourseManagement = () => {
                         )}
                     </div>
                     <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
-                    {!selectedCollege ? (
-                        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                            <i className="fa-solid fa-building text-4xl mb-4"></i>
-                            <p>Select an institute to view campuses</p>
-                        </div>
-                    ) : campuses.length === 0 ? (
-                        <div className="p-8 text-center text-gray-500 dark:text-gray-400">
-                            <i className="fa-solid fa-building text-4xl mb-4"></i>
-                            <p>No campuses found for {selectedCollege.name}</p>
-                            <p className="text-sm mt-2">Click "Add Campus" to create one</p>
-                        </div>
-                    ) : (
-                        campuses.map((campus) => (
-                            <div key={campus._id} className="p-4">
-                                <div className="flex justify-between items-start">
-                                    <div className="flex-1">
-                                        <div className="flex items-center space-x-2">
-                                            <h4 className="font-medium text-gray-900 dark:text-gray-100">
-                                                {campus.name}
-                                            </h4>
-                                            {campus.isActive ? (
-                                                <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full">
-                                                    Active
-                                                </span>
-                                            ) : (
-                                                <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">
-                                                    Inactive
-                                                </span>
+                        {!selectedCollege ? (
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                                <i className="fa-solid fa-building text-4xl mb-4"></i>
+                                <p>Select an institute to view campuses</p>
+                            </div>
+                        ) : campuses.length === 0 ? (
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                                <i className="fa-solid fa-building text-4xl mb-4"></i>
+                                <p>No campuses found for {selectedCollege.name}</p>
+                                <p className="text-sm mt-2">Click "Add Campus" to create one</p>
+                            </div>
+                        ) : (
+                            campuses.map((campus) => (
+                                <div key={campus._id} className="p-4">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex-1">
+                                            <div className="flex items-center space-x-2">
+                                                <h4 className="font-medium text-gray-900 dark:text-gray-100">
+                                                    {campus.name}
+                                                </h4>
+                                                {campus.isActive ? (
+                                                    <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full">
+                                                        Active
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">
+                                                        Inactive
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {campus.code && (
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                    Code: {campus.code}
+                                                </p>
+                                            )}
+                                            {campus.description && (
+                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                    {campus.description}
+                                                </p>
                                             )}
                                         </div>
-                                        {campus.code && (
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                Code: {campus.code}
-                                            </p>
-                                        )}
-                                        {campus.description && (
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                {campus.description}
-                                            </p>
-                                        )}
-                                    </div>
-                                    <div className="flex space-x-2 ml-4">
-                                        <button
-                                            onClick={() => handleEditCampus(campus)}
-                                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
-                                            title="Edit"
-                                        >
-                                            <i className="fa-solid fa-edit"></i>
-                                        </button>
-                                        <button
-                                            onClick={() => handleDeleteCampus(campus._id)}
-                                            className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
-                                            title="Delete"
-                                        >
-                                            <i className="fa-solid fa-trash"></i>
-                                        </button>
+                                        <div className="flex space-x-2 ml-4">
+                                            <button
+                                                onClick={() => handleEditCampus(campus)}
+                                                className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded"
+                                                title="Edit"
+                                            >
+                                                <i className="fa-solid fa-edit"></i>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteCampus(campus._id)}
+                                                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                                title="Delete"
+                                            >
+                                                <i className="fa-solid fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))
-                    )}
+                            ))
+                        )}
                     </div>
                 </div>
             </div>
