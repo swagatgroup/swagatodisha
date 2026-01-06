@@ -448,26 +448,59 @@ const StudentManagement = () => {
         try {
             showLoading('Updating student...');
 
-            console.log('🔄 Updating student:', selectedStudent._id, 'with data:', editData);
-            await api.put(`/api/admin/students/${selectedStudent._id}`, editData);
+            // Structure the data properly for the backend
+            const updatePayload = {
+                personalDetails: {
+                    ...editData.personalDetails
+                },
+                contactDetails: {
+                    ...editData.contactDetails,
+                    // Ensure permanentAddress is properly structured
+                    permanentAddress: {
+                        street: editData.contactDetails?.permanentAddress?.street || editData.contactDetails?.address || '',
+                        city: editData.contactDetails?.permanentAddress?.city || editData.contactDetails?.city || '',
+                        state: editData.contactDetails?.permanentAddress?.state || '',
+                        pincode: editData.contactDetails?.permanentAddress?.pincode || ''
+                    }
+                },
+                courseDetails: {
+                    ...editData.courseDetails
+                },
+                guardianDetails: {
+                    ...editData.guardianDetails
+                }
+            };
 
+            // Remove empty address fields
+            if (updatePayload.contactDetails.permanentAddress) {
+                Object.keys(updatePayload.contactDetails.permanentAddress).forEach(key => {
+                    if (!updatePayload.contactDetails.permanentAddress[key]) {
+                        delete updatePayload.contactDetails.permanentAddress[key];
+                    }
+                });
+            }
+
+            console.log('🔄 Updating student:', selectedStudent._id, 'with data:', updatePayload);
+            const response = await api.put(`/api/admin/students/${selectedStudent._id}`, updatePayload);
+
+            console.log('✅ Update response:', response.data);
+            
             setShowEditModal(false);
             setEditData({});
             setSelectedStudent(null);
             closeLoading();
             showSuccess('Student updated successfully!');
 
-            fetchStudents(); // Refresh the list
+            // Refresh the list to show updated data
+            await fetchStudents();
         } catch (error) {
             console.error('❌ Error updating student:', error);
             console.error('❌ Error response:', error.response?.data);
             closeLoading();
-
-            // For demo purposes, just show success message
-            setShowEditModal(false);
-            setEditData({});
-            setSelectedStudent(null);
-            showSuccess('Student updated (demo mode)');
+            
+            // Show actual error message
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update student';
+            showError(errorMessage);
         }
     };
 

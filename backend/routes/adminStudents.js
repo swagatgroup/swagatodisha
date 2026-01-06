@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
+const Campus = require('../models/Campus');
 const { protect, authorize } = require('../middleware/auth');
 
 const router = express.Router();
@@ -790,23 +791,91 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
                 delete personalDetailsUpdate.aadharNumber;
             }
             
-            Object.assign(application.personalDetails, personalDetailsUpdate);
+            // Ensure personalDetails object exists
+            if (!application.personalDetails) {
+                application.personalDetails = {};
+            }
+            
+            // Update each field individually to ensure proper saving
+            Object.keys(personalDetailsUpdate).forEach(key => {
+                if (personalDetailsUpdate[key] !== undefined && personalDetailsUpdate[key] !== null) {
+                    application.personalDetails[key] = personalDetailsUpdate[key];
+                }
+            });
         }
 
         // Update contact details
         if (updateData.contactDetails) {
-            Object.assign(application.contactDetails, updateData.contactDetails);
+            // Deep merge contact details, especially for nested objects like permanentAddress
+            if (updateData.contactDetails.permanentAddress) {
+                if (!application.contactDetails.permanentAddress) {
+                    application.contactDetails.permanentAddress = {};
+                }
+                Object.assign(application.contactDetails.permanentAddress, updateData.contactDetails.permanentAddress);
+            }
+            
+            // Update other contact details fields
+            Object.keys(updateData.contactDetails).forEach(key => {
+                if (key !== 'permanentAddress') {
+                    application.contactDetails[key] = updateData.contactDetails[key];
+                }
+            });
         }
 
         // Update course details - Staff cannot update education details
         if (updateData.courseDetails) {
+            const courseDetailsUpdate = { ...updateData.courseDetails };
+            
+            // Handle campus field - it must be an ObjectId, not a string
+            if (courseDetailsUpdate.campus !== undefined) {
+                // Check if campus is a valid ObjectId
+                if (mongoose.Types.ObjectId.isValid(courseDetailsUpdate.campus)) {
+                    // It's already a valid ObjectId, keep it
+                    // Verify the campus exists
+                    const campusExists = await Campus.findById(courseDetailsUpdate.campus);
+                    if (!campusExists) {
+                        // Campus doesn't exist, remove it from update
+                        delete courseDetailsUpdate.campus;
+                    }
+                } else if (typeof courseDetailsUpdate.campus === 'string') {
+                    if (courseDetailsUpdate.campus.trim() === '' || courseDetailsUpdate.campus === null) {
+                        // Empty string or null - clear the campus
+                        courseDetailsUpdate.campus = null;
+                    } else {
+                        // It's a string (campus name), try to find the campus by name
+                        try {
+                            const campus = await Campus.findOne({ name: courseDetailsUpdate.campus.trim() });
+                            if (campus) {
+                                courseDetailsUpdate.campus = campus._id;
+                            } else {
+                                // Campus not found by name, remove it from update to keep existing value
+                                console.log(`⚠️ Campus "${courseDetailsUpdate.campus}" not found, keeping existing campus value`);
+                                delete courseDetailsUpdate.campus;
+                            }
+                        } catch (error) {
+                            console.error('Error finding campus:', error);
+                            delete courseDetailsUpdate.campus;
+                        }
+                    }
+                } else if (courseDetailsUpdate.campus === null) {
+                    // Explicitly set to null to clear campus
+                    courseDetailsUpdate.campus = null;
+                } else {
+                    // Invalid value, remove it from update
+                    delete courseDetailsUpdate.campus;
+                }
+            }
+            
             if (isSuperAdmin) {
                 // Super admin can update all course details
-                Object.assign(application.courseDetails, updateData.courseDetails);
+                Object.keys(courseDetailsUpdate).forEach(key => {
+                    if (courseDetailsUpdate[key] !== undefined) {
+                        application.courseDetails[key] = courseDetailsUpdate[key];
+                    }
+                });
             } else {
                 // Staff cannot update institute, course, stream, or campus
                 const restrictedFields = ['institutionName', 'selectedCollege', 'selectedCourse', 'courseName', 'stream', 'campus'];
-                const courseDetailsUpdate = { ...updateData.courseDetails };
                 
                 restrictedFields.forEach(field => {
                     if (courseDetailsUpdate[field] !== undefined) {
@@ -816,7 +885,7 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
                 
                 // Only update non-restricted fields
                 Object.keys(courseDetailsUpdate).forEach(key => {
-                    if (!restrictedFields.includes(key)) {
+                    if (!restrictedFields.includes(key) && courseDetailsUpdate[key] !== undefined) {
                         application.courseDetails[key] = courseDetailsUpdate[key];
                     }
                 });
@@ -825,12 +894,42 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 
         // Update guardian details
         if (updateData.guardianDetails) {
-            Object.assign(application.guardianDetails, updateData.guardianDetails);
+            // Ensure guardianDetails object exists
+            if (!application.guardianDetails) {
+                application.guardianDetails = {};
+            }
+            
+            // Update each field individually to ensure proper saving
+            Object.keys(updateData.guardianDetails).forEach(key => {
+                if (updateData.guardianDetails[key] !== undefined && updateData.guardianDetails[key] !== null) {
+                    application.guardianDetails[key] = updateData.guardianDetails[key];
+                }
+            });
         }
 
         // Update financial details
         if (updateData.financialDetails) {
             Object.assign(application.financialDetails, updateData.financialDetails);
+        }
+
+        // Mark nested objects as modified for Mongoose to save them properly
+        if (updateData.personalDetails) {
+            application.markModified('personalDetails');
+        }
+        if (updateData.contactDetails) {
+            application.markModified('contactDetails');
+            if (updateData.contactDetails.permanentAddress) {
+                application.markModified('contactDetails.permanentAddress');
+            }
+        }
+        if (updateData.courseDetails) {
+            application.markModified('courseDetails');
+        }
+        if (updateData.guardianDetails) {
+            application.markModified('guardianDetails');
+        }
+        if (updateData.financialDetails) {
+            application.markModified('financialDetails');
         }
 
         await application.save();
