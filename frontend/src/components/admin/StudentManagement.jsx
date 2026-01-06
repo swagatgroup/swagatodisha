@@ -1399,15 +1399,19 @@ const StudentManagement = () => {
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.dateOfBirth || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {selectedStudent.personalDetails?.dateOfBirth 
+                                                    ? formatDate(selectedStudent.personalDetails.dateOfBirth) 
+                                                    : 'N/A'}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Aadhar Number</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.aadharNumber || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.aadharNumber || selectedStudent.aadharNumber || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Category</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.category || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.category || selectedStudent.personalDetails?.status || selectedStudent.category || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Religion</label>
@@ -1574,7 +1578,11 @@ const StudentManagement = () => {
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.campus || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {selectedStudent.courseDetails?.campus?.name || 
+                                                 (typeof selectedStudent.courseDetails?.campus === 'string' ? selectedStudent.courseDetails.campus : '') || 
+                                                 'N/A'}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -1590,27 +1598,19 @@ const StudentManagement = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianName || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianName || selectedStudent.guardianName || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Phone</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianPhone || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianPhone || selectedStudent.guardianPhone || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Relation</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianRelation || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.relationship || selectedStudent.guardianDetails?.guardianRelation || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Email</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianEmail || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Occupation</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianOccupation || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Annual Income</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.annualIncome || selectedStudent.financialDetails?.annualIncome || 'N/A'}</p>
                                         </div>
                                     </div>
                                 </div>
