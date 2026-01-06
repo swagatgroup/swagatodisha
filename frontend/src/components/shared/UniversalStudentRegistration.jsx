@@ -187,6 +187,17 @@ const UniversalStudentRegistration = ({
     return selectedCourse?.streams || [];
   };
 
+  // Get campuses for selected college
+  const getCampusesForCollege = () => {
+    if (!formData.courseDetails.selectedCollege) {
+      return [];
+    }
+    const selectedCollegeData = colleges.find(
+      (college) => college._id === formData.courseDetails.selectedCollege
+    );
+    return selectedCollegeData?.campuses || [];
+  };
+
   const loadExistingApplication = async () => {
     // Only try to load from server if user is authenticated
     if (user && token) {
@@ -1058,6 +1069,7 @@ const UniversalStudentRegistration = ({
     const availableStreams = getStreamsForCourse();
     const availableCampuses = getCampusesForCollege();
     const hasStreams = availableStreams.length > 0;
+    const hasCampuses = availableCampuses.length > 0;
 
     return (
       <div className="space-y-6">

@@ -278,6 +278,8 @@ const StudentManagement = () => {
                 page: currentPage,
                 limit: 20,
                 session: selectedSession, // REQUIRED - always pass session
+                sortBy: 'personalDetails.fullName',
+                sortOrder: 'asc', // A to Z (alphabetical order)
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
@@ -291,7 +293,18 @@ const StudentManagement = () => {
             console.log('📊 Filters from API:', response.data.data?.filters);
 
             if (response.data.success) {
-                setStudents(response.data.data.students || []);
+                let studentsData = response.data.data.students || [];
+
+                // Frontend sorting fallback: Sort by fullName A to Z (alphabetical)
+                studentsData = [...studentsData].sort((a, b) => {
+                    const nameA = (a.fullName || '').toLowerCase().trim();
+                    const nameB = (b.fullName || '').toLowerCase().trim();
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0; // Ascending (A to Z)
+                });
+
+                setStudents(studentsData);
                 const pagination = response.data.data.pagination || {};
                 setTotalPages(pagination.totalPages || 1);
                 setTotalItems(pagination.totalItems || 0);
@@ -534,6 +547,8 @@ const StudentManagement = () => {
                 page: 1,
                 limit: 10000, // Large limit to get all records
                 session: selectedSession, // REQUIRED - always pass session
+                sortBy: 'personalDetails.fullName',
+                sortOrder: 'asc', // A to Z (alphabetical order)
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
@@ -543,12 +558,21 @@ const StudentManagement = () => {
             const response = await api.get(`/api/admin/students?${params}`);
             closeLoading();
 
-            const allStudents = response.data.success ? (response.data.data.students || []) : [];
+            let allStudents = response.data.success ? (response.data.data.students || []) : [];
 
             if (allStudents.length === 0) {
                 showError('No students to export');
                 return;
             }
+
+            // Sort by fullName A to Z (alphabetical) for export consistency
+            allStudents = [...allStudents].sort((a, b) => {
+                const nameA = (a.fullName || '').toLowerCase().trim();
+                const nameB = (b.fullName || '').toLowerCase().trim();
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                return 0; // Ascending (A to Z)
+            });
 
             // Helper function to escape CSV values
             const escapeCSV = (value) => {
