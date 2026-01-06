@@ -1207,9 +1207,18 @@ const StudentManagement = () => {
                                                     onClick={() => {
                                                         setSelectedStudent(student);
                                                         setEditData({
-                                                            personalDetails: student.personalDetails || {},
+                                                            personalDetails: {
+                                                                ...student.personalDetails,
+                                                                aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || ''
+                                                            } || {},
                                                             contactDetails: student.contactDetails || {},
-                                                            courseDetails: student.courseDetails || {},
+                                                            courseDetails: {
+                                                                ...student.courseDetails,
+                                                                institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
+                                                                selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
+                                                                stream: student.courseDetails?.stream || '',
+                                                                campus: student.courseDetails?.campus || ''
+                                                            } || {},
                                                             guardianDetails: student.guardianDetails || {}
                                                         });
                                                         setShowEditModal(true);
@@ -2041,17 +2050,88 @@ const StudentManagement = () => {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                            Course
+                                            Aadhar Number {!isSuperAdmin && <span className="text-xs text-gray-500">(Read-only)</span>}
                                         </label>
                                         <input
                                             type="text"
-                                            value={editData.courseDetails?.selectedCourse || ''}
+                                            value={editData.personalDetails?.aadharNumber || ''}
                                             onChange={(e) => setEditData({
                                                 ...editData,
-                                                courseDetails: { ...editData.courseDetails, selectedCourse: e.target.value }
+                                                personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12) }
                                             })}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            disabled={!isSuperAdmin}
+                                            maxLength="12"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                         />
+                                    </div>
+                                </div>
+                                
+                                {/* Education Details Section */}
+                                <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+                                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                        Education Details {!isSuperAdmin && <span className="text-xs font-normal text-gray-500">(Read-only for Staff)</span>}
+                                    </h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Institute
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.courseDetails?.institutionName || (typeof editData.courseDetails?.selectedCollege === 'object' ? editData.courseDetails.selectedCollege?.name || editData.courseDetails.selectedCollege?.code || '' : '') || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    courseDetails: { ...editData.courseDetails, institutionName: e.target.value }
+                                                })}
+                                                disabled={!isSuperAdmin}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Course
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.courseDetails?.selectedCourse || editData.courseDetails?.courseName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    courseDetails: { ...editData.courseDetails, selectedCourse: e.target.value, courseName: e.target.value }
+                                                })}
+                                                disabled={!isSuperAdmin}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Stream
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.courseDetails?.stream || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    courseDetails: { ...editData.courseDetails, stream: e.target.value }
+                                                })}
+                                                disabled={!isSuperAdmin}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Campus
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.courseDetails?.campus || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    courseDetails: { ...editData.courseDetails, campus: e.target.value }
+                                                })}
+                                                disabled={!isSuperAdmin}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                            />
+                                        </div>
                                     </div>
                                 </div>
                             </div>

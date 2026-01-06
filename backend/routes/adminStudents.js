@@ -779,10 +779,18 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         }
 
         const updateData = req.body;
+        const isSuperAdmin = req.user.role === 'super_admin';
 
         // Update personal details
         if (updateData.personalDetails) {
-            Object.assign(application.personalDetails, updateData.personalDetails);
+            const personalDetailsUpdate = { ...updateData.personalDetails };
+            
+            // Staff cannot update Aadhar number
+            if (!isSuperAdmin && personalDetailsUpdate.aadharNumber !== undefined) {
+                delete personalDetailsUpdate.aadharNumber;
+            }
+            
+            Object.assign(application.personalDetails, personalDetailsUpdate);
         }
 
         // Update contact details
@@ -790,9 +798,29 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
             Object.assign(application.contactDetails, updateData.contactDetails);
         }
 
-        // Update course details
+        // Update course details - Staff cannot update education details
         if (updateData.courseDetails) {
-            Object.assign(application.courseDetails, updateData.courseDetails);
+            if (isSuperAdmin) {
+                // Super admin can update all course details
+                Object.assign(application.courseDetails, updateData.courseDetails);
+            } else {
+                // Staff cannot update institute, course, stream, or campus
+                const restrictedFields = ['institutionName', 'selectedCollege', 'selectedCourse', 'courseName', 'stream', 'campus'];
+                const courseDetailsUpdate = { ...updateData.courseDetails };
+                
+                restrictedFields.forEach(field => {
+                    if (courseDetailsUpdate[field] !== undefined) {
+                        delete courseDetailsUpdate[field];
+                    }
+                });
+                
+                // Only update non-restricted fields
+                Object.keys(courseDetailsUpdate).forEach(key => {
+                    if (!restrictedFields.includes(key)) {
+                        application.courseDetails[key] = courseDetailsUpdate[key];
+                    }
+                });
+            }
         }
 
         // Update guardian details
