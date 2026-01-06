@@ -881,7 +881,7 @@ const InstituteCourseManagement = () => {
                             </button>
                         )}
                     </div>
-                <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
+                    <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
                     {!selectedCollege ? (
                         <div className="p-8 text-center text-gray-500 dark:text-gray-400">
                             <i className="fa-solid fa-building text-4xl mb-4"></i>
@@ -943,7 +943,7 @@ const InstituteCourseManagement = () => {
                             </div>
                         ))
                     )}
-                </div>
+                    </div>
                 </div>
             </div>
         </div>
