@@ -274,9 +274,8 @@ const studentSchema = new mongoose.Schema({
         customCourse: String, // For "Other" option
         stream: String, // Dynamic based on course selection
         campus: {
-            type: String,
-            enum: ['Sargiguda', 'Ghantiguda', 'Online'],
-            default: 'Sargiguda'
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Campus'
         }
     },
 

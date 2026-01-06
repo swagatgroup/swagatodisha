@@ -1,5 +1,6 @@
 const College = require('../models/College');
 const CollegeCourse = require('../models/CollegeCourse');
+const Campus = require('../models/Campus');
 const { asyncHandler } = require('../middleware/errorHandler');
 
 // @desc    Get all colleges
@@ -374,7 +375,7 @@ const getPublicColleges = asyncHandler(async (req, res) => {
         .sort({ name: 1 })
         .select('name');
 
-    // Get courses for each college
+    // Get courses and campuses for each college
     const collegesWithCourses = await Promise.all(
         colleges.map(async (college) => {
             const courses = await CollegeCourse.find({
@@ -384,6 +385,13 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                 .sort({ courseName: 1 })
                 .select('courseName courseCode streams');
 
+            const campuses = await Campus.find({
+                college: college._id,
+                isActive: true
+            })
+                .sort({ name: 1 })
+                .select('name code');
+
             return {
                 _id: college._id,
                 name: college.name,
@@ -391,6 +399,11 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                     _id: c._id,
                     courseName: c.courseName,
                     streams: c.streams ? c.streams.filter(s => s.isActive).map(s => s.name) : []
+                })),
+                campuses: campuses.map(c => ({
+                    _id: c._id,
+                    name: c.name,
+                    code: c.code
                 }))
             };
         })
