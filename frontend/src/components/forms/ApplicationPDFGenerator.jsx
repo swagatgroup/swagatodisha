@@ -252,6 +252,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 { label: 'WhatsApp', value: pdfContent.contactDetails.whatsappNumber || 'N/A', icon: '💬' },
                 { label: 'Street Address', value: pdfContent.contactDetails.permanentAddress?.street || 'N/A', icon: '📍' },
                 { label: 'City', value: pdfContent.contactDetails.permanentAddress?.city || 'N/A', icon: '🏙️' },
+                { label: 'District', value: pdfContent.contactDetails.permanentAddress?.district || 'N/A', icon: '🏛️' },
                 { label: 'State', value: pdfContent.contactDetails.permanentAddress?.state || 'N/A', icon: '🗺️' },
                 { label: 'Pincode', value: pdfContent.contactDetails.permanentAddress?.pincode || 'N/A', icon: '📮' }
             ];
