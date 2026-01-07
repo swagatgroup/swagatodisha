@@ -97,14 +97,23 @@ const createCollege = asyncHandler(async (req, res) => {
     }
 
     try {
-        const college = await College.create({
+        // Normalize code - convert empty strings, null, or whitespace to undefined
+        // Only include code field if it has a valid value
+        const collegeData = {
             name: name.trim(),
-            code: code ? code.trim().toUpperCase() : undefined,
             description: description ? description.trim() : undefined,
             isActive: isActive !== 'false' && isActive !== false,
             createdBy: req.user._id,
             updatedBy: req.user._id
-        });
+        };
+
+        // Only add code if it's a valid non-empty string
+        if (code !== undefined && code !== null && code !== '' && typeof code === 'string' && code.trim()) {
+            collegeData.code = code.trim().toUpperCase();
+        }
+        // If code is not provided or is empty, don't include it (allows sparse index to work)
+
+        const college = await College.create(collegeData);
 
         await college.populate('createdBy', 'fullName email');
         await college.populate('updatedBy', 'fullName email');
@@ -121,14 +130,20 @@ const createCollege = asyncHandler(async (req, res) => {
         if (error.code === 11000) {
             // Determine which field caused the duplicate
             const duplicateField = error.keyPattern ? Object.keys(error.keyPattern)[0] : 'unknown';
-            const duplicateValue = error.keyValue ? error.keyValue[duplicateField] : 'unknown';
+            const duplicateValue = error.keyValue ? error.keyValue[duplicateField] : null;
 
             let message = 'Duplicate field value entered';
             
             if (duplicateField === 'name') {
                 message = `A college with the name "${duplicateValue}" already exists. Please use a different name.`;
             } else if (duplicateField === 'code') {
-                message = `A college with the code "${duplicateValue || 'null'}" already exists. Please use a different code or leave it empty.`;
+                // Handle null/undefined values properly
+                if (duplicateValue === null || duplicateValue === undefined || duplicateValue === 'null') {
+                    // This shouldn't happen with sparse index, but handle it gracefully
+                    message = 'A college without a code already exists. Please provide a unique code or contact support.';
+                } else {
+                    message = `A college with the code "${duplicateValue}" already exists. Please use a different code.`;
+                }
             } else {
                 message = `A college with this ${duplicateField} already exists. Please use a different value.`;
             }
@@ -174,9 +189,19 @@ const updateCollege = asyncHandler(async (req, res) => {
         }
     }
 
+    // Normalize code - convert empty strings, null, or whitespace to undefined
+    let normalizedCode = college.code;
+    if (code !== undefined) {
+        if (code === null || code === '' || (typeof code === 'string' && !code.trim())) {
+            normalizedCode = undefined;
+        } else if (typeof code === 'string' && code.trim()) {
+            normalizedCode = code.trim().toUpperCase();
+        }
+    }
+
     const updateData = {
         name: name !== undefined ? name.trim() : college.name,
-        code: code !== undefined ? (code.trim() ? code.trim().toUpperCase() : undefined) : college.code,
+        code: normalizedCode,
         description: description !== undefined ? (description.trim() || undefined) : college.description,
         isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : college.isActive,
         updatedBy: req.user._id

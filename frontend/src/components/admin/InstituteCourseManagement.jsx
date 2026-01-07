@@ -19,6 +19,7 @@ const InstituteCourseManagement = () => {
 
     const [collegeFormData, setCollegeFormData] = useState({
         name: '',
+        code: '',
         isActive: true
     });
 
@@ -99,7 +100,19 @@ const InstituteCourseManagement = () => {
                 : '/api/colleges';
             const method = editingCollege ? 'put' : 'post';
 
-            const response = await api[method](url, collegeFormData);
+            // Prepare data - only include code if it has a value
+            const submitData = {
+                name: collegeFormData.name.trim(),
+                isActive: collegeFormData.isActive
+            };
+            // Only include code if it's a non-empty string (not null, undefined, or empty)
+            const codeValue = collegeFormData.code;
+            if (codeValue && typeof codeValue === 'string' && codeValue.trim().length > 0) {
+                submitData.code = codeValue.trim();
+            }
+            // Explicitly don't send code field if empty to avoid null conflicts
+
+            const response = await api[method](url, submitData);
             if (response.data.success) {
                 showSuccessToast(
                     editingCollege 
@@ -108,7 +121,7 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCollegeForm(false);
                 setEditingCollege(null);
-                setCollegeFormData({ name: '', isActive: true });
+                setCollegeFormData({ name: '', code: '', isActive: true });
                 fetchColleges();
             }
         } catch (error) {
@@ -164,6 +177,7 @@ const InstituteCourseManagement = () => {
         setEditingCollege(college);
         setCollegeFormData({
             name: college.name || '',
+            code: college.code || '',
             isActive: college.isActive !== false
         });
         setShowCollegeForm(true);
@@ -344,7 +358,7 @@ const InstituteCourseManagement = () => {
                         onClick={() => {
                             setShowCollegeForm(true);
                             setEditingCollege(null);
-                            setCollegeFormData({ name: '', isActive: true });
+                            setCollegeFormData({ name: '', code: '', isActive: true });
                         }}
                         className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                     >
@@ -389,6 +403,21 @@ const InstituteCourseManagement = () => {
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Institute Code (Optional)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={collegeFormData.code}
+                                        onChange={(e) => setCollegeFormData(prev => ({ ...prev, code: e.target.value }))}
+                                        placeholder="Leave empty if not needed"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    />
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        Unique code for this institute. Leave empty if not needed.
+                                    </p>
                                 </div>
                                 <div className="flex items-center">
                                     <input
