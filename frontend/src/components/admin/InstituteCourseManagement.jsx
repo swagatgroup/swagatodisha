@@ -19,22 +19,17 @@ const InstituteCourseManagement = () => {
 
     const [collegeFormData, setCollegeFormData] = useState({
         name: '',
-        code: '',
-        description: '',
         isActive: true
     });
 
     const [courseFormData, setCourseFormData] = useState({
         courseName: '',
-        courseCode: '',
         streams: [],
         isActive: true
     });
 
     const [campusFormData, setCampusFormData] = useState({
         name: '',
-        code: '',
-        description: '',
         isActive: true
     });
 
@@ -113,7 +108,7 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCollegeForm(false);
                 setEditingCollege(null);
-                setCollegeFormData({ name: '', code: '', description: '', isActive: true });
+                setCollegeFormData({ name: '', isActive: true });
                 fetchColleges();
             }
         } catch (error) {
@@ -150,7 +145,7 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCourseForm(false);
                 setEditingCourse(null);
-                setCourseFormData({ courseName: '', courseCode: '', streams: [], isActive: true });
+                setCourseFormData({ courseName: '', streams: [], isActive: true });
                 setNewStream('');
                 fetchCourses(selectedCollege._id);
             }
@@ -169,8 +164,6 @@ const InstituteCourseManagement = () => {
         setEditingCollege(college);
         setCollegeFormData({
             name: college.name || '',
-            code: college.code || '',
-            description: college.description || '',
             isActive: college.isActive !== false
         });
         setShowCollegeForm(true);
@@ -180,7 +173,6 @@ const InstituteCourseManagement = () => {
         setEditingCourse(course);
         setCourseFormData({
             courseName: course.courseName || '',
-            courseCode: course.courseCode || '',
             streams: course.streams ? course.streams.map(s => s.name || s) : [],
             isActive: course.isActive !== false
         });
@@ -279,7 +271,7 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCampusForm(false);
                 setEditingCampus(null);
-                setCampusFormData({ name: '', code: '', description: '', isActive: true });
+                setCampusFormData({ name: '', isActive: true });
                 fetchCampuses(selectedCollege._id);
             }
         } catch (error) {
@@ -297,8 +289,6 @@ const InstituteCourseManagement = () => {
         setEditingCampus(campus);
         setCampusFormData({
             name: campus.name || '',
-            code: campus.code || '',
-            description: campus.description || '',
             isActive: campus.isActive !== false
         });
         setShowCampusForm(true);
@@ -354,7 +344,7 @@ const InstituteCourseManagement = () => {
                         onClick={() => {
                             setShowCollegeForm(true);
                             setEditingCollege(null);
-                            setCollegeFormData({ name: '', code: '', description: '', isActive: true });
+                            setCollegeFormData({ name: '', isActive: true });
                         }}
                         className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                     >
@@ -398,28 +388,6 @@ const InstituteCourseManagement = () => {
                                         onChange={(e) => setCollegeFormData(prev => ({ ...prev, name: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Institute Code (Optional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={collegeFormData.code}
-                                        onChange={(e) => setCollegeFormData(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Description (Optional)
-                                    </label>
-                                    <textarea
-                                        value={collegeFormData.description}
-                                        onChange={(e) => setCollegeFormData(prev => ({ ...prev, description: e.target.value }))}
-                                        rows="3"
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                     />
                                 </div>
                                 <div className="flex items-center">
@@ -496,17 +464,6 @@ const InstituteCourseManagement = () => {
                                         onChange={(e) => setCourseFormData(prev => ({ ...prev, courseName: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Course Code (Optional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={courseFormData.courseCode}
-                                        onChange={(e) => setCourseFormData(prev => ({ ...prev, courseCode: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                     />
                                 </div>
                                 <div>
@@ -629,28 +586,6 @@ const InstituteCourseManagement = () => {
                                         onChange={(e) => setCampusFormData(prev => ({ ...prev, name: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Campus Code (Optional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={campusFormData.code}
-                                        onChange={(e) => setCampusFormData(prev => ({ ...prev, code: e.target.value.toUpperCase() }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Description (Optional)
-                                    </label>
-                                    <textarea
-                                        value={campusFormData.description}
-                                        onChange={(e) => setCampusFormData(prev => ({ ...prev, description: e.target.value }))}
-                                        rows="3"
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                     />
                                 </div>
                                 <div className="flex items-center">
@@ -779,7 +714,7 @@ const InstituteCourseManagement = () => {
                                 onClick={() => {
                                     setShowCourseForm(true);
                                     setEditingCourse(null);
-                                    setCourseFormData({ courseName: '', courseCode: '', streams: [], isActive: true });
+                                    setCourseFormData({ courseName: '', streams: [], isActive: true });
                                     setNewStream('');
                                 }}
                                 className="px-3 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
@@ -872,7 +807,7 @@ const InstituteCourseManagement = () => {
                                 onClick={() => {
                                     setShowCampusForm(true);
                                     setEditingCampus(null);
-                                    setCampusFormData({ name: '', code: '', description: '', isActive: true });
+                                    setCampusFormData({ name: '', isActive: true });
                                 }}
                                 className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
                             >
