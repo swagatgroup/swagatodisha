@@ -189,23 +189,23 @@ const updateCollege = asyncHandler(async (req, res) => {
         }
     }
 
-    // Normalize code - convert empty strings, null, or whitespace to undefined
-    let normalizedCode = college.code;
-    if (code !== undefined) {
-        if (code === null || code === '' || (typeof code === 'string' && !code.trim())) {
-            normalizedCode = undefined;
-        } else if (typeof code === 'string' && code.trim()) {
-            normalizedCode = code.trim().toUpperCase();
-        }
-    }
-
     const updateData = {
         name: name !== undefined ? name.trim() : college.name,
-        code: normalizedCode,
         description: description !== undefined ? (description.trim() || undefined) : college.description,
         isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : college.isActive,
         updatedBy: req.user._id
     };
+
+    // Handle code update - only include if it has a value, or remove it if explicitly set to empty
+    if (code !== undefined) {
+        if (code === null || code === '' || (typeof code === 'string' && !code.trim())) {
+            // Explicitly unset code field (remove it) - prevents storing as null
+            updateData.$unset = { code: '' };
+        } else if (typeof code === 'string' && code.trim()) {
+            // Set code to the provided value
+            updateData.code = code.trim().toUpperCase();
+        }
+    }
 
     college = await College.findByIdAndUpdate(
         req.params.id,
