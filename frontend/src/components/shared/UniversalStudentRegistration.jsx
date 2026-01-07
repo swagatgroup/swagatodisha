@@ -208,7 +208,22 @@ const UniversalStudentRegistration = ({
         );
         if (response.data.success) {
           setApplication(response.data.data);
-          setFormData(response.data.data);
+          // Merge with existing formData to preserve district field if missing in response
+          const loadedData = response.data.data;
+          setFormData((prev) => ({
+            ...prev,
+            ...loadedData,
+            contactDetails: {
+              ...prev.contactDetails,
+              ...loadedData.contactDetails,
+              permanentAddress: {
+                ...prev.contactDetails.permanentAddress,
+                ...(loadedData.contactDetails?.permanentAddress || {}),
+                // Ensure district field exists
+                district: loadedData.contactDetails?.permanentAddress?.district || prev.contactDetails.permanentAddress.district || "",
+              },
+            },
+          }));
         }
       } catch (error) {
         if (error.response?.status !== 404) {
@@ -223,7 +238,20 @@ const UniversalStudentRegistration = ({
       const draftData = localStorage.getItem(draftKey);
       if (draftData) {
         const parsed = JSON.parse(draftData);
-        setFormData((prev) => ({ ...prev, ...parsed }));
+        setFormData((prev) => ({
+          ...prev,
+          ...parsed,
+          contactDetails: {
+            ...prev.contactDetails,
+            ...parsed.contactDetails,
+            permanentAddress: {
+              ...prev.contactDetails.permanentAddress,
+              ...(parsed.contactDetails?.permanentAddress || {}),
+              // Ensure district field exists
+              district: parsed.contactDetails?.permanentAddress?.district || prev.contactDetails.permanentAddress.district || "",
+            },
+          },
+        }));
       }
     } catch (error) {
       console.error("Error loading draft data:", error);
@@ -982,15 +1010,16 @@ const UniversalStudentRegistration = ({
           </label>
           <input
             type="text"
-            value={formData.contactDetails.permanentAddress.city}
+            value={formData.contactDetails?.permanentAddress?.city || ""}
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,
                 contactDetails: {
                   ...prev.contactDetails,
                   permanentAddress: {
-                    ...prev.contactDetails.permanentAddress,
+                    ...prev.contactDetails?.permanentAddress || {},
                     city: e.target.value.toUpperCase(),
+                    district: prev.contactDetails?.permanentAddress?.district || "",
                   },
                 },
               }))
@@ -998,6 +1027,7 @@ const UniversalStudentRegistration = ({
             style={{ textTransform: 'uppercase' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter city"
+            required
           />
           {errors["contactDetails.permanentAddress.city"] && (
             <p className="text-red-500 text-sm mt-1">
@@ -1006,28 +1036,34 @@ const UniversalStudentRegistration = ({
           )}
         </div>
 
-        <div>
+        <div id="district-field-container" style={{ display: 'block' }}>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             District *
           </label>
           <input
+            id="district-input-field"
             type="text"
-            value={formData.contactDetails.permanentAddress.district}
+            name="district"
+            value={formData.contactDetails?.permanentAddress?.district || ""}
             onChange={(e) =>
               setFormData((prev) => ({
                 ...prev,
                 contactDetails: {
                   ...prev.contactDetails,
                   permanentAddress: {
-                    ...prev.contactDetails.permanentAddress,
+                    ...prev.contactDetails?.permanentAddress || {},
+                    city: prev.contactDetails?.permanentAddress?.city || "",
                     district: e.target.value.toUpperCase(),
+                    state: prev.contactDetails?.permanentAddress?.state || "",
+                    pincode: prev.contactDetails?.permanentAddress?.pincode || "",
                   },
                 },
               }))
             }
-            style={{ textTransform: 'uppercase' }}
+            style={{ textTransform: 'uppercase', display: 'block', width: '100%' }}
             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             placeholder="Enter district"
+            required
           />
           {errors["contactDetails.permanentAddress.district"] && (
             <p className="text-red-500 text-sm mt-1">

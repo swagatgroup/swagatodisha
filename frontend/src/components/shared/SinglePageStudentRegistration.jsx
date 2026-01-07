@@ -68,6 +68,7 @@ const SinglePageStudentRegistration = ({
             permanentAddress: {
                 street: "",
                 city: "",
+                district: "",
                 state: "",
                 pincode: "",
                 country: "India",
@@ -157,7 +158,13 @@ const SinglePageStudentRegistration = ({
                         const existingData = response.data.data;
                         setFormData({
                             personalDetails: existingData.personalDetails || formData.personalDetails,
-                            contactDetails: existingData.contactDetails || formData.contactDetails,
+                            contactDetails: {
+                                ...(existingData.contactDetails || formData.contactDetails),
+                                permanentAddress: {
+                                    ...(existingData.contactDetails?.permanentAddress || formData.contactDetails.permanentAddress),
+                                    district: existingData.contactDetails?.permanentAddress?.district || "",
+                                },
+                            },
                             courseDetails: existingData.courseDetails || formData.courseDetails,
                             guardianDetails: existingData.guardianDetails || formData.guardianDetails,
                             documents: existingData.documents || [],
@@ -217,6 +224,9 @@ const SinglePageStudentRegistration = ({
         }
         if (!formData.contactDetails.permanentAddress.city.trim()) {
             newErrors["contactDetails.permanentAddress.city"] = "City is required";
+        }
+        if (!formData.contactDetails.permanentAddress.district?.trim()) {
+            newErrors["contactDetails.permanentAddress.district"] = "District is required";
         }
         if (!formData.contactDetails.permanentAddress.state.trim()) {
             newErrors["contactDetails.permanentAddress.state"] = "State is required";
@@ -1200,6 +1210,7 @@ const SinglePageStudentRegistration = ({
                                         permanentAddress: {
                                             ...prev.contactDetails.permanentAddress,
                                             city: e.target.value.toUpperCase(),
+                                            district: prev.contactDetails.permanentAddress.district || "",
                                         },
                                     },
                                 }))
@@ -1211,6 +1222,42 @@ const SinglePageStudentRegistration = ({
                         {errors["contactDetails.permanentAddress.city"] && (
                             <p className="text-red-500 text-sm mt-1">
                                 {errors["contactDetails.permanentAddress.city"]}
+                            </p>
+                        )}
+                    </div>
+
+                    <div id="district-field-container">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            District *
+                        </label>
+                        <input
+                            id="district-input-field"
+                            type="text"
+                            name="district"
+                            value={formData.contactDetails.permanentAddress.district || ""}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    contactDetails: {
+                                        ...prev.contactDetails,
+                                        permanentAddress: {
+                                            ...prev.contactDetails.permanentAddress,
+                                            city: prev.contactDetails.permanentAddress.city || "",
+                                            district: e.target.value.toUpperCase(),
+                                            state: prev.contactDetails.permanentAddress.state || "",
+                                            pincode: prev.contactDetails.permanentAddress.pincode || "",
+                                        },
+                                    },
+                                }))
+                            }
+                            style={{ textTransform: 'uppercase' }}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            placeholder="Enter district"
+                            required
+                        />
+                        {errors["contactDetails.permanentAddress.district"] && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors["contactDetails.permanentAddress.district"]}
                             </p>
                         )}
                     </div>
