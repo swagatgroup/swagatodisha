@@ -278,8 +278,8 @@ const StudentManagement = () => {
                 page: currentPage,
                 limit: 20,
                 session: selectedSession, // REQUIRED - always pass session
-                sortBy: 'personalDetails.fullName',
-                sortOrder: 'asc', // A to Z (alphabetical order)
+                sortBy: 'createdAt',
+                sortOrder: 'desc', // Newer students on top
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
@@ -295,13 +295,11 @@ const StudentManagement = () => {
             if (response.data.success) {
                 let studentsData = response.data.data.students || [];
 
-                // Frontend sorting fallback: Sort by fullName A to Z (alphabetical)
+                // Frontend sorting fallback: Sort by createdAt desc (newest first)
                 studentsData = [...studentsData].sort((a, b) => {
-                    const nameA = (a.fullName || '').toLowerCase().trim();
-                    const nameB = (b.fullName || '').toLowerCase().trim();
-                    if (nameA < nameB) return -1;
-                    if (nameA > nameB) return 1;
-                    return 0; // Ascending (A to Z)
+                    const dateA = new Date(a.createdAt || 0);
+                    const dateB = new Date(b.createdAt || 0);
+                    return dateB - dateA; // Descending (newest first)
                 });
 
                 setStudents(studentsData);
@@ -580,8 +578,8 @@ const StudentManagement = () => {
                 page: 1,
                 limit: 10000, // Large limit to get all records
                 session: selectedSession, // REQUIRED - always pass session
-                sortBy: 'personalDetails.fullName',
-                sortOrder: 'asc', // A to Z (alphabetical order)
+                sortBy: 'createdAt',
+                sortOrder: 'desc', // Newer students on top
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),

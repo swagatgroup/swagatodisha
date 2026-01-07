@@ -272,6 +272,96 @@ const SuperAdminDashboard = () => {
             closeLoading();
             showSuccess(`${student.fullName}'s application has been approved!`);
             fetchStudents();
+            // Refresh stats
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            if (statsRes.data?.success) {
+                setStats(statsRes.data.data);
+            }
+        } catch (error) {
+            closeLoading();
+            handleApiError(error);
+        }
+    };
+
+    const addRejectionDetail = () => {
+        setStatusData({
+            ...statusData,
+            rejectionDetails: [
+                ...statusData.rejectionDetails,
+                {
+                    issue: '',
+                    documentType: '',
+                    actionRequired: '',
+                    priority: 'High',
+                    specificFeedback: ''
+                }
+            ]
+        });
+    };
+
+    const removeRejectionDetail = (index) => {
+        const newDetails = statusData.rejectionDetails.filter((_, i) => i !== index);
+        setStatusData({
+            ...statusData,
+            rejectionDetails: newDetails
+        });
+    };
+
+    const updateRejectionDetail = (index, field, value) => {
+        const newDetails = [...statusData.rejectionDetails];
+        newDetails[index] = { ...newDetails[index], [field]: value };
+        setStatusData({
+            ...statusData,
+            rejectionDetails: newDetails
+        });
+    };
+
+    const handleUpdateStatus = async () => {
+        if (!selectedStudent) {
+            showError('No student selected');
+            return;
+        }
+
+        if (!statusData.status) {
+            showError('Please select a status');
+            return;
+        }
+
+        // If rejecting, check for required rejection fields
+        if (statusData.status === 'REJECTED') {
+            if (!statusData.rejectionReason) {
+                showError('Please select a rejection reason');
+                return;
+            }
+            if (!statusData.rejectionMessage) {
+                showError('Please provide a rejection message');
+                return;
+            }
+        }
+
+        try {
+            showLoading('Updating application status...');
+            const response = await api.put(`/api/admin/students/${selectedStudent._id}/status`, statusData);
+            
+            setShowStatusModal(false);
+            setStatusData({
+                status: '',
+                notes: '',
+                rejectionReason: '',
+                rejectionMessage: '',
+                rejectionDetails: []
+            });
+            setShowRejectionForm(false);
+            setSelectedStudent(null);
+            closeLoading();
+            showSuccess(`Application status updated to ${statusData.status}!`);
+
+            fetchStudents(); // Refresh the list
+            // Refresh stats
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            if (statsRes.data?.success) {
+                setStats(statsRes.data.data);
+            }
         } catch (error) {
             closeLoading();
             handleApiError(error);
@@ -297,8 +387,10 @@ const SuperAdminDashboard = () => {
 
             fetchAdminData();
 
-            // Optionally switch to students tab to see the new registration
-            // setActiveSidebarItem('students');
+            // Refresh the student list to show new student on top
+            if (activeSidebarItem === 'dashboard') {
+                fetchStudents();
+            }
         }
     };
 
@@ -740,7 +832,7 @@ const SuperAdminDashboard = () => {
                                                                             setSelectedStudent(student);
                                                                             setShowDetailsModal(true);
                                                                         }}
-                                                                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                                                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer"
                                                                         title="View Details"
                                                                     >
                                                                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -749,11 +841,11 @@ const SuperAdminDashboard = () => {
                                                                         </svg>
                                                                     </button>
                                                                     {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
-                                                                        <button
-                                                                            onClick={() => handleAcceptApplication(student)}
-                                                                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-                                                                            title="Accept Application"
-                                                                        >
+                                                                    <button
+                                                                        onClick={() => handleAcceptApplication(student)}
+                                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 cursor-pointer"
+                                                                        title="Accept Application"
+                                                                    >
                                                                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                                             </svg>
@@ -773,7 +865,7 @@ const SuperAdminDashboard = () => {
                                                                                 setShowRejectionForm(true);
                                                                                 setShowStatusModal(true);
                                                                             }}
-                                                                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 cursor-pointer"
                                                                             title="Reject Application"
                                                                         >
                                                                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -784,10 +876,17 @@ const SuperAdminDashboard = () => {
                                                                     <button
                                                                         onClick={() => {
                                                                             setSelectedStudent(student);
-                                                                            setStatusData({ status: student.status, notes: '' });
+                                                                            setStatusData({ 
+                                                                                status: student.status, 
+                                                                                notes: '',
+                                                                                rejectionReason: '',
+                                                                                rejectionMessage: '',
+                                                                                rejectionDetails: []
+                                                                            });
+                                                                            setShowRejectionForm(false);
                                                                             setShowStatusModal(true);
                                                                         }}
-                                                                        className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                                                                        className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 cursor-pointer"
                                                                         title="Update Status"
                                                                     >
                                                                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -796,16 +895,14 @@ const SuperAdminDashboard = () => {
                                                                     </button>
                                                                     <button
                                                                         onClick={() => {
-                                                                            setSelectedStudent(student);
-                                                                            setEditData({
-                                                                                personalDetails: student.personalDetails || {},
-                                                                                contactDetails: student.contactDetails || {},
-                                                                                courseDetails: student.courseDetails || {},
-                                                                                guardianDetails: student.guardianDetails || {}
-                                                                            });
-                                                                            setShowEditModal(true);
+                                                                            setActiveSidebarItem('students');
+                                                                            // Store student ID in sessionStorage to auto-select in StudentManagement
+                                                                            if (student._id) {
+                                                                                sessionStorage.setItem('selectedStudentId', student._id);
+                                                                                sessionStorage.setItem('openEditModal', 'true');
+                                                                            }
                                                                         }}
-                                                                        className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
+                                                                        className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer"
                                                                         title="Edit"
                                                                     >
                                                                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -937,6 +1034,422 @@ const SuperAdminDashboard = () => {
             sidebarItems={sidebarItems}
         >
             {renderSidebarContent()}
+            
+            {/* Modals for Dashboard tab */}
+            {activeSidebarItem === 'dashboard' && showDetailsModal && selectedStudent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailsModal(false)}>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Student Details</h3>
+                                <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 hover:text-gray-600">
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="space-y-6">
+                                {/* Personal Information */}
+                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Personal Information</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Full Name</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.fullName || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Father's Name</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.fathersName || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Mother's Name</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.mothersName || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Gender</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.gender || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {selectedStudent.personalDetails?.dateOfBirth ? new Date(selectedStudent.personalDetails.dateOfBirth).toLocaleDateString() : 'N/A'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Aadhar Number</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.aadharNumber || selectedStudent.personalDetails?.aadharNumber || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.category || selectedStudent.personalDetails?.status || selectedStudent.category || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Contact Information */}
+                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Contact Information</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Primary Phone</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">WhatsApp Number</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.whatsappNumber || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                    {selectedStudent.contactDetails?.permanentAddress && (
+                                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                            <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Permanent Address</h5>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="md:col-span-2">
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.street || 'N/A'}</p>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.city || 'N/A'}</p>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.district || 'N/A'}</p>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.state || 'N/A'}</p>
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.pincode || 'N/A'}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Course Information */}
+                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Course Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName || 'Swagat Group of Institutions'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.selectedCourse || selectedStudent.course || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Stream</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.stream || 'N/A'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.campus || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Guardian Information */}
+                                {selectedStudent.guardianDetails && (
+                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                        <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Guardian Information</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                            <div>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Name</label>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianName || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Phone</label>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianPhone || 'N/A'}</p>
+                                            </div>
+                                            <div>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Relationship</label>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.relationship || 'N/A'}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            <div className="mt-6 flex justify-end">
+                                <button onClick={() => setShowDetailsModal(false)} className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* Status Update Modal */}
+            {activeSidebarItem === 'dashboard' && showStatusModal && selectedStudent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => {
+                    setShowStatusModal(false);
+                    setShowRejectionForm(false);
+                    setStatusData({
+                        status: '',
+                        notes: '',
+                        rejectionReason: '',
+                        rejectionMessage: '',
+                        rejectionDetails: []
+                    });
+                }}>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                Update Status - {selectedStudent.fullName}
+                            </h3>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Status
+                                    </label>
+                                    <select
+                                        value={statusData.status}
+                                        onChange={(e) => {
+                                            const newStatus = e.target.value;
+                                            setStatusData({
+                                                ...statusData,
+                                                status: newStatus,
+                                                rejectionReason: '',
+                                                rejectionMessage: '',
+                                                rejectionDetails: []
+                                            });
+                                            setShowRejectionForm(newStatus === 'REJECTED');
+                                        }}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    >
+                                        <option value="">Select Status</option>
+                                        <option value="DRAFT">Draft</option>
+                                        <option value="SUBMITTED">Submitted</option>
+                                        <option value="UNDER_REVIEW">Under Review</option>
+                                        <option value="APPROVED">Approved</option>
+                                        <option value="REJECTED">Rejected</option>
+                                        <option value="COMPLETE">Complete (Graduated)</option>
+                                        <option value="CANCELLED">Cancelled</option>
+                                    </select>
+                                </div>
+
+                                {/* Rejection Form */}
+                                {showRejectionForm && (
+                                    <div className="border border-red-200 dark:border-red-800 rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
+                                        <h4 className="text-md font-semibold text-red-800 dark:text-red-200 mb-4">
+                                            Rejection Details
+                                        </h4>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                    Rejection Reason *
+                                                </label>
+                                                <select
+                                                    value={statusData.rejectionReason}
+                                                    onChange={(e) => setStatusData({ ...statusData, rejectionReason: e.target.value })}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                >
+                                                    <option value="">Select Rejection Reason</option>
+                                                    <option value="incomplete_documents">Incomplete Documents</option>
+                                                    <option value="invalid_documents">Invalid Documents</option>
+                                                    <option value="eligibility_criteria">Does Not Meet Eligibility Criteria</option>
+                                                    <option value="document_quality">Poor Document Quality</option>
+                                                    <option value="missing_information">Missing Required Information</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                    Rejection Message *
+                                                </label>
+                                                <textarea
+                                                    value={statusData.rejectionMessage}
+                                                    onChange={(e) => setStatusData({ ...statusData, rejectionMessage: e.target.value })}
+                                                    rows={3}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                    placeholder="Explain what the student needs to do to fix the issues..."
+                                                />
+                                            </div>
+
+                                            {/* Rejection Details */}
+                                            <div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Specific Issues
+                                                    </label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={addRejectionDetail}
+                                                        className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                                    >
+                                                        + Add Issue
+                                                    </button>
+                                                </div>
+
+                                                {statusData.rejectionDetails.map((detail, index) => (
+                                                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 mb-3 bg-white dark:bg-gray-800">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                Issue #{index + 1}
+                                                            </h5>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeRejectionDetail(index)}
+                                                                className="text-red-600 hover:text-red-800 text-sm"
+                                                            >
+                                                                Remove
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Issue Description
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.issue || ''}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'issue', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., Certificate is too old"
+                                                                />
+                                                            </div>
+
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Document Type
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.documentType || ''}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'documentType', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., 10th Grade Certificate"
+                                                                />
+                                                            </div>
+
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Action Required
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.actionRequired || ''}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'actionRequired', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., Provide recent certificate"
+                                                                />
+                                                            </div>
+
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Priority
+                                                                </label>
+                                                                <select
+                                                                    value={detail.priority || 'High'}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'priority', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                >
+                                                                    <option value="High">High</option>
+                                                                    <option value="Medium">Medium</option>
+                                                                    <option value="Low">Low</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-2">
+                                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                Specific Feedback
+                                                            </label>
+                                                            <textarea
+                                                                value={detail.specificFeedback || ''}
+                                                                onChange={(e) => updateRejectionDetail(index, 'specificFeedback', e.target.value)}
+                                                                rows={2}
+                                                                className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                placeholder="Additional specific feedback for this issue..."
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Notes (Optional)
+                                    </label>
+                                    <textarea
+                                        value={statusData.notes || ''}
+                                        onChange={(e) => setStatusData({ ...statusData, notes: e.target.value })}
+                                        rows={3}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        placeholder="Add any notes about this status change..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3 mt-6">
+                                <button
+                                    onClick={() => {
+                                        setShowStatusModal(false);
+                                        setShowRejectionForm(false);
+                                        setStatusData({
+                                            status: '',
+                                            notes: '',
+                                            rejectionReason: '',
+                                            rejectionMessage: '',
+                                            rejectionDetails: []
+                                        });
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleUpdateStatus}
+                                    className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 ${statusData.status === 'REJECTED'
+                                        ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                                        : 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500'
+                                        }`}
+                                >
+                                    {statusData.status === 'REJECTED' ? 'Reject Application' : 'Update Status'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {activeSidebarItem === 'dashboard' && showEditModal && selectedStudent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Student</h3>
+                                <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className="text-center py-8 text-gray-500">
+                                <p>Please use the "Students" tab from the sidebar to edit student details with full functionality.</p>
+                                <button onClick={() => {
+                                    setShowEditModal(false);
+                                    setActiveSidebarItem('students');
+                                }} className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
+                                    Go to Students Tab
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </DashboardLayout>
     );
 };

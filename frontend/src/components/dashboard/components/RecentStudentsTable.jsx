@@ -18,6 +18,8 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const [itemsPerPage] = useState(10);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [editData, setEditData] = useState({});
     const [filters, setFilters] = useState({
         statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
         courses: [],
@@ -319,6 +321,99 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
         }
     };
 
+    const handleEditStudent = (student) => {
+        setSelectedStudent(student);
+        setEditData({
+            personalDetails: {
+                fullName: student.personalDetails?.fullName || '',
+                fathersName: student.personalDetails?.fathersName || '',
+                mothersName: student.personalDetails?.mothersName || '',
+                dateOfBirth: student.personalDetails?.dateOfBirth || '',
+                gender: student.personalDetails?.gender || '',
+                aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
+                category: student.personalDetails?.category || student.personalDetails?.status || student.category || ''
+            },
+            contactDetails: {
+                email: student.contactDetails?.email || student.email || '',
+                primaryPhone: student.contactDetails?.primaryPhone || student.phone || '',
+                whatsappNumber: student.contactDetails?.whatsappNumber || '',
+                permanentAddress: {
+                    street: student.contactDetails?.permanentAddress?.street || student.contactDetails?.address || '',
+                    city: student.contactDetails?.permanentAddress?.city || student.contactDetails?.city || '',
+                    district: student.contactDetails?.permanentAddress?.district || '',
+                    state: student.contactDetails?.permanentAddress?.state || '',
+                    pincode: student.contactDetails?.permanentAddress?.pincode || ''
+                }
+            },
+            courseDetails: {
+                ...student.courseDetails,
+                institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
+                selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
+                stream: student.courseDetails?.stream || '',
+                campus: student.courseDetails?.campus || ''
+            },
+            guardianDetails: {
+                guardianName: student.guardianDetails?.guardianName || '',
+                relationship: student.guardianDetails?.relationship || '',
+                guardianPhone: student.guardianDetails?.guardianPhone || '',
+                guardianEmail: student.guardianDetails?.guardianEmail || ''
+            }
+        });
+        setShowEditModal(true);
+    };
+
+    const handleEdit = async () => {
+        try {
+            const updatePayload = {
+                personalDetails: {
+                    ...editData.personalDetails
+                },
+                contactDetails: {
+                    ...editData.contactDetails,
+                    permanentAddress: {
+                        street: editData.contactDetails?.permanentAddress?.street || editData.contactDetails?.address || '',
+                        city: editData.contactDetails?.permanentAddress?.city || editData.contactDetails?.city || '',
+                        district: editData.contactDetails?.permanentAddress?.district || '',
+                        state: editData.contactDetails?.permanentAddress?.state || '',
+                        pincode: editData.contactDetails?.permanentAddress?.pincode || ''
+                    }
+                },
+                courseDetails: {
+                    ...editData.courseDetails
+                },
+                guardianDetails: {
+                    ...editData.guardianDetails
+                }
+            };
+
+            // Remove empty address fields
+            if (updatePayload.contactDetails.permanentAddress) {
+                Object.keys(updatePayload.contactDetails.permanentAddress).forEach(key => {
+                    if (!updatePayload.contactDetails.permanentAddress[key]) {
+                        delete updatePayload.contactDetails.permanentAddress[key];
+                    }
+                });
+            }
+
+            const response = await api.put(`/api/admin/students/${selectedStudent._id}`, updatePayload);
+
+            setShowEditModal(false);
+            setEditData({});
+            setSelectedStudent(null);
+            showSuccess('Student updated successfully!');
+
+            // Refresh the list
+            await fetchRecentStudents();
+            if (onStudentUpdate) {
+                onStudentUpdate(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error updating student:', error);
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update student';
+            showError(errorMessage);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -573,6 +668,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     </svg>
                                                 </button>
                                                 <button
+                                                    onClick={() => handleEditStudent(student)}
                                                     className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
                                                     title="Edit"
                                                 >
@@ -1177,6 +1273,114 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Edit Student Modal */}
+            {showEditModal && selectedStudent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Student</h3>
+                                <button
+                                    onClick={() => {
+                                        setShowEditModal(false);
+                                        setEditData({});
+                                        setSelectedStudent(null);
+                                    }}
+                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                >
+                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            {/* Personal Details */}
+                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Personal Details</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.fullName || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, fullName: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aadhar Number</label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.aadharNumber || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12) }
+                                            })}
+                                            maxLength="12"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Contact Details */}
+                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Contact Details</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                                        <input
+                                            type="email"
+                                            value={editData.contactDetails?.email || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: { ...editData.contactDetails, email: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Primary Phone</label>
+                                        <input
+                                            type="tel"
+                                            value={editData.contactDetails?.primaryPhone || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+                                <button
+                                    onClick={() => {
+                                        setShowEditModal(false);
+                                        setEditData({});
+                                        setSelectedStudent(null);
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleEdit}
+                                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                                >
+                                    Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
