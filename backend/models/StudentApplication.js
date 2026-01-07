@@ -133,8 +133,8 @@ const studentApplicationSchema = new mongoose.Schema({
         permanentAddress: {
             street: { type: String, required: true },
             city: { type: String, required: true },
+            district: { type: String, required: true, trim: true },
             state: { type: String, required: true },
-            district: { type: String, trim: true },
             pincode: {
                 type: String,
                 required: true,

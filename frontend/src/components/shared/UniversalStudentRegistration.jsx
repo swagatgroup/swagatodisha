@@ -56,6 +56,7 @@ const UniversalStudentRegistration = ({
       permanentAddress: {
         street: "",
         city: "",
+        district: "",
         state: "",
         pincode: "",
         country: "India",
@@ -285,6 +286,10 @@ const UniversalStudentRegistration = ({
         if (!formData.contactDetails.permanentAddress.city.trim()) {
           newErrors["contactDetails.permanentAddress.city"] =
             "City is required";
+        }
+        if (!formData.contactDetails.permanentAddress.district.trim()) {
+          newErrors["contactDetails.permanentAddress.district"] =
+            "District is required";
         }
         if (!formData.contactDetails.permanentAddress.state.trim()) {
           newErrors["contactDetails.permanentAddress.state"] =
@@ -1003,6 +1008,36 @@ const UniversalStudentRegistration = ({
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            District *
+          </label>
+          <input
+            type="text"
+            value={formData.contactDetails.permanentAddress.district}
+            onChange={(e) =>
+              setFormData((prev) => ({
+                ...prev,
+                contactDetails: {
+                  ...prev.contactDetails,
+                  permanentAddress: {
+                    ...prev.contactDetails.permanentAddress,
+                    district: e.target.value.toUpperCase(),
+                  },
+                },
+              }))
+            }
+            style={{ textTransform: 'uppercase' }}
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            placeholder="Enter district"
+          />
+          {errors["contactDetails.permanentAddress.district"] && (
+            <p className="text-red-500 text-sm mt-1">
+              {errors["contactDetails.permanentAddress.district"]}
+            </p>
+          )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             State *
           </label>
           <input
@@ -1445,6 +1480,7 @@ const UniversalStudentRegistration = ({
               </strong>{" "}
               {formData.contactDetails.permanentAddress.street},{" "}
               {formData.contactDetails.permanentAddress.city},{" "}
+              {formData.contactDetails.permanentAddress.district},{" "}
               {formData.contactDetails.permanentAddress.state} -{" "}
               {formData.contactDetails.permanentAddress.pincode}
             </div>
