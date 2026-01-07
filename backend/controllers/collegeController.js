@@ -68,37 +68,80 @@ const createCollege = asyncHandler(async (req, res) => {
         });
     }
 
-    // Check if college with same name exists
+    // Check if college with same name exists (case-insensitive)
     const existingCollege = await College.findOne({
-        name: name.trim()
+        name: { $regex: new RegExp(`^${name.trim()}$`, 'i') }
     });
 
     if (existingCollege) {
         return res.status(400).json({
             success: false,
-            message: 'College with this name already exists'
+            message: `A college with the name "${name.trim()}" already exists. Please use a different name.`,
+            field: 'name'
         });
     }
 
-    const college = await College.create({
-        name: name.trim(),
-        code: code ? code.trim().toUpperCase() : undefined,
-        description: description ? description.trim() : undefined,
-        isActive: isActive !== 'false' && isActive !== false,
-        createdBy: req.user._id,
-        updatedBy: req.user._id
-    });
+    // Check if college with same code exists (if code is provided)
+    if (code && code.trim()) {
+        const existingCodeCollege = await College.findOne({
+            code: code.trim().toUpperCase()
+        });
 
-    await college.populate('createdBy', 'fullName email');
-    await college.populate('updatedBy', 'fullName email');
+        if (existingCodeCollege) {
+            return res.status(400).json({
+                success: false,
+                message: `A college with the code "${code.trim().toUpperCase()}" already exists. Please use a different code.`,
+                field: 'code'
+            });
+        }
+    }
 
-    console.log('✅ College created:', college._id);
+    try {
+        const college = await College.create({
+            name: name.trim(),
+            code: code ? code.trim().toUpperCase() : undefined,
+            description: description ? description.trim() : undefined,
+            isActive: isActive !== 'false' && isActive !== false,
+            createdBy: req.user._id,
+            updatedBy: req.user._id
+        });
 
-    res.status(201).json({
-        success: true,
-        message: 'College created successfully',
-        data: college
-    });
+        await college.populate('createdBy', 'fullName email');
+        await college.populate('updatedBy', 'fullName email');
+
+        console.log('✅ College created:', college._id);
+
+        res.status(201).json({
+            success: true,
+            message: 'College created successfully',
+            data: college
+        });
+    } catch (error) {
+        // Handle duplicate key errors
+        if (error.code === 11000) {
+            // Determine which field caused the duplicate
+            const duplicateField = error.keyPattern ? Object.keys(error.keyPattern)[0] : 'unknown';
+            const duplicateValue = error.keyValue ? error.keyValue[duplicateField] : 'unknown';
+
+            let message = 'Duplicate field value entered';
+            
+            if (duplicateField === 'name') {
+                message = `A college with the name "${duplicateValue}" already exists. Please use a different name.`;
+            } else if (duplicateField === 'code') {
+                message = `A college with the code "${duplicateValue || 'null'}" already exists. Please use a different code or leave it empty.`;
+            } else {
+                message = `A college with this ${duplicateField} already exists. Please use a different value.`;
+            }
+
+            return res.status(400).json({
+                success: false,
+                message,
+                field: duplicateField
+            });
+        }
+        // Re-throw other errors to be handled by asyncHandler
+        throw error;
+    }
 });
 
 // @desc    Update college
