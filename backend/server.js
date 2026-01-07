@@ -991,6 +991,7 @@ app.use('/api/payments', apiRateLimit, paymentRoutes);
 // This ensures /api/admin/students/bulk matches before /api/admin/students/:studentId
 app.use('/api/admin/students', apiRateLimit, adminStudentsRoutes);
 app.use('/api/admin', apiRateLimit, adminRoutes);
+app.use('/api/admin/fix', apiRateLimit, require('./routes/fixCollegeIndex'));
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
