@@ -43,6 +43,8 @@ const collegeSchema = new mongoose.Schema({
 // Indexes
 collegeSchema.index({ name: 1 });
 collegeSchema.index({ isActive: 1 });
+// Unique sparse index on code - allows multiple null/undefined values
+collegeSchema.index({ code: 1 }, { unique: true, sparse: true });
 
 module.exports = mongoose.model('College', collegeSchema);
 
