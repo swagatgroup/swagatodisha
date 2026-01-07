@@ -1246,15 +1246,12 @@ const StudentManagement = () => {
                                                                 mothersName: student.personalDetails?.mothersName || '',
                                                                 dateOfBirth: student.personalDetails?.dateOfBirth || '',
                                                                 gender: student.personalDetails?.gender || '',
-                                                                aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
-                                                                religion: student.personalDetails?.religion || '',
-                                                                nationality: student.personalDetails?.nationality || 'Indian'
+                                                                aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || ''
                                                             },
                                                             contactDetails: {
                                                                 email: student.contactDetails?.email || student.email || '',
                                                                 primaryPhone: student.contactDetails?.primaryPhone || student.phone || '',
                                                                 whatsappNumber: student.contactDetails?.whatsappNumber || '',
-                                                                secondaryPhone: student.contactDetails?.secondaryPhone || '',
                                                                 permanentAddress: {
                                                                     street: student.contactDetails?.permanentAddress?.street || student.contactDetails?.address || '',
                                                                     city: student.contactDetails?.permanentAddress?.city || student.contactDetails?.city || '',
@@ -1413,14 +1410,6 @@ const StudentManagement = () => {
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Category</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.category || selectedStudent.personalDetails?.status || selectedStudent.category || 'N/A'}</p>
                                         </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Religion</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.religion || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Nationality</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.nationality || 'Indian'}</p>
-                                        </div>
                                     </div>
                                 </div>
 
@@ -1436,10 +1425,6 @@ const StudentManagement = () => {
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Primary Phone</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Secondary Phone</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.secondaryPhone || 'N/A'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
@@ -2156,34 +2141,6 @@ const StudentManagement = () => {
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                             />
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Religion
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={editData.personalDetails?.religion || ''}
-                                                onChange={(e) => setEditData({
-                                                    ...editData,
-                                                    personalDetails: { ...editData.personalDetails, religion: e.target.value }
-                                                })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Nationality
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={editData.personalDetails?.nationality || 'Indian'}
-                                                onChange={(e) => setEditData({
-                                                    ...editData,
-                                                    personalDetails: { ...editData.personalDetails, nationality: e.target.value }
-                                                })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            />
-                                        </div>
                                     </div>
                                 </div>
 
@@ -2231,20 +2188,6 @@ const StudentManagement = () => {
                                                 onChange={(e) => setEditData({
                                                     ...editData,
                                                     contactDetails: { ...editData.contactDetails, whatsappNumber: e.target.value }
-                                                })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Secondary Phone
-                                            </label>
-                                            <input
-                                                type="tel"
-                                                value={editData.contactDetails?.secondaryPhone || ''}
-                                                onChange={(e) => setEditData({
-                                                    ...editData,
-                                                    contactDetails: { ...editData.contactDetails, secondaryPhone: e.target.value }
                                                 })}
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                             />
