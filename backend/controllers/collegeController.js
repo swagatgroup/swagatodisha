@@ -81,40 +81,30 @@ const createCollege = asyncHandler(async (req, res) => {
         });
     }
 
-    // Process code: if empty/null, set to null (sparse index allows multiple nulls)
-    let processedCode = null;
+    // Check if college with same code exists (if code is provided)
     if (code && code.trim()) {
-        processedCode = code.trim().toUpperCase();
-        
-        // Check if college with same code exists
         const existingCodeCollege = await College.findOne({
-            code: processedCode
+            code: code.trim().toUpperCase()
         });
 
         if (existingCodeCollege) {
             return res.status(400).json({
                 success: false,
-                message: `A college with the code "${processedCode}" already exists. Please use a different code.`,
+                message: `A college with the code "${code.trim().toUpperCase()}" already exists. Please use a different code.`,
                 field: 'code'
             });
         }
     }
 
     try {
-        const collegeData = {
+        const college = await College.create({
             name: name.trim(),
+            code: code ? code.trim().toUpperCase() : undefined,
             description: description ? description.trim() : undefined,
             isActive: isActive !== 'false' && isActive !== false,
             createdBy: req.user._id,
             updatedBy: req.user._id
-        };
-        
-        // Only add code field if it's not null (MongoDB sparse index handles null properly)
-        if (processedCode) {
-            collegeData.code = processedCode;
-        }
-        
-        const college = await College.create(collegeData);
+        });
 
         await college.populate('createdBy', 'fullName email');
         await college.populate('updatedBy', 'fullName email');
@@ -131,19 +121,14 @@ const createCollege = asyncHandler(async (req, res) => {
         if (error.code === 11000) {
             // Determine which field caused the duplicate
             const duplicateField = error.keyPattern ? Object.keys(error.keyPattern)[0] : 'unknown';
-            const duplicateValue = error.keyValue ? error.keyValue[duplicateField] : null;
+            const duplicateValue = error.keyValue ? error.keyValue[duplicateField] : 'unknown';
 
             let message = 'Duplicate field value entered';
             
             if (duplicateField === 'name') {
                 message = `A college with the name "${duplicateValue}" already exists. Please use a different name.`;
             } else if (duplicateField === 'code') {
-                // Handle null/empty code duplicates - this shouldn't happen with sparse index, but handle it anyway
-                if (!duplicateValue || duplicateValue === null || duplicateValue === 'null') {
-                    message = `A college without a code already exists. The code field must be unique when provided, or can be left empty.`;
-                } else {
-                    message = `A college with the code "${duplicateValue}" already exists. Please use a different code or leave it empty.`;
-                }
+                message = `A college with the code "${duplicateValue || 'null'}" already exists. Please use a different code or leave it empty.`;
             } else {
                 message = `A college with this ${duplicateField} already exists. Please use a different value.`;
             }
@@ -178,97 +163,39 @@ const updateCollege = asyncHandler(async (req, res) => {
     if (name) {
         const existingCollege = await College.findOne({
             _id: { $ne: req.params.id },
-            name: { $regex: new RegExp(`^${name.trim()}$`, 'i') }
+            name: name.trim()
         });
 
         if (existingCollege) {
             return res.status(400).json({
                 success: false,
-                message: `A college with the name "${name.trim()}" already exists. Please use a different name.`,
-                field: 'name'
+                message: 'College with this name already exists'
             });
         }
     }
 
-    // Check if another college with same code exists (if code is provided)
     const updateData = {
         name: name !== undefined ? name.trim() : college.name,
+        code: code !== undefined ? (code.trim() ? code.trim().toUpperCase() : undefined) : college.code,
         description: description !== undefined ? (description.trim() || undefined) : college.description,
         isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : college.isActive,
         updatedBy: req.user._id
     };
-    
-    if (code !== undefined) {
-        // If code is empty/null, unset it (sparse index allows multiple nulls/undefined)
-        if (!code || !code.trim()) {
-            updateData.$unset = { code: '' };
-        } else {
-            const processedCode = code.trim().toUpperCase();
-            
-            // Check for duplicate code
-            const existingCodeCollege = await College.findOne({
-                _id: { $ne: req.params.id },
-                code: processedCode
-            });
 
-            if (existingCodeCollege) {
-                return res.status(400).json({
-                    success: false,
-                    message: `A college with the code "${processedCode}" already exists. Please use a different code.`,
-                    field: 'code'
-                });
-            }
-            
-            updateData.code = processedCode;
-        }
-    }
+    college = await College.findByIdAndUpdate(
+        req.params.id,
+        updateData,
+        { new: true, runValidators: true }
+    ).populate('createdBy', 'fullName email')
+        .populate('updatedBy', 'fullName email');
 
-    try {
-        college = await College.findByIdAndUpdate(
-            req.params.id,
-            updateData,
-            { new: true, runValidators: true }
-        ).populate('createdBy', 'fullName email')
-            .populate('updatedBy', 'fullName email');
+    console.log('✅ College updated:', college._id);
 
-        console.log('✅ College updated:', college._id);
-
-        res.status(200).json({
-            success: true,
-            message: 'College updated successfully',
-            data: college
-        });
-    } catch (error) {
-        // Handle duplicate key errors
-        if (error.code === 11000) {
-            // Determine which field caused the duplicate
-            const duplicateField = error.keyPattern ? Object.keys(error.keyPattern)[0] : 'unknown';
-            const duplicateValue = error.keyValue ? error.keyValue[duplicateField] : null;
-
-            let message = 'Duplicate field value entered';
-            
-            if (duplicateField === 'name') {
-                message = `A college with the name "${duplicateValue}" already exists. Please use a different name.`;
-            } else if (duplicateField === 'code') {
-                // Handle null/empty code duplicates - this shouldn't happen with sparse index, but handle it anyway
-                if (!duplicateValue || duplicateValue === null || duplicateValue === 'null') {
-                    message = `A college without a code already exists. The code field must be unique when provided, or can be left empty.`;
-                } else {
-                    message = `A college with the code "${duplicateValue}" already exists. Please use a different code or leave it empty.`;
-                }
-            } else {
-                message = `A college with this ${duplicateField} already exists. Please use a different value.`;
-            }
-
-            return res.status(400).json({
-                success: false,
-                message,
-                field: duplicateField
-            });
-        }
-        // Re-throw other errors to be handled by asyncHandler
-        throw error;
-    }
+    res.status(200).json({
+        success: true,
+        message: 'College updated successfully',
+        data: college
+    });
 });
 
 // @desc    Delete college
