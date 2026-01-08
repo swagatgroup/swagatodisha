@@ -60,6 +60,13 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             status,
             course,
             category,
+            college,
+            gender,
+            district,
+            city,
+            state,
+            stream,
+            campus,
             submitterRole,
             session: sessionParam,
             sortBy = 'createdAt',
@@ -122,6 +129,51 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             filter['personalDetails.status'] = category;
         }
 
+        // Filter by college
+        if (college && college !== 'all') {
+            // Check if it's an ObjectId or a college name
+            if (college.match(/^[0-9a-fA-F]{24}$/)) {
+                // It's an ObjectId - filter by selectedCollege ID
+                filter['courseDetails.selectedCollege'] = college;
+            } else {
+                // It's a name - filter by institutionName
+                filter['courseDetails.institutionName'] = college;
+            }
+        }
+
+        // Filter by gender
+        if (gender && gender !== 'all') {
+            filter['personalDetails.gender'] = gender;
+        }
+
+        // Filter by district
+        if (district && district !== 'all') {
+            filter['contactDetails.permanentAddress.district'] = district;
+        }
+
+        // Filter by city
+        if (city && city !== 'all') {
+            filter['contactDetails.permanentAddress.city'] = city;
+        }
+
+        // Filter by state
+        if (state && state !== 'all') {
+            filter['contactDetails.permanentAddress.state'] = state;
+        }
+
+        // Filter by stream
+        if (stream && stream !== 'all') {
+            filter['courseDetails.stream'] = stream;
+        }
+
+        // Filter by campus
+        if (campus && campus !== 'all') {
+            // Check if it's an ObjectId
+            if (campus.match(/^[0-9a-fA-F]{24}$/)) {
+                filter['courseDetails.campus'] = campus;
+            }
+        }
+
         // Filter by submitter role or specific submitter
         if (submitterRole && submitterRole !== 'all') {
             // Check if it's a submitter ID (ObjectId format) or role
@@ -172,12 +224,46 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
             courses: [],
             categories: [],
+            colleges: [],
+            genders: [],
+            districts: [],
+            cities: [],
+            states: [],
+            streams: [],
+            campuses: [],
             submitters: []
         };
 
         try {
             filterOptions.courses = await StudentApplication.distinct('courseDetails.selectedCourse');
             filterOptions.categories = await StudentApplication.distinct('personalDetails.status');
+            filterOptions.genders = await StudentApplication.distinct('personalDetails.gender');
+            filterOptions.districts = await StudentApplication.distinct('contactDetails.permanentAddress.district');
+            filterOptions.cities = await StudentApplication.distinct('contactDetails.permanentAddress.city');
+            filterOptions.states = await StudentApplication.distinct('contactDetails.permanentAddress.state');
+            filterOptions.streams = await StudentApplication.distinct('courseDetails.stream');
+            
+            // Get unique colleges (by ID or name)
+            const College = require('../models/College');
+            try {
+                const colleges = await College.find({}).select('_id name code').lean();
+                filterOptions.colleges = colleges;
+            } catch (collegeError) {
+                console.error('Error fetching colleges for filters:', collegeError);
+                // Fallback: get distinct college names from applications
+                const collegeNames = await StudentApplication.distinct('courseDetails.institutionName');
+                filterOptions.colleges = collegeNames.filter(Boolean).map(name => ({ _id: name, name }));
+            }
+
+            // Get unique campuses
+            const Campus = require('../models/Campus');
+            try {
+                const campuses = await Campus.find({}).select('_id name code').lean();
+                filterOptions.campuses = campuses;
+            } catch (campusError) {
+                console.error('Error fetching campuses for filters:', campusError);
+                filterOptions.campuses = [];
+            }
 
             // Get unique submitters (agents and staff) with their names and submission counts
             // Apply session filter if provided

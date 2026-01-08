@@ -11,9 +11,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState(initialFilter);
-    const [filterCourse, setFilterCourse] = useState('all');
-    const [filterSubmitterRole, setFilterSubmitterRole] = useState('all');
+    const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -34,6 +32,14 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const [filters, setFilters] = useState({
         statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
         courses: [],
+        categories: [],
+        colleges: [],
+        genders: [],
+        districts: [],
+        cities: [],
+        states: [],
+        streams: [],
+        campuses: [],
         submitters: []
     });
     const [showDocumentSelectionModal, setShowDocumentSelectionModal] = useState(false);
@@ -60,7 +66,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
         console.log('🔄 RecentStudentsTable: Fetching students for session:', selectedSession);
         fetchRecentStudents();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, selectedSession, searchTerm, filterStatus, filterCourse, filterSubmitterRole]);
+    }, [currentPage, selectedSession, searchTerm, sortBy]);
 
     // Document selection and generation handlers
     const toggleDocumentSelection = (documentId) => {
@@ -262,16 +268,55 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                 return;
             }
 
+            // Map sortBy to backend sortBy and sortOrder
+            let backendSortBy = 'createdAt';
+            let backendSortOrder = 'desc';
+            
+            switch(sortBy) {
+                case 'latest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'oldest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_asc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_desc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'course_asc':
+                    backendSortBy = 'courseDetails.selectedCourse';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'course_desc':
+                    backendSortBy = 'courseDetails.selectedCourse';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'status_asc':
+                    backendSortBy = 'status';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'status_desc':
+                    backendSortBy = 'status';
+                    backendSortOrder = 'desc';
+                    break;
+                default:
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+            }
+
             const params = new URLSearchParams({
                 page: currentPage,
                 limit: itemsPerPage,
-                sortBy: 'createdAt',
-                sortOrder: 'desc',
+                sortBy: backendSortBy,
+                sortOrder: backendSortOrder,
                 session: selectedSession, // REQUIRED - always pass session
-                ...(searchTerm && { search: searchTerm }),
-                ...(filterStatus !== 'all' && { status: filterStatus }),
-                ...(filterCourse !== 'all' && { course: filterCourse }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                ...(searchTerm && { search: searchTerm })
             });
 
             const response = await api.get(`/api/admin/students?${params}`);
@@ -285,6 +330,13 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                     statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
                     courses: [],
                     categories: [],
+                    colleges: [],
+                    genders: [],
+                    districts: [],
+                    cities: [],
+                    states: [],
+                    streams: [],
+                    campuses: [],
                     submitters: []
                 });
             }
@@ -550,72 +602,32 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                 </div>
             </div>
 
-            {/* Filters - EXACT same as StudentManagement */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <input
-                    type="text"
-                    placeholder="Search by name, Aadhar, phone, email..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    <option value="all">Total Students</option>
-                    {(filters.statuses || []).map(status => {
-                        // Map status codes to readable labels
-                        const statusLabels = {
-                            'DRAFT': 'Draft',
-                            'SUBMITTED': 'Submitted',
-                            'UNDER_REVIEW': 'Under Review',
-                            'APPROVED': 'Approved',
-                            'REJECTED': 'Rejected'
-                        };
-                        return (
-                            <option key={status} value={status}>{statusLabels[status] || status}</option>
-                        );
-                    })}
-                </select>
-                <select
-                    value={filterCourse}
-                    onChange={(e) => setFilterCourse(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    <option value="all">All Courses</option>
-                    {(filters.courses || []).map(course => (
-                        <option key={course} value={course}>{course}</option>
-                    ))}
-                </select>
-                <select
-                    value={filterSubmitterRole}
-                    onChange={(e) => setFilterSubmitterRole(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    <option value="all">All Submitters</option>
-                    <option value="student">Student</option>
-                    <optgroup label="Agents">
-                        {(filters.submitters || [])
-                            .filter(s => s.role === 'agent')
-                            .map(submitter => (
-                                <option key={submitter.id} value={submitter.id}>
-                                    {submitter.name} ({submitter.count} submissions)
-                                </option>
-                            ))}
-                    </optgroup>
-                    <optgroup label="Staff">
-                        {(filters.submitters || [])
-                            .filter(s => s.role === 'staff')
-                            .map(submitter => (
-                                <option key={submitter.id} value={submitter.id}>
-                                    {submitter.name} ({submitter.count} submissions)
-                                </option>
-                            ))}
-                    </optgroup>
-                    <option value="super_admin">Super Admin</option>
-                </select>
+            {/* Search and Sort */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="flex-1">
+                    <input
+                        type="text"
+                        placeholder="Search by name, Aadhar, phone, email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                </div>
+                <div className="flex items-center gap-4">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                        Sort by:
+                    </label>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                    >
+                        <option value="latest">Latest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name_asc">Name A-Z</option>
+                        <option value="name_desc">Name Z-A</option>
+                    </select>
+                </div>
             </div>
 
             {/* Students Table - EXACT same structure as StudentManagement */}
@@ -664,23 +676,20 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             No students found
                                         </h3>
                                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                            {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterSubmitterRole !== 'all')
-                                                ? 'Try adjusting your search criteria or filters.'
+                                            {searchTerm
+                                                ? 'Try adjusting your search criteria.'
                                                 : selectedSession
                                                     ? `No admissions found for the ${selectedSession} academic session.`
                                                     : 'No student applications in this session yet.'}
                                         </p>
-                                        {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterSubmitterRole !== 'all') && (
+                                        {searchTerm && (
                                             <button
                                                 onClick={() => {
                                                     setSearchTerm('');
-                                                    setFilterStatus('all');
-                                                    setFilterCourse('all');
-                                                    setFilterSubmitterRole('all');
                                                 }}
                                                 className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
                                             >
-                                                Clear Filters
+                                                Clear Search
                                             </button>
                                         )}
                                     </div>

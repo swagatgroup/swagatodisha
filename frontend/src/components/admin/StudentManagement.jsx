@@ -18,9 +18,7 @@ const StudentManagement = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
-    const [filterStatus, setFilterStatus] = useState('all');
-    const [filterCourse, setFilterCourse] = useState('all');
-    const [filterSubmitterRole, setFilterSubmitterRole] = useState('all');
+    const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -116,7 +114,7 @@ const StudentManagement = () => {
         fetchStudents();
         fetchRejectionReasons();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, selectedSession]);
+    }, [currentPage, searchTerm, sortBy, selectedSession]);
 
     const fetchRejectionReasons = async () => {
         try {
@@ -329,16 +327,55 @@ const StudentManagement = () => {
                 return;
             }
 
+            // Map sortBy to backend sortBy and sortOrder
+            let backendSortBy = 'createdAt';
+            let backendSortOrder = 'desc';
+            
+            switch(sortBy) {
+                case 'latest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'oldest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_asc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_desc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'course_asc':
+                    backendSortBy = 'courseDetails.selectedCourse';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'course_desc':
+                    backendSortBy = 'courseDetails.selectedCourse';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'status_asc':
+                    backendSortBy = 'status';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'status_desc':
+                    backendSortBy = 'status';
+                    backendSortOrder = 'desc';
+                    break;
+                default:
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+            }
+
             const params = new URLSearchParams({
                 page: currentPage,
                 limit: 20,
                 session: selectedSession, // REQUIRED - always pass session
-                sortBy: 'createdAt',
-                sortOrder: 'desc', // Newer students on top
-                ...(searchTerm && { search: searchTerm }),
-                ...(filterStatus !== 'all' && { status: filterStatus }),
-                ...(filterCourse !== 'all' && { course: filterCourse }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                sortBy: backendSortBy,
+                sortOrder: backendSortOrder,
+                ...(searchTerm && { search: searchTerm })
             });
 
             console.log('🔍 Fetching students from:', `/api/admin/students?${params}`);
@@ -970,73 +1007,32 @@ const StudentManagement = () => {
                 </div>
             </div>
 
-            {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <input
-                    type="text"
-                    placeholder="Search by name, Aadhar, phone, email..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-                <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    <option value="all">Total Students</option>
-                    {(filters.statuses || []).map(status => {
-                        // Map status codes to readable labels
-                        const statusLabels = {
-                            'DRAFT': 'Draft',
-                            'SUBMITTED': 'Submitted',
-                            'UNDER_REVIEW': 'Under Review',
-                            'APPROVED': 'Approved',
-                            'REJECTED': 'Rejected',
-                            'COMPLETE': 'Complete'
-                        };
-                        return (
-                            <option key={status} value={status}>{statusLabels[status] || status}</option>
-                        );
-                    })}
-                </select>
-                <select
-                    value={filterCourse}
-                    onChange={(e) => setFilterCourse(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    <option value="all">All Courses</option>
-                    {(filters.courses || []).map(course => (
-                        <option key={course} value={course}>{course}</option>
-                    ))}
-                </select>
-                <select
-                    value={filterSubmitterRole}
-                    onChange={(e) => setFilterSubmitterRole(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                    <option value="all">All Submitters</option>
-                    <option value="student">Student</option>
-                    <optgroup label="Agents">
-                        {(filters.submitters || [])
-                            .filter(s => s.role === 'agent')
-                            .map(submitter => (
-                                <option key={submitter.id} value={submitter.id}>
-                                    {submitter.name} ({submitter.count} submissions)
-                                </option>
-                            ))}
-                    </optgroup>
-                    <optgroup label="Staff">
-                        {(filters.submitters || [])
-                            .filter(s => s.role === 'staff')
-                            .map(submitter => (
-                                <option key={submitter.id} value={submitter.id}>
-                                    {submitter.name} ({submitter.count} submissions)
-                                </option>
-                            ))}
-                    </optgroup>
-                    <option value="super_admin">Super Admin</option>
-                </select>
+            {/* Search and Sort */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <div className="flex-1">
+                    <input
+                        type="text"
+                        placeholder="Search by name, Aadhar, phone, email..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                </div>
+                <div className="flex items-center gap-4">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                        Sort by:
+                    </label>
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                    >
+                        <option value="latest">Latest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="name_asc">Name A-Z</option>
+                        <option value="name_desc">Name Z-A</option>
+                    </select>
+                </div>
             </div>
 
             {/* Action Buttons */}

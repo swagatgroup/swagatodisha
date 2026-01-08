@@ -9,6 +9,13 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
     const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState(initialFilter);
+    const [courseFilter, setCourseFilter] = useState('all');
+    const [categoryFilter, setCategoryFilter] = useState('all');
+    const [genderFilter, setGenderFilter] = useState('all');
+    const [districtFilter, setDistrictFilter] = useState('all');
+    const [cityFilter, setCityFilter] = useState('all');
+    const [stateFilter, setStateFilter] = useState('all');
+    const [streamFilter, setStreamFilter] = useState('all');
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -225,17 +232,72 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
 
     const safeStudents = Array.isArray(students) ? students : [];
 
+    // Get unique values for filters from students
+    const availableCourses = [...new Set(safeStudents.map(s => 
+        s.courseDetails?.selectedCourse || s.courseDetails?.courseName || ''
+    ).filter(Boolean))].sort();
+    
+    const availableCategories = [...new Set(safeStudents.map(s => 
+        s.personalDetails?.category || s.personalDetails?.status || ''
+    ).filter(Boolean))].sort();
+
+    const availableGenders = [...new Set(safeStudents.map(s => 
+        s.personalDetails?.gender || ''
+    ).filter(Boolean))].sort();
+
+    const availableDistricts = [...new Set(safeStudents.map(s => 
+        s.contactDetails?.permanentAddress?.district || ''
+    ).filter(Boolean))].sort();
+
+    const availableCities = [...new Set(safeStudents.map(s => 
+        s.contactDetails?.permanentAddress?.city || ''
+    ).filter(Boolean))].sort();
+
+    const availableStates = [...new Set(safeStudents.map(s => 
+        s.contactDetails?.permanentAddress?.state || ''
+    ).filter(Boolean))].sort();
+
+    const availableStreams = [...new Set(safeStudents.map(s => 
+        s.courseDetails?.stream || ''
+    ).filter(Boolean))].sort();
+
     const filteredStudents = safeStudents.filter(student => {
         const matchesSearch =
             student.personalDetails?.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             student.contactDetails?.primaryPhone?.includes(searchTerm) ||
-            student.personalDetails?.aadharNumber?.includes(searchTerm);
+            student.contactDetails?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            student.personalDetails?.aadharNumber?.includes(searchTerm) ||
+            student.applicationId?.toLowerCase().includes(searchTerm.toLowerCase());
 
         const matchesStatus = statusFilter === 'all' ||
             student.workflowStatus?.currentStage === statusFilter ||
             student.status === statusFilter;
 
-        return matchesSearch && matchesStatus;
+        const matchesCourse = courseFilter === 'all' ||
+            student.courseDetails?.selectedCourse === courseFilter ||
+            student.courseDetails?.courseName === courseFilter;
+
+        const matchesCategory = categoryFilter === 'all' ||
+            student.personalDetails?.category === categoryFilter ||
+            student.personalDetails?.status === categoryFilter;
+
+        const matchesGender = genderFilter === 'all' ||
+            student.personalDetails?.gender === genderFilter;
+
+        const matchesDistrict = districtFilter === 'all' ||
+            student.contactDetails?.permanentAddress?.district === districtFilter;
+
+        const matchesCity = cityFilter === 'all' ||
+            student.contactDetails?.permanentAddress?.city === cityFilter;
+
+        const matchesState = stateFilter === 'all' ||
+            student.contactDetails?.permanentAddress?.state === stateFilter;
+
+        const matchesStream = streamFilter === 'all' ||
+            student.courseDetails?.stream === streamFilter;
+
+        return matchesSearch && matchesStatus && matchesCourse && matchesCategory && 
+               matchesGender && matchesDistrict && matchesCity && matchesState && matchesStream;
     });
 
     const sortedStudents = [...filteredStudents].sort((a, b) => {
@@ -264,30 +326,139 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
     return (
         <div className="space-y-4">
             {/* Search and Filter Controls */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="space-y-4">
+                {/* Search Bar */}
                 <div className="flex-1">
                     <input
                         type="text"
-                        placeholder="Search by name, phone, or Aadhaar..."
+                        placeholder="Search by name, phone, Aadhaar, email, or Application ID..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                     />
                 </div>
-                <div className="sm:w-48">
+                
+                {/* Filters Row 1 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                     >
-                        <option value="all">Total Students</option>
+                        <option value="all">All Status</option>
                         <option value="DRAFT">Draft</option>
                         <option value="SUBMITTED">Submitted</option>
                         <option value="UNDER_REVIEW">Under Review</option>
                         <option value="APPROVED">Approved</option>
                         <option value="REJECTED">Rejected</option>
                     </select>
+                    
+                    <select
+                        value={courseFilter}
+                        onChange={(e) => setCourseFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All Courses</option>
+                        {availableCourses.map(course => (
+                            <option key={course} value={course}>{course}</option>
+                        ))}
+                    </select>
+                    
+                    <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All Categories</option>
+                        {availableCategories.map(category => (
+                            <option key={category} value={category}>{category}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={genderFilter}
+                        onChange={(e) => setGenderFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All Gender</option>
+                        {availableGenders.map(gender => (
+                            <option key={gender} value={gender}>{gender}</option>
+                        ))}
+                    </select>
                 </div>
+
+                {/* Filters Row 2 - Geographical */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select
+                        value={stateFilter}
+                        onChange={(e) => setStateFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All States</option>
+                        {availableStates.map(state => (
+                            <option key={state} value={state}>{state}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={districtFilter}
+                        onChange={(e) => setDistrictFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All Districts</option>
+                        {availableDistricts.map(district => (
+                            <option key={district} value={district}>{district}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={cityFilter}
+                        onChange={(e) => setCityFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All Cities</option>
+                        {availableCities.map(city => (
+                            <option key={city} value={city}>{city}</option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={streamFilter}
+                        onChange={(e) => setStreamFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All Streams</option>
+                        {availableStreams.map(stream => (
+                            <option key={stream} value={stream}>{stream}</option>
+                        ))}
+                    </select>
+                </div>
+                    
+                {(searchTerm || statusFilter !== 'all' || courseFilter !== 'all' || categoryFilter !== 'all' || genderFilter !== 'all' || districtFilter !== 'all' || cityFilter !== 'all' || stateFilter !== 'all' || streamFilter !== 'all') && (
+                    <button
+                        onClick={() => {
+                            setSearchTerm('');
+                            setStatusFilter('all');
+                            setCourseFilter('all');
+                            setCategoryFilter('all');
+                            setGenderFilter('all');
+                            setDistrictFilter('all');
+                            setCityFilter('all');
+                            setStateFilter('all');
+                            setStreamFilter('all');
+                        }}
+                        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+                    >
+                        Clear All Filters
+                    </button>
+                )}
+                
+                {/* Results Count */}
+                {filteredStudents.length !== safeStudents.length && (
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                        Showing {filteredStudents.length} of {safeStudents.length} students
+                    </div>
+                )}
             </div>
 
             {/* Table */}
