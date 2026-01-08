@@ -421,8 +421,41 @@ app.post('/api/application/create', protect, async (req, res) => {
                     .filter(doc => doc && doc.filePath && doc.filePath.trim() !== '');
             }
 
-            // Mark documents as complete if we have at least some documents
-            documentsComplete = processedDocuments.length > 0;
+            // Validate mandatory documents before submission
+            const documentRequirements = require('./config/documentRequirements');
+            const requiredDocs = documentRequirements.required || [];
+            const missingDocuments = [];
+            
+            requiredDocs.forEach(reqDoc => {
+                const uploadedDoc = processedDocuments.find(doc => doc.documentType === reqDoc.key);
+                if (!uploadedDoc || !uploadedDoc.filePath) {
+                    missingDocuments.push(reqDoc.label);
+                }
+            });
+
+            if (missingDocuments.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Missing mandatory documents',
+                    errors: [`Please upload all mandatory documents: ${missingDocuments.join(', ')}`],
+                    missingDocuments: missingDocuments
+                });
+            }
+
+            // Mark documents as complete only if all required documents are present
+            documentsComplete = processedDocuments.length > 0 && missingDocuments.length === 0;
+        } else {
+            // No documents provided - validate mandatory documents are required
+            const documentRequirements = require('./config/documentRequirements');
+            const requiredDocs = documentRequirements.required || [];
+            const missingDocuments = requiredDocs.map(reqDoc => reqDoc.label);
+            
+            return res.status(400).json({
+                success: false,
+                message: 'Missing mandatory documents',
+                errors: [`Please upload all mandatory documents: ${missingDocuments.join(', ')}`],
+                missingDocuments: missingDocuments
+            });
         }
 
         // Create application in database
