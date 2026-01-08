@@ -126,7 +126,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Filter by category
         if (category && category !== 'all') {
-            filter['personalDetails.status'] = category;
+            filter['personalDetails.category'] = category;
         }
 
         // Filter by college

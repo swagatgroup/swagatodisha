@@ -50,6 +50,19 @@ const StudentManagement = () => {
     const [colleges, setColleges] = useState([]);
     const [loadingColleges, setLoadingColleges] = useState(false);
     const isSuperAdmin = user?.role === 'super_admin';
+    
+    // Filter state variables (matching ApplicationReview filters)
+    const [filterStatus, setFilterStatus] = useState('all');
+    const [filterCourse, setFilterCourse] = useState('all');
+    const [filterCategory, setFilterCategory] = useState('all');
+    const [filterCollege, setFilterCollege] = useState('all');
+    const [filterGender, setFilterGender] = useState('all');
+    const [filterDistrict, setFilterDistrict] = useState('all');
+    const [filterCity, setFilterCity] = useState('all');
+    const [filterState, setFilterState] = useState('all');
+    const [filterStream, setFilterStream] = useState('all');
+    const [filterCampus, setFilterCampus] = useState('all');
+    const [filterSubmitterRole, setFilterSubmitterRole] = useState('all'); // Includes staff and agent
 
     useEffect(() => {
         // Reset to page 1 when session changes (but not on initial mount)
@@ -110,11 +123,28 @@ const StudentManagement = () => {
     }, []);
 
     useEffect(() => {
+        if (!selectedSession) return;
+        
         console.log('🔄 StudentManagement: Fetching students for session:', selectedSession);
+        
+        // Reset to page 1 when filters change (except for pagination and sort changes)
+        const hasFilterChanged = 
+            filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || 
+            filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || 
+            filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || 
+            filterCampus !== 'all' || filterSubmitterRole !== 'all' || searchTerm !== '';
+        
+        if (hasFilterChanged && currentPage !== 1) {
+            setCurrentPage(1);
+            return; // Will trigger another fetch when page resets
+        }
+        
         fetchStudents();
         fetchRejectionReasons();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, sortBy, selectedSession]);
+    }, [currentPage, searchTerm, sortBy, selectedSession, filterStatus, filterCourse, 
+        filterCategory, filterCollege, filterGender, filterDistrict, filterCity, 
+        filterState, filterStream, filterCampus, filterSubmitterRole]);
 
     const fetchRejectionReasons = async () => {
         try {
@@ -375,7 +405,18 @@ const StudentManagement = () => {
                 session: selectedSession, // REQUIRED - always pass session
                 sortBy: backendSortBy,
                 sortOrder: backendSortOrder,
-                ...(searchTerm && { search: searchTerm })
+                ...(searchTerm && { search: searchTerm }),
+                ...(filterStatus !== 'all' && { status: filterStatus }),
+                ...(filterCourse !== 'all' && { course: filterCourse }),
+                ...(filterCategory !== 'all' && { category: filterCategory }),
+                ...(filterCollege !== 'all' && { college: filterCollege }),
+                ...(filterGender !== 'all' && { gender: filterGender }),
+                ...(filterDistrict !== 'all' && { district: filterDistrict }),
+                ...(filterCity !== 'all' && { city: filterCity }),
+                ...(filterState !== 'all' && { state: filterState }),
+                ...(filterStream !== 'all' && { stream: filterStream }),
+                ...(filterCampus !== 'all' && { campus: filterCampus }),
+                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
             });
 
             console.log('🔍 Fetching students from:', `/api/admin/students?${params}`);
@@ -683,6 +724,14 @@ const StudentManagement = () => {
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
+                ...(filterCategory !== 'all' && { category: filterCategory }),
+                ...(filterCollege !== 'all' && { college: filterCollege }),
+                ...(filterGender !== 'all' && { gender: filterGender }),
+                ...(filterDistrict !== 'all' && { district: filterDistrict }),
+                ...(filterCity !== 'all' && { city: filterCity }),
+                ...(filterState !== 'all' && { state: filterState }),
+                ...(filterStream !== 'all' && { stream: filterStream }),
+                ...(filterCampus !== 'all' && { campus: filterCampus }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
             });
 
@@ -1035,6 +1084,180 @@ const StudentManagement = () => {
                 </div>
             </div>
 
+            {/* Filter Controls - Matching ApplicationReview filters */}
+            <div className="mb-6 space-y-4">
+                {/* Primary Filters */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Status</option>
+                        {filters.statuses?.map(status => (
+                            <option key={status} value={status}>{status}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterCourse}
+                        onChange={(e) => setFilterCourse(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Courses</option>
+                        {[...new Set(students.map(student => 
+                            student.courseDetails?.selectedCourse || student.courseDetails?.courseName || ''
+                        ).filter(Boolean))].sort().map(course => (
+                            <option key={course} value={course}>{course}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterCategory}
+                        onChange={(e) => setFilterCategory(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Categories</option>
+                        {[...new Set(students.map(student => 
+                            student.personalDetails?.category || ''
+                        ).filter(Boolean))].sort().map(category => (
+                            <option key={category} value={category}>{category}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterGender}
+                        onChange={(e) => setFilterGender(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Gender</option>
+                        {[...new Set(students.map(student => 
+                            student.personalDetails?.gender || ''
+                        ).filter(Boolean))].sort().map(gender => (
+                            <option key={gender} value={gender}>{gender}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Secondary Filters - Geographical */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select
+                        value={filterState}
+                        onChange={(e) => setFilterState(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All States</option>
+                        {[...new Set(students.map(student => 
+                            student.contactDetails?.permanentAddress?.state || ''
+                        ).filter(Boolean))].sort().map(state => (
+                            <option key={state} value={state}>{state}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterDistrict}
+                        onChange={(e) => setFilterDistrict(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Districts</option>
+                        {[...new Set(students.map(student => 
+                            student.contactDetails?.permanentAddress?.district || ''
+                        ).filter(Boolean))].sort().map(district => (
+                            <option key={district} value={district}>{district}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterCity}
+                        onChange={(e) => setFilterCity(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Cities</option>
+                        {[...new Set(students.map(student => 
+                            student.contactDetails?.permanentAddress?.city || ''
+                        ).filter(Boolean))].sort().map(city => (
+                            <option key={city} value={city}>{city}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterStream}
+                        onChange={(e) => setFilterStream(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Streams</option>
+                        {[...new Set(students.map(student => 
+                            student.courseDetails?.stream || ''
+                        ).filter(Boolean))].sort().map(stream => (
+                            <option key={stream} value={stream}>{stream}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Tertiary Filters - College, Campus, and Submitter Role */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select
+                        value={filterCollege}
+                        onChange={(e) => setFilterCollege(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Colleges</option>
+                        {colleges.map(college => {
+                            const collegeId = typeof college === 'object' ? college._id : college;
+                            const collegeName = typeof college === 'object' ? college.name : college;
+                            return (
+                                <option key={collegeId} value={collegeId}>{collegeName}</option>
+                            );
+                        })}
+                    </select>
+                    <select
+                        value={filterCampus}
+                        onChange={(e) => setFilterCampus(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Campuses</option>
+                        {Array.from(new Map(students
+                            .map(student => {
+                                const campus = student.courseDetails?.campus;
+                                if (!campus) return null;
+                                const campusId = typeof campus === 'object' ? campus._id : campus;
+                                const campusName = typeof campus === 'object' ? campus.name : campus;
+                                return campusId ? [campusId, campusName] : null;
+                            })
+                            .filter(Boolean)
+                        ).entries()).map(([campusId, campusName]) => (
+                            <option key={campusId} value={campusId}>{campusName}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterSubmitterRole}
+                        onChange={(e) => setFilterSubmitterRole(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Submitters</option>
+                        <option value="agent">By Agent</option>
+                        <option value="staff">By Staff</option>
+                        <option value="student">By Student</option>
+                        <option value="super_admin">By Super Admin</option>
+                    </select>
+                    {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || filterCampus !== 'all' || filterSubmitterRole !== 'all') && (
+                        <button
+                            onClick={() => {
+                                setSearchTerm('');
+                                setFilterStatus('all');
+                                setFilterCourse('all');
+                                setFilterCategory('all');
+                                setFilterCollege('all');
+                                setFilterGender('all');
+                                setFilterDistrict('all');
+                                setFilterCity('all');
+                                setFilterState('all');
+                                setFilterStream('all');
+                                setFilterCampus('all');
+                                setFilterSubmitterRole('all');
+                            }}
+                            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+                        >
+                            Clear All Filters
+                        </button>
+                    )}
+                </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
                 {/* Export to Excel Button */}
@@ -1124,25 +1347,12 @@ const StudentManagement = () => {
                                             No students found
                                         </h3>
                                         <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                            {searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterSubmitterRole !== 'all'
+                                            {searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || filterCampus !== 'all' || filterSubmitterRole !== 'all'
                                                 ? 'Try adjusting your search criteria or filters.'
                                                 : selectedSession
                                                     ? `No admissions found for the ${selectedSession} academic session.`
                                                     : 'No student applications have been submitted yet.'}
                                         </p>
-                                        {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterSubmitterRole !== 'all') && (
-                                            <button
-                                                onClick={() => {
-                                                    setSearchTerm('');
-                                                    setFilterStatus('all');
-                                                    setFilterCourse('all');
-                                                    setFilterSubmitterRole('all');
-                                                }}
-                                                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                                            >
-                                                Clear Filters
-                                            </button>
-                                        )}
                                     </div>
                                 </td>
                             </tr>
