@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '../../../contexts/SessionContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../utils/api';
-import { showSuccess, showError } from '../../../utils/sweetAlert';
+import { showSuccess, showError, showLoading, closeLoading, handleApiError } from '../../../utils/sweetAlert';
 
 const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const { selectedSession } = useSession();
+    const { user } = useAuth();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -19,7 +21,16 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showStatusModal, setShowStatusModal] = useState(false);
     const [editData, setEditData] = useState({});
+    const [statusData, setStatusData] = useState({
+        status: '',
+        notes: '',
+        rejectionReason: '',
+        rejectionMessage: '',
+        rejectionDetails: []
+    });
+    const [showRejectionForm, setShowRejectionForm] = useState(false);
     const [filters, setFilters] = useState({
         statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
         courses: [],
@@ -29,6 +40,8 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
     const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
     const [generating, setGenerating] = useState(false);
+    
+    const isSuperAdmin = user?.role === 'super_admin';
 
     useEffect(() => {
         // Reset to page 1 when session changes
@@ -364,6 +377,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
 
     const handleEdit = async () => {
         try {
+            showLoading('Updating student...');
             const updatePayload = {
                 personalDetails: {
                     ...editData.personalDetails
@@ -400,6 +414,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             setShowEditModal(false);
             setEditData({});
             setSelectedStudent(null);
+            closeLoading();
             showSuccess('Student updated successfully!');
 
             // Refresh the list
@@ -409,9 +424,102 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             }
         } catch (error) {
             console.error('Error updating student:', error);
+            closeLoading();
             const errorMessage = error.response?.data?.message || error.message || 'Failed to update student';
             showError(errorMessage);
         }
+    };
+
+    const handleAcceptApplication = async (student) => {
+        try {
+            showLoading('Accepting application...');
+            const response = await api.put(`/api/admin/students/${student._id}/status`, {
+                status: 'APPROVED',
+                notes: 'Application approved by admin'
+            });
+            closeLoading();
+            showSuccess(`${student.fullName || student.personalDetails?.fullName || 'Student'}'s application has been approved!`);
+            await fetchRecentStudents();
+            if (onStudentUpdate) {
+                onStudentUpdate(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error accepting application:', error);
+            closeLoading();
+            handleApiError(error);
+        }
+    };
+
+    const handleStatusUpdate = async () => {
+        if (!statusData.status) {
+            showError('Please select a status');
+            return;
+        }
+
+        if (statusData.status === 'REJECTED') {
+            if (!statusData.rejectionMessage) {
+                showError('Please provide a rejection message');
+                return;
+            }
+        }
+
+        try {
+            showLoading('Updating application status...');
+            const response = await api.put(`/api/admin/students/${selectedStudent._id}/status`, statusData);
+            setShowStatusModal(false);
+            setStatusData({
+                status: '',
+                notes: '',
+                rejectionReason: '',
+                rejectionMessage: '',
+                rejectionDetails: []
+            });
+            setShowRejectionForm(false);
+            setSelectedStudent(null);
+            closeLoading();
+            showSuccess(`Application status updated to ${statusData.status}!`);
+            await fetchRecentStudents();
+            if (onStudentUpdate) {
+                onStudentUpdate(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error updating status:', error);
+            closeLoading();
+            handleApiError(error);
+        }
+    };
+
+    const addRejectionDetail = () => {
+        setStatusData({
+            ...statusData,
+            rejectionDetails: [
+                ...statusData.rejectionDetails,
+                {
+                    issue: '',
+                    documentType: '',
+                    actionRequired: '',
+                    priority: 'High',
+                    specificFeedback: ''
+                }
+            ]
+        });
+    };
+
+    const removeRejectionDetail = (index) => {
+        const newDetails = statusData.rejectionDetails.filter((_, i) => i !== index);
+        setStatusData({
+            ...statusData,
+            rejectionDetails: newDetails
+        });
+    };
+
+    const updateRejectionDetail = (index, field, value) => {
+        const newDetails = [...statusData.rejectionDetails];
+        newDetails[index] = { ...newDetails[index], [field]: value };
+        setStatusData({
+            ...statusData,
+            rejectionDetails: newDetails
+        });
     };
 
     if (loading) {
@@ -603,7 +711,12 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 </div>
                                                 <div className="ml-4">
                                                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                        {student.fullName}
+                                                        {(() => {
+                                                            const name = student.fullName || student.personalDetails?.fullName;
+                                                            if (!name) return 'N/A';
+                                                            if (typeof name === 'object') return name.fullName || name.name || 'N/A';
+                                                            return name;
+                                                        })()}
                                                     </div>
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         ID: {student.applicationId}
@@ -621,7 +734,12 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             {student.email}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                            {student.course}
+                                            {(() => {
+                                                const course = student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName;
+                                                if (!course) return 'N/A';
+                                                if (typeof course === 'object') return course.courseName || course.name || course.selectedCourse || 'N/A';
+                                                return course;
+                                            })()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(student.status)}`}>
@@ -667,21 +785,64 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                     </svg>
                                                 </button>
+
+                                                {/* Accept Button - Only for SUBMITTED and UNDER_REVIEW */}
+                                                {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
+                                                    <button
+                                                        onClick={() => handleAcceptApplication(student)}
+                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                                                        title="Accept Application"
+                                                    >
+                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </button>
+                                                )}
+
+                                                {/* Reject Button - Only for SUBMITTED and UNDER_REVIEW */}
+                                                {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setSelectedStudent(student);
+                                                            setStatusData({
+                                                                status: 'REJECTED',
+                                                                notes: '',
+                                                                rejectionReason: '',
+                                                                rejectionMessage: '',
+                                                                rejectionDetails: []
+                                                            });
+                                                            setShowRejectionForm(true);
+                                                            setShowStatusModal(true);
+                                                        }}
+                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                        title="Reject Application"
+                                                    >
+                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                )}
+
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedStudent(student);
+                                                        setStatusData({ status: student.status, notes: '' });
+                                                        setShowStatusModal(true);
+                                                    }}
+                                                    className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                                                    title="Update Status"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </button>
                                                 <button
                                                     onClick={() => handleEditStudent(student)}
-                                                    className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                                                    className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
                                                     title="Edit"
                                                 >
                                                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </button>
-                                                <button
-                                                    className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
-                                                    title="Contact"
-                                                >
-                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                                     </svg>
                                                 </button>
                                             </div>
@@ -782,7 +943,14 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Full Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.fullName || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
+                                                    if (!name) return 'N/A';
+                                                    if (typeof name === 'object') return name.fullName || name.name || 'N/A';
+                                                    return name;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Father's Name</label>
@@ -943,19 +1111,55 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName || 'Swagat Group of Institutions'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const institution = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
+                                                    if (institution) {
+                                                        if (typeof institution === 'object') return institution.name || institution.institutionName || 'Swagat Group of Institutions';
+                                                        return institution;
+                                                    }
+                                                    // Try selectedCollege as fallback
+                                                    const college = selectedStudent.courseDetails?.selectedCollege;
+                                                    if (college) {
+                                                        if (typeof college === 'object') return college.name || college.institutionName || 'Swagat Group of Institutions';
+                                                        return college;
+                                                    }
+                                                    return 'Swagat Group of Institutions';
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.selectedCourse || selectedStudent.course || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const course = selectedStudent.courseDetails?.selectedCourse || selectedStudent.course;
+                                                    if (!course) return 'N/A';
+                                                    if (typeof course === 'object') return course.courseName || course.name || 'N/A';
+                                                    return course;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Stream</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.stream || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const stream = selectedStudent.courseDetails?.stream;
+                                                    if (!stream) return 'N/A';
+                                                    if (typeof stream === 'object') return stream.name || stream.streamName || 'N/A';
+                                                    return stream;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.campus || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const campus = selectedStudent.courseDetails?.campus;
+                                                    if (!campus) return 'N/A';
+                                                    if (typeof campus === 'object') return campus.name || campus.campusName || 'N/A';
+                                                    return campus;
+                                                })()}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -971,11 +1175,25 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianName || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const name = selectedStudent.guardianName || selectedStudent.guardianDetails?.guardianName;
+                                                    if (!name) return 'N/A';
+                                                    if (typeof name === 'object') return name.guardianName || name.name || 'N/A';
+                                                    return name;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Phone</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianPhone || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const phone = selectedStudent.guardianPhone || selectedStudent.guardianDetails?.guardianPhone;
+                                                    if (!phone) return 'N/A';
+                                                    if (typeof phone === 'object') return phone.phone || phone.guardianPhone || 'N/A';
+                                                    return phone;
+                                                })()}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -1375,6 +1593,223 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
                                 >
                                     Save Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Status Update Modal */}
+            {showStatusModal && selectedStudent && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                                Update Status - {(() => {
+                                    const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
+                                    if (!name) return 'Student';
+                                    if (typeof name === 'object') return name.fullName || name.name || 'Student';
+                                    return name;
+                                })()}
+                            </h3>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Status
+                                    </label>
+                                    <select
+                                        value={statusData.status}
+                                        onChange={(e) => {
+                                            const newStatus = e.target.value;
+                                            setStatusData({
+                                                ...statusData,
+                                                status: newStatus,
+                                                rejectionReason: '',
+                                                rejectionMessage: '',
+                                                rejectionDetails: []
+                                            });
+                                            setShowRejectionForm(newStatus === 'REJECTED');
+                                        }}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    >
+                                        <option value="">Select Status</option>
+                                        <option value="DRAFT">Draft</option>
+                                        <option value="SUBMITTED">Submitted</option>
+                                        <option value="UNDER_REVIEW">Under Review</option>
+                                        <option value="APPROVED">Approved</option>
+                                        <option value="REJECTED">Rejected</option>
+                                        <option value="COMPLETE">Complete (Graduated)</option>
+                                        <option value="CANCELLED">Cancelled</option>
+                                    </select>
+                                </div>
+
+                                {/* Rejection Form */}
+                                {showRejectionForm && (
+                                    <div className="border border-red-200 dark:border-red-800 rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
+                                        <h4 className="text-md font-semibold text-red-800 dark:text-red-200 mb-4">
+                                            Rejection Details
+                                        </h4>
+
+                                        <div className="space-y-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                    Rejection Message *
+                                                </label>
+                                                <textarea
+                                                    value={statusData.rejectionMessage}
+                                                    onChange={(e) => setStatusData({ ...statusData, rejectionMessage: e.target.value })}
+                                                    rows={3}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                                    placeholder="Explain what the student needs to do to fix the issues..."
+                                                />
+                                            </div>
+
+                                            {/* Rejection Details */}
+                                            <div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                        Specific Issues (Optional)
+                                                    </label>
+                                                    <button
+                                                        type="button"
+                                                        onClick={addRejectionDetail}
+                                                        className="text-sm bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                                                    >
+                                                        + Add Issue
+                                                    </button>
+                                                </div>
+
+                                                {statusData.rejectionDetails.map((detail, index) => (
+                                                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 mb-3 bg-white dark:bg-gray-800">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                                Issue #{index + 1}
+                                                            </h5>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeRejectionDetail(index)}
+                                                                className="text-red-600 hover:text-red-800 text-sm"
+                                                            >
+                                                                Remove
+                                                            </button>
+                                                        </div>
+
+                                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Issue Description
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.issue}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'issue', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., Certificate is too old"
+                                                                />
+                                                            </div>
+
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Document Type
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.documentType}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'documentType', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., 10th Grade Certificate"
+                                                                />
+                                                            </div>
+
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Action Required
+                                                                </label>
+                                                                <input
+                                                                    type="text"
+                                                                    value={detail.actionRequired}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'actionRequired', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                    placeholder="e.g., Provide recent certificate"
+                                                                />
+                                                            </div>
+
+                                                            <div>
+                                                                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                    Priority
+                                                                </label>
+                                                                <select
+                                                                    value={detail.priority}
+                                                                    onChange={(e) => updateRejectionDetail(index, 'priority', e.target.value)}
+                                                                    className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                >
+                                                                    <option value="High">High</option>
+                                                                    <option value="Medium">Medium</option>
+                                                                    <option value="Low">Low</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="mt-2">
+                                                            <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                                                Specific Feedback
+                                                            </label>
+                                                            <textarea
+                                                                value={detail.specificFeedback}
+                                                                onChange={(e) => updateRejectionDetail(index, 'specificFeedback', e.target.value)}
+                                                                rows={2}
+                                                                className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-1 focus:ring-red-500"
+                                                                placeholder="Additional specific feedback for this issue..."
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Notes (Optional)
+                                    </label>
+                                    <textarea
+                                        value={statusData.notes}
+                                        onChange={(e) => setStatusData({ ...statusData, notes: e.target.value })}
+                                        rows={3}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        placeholder="Add any notes about this status change..."
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3 mt-6">
+                                <button
+                                    onClick={() => {
+                                        setShowStatusModal(false);
+                                        setShowRejectionForm(false);
+                                        setStatusData({
+                                            status: '',
+                                            notes: '',
+                                            rejectionReason: '',
+                                            rejectionMessage: '',
+                                            rejectionDetails: []
+                                        });
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleStatusUpdate}
+                                    className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 ${statusData.status === 'REJECTED'
+                                        ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
+                                        : 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500'
+                                        }`}
+                                >
+                                    {statusData.status === 'REJECTED' ? 'Reject Application' : 'Update Status'}
                                 </button>
                             </div>
                         </div>

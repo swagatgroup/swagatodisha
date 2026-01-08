@@ -808,18 +808,35 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 
         // Update contact details
         if (updateData.contactDetails) {
-            // Deep merge contact details, especially for nested objects like permanentAddress
+            // Ensure contactDetails object exists
+            if (!application.contactDetails) {
+                application.contactDetails = {};
+            }
+            
+            // Deep merge permanentAddress
             if (updateData.contactDetails.permanentAddress) {
                 if (!application.contactDetails.permanentAddress) {
                     application.contactDetails.permanentAddress = {};
                 }
+                // If district is not provided but city is, use city as district fallback
+                if (!updateData.contactDetails.permanentAddress.district && 
+                    updateData.contactDetails.permanentAddress.city) {
+                    updateData.contactDetails.permanentAddress.district = updateData.contactDetails.permanentAddress.city;
+                }
+                // Ensure district exists (required field)
+                if (!updateData.contactDetails.permanentAddress.district && 
+                    application.contactDetails.permanentAddress.city) {
+                    updateData.contactDetails.permanentAddress.district = application.contactDetails.permanentAddress.city;
+                }
                 Object.assign(application.contactDetails.permanentAddress, updateData.contactDetails.permanentAddress);
             }
             
-            // Update other contact details fields
+            // Update other contact details fields (email, primaryPhone, whatsappNumber)
             Object.keys(updateData.contactDetails).forEach(key => {
                 if (key !== 'permanentAddress') {
-                    application.contactDetails[key] = updateData.contactDetails[key];
+                    if (updateData.contactDetails[key] !== undefined && updateData.contactDetails[key] !== null) {
+                        application.contactDetails[key] = updateData.contactDetails[key];
+                    }
                 }
             });
         }
@@ -901,17 +918,12 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
                 application.guardianDetails = {};
             }
             
-            // Update each field individually to ensure proper saving
+            // Update guardian details fields (only fields from Universal Registration)
             Object.keys(updateData.guardianDetails).forEach(key => {
                 if (updateData.guardianDetails[key] !== undefined && updateData.guardianDetails[key] !== null) {
                     application.guardianDetails[key] = updateData.guardianDetails[key];
                 }
             });
-        }
-
-        // Update financial details
-        if (updateData.financialDetails) {
-            Object.assign(application.financialDetails, updateData.financialDetails);
         }
 
         // Mark nested objects as modified for Mongoose to save them properly
@@ -929,9 +941,6 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         }
         if (updateData.guardianDetails) {
             application.markModified('guardianDetails');
-        }
-        if (updateData.financialDetails) {
-            application.markModified('financialDetails');
         }
 
         await application.save();
