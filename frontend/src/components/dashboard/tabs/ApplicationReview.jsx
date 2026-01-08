@@ -50,6 +50,18 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
     const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
     const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
     const [generating, setGenerating] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortBy, setSortBy] = useState('createdAt');
+    const [sortOrder, setSortOrder] = useState('desc');
+    const [filterCourse, setFilterCourse] = useState('all');
+    const [filterCategory, setFilterCategory] = useState('all');
+    const [filterCollege, setFilterCollege] = useState('all');
+    const [filterGender, setFilterGender] = useState('all');
+    const [filterDistrict, setFilterDistrict] = useState('all');
+    const [filterCity, setFilterCity] = useState('all');
+    const [filterState, setFilterState] = useState('all');
+    const [filterStream, setFilterStream] = useState('all');
+    const [filterCampus, setFilterCampus] = useState('all');
 
     // Make tabs reactive to state changes
     const getTabs = () => [
@@ -1046,20 +1058,310 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
                 </nav>
             </div>
 
+            {/* Filter and Sort Controls */}
+            <div className="mb-6 space-y-4">
+                {/* Search and Primary Filters */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <input
+                        type="text"
+                        placeholder="Search by name, ID, email, phone..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <select
+                        value={filterCourse}
+                        onChange={(e) => setFilterCourse(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Courses</option>
+                        {[...new Set(applications.map(app => 
+                            app.courseDetails?.selectedCourse || app.courseDetails?.courseName || ''
+                        ).filter(Boolean))].sort().map(course => (
+                            <option key={course} value={course}>{course}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterCategory}
+                        onChange={(e) => setFilterCategory(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Categories</option>
+                        {[...new Set(applications.map(app => 
+                            app.personalDetails?.category || ''
+                        ).filter(Boolean))].sort().map(category => (
+                            <option key={category} value={category}>{category}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterGender}
+                        onChange={(e) => setFilterGender(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Gender</option>
+                        {[...new Set(applications.map(app => 
+                            app.personalDetails?.gender || ''
+                        ).filter(Boolean))].sort().map(gender => (
+                            <option key={gender} value={gender}>{gender}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Secondary Filters - Geographical */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select
+                        value={filterState}
+                        onChange={(e) => setFilterState(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All States</option>
+                        {[...new Set(applications.map(app => 
+                            app.contactDetails?.permanentAddress?.state || ''
+                        ).filter(Boolean))].sort().map(state => (
+                            <option key={state} value={state}>{state}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterDistrict}
+                        onChange={(e) => setFilterDistrict(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Districts</option>
+                        {[...new Set(applications.map(app => 
+                            app.contactDetails?.permanentAddress?.district || ''
+                        ).filter(Boolean))].sort().map(district => (
+                            <option key={district} value={district}>{district}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterCity}
+                        onChange={(e) => setFilterCity(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Cities</option>
+                        {[...new Set(applications.map(app => 
+                            app.contactDetails?.permanentAddress?.city || ''
+                        ).filter(Boolean))].sort().map(city => (
+                            <option key={city} value={city}>{city}</option>
+                        ))}
+                    </select>
+                    <select
+                        value={filterStream}
+                        onChange={(e) => setFilterStream(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="all">All Streams</option>
+                        {[...new Set(applications.map(app => 
+                            app.courseDetails?.stream || ''
+                        ).filter(Boolean))].sort().map(stream => (
+                            <option key={stream} value={stream}>{stream}</option>
+                        ))}
+                    </select>
+                </div>
+
+                {/* Tertiary Filters and Sorting */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="createdAt">Sort by: Date Created</option>
+                        <option value="personalDetails.fullName">Sort by: Name</option>
+                        <option value="courseDetails.selectedCourse">Sort by: Course</option>
+                        <option value="status">Sort by: Status</option>
+                        <option value="personalDetails.gender">Sort by: Gender</option>
+                        <option value="contactDetails.permanentAddress.city">Sort by: City</option>
+                        <option value="contactDetails.permanentAddress.district">Sort by: District</option>
+                        <option value="contactDetails.permanentAddress.state">Sort by: State</option>
+                        <option value="courseDetails.stream">Sort by: Stream</option>
+                        <option value="applicationId">Sort by: Application ID</option>
+                        <option value="updatedAt">Sort by: Last Updated</option>
+                    </select>
+                    <select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                        <option value="desc">Descending</option>
+                        <option value="asc">Ascending</option>
+                    </select>
+                    {(searchQuery || filterCourse !== 'all' || filterCategory !== 'all' || filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || filterCampus !== 'all' || sortBy !== 'createdAt' || sortOrder !== 'desc') && (
+                        <button
+                            onClick={() => {
+                                setSearchQuery('');
+                                setFilterCourse('all');
+                                setFilterCategory('all');
+                                setFilterCollege('all');
+                                setFilterGender('all');
+                                setFilterDistrict('all');
+                                setFilterCity('all');
+                                setFilterState('all');
+                                setFilterStream('all');
+                                setFilterCampus('all');
+                                setSortBy('createdAt');
+                                setSortOrder('desc');
+                            }}
+                            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+                        >
+                            Clear All Filters & Reset Sorting
+                        </button>
+                    )}
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Applications List */}
                 <div className="lg:col-span-1">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                        Applications ({applications.length})
+                        Applications ({(() => {
+                            // Filter applications
+                            let filtered = applications.filter(app => {
+                                // Search filter
+                                if (searchQuery.trim()) {
+                                    const query = searchQuery.toLowerCase();
+                                    const matches = 
+                                        (app.personalDetails?.fullName || '').toLowerCase().includes(query) ||
+                                        (app.applicationId || '').toLowerCase().includes(query) ||
+                                        (app.user?.email || '').toLowerCase().includes(query) ||
+                                        (app.contactDetails?.primaryPhone || '').includes(query) ||
+                                        (app.courseDetails?.selectedCourse || '').toLowerCase().includes(query);
+                                    if (!matches) return false;
+                                }
+                                
+                                // Course filter
+                                if (filterCourse !== 'all') {
+                                    const course = app.courseDetails?.selectedCourse || app.courseDetails?.courseName || '';
+                                    if (course !== filterCourse) return false;
+                                }
+                                
+                                // Category filter
+                                if (filterCategory !== 'all') {
+                                    const category = app.personalDetails?.category || '';
+                                    if (category !== filterCategory) return false;
+                                }
+                                
+                                // College filter
+                                if (filterCollege !== 'all') {
+                                    const collegeId = typeof app.courseDetails?.selectedCollege === 'object' 
+                                        ? app.courseDetails.selectedCollege._id 
+                                        : app.courseDetails?.selectedCollege;
+                                    if (collegeId !== filterCollege) return false;
+                                }
+                                
+                                // Gender filter
+                                if (filterGender !== 'all') {
+                                    const gender = app.personalDetails?.gender || '';
+                                    if (gender !== filterGender) return false;
+                                }
+                                
+                                // District filter
+                                if (filterDistrict !== 'all') {
+                                    const district = app.contactDetails?.permanentAddress?.district || '';
+                                    if (district !== filterDistrict) return false;
+                                }
+                                
+                                // City filter
+                                if (filterCity !== 'all') {
+                                    const city = app.contactDetails?.permanentAddress?.city || '';
+                                    if (city !== filterCity) return false;
+                                }
+                                
+                                // State filter
+                                if (filterState !== 'all') {
+                                    const state = app.contactDetails?.permanentAddress?.state || '';
+                                    if (state !== filterState) return false;
+                                }
+                                
+                                // Stream filter
+                                if (filterStream !== 'all') {
+                                    const stream = app.courseDetails?.stream || '';
+                                    if (stream !== filterStream) return false;
+                                }
+                                
+                                // Campus filter
+                                if (filterCampus !== 'all') {
+                                    const campusId = typeof app.courseDetails?.campus === 'object' 
+                                        ? app.courseDetails.campus._id 
+                                        : app.courseDetails?.campus;
+                                    if (campusId !== filterCampus) return false;
+                                }
+                                
+                                return true;
+                            });
+                            
+                            // Sort applications
+                            filtered.sort((a, b) => {
+                                let aValue = a;
+                                let bValue = b;
+                                
+                                const keys = sortBy.split('.');
+                                keys.forEach(key => {
+                                    aValue = aValue?.[key];
+                                    bValue = bValue?.[key];
+                                });
+                                
+                                if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+                                if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+                                return 0;
+                            });
+                            
+                            return filtered.length;
+                        })()})
                     </h3>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
-                        {applications.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                                No applications found
-                            </div>
-                        ) : (
-                            applications.map(renderApplicationCard)
-                        )}
+                        {(() => {
+                            // Filter applications
+                            let filtered = applications.filter(app => {
+                                if (searchQuery.trim()) {
+                                    const query = searchQuery.toLowerCase();
+                                    const matches = 
+                                        (app.personalDetails?.fullName || '').toLowerCase().includes(query) ||
+                                        (app.applicationId || '').toLowerCase().includes(query) ||
+                                        (app.user?.email || '').toLowerCase().includes(query) ||
+                                        (app.contactDetails?.primaryPhone || '').includes(query) ||
+                                        (app.courseDetails?.selectedCourse || '').toLowerCase().includes(query);
+                                    if (!matches) return false;
+                                }
+                                if (filterCourse !== 'all') {
+                                    const course = app.courseDetails?.selectedCourse || app.courseDetails?.courseName || '';
+                                    if (course !== filterCourse) return false;
+                                }
+                                if (filterCategory !== 'all') {
+                                    const category = app.personalDetails?.category || '';
+                                    if (category !== filterCategory) return false;
+                                }
+                                if (filterCollege !== 'all') {
+                                    const collegeId = typeof app.courseDetails?.selectedCollege === 'object' 
+                                        ? app.courseDetails.selectedCollege._id 
+                                        : app.courseDetails?.selectedCollege;
+                                    if (collegeId !== filterCollege) return false;
+                                }
+                                return true;
+                            });
+                            
+                            // Sort applications
+                            filtered.sort((a, b) => {
+                                let aValue = a;
+                                let bValue = b;
+                                const keys = sortBy.split('.');
+                                keys.forEach(key => {
+                                    aValue = aValue?.[key];
+                                    bValue = bValue?.[key];
+                                });
+                                if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
+                                if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
+                                return 0;
+                            });
+                            
+                            return filtered.length === 0 ? (
+                                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                    No applications found
+                                </div>
+                            ) : (
+                                filtered.map(renderApplicationCard)
+                            );
+                        })()}
                     </div>
                 </div>
 
