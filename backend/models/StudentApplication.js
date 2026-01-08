@@ -171,6 +171,11 @@ const studentApplicationSchema = new mongoose.Schema({
             required: true
         },
         customCourse: String,
+        institutionName: String,
+        selectedCollege: {
+            type: mongoose.Schema.Types.Mixed, // Can be ObjectId or String
+            ref: 'Campus'
+        },
         stream: String,
         campus: {
             type: mongoose.Schema.Types.ObjectId,
@@ -202,6 +207,36 @@ const studentApplicationSchema = new mongoose.Schema({
             type: String,
             lowercase: true,
             trim: true
+        },
+        alternativeContact: {
+            name: String,
+            phone: {
+                type: String,
+                validate: {
+                    validator: function (v) {
+                        if (!v) return true;
+                        return /^[6-9]\d{9}$/.test(v);
+                    },
+                    message: 'Alternative contact phone must be a valid 10-digit Indian mobile number'
+                }
+            },
+            relationship: String
+        },
+        guardianAddress: {
+            street: String,
+            city: String,
+            state: String,
+            pincode: {
+                type: String,
+                validate: {
+                    validator: function (v) {
+                        if (!v) return true;
+                        return /^\d{6}$/.test(v);
+                    },
+                    message: 'Guardian address pincode must be 6 digits'
+                }
+            },
+            country: { type: String, default: 'India' }
         }
     },
 

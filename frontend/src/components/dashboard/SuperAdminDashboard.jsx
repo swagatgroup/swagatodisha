@@ -73,6 +73,8 @@ const SuperAdminDashboard = () => {
         submitters: []
     });
     const [selectedStudents, setSelectedStudents] = useState([]);
+    const [colleges, setColleges] = useState([]);
+    const [loadingColleges, setLoadingColleges] = useState(false);
     const isSuperAdmin = user?.role === 'super_admin';
 
     const sidebarItems = [
@@ -141,6 +143,55 @@ const SuperAdminDashboard = () => {
         }
     ];
 
+    // Fetch colleges
+    const fetchColleges = async () => {
+        try {
+            setLoadingColleges(true);
+            const response = await api.get('/api/colleges/public');
+            if (response.data.success) {
+                setColleges(response.data.data || []);
+            }
+        } catch (error) {
+            console.error('Error fetching colleges:', error);
+        } finally {
+            setLoadingColleges(false);
+        }
+    };
+
+    // Get courses for selected college
+    const getCoursesForCollege = () => {
+        if (!editData.courseDetails?.selectedCollege) {
+            return [];
+        }
+        const selectedCollegeData = colleges.find(
+            (college) => college._id === editData.courseDetails.selectedCollege
+        );
+        return selectedCollegeData?.courses || [];
+    };
+
+    // Get streams for selected course
+    const getStreamsForCourse = () => {
+        if (!editData.courseDetails?.selectedCourse) {
+            return [];
+        }
+        const availableCourses = getCoursesForCollege();
+        const selectedCourse = availableCourses.find(
+            (course) => course.courseName === editData.courseDetails.selectedCourse
+        );
+        return selectedCourse?.streams || [];
+    };
+
+    // Get campuses for selected college
+    const getCampusesForCollege = () => {
+        if (!editData.courseDetails?.selectedCollege) {
+            return [];
+        }
+        const selectedCollegeData = colleges.find(
+            (college) => college._id === editData.courseDetails.selectedCollege
+        );
+        return selectedCollegeData?.campuses || [];
+    };
+
     useEffect(() => {
         const fetchAdminData = async (session = selectedSession) => {
             try {
@@ -159,6 +210,10 @@ const SuperAdminDashboard = () => {
 
         fetchAdminData(selectedSession);
     }, [selectedSession]);
+
+    useEffect(() => {
+        fetchColleges();
+    }, []);
 
     // Reset to page 1 when session changes
     useEffect(() => {
@@ -365,6 +420,65 @@ const SuperAdminDashboard = () => {
         } catch (error) {
             closeLoading();
             handleApiError(error);
+        }
+    };
+
+    const handleEdit = async () => {
+        try {
+            showLoading('Updating student...');
+            const updatePayload = {
+                personalDetails: {
+                    ...editData.personalDetails
+                },
+                contactDetails: {
+                    ...editData.contactDetails,
+                    permanentAddress: {
+                        street: editData.contactDetails?.permanentAddress?.street || editData.contactDetails?.address || '',
+                        city: editData.contactDetails?.permanentAddress?.city || editData.contactDetails?.city || '',
+                        district: editData.contactDetails?.permanentAddress?.district || '',
+                        state: editData.contactDetails?.permanentAddress?.state || '',
+                        pincode: editData.contactDetails?.permanentAddress?.pincode || '',
+                        country: editData.contactDetails?.permanentAddress?.country || 'India'
+                    }
+                },
+                courseDetails: {
+                    ...editData.courseDetails,
+                    institutionName: colleges.find(c => c._id === editData.courseDetails?.selectedCollege)?.name || ''
+                },
+                guardianDetails: {
+                    ...editData.guardianDetails
+                }
+            };
+
+            // Remove empty address fields
+            if (updatePayload.contactDetails.permanentAddress) {
+                Object.keys(updatePayload.contactDetails.permanentAddress).forEach(key => {
+                    if (!updatePayload.contactDetails.permanentAddress[key]) {
+                        delete updatePayload.contactDetails.permanentAddress[key];
+                    }
+                });
+            }
+
+            const response = await api.put(`/api/admin/students/${selectedStudent._id}`, updatePayload);
+            
+            setShowEditModal(false);
+            setEditData({});
+            setSelectedStudent(null);
+            closeLoading();
+            showSuccess('Student updated successfully!');
+
+            // Refresh the student list
+            await fetchStudents();
+            // Refresh stats
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            if (statsRes.data?.success) {
+                setStats(statsRes.data.data);
+            }
+        } catch (error) {
+            console.error('Error updating student:', error);
+            closeLoading();
+            const errorMessage = error.response?.data?.message || error.message || 'Failed to update student';
+            showError(errorMessage);
         }
     };
 
@@ -783,7 +897,12 @@ const SuperAdminDashboard = () => {
                                                                     </div>
                                                                     <div className="ml-4">
                                                                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                            {student.fullName}
+                                                                            {(() => {
+                                                                                const name = student.fullName || student.personalDetails?.fullName;
+                                                                                if (!name) return 'N/A';
+                                                                                if (typeof name === 'object') return name.fullName || name.name || 'N/A';
+                                                                                return name;
+                                                                            })()}
                                                                         </div>
                                                                         <div className="text-sm text-gray-500 dark:text-gray-400">
                                                                             ID: {student.applicationId}
@@ -801,7 +920,12 @@ const SuperAdminDashboard = () => {
                                                                 {student.email}
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                                                {student.course}
+                                                                {(() => {
+                                                                    const course = student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName;
+                                                                    if (!course) return 'N/A';
+                                                                    if (typeof course === 'object') return course.courseName || course.name || course.selectedCourse || 'N/A';
+                                                                    return course;
+                                                                })()}
                                                             </td>
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
@@ -814,8 +938,15 @@ const SuperAdminDashboard = () => {
                                                                         let submitterName = 'Direct';
                                                                         if (student.referredBy && student.referredBy !== 'Direct' && student.referredBy !== 'Unknown' && student.referredBy.trim() !== '') {
                                                                             submitterName = student.referredBy.trim();
-                                                                        } else if (student.submittedBy && student.submittedBy.fullName) {
-                                                                            submitterName = student.submittedBy.fullName.trim();
+                                                                        } else if (student.submittedBy) {
+                                                                            const name = student.submittedBy.fullName;
+                                                                            if (name) {
+                                                                                if (typeof name === 'object') {
+                                                                                    submitterName = (name.fullName || name.name || '').trim();
+                                                                                } else {
+                                                                                    submitterName = name.trim();
+                                                                                }
+                                                                            }
                                                                         }
                                                                         const role = student.submitterRole || 'student';
                                                                         const roleCapitalized = role.charAt(0).toUpperCase() + role.slice(1);
@@ -894,13 +1025,101 @@ const SuperAdminDashboard = () => {
                                                                         </svg>
                                                                     </button>
                                                                     <button
-                                                                        onClick={() => {
-                                                                            setActiveSidebarItem('students');
-                                                                            // Store student ID in sessionStorage to auto-select in StudentManagement
-                                                                            if (student._id) {
-                                                                                sessionStorage.setItem('selectedStudentId', student._id);
-                                                                                sessionStorage.setItem('openEditModal', 'true');
+                                                                        onClick={async () => {
+                                                                            setSelectedStudent(student);
+                                                                            
+                                                                            // Helper function to format date for input field
+                                                                            const formatDateForInput = (dateValue) => {
+                                                                                if (!dateValue) return '';
+                                                                                try {
+                                                                                    const date = new Date(dateValue);
+                                                                                    if (isNaN(date.getTime())) return '';
+                                                                                    return date.toISOString().split('T')[0];
+                                                                                } catch (e) {
+                                                                                    return '';
+                                                                                }
+                                                                            };
+                                                                            
+                                                                            // Helper to get campus ID
+                                                                            const getCampusId = (campus) => {
+                                                                                if (!campus) return '';
+                                                                                if (typeof campus === 'string') {
+                                                                                    return campus;
+                                                                                }
+                                                                                if (typeof campus === 'object' && campus._id) {
+                                                                                    return campus._id.toString();
+                                                                                }
+                                                                                return '';
+                                                                            };
+                                                                            
+                                                                            // Ensure colleges are loaded before setting edit data
+                                                                            let loadedColleges = colleges;
+                                                                            if (loadedColleges.length === 0) {
+                                                                                await fetchColleges();
+                                                                                await new Promise(resolve => setTimeout(resolve, 100));
+                                                                                const response = await api.get('/api/colleges/public');
+                                                                                if (response.data.success) {
+                                                                                    loadedColleges = response.data.data || [];
+                                                                                }
                                                                             }
+                                                                            
+                                                                            // Find college ID from existing data
+                                                                            const findCollegeId = () => {
+                                                                                if (student.courseDetails?.selectedCollege && typeof student.courseDetails.selectedCollege === 'string') {
+                                                                                    return student.courseDetails.selectedCollege;
+                                                                                }
+                                                                                if (student.courseDetails?.selectedCollege && typeof student.courseDetails.selectedCollege === 'object' && student.courseDetails.selectedCollege._id) {
+                                                                                    return student.courseDetails.selectedCollege._id.toString();
+                                                                                }
+                                                                                if (student.courseDetails?.institutionName && loadedColleges.length > 0) {
+                                                                                    const foundCollege = loadedColleges.find(c => 
+                                                                                        c.name === student.courseDetails.institutionName || 
+                                                                                        c.name?.toLowerCase() === student.courseDetails.institutionName?.toLowerCase()
+                                                                                    );
+                                                                                    if (foundCollege) return foundCollege._id.toString();
+                                                                                }
+                                                                                return '';
+                                                                            };
+                                                                            
+                                                                            setEditData({
+                                                                                personalDetails: {
+                                                                                    fullName: student.personalDetails?.fullName || student.fullName || '',
+                                                                                    fathersName: student.personalDetails?.fathersName || '',
+                                                                                    mothersName: student.personalDetails?.mothersName || '',
+                                                                                    dateOfBirth: formatDateForInput(student.personalDetails?.dateOfBirth) || '',
+                                                                                    gender: student.personalDetails?.gender || '',
+                                                                                    aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
+                                                                                    category: student.personalDetails?.category || ''
+                                                                                },
+                                                                                contactDetails: {
+                                                                                    email: student.contactDetails?.email || student.email || '',
+                                                                                    primaryPhone: student.contactDetails?.primaryPhone || student.phone || '',
+                                                                                    whatsappNumber: student.contactDetails?.whatsappNumber || '',
+                                                                                    permanentAddress: {
+                                                                                        street: student.contactDetails?.permanentAddress?.street || student.contactDetails?.address || '',
+                                                                                        city: student.contactDetails?.permanentAddress?.city || student.contactDetails?.city || '',
+                                                                                        district: student.contactDetails?.permanentAddress?.district || '',
+                                                                                        state: student.contactDetails?.permanentAddress?.state || '',
+                                                                                        pincode: student.contactDetails?.permanentAddress?.pincode || '',
+                                                                                        country: student.contactDetails?.permanentAddress?.country || 'India'
+                                                                                    }
+                                                                                },
+                                                                                courseDetails: {
+                                                                                    selectedCollege: findCollegeId(),
+                                                                                    institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
+                                                                                    selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
+                                                                                    customCourse: student.courseDetails?.customCourse || '',
+                                                                                    stream: student.courseDetails?.stream || '',
+                                                                                    campus: getCampusId(student.courseDetails?.campus) || ''
+                                                                                },
+                                                                                guardianDetails: {
+                                                                                    guardianName: student.guardianDetails?.guardianName || '',
+                                                                                    relationship: student.guardianDetails?.relationship || '',
+                                                                                    guardianPhone: student.guardianDetails?.guardianPhone || '',
+                                                                                    guardianEmail: student.guardianDetails?.guardianEmail || ''
+                                                                                }
+                                                                            });
+                                                                            setShowEditModal(true);
                                                                         }}
                                                                         className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer"
                                                                         title="Edit"
@@ -1055,7 +1274,14 @@ const SuperAdminDashboard = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Full Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.fullName || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
+                                                    if (!name) return 'N/A';
+                                                    if (typeof name === 'object') return name.fullName || name.name || 'N/A';
+                                                    return name;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Father's Name</label>
@@ -1138,19 +1364,54 @@ const SuperAdminDashboard = () => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName || 'Swagat Group of Institutions'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const institution = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
+                                                    if (institution) {
+                                                        if (typeof institution === 'object') return institution.name || institution.institutionName || 'Swagat Group of Institutions';
+                                                        return institution;
+                                                    }
+                                                    const college = selectedStudent.courseDetails?.selectedCollege;
+                                                    if (college) {
+                                                        if (typeof college === 'object') return college.name || college.institutionName || 'Swagat Group of Institutions';
+                                                        return college;
+                                                    }
+                                                    return 'Swagat Group of Institutions';
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.selectedCourse || selectedStudent.course || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const course = selectedStudent.courseDetails?.selectedCourse || selectedStudent.course;
+                                                    if (!course) return 'N/A';
+                                                    if (typeof course === 'object') return course.courseName || course.name || 'N/A';
+                                                    return course;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Stream</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.stream || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const stream = selectedStudent.courseDetails?.stream;
+                                                    if (!stream) return 'N/A';
+                                                    if (typeof stream === 'object') return stream.name || stream.streamName || 'N/A';
+                                                    return stream;
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.campus || 'N/A'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const campus = selectedStudent.courseDetails?.campus;
+                                                    if (!campus) return 'N/A';
+                                                    if (typeof campus === 'object') return campus.name || campus.campusName || 'N/A';
+                                                    return campus;
+                                                })()}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -1162,11 +1423,25 @@ const SuperAdminDashboard = () => {
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div>
                                                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Name</label>
-                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianName || 'N/A'}</p>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    {(() => {
+                                                        const name = selectedStudent.guardianDetails?.guardianName;
+                                                        if (!name) return 'N/A';
+                                                        if (typeof name === 'object') return name.guardianName || name.name || 'N/A';
+                                                        return name;
+                                                    })()}
+                                                </p>
                                             </div>
                                             <div>
                                                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Phone</label>
-                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianPhone || 'N/A'}</p>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    {(() => {
+                                                        const phone = selectedStudent.guardianDetails?.guardianPhone;
+                                                        if (!phone) return 'N/A';
+                                                        if (typeof phone === 'object') return phone.phone || phone.guardianPhone || 'N/A';
+                                                        return phone;
+                                                    })()}
+                                                </p>
                                             </div>
                                             <div>
                                                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Relationship</label>
@@ -1200,7 +1475,12 @@ const SuperAdminDashboard = () => {
                     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="p-6">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                                Update Status - {selectedStudent.fullName}
+                                Update Status - {(() => {
+                                    const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
+                                    if (!name) return 'Student';
+                                    if (typeof name === 'object') return name.fullName || name.name || 'Student';
+                                    return name;
+                                })()}
                             </h3>
 
                             <div className="space-y-4">
@@ -1431,19 +1711,491 @@ const SuperAdminDashboard = () => {
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Student</h3>
-                                <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <button onClick={() => {
+                                    setShowEditModal(false);
+                                    setEditData({});
+                                    setSelectedStudent(null);
+                                }} className="text-gray-400 hover:text-gray-600">
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
-                            <div className="text-center py-8 text-gray-500">
-                                <p>Please use the "Students" tab from the sidebar to edit student details with full functionality.</p>
-                                <button onClick={() => {
-                                    setShowEditModal(false);
-                                    setActiveSidebarItem('students');
-                                }} className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700">
-                                    Go to Students Tab
+
+                            {/* Personal Details */}
+                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Personal Details</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.fullName || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, fullName: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Father's Name</label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.fathersName || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mother's Name</label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.mothersName || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Date of Birth</label>
+                                        <input
+                                            type="date"
+                                            value={editData.personalDetails?.dateOfBirth ? (typeof editData.personalDetails.dateOfBirth === 'string' && editData.personalDetails.dateOfBirth.includes('T') ? editData.personalDetails.dateOfBirth.split('T')[0] : editData.personalDetails.dateOfBirth) : ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gender</label>
+                                        <select
+                                            value={editData.personalDetails?.gender || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, gender: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        >
+                                            <option value="">Select Gender</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Female">Female</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aadhar Number</label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.aadharNumber || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12) }
+                                            })}
+                                            maxLength="12"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Category</label>
+                                        <select
+                                            value={editData.personalDetails?.category || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, category: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        >
+                                            <option value="">Select Category</option>
+                                            <option value="General">General</option>
+                                            <option value="OBC">OBC</option>
+                                            <option value="SC">SC</option>
+                                            <option value="ST">ST</option>
+                                            <option value="PwD">PwD</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Contact Details */}
+                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Contact Details</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                                        <input
+                                            type="email"
+                                            value={editData.contactDetails?.email || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: { ...editData.contactDetails, email: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Primary Phone</label>
+                                        <input
+                                            type="tel"
+                                            value={editData.contactDetails?.primaryPhone || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value.replace(/\D/g, '').slice(0, 10) }
+                                            })}
+                                            maxLength="10"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">WhatsApp Number</label>
+                                        <input
+                                            type="tel"
+                                            value={editData.contactDetails?.whatsappNumber || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: { ...editData.contactDetails, whatsappNumber: e.target.value.replace(/\D/g, '').slice(0, 10) }
+                                            })}
+                                            maxLength="10"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street Address</label>
+                                        <input
+                                            type="text"
+                                            value={editData.contactDetails?.permanentAddress?.street || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: {
+                                                    ...editData.contactDetails,
+                                                    permanentAddress: { ...editData.contactDetails?.permanentAddress, street: e.target.value }
+                                                }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+                                        <input
+                                            type="text"
+                                            value={editData.contactDetails?.permanentAddress?.city || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: {
+                                                    ...editData.contactDetails,
+                                                    permanentAddress: { ...editData.contactDetails?.permanentAddress, city: e.target.value }
+                                                }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">District</label>
+                                        <input
+                                            type="text"
+                                            value={editData.contactDetails?.permanentAddress?.district || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: {
+                                                    ...editData.contactDetails,
+                                                    permanentAddress: { ...editData.contactDetails?.permanentAddress, district: e.target.value }
+                                                }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
+                                        <input
+                                            type="text"
+                                            value={editData.contactDetails?.permanentAddress?.state || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: {
+                                                    ...editData.contactDetails,
+                                                    permanentAddress: { ...editData.contactDetails?.permanentAddress, state: e.target.value }
+                                                }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Pincode</label>
+                                        <input
+                                            type="text"
+                                            value={editData.contactDetails?.permanentAddress?.pincode || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: {
+                                                    ...editData.contactDetails,
+                                                    permanentAddress: { ...editData.contactDetails?.permanentAddress, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) }
+                                                }
+                                            })}
+                                            maxLength="6"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
+                                        <input
+                                            type="text"
+                                            value={editData.contactDetails?.permanentAddress?.country || 'India'}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                contactDetails: {
+                                                    ...editData.contactDetails,
+                                                    permanentAddress: { ...editData.contactDetails?.permanentAddress, country: e.target.value }
+                                                }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Education Details Section */}
+                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                                    Education Details
+                                </h4>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Institution Name *
+                                        </label>
+                                        <select
+                                            value={editData.courseDetails?.selectedCollege || ''}
+                                            onChange={(e) =>
+                                                setEditData((prev) => ({
+                                                    ...prev,
+                                                    courseDetails: {
+                                                        ...prev.courseDetails,
+                                                        selectedCollege: e.target.value,
+                                                        selectedCourse: "",
+                                                        stream: "",
+                                                        campus: "",
+                                                        institutionName: colleges.find(c => c._id === e.target.value)?.name || ''
+                                                    },
+                                                }))
+                                            }
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            required
+                                            disabled={loadingColleges}
+                                        >
+                                            <option value="">{loadingColleges ? "Loading institutions..." : "Select Institution"}</option>
+                                            {colleges.map((college) => (
+                                                <option key={college._id} value={college._id}>
+                                                    {college.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Course Name *
+                                        </label>
+                                        <select
+                                            value={editData.courseDetails?.selectedCourse || ''}
+                                            onChange={(e) =>
+                                                setEditData((prev) => ({
+                                                    ...prev,
+                                                    courseDetails: {
+                                                        ...prev.courseDetails,
+                                                        selectedCourse: e.target.value,
+                                                        courseName: e.target.value,
+                                                        stream: "",
+                                                    },
+                                                }))
+                                            }
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            required
+                                            disabled={!editData.courseDetails?.selectedCollege || getCoursesForCollege().length === 0}
+                                        >
+                                            <option value="">
+                                                {!editData.courseDetails?.selectedCollege
+                                                    ? "Select institution first"
+                                                    : getCoursesForCollege().length === 0
+                                                        ? "No courses available"
+                                                        : "Select Course"}
+                                            </option>
+                                            {getCoursesForCollege().map((course) => (
+                                                <option key={course._id} value={course.courseName}>
+                                                    {course.courseName}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Campus *
+                                        </label>
+                                        <select
+                                            value={editData.courseDetails?.campus || ""}
+                                            onChange={(e) =>
+                                                setEditData((prev) => ({
+                                                    ...prev,
+                                                    courseDetails: {
+                                                        ...prev.courseDetails,
+                                                        campus: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            required
+                                            disabled={!editData.courseDetails?.selectedCollege}
+                                        >
+                                            <option value="">
+                                                {!editData.courseDetails?.selectedCollege
+                                                    ? "Select institution first"
+                                                    : getCampusesForCollege().length === 0
+                                                        ? "No campuses available"
+                                                        : "Select Campus"}
+                                            </option>
+                                            {getCampusesForCollege().length > 0 && getCampusesForCollege().map((campus) => (
+                                                <option key={campus._id} value={campus._id}>
+                                                    {campus.name} {campus.code ? `(${campus.code})` : ''}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                {/* Stream Field - Below the three columns */}
+                                {getStreamsForCourse().length > 0 && (
+                                    <div className="mt-4">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Stream (Optional)
+                                        </label>
+                                        <select
+                                            value={editData.courseDetails?.stream || ''}
+                                            onChange={(e) =>
+                                                setEditData((prev) => ({
+                                                    ...prev,
+                                                    courseDetails: {
+                                                        ...prev.courseDetails,
+                                                        stream: e.target.value,
+                                                    },
+                                                }))
+                                            }
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        >
+                                            <option value="">Select Stream (Optional)</option>
+                                            {getStreamsForCourse().map((stream) => (
+                                                <option key={stream} value={stream}>
+                                                    {stream}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+                                
+                                {/* Custom Course Field - Show if "Other" is selected */}
+                                {editData.courseDetails?.selectedCourse === 'Other' && (
+                                    <div className="mt-4">
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Custom Course (if Other selected)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editData.courseDetails?.customCourse || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                courseDetails: { ...editData.courseDetails, customCourse: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            placeholder="Enter custom course name if 'Other' is selected"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Guardian Details */}
+                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
+                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Guardian Details</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Guardian Name</label>
+                                        <input
+                                            type="text"
+                                            value={editData.guardianDetails?.guardianName || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Relationship</label>
+                                        <select
+                                            value={editData.guardianDetails?.relationship || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                guardianDetails: { ...editData.guardianDetails, relationship: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        >
+                                            <option value="">Select Relationship</option>
+                                            <option value="Father">Father</option>
+                                            <option value="Mother">Mother</option>
+                                            <option value="Guardian">Guardian</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Guardian Phone</label>
+                                        <input
+                                            type="tel"
+                                            value={editData.guardianDetails?.guardianPhone || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                guardianDetails: { ...editData.guardianDetails, guardianPhone: e.target.value.replace(/\D/g, '').slice(0, 10) }
+                                            })}
+                                            maxLength="10"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Guardian Email</label>
+                                        <input
+                                            type="email"
+                                            value={editData.guardianDetails?.guardianEmail || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                guardianDetails: { ...editData.guardianDetails, guardianEmail: e.target.value }
+                                            })}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+                                <button
+                                    onClick={() => {
+                                        setShowEditModal(false);
+                                        setEditData({});
+                                        setSelectedStudent(null);
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleEdit}
+                                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                                >
+                                    Save Changes
                                 </button>
                             </div>
                         </div>
