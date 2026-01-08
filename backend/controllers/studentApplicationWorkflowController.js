@@ -11,27 +11,48 @@ const validateDocumentRequirements = (documents) => {
 
     // Check required documents
     const requiredDocs = documentRequirements.required;
-    const uploadedDocs = documents || [];
+    
+    // Handle both array and object formats
+    let uploadedDocs = [];
+    if (Array.isArray(documents)) {
+        uploadedDocs = documents || [];
+    } else if (documents && typeof documents === 'object') {
+        // Convert object format to array format
+        uploadedDocs = Object.entries(documents)
+            .map(([docType, doc]) => {
+                if (!doc || (!doc.downloadUrl && !doc.url && !doc.filePath)) {
+                    return null;
+                }
+                return {
+                    documentType: docType,
+                    fileName: doc.name || doc.fileName || 'uploaded',
+                    filePath: doc.downloadUrl || doc.url || doc.filePath || '',
+                    fileSize: doc.size || doc.fileSize || 0,
+                    uploadedAt: doc.uploadedAt || new Date()
+                };
+            })
+            .filter(doc => doc && doc.filePath);
+    }
 
     requiredDocs.forEach(reqDoc => {
         const uploadedDoc = uploadedDocs.find(doc => doc.documentType === reqDoc.key);
 
-        if (!uploadedDoc) {
+        if (!uploadedDoc || !uploadedDoc.filePath) {
             errors.push(`Missing required document: ${reqDoc.label}`);
         } else {
             // Validate file format
             const fileExtension = uploadedDoc.fileName?.split('.').pop()?.toLowerCase();
-            if (!reqDoc.allowedFormats.includes(fileExtension)) {
+            if (fileExtension && reqDoc.allowedFormats && !reqDoc.allowedFormats.includes(fileExtension)) {
                 errors.push(`${reqDoc.label}: Invalid file format. Allowed: ${reqDoc.allowedFormats.join(', ')}`);
             }
 
             // Validate file size
-            if (uploadedDoc.fileSize > reqDoc.maxSize) {
+            if (uploadedDoc.fileSize && reqDoc.maxSize && uploadedDoc.fileSize > reqDoc.maxSize) {
                 errors.push(`${reqDoc.label}: File size too large. Maximum: ${Math.round(reqDoc.maxSize / (1024 * 1024))}MB`);
             }
 
             // Check document age if required
-            if (reqDoc.validation.checkDate && reqDoc.validation.maxAge) {
+            if (reqDoc.validation && reqDoc.validation.checkDate && reqDoc.validation.maxAge) {
                 const docDate = uploadedDoc.uploadedAt || new Date();
                 const ageInYears = (new Date() - new Date(docDate)) / (1000 * 60 * 60 * 24 * 365);
                 if (ageInYears > reqDoc.validation.maxAge) {
@@ -362,12 +383,31 @@ const submitApplication = async (req, res) => {
             });
         }
 
+        // Normalize documents to array format if needed
+        let documentsArray = application.documents || [];
+        if (!Array.isArray(documentsArray) && typeof documentsArray === 'object') {
+            documentsArray = Object.entries(documentsArray)
+                .map(([docType, doc]) => {
+                    if (!doc || (!doc.downloadUrl && !doc.url && !doc.filePath)) {
+                        return null;
+                    }
+                    return {
+                        documentType: docType,
+                        fileName: doc.name || doc.fileName || 'uploaded',
+                        filePath: doc.downloadUrl || doc.url || doc.filePath || '',
+                        fileSize: doc.size || doc.fileSize || 0,
+                        uploadedAt: doc.uploadedAt || new Date()
+                    };
+                })
+                .filter(doc => doc && doc.filePath);
+        }
+
         // Validate document requirements
-        const documentValidation = validateDocumentRequirements(application.documents);
+        const documentValidation = validateDocumentRequirements(documentsArray);
         if (documentValidation.errors.length > 0) {
             return res.status(400).json({
                 success: false,
-                message: 'Document validation failed',
+                message: 'Cannot submit application without all mandatory documents',
                 errors: documentValidation.errors,
                 warnings: documentValidation.warnings
             });
@@ -521,6 +561,17 @@ const generateApplicationPDF = async (req, res) => {
             return res.status(404).json({
                 success: false,
                 message: 'Application not found'
+            });
+        }
+
+        // Validate mandatory documents before PDF generation
+        const documentValidation = validateDocumentRequirements(application.documents);
+        if (documentValidation.errors.length > 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot generate PDF without all mandatory documents',
+                errors: documentValidation.errors,
+                warnings: documentValidation.warnings
             });
         }
 

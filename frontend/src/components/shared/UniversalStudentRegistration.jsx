@@ -370,23 +370,76 @@ const UniversalStudentRegistration = ({
         const requiredDocuments = [
           "passport_photo",
           "aadhar_card",
-          "birth_certificate",
-          "marksheet_10th",
-          "marksheet_12th",
+          "marksheet_10th", // This is the key used by SimpleDocumentUpload
+          "tenth_marksheet_certificate", // Also check backend key for compatibility
+          "caste_certificate",
+          "income_certificate",
         ];
         const missingDocuments = requiredDocuments.filter(
-          (doc) => !formData.documents[doc]
+          (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
         );
-        if (missingDocuments.length > 0) {
+        // Check if at least one 10th marksheet variant exists
+        const has10thMarksheet = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
+        const actualMissing = missingDocuments.filter(doc => 
+          doc !== "marksheet_10th" && doc !== "tenth_marksheet_certificate"
+        );
+        if (!has10thMarksheet) {
+          actualMissing.push("marksheet_10th");
+        }
+        if (actualMissing.length > 0) {
+          const docLabels = {
+            "passport_photo": "Passport Size Photo",
+            "aadhar_card": "Aadhar Card",
+            "marksheet_10th": "10th Marksheet",
+            "tenth_marksheet_certificate": "10th Marksheet cum Certificate",
+            "caste_certificate": "Caste Certificate",
+            "income_certificate": "Income Certificate",
+          };
+          const missingLabels = missingDocuments.map(doc => docLabels[doc] || doc);
           newErrors[
             "documents"
-          ] = `Please upload all required documents: ${missingDocuments.join(
+          ] = `Please upload all required documents: ${missingLabels.join(
             ", "
           )}`;
         }
         break;
-      case 6: // PDF Generation
-        // No validation needed for PDF generation step
+      case 6: // PDF Generation / Submit
+        // Validate mandatory documents before final submission
+        const mandatoryDocuments = [
+          "passport_photo",
+          "aadhar_card",
+          "marksheet_10th",
+          "tenth_marksheet_certificate",
+          "caste_certificate",
+          "income_certificate",
+        ];
+        const missingMandatory = mandatoryDocuments.filter(
+          (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
+        );
+        // Check if at least one 10th marksheet variant exists
+        const has10thMarksheet = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
+        const actualMissing = missingMandatory.filter(doc => 
+          doc !== "marksheet_10th" && doc !== "tenth_marksheet_certificate"
+        );
+        if (!has10thMarksheet) {
+          actualMissing.push("marksheet_10th");
+        }
+        if (actualMissing.length > 0) {
+          const docLabels = {
+            "passport_photo": "Passport Size Photo",
+            "aadhar_card": "Aadhar Card",
+            "marksheet_10th": "10th Marksheet",
+            "tenth_marksheet_certificate": "10th Marksheet cum Certificate",
+            "caste_certificate": "Caste Certificate",
+            "income_certificate": "Income Certificate",
+          };
+          const missingLabels = actualMissing.map(doc => docLabels[doc] || doc);
+          newErrors[
+            "documents"
+          ] = `Cannot submit application. Please upload all mandatory documents: ${missingLabels.join(
+            ", "
+          )}`;
+        }
         break;
     }
 
@@ -494,6 +547,45 @@ const UniversalStudentRegistration = ({
 
   const nextStep = () => {
     if (validateStep(currentStep)) {
+      // Additional validation: Prevent moving to PDF generation step (step 6) without all mandatory documents
+      if (currentStep === 5 && currentStep + 1 === 6) {
+        const mandatoryDocuments = [
+          "passport_photo",
+          "aadhar_card",
+          "marksheet_10th",
+          "tenth_marksheet_certificate",
+          "caste_certificate",
+          "income_certificate",
+        ];
+        const missingMandatory = mandatoryDocuments.filter(
+          (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
+        );
+        // Check if at least one 10th marksheet variant exists
+        const has10thMarksheet = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
+        const actualMissing = missingMandatory.filter(doc => 
+          doc !== "marksheet_10th" && doc !== "tenth_marksheet_certificate"
+        );
+        if (!has10thMarksheet) {
+          actualMissing.push("marksheet_10th");
+        }
+        if (actualMissing.length > 0) {
+          const docLabels = {
+            "passport_photo": "Passport Size Photo",
+            "aadhar_card": "Aadhar Card",
+            "marksheet_10th": "10th Marksheet",
+            "tenth_marksheet_certificate": "10th Marksheet cum Certificate",
+            "caste_certificate": "Caste Certificate",
+            "income_certificate": "Income Certificate",
+          };
+          const missingLabels = actualMissing.map(doc => docLabels[doc] || doc);
+          setErrors({
+            documents: `Cannot proceed to PDF generation. Please upload all mandatory documents: ${missingLabels.join(", ")}`
+          });
+          showErrorToast(`Please upload all mandatory documents before generating PDF: ${missingLabels.join(", ")}`);
+          return;
+        }
+      }
+      
       if (currentStep < steps.length) {
         setCurrentStep(currentStep + 1);
       }
@@ -568,6 +660,19 @@ const UniversalStudentRegistration = ({
               if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
             }
             return;
+          } catch (submitError) {
+            // Handle document validation errors from submit
+            if (submitError.response?.status === 400) {
+              const submitErrors = submitError.response?.data?.errors || [];
+              const submitMsg = submitError.response?.data?.message || '';
+              if (submitErrors.length > 0 || submitMsg.toLowerCase().includes('mandatory documents') || submitMsg.toLowerCase().includes('document validation')) {
+                showErrorToast(submitErrors.length > 0 ? submitErrors[0] : submitMsg || "Please upload all mandatory documents before submitting");
+                setCurrentStep(5);
+                setErrors({ documents: submitErrors[0] || submitMsg || "Please upload all mandatory documents" });
+                return;
+              }
+            }
+            throw submitError;
           }
         } catch (verifyError) {
           console.log('Error verifying application, clearing local state and creating new one');
@@ -587,7 +692,20 @@ const UniversalStudentRegistration = ({
         if (error.response?.status === 400) {
           // Handle known 400s by loading existing app and submitting
           const serverMsg = error.response?.data?.message;
+          const serverErrors = error.response?.data?.errors || [];
           console.log("Application 400 error:", serverMsg);
+
+          // Handle document validation errors
+          if (serverMsg?.toLowerCase().includes("missing mandatory documents") || 
+              serverMsg?.toLowerCase().includes("document validation failed") ||
+              serverErrors.some(err => err.toLowerCase().includes("missing required document"))) {
+            showErrorToast(serverErrors.length > 0 ? serverErrors[0] : serverMsg || "Please upload all mandatory documents before submitting");
+            setCurrentStep(5); // Go back to documents step
+            setErrors({
+              documents: serverErrors[0] || serverMsg || "Please upload all mandatory documents"
+            });
+            return;
+          }
 
           if (
             serverMsg?.toLowerCase().includes("already have an application")
@@ -628,6 +746,20 @@ const UniversalStudentRegistration = ({
                   if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
                 }
                 return;
+              } catch (submitError) {
+                // Handle document validation errors from submit
+                if (submitError.response?.status === 400) {
+                  const submitErrors = submitError.response?.data?.errors || [];
+                  const submitMsg = submitError.response?.data?.message || '';
+                  if (submitErrors.length > 0 || submitMsg.toLowerCase().includes('mandatory documents') || submitMsg.toLowerCase().includes('document validation')) {
+                    showErrorToast(submitErrors.length > 0 ? submitErrors[0] : submitMsg || "Please upload all mandatory documents before submitting");
+                    setCurrentStep(5);
+                    setErrors({ documents: submitErrors[0] || submitMsg || "Please upload all mandatory documents" });
+                    return;
+                  }
+                }
+                throw submitError;
+              }
               }
             } catch (loadErr) {
               console.error(
@@ -662,7 +794,17 @@ const UniversalStudentRegistration = ({
         error?.response?.data?.message ||
         error?.message ||
         "Failed to submit application";
-      showErrorToast(serverMessage);
+      const serverErrors = error?.response?.data?.errors || [];
+      
+      // Handle document validation errors
+      if (serverErrors.length > 0 || serverMessage.toLowerCase().includes('mandatory documents') || serverMessage.toLowerCase().includes('document validation') || serverMessage.toLowerCase().includes('missing required document')) {
+        const errorMsg = serverErrors.length > 0 ? serverErrors[0] : serverMessage;
+        showErrorToast(errorMsg);
+        setCurrentStep(5);
+        setErrors({ documents: errorMsg });
+      } else {
+        showErrorToast(serverMessage);
+      }
     } finally {
       setLoading(false);
     }
