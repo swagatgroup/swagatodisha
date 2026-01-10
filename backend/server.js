@@ -351,6 +351,9 @@ app.post('/api/application/create', protect, async (req, res) => {
         if (req.body.personalDetails && req.body.personalDetails.dateOfBirth) {
             req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
         }
+        if (req.body.personalDetails && req.body.personalDetails.registrationDate) {
+            req.body.personalDetails.registrationDate = new Date(req.body.personalDetails.registrationDate);
+        }
 
         // Validate phone number - maximum 2 students per phone number
         if (req.body.contactDetails && req.body.contactDetails.primaryPhone) {
@@ -592,6 +595,9 @@ app.post('/api/student-application/create', protect, async (req, res) => {
         // Convert date string to Date object
         if (req.body.personalDetails && req.body.personalDetails.dateOfBirth) {
             req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
+        }
+        if (req.body.personalDetails && req.body.personalDetails.registrationDate) {
+            req.body.personalDetails.registrationDate = new Date(req.body.personalDetails.registrationDate);
         }
 
         // Validate phone number - maximum 2 students per phone number

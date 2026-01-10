@@ -66,6 +66,10 @@ const studentApplicationSchema = new mongoose.Schema({
             type: Date,
             required: true
         },
+        registrationDate: {
+            type: Date,
+            required: true
+        },
         gender: {
             type: String,
             enum: ['Male', 'Female', 'Other', 'Prefer not to say'],

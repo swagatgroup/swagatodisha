@@ -146,6 +146,10 @@ const createApplication = async (req, res) => {
         if (personalDetails && personalDetails.dateOfBirth) {
             personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
         }
+        // Convert date string to Date object for personalDetails.registrationDate
+        if (personalDetails && personalDetails.registrationDate) {
+            personalDetails.registrationDate = new Date(personalDetails.registrationDate);
+        }
 
         // Create application
         const applicationData = {
@@ -285,6 +289,16 @@ const saveDraft = async (req, res) => {
 
         // Update application data
         if (data) {
+            // Convert date strings to Date objects for personalDetails
+            if (data.personalDetails) {
+                if (data.personalDetails.dateOfBirth) {
+                    data.personalDetails.dateOfBirth = new Date(data.personalDetails.dateOfBirth);
+                }
+                if (data.personalDetails.registrationDate) {
+                    data.personalDetails.registrationDate = new Date(data.personalDetails.registrationDate);
+                }
+            }
+
             Object.keys(data).forEach((key) => {
                 if (data[key] !== undefined) {
                     // Special handling: normalize documents from frontend SimpleDocumentUpload (Cloudinary-backed)
