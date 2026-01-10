@@ -623,6 +623,9 @@ router.post("/submit-application", async (req, res) => {
     if (personalDetails && personalDetails.dateOfBirth) {
       personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
     }
+    if (personalDetails && personalDetails.registrationDate) {
+      personalDetails.registrationDate = new Date(personalDetails.registrationDate);
+    }
 
     // Create application data
     const applicationData = {

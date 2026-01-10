@@ -26,6 +26,60 @@ const SinglePageStudentRegistration = ({
     const [colleges, setColleges] = useState([]);
     const [loadingColleges, setLoadingColleges] = useState(false);
 
+    // Convert DD/MM/YYYY to ISO format (YYYY-MM-DD)
+    const convertDDMMYYYYToISO = (dateString) => {
+        if (!dateString) return '';
+        // Check if already in ISO format
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            return dateString;
+        }
+        // Parse DD/MM/YYYY format
+        const parts = dateString.split('/');
+        if (parts.length !== 3) return '';
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return '';
+        // Validate date
+        if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100) return '';
+        return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    };
+
+    // Convert ISO format (YYYY-MM-DD) to DD/MM/YYYY
+    const convertISOToDDMMYYYY = (dateString) => {
+        if (!dateString) return '';
+        // Check if already in DD/MM/YYYY format
+        if (dateString.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+            return dateString;
+        }
+        try {
+            // Handle ISO format or other date formats
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return '';
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        } catch (error) {
+            return '';
+        }
+    };
+
+    // Validate DD/MM/YYYY format
+    const validateDDMMYYYY = (dateString) => {
+        if (!dateString) return false;
+        const parts = dateString.split('/');
+        if (parts.length !== 3) return false;
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return false;
+        if (day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2100) return false;
+        // Check if date is valid (e.g., not 32/01/2000)
+        const date = new Date(year, month - 1, day);
+        return date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
+    };
+
     // Generate unique draft key for proper isolation
     const generateDraftKey = () => {
         const userId = user?._id || `anonymous_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -50,6 +104,7 @@ const SinglePageStudentRegistration = ({
             fathersName: "",
             mothersName: "",
             dateOfBirth: "",
+            registrationDate: "",
             aadharNumber: "",
             gender: "",
             category: "",
@@ -156,8 +211,14 @@ const SinglePageStudentRegistration = ({
                         setApplication(response.data.data);
                         // Populate form with existing data
                         const existingData = response.data.data;
+                        // Convert ISO date format to DD/MM/YYYY for display
+                        const existingPersonalDetails = existingData.personalDetails ? {
+                            ...existingData.personalDetails,
+                            dateOfBirth: convertISOToDDMMYYYY(existingData.personalDetails.dateOfBirth) || existingData.personalDetails.dateOfBirth,
+                            registrationDate: convertISOToDDMMYYYY(existingData.personalDetails.registrationDate) || existingData.personalDetails.registrationDate || "",
+                        } : formData.personalDetails;
                         setFormData({
-                            personalDetails: existingData.personalDetails || formData.personalDetails,
+                            personalDetails: existingPersonalDetails,
                             contactDetails: {
                                 ...(existingData.contactDetails || formData.contactDetails),
                                 permanentAddress: {
@@ -193,6 +254,13 @@ const SinglePageStudentRegistration = ({
         }
         if (!formData.personalDetails.dateOfBirth) {
             newErrors["personalDetails.dateOfBirth"] = "Date of birth is required";
+        } else if (!validateDDMMYYYY(formData.personalDetails.dateOfBirth)) {
+            newErrors["personalDetails.dateOfBirth"] = "Please enter a valid date in DD/MM/YYYY format";
+        }
+        if (!formData.personalDetails.registrationDate) {
+            newErrors["personalDetails.registrationDate"] = "Registration date is required";
+        } else if (!validateDDMMYYYY(formData.personalDetails.registrationDate)) {
+            newErrors["personalDetails.registrationDate"] = "Please enter a valid date in DD/MM/YYYY format";
         }
         if (!formData.personalDetails.gender) {
             newErrors["personalDetails.gender"] = "Gender is required";
@@ -289,9 +357,15 @@ const SinglePageStudentRegistration = ({
                 try {
                     if (application && application.applicationId) {
                         // Update existing application
+                        // Convert date format from DD/MM/YYYY to ISO (YYYY-MM-DD) before saving
+                        const personalDetailsForSave = {
+                            ...formData.personalDetails,
+                            dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
+                            registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                        };
                         await api.put(`/api/student-application/${application.applicationId}/save-draft`, {
                             data: {
-                                personalDetails: formData.personalDetails,
+                                personalDetails: personalDetailsForSave,
                                 contactDetails: formData.contactDetails,
                                 courseDetails: formData.courseDetails,
                                 guardianDetails: formData.guardianDetails,
@@ -301,8 +375,14 @@ const SinglePageStudentRegistration = ({
                         });
                     } else {
                         // Create new application
+                        // Convert date format from DD/MM/YYYY to ISO (YYYY-MM-DD) before submitting
+                        const personalDetailsForSubmit = {
+                            ...formData.personalDetails,
+                            dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
+                            registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                        };
                         const response = await api.post("/api/student-application/create", {
-                            personalDetails: formData.personalDetails,
+                            personalDetails: personalDetailsForSubmit,
                             contactDetails: formData.contactDetails,
                             courseDetails: formData.courseDetails,
                             guardianDetails: formData.guardianDetails,
@@ -557,8 +637,15 @@ const SinglePageStudentRegistration = ({
 
                 // Get college and course names for backend compatibility
                 const selectedCollegeData = colleges.find(c => c._id === formData.courseDetails?.selectedCollege);
+                // Convert date format from DD/MM/YYYY to ISO (YYYY-MM-DD) before submitting
+                const personalDetailsForSubmit = {
+                    ...formData.personalDetails,
+                    dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
+                    registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                };
                 const submitData = {
                     ...formData,
+                    personalDetails: personalDetailsForSubmit,
                     documents: documentsArray,
                     termsAccepted: true,
                     courseDetails: {
@@ -614,11 +701,17 @@ const SinglePageStudentRegistration = ({
                                         status: 'PENDING' // Valid enum: PENDING, APPROVED, REJECTED
                                     }));
 
+                                    // Convert date format from DD/MM/YYYY to ISO (YYYY-MM-DD) before saving
+                                    const personalDetailsForSave2 = {
+                                        ...formData.personalDetails,
+                                        dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
+                                        registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                                    };
                                     await api.put(
                                         `/api/student-application/${existing.data.data.applicationId}/save-draft`,
                                         {
                                             data: {
-                                                personalDetails: formData.personalDetails,
+                                                personalDetails: personalDetailsForSave2,
                                                 contactDetails: formData.contactDetails,
                                                 courseDetails: {
                                                     selectedCollege: formData.courseDetails?.selectedCollege || '',
@@ -960,25 +1053,72 @@ const SinglePageStudentRegistration = ({
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Date of Birth *
+                            Date of Birth * (DD/MM/YYYY)
                         </label>
                         <input
-                            type="date"
-                            value={formatDateForInput(formData.personalDetails.dateOfBirth)}
-                            onChange={(e) =>
+                            type="text"
+                            value={formData.personalDetails.dateOfBirth}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                // Allow only numbers and forward slashes
+                                value = value.replace(/[^0-9/]/g, '');
+                                // Auto-format as user types: DD/MM/YYYY
+                                if (value.length === 2 && !value.includes('/')) {
+                                    value = value + '/';
+                                } else if (value.length === 5 && value.split('/').length === 2) {
+                                    value = value + '/';
+                                }
                                 setFormData((prev) => ({
                                     ...prev,
                                     personalDetails: {
                                         ...prev.personalDetails,
-                                        dateOfBirth: e.target.value,
+                                        dateOfBirth: value,
                                     },
-                                }))
-                            }
+                                }));
+                            }}
+                            placeholder="DD/MM/YYYY"
+                            maxLength={10}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                         />
                         {errors["personalDetails.dateOfBirth"] && (
                             <p className="text-red-500 text-sm mt-1">
                                 {errors["personalDetails.dateOfBirth"]}
+                            </p>
+                        )}
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            Registration Date * (DD/MM/YYYY)
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.personalDetails.registrationDate}
+                            onChange={(e) => {
+                                let value = e.target.value;
+                                // Allow only numbers and forward slashes
+                                value = value.replace(/[^0-9/]/g, '');
+                                // Auto-format as user types: DD/MM/YYYY
+                                if (value.length === 2 && !value.includes('/')) {
+                                    value = value + '/';
+                                } else if (value.length === 5 && value.split('/').length === 2) {
+                                    value = value + '/';
+                                }
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    personalDetails: {
+                                        ...prev.personalDetails,
+                                        registrationDate: value,
+                                    },
+                                }));
+                            }}
+                            placeholder="DD/MM/YYYY"
+                            maxLength={10}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        />
+                        {errors["personalDetails.registrationDate"] && (
+                            <p className="text-red-500 text-sm mt-1">
+                                {errors["personalDetails.registrationDate"]}
                             </p>
                         )}
                     </div>

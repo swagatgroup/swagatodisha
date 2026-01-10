@@ -284,6 +284,7 @@ class PDFGenerator {
             { label: 'Email', value: personalDetails.email || 'N/A' },
             { label: 'Phone Number', value: personalDetails.phoneNumber || 'N/A' },
             { label: 'Date of Birth', value: personalDetails.dateOfBirth ? new Date(personalDetails.dateOfBirth).toLocaleDateString() : 'N/A' },
+            { label: 'Registration Date', value: personalDetails.registrationDate ? new Date(personalDetails.registrationDate).toLocaleDateString() : 'N/A' },
             { label: 'Gender', value: personalDetails.gender || 'N/A' },
             { label: 'Aadhar Number', value: personalDetails.aadharNumber || 'N/A' },
             { label: 'Address', value: personalDetails.address || 'N/A' }

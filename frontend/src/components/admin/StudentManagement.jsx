@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useSession } from '../../contexts/SessionContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -18,6 +18,7 @@ const StudentManagement = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -63,6 +64,7 @@ const StudentManagement = () => {
     const [filterStream, setFilterStream] = useState('all');
     const [filterCampus, setFilterCampus] = useState('all');
     const [filterSubmitterRole, setFilterSubmitterRole] = useState('all'); // Includes staff and agent
+    const prevSortByRef = useRef('latest');
 
     useEffect(() => {
         // Reset to page 1 when session changes (but not on initial mount)
@@ -122,27 +124,36 @@ const StudentManagement = () => {
         fetchColleges();
     }, []);
 
+    // Search only triggers on button click or Enter key, not automatically
+
     useEffect(() => {
         if (!selectedSession) return;
         
         console.log('🔄 StudentManagement: Fetching students for session:', selectedSession);
         
-        // Reset to page 1 when filters change (except for pagination and sort changes)
+        // Reset to page 1 when filters or sort changes
         const hasFilterChanged = 
             filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || 
             filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || 
             filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || 
-            filterCampus !== 'all' || filterSubmitterRole !== 'all' || searchTerm !== '';
+            filterCampus !== 'all' || filterSubmitterRole !== 'all' || debouncedSearchTerm !== '';
         
-        if (hasFilterChanged && currentPage !== 1) {
+        // Check if sortBy has changed
+        const sortByChanged = prevSortByRef.current !== sortBy;
+        
+        if ((hasFilterChanged || sortByChanged) && currentPage !== 1) {
+            prevSortByRef.current = sortBy; // Update ref after detecting change
             setCurrentPage(1);
             return; // Will trigger another fetch when page resets
         }
         
+        // Update ref for next comparison
+        prevSortByRef.current = sortBy;
+        
         fetchStudents();
         fetchRejectionReasons();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, sortBy, selectedSession, filterStatus, filterCourse, 
+    }, [currentPage, debouncedSearchTerm, sortBy, selectedSession, filterStatus, filterCourse, 
         filterCategory, filterCollege, filterGender, filterDistrict, filterCity, 
         filterState, filterStream, filterCampus, filterSubmitterRole]);
 
@@ -341,6 +352,22 @@ const StudentManagement = () => {
         return fileName || 'Uploaded Document';
     };
 
+    // Handle immediate search (on button click or Enter key)
+    const handleSearch = () => {
+        setDebouncedSearchTerm(searchTerm);
+        if (currentPage !== 1) {
+            setCurrentPage(1);
+        }
+    };
+
+    // Handle Enter key press in search input
+    const handleSearchKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSearch();
+        }
+    };
+
     const fetchStudents = async () => {
         try {
             setLoading(true);
@@ -405,7 +432,7 @@ const StudentManagement = () => {
                 session: selectedSession, // REQUIRED - always pass session
                 sortBy: backendSortBy,
                 sortOrder: backendSortOrder,
-                ...(searchTerm && { search: searchTerm }),
+                ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
                 ...(filterCategory !== 'all' && { category: filterCategory }),
@@ -428,13 +455,7 @@ const StudentManagement = () => {
             if (response.data.success) {
                 let studentsData = response.data.data.students || [];
 
-                // Frontend sorting fallback: Sort by createdAt desc (newest first)
-                studentsData = [...studentsData].sort((a, b) => {
-                    const dateA = new Date(a.createdAt || 0);
-                    const dateB = new Date(b.createdAt || 0);
-                    return dateB - dateA; // Descending (newest first)
-                });
-
+                // Backend is already sorting the data correctly, no need to re-sort
                 setStudents(studentsData);
                 const pagination = response.data.data.pagination || {};
                 setTotalPages(pagination.totalPages || 1);
@@ -704,41 +725,61 @@ const StudentManagement = () => {
     // Export to Excel (CSV format that Excel can open) - Complete Data Export
     const handleExportToExcel = async () => {
         try {
-            // Show loading while fetching all data
-            showLoading('Preparing export...', 'Fetching all filtered student data...');
-
             // Session is REQUIRED - always include it
             if (!selectedSession) {
-                closeLoading();
                 showError('No session selected');
                 return;
             }
 
-            // Fetch ALL students matching current filters (no pagination)
-            const params = new URLSearchParams({
-                page: 1,
-                limit: 10000, // Large limit to get all records
-                session: selectedSession, // REQUIRED - always pass session
-                sortBy: 'createdAt',
-                sortOrder: 'desc', // Newer students on top
-                ...(searchTerm && { search: searchTerm }),
-                ...(filterStatus !== 'all' && { status: filterStatus }),
-                ...(filterCourse !== 'all' && { course: filterCourse }),
-                ...(filterCategory !== 'all' && { category: filterCategory }),
-                ...(filterCollege !== 'all' && { college: filterCollege }),
-                ...(filterGender !== 'all' && { gender: filterGender }),
-                ...(filterDistrict !== 'all' && { district: filterDistrict }),
-                ...(filterCity !== 'all' && { city: filterCity }),
-                ...(filterState !== 'all' && { state: filterState }),
-                ...(filterStream !== 'all' && { stream: filterStream }),
-                ...(filterCampus !== 'all' && { campus: filterCampus }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
-            });
+            let allStudents = [];
 
-            const response = await api.get(`/api/admin/students?${params}`);
-            closeLoading();
+            // If students are selected, export only selected ones
+            if (selectedStudents.length > 0) {
+                showLoading('Preparing export...', `Exporting ${selectedStudents.length} selected student(s)...`);
+                
+                // Filter current page students to only include selected ones
+                const selectedIds = selectedStudents.map(id => id?.toString());
+                allStudents = students.filter(student => selectedIds.includes(student._id?.toString()));
+                closeLoading();
+                
+                if (allStudents.length === 0) {
+                    showError('No selected students found on current page. Please select students and try again.');
+                    return;
+                }
+                
+                if (allStudents.length !== selectedStudents.length) {
+                    showError(`Only ${allStudents.length} of ${selectedStudents.length} selected students found on current page. Exporting available students.`);
+                }
+            } else {
+                // No selection - export all filtered students
+                showLoading('Preparing export...', 'Fetching all filtered student data...');
 
-            let allStudents = response.data.success ? (response.data.data.students || []) : [];
+                // Fetch ALL students matching current filters (no pagination)
+                const params = new URLSearchParams({
+                    page: 1,
+                    limit: 10000, // Large limit to get all records
+                    session: selectedSession, // REQUIRED - always pass session
+                    sortBy: 'createdAt',
+                    sortOrder: 'desc', // Newer students on top
+                    ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
+                    ...(filterStatus !== 'all' && { status: filterStatus }),
+                    ...(filterCourse !== 'all' && { course: filterCourse }),
+                    ...(filterCategory !== 'all' && { category: filterCategory }),
+                    ...(filterCollege !== 'all' && { college: filterCollege }),
+                    ...(filterGender !== 'all' && { gender: filterGender }),
+                    ...(filterDistrict !== 'all' && { district: filterDistrict }),
+                    ...(filterCity !== 'all' && { city: filterCity }),
+                    ...(filterState !== 'all' && { state: filterState }),
+                    ...(filterStream !== 'all' && { stream: filterStream }),
+                    ...(filterCampus !== 'all' && { campus: filterCampus }),
+                    ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                });
+
+                const response = await api.get(`/api/admin/students?${params}`);
+                closeLoading();
+
+                allStudents = response.data.success ? (response.data.data.students || []) : [];
+            }
 
             if (allStudents.length === 0) {
                 showError('No students to export');
@@ -974,7 +1015,10 @@ const StudentManagement = () => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
 
-            showSuccess(`Exported ${allStudents.length} student(s) to Excel file with essential details and document links!`);
+            const exportMessage = selectedStudents.length > 0 
+                ? `Exported ${allStudents.length} selected student(s) to Excel file!`
+                : `Exported ${allStudents.length} student(s) to Excel file with essential details and document links!`;
+            showSuccess(exportMessage);
         } catch (error) {
             console.error('Error exporting to Excel:', error);
             showError('Failed to export data to Excel');
@@ -1058,14 +1102,23 @@ const StudentManagement = () => {
 
             {/* Search and Sort */}
             <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="flex-1">
+                <div className="flex-1 flex gap-2">
                     <input
                         type="text"
                         placeholder="Search by name, Aadhar, phone, email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        onKeyDown={handleSearchKeyDown}
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
+                    <button
+                        onClick={handleSearch}
+                        className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
+                        title="Search (or press Enter)"
+                    >
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                        <span className="hidden sm:inline">Search</span>
+                    </button>
                 </div>
                 <div className="flex items-center gap-4">
                     <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
@@ -1229,8 +1282,26 @@ const StudentManagement = () => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Submitters</option>
-                        <option value="agent">By Agent</option>
-                        <option value="staff">By Staff</option>
+                        <option value="agent">By Agent (All)</option>
+                        <optgroup label="Submitted by Agent">
+                            {(filters.submitters || [])
+                                .filter(s => s.role === 'agent')
+                                .map(submitter => (
+                                    <option key={submitter.id} value={submitter.id}>
+                                        {submitter.name} ({submitter.count} submissions)
+                                    </option>
+                                ))}
+                        </optgroup>
+                        <option value="staff">By Staff (All)</option>
+                        <optgroup label="Submitted by Staff">
+                            {(filters.submitters || [])
+                                .filter(s => s.role === 'staff')
+                                .map(submitter => (
+                                    <option key={submitter.id} value={submitter.id}>
+                                        {submitter.name} ({submitter.count} submissions)
+                                    </option>
+                                ))}
+                        </optgroup>
                         <option value="student">By Student</option>
                         <option value="super_admin">By Super Admin</option>
                     </select>
@@ -1238,6 +1309,7 @@ const StudentManagement = () => {
                         <button
                             onClick={() => {
                                 setSearchTerm('');
+                                setDebouncedSearchTerm('');
                                 setFilterStatus('all');
                                 setFilterCourse('all');
                                 setFilterCategory('all');
@@ -1265,9 +1337,14 @@ const StudentManagement = () => {
                     <button
                         onClick={handleExportToExcel}
                         className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2"
+                        title={selectedStudents.length > 0 ? `Export ${selectedStudents.length} selected student(s)` : 'Export all filtered students'}
                     >
                         <i className="fa-solid fa-file-excel"></i>
-                        <span>Export to Excel</span>
+                        <span>
+                            {selectedStudents.length > 0 
+                                ? `Export Selected (${selectedStudents.length})` 
+                                : 'Export to Excel'}
+                        </span>
                     </button>
                 )}
 
