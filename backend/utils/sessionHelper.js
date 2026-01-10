@@ -33,19 +33,39 @@ const getSessionDateRange = (session) => {
         }
     }
 
-    // Parse session string like "2025-26"
+    // Parse session string like "2025-26" or "25-26" (supports both formats)
     const parts = session.split('-');
     if (parts.length !== 2) {
-        throw new Error(`Invalid session format: ${session}. Expected format: "YYYY-YY"`);
+        throw new Error(`Invalid session format: ${session}. Expected format: "YYYY-YY" or "YY-YY"`);
     }
 
-    const startYear = parseInt(parts[0], 10);
+    let startYear = parseInt(parts[0], 10);
     const endYearShort = parseInt(parts[1], 10);
 
-    // Calculate full end year (e.g., "26" -> 2026 if start is 2025)
-    const endYear = startYear < 2000
-        ? 2000 + endYearShort
-        : Math.floor(startYear / 100) * 100 + endYearShort;
+    // Handle 2-digit year format (e.g., "26-27" -> "2026-27")
+    // For academic sessions in 2000s, convert 2-digit to 4-digit
+    if (startYear < 100) {
+        // Convert 2-digit to 4-digit year
+        // Assume years 00-99 are 2000-2099 for academic sessions
+        startYear = 2000 + startYear;
+    }
+
+    // Calculate full end year
+    // For academic sessions, end year is always start year + 1
+    // If endYearShort was provided (2-digit), it should match (startYear + 1) % 100
+    // But we'll just calculate it as startYear + 1 for consistency
+    let endYear = startYear + 1;
+    
+    // Validate that the provided endYearShort matches our calculated endYear (if it was 2-digit)
+    if (endYearShort < 100) {
+        const expectedEndYearShort = endYear % 100;
+        if (endYearShort !== expectedEndYearShort) {
+            throw new Error(`Invalid session: end year "${endYearShort}" does not match start year "${parts[0]}" (expected "${expectedEndYearShort}"). Got: ${session}`);
+        }
+    } else {
+        // If endYearShort is 4-digit, use it directly but validate
+        endYear = endYearShort;
+    }
 
     // Validate years
     if (isNaN(startYear) || isNaN(endYear) || startYear < 2000 || endYear > 2100) {
@@ -54,7 +74,7 @@ const getSessionDateRange = (session) => {
 
     // Validate that end year is one more than start year
     if (endYear !== startYear + 1) {
-        throw new Error(`Invalid session: end year must be start year + 1. Got: ${session}`);
+        throw new Error(`Invalid session: end year must be start year + 1. Got: ${session} (startYear: ${startYear}, endYear: ${endYear})`);
     }
 
     return {
