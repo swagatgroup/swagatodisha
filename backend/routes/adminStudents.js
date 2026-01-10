@@ -75,6 +75,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Build filter query
         const filter = {};
+        const andConditions = []; // Array to collect all conditions that need to be ANDed together
 
         // SESSION IS REQUIRED - Always filter by session
         if (!sessionParam) {
@@ -86,14 +87,54 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         }
 
         // Add session filter - REQUIRED
-        const { getSessionDateRange } = require('../utils/sessionHelper');
+        // Session is based on registration year: 
+        // - Student registered in 2025 → show in session 2025-26
+        // - Student registered in 2026 → show in session 2026-27
         try {
-            const { startDate, endDate } = getSessionDateRange(sessionParam);
-            console.log(`📅 Filtering by session ${sessionParam}: ${startDate.toISOString()} to ${endDate.toISOString()}`);
-            filter.createdAt = {
-                $gte: startDate,
-                $lte: endDate
+            // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
+            const parts = sessionParam.split('-');
+            if (parts.length !== 2) {
+                throw new Error(`Invalid session format: ${sessionParam}`);
+            }
+            
+            let startYear = parseInt(parts[0], 10);
+            // Handle 2-digit year format (e.g., "26-27" → 2026)
+            if (startYear < 100) {
+                startYear = 2000 + startYear;
+            }
+            
+            console.log(`📅 Filtering by session ${sessionParam} (registration year: ${startYear})`);
+            
+            // Create date range for the entire year (Jan 1 to Dec 31) in UTC
+            const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
+            const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
+            
+            // Match students where registrationDate year OR createdAt year equals session start year
+            const sessionDateFilter = {
+                $or: [
+                    // Match by registrationDate year (if registrationDate exists)
+                    {
+                        $and: [
+                            { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
+                            { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
+                        ]
+                    },
+                    // OR match by createdAt year (if registrationDate doesn't exist or is null)
+                    {
+                        $and: [
+                            {
+                                $or: [
+                                    { 'personalDetails.registrationDate': { $exists: false } },
+                                    { 'personalDetails.registrationDate': null }
+                                ]
+                            },
+                            { createdAt: { $gte: yearStart, $lte: yearEnd } }
+                        ]
+                    }
+                ]
             };
+            
+            andConditions.push(sessionDateFilter);
         } catch (error) {
             console.error('❌ Session date range error:', error);
             return res.status(400).json({
@@ -105,13 +146,16 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Search functionality
         if (search) {
-            filter.$or = [
-                { 'personalDetails.fullName': { $regex: search, $options: 'i' } },
-                { 'personalDetails.aadharNumber': { $regex: search, $options: 'i' } },
-                { 'contactDetails.primaryPhone': { $regex: search, $options: 'i' } },
-                { 'contactDetails.email': { $regex: search, $options: 'i' } },
-                { applicationId: { $regex: search, $options: 'i' } }
-            ];
+            const searchFilter = {
+                $or: [
+                    { 'personalDetails.fullName': { $regex: search, $options: 'i' } },
+                    { 'personalDetails.aadharNumber': { $regex: search, $options: 'i' } },
+                    { 'contactDetails.primaryPhone': { $regex: search, $options: 'i' } },
+                    { 'contactDetails.email': { $regex: search, $options: 'i' } },
+                    { applicationId: { $regex: search, $options: 'i' } }
+                ]
+            };
+            andConditions.push(searchFilter);
         }
 
         // Filter by status
@@ -186,15 +230,26 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             }
         }
 
+        // Combine all filters: if we have AND conditions, combine them with simple filters
+        let finalFilter = filter;
+        if (andConditions.length > 0) {
+            // If there are simple filters, add them to AND conditions
+            if (Object.keys(filter).length > 0) {
+                andConditions.push(filter);
+            }
+            // If only one AND condition, use it directly, otherwise wrap in $and
+            finalFilter = andConditions.length === 1 ? andConditions[0] : { $and: andConditions };
+        }
+
         // Build sort query
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
 
         // Debug filter
-        console.log('🔍 Query filter:', JSON.stringify(filter, null, 2));
+        console.log('🔍 Query filter:', JSON.stringify(finalFilter, null, 2));
 
         // Execute query with pagination - don't populate submittedBy yet as it might be Admin
-        const applications = await StudentApplication.find(filter)
+        const applications = await StudentApplication.find(finalFilter)
             .populate('user', 'fullName email phoneNumber')
             .populate('referralInfo.referredBy', 'fullName email phoneNumber referralCode')
             .populate('courseDetails.campus', 'name code')
@@ -208,7 +263,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         console.log(`📊 Found ${applications.length} applications`);;
 
         // Get total count for pagination
-        const total = await StudentApplication.countDocuments(filter);
+        const total = await StudentApplication.countDocuments(finalFilter);
         const totalInCollection = await StudentApplication.countDocuments({});
 
         console.log(`📊 Total with filter: ${total}, Total in collection: ${totalInCollection}`);

@@ -751,13 +751,17 @@ const StudentManagement = () => {
                     showError(`Only ${allStudents.length} of ${selectedStudents.length} selected students found on current page. Exporting available students.`);
                 }
             } else {
-                // No selection - export all filtered students
+                // No selection - export all filtered students (fetch all pages)
                 showLoading('Preparing export...', 'Fetching all filtered student data...');
 
-                // Fetch ALL students matching current filters (no pagination)
-                const params = new URLSearchParams({
-                    page: 1,
-                    limit: 10000, // Large limit to get all records
+                allStudents = [];
+                let currentPage = 1;
+                const pageSize = 1000; // Fetch 1000 records per page
+                let hasMore = true;
+
+                // Build base params with all current filters
+                const baseParams = {
+                    limit: pageSize,
                     session: selectedSession, // REQUIRED - always pass session
                     sortBy: 'createdAt',
                     sortOrder: 'desc', // Newer students on top
@@ -773,12 +777,38 @@ const StudentManagement = () => {
                     ...(filterStream !== 'all' && { stream: filterStream }),
                     ...(filterCampus !== 'all' && { campus: filterCampus }),
                     ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
-                });
+                };
 
-                const response = await api.get(`/api/admin/students?${params}`);
+                // Fetch all pages until no more data
+                while (hasMore) {
+                    const params = new URLSearchParams({
+                        ...baseParams,
+                        page: currentPage.toString()
+                    });
+
+                    const response = await api.get(`/api/admin/students?${params}`);
+                    
+                    if (response.data.success && response.data.data.students) {
+                        const pageStudents = response.data.data.students || [];
+                        if (pageStudents.length > 0) {
+                            allStudents = [...allStudents, ...pageStudents];
+                            currentPage++;
+                            
+                            // Update loading message to show progress
+                            showLoading('Preparing export...', `Fetched ${allStudents.length} students so far...`);
+                            
+                            // Check if there are more pages
+                            const totalPages = response.data.data.pagination?.totalPages || 1;
+                            hasMore = currentPage <= totalPages;
+                        } else {
+                            hasMore = false;
+                        }
+                    } else {
+                        hasMore = false;
+                    }
+                }
+
                 closeLoading();
-
-                allStudents = response.data.success ? (response.data.data.students || []) : [];
             }
 
             if (allStudents.length === 0) {
