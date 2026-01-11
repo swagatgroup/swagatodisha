@@ -14,10 +14,20 @@ exports.getDashboardStats = async (req, res) => {
         // Get session from query parameter, default to current session
         const sessionParam = req.query.session || getCurrentSession();
 
-        // Get date range for the session
-        let sessionDateRange;
+        // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
+        // Session is based on registration year: registered in 2025 → session 2025-26
+        let startYear;
         try {
-            sessionDateRange = getSessionDateRange(sessionParam);
+            const parts = sessionParam.split('-');
+            if (parts.length !== 2) {
+                throw new Error(`Invalid session format: ${sessionParam}`);
+            }
+            
+            startYear = parseInt(parts[0], 10);
+            // Handle 2-digit year format (e.g., "26-27" → 2026)
+            if (startYear < 100) {
+                startYear = 2000 + startYear;
+            }
         } catch (error) {
             return res.status(400).json({
                 success: false,
@@ -26,17 +36,52 @@ exports.getDashboardStats = async (req, res) => {
             });
         }
 
-        const { startDate, endDate } = sessionDateRange;
+        // Create date range for the entire calendar year (Jan 1 to Dec 31) in UTC
+        // This matches the filtering logic used in student listing endpoints
+        const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
+        const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
 
         // Base query for session-based filtering
+        // Match students where registrationDate year OR createdAt year equals session start year
         const sessionQuery = {
-            createdAt: {
-                $gte: startDate,
-                $lte: endDate
-            }
+            $or: [
+                // Match by registrationDate year (if registrationDate exists)
+                {
+                    $and: [
+                        { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
+                        { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
+                    ]
+                },
+                // OR match by createdAt year (if registrationDate doesn't exist or is null)
+                {
+                    $and: [
+                        {
+                            $or: [
+                                { 'personalDetails.registrationDate': { $exists: false } },
+                                { 'personalDetails.registrationDate': null }
+                            ]
+                        },
+                        { createdAt: { $gte: yearStart, $lte: yearEnd } }
+                    ]
+                }
+            ]
         };
 
         // Calculating dashboard stats
+
+        // Helper function to combine session query with status filter
+        const buildQuery = (statusFilter = null) => {
+            const query = { $and: [sessionQuery] };
+            if (statusFilter) {
+                query.$and.push(statusFilter);
+            }
+            return query;
+        };
+
+        // Debug logging
+        console.log('📊 Dashboard stats requested for session:', sessionParam);
+        console.log('📅 Date range:', { yearStart, yearEnd });
+        console.log('🔍 Session query:', JSON.stringify(sessionQuery, null, 2));
 
         const [
             totalStudents,
@@ -61,46 +106,25 @@ exports.getDashboardStats = async (req, res) => {
             Admin.countDocuments({ role: 'staff', isActive: true }),
 
             // Pending Applications in this session
-            StudentApplication.countDocuments({
-                ...sessionQuery,
-                status: { $in: ['SUBMITTED', 'UNDER_REVIEW'] }
-            }),
+            StudentApplication.countDocuments(buildQuery({ status: { $in: ['SUBMITTED', 'UNDER_REVIEW'] } })),
 
             // Approved Applications in this session
-            StudentApplication.countDocuments({
-                ...sessionQuery,
-                status: 'APPROVED'
-            }),
+            StudentApplication.countDocuments(buildQuery({ status: 'APPROVED' })),
 
             // Draft Applications in this session
-            StudentApplication.countDocuments({
-                ...sessionQuery,
-                status: 'DRAFT'
-            }),
+            StudentApplication.countDocuments(buildQuery({ status: 'DRAFT' })),
 
             // Submitted Applications in this session
-            StudentApplication.countDocuments({
-                ...sessionQuery,
-                status: 'SUBMITTED'
-            }),
+            StudentApplication.countDocuments(buildQuery({ status: 'SUBMITTED' })),
 
             // Under Review Applications in this session
-            StudentApplication.countDocuments({
-                ...sessionQuery,
-                status: 'UNDER_REVIEW'
-            }),
+            StudentApplication.countDocuments(buildQuery({ status: 'UNDER_REVIEW' })),
 
             // Rejected Applications in this session
-            StudentApplication.countDocuments({
-                ...sessionQuery,
-                status: 'REJECTED'
-            }),
+            StudentApplication.countDocuments(buildQuery({ status: 'REJECTED' })),
 
             // Complete Applications (Graduated Students) in this session
-            StudentApplication.countDocuments({
-                ...sessionQuery,
-                status: 'COMPLETE'
-            }),
+            StudentApplication.countDocuments(buildQuery({ status: 'COMPLETE' })),
 
             // Recent Students in this session
             StudentApplication.find(sessionQuery)
@@ -124,8 +148,8 @@ exports.getDashboardStats = async (req, res) => {
                 rejectedApplications,
                 completeApplications,
                 session: sessionParam,
-                sessionStartDate: startDate,
-                sessionEndDate: endDate
+                sessionStartDate: yearStart,
+                sessionEndDate: yearEnd
             }
         });
     } catch (error) {
