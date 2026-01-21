@@ -15,8 +15,10 @@ import {
 import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm, showLoading, closeLoading } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
+import { useSession } from '../../../contexts/SessionContext';
 
 const AgentApplicationStatus = ({ initialTab = 'all' }) => {
+    const { selectedSession } = useSession();
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -37,9 +39,11 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     ];
 
     useEffect(() => {
-        fetchApplications();
+        if (selectedSession) {
+            fetchApplications();
+        }
         fetchDocumentRequirements();
-    }, [activeTab]);
+    }, [activeTab, selectedSession]);
 
     const fetchDocumentRequirements = async () => {
         try {
@@ -53,22 +57,37 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     };
 
     const fetchApplications = async () => {
+        if (!selectedSession) {
+            console.warn('⚠️ Cannot fetch applications: no session selected');
+            setApplications([]);
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
-            let endpoint = '/api/agents/my-submitted-applications';
-            
-            if (activeTab !== 'all') {
-                endpoint += `?status=${activeTab.toUpperCase()}`;
-            }
+            const params = {
+                session: selectedSession,
+                ...(activeTab !== 'all' && { status: activeTab.toUpperCase() })
+            };
 
-            const response = await api.get(endpoint);
+            console.log('📤 Fetching agent applications with params:', params);
+            const response = await api.get('/api/agents/my-submitted-applications', { params });
+            
             if (response.data?.success) {
                 const applicationsData = response.data.data?.applications || response.data.data || [];
                 setApplications(Array.isArray(applicationsData) ? applicationsData : []);
+                console.log('✅ Applications loaded:', applicationsData.length, 'items');
+            } else {
+                console.error('❌ Applications API not successful:', response.data);
+                showError('Failed to load applications: ' + (response.data.message || 'Unknown error'));
+                setApplications([]);
             }
         } catch (error) {
             console.error('Error fetching applications:', error);
-            showError('Failed to fetch applications');
+            const errorMsg = error.response?.data?.message || 'Failed to fetch applications';
+            showError(errorMsg);
+            setApplications([]);
         } finally {
             setLoading(false);
         }

@@ -118,10 +118,9 @@ router.get("/my-students", async (req, res) => {
 
     // Import StudentApplication model (temporary fix)
     const StudentApplication = require('../models/StudentApplication');
-    const { getSessionDateRange } = require('../utils/sessionHelper');
 
     // Build filter query - applications either referred by this agent, assigned to this agent, or submitted by this agent
-    const filter = {
+    let filter = {
       $or: [
         { 'referralInfo.referredBy': new mongoose.Types.ObjectId(agentId) }, // Applications that used this agent's referral code
         { 'assignedAgent': new mongoose.Types.ObjectId(agentId) }, // Applications assigned to this agent
@@ -147,65 +146,77 @@ router.get("/my-students", async (req, res) => {
     if (currentClass) filter.currentClass = currentClass;
     if (academicYear) filter.academicYear = academicYear;
 
-    // Add session filter if provided (after other filters to avoid conflicts)
-    // Session is based on registration year: registered in 2025 → session 2025-26
-    if (sessionParam) {
-      try {
-        // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
-        const parts = sessionParam.split('-');
-        if (parts.length !== 2) {
-          throw new Error(`Invalid session format: ${sessionParam}`);
-        }
-        
-        let startYear = parseInt(parts[0], 10);
-        // Handle 2-digit year format (e.g., "26-27" → 2026)
-        if (startYear < 100) {
-          startYear = 2000 + startYear;
-        }
-        
-        console.log(`📅 Agent route - Filtering by session ${sessionParam} (registration year: ${startYear})`);
-        
-        // Create date range for the entire year (Jan 1 to Dec 31) in UTC
-        const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
-        const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
-        
-        // Match students where registrationDate year OR createdAt year equals session start year
-        const sessionDateFilter = {
-          $or: [
-            {
-              $and: [
-                { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
-                { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
-              ]
-            },
-            {
-              $and: [
-                {
-                  $or: [
-                    { 'personalDetails.registrationDate': { $exists: false } },
-                    { 'personalDetails.registrationDate': null }
-                  ]
-                },
-                { createdAt: { $gte: yearStart, $lte: yearEnd } }
-              ]
-            }
-          ]
-        };
-        
-        // Combine with existing filter using $and
-        if (filter.$and) {
-          filter.$and.push(sessionDateFilter);
-        } else {
-          filter = { $and: [filter, sessionDateFilter] };
-        }
-      } catch (error) {
-        console.error('❌ Session date range error:', error);
-        return res.status(400).json({
-          success: false,
-          message: `Invalid session format: ${error.message}`,
-          error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
-        });
+    // SESSION IS REQUIRED - Always filter by session (same as admin)
+    if (!sessionParam) {
+      return res.status(400).json({
+        success: false,
+        message: 'Session parameter is required',
+        error: 'Missing session parameter'
+      });
+    }
+
+    // Add session filter - REQUIRED
+    // Session is based on registration year (calendar year): 
+    // - Session "2026-27" shows students registered in calendar year 2026 (Jan 1 - Dec 31, 2026)
+    // - Student registered in 2026 (any month) → show in session 2026-27
+    try {
+      // Parse session to extract start year (e.g., "2026-27" → 2026)
+      const parts = sessionParam.split('-');
+      if (parts.length !== 2) {
+        throw new Error(`Invalid session format: ${sessionParam}`);
       }
+      
+      let startYear = parseInt(parts[0], 10);
+      // Handle 2-digit year format (e.g., "26-27" → 2026)
+      if (startYear < 100) {
+        startYear = 2000 + startYear;
+      }
+      
+      console.log(`📅 Agent route - Filtering by session ${sessionParam} (registration year: ${startYear})`);
+      
+      // Create date range for the entire calendar year (Jan 1 to Dec 31) in UTC
+      // This ensures students registered in 2026 (any month) show in 2026-27 session
+      const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
+      const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
+      
+      // Match students where registrationDate year OR createdAt year equals session start year
+      const sessionDateFilter = {
+        $or: [
+          // Match by registrationDate year (if registrationDate exists)
+          {
+            $and: [
+              { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
+              { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
+            ]
+          },
+          // OR match by createdAt year (if registrationDate doesn't exist or is null)
+          {
+            $and: [
+              {
+                $or: [
+                  { 'personalDetails.registrationDate': { $exists: false } },
+                  { 'personalDetails.registrationDate': null }
+                ]
+              },
+              { createdAt: { $gte: yearStart, $lte: yearEnd } }
+            ]
+          }
+        ]
+      };
+      
+      // Combine with existing filter using $and
+      if (filter.$and) {
+        filter.$and.push(sessionDateFilter);
+      } else {
+        filter = { $and: [filter, sessionDateFilter] };
+      }
+    } catch (error) {
+      console.error('❌ Session date range error:', error);
+      return res.status(400).json({
+        success: false,
+        message: `Invalid session format: ${error.message}`,
+        error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+      });
     }
 
     console.log("🔍 Filter query:", JSON.stringify(filter, null, 2));
@@ -516,68 +527,76 @@ router.get("/stats", async (req, res) => {
       ],
     };
 
-    // Add session filter if provided
-    // Session is based on registration year: registered in 2025 → session 2025-26
-    if (sessionParam) {
-      try {
-        // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
-        const parts = sessionParam.split('-');
-        if (parts.length !== 2) {
-          throw new Error(`Invalid session format: ${sessionParam}`);
-        }
-        
-        let startYear = parseInt(parts[0], 10);
-        // Handle 2-digit year format (e.g., "26-27" → 2026)
-        if (startYear < 100) {
-          startYear = 2000 + startYear;
-        }
-        
-        console.log(`📅 Agent stats - Filtering by session ${sessionParam} (registration year: ${startYear})`);
-        
-        // Create date range for the entire year (Jan 1 to Dec 31) in UTC
-        const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
-        const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
-        
-        // Match students where registrationDate year OR createdAt year equals session start year
-        // Need to combine with existing agentQuery using $and
-        const sessionDateFilter = {
-          $or: [
-            {
-              $and: [
-                { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
-                { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
-              ]
-            },
-            {
-              $and: [
-                {
-                  $or: [
-                    { 'personalDetails.registrationDate': { $exists: false } },
-                    { 'personalDetails.registrationDate': null }
-                  ]
-                },
-                { createdAt: { $gte: yearStart, $lte: yearEnd } }
-              ]
-            }
-          ]
-        };
-        
-        // Combine with existing agentQuery using $and
-        agentQuery = { $and: [agentQuery, sessionDateFilter] };
-      } catch (error) {
-        console.error('❌ Session date range error:', error);
-        return res.status(400).json({
-          success: false,
-          message: `Invalid session format: ${error.message}`,
-          error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
-        });
+    // SESSION IS REQUIRED - Always filter by session (same as admin)
+    if (!sessionParam) {
+      return res.status(400).json({
+        success: false,
+        message: 'Session parameter is required',
+        error: 'Missing session parameter'
+      });
+    }
+
+    // Add session filter - REQUIRED
+    // Session is based on registration year (calendar year)
+    try {
+      // Parse session to extract start year (e.g., "2026-27" → 2026)
+      const parts = sessionParam.split('-');
+      if (parts.length !== 2) {
+        throw new Error(`Invalid session format: ${sessionParam}`);
       }
+      
+      let startYear = parseInt(parts[0], 10);
+      // Handle 2-digit year format (e.g., "26-27" → 2026)
+      if (startYear < 100) {
+        startYear = 2000 + startYear;
+      }
+      
+      console.log(`📅 Agent stats - Filtering by session ${sessionParam} (registration year: ${startYear})`);
+      
+      // Create date range for the entire calendar year (Jan 1 to Dec 31) in UTC
+      const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
+      const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
+      
+      // Match students where registrationDate year OR createdAt year equals session start year
+      const sessionDateFilter = {
+        $or: [
+          // Match by registrationDate year (if registrationDate exists)
+          {
+            $and: [
+              { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
+              { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
+            ]
+          },
+          // OR match by createdAt year (if registrationDate doesn't exist or is null)
+          {
+            $and: [
+              {
+                $or: [
+                  { 'personalDetails.registrationDate': { $exists: false } },
+                  { 'personalDetails.registrationDate': null }
+                ]
+              },
+              { createdAt: { $gte: yearStart, $lte: yearEnd } }
+            ]
+          }
+        ]
+      };
+      
+      // Combine with existing agentQuery using $and
+      agentQuery = { $and: [agentQuery, sessionDateFilter] };
+    } catch (error) {
+      console.error('❌ Session date range error:', error);
+      return res.status(400).json({
+        success: false,
+        message: `Invalid session format: ${error.message}`,
+        error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+      });
     }
 
     const totalStudents = await StudentApplication.countDocuments(agentQuery);
     const pendingStudents = await StudentApplication.countDocuments({
       ...agentQuery,
-      status: "SUBMITTED",
+      status: "UNDER_REVIEW",
     });
     const underReviewStudents = await StudentApplication.countDocuments({
       ...agentQuery,
@@ -718,8 +737,8 @@ router.post("/submit-application", async (req, res) => {
       referralInfo,
       submittedBy: req.user._id, // Agent who is submitting
       submitterRole: req.user.role,
-      status: "SUBMITTED",
-      currentStage: "SUBMITTED",
+      status: "UNDER_REVIEW",
+      currentStage: "UNDER_REVIEW",
       progress: {
         registrationComplete: true,
         documentsComplete: true,
@@ -827,35 +846,47 @@ router.get("/my-submitted-applications", async (req, res) => {
       query.status = status.toUpperCase();
     }
 
-    // Add session filter if provided
-    if (sessionParam) {
-      try {
-        // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
-        const parts = sessionParam.split('-');
-        if (parts.length !== 2) {
-          throw new Error(`Invalid session format: ${sessionParam}`);
-        }
-        
-        let startYear = parseInt(parts[0], 10);
-        // Handle 2-digit year format (e.g., "26-27" → 2026)
-        if (startYear < 100) {
-          startYear = 2000 + startYear;
-        }
-        
-        console.log(`📅 Agent applications - Filtering by session ${sessionParam} (registration year: ${startYear})`);
-        
-        // Create date range for the entire year (Jan 1 to Dec 31) in UTC
-        const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
-        const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
-        
-        // Match students where registrationDate year OR createdAt year equals session start year
-        query.$or = [
+    // SESSION IS REQUIRED - Always filter by session (same as admin)
+    if (!sessionParam) {
+      return res.status(400).json({
+        success: false,
+        message: 'Session parameter is required',
+        error: 'Missing session parameter'
+      });
+    }
+
+    // Add session filter - REQUIRED
+    // Session is based on registration year (calendar year)
+    try {
+      // Parse session to extract start year (e.g., "2026-27" → 2026)
+      const parts = sessionParam.split('-');
+      if (parts.length !== 2) {
+        throw new Error(`Invalid session format: ${sessionParam}`);
+      }
+      
+      let startYear = parseInt(parts[0], 10);
+      // Handle 2-digit year format (e.g., "26-27" → 2026)
+      if (startYear < 100) {
+        startYear = 2000 + startYear;
+      }
+      
+      console.log(`📅 Agent applications - Filtering by session ${sessionParam} (registration year: ${startYear})`);
+      
+      // Create date range for the entire calendar year (Jan 1 to Dec 31) in UTC
+      const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
+      const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
+      
+      // Match students where registrationDate year OR createdAt year equals session start year
+      const sessionDateFilter = {
+        $or: [
+          // Match by registrationDate year (if registrationDate exists)
           {
             $and: [
               { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
               { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
             ]
           },
+          // OR match by createdAt year (if registrationDate doesn't exist or is null)
           {
             $and: [
               {
@@ -867,15 +898,18 @@ router.get("/my-submitted-applications", async (req, res) => {
               { createdAt: { $gte: yearStart, $lte: yearEnd } }
             ]
           }
-        ];
-      } catch (error) {
-        console.error('❌ Session date range error:', error);
-        return res.status(400).json({
-          success: false,
-          message: `Invalid session format: ${error.message}`,
-          error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
-        });
-      }
+        ]
+      };
+
+      // Combine with existing query using $and
+      query = { $and: [query, sessionDateFilter] };
+    } catch (error) {
+      console.error('❌ Session date range error:', error);
+      return res.status(400).json({
+        success: false,
+        message: `Invalid session format: ${error.message}`,
+        error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+      });
     }
 
     const applications = await StudentApplication.find(query)
@@ -969,7 +1003,7 @@ router.get("/referral-info", async (req, res) => {
           _id: null,
           totalReferrals: { $sum: 1 },
           successfulReferrals: { $sum: { $cond: [{ $eq: ['$status', 'APPROVED'] }, 1, 0] } },
-          pendingReferrals: { $sum: { $cond: [{ $eq: ['$status', 'SUBMITTED'] }, 1, 0] } },
+          pendingReferrals: { $sum: { $cond: [{ $eq: ['$status', 'UNDER_REVIEW'] }, 1, 0] } },
           rejectedReferrals: { $sum: { $cond: [{ $eq: ['$status', 'REJECTED'] }, 1, 0] } }
         }
       }
@@ -1120,9 +1154,9 @@ router.post('/students/:id/resubmit', async (req, res) => {
 
     console.log('✅ Application is rejected, proceeding with resubmission');
 
-    // Reset status to SUBMITTED for review
-    application.status = 'SUBMITTED';
-    application.currentStage = 'SUBMITTED';
+    // Reset status to UNDER_REVIEW for staff to check again
+    application.status = 'UNDER_REVIEW';
+    application.currentStage = 'UNDER_REVIEW';
     application.submittedAt = new Date();
 
     // Clear review info fields to allow fresh review
@@ -1149,8 +1183,8 @@ router.post('/students/:id/resubmit', async (req, res) => {
       application.workflowHistory = [];
     }
     application.workflowHistory.push({
-      stage: 'SUBMITTED',
-      status: 'SUBMITTED',
+      stage: 'UNDER_REVIEW',
+      status: 'UNDER_REVIEW',
       updatedBy: agentId,
       action: 'RESUBMIT',
       remarks: 'Application resubmitted after addressing rejection feedback',

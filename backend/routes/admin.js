@@ -131,8 +131,8 @@ router.post('/submit-application', protect, authorize('staff', 'super_admin'), a
             referralInfo,
             submittedBy: req.user._id, // Admin who is submitting
             submitterRole: req.user.role,
-            status: "SUBMITTED",
-            currentStage: "SUBMITTED",
+            status: "UNDER_REVIEW",
+            currentStage: "UNDER_REVIEW",
             progress: {
                 registrationComplete: true,
                 documentsComplete: true,

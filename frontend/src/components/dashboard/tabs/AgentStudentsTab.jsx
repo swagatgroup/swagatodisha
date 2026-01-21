@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useSession } from "../../../contexts/SessionContext";
 import api from "../../../utils/api";
 import { showSuccess, showError, showLoading, closeLoading } from "../../../utils/sweetAlert";
 
 const AgentStudentsTab = () => {
   const { user } = useAuth();
+  const { selectedSession } = useSession();
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -32,27 +34,68 @@ const AgentStudentsTab = () => {
   }, [stats]);
 
   useEffect(() => {
-    loadStudents();
-    loadStats();
-  }, []);
+    if (selectedSession) {
+      loadStudents();
+      loadStats();
+    } else {
+      console.warn('⚠️ No session selected in AgentStudentsTab');
+      setStudents([]);
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSession]);
+
+  // Reload when filters change (but not on initial mount)
+  useEffect(() => {
+    if (selectedSession && students.length > 0) {
+      // Only reload if we already have data (filters changed)
+      const timer = setTimeout(() => {
+        loadStudents();
+      }, 300); // Debounce filter changes
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.search, filters.status, filters.course]);
 
   const loadStudents = async () => {
+    if (!selectedSession) {
+      console.warn('⚠️ Cannot load students: no session selected');
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await api.get("/api/agents/my-students", {
-        params: {
-          search: filters.search || undefined,
-          status: filters.status || undefined,
-          course: filters.course || undefined,
-        },
-      });
+      const params = {
+        page: 1,
+        limit: 1000,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+        session: selectedSession,
+        ...(filters.search && { search: filters.search }),
+        ...(filters.status && { status: filters.status }),
+        ...(filters.course && { course: filters.course }),
+      };
+
+      console.log('📤 Loading students with params:', params);
+      const response = await api.get("/api/agents/my-students", { params });
+      console.log('📥 Students API response:', response.data);
+
       if (response.data.success) {
-        console.log('📊 Agent students data:', response.data.data.students);
-        console.log('📊 First student:', response.data.data.students?.[0]);
-        setStudents(response.data.data.students || []);
+        const list = response.data.data?.students ?? response.data.data ?? [];
+        console.log('✅ Students loaded:', list.length, 'items');
+        console.log('📋 Sample student:', list[0]);
+        console.log('📋 Student statuses:', list.map(s => ({ id: s._id, status: s.status, name: s.personalDetails?.fullName })));
+        setStudents(Array.isArray(list) ? list : []);
+      } else {
+        console.error('❌ Students API not successful:', response.data);
+        setStudents([]);
+        showError(response.data.message || "Failed to load students");
       }
     } catch (error) {
-      console.error("Error loading students:", error);
+      console.error("❌ Error loading students:", error);
+      console.error("❌ Error response:", error.response?.data);
+      setStudents([]);
+      showError(error.response?.data?.message || "Failed to load students");
     } finally {
       setLoading(false);
     }
@@ -61,7 +104,11 @@ const AgentStudentsTab = () => {
   const loadStats = async () => {
     try {
       console.log('📊 Loading agent stats...');
-      const response = await api.get("/api/agents/stats");
+      const response = await api.get("/api/agents/stats", {
+        params: {
+          session: selectedSession
+        }
+      });
       console.log('📊 Stats response:', response.data);
       if (response.data.success) {
         setStats(response.data.data);
@@ -249,21 +296,49 @@ const AgentStudentsTab = () => {
   };
 
   const filteredStudents = students.filter((student) => {
+    // Search filter
     const matchesSearch =
       !filters.search ||
       student.personalDetails?.fullName
         ?.toLowerCase()
         .includes(filters.search.toLowerCase()) ||
       student.personalDetails?.aadharNumber?.includes(filters.search) ||
-      student.contactDetails?.primaryPhone?.includes(filters.search);
+      student.contactDetails?.primaryPhone?.includes(filters.search) ||
+      student.contactDetails?.email?.toLowerCase().includes(filters.search.toLowerCase()) ||
+      student.applicationId?.toLowerCase().includes(filters.search.toLowerCase());
 
-    const matchesStatus = !filters.status || student.status === filters.status;
+    // Status filter - handle multiple status values
+    const matchesStatus = !filters.status || 
+      student.status === filters.status ||
+      student.status === filters.status.toUpperCase() ||
+      (filters.status === 'PENDING' && (student.status === 'SUBMITTED' || student.status === 'PENDING')) ||
+      (filters.status === 'IN_PROGRESS' && (student.status === 'UNDER_REVIEW' || student.status === 'IN_PROGRESS')) ||
+      (filters.status === 'COMPLETED' && (student.status === 'APPROVED' || student.status === 'COMPLETED'));
+
+    // Course filter
     const matchesCourse =
       !filters.course ||
-      student.courseDetails?.selectedCourse === filters.course;
+      student.courseDetails?.selectedCourse === filters.course ||
+      student.courseDetails?.courseName === filters.course;
 
     return matchesSearch && matchesStatus && matchesCourse;
   });
+
+  if (!selectedSession) {
+    return (
+      <div className="flex flex-col items-center justify-center h-64">
+        <svg className="h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+          No Session Selected
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Please select an academic session to view students.
+        </p>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -421,8 +496,12 @@ const AgentStudentsTab = () => {
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Statuses</option>
+              <option value="DRAFT">Draft</option>
+              <option value="SUBMITTED">Submitted</option>
               <option value="PENDING">Pending</option>
+              <option value="UNDER_REVIEW">Under Review</option>
               <option value="IN_PROGRESS">In Progress</option>
+              <option value="APPROVED">Approved</option>
               <option value="COMPLETED">Completed</option>
               <option value="REJECTED">Rejected</option>
             </select>
@@ -457,11 +536,25 @@ const AgentStudentsTab = () => {
           </div>
           <div className="flex items-end">
             <button
-              onClick={loadStudents}
-              className="w-full px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"
+              onClick={() => {
+                console.log('🔄 Applying filters:', filters);
+                loadStudents();
+              }}
+              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
             >
-              Filter
+              Apply Filters
             </button>
+            {(filters.search || filters.status || filters.course) && (
+              <button
+                onClick={() => {
+                  setFilters({ search: "", status: "", course: "" });
+                  setTimeout(() => loadStudents(), 100);
+                }}
+                className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+              >
+                Clear
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -498,14 +591,38 @@ const AgentStudentsTab = () => {
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {filteredStudents.map((student, index) => (
-                <motion.tr
-                  key={student._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="hover:bg-gray-50"
-                >
+              {filteredStudents.length === 0 ? (
+                <tr>
+                  <td colSpan="6" className="px-6 py-12 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                      </svg>
+                      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                        {students.length === 0 ? 'No Students Found' : 'No Students Match Filters'}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        {students.length === 0 
+                          ? `No students found for the ${selectedSession} academic session.`
+                          : 'Try adjusting your search or filter criteria.'}
+                      </p>
+                      {students.length === 0 && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                          Students will appear here once you register them.
+                        </p>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filteredStudents.map((student, index) => (
+                  <motion.tr
+                    key={student._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="hover:bg-gray-50"
+                  >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
@@ -598,7 +715,8 @@ const AgentStudentsTab = () => {
                     </div>
                   </td>
                 </motion.tr>
-              ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>

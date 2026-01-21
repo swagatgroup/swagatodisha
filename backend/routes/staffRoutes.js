@@ -221,10 +221,7 @@ router.get("/processing-stats", async (req, res) => {
     // Pending verification - applications that are submitted but not yet approved/rejected (in this session)
     const pendingVerification = await StudentApplication.countDocuments({
       ...sessionQuery,
-      $or: [
-        { status: 'SUBMITTED' },
-        { status: 'UNDER_REVIEW' }
-      ]
+      status: 'UNDER_REVIEW'
     });
     console.log('⏳ Pending verification:', pendingVerification);
 
@@ -321,7 +318,7 @@ router.get("/processing-stats", async (req, res) => {
       // Fallback: calculate from creation to now for pending applications in this session
       const recentPending = await StudentApplication.find({
         ...sessionQuery,
-        status: { $in: ['SUBMITTED', 'UNDER_REVIEW'] },
+        status: 'UNDER_REVIEW',
         submittedAt: { $exists: true }
       })
         .select('submittedAt createdAt')
@@ -734,8 +731,8 @@ router.post("/submit-application", async (req, res) => {
       referralInfo,
       submittedBy: req.user._id, // Staff who is submitting
       submitterRole: req.user.role,
-      status: "SUBMITTED",
-      currentStage: "SUBMITTED",
+      status: "UNDER_REVIEW",
+      currentStage: "UNDER_REVIEW",
       progress: {
         registrationComplete: true,
         documentsComplete: true,
