@@ -378,8 +378,8 @@ const submitApplication = async (req, res) => {
             });
         }
 
-        // Validate that application is not already submitted
-        if (application.status === 'SUBMITTED' || application.status === 'UNDER_REVIEW' || application.status === 'APPROVED') {
+        // Validate that application is not already submitted/reviewed
+        if (application.status === 'UNDER_REVIEW' || application.status === 'APPROVED') {
             return res.status(400).json({
                 success: false,
                 message: `Application is already ${application.status.toLowerCase()}`,
@@ -435,20 +435,20 @@ const submitApplication = async (req, res) => {
             });
         }
 
-        // Update application status
-        application.status = "SUBMITTED";
-        application.currentStage = "SUBMITTED";
+        // Update application status - goes directly to UNDER_REVIEW for staff to check
+        application.status = "UNDER_REVIEW";
+        application.currentStage = "UNDER_REVIEW";
         application.submittedAt = new Date();
         application.termsAccepted = termsAccepted;
         application.termsAcceptedAt = new Date();
 
         // Add workflow history entry
         application.workflowHistory.push({
-            stage: 'SUBMITTED',
-            status: 'SUBMITTED',
+            stage: 'UNDER_REVIEW',
+            status: 'UNDER_REVIEW',
             updatedBy: req.user._id,
             action: 'SUBMIT',
-            remarks: 'Application submitted by student',
+            remarks: 'Application submitted and moved to review',
             timestamp: new Date()
         });
 
@@ -643,7 +643,7 @@ const downloadApplicationPDF = async (req, res) => {
 
 const getApplicationsByStatus = async (req, res) => {
     try {
-        const { status = 'SUBMITTED', page = 1, limit = 20, reviewFilter, session: sessionParam } = req.query;
+        const { status = 'UNDER_REVIEW', page = 1, limit = 20, reviewFilter, session: sessionParam } = req.query;
 
         console.log('getApplicationsByStatus called with:', { status, page, limit, reviewFilter, session: sessionParam });
 
@@ -797,11 +797,8 @@ const getApplicationsByStatus = async (req, res) => {
             } else if (reviewedDocs === totalDocs) {
                 if (rejectedDocs === 0) {
                     reviewStatus = 'all_approved';
-                    // All documents approved - can move to UNDER_REVIEW for final approval
-                    if (app.status === 'SUBMITTED') {
-                        applicationStatus = 'UNDER_REVIEW';
-                        currentStage = 'UNDER_REVIEW';
-                    }
+                    // All documents approved - already in UNDER_REVIEW, ready for final approval
+                    // Status remains UNDER_REVIEW
                 } else if (approvedDocs === 0) {
                     reviewStatus = 'all_rejected';
                     // All documents rejected - keep as SUBMITTED, needs re-upload
@@ -1051,7 +1048,6 @@ const getWorkflowStats = async (req, res) => {
     try {
         const totals = await Promise.all([
             StudentApplication.countDocuments({}),
-            StudentApplication.countDocuments({ status: 'SUBMITTED' }),
             StudentApplication.countDocuments({ status: 'UNDER_REVIEW' }),
             StudentApplication.countDocuments({ status: 'APPROVED' }),
             StudentApplication.countDocuments({ status: 'REJECTED' })
@@ -1061,10 +1057,9 @@ const getWorkflowStats = async (req, res) => {
             success: true,
             data: {
                 total: totals[0],
-                submitted: totals[1],
-                underReview: totals[2],
-                approved: totals[3],
-                rejected: totals[4]
+                underReview: totals[1],
+                approved: totals[2],
+                rejected: totals[3]
             }
         });
     } catch (error) {
@@ -1142,7 +1137,7 @@ const getDocumentReviewStats = async (req, res) => {
         const query = {
             $and: [
                 sessionDateFilter,
-                { status: 'SUBMITTED' }
+                { status: 'UNDER_REVIEW' }
             ]
         };
 
@@ -1246,20 +1241,39 @@ const verifyDocuments = async (req, res) => {
 
         console.log('📝 Processing', decisions.length, 'document decisions');
 
+        // Build update operations for each document
+        const updateOperations = {};
+        
         decisions.forEach((d) => {
             const existing = docMap.get(d.documentType);
             if (existing) {
-                console.log(`  - Updating ${d.documentType}: ${existing.status} → ${d.status}`);
-                existing.status = d.status || 'PENDING';
-                // For approvals, use default remark if none provided. For rejections, require remarks.
-                if (d.status === 'APPROVED') {
-                    existing.remarks = d.remarks || 'Document approved';
-                } else if (d.status === 'REJECTED') {
-                    existing.remarks = d.remarks || 'Document rejected - no reason provided';
+                const oldStatus = existing.status;
+                console.log(`  - Updating ${d.documentType}: ${oldStatus} → ${d.status}`);
+                
+                // Find the index of this document in the array
+                const docIndex = application.documents.findIndex(doc => doc.documentType === d.documentType);
+                
+                if (docIndex !== -1) {
+                    // Build update path for this document
+                    const basePath = `documents.${docIndex}`;
+                    
+                    // Update document properties using $set operator paths
+                    updateOperations[`${basePath}.status`] = d.status || 'PENDING';
+                    
+                    // For approvals, use default remark if none provided. For rejections, require remarks.
+                    if (d.status === 'APPROVED') {
+                        updateOperations[`${basePath}.remarks`] = d.remarks || 'Document approved';
+                    } else if (d.status === 'REJECTED') {
+                        updateOperations[`${basePath}.remarks`] = d.remarks || 'Document rejected - no reason provided';
+                    }
+                    
+                    updateOperations[`${basePath}.reviewedBy`] = req.user?._id;
+                    updateOperations[`${basePath}.reviewedAt`] = new Date();
+                    
+                    updatedDocuments++;
+                } else {
+                    console.warn(`  - Document type ${d.documentType} not found in application documents array`);
                 }
-                existing.reviewedBy = req.user?._id;
-                existing.reviewedAt = new Date();
-                updatedDocuments++;
             } else {
                 console.warn(`  - Document type ${d.documentType} not found in application`);
             }
@@ -1272,10 +1286,34 @@ const verifyDocuments = async (req, res) => {
             });
         }
 
-        console.log(`✅ Updated ${updatedDocuments} documents`);
+        console.log(`✅ Prepared updates for ${updatedDocuments} documents`);
+        console.log('📝 Update operations:', JSON.stringify(updateOperations, null, 2));
 
-        // CRITICAL: Mark documents array as modified so Mongoose saves it
-        application.markModified('documents');
+        // Use findOneAndUpdate with $set to ensure nested document updates are saved
+        const updatedApplication = await StudentApplication.findOneAndUpdate(
+            { applicationId },
+            { $set: updateOperations },
+            { new: true, runValidators: true }
+        );
+
+        if (!updatedApplication) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found after update'
+            });
+        }
+
+        // Reload the application to get the updated documents
+        application = await StudentApplication.findOne({ applicationId });
+        console.log('✅ Documents updated using findOneAndUpdate');
+        
+        // Verify the updates were saved
+        console.log('📋 Document statuses after update:');
+        if (application && application.documents) {
+            application.documents.forEach(doc => {
+                console.log(`  - ${doc.documentType}: ${doc.status} ${doc.remarks ? `(${doc.remarks.substring(0, 50)})` : ''}`);
+            });
+        }
 
         // Compute verification flags
         const allDocs = application.documents || [];
@@ -1335,24 +1373,27 @@ const verifyDocuments = async (req, res) => {
         const previousStatus = application.status;
         const previousStage = application.currentStage;
 
+        // Document review doesn't change application status - it stays UNDER_REVIEW
+        // Staff will approve/reject the application after reviewing documents
+        // Only update currentStage to reflect document review progress
         if (allApproved) {
-            // All documents approved - move to UNDER_REVIEW for final approval
+            // All documents approved - ready for final approval, stay in UNDER_REVIEW
             application.status = 'UNDER_REVIEW';
             application.currentStage = 'UNDER_REVIEW';
         } else if (allRejected) {
-            // All documents rejected - keep as SUBMITTED but mark for re-upload
-            application.status = 'SUBMITTED';
+            // All documents rejected - stay in UNDER_REVIEW but mark for re-upload
+            application.status = 'UNDER_REVIEW';
             application.currentStage = 'DOCUMENTS';
         } else if (counts.rejected > 0) {
-            // Some documents rejected - keep as SUBMITTED, needs attention
-            application.status = 'SUBMITTED';
+            // Some documents rejected - stay in UNDER_REVIEW, needs attention
+            application.status = 'UNDER_REVIEW';
             application.currentStage = 'DOCUMENTS';
         } else if (anyReviewed && counts.rejected === 0) {
-            // Partially reviewed but no rejections yet - move to UNDER_REVIEW
+            // Partially reviewed but no rejections yet - stay in UNDER_REVIEW
             application.status = 'UNDER_REVIEW';
             application.currentStage = 'DOCUMENTS';
         }
-        // If no documents reviewed, keep current status
+        // If no documents reviewed, keep current status (should be UNDER_REVIEW)
 
         // Add workflow history entry for document review
         // Use REQUEST_MODIFICATION if any docs rejected, otherwise APPROVE if all approved
@@ -1367,17 +1408,77 @@ const verifyDocuments = async (req, res) => {
             timestamp: new Date()
         });
 
-        application.lastModified = new Date();
+        // Update reviewStatus and application status using findOneAndUpdate
+        const statusUpdateOperations = {
+            'reviewStatus.documentsVerified': allApproved,
+            'reviewStatus.reviewedBy': req.user._id,
+            'reviewStatus.reviewedAt': new Date(),
+            'reviewStatus.documentCounts': counts,
+            'reviewStatus.overallDocumentReviewStatus': overallStatus,
+            'lastModified': new Date()
+        };
 
-        console.log('💾 Saving application with updated document statuses...');
-        await application.save();
-        console.log('✅ Application saved successfully to database');
+        if (feedbackSummary) {
+            statusUpdateOperations['reviewStatus.feedbackSummary'] = feedbackSummary;
+        }
 
-        // Verify the save by logging final document statuses
-        console.log('📋 Final document statuses after save:');
-        application.documents.forEach(doc => {
-            console.log(`  - ${doc.documentType}: ${doc.status} ${doc.remarks ? `(${doc.remarks.substring(0, 50)})` : ''}`);
-        });
+        // Document review doesn't change application status - it stays UNDER_REVIEW
+        // Staff will approve/reject the application after reviewing documents
+        // Only update currentStage to reflect document review progress
+        if (allApproved) {
+            // All documents approved - ready for final approval, stay in UNDER_REVIEW
+            statusUpdateOperations.status = 'UNDER_REVIEW';
+            statusUpdateOperations.currentStage = 'UNDER_REVIEW';
+        } else if (allRejected || counts.rejected > 0) {
+            // Documents rejected - stay in UNDER_REVIEW but mark for re-upload
+            statusUpdateOperations.status = 'UNDER_REVIEW';
+            statusUpdateOperations.currentStage = 'DOCUMENTS';
+        } else if (anyReviewed && counts.rejected === 0) {
+            // Partially reviewed but no rejections - stay in UNDER_REVIEW
+            statusUpdateOperations.status = 'UNDER_REVIEW';
+            statusUpdateOperations.currentStage = 'DOCUMENTS';
+        }
+        // If no documents reviewed, keep current status (should already be UNDER_REVIEW)
+
+        // Update workflow history using $push
+        const workflowHistoryEntry = {
+            stage: statusUpdateOperations.currentStage || application.currentStage,
+            status: statusUpdateOperations.status || application.status,
+            updatedBy: req.user._id,
+            action: workflowAction,
+            remarks: `Document review completed: ${counts.approved} approved, ${counts.rejected} rejected, ${counts.pending} pending`,
+            timestamp: new Date()
+        };
+
+        // Final update with all status changes
+        const finalApplication = await StudentApplication.findOneAndUpdate(
+            { applicationId },
+            {
+                $set: statusUpdateOperations,
+                $push: { workflowHistory: workflowHistoryEntry }
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!finalApplication) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found after final update'
+            });
+        }
+
+        // Reload to get the complete updated application
+        application = await StudentApplication.findOne({ applicationId })
+            .populate('user', 'fullName email phoneNumber')
+            .populate('assignedAgent', 'fullName email phoneNumber');
+
+        console.log('✅ Application fully updated and saved');
+        console.log('📋 Final document statuses:');
+        if (application && application.documents) {
+            application.documents.forEach(doc => {
+                console.log(`  - ${doc.documentType}: ${doc.status} ${doc.remarks ? `(${doc.remarks.substring(0, 50)})` : ''}`);
+            });
+        }
 
         // Send notification about document review status
         if (anyReviewed) {

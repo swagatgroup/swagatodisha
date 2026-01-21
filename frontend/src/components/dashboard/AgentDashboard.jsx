@@ -6,6 +6,7 @@ import DashboardLayout from "./DashboardLayout";
 import StudentRegistrationWorkflow from "./tabs/StudentRegistrationWorkflow";
 import AgentApplicationsTab from "./tabs/AgentApplicationsTab";
 import AgentApplicationStatus from "./tabs/AgentApplicationStatus";
+import AgentStudentsTab from "./tabs/AgentStudentsTab";
 import StudentTable from "./components/StudentTable";
 import api from "../../utils/api";
 
@@ -35,7 +36,7 @@ const EnhancedAgentDashboard = () => {
   const sidebarItems = [
     {
       id: "dashboard",
-      name: "Dashboard & Students",
+      name: "Dashboard",
       icon: (
         <svg
           className="mr-3 h-5 w-5"
@@ -48,6 +49,25 @@ const EnhancedAgentDashboard = () => {
             strokeLinejoin="round"
             strokeWidth={2}
             d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: "students",
+      name: "Students",
+      icon: (
+        <svg
+          className="mr-3 h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
           />
         </svg>
       ),
@@ -102,43 +122,59 @@ const EnhancedAgentDashboard = () => {
       return;
     }
 
+    // Don't load if no session selected
+    if (!session) {
+      console.warn('⚠️ No session selected, skipping data load');
+      setLoading(false);
+      return;
+    }
+
     try {
       isLoadingRef.current = true;
       if (showLoading) {
         setLoading(true);
       }
+
+      console.log('🔄 Loading agent dashboard data for session:', session);
+
+      const params = {
+        page: 1,
+        limit: 1000,
+        sortBy: 'createdAt',
+        sortOrder: 'desc',
+        session: session
+      };
+
+      console.log('📤 API params:', params);
+
       const [studentsRes, statsRes, applicationsRes] = await Promise.all([
-        api.get("/api/agents/my-students", {
-          params: {
-            page: 1,
-            limit: 1000, // Get all students (increase limit to show all submissions)
-            sortBy: 'createdAt',
-            sortOrder: 'desc',
-            session: session // Pass session parameter
-          }
-        }),
-        api.get("/api/agents/stats", {
-          params: {
-            session: session // Pass session parameter
-          }
-        }),
-        api.get("/api/agents/my-submitted-applications", {
-          params: {
-            session: session // Pass session parameter
-          }
-        }),
+        api.get("/api/agents/my-students", { params }),
+        api.get("/api/agents/stats", { params: { session } }),
+        api.get("/api/agents/my-submitted-applications", { params: { session } })
       ]);
 
+      console.log('📥 Students response:', studentsRes.data);
+      console.log('📥 Stats response:', statsRes.data);
+      console.log('📥 Applications response:', applicationsRes.data);
+
       if (studentsRes.data.success) {
-        const list =
-          studentsRes.data.data?.students ?? studentsRes.data.data ?? [];
+        const list = studentsRes.data.data?.students ?? studentsRes.data.data ?? [];
+        console.log('✅ Students loaded:', list.length);
+        console.log('📋 Sample student data:', list[0]);
+        console.log('📋 All student statuses:', list.map(s => ({ id: s._id, status: s.status, name: s.personalDetails?.fullName })));
         setStudents(Array.isArray(list) ? list : []);
+      } else {
+        console.error('❌ Students API not successful:', studentsRes.data);
+        setStudents([]);
       }
 
       if (applicationsRes.data.success) {
-        // The API returns { success: true, data: { applications: [...], pagination: {...} } }
         const applicationsData = applicationsRes.data.data?.applications || applicationsRes.data.data || [];
+        console.log('✅ Applications loaded:', applicationsData.length);
         setApplications(Array.isArray(applicationsData) ? applicationsData : []);
+      } else {
+        console.error('❌ Applications API not successful:', applicationsRes.data);
+        setApplications([]);
       }
 
       if (statsRes.data.success) {
@@ -148,23 +184,35 @@ const EnhancedAgentDashboard = () => {
         // Map backend field names to frontend field names
         setStats({
           totalStudents: statsData.total || 0,
-          pendingStudents: statsData.pending || 0,
+          pendingStudents: statsData.pending || statsData.submitted || 0,
           underReviewStudents: statsData.underReview || 0,
           approvedStudents: statsData.approved || 0,
           rejectedStudents: statsData.rejected || 0,
         });
         console.log('📊 AgentDashboard - Stats mapped:', {
           totalStudents: statsData.total || 0,
-          pendingStudents: statsData.pending || 0,
+          pendingStudents: statsData.pending || statsData.submitted || 0,
           underReviewStudents: statsData.underReview || 0,
           approvedStudents: statsData.approved || 0,
           rejectedStudents: statsData.rejected || 0,
         });
       } else {
-        console.error('📊 AgentDashboard - Stats not successful:', statsRes.data);
+        console.error('❌ AgentDashboard - Stats not successful:', statsRes.data);
+        // Set default stats if API fails
+        setStats({
+          totalStudents: students.length,
+          pendingStudents: 0,
+          underReviewStudents: 0,
+          approvedStudents: 0,
+          rejectedStudents: 0,
+        });
       }
     } catch (error) {
-      console.error("Error loading dashboard data:", error);
+      console.error("❌ Error loading dashboard data:", error);
+      console.error("❌ Error details:", error.response?.data || error.message);
+      // Set empty arrays on error
+      setStudents([]);
+      setApplications([]);
     } finally {
       setLoading(false);
       isLoadingRef.current = false;
@@ -300,6 +348,10 @@ const EnhancedAgentDashboard = () => {
               </div>
             </motion.div>
           </>
+        );
+      case "students":
+        return (
+          <AgentStudentsTab />
         );
       case "registration":
         return (

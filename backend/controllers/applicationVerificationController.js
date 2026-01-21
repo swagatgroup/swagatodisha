@@ -57,7 +57,7 @@ const getPendingVerifications = async (req, res) => {
         // Get filter options
         const submitterRoles = await StudentApplication.distinct('submitterRole');
         const courses = await StudentApplication.distinct('courseDetails.selectedCourse');
-        const statuses = ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'];
+        const statuses = ['UNDER_REVIEW', 'APPROVED', 'REJECTED'];
 
         res.json({
             success: true,
@@ -132,10 +132,10 @@ const approveApplication = async (req, res) => {
             });
         }
 
-        if (application.status !== 'SUBMITTED' && application.status !== 'UNDER_REVIEW') {
+        if (application.status !== 'UNDER_REVIEW') {
             return res.status(400).json({
                 success: false,
-                message: 'Application is not in a state that can be approved'
+                message: 'Application is not in a state that can be approved. Only applications with status UNDER_REVIEW can be approved.'
             });
         }
 
@@ -189,10 +189,10 @@ const rejectApplication = async (req, res) => {
             });
         }
 
-        if (application.status !== 'SUBMITTED' && application.status !== 'UNDER_REVIEW') {
+        if (application.status !== 'UNDER_REVIEW') {
             return res.status(400).json({
                 success: false,
-                message: 'Application is not in a state that can be rejected'
+                message: 'Application is not in a state that can be rejected. Only applications with status UNDER_REVIEW can be rejected.'
             });
         }
 
@@ -400,7 +400,7 @@ const getVerificationStats = async (req, res) => {
                 courseStats,
                 totalApplications: await StudentApplication.countDocuments(),
                 pendingVerification: await StudentApplication.countDocuments({ 
-                    status: { $in: ['SUBMITTED', 'UNDER_REVIEW'] }
+                    status: 'UNDER_REVIEW'
                 }),
                 approved: await StudentApplication.countDocuments({ 
                     status: 'APPROVED'
