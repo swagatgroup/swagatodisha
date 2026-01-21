@@ -507,7 +507,7 @@ router.get("/stats", async (req, res) => {
 
     // Prefer stats from StudentApplication (new workflow) - include both assigned and referred
     // Match the same query logic as /my-students endpoint
-    const agentQuery = {
+    let agentQuery = {
       $or: [
         { 'referralInfo.referredBy': new mongoose.Types.ObjectId(req.user._id) },
         { 'assignedAgent': new mongoose.Types.ObjectId(req.user._id) },
@@ -1204,12 +1204,15 @@ router.put('/students/:id', async (req, res) => {
       });
     }
 
-    // Check if application can be edited (not approved)
-    // Allow editing REJECTED applications so agents can fix issues and resubmit
-    if (application.status === 'APPROVED') {
+    // Check if application can be edited
+    // Agents can only edit: DRAFT (before submission) and REJECTED (to fix and resubmit)
+    // Once SUBMITTED, it's with staff for review, so agents cannot edit
+    // Block editing: SUBMITTED, UNDER_REVIEW, APPROVED
+    const editableStatuses = ['DRAFT', 'REJECTED'];
+    if (!editableStatuses.includes(application.status)) {
       return res.status(400).json({
         success: false,
-        message: 'Cannot edit approved applications'
+        message: `Cannot edit application when status is ${application.status}. You can only edit applications with status: DRAFT (before submission) or REJECTED (to fix and resubmit).`
       });
     }
 

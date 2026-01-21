@@ -562,32 +562,38 @@ const AgentStudentsTab = () => {
                       >
                         View
                       </button>
-                      {student.status === 'REJECTED' ? (
+                      {/* Agents can only edit: DRAFT (before submission) and REJECTED (to fix and resubmit) */}
+                      {(student.status === 'DRAFT' || student.status === 'REJECTED') && (
                         <>
-                          <button
-                            onClick={async () => {
-                              console.log('👆 View Rejection clicked for student:', student);
-                              setSelectedStudent(student);
-                              await fetchRejectionDetails(student._id);
-                            }}
-                            className="text-red-600 hover:text-red-900"
-                          >
-                            View Rejection
-                          </button>
+                          {student.status === 'REJECTED' && (
+                            <button
+                              onClick={async () => {
+                                console.log('👆 View Rejection clicked for student:', student);
+                                setSelectedStudent(student);
+                                await fetchRejectionDetails(student._id);
+                              }}
+                              className="text-red-600 hover:text-red-900"
+                            >
+                              View Rejection
+                            </button>
+                          )}
                           <button
                             onClick={() => handleEditStudent(student)}
                             className="text-green-600 hover:text-green-900"
                           >
-                            Edit & Resubmit
+                            {student.status === 'REJECTED' ? 'Edit & Resubmit' : 'Edit'}
                           </button>
                         </>
-                      ) : (
-                        <button
-                          onClick={() => handleEditStudent(student)}
-                          className="text-green-600 hover:text-green-900"
-                        >
-                          Edit
-                        </button>
+                      )}
+                      {/* Show message for statuses that cannot be edited */}
+                      {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW' || student.status === 'APPROVED') && (
+                        <span className="text-gray-500 text-xs italic">
+                          {student.status === 'SUBMITTED' 
+                            ? 'Cannot edit - application is with staff for review'
+                            : student.status === 'UNDER_REVIEW' 
+                            ? 'Cannot edit - currently under review'
+                            : 'Cannot edit - application is approved'}
+                        </span>
                       )}
                     </div>
                   </td>
