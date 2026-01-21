@@ -548,22 +548,53 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         </div>
 
                                         <div className="flex space-x-2">
-                                            <button
-                                                onClick={() => handleEditApplication(selectedApplication)}
-                                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                            >
-                                                <DocumentTextIcon className="h-4 w-4 mr-2" />
-                                                Edit Application
-                                            </button>
-                                            <button
-                                                onClick={handleResubmit}
-                                                disabled={resubmitting}
-                                                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-                                            >
-                                                <ArrowPathIcon className="h-4 w-4 mr-2" />
-                                                {resubmitting ? 'Resubmitting...' : 'Resubmit Application'}
-                                            </button>
+                                            {/* Agents can only edit: DRAFT (before submission) and REJECTED (to fix and resubmit) */}
+                                            {(selectedApplication.status === 'DRAFT' || selectedApplication.status === 'REJECTED') && (
+                                                <button
+                                                    onClick={() => handleEditApplication(selectedApplication)}
+                                                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                                >
+                                                    <DocumentTextIcon className="h-4 w-4 mr-2" />
+                                                    Edit Application
+                                                </button>
+                                            )}
+                                            {selectedApplication.status === 'REJECTED' && (
+                                                <button
+                                                    onClick={handleResubmit}
+                                                    disabled={resubmitting}
+                                                    className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                                                >
+                                                    <ArrowPathIcon className="h-4 w-4 mr-2" />
+                                                    {resubmitting ? 'Resubmitting...' : 'Resubmit Application'}
+                                                </button>
+                                            )}
                                         </div>
+                                    </div>
+                                )}
+
+                                {/* Show edit button for DRAFT status only */}
+                                {selectedApplication.status === 'DRAFT' && (
+                                    <div className="flex space-x-2 mt-4">
+                                        <button
+                                            onClick={() => handleEditApplication(selectedApplication)}
+                                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                        >
+                                            <DocumentTextIcon className="h-4 w-4 mr-2" />
+                                            Edit Application
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Show message for statuses that cannot be edited */}
+                                {(selectedApplication.status === 'SUBMITTED' || selectedApplication.status === 'UNDER_REVIEW' || selectedApplication.status === 'APPROVED') && (
+                                    <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                                        <p className="text-yellow-800 dark:text-yellow-200 text-sm">
+                                            {selectedApplication.status === 'SUBMITTED' 
+                                                ? 'This application is with staff for review and cannot be edited. If it gets rejected, you can edit and resubmit it.' 
+                                                : selectedApplication.status === 'UNDER_REVIEW' 
+                                                ? 'This application is under review and cannot be edited.' 
+                                                : 'This application has been approved and cannot be edited.'}
+                                        </p>
                                     </div>
                                 )}
 
