@@ -18,11 +18,13 @@ import {
     EyeSlashIcon,
     ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import { useSession } from '../../../contexts/SessionContext';
 import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
 
 const ApplicationReview = ({ initialTab = 'submitted' }) => {
+    const { selectedSession } = useSession();
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -124,9 +126,11 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
     ];
 
     useEffect(() => {
-        fetchAllApplicationsForStats();
-        fetchApplications();
-    }, [activeTab]);
+        if (selectedSession) {
+            fetchAllApplicationsForStats();
+            fetchApplications();
+        }
+    }, [activeTab, selectedSession]);
 
     // Note: Auto-refresh removed to prevent rate limiting issues
     // Staff can use the manual "Refresh" button to get latest data
@@ -137,9 +141,14 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
     }, [documentReviewStats]);
 
     const fetchAllApplicationsForStats = async () => {
+        if (!selectedSession) {
+            console.warn('No session selected, skipping stats fetch');
+            return;
+        }
+
         try {
-            // First try the dedicated stats endpoint
-            const response = await api.get('/api/student-application/document-review-stats');
+            // First try the dedicated stats endpoint with session
+            const response = await api.get(`/api/student-application/document-review-stats?session=${encodeURIComponent(selectedSession)}`);
             if (response.data?.success) {
                 setDocumentReviewStats(response.data.data);
                 return;
@@ -151,7 +160,7 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
 
         // Fallback: fetch all applications and calculate stats
         try {
-            const response = await api.get('/api/student-application/applications');
+            const response = await api.get(`/api/student-application/applications?session=${encodeURIComponent(selectedSession)}`);
             if (response.data?.success) {
                 const allApplications = response.data.data.applications || [];
                 calculateStatsFromApplicationsData(allApplications);
@@ -208,6 +217,12 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
     };
 
     const fetchApplications = async () => {
+        if (!selectedSession) {
+            console.warn('No session selected, cannot fetch applications');
+            setLoading(false);
+            return;
+        }
+
         try {
             setLoading(true);
 
@@ -221,13 +236,18 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
             };
 
             const reviewFilter = reviewFilterMap[activeTab];
-            const queryParams = reviewFilter ? `?reviewFilter=${reviewFilter}` : '';
+            const params = new URLSearchParams({
+                session: selectedSession
+            });
+            if (reviewFilter) {
+                params.append('reviewFilter', reviewFilter);
+            }
 
-            const response = await api.get(`/api/student-application/applications${queryParams}`);
+            const response = await api.get(`/api/student-application/applications?${params.toString()}`);
 
             if (response.data?.success) {
                 const applicationsData = response.data.data.applications || [];
-                console.log(`Fetched applications for ${activeTab} (${reviewFilter}):`, applicationsData.length, applicationsData);
+                console.log(`Fetched applications for ${activeTab} (${reviewFilter}) in session ${selectedSession}:`, applicationsData.length, applicationsData);
                 setApplications(applicationsData);
             }
         } catch (error) {

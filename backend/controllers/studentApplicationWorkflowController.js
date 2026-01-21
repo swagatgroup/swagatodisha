@@ -643,11 +643,73 @@ const downloadApplicationPDF = async (req, res) => {
 
 const getApplicationsByStatus = async (req, res) => {
     try {
-        const { status = 'SUBMITTED', page = 1, limit = 20, reviewFilter } = req.query;
+        const { status = 'SUBMITTED', page = 1, limit = 20, reviewFilter, session: sessionParam } = req.query;
 
-        console.log('getApplicationsByStatus called with:', { status, page, limit, reviewFilter });
+        console.log('getApplicationsByStatus called with:', { status, page, limit, reviewFilter, session: sessionParam });
 
-        let query = status === 'all' ? {} : { status: status.toUpperCase() };
+        // SESSION IS REQUIRED - Always filter by session
+        if (!sessionParam) {
+            return res.status(400).json({
+                success: false,
+                message: 'Session parameter is required',
+                error: 'Missing session parameter'
+            });
+        }
+
+        // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
+        let startYear;
+        try {
+            const parts = sessionParam.split('-');
+            if (parts.length !== 2) {
+                throw new Error(`Invalid session format: ${sessionParam}`);
+            }
+            
+            startYear = parseInt(parts[0], 10);
+            // Handle 2-digit year format (e.g., "26-27" → 2026)
+            if (startYear < 100) {
+                startYear = 2000 + startYear;
+            }
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid session format: ${error.message}`,
+                error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+            });
+        }
+
+        // Create date range for the entire calendar year (Jan 1 to Dec 31) in UTC
+        const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
+        const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
+
+        // Base query - start with session filter
+        const sessionDateFilter = {
+            $or: [
+                {
+                    $and: [
+                        { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
+                        { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
+                    ]
+                },
+                {
+                    $and: [
+                        {
+                            $or: [
+                                { 'personalDetails.registrationDate': { $exists: false } },
+                                { 'personalDetails.registrationDate': null }
+                            ]
+                        },
+                        { createdAt: { $gte: yearStart, $lte: yearEnd } }
+                    ]
+                }
+            ]
+        };
+
+        let query = { $and: [sessionDateFilter] };
+
+        // Add status filter if not 'all'
+        if (status !== 'all') {
+            query.$and.push({ status: status.toUpperCase() });
+        }
 
         // Get all applications first, then filter by document review status
         let applications = await StudentApplication.find(query)
@@ -1017,8 +1079,74 @@ const getWorkflowStats = async (req, res) => {
 
 const getDocumentReviewStats = async (req, res) => {
     try {
-        // Only count SUBMITTED applications to match the filtered endpoints
-        const applications = await StudentApplication.find({ status: 'SUBMITTED' })
+        const { session: sessionParam } = req.query;
+
+        // SESSION IS REQUIRED - Always filter by session
+        if (!sessionParam) {
+            return res.status(400).json({
+                success: false,
+                message: 'Session parameter is required',
+                error: 'Missing session parameter'
+            });
+        }
+
+        // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
+        let startYear;
+        try {
+            const parts = sessionParam.split('-');
+            if (parts.length !== 2) {
+                throw new Error(`Invalid session format: ${sessionParam}`);
+            }
+            
+            startYear = parseInt(parts[0], 10);
+            // Handle 2-digit year format (e.g., "26-27" → 2026)
+            if (startYear < 100) {
+                startYear = 2000 + startYear;
+            }
+        } catch (error) {
+            return res.status(400).json({
+                success: false,
+                message: `Invalid session format: ${error.message}`,
+                error: process.env.NODE_ENV === "development" ? error.message : "Invalid session"
+            });
+        }
+
+        // Create date range for the entire calendar year (Jan 1 to Dec 31) in UTC
+        const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
+        const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
+
+        // Base query - start with session filter
+        const sessionDateFilter = {
+            $or: [
+                {
+                    $and: [
+                        { 'personalDetails.registrationDate': { $exists: true, $ne: null } },
+                        { 'personalDetails.registrationDate': { $gte: yearStart, $lte: yearEnd } }
+                    ]
+                },
+                {
+                    $and: [
+                        {
+                            $or: [
+                                { 'personalDetails.registrationDate': { $exists: false } },
+                                { 'personalDetails.registrationDate': null }
+                            ]
+                        },
+                        { createdAt: { $gte: yearStart, $lte: yearEnd } }
+                    ]
+                }
+            ]
+        };
+
+        // Only count SUBMITTED applications in this session to match the filtered endpoints
+        const query = {
+            $and: [
+                sessionDateFilter,
+                { status: 'SUBMITTED' }
+            ]
+        };
+
+        const applications = await StudentApplication.find(query)
             .select('documents status');
 
         let totalApplications = applications.length;
