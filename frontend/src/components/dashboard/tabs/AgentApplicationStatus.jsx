@@ -66,9 +66,18 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
 
         try {
             setLoading(true);
+            
+            // Map tab IDs to status values
+            // Note: When agents submit, applications go to UNDER_REVIEW status
+            const statusMap = {
+                'submitted': 'UNDER_REVIEW', // Submitted applications are in UNDER_REVIEW status
+                'approved': 'APPROVED',
+                'rejected': 'REJECTED'
+            };
+            
             const params = {
                 session: selectedSession,
-                ...(activeTab !== 'all' && { status: activeTab.toUpperCase() })
+                ...(activeTab !== 'all' && statusMap[activeTab] && { status: statusMap[activeTab] })
             };
 
             console.log('📤 Fetching agent applications with params:', params);
@@ -604,18 +613,6 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                     </div>
                                 )}
 
-                                {/* Show message for statuses that cannot be edited */}
-                                {(selectedApplication.status === 'SUBMITTED' || selectedApplication.status === 'UNDER_REVIEW' || selectedApplication.status === 'APPROVED') && (
-                                    <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
-                                        <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-                                            {selectedApplication.status === 'SUBMITTED' 
-                                                ? 'This application is with staff for review and cannot be edited. If it gets rejected, you can edit and resubmit it.' 
-                                                : selectedApplication.status === 'UNDER_REVIEW' 
-                                                ? 'This application is under review and cannot be edited.' 
-                                                : 'This application has been approved and cannot be edited.'}
-                                        </p>
-                                    </div>
-                                )}
 
                                 {selectedApplication.status === 'APPROVED' && (
                                     <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">

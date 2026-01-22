@@ -4,6 +4,13 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { useSession } from "../../../contexts/SessionContext";
 import api from "../../../utils/api";
 import { showSuccess, showError, showLoading, closeLoading } from "../../../utils/sweetAlert";
+import { 
+  EyeIcon, 
+  PencilIcon, 
+  ArrowPathIcon,
+  DocumentTextIcon,
+  ExclamationTriangleIcon
+} from "@heroicons/react/24/outline";
 
 const AgentStudentsTab = () => {
   const { user } = useAuth();
@@ -16,6 +23,8 @@ const AgentStudentsTab = () => {
   const [showRejectionModal, setShowRejectionModal] = useState(false);
   const [rejectionDetails, setRejectionDetails] = useState(null);
   const [resubmitting, setResubmitting] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingStudent, setViewingStudent] = useState(null);
   const [filters, setFilters] = useState({
     search: "",
     status: "",
@@ -246,6 +255,16 @@ const AgentStudentsTab = () => {
     } finally {
       setResubmitting(false);
       closeLoading();
+    }
+  };
+
+  const handleViewDetails = async (student) => {
+    try {
+      setViewingStudent(student);
+      setShowViewModal(true);
+    } catch (error) {
+      console.error('Error loading student details:', error);
+      showError('Failed to load student details');
     }
   };
 
@@ -670,47 +689,56 @@ const AgentStudentsTab = () => {
                     {formatDate(student.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
+                    <div className="flex items-center space-x-2">
+                      {/* View Details - Available for all statuses */}
                       <button
-                        onClick={() => {
-                          /* TODO: Implement view student functionality */
-                        }}
-                        className="text-blue-600 hover:text-blue-900"
+                        onClick={() => handleViewDetails(student)}
+                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
+                        title="View application details"
                       >
+                        <EyeIcon className="h-4 w-4 mr-1" />
                         View
                       </button>
-                      {/* Agents can only edit: DRAFT (before submission) and REJECTED (to fix and resubmit) */}
+
+                      {/* Edit - Only for DRAFT and REJECTED */}
                       {(student.status === 'DRAFT' || student.status === 'REJECTED') && (
-                        <>
-                          {student.status === 'REJECTED' && (
-                            <button
-                              onClick={async () => {
-                                console.log('👆 View Rejection clicked for student:', student);
-                                setSelectedStudent(student);
-                                await fetchRejectionDetails(student._id);
-                              }}
-                              className="text-red-600 hover:text-red-900"
-                            >
-                              View Rejection
-                            </button>
-                          )}
-                          <button
-                            onClick={() => handleEditStudent(student)}
-                            className="text-green-600 hover:text-green-900"
-                          >
-                            {student.status === 'REJECTED' ? 'Edit & Resubmit' : 'Edit'}
-                          </button>
-                        </>
+                        <button
+                          onClick={() => handleEditStudent(student)}
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
+                          title={student.status === 'REJECTED' ? 'Edit and resubmit application' : 'Edit application'}
+                        >
+                          <PencilIcon className="h-4 w-4 mr-1" />
+                          {student.status === 'REJECTED' ? 'Edit' : 'Edit'}
+                        </button>
                       )}
-                      {/* Show message for statuses that cannot be edited */}
-                      {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW' || student.status === 'APPROVED') && (
-                        <span className="text-gray-500 text-xs italic">
-                          {student.status === 'SUBMITTED' 
-                            ? 'Cannot edit - application is with staff for review'
-                            : student.status === 'UNDER_REVIEW' 
-                            ? 'Cannot edit - currently under review'
-                            : 'Cannot edit - application is approved'}
-                        </span>
+
+                      {/* View Rejection - Only for REJECTED */}
+                      {student.status === 'REJECTED' && (
+                        <button
+                          onClick={async () => {
+                            console.log('👆 View Rejection clicked for student:', student);
+                            setSelectedStudent(student);
+                            await fetchRejectionDetails(student._id);
+                          }}
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-red-700 bg-red-50 hover:bg-red-100 rounded-md transition-colors"
+                          title="View rejection details"
+                        >
+                          <ExclamationTriangleIcon className="h-4 w-4 mr-1" />
+                          Rejection
+                        </button>
+                      )}
+
+                      {/* Resubmit - Only for REJECTED */}
+                      {student.status === 'REJECTED' && (
+                        <button
+                          onClick={() => resubmitApplication(student._id)}
+                          disabled={resubmitting}
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Resubmit application for review"
+                        >
+                          <ArrowPathIcon className="h-4 w-4 mr-1" />
+                          Resubmit
+                        </button>
                       )}
                     </div>
                   </td>
@@ -1192,6 +1220,159 @@ const AgentStudentsTab = () => {
                       {resubmitting ? 'Resubmitting...' : 'Resubmit'}
                     </button>
                   </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Details Modal */}
+      {showViewModal && viewingStudent && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  Application Details - {viewingStudent.personalDetails?.fullName || 'Student'}
+                </h3>
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setViewingStudent(null);
+                  }}
+                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Application Status */}
+                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Application ID</p>
+                      <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                        {viewingStudent.applicationId || viewingStudent._id}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Status</p>
+                      <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(viewingStudent.status)}`}>
+                        {getStatusText(viewingStudent.status)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Personal Details */}
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+                    <DocumentTextIcon className="h-5 w-5 mr-2" />
+                    Personal Details
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Full Name:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.fullName || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Aadhaar:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.aadharNumber || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Date of Birth:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
+                        {viewingStudent.personalDetails?.dateOfBirth ? formatDate(viewingStudent.personalDetails.dateOfBirth) : 'N/A'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Gender:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.gender || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Contact Details */}
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Phone:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.primaryPhone || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Email:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.email || 'N/A'}</span>
+                    </div>
+                    <div className="md:col-span-2">
+                      <span className="text-gray-600 dark:text-gray-400">Address:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.address || 'N/A'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Course Details */}
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Course Details</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Course:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.courseDetails?.selectedCourse || 'N/A'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-600 dark:text-gray-400">Registration Date:</span>
+                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{formatDate(viewingStudent.createdAt)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Documents Status */}
+                {viewingStudent.documents && viewingStudent.documents.length > 0 && (
+                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Documents</h4>
+                    <div className="space-y-2">
+                      {viewingStudent.documents.map((doc, index) => (
+                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
+                          <span className="text-sm text-gray-900 dark:text-gray-100">{doc.documentType}</span>
+                          <span className={`px-2 py-1 text-xs font-semibold rounded ${
+                            doc.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                            doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                            'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {doc.status || 'PENDING'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Modal Actions */}
+              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button
+                  onClick={() => {
+                    setShowViewModal(false);
+                    setViewingStudent(null);
+                  }}
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  Close
+                </button>
+                {(viewingStudent.status === 'DRAFT' || viewingStudent.status === 'REJECTED') && (
+                  <button
+                    onClick={() => {
+                      setShowViewModal(false);
+                      handleEditStudent(viewingStudent);
+                    }}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  >
+                    Edit Application
+                  </button>
                 )}
               </div>
             </div>
