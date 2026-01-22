@@ -841,11 +841,6 @@ router.get("/my-submitted-applications", async (req, res) => {
     const { page = 1, limit = 20, status, session: sessionParam } = req.query;
     const agentId = req.user._id;
 
-    let query = { submittedBy: agentId };
-    if (status && status !== "all") {
-      query.status = status.toUpperCase();
-    }
-
     // SESSION IS REQUIRED - Always filter by session (same as admin)
     if (!sessionParam) {
       return res.status(400).json({
@@ -855,8 +850,15 @@ router.get("/my-submitted-applications", async (req, res) => {
       });
     }
 
+    // Build base query filters
+    const baseFilters = { submittedBy: agentId };
+    if (status && status !== "all") {
+      baseFilters.status = status.toUpperCase();
+    }
+
     // Add session filter - REQUIRED
     // Session is based on registration year (calendar year)
+    let query;
     try {
       // Parse session to extract start year (e.g., "2026-27" → 2026)
       const parts = sessionParam.split('-');
@@ -871,6 +873,7 @@ router.get("/my-submitted-applications", async (req, res) => {
       }
       
       console.log(`📅 Agent applications - Filtering by session ${sessionParam} (registration year: ${startYear})`);
+      console.log(`🔍 Base filters:`, baseFilters);
       
       // Create date range for the entire calendar year (Jan 1 to Dec 31) in UTC
       const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
@@ -902,7 +905,9 @@ router.get("/my-submitted-applications", async (req, res) => {
       };
 
       // Combine with existing query using $and
-      query = { $and: [query, sessionDateFilter] };
+      query = { $and: [baseFilters, sessionDateFilter] };
+      
+      console.log(`📋 Final query:`, JSON.stringify(query, null, 2));
     } catch (error) {
       console.error('❌ Session date range error:', error);
       return res.status(400).json({
@@ -913,11 +918,13 @@ router.get("/my-submitted-applications", async (req, res) => {
     }
 
     const applications = await StudentApplication.find(query)
-      .populate("user", "fullName email phoneNumber")
-      .populate("submittedBy", "fullName email")
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+        .populate("user", "fullName email phoneNumber")
+        .populate("submittedBy", "fullName email")
+        .sort({ createdAt: -1 })
+        .limit(limit * 1)
+        .skip((page - 1) * limit);
+
+    console.log(`✅ Found ${applications.length} applications for agent ${agentId} with status ${status || 'all'} in session ${sessionParam}`);
 
     // Add document review status information for each application
     const applicationsWithReviewStatus = applications.map(app => {
@@ -958,6 +965,7 @@ router.get("/my-submitted-applications", async (req, res) => {
     });
 
     const total = await StudentApplication.countDocuments(query);
+    console.log(`📊 Total count: ${total} applications`);
 
     res.status(200).json({
       success: true,
@@ -1251,6 +1259,14 @@ router.put('/students/:id', async (req, res) => {
     }
 
     const updateData = req.body;
+
+    // SECURITY: Agents cannot update status or currentStage - these are controlled by staff/admin only
+    if (updateData.status || updateData.currentStage) {
+      return res.status(403).json({
+        success: false,
+        message: 'Agents cannot update application status. Status can only be changed by staff/admin through the review process.'
+      });
+    }
 
     // Update personal details
     if (updateData.personalDetails) {

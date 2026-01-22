@@ -706,31 +706,61 @@ const getApplicationsByStatus = async (req, res) => {
 
         let query = { $and: [sessionDateFilter] };
 
-        // Add status filter if not 'all'
-        if (status !== 'all') {
+        // Add status filter if not 'all' and reviewFilter is not provided
+        // When reviewFilter is used, we want to see all applications regardless of status
+        // (they will be filtered by document review status instead)
+        if (status !== 'all' && !reviewFilter) {
             query.$and.push({ status: status.toUpperCase() });
+        } else if (reviewFilter) {
+            // When using reviewFilter, prioritize SUBMITTED and UNDER_REVIEW applications
+            // These are the main statuses that need staff review
+            // Also include APPROVED and REJECTED to show completed reviews
+            // Include DRAFT only if they have documents (will be filtered by reviewFilter)
+            query.$and.push({ 
+                status: { 
+                    $in: ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'DRAFT'] 
+                } 
+            });
+            console.log('📋 Including applications with status: SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED, DRAFT');
+        } else {
+            // No reviewFilter and status is 'all' - show all statuses except maybe DRAFT
+            // But for staff review, we typically want to see submitted/review statuses
+            query.$and.push({ 
+                status: { 
+                    $in: ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'] 
+                } 
+            });
         }
 
         // Get all applications first, then filter by document review status
+        console.log('🔍 Query being executed:', JSON.stringify(query, null, 2));
         let applications = await StudentApplication.find(query)
             .populate('user', 'fullName email phoneNumber')
             .populate('referralInfo.referredBy', 'firstName lastName referralCode')
             .populate('assignedAgent', 'firstName lastName referralCode')
             .sort({ createdAt: -1 });
 
+        console.log(`📊 Found ${applications.length} applications matching session and status filters`);
+        console.log(`📋 Application statuses:`, applications.map(app => ({ id: app._id, status: app.status, name: app.personalDetails?.fullName })));
+
         // Apply document review filtering (treat PENDING and NOT_VERIFIED as not reviewed)
         if (reviewFilter) {
-            console.log(`Filtering applications by reviewFilter: ${reviewFilter}`);
-            console.log(`Total applications before filtering: ${applications.length}`);
+            console.log(`🔍 Filtering applications by reviewFilter: ${reviewFilter}`);
+            console.log(`📊 Total applications before reviewFilter: ${applications.length}`);
 
             applications = applications.filter(app => {
                 const documents = app.documents || [];
                 const totalDocs = documents.length;
-                const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING').length;
+                // Treat undefined, null, 'PENDING', and 'NOT_VERIFIED' as not reviewed
+                const reviewedDocs = documents.filter(doc => {
+                    const status = doc.status;
+                    return status && status !== 'PENDING' && status !== 'NOT_VERIFIED';
+                }).length;
                 const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
                 const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
 
                 console.log(`Checking application ${app._id}:`, {
+                    appStatus: app.status,
                     totalDocs, reviewedDocs, approvedDocs, rejectedDocs,
                     documents: documents.map(d => ({ type: d.documentType, status: d.status })),
                     allDocumentStatuses: documents.map(d => d.status),
@@ -738,6 +768,8 @@ const getApplicationsByStatus = async (req, res) => {
                 });
 
                 let matches = false;
+                
+                // Check if application matches the document review filter
                 switch (reviewFilter) {
                     case 'not_reviewed':
                         // Include applications that haven't been reviewed (either no documents or documents not reviewed)
@@ -759,12 +791,31 @@ const getApplicationsByStatus = async (req, res) => {
                         matches = true;
                 }
 
-                console.log(`Application ${app._id} ${matches ? 'MATCHES' : 'DOES NOT MATCH'} filter ${reviewFilter}`);
+                // Special handling: If application is UNDER_REVIEW, ensure it's always visible
+                // If it doesn't match the current filter based on document status, 
+                // include it in "not_reviewed" tab as a fallback to ensure visibility
+                if (!matches && app.status === 'UNDER_REVIEW') {
+                    if (reviewFilter === 'not_reviewed') {
+                        matches = true;
+                        console.log(`✅ Including UNDER_REVIEW application ${app._id} in 'not_reviewed' tab (fallback to ensure visibility)`);
+                    }
+                }
+
+                console.log(`Application ${app._id} (status: ${app.status}) ${matches ? 'MATCHES' : 'DOES NOT MATCH'} filter ${reviewFilter}`);
 
                 return matches;
             });
 
-            console.log(`Total applications after filtering: ${applications.length}`);
+            console.log(`✅ Total applications after reviewFilter: ${applications.length}`);
+            if (applications.length === 0) {
+                console.log('⚠️ No applications match the reviewFilter criteria');
+                console.log('💡 This might mean:');
+                console.log('   - No applications have documents matching the filter');
+                console.log('   - All documents are in a different review state');
+                console.log('   - Applications exist but documents are not in the expected state');
+            }
+        } else {
+            console.log(`📋 No reviewFilter applied, showing all ${applications.length} applications`);
         }
 
         // Apply pagination
@@ -844,6 +895,14 @@ const getApplicationsByStatus = async (req, res) => {
             };
         });
 
+        console.log(`✅ Returning ${applicationsWithStats.length} applications to frontend`);
+        console.log(`📊 Response summary:`, {
+            total: applicationsWithStats.length,
+            reviewFilter: reviewFilter || 'none',
+            status: status,
+            session: sessionParam
+        });
+
         return res.status(200).json({
             success: true,
             data: {
@@ -852,6 +911,11 @@ const getApplicationsByStatus = async (req, res) => {
                     current: parseInt(page),
                     pages: Math.ceil(total / limit),
                     total
+                },
+                filters: {
+                    session: sessionParam,
+                    status: status,
+                    reviewFilter: reviewFilter || null
                 }
             }
         });
@@ -1217,7 +1281,7 @@ const verifyDocuments = async (req, res) => {
         const { applicationId } = req.params;
         const { decisions = [], feedbackSummary } = req.body;
 
-        const application = await StudentApplication.findOne({ applicationId });
+        let application = await StudentApplication.findOne({ applicationId });
         if (!application) {
             return res.status(404).json({ success: false, message: 'Application not found' });
         }
