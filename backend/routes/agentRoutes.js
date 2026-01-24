@@ -610,6 +610,8 @@ router.get("/stats", async (req, res) => {
       ...agentQuery,
       status: "REJECTED",
     });
+    // Completed = Approved (approved applications are considered completed)
+    const completedStudents = approvedStudents;
 
     // Debug logging
     console.log("📊 Stats Debug - Agent ID:", req.user._id);
@@ -619,6 +621,7 @@ router.get("/stats", async (req, res) => {
     console.log("📊 Under Review count:", underReviewStudents);
     console.log("📊 Approved count:", approvedStudents);
     console.log("📊 Rejected count:", rejectedStudents);
+    console.log("📊 Completed count:", completedStudents);
 
     res.status(200).json({
       success: true,
@@ -628,6 +631,7 @@ router.get("/stats", async (req, res) => {
         underReview: underReviewStudents,
         approved: approvedStudents,
         rejected: rejectedStudents,
+        completed: completedStudents,
       },
     });
   } catch (error) {

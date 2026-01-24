@@ -23,7 +23,7 @@ import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
 
-const ApplicationReview = ({ initialTab = 'submitted' }) => {
+const ApplicationReview = ({ initialTab = 'all_submission' }) => {
     const { selectedSession } = useSession();
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
@@ -34,19 +34,9 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
     const [selectedDocument, setSelectedDocument] = useState(null);
     const [documentDecisions, setDocumentDecisions] = useState({});
     const [tabStats, setTabStats] = useState({
-        submitted: 0,
-        under_review: 0,
+        all_submission: 0,
         approved: 0,
         rejected: 0
-    });
-    const [documentReviewStats, setDocumentReviewStats] = useState({
-        total: 0,
-        notReviewed: 0,
-        partiallyReviewed: 0,
-        fullyReviewed: 0,
-        allApproved: 0,
-        hasRejected: 0,
-        noDocuments: 0
     });
     const [showDocumentSelectionModal, setShowDocumentSelectionModal] = useState(false);
     const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
@@ -67,11 +57,9 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
 
     // Make tabs reactive to state changes
     const getTabs = () => [
-        { id: 'submitted', name: 'Not Reviewed', count: documentReviewStats.notReviewed, color: 'blue' },
-        { id: 'under_review', name: 'Partially Reviewed', count: documentReviewStats.partiallyReviewed, color: 'yellow' },
-        { id: 'approved', name: 'All Approved', count: documentReviewStats.allApproved, color: 'green' },
-        { id: 'rejected', name: 'Has Rejected', count: documentReviewStats.hasRejected, color: 'red' },
-        { id: 'no_documents', name: 'No Documents', count: documentReviewStats.noDocuments, color: 'gray' }
+        { id: 'all_submission', name: 'All Submission', count: tabStats.all_submission, color: 'blue' },
+        { id: 'approved', name: 'Approved', count: tabStats.approved, color: 'green' },
+        { id: 'rejected', name: 'Rejected', count: tabStats.rejected, color: 'red' }
     ];
 
     const verificationSteps = [
@@ -135,11 +123,6 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
     // Note: Auto-refresh removed to prevent rate limiting issues
     // Staff can use the manual "Refresh" button to get latest data
 
-    // Debug: Log when documentReviewStats changes
-    useEffect(() => {
-        console.log('Document review stats updated:', documentReviewStats);
-    }, [documentReviewStats]);
-
     const fetchAllApplicationsForStats = async () => {
         if (!selectedSession) {
             console.warn('No session selected, skipping stats fetch');
@@ -147,20 +130,8 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
         }
 
         try {
-            // First try the dedicated stats endpoint with session
-            const response = await api.get(`/api/student-application/document-review-stats?session=${encodeURIComponent(selectedSession)}`);
-            if (response.data?.success) {
-                setDocumentReviewStats(response.data.data);
-                return;
-            }
-        } catch (error) {
-            console.log('Stats endpoint not available, calculating from applications data');
-            console.error('Stats endpoint error:', error);
-        }
-
-        // Fallback: fetch all applications and calculate stats
-        try {
-            const response = await api.get(`/api/student-application/applications?session=${encodeURIComponent(selectedSession)}`);
+            // Fetch all applications to calculate stats
+            const response = await api.get(`/api/student-application/applications?session=${encodeURIComponent(selectedSession)}&status=all`);
             if (response.data?.success) {
                 const allApplications = response.data.data.applications || [];
                 calculateStatsFromApplicationsData(allApplications);
@@ -170,49 +141,36 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
         }
     };
 
-
     const calculateStatsFromApplicationsData = (applicationsData) => {
-        let notReviewed = 0;
-        let partiallyReviewed = 0;
-        let allApproved = 0;
-        let hasRejected = 0;
-        let noDocuments = 0;
+        let allSubmission = 0;
+        let approved = 0;
+        let rejected = 0;
 
         applicationsData.forEach(app => {
-            const documents = app.documents || [];
-            const totalDocs = documents.length;
-            const reviewedDocs = documents.filter(doc => doc.status && doc.status !== 'PENDING').length;
-            const approvedDocs = documents.filter(doc => doc.status === 'APPROVED').length;
-            const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
-
-            if (totalDocs === 0) {
-                noDocuments++;
-            } else if (reviewedDocs === 0) {
-                notReviewed++;
-            } else if (reviewedDocs === totalDocs) {
-                if (rejectedDocs === 0) {
-                    allApproved++;
-                } else {
-                    hasRejected++;
-                }
-            } else {
-                partiallyReviewed++;
+            const status = app.status?.toUpperCase();
+            
+            // Count all submissions (excluding DRAFT)
+            if (status && status !== 'DRAFT') {
+                allSubmission++;
+            }
+            
+            // Count approved
+            if (status === 'APPROVED') {
+                approved++;
+            }
+            
+            // Count rejected
+            if (status === 'REJECTED') {
+                rejected++;
             }
         });
 
-        console.log('Calculated stats:', { notReviewed, partiallyReviewed, allApproved, hasRejected, noDocuments });
+        console.log('Calculated stats:', { allSubmission, approved, rejected });
 
-        setDocumentReviewStats(prev => {
-            const newStats = {
-                ...prev,
-                notReviewed,
-                partiallyReviewed,
-                allApproved,
-                hasRejected,
-                noDocuments
-            };
-            console.log('Setting document review stats:', newStats);
-            return newStats;
+        setTabStats({
+            all_submission: allSubmission,
+            approved: approved,
+            rejected: rejected
         });
     };
 
@@ -226,28 +184,33 @@ const ApplicationReview = ({ initialTab = 'submitted' }) => {
         try {
             setLoading(true);
 
-            // Map tab IDs to review filters
-            const reviewFilterMap = {
-                'submitted': 'not_reviewed',
-                'under_review': 'partially_reviewed',
-                'approved': 'all_approved',
-                'rejected': 'has_rejected',
-                'no_documents': 'no_documents'
+            // Map tab IDs to status filters
+            const statusMap = {
+                'all_submission': 'all', // Show all submissions (excluding DRAFT)
+                'approved': 'APPROVED',
+                'rejected': 'REJECTED'
             };
 
-            const reviewFilter = reviewFilterMap[activeTab];
+            const status = statusMap[activeTab] || 'all';
             const params = new URLSearchParams({
-                session: selectedSession
+                session: selectedSession,
+                status: status
             });
-            if (reviewFilter) {
-                params.append('reviewFilter', reviewFilter);
-            }
 
             const response = await api.get(`/api/student-application/applications?${params.toString()}`);
 
             if (response.data?.success) {
-                const applicationsData = response.data.data.applications || [];
-                console.log(`Fetched applications for ${activeTab} (${reviewFilter}) in session ${selectedSession}:`, applicationsData.length, applicationsData);
+                let applicationsData = response.data.data.applications || [];
+                
+                // For "all_submission", filter out DRAFT status
+                if (activeTab === 'all_submission') {
+                    applicationsData = applicationsData.filter(app => {
+                        const appStatus = app.status?.toUpperCase();
+                        return appStatus && appStatus !== 'DRAFT';
+                    });
+                }
+                
+                console.log(`Fetched applications for ${activeTab} (status: ${status}) in session ${selectedSession}:`, applicationsData.length, applicationsData);
                 setApplications(applicationsData);
             }
         } catch (error) {

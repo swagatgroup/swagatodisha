@@ -24,6 +24,7 @@ const EnhancedAgentDashboard = () => {
     underReviewStudents: 0,
     approvedStudents: 0,
     rejectedStudents: 0,
+    completedStudents: 0,
   });
   const isLoadingRef = useRef(false);
 
@@ -188,6 +189,7 @@ const EnhancedAgentDashboard = () => {
           underReviewStudents: statsData.underReview || 0,
           approvedStudents: statsData.approved || 0,
           rejectedStudents: statsData.rejected || 0,
+          completedStudents: statsData.completed || statsData.approved || 0,
         });
         console.log('📊 AgentDashboard - Stats mapped:', {
           totalStudents: statsData.total || 0,
@@ -195,6 +197,7 @@ const EnhancedAgentDashboard = () => {
           underReviewStudents: statsData.underReview || 0,
           approvedStudents: statsData.approved || 0,
           rejectedStudents: statsData.rejected || 0,
+          completedStudents: statsData.completed || statsData.approved || 0,
         });
       } else {
         console.error('❌ AgentDashboard - Stats not successful:', statsRes.data);
@@ -205,6 +208,7 @@ const EnhancedAgentDashboard = () => {
           underReviewStudents: 0,
           approvedStudents: 0,
           rejectedStudents: 0,
+          completedStudents: 0,
         });
       }
     } catch (error) {
@@ -259,7 +263,7 @@ const EnhancedAgentDashboard = () => {
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Processing Statistics</h3>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                 {/* Total Students - Clickable */}
                 <div
                   className={`bg-blue-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
@@ -303,6 +307,15 @@ const EnhancedAgentDashboard = () => {
                 >
                   <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Rejected</p>
                   <p className="text-2xl font-semibold text-red-600 dark:text-red-400">{stats.rejectedStudents}</p>
+                </div>
+
+                {/* Completed - Clickable */}
+                <div
+                  className={`bg-teal-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'COMPLETED' ? 'ring-2 ring-teal-500' : ''}`}
+                  onClick={() => handleStatClick('COMPLETED')}
+                >
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
+                  <p className="text-2xl font-semibold text-teal-600 dark:text-teal-400">{stats.completedStudents}</p>
                 </div>
               </div>
             </motion.div>
