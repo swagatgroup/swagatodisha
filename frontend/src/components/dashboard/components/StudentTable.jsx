@@ -269,9 +269,18 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
             student.personalDetails?.aadharNumber?.includes(searchTerm) ||
             student.applicationId?.toLowerCase().includes(searchTerm.toLowerCase());
 
-        const matchesStatus = statusFilter === 'all' ||
-            student.workflowStatus?.currentStage === statusFilter ||
-            student.status === statusFilter;
+        // Handle COMPLETED filter - it should match APPROVED status
+        let statusMatch = false;
+        if (statusFilter === 'all') {
+            statusMatch = true;
+        } else if (statusFilter === 'COMPLETED') {
+            // Completed = Approved
+            statusMatch = student.status === 'APPROVED' || student.workflowStatus?.currentStage === 'APPROVED';
+        } else {
+            statusMatch = student.workflowStatus?.currentStage === statusFilter ||
+                student.status === statusFilter;
+        }
+        const matchesStatus = statusMatch;
 
         const matchesCourse = courseFilter === 'all' ||
             student.courseDetails?.selectedCourse === courseFilter ||
