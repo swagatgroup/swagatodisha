@@ -159,9 +159,17 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                 approved++;
             }
             
-            // Count rejected
-            if (status === 'REJECTED') {
+            // Count rejected - include applications with status REJECTED OR applications with rejected documents
+            const rejectedDocs = app.documentStats?.rejected || 0;
+            const documents = app.documents || [];
+            const rejectedDocsFromArray = documents.filter(doc => doc.status === 'REJECTED').length;
+            const hasRejectedDocs = rejectedDocs > 0 || rejectedDocsFromArray > 0;
+            
+            if (status === 'REJECTED' || (hasRejectedDocs && status !== 'APPROVED' && status !== 'COMPLETE')) {
                 rejected++;
+                if (status !== 'REJECTED') {
+                    console.log(`📊 Counting as rejected (has rejected docs): ${app.applicationId}, status: ${status}, rejectedDocs: ${rejectedDocs}/${rejectedDocsFromArray}`);
+                }
             }
         });
 
