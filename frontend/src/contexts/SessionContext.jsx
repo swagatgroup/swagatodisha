@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 
 const SessionContext = createContext();
 
@@ -58,8 +58,22 @@ export const SessionProvider = ({ children }) => {
         return sessions;
     };
 
-    const [selectedSession, setSelectedSession] = useState(getCurrentSession());
+    // Load session from localStorage or use current session
+    const loadSession = () => {
+        const savedSession = localStorage.getItem('selectedSession');
+        if (savedSession) {
+            return savedSession;
+        }
+        return getCurrentSession();
+    };
+
+    const [selectedSession, setSelectedSession] = useState(loadSession);
     const availableSessions = getAvailableSessions();
+
+    // Persist session to localStorage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('selectedSession', selectedSession);
+    }, [selectedSession]);
 
     const value = {
         selectedSession,

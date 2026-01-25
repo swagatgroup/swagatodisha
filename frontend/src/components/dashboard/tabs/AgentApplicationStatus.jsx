@@ -179,6 +179,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     const handleEditApplication = (application) => {
         console.log('📝 Editing application:', application);
         setEditData({
+            status: application.status || '',
             personalDetails: {
                 fullName: application.personalDetails?.fullName || '',
                 fathersName: application.personalDetails?.fathersName || '',
@@ -186,7 +187,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                 gender: application.personalDetails?.gender || '',
                 dateOfBirth: application.personalDetails?.dateOfBirth || '',
                 aadharNumber: application.personalDetails?.aadharNumber || '',
-                status: application.personalDetails?.status || ''
+                category: application.personalDetails?.category || ''
             },
             contactDetails: {
                 primaryPhone: application.contactDetails?.primaryPhone || '',
@@ -576,16 +577,59 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         </div>
 
                                         <div className="flex space-x-2">
-                                            {/* Agents can only edit: DRAFT (before submission) and REJECTED (to fix and resubmit) */}
-                                            {(selectedApplication.status === 'DRAFT' || selectedApplication.status === 'REJECTED') && (
-                                                <button
-                                                    onClick={() => handleEditApplication(selectedApplication)}
-                                                    className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                                >
-                                                    <DocumentTextIcon className="h-4 w-4 mr-2" />
-                                                    Edit Application
-                                                </button>
-                                            )}
+                                            {/* Edit: DRAFT, REJECTED, SUBMITTED (with UNDER_REVIEW), or UNDER_REVIEW */}
+                                            {(() => {
+                                                const status = selectedApplication.status;
+                                                const isDraft = status === 'DRAFT';
+                                                const isRejected = status === 'REJECTED';
+                                                const isSubmitted = status === 'SUBMITTED';
+                                                const isUnderReviewStatus = status === 'UNDER_REVIEW';
+                                                
+                                                // Check if documents are all approved
+                                                const documentsAllApproved = selectedApplication.reviewStatus?.overallDocumentReviewStatus === 'ALL_APPROVED' || 
+                                                                              selectedApplication.reviewStatus?.documentsVerified === true;
+                                                
+                                                // Check if currentStage is UNDER_REVIEW
+                                                const currentStageValue = selectedApplication.currentStage || '';
+                                                const isUnderReviewStage = currentStageValue === 'UNDER_REVIEW';
+                                                
+                                                // Debug logging
+                                                console.log('🔍 Edit button check (AgentApplicationStatus):', {
+                                                  applicationId: selectedApplication._id,
+                                                  status,
+                                                  currentStage: currentStageValue,
+                                                  isDraft,
+                                                  isRejected,
+                                                  isSubmitted,
+                                                  isUnderReviewStatus,
+                                                  isUnderReviewStage,
+                                                  documentsAllApproved
+                                                });
+                                                
+                                                // Allow editing for:
+                                                // 1. DRAFT - always
+                                                // 2. REJECTED - always
+                                                // 3. SUBMITTED - allow (backend will check if documents are approved)
+                                                // 4. UNDER_REVIEW status - always
+                                                const canEdit = isDraft || 
+                                                               isRejected || 
+                                                               isSubmitted ||
+                                                               isUnderReviewStatus;
+                                                
+                                                console.log('✅ Can edit result (AgentApplicationStatus):', canEdit);
+                                                
+                                                return canEdit;
+                                                
+                                                return canEdit ? (
+                                                    <button
+                                                        onClick={() => handleEditApplication(selectedApplication)}
+                                                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                                    >
+                                                        <DocumentTextIcon className="h-4 w-4 mr-2" />
+                                                        Edit Application
+                                                    </button>
+                                                ) : null;
+                                            })()}
                                             {selectedApplication.status === 'REJECTED' && (
                                                 <button
                                                     onClick={handleResubmit}
@@ -600,18 +644,43 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                     </div>
                                 )}
 
-                                {/* Show edit button for DRAFT status only */}
-                                {selectedApplication.status === 'DRAFT' && (
-                                    <div className="flex space-x-2 mt-4">
-                                        <button
-                                            onClick={() => handleEditApplication(selectedApplication)}
-                                            className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                        >
-                                            <DocumentTextIcon className="h-4 w-4 mr-2" />
-                                            Edit Application
-                                        </button>
-                                    </div>
-                                )}
+                                {/* Edit: DRAFT, REJECTED, SUBMITTED (with UNDER_REVIEW), or UNDER_REVIEW (documents not all approved) */}
+                                {(() => {
+                                    const isDraft = selectedApplication.status === 'DRAFT';
+                                    const isRejected = selectedApplication.status === 'REJECTED';
+                                    const isSubmitted = selectedApplication.status === 'SUBMITTED';
+                                    const isUnderReviewStatus = selectedApplication.status === 'UNDER_REVIEW';
+                                    
+                                    // Check if documents are all approved
+                                    const documentsAllApproved = selectedApplication.reviewStatus?.overallDocumentReviewStatus === 'ALL_APPROVED' || 
+                                                                  selectedApplication.reviewStatus?.documentsVerified === true;
+                                    
+                                    // Check if currentStage is UNDER_REVIEW
+                                    const isUnderReviewStage = selectedApplication.currentStage === 'UNDER_REVIEW';
+                                    
+                                    // Allow editing for SUBMITTED when currentStage is UNDER_REVIEW, or when status is UNDER_REVIEW
+                                    // Allow editing for:
+                                    // 1. DRAFT - always
+                                    // 2. REJECTED - always
+                                    // 3. SUBMITTED - allow (backend will check if documents are approved)
+                                    // 4. UNDER_REVIEW status - always
+                                    const canEdit = isDraft || 
+                                                   isRejected || 
+                                                   isSubmitted ||
+                                                   isUnderReviewStatus;
+                                    
+                                    return canEdit ? (
+                                        <div className="flex space-x-2 mt-4">
+                                            <button
+                                                onClick={() => handleEditApplication(selectedApplication)}
+                                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                            >
+                                                <DocumentTextIcon className="h-4 w-4 mr-2" />
+                                                Edit Application
+                                            </button>
+                                        </div>
+                                    ) : null;
+                                })()}
 
 
                                 {selectedApplication.status === 'APPROVED' && (
