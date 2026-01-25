@@ -239,6 +239,13 @@ router.get("/processing-stats", async (req, res) => {
     });
     console.log('❌ Rejected:', rejectedInSession);
 
+    // Completed in this session - applications with COMPLETE status (graduated students, separate from APPROVED)
+    const completedInSession = await StudentApplication.countDocuments({
+      ...sessionQuery,
+      status: 'COMPLETE'
+    });
+    console.log('🎓 Completed:', completedInSession);
+
     // Draft applications in this session
     const draftInSession = await StudentApplication.countDocuments({
       ...sessionQuery,
@@ -355,6 +362,7 @@ router.get("/processing-stats", async (req, res) => {
         pendingVerification,
         approvedInSession,
         rejectedInSession,
+        completedInSession,
         draftInSession,
         submittedInSession,
         underReviewInSession,

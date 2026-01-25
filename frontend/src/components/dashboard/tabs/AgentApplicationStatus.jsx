@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
     EyeIcon,
@@ -20,6 +20,7 @@ import { useSession } from '../../../contexts/SessionContext';
 const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     const { selectedSession } = useSession();
     const [applications, setApplications] = useState([]);
+    const [allApplications, setAllApplications] = useState([]); // Store all applications for tab counts
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(initialTab);
@@ -31,12 +32,42 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     const [uploadProgress, setUploadProgress] = useState({});
     const [visibleDocFields, setVisibleDocFields] = useState([]);
 
-    const tabs = [
-        { id: 'all', name: 'All Applications', color: 'gray' },
-        { id: 'submitted', name: 'Submitted', color: 'blue' },
-        { id: 'approved', name: 'Approved', color: 'green' },
-        { id: 'rejected', name: 'Rejected', color: 'red' }
-    ];
+    // Calculate tab counts based on ALL applications (not just filtered ones)
+    // Fallback to applications if allApplications is empty
+    const appsForCounts = allApplications.length > 0 ? allApplications : applications;
+    
+    const tabs = useMemo(() => {
+        const allCount = appsForCounts.length;
+        const submittedCount = appsForCounts.filter(app => {
+            const status = app.status;
+            return status === 'SUBMITTED' || status === 'UNDER_REVIEW';
+        }).length;
+        const approvedCount = appsForCounts.filter(app => app.status === 'APPROVED').length;
+        const rejectedCount = appsForCounts.filter(app => {
+            // Count applications with status REJECTED OR applications with rejected documents
+            const status = app.status;
+            const rejectedDocs = app.documentStats?.rejected || 0;
+            const documents = app.documents || [];
+            const rejectedDocsFromArray = documents.filter(doc => doc.status === 'REJECTED').length;
+            const hasRejectedDocs = rejectedDocs > 0 || rejectedDocsFromArray > 0;
+            const isRejected = status === 'REJECTED' || (hasRejectedDocs && status !== 'APPROVED' && status !== 'COMPLETE');
+            
+            if (isRejected) {
+                console.log(`📊 Counting as rejected: ${app.applicationId}, status: ${status}, rejectedDocs: ${rejectedDocs}/${rejectedDocsFromArray}`);
+            }
+            
+            return isRejected;
+        }).length;
+        
+        console.log('📊 Tab counts calculated:', { allCount, submittedCount, approvedCount, rejectedCount, appsForCountsLength: appsForCounts.length });
+        
+        return [
+            { id: 'all', name: `All Submission ${allCount}`, color: 'gray' },
+            { id: 'submitted', name: `Submitted ${submittedCount}`, color: 'blue' },
+            { id: 'approved', name: `Approved ${approvedCount}`, color: 'green' },
+            { id: 'rejected', name: `Rejected ${rejectedCount}`, color: 'red' }
+        ];
+    }, [appsForCounts, allApplications, applications]);
 
     useEffect(() => {
         if (selectedSession) {
@@ -85,7 +116,13 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             }
 
             console.log('📤 Fetching agent applications with params:', params);
+            
+            // Fetch filtered applications for current tab
             const response = await api.get('/api/agents/my-submitted-applications', { params });
+            
+            // Also fetch all applications for tab counts (without status filter)
+            const allParams = { session: selectedSession };
+            const allResponse = await api.get('/api/agents/my-submitted-applications', { params: allParams });
             
             if (response.data?.success) {
                 const applicationsData = response.data.data?.applications || response.data.data || [];
@@ -101,11 +138,52 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                 showError('Failed to load applications: ' + (response.data.message || 'Unknown error'));
                 setApplications([]);
             }
+            
+            // Store all applications for tab counts
+            try {
+                if (allResponse?.data?.success) {
+                    const allApplicationsData = allResponse.data.data?.applications || allResponse.data.data || [];
+                    setAllApplications(Array.isArray(allApplicationsData) ? allApplicationsData : []);
+                    console.log('✅ All applications loaded for counts:', allApplicationsData.length, 'items');
+                    console.log('📊 All applications status breakdown:', {
+                        total: allApplicationsData.length,
+                        rejected: allApplicationsData.filter(app => {
+                            const status = app.status;
+                            const rejectedDocs = app.documentStats?.rejected || 0;
+                            const documents = app.documents || [];
+                            const rejectedDocsFromArray = documents.filter(doc => doc.status === 'REJECTED').length;
+                            const hasRejectedDocs = rejectedDocs > 0 || rejectedDocsFromArray > 0;
+                            return status === 'REJECTED' || (hasRejectedDocs && status !== 'APPROVED' && status !== 'COMPLETE');
+                        }).length,
+                        approved: allApplicationsData.filter(app => app.status === 'APPROVED').length,
+                        submitted: allApplicationsData.filter(app => app.status === 'SUBMITTED' || app.status === 'UNDER_REVIEW').length
+                    });
+                } else {
+                    console.warn('⚠️ All applications fetch not successful, using filtered applications as fallback');
+                    // If all applications fetch fails, use filtered applications as fallback
+                    if (response.data?.success) {
+                        const applicationsData = response.data.data?.applications || response.data.data || [];
+                        setAllApplications(Array.isArray(applicationsData) ? applicationsData : []);
+                    } else {
+                        setAllApplications([]);
+                    }
+                }
+            } catch (allError) {
+                console.error('❌ Error processing all applications:', allError);
+                // Fallback to filtered applications
+                if (response.data?.success) {
+                    const applicationsData = response.data.data?.applications || response.data.data || [];
+                    setAllApplications(Array.isArray(applicationsData) ? applicationsData : []);
+                } else {
+                    setAllApplications([]);
+                }
+            }
         } catch (error) {
             console.error('Error fetching applications:', error);
             const errorMsg = error.response?.data?.message || 'Failed to fetch applications';
             showError(errorMsg);
             setApplications([]);
+            setAllApplications([]);
         } finally {
             setLoading(false);
         }
@@ -397,7 +475,24 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
         }
     };
 
-    const renderApplicationCard = (application) => (
+    const renderApplicationCard = (application) => {
+        // Backend already sets effectiveStatus to REJECTED if documents are rejected
+        // But we'll also check documentStats as a fallback
+        const rejectedDocsFromStats = application.documentStats?.rejected || 0;
+        const documents = application.documents || [];
+        const rejectedDocsFromArray = documents.filter(doc => doc.status === 'REJECTED').length;
+        const rejectedDocs = Math.max(rejectedDocsFromArray, rejectedDocsFromStats);
+        
+        // Always set to REJECTED if documents are rejected (unless already APPROVED/COMPLETE)
+        let effectiveStatus = application.status;
+        if (rejectedDocs > 0 && application.status !== 'APPROVED' && application.status !== 'COMPLETE') {
+            effectiveStatus = 'REJECTED';
+            if (application.status !== 'REJECTED') {
+                console.log(`🔍 Frontend override: Application ${application.applicationId} has ${rejectedDocs} rejected document(s), showing REJECTED status (backend had: ${application.status})`);
+            }
+        }
+        
+        return (
         <motion.div
             key={application._id}
             initial={{ opacity: 0, y: 20 }}
@@ -418,9 +513,9 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     </p>
                 </div>
                 <div className="flex items-center space-x-2">
-                    {getStatusIcon(application.status)}
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
-                        {application.status}
+                    {getStatusIcon(effectiveStatus)}
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(effectiveStatus)}`}>
+                        {effectiveStatus}
                     </span>
                 </div>
             </div>
@@ -458,7 +553,8 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                 </div>
             </div>
         </motion.div>
-    );
+        );
+    };
 
     if (loading) {
         return (
@@ -549,10 +645,23 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                             Refresh
                                         </button>
                                         <div className="flex items-center space-x-2">
-                                            {getStatusIcon(selectedApplication.status)}
-                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedApplication.status)}`}>
-                                                {selectedApplication.status}
-                                            </span>
+                                            {(() => {
+                                                // Check if any documents are rejected - if so, show REJECTED status
+                                                const documents = selectedApplication.documents || [];
+                                                const rejectedDocsFromArray = documents.filter(doc => doc.status === 'REJECTED').length;
+                                                const rejectedDocsFromStats = selectedApplication.documentStats?.rejected || 0;
+                                                const rejectedDocs = rejectedDocsFromArray || rejectedDocsFromStats;
+                                                const effectiveStatus = (rejectedDocs > 0 && selectedApplication.status !== 'APPROVED' && selectedApplication.status !== 'COMPLETE') ? 'REJECTED' : selectedApplication.status;
+                                                
+                                                return (
+                                                    <>
+                                                        {getStatusIcon(effectiveStatus)}
+                                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(effectiveStatus)}`}>
+                                                            {effectiveStatus}
+                                                        </span>
+                                                    </>
+                                                );
+                                            })()}
                                         </div>
                                     </div>
                                 </div>

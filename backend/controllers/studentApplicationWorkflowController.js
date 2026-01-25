@@ -1437,21 +1437,24 @@ const verifyDocuments = async (req, res) => {
         const previousStatus = application.status;
         const previousStage = application.currentStage;
 
-        // Document review doesn't change application status - it stays UNDER_REVIEW
-        // Staff will approve/reject the application after reviewing documents
-        // Only update currentStage to reflect document review progress
-        if (allApproved) {
+        // If any document is rejected, automatically set application status to REJECTED
+        if (counts.rejected > 0) {
+            // Any document rejected - automatically reject the application
+            application.status = 'REJECTED';
+            application.currentStage = 'REJECTED';
+            
+            // Update review info with rejection details
+            if (!application.reviewInfo) {
+                application.reviewInfo = {};
+            }
+            application.reviewInfo.rejectionReason = `Application rejected due to ${counts.rejected} rejected document(s)`;
+            application.reviewInfo.reviewedBy = req.user._id;
+            application.reviewInfo.reviewedAt = new Date();
+            application.reviewInfo.remarks = feedbackSummary || `Application rejected: ${counts.rejected} document(s) rejected`;
+        } else if (allApproved) {
             // All documents approved - ready for final approval, stay in UNDER_REVIEW
             application.status = 'UNDER_REVIEW';
             application.currentStage = 'UNDER_REVIEW';
-        } else if (allRejected) {
-            // All documents rejected - stay in UNDER_REVIEW but mark for re-upload
-            application.status = 'UNDER_REVIEW';
-            application.currentStage = 'DOCUMENTS';
-        } else if (counts.rejected > 0) {
-            // Some documents rejected - stay in UNDER_REVIEW, needs attention
-            application.status = 'UNDER_REVIEW';
-            application.currentStage = 'DOCUMENTS';
         } else if (anyReviewed && counts.rejected === 0) {
             // Partially reviewed but no rejections yet - stay in UNDER_REVIEW
             application.status = 'UNDER_REVIEW';
@@ -1481,27 +1484,43 @@ const verifyDocuments = async (req, res) => {
             'reviewStatus.overallDocumentReviewStatus': overallStatus,
             'lastModified': new Date()
         };
+        
+        // If any document is rejected, update application status to REJECTED
+        if (counts.rejected > 0) {
+            statusUpdateOperations.status = 'REJECTED';
+            statusUpdateOperations.currentStage = 'REJECTED';
+            statusUpdateOperations['reviewStatus.overallApproved'] = false;
+            
+            // Update review info
+            if (!application.reviewInfo) {
+                application.reviewInfo = {};
+            }
+            statusUpdateOperations['reviewInfo.rejectionReason'] = `Application rejected due to ${counts.rejected} rejected document(s)`;
+            statusUpdateOperations['reviewInfo.reviewedBy'] = req.user._id;
+            statusUpdateOperations['reviewInfo.reviewedAt'] = new Date();
+            statusUpdateOperations['reviewInfo.remarks'] = feedbackSummary || `Application rejected: ${counts.rejected} document(s) rejected`;
+        }
 
         if (feedbackSummary) {
             statusUpdateOperations['reviewStatus.feedbackSummary'] = feedbackSummary;
         }
 
-        // Document review doesn't change application status - it stays UNDER_REVIEW
-        // Staff will approve/reject the application after reviewing documents
-        // Only update currentStage to reflect document review progress
-        if (allApproved) {
-            // All documents approved - ready for final approval, stay in UNDER_REVIEW
-            statusUpdateOperations.status = 'UNDER_REVIEW';
-            statusUpdateOperations.currentStage = 'UNDER_REVIEW';
-        } else if (allRejected || counts.rejected > 0) {
-            // Documents rejected - stay in UNDER_REVIEW but mark for re-upload
-            statusUpdateOperations.status = 'UNDER_REVIEW';
-            statusUpdateOperations.currentStage = 'DOCUMENTS';
-        } else if (anyReviewed && counts.rejected === 0) {
-            // Partially reviewed but no rejections - stay in UNDER_REVIEW
-            statusUpdateOperations.status = 'UNDER_REVIEW';
-            statusUpdateOperations.currentStage = 'DOCUMENTS';
+        // Update status based on document review results
+        // If any document is rejected, application status becomes REJECTED (already set above)
+        // Otherwise, update status based on review progress
+        if (counts.rejected === 0) {
+            if (allApproved) {
+                // All documents approved - ready for final approval, stay in UNDER_REVIEW
+                statusUpdateOperations.status = 'UNDER_REVIEW';
+                statusUpdateOperations.currentStage = 'UNDER_REVIEW';
+            } else if (anyReviewed) {
+                // Partially reviewed but no rejections - stay in UNDER_REVIEW
+                statusUpdateOperations.status = 'UNDER_REVIEW';
+                statusUpdateOperations.currentStage = 'DOCUMENTS';
+            }
+            // If no documents reviewed, keep current status (should be UNDER_REVIEW)
         }
+        // If rejected > 0, status is already set to REJECTED above
         // If no documents reviewed, keep current status (should already be UNDER_REVIEW)
 
         // Update workflow history using $push

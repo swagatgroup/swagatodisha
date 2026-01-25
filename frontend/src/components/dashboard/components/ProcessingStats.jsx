@@ -8,6 +8,7 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
         pendingVerification = 0,
         approvedInSession = 0,
         rejectedInSession = 0,
+        completedInSession = 0,
         draftInSession = 0,
         submittedInSession = 0,
         underReviewInSession = 0,
@@ -22,6 +23,7 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
     const pending = Number(pendingVerification) || 0;
     const approved = Number(approvedInSession) || 0;
     const rejected = Number(rejectedInSession) || 0;
+    const completed = Number(completedInSession) || 0;
     const draft = Number(draftInSession) || 0;
     const submitted = Number(submittedInSession) || 0;
     const underReview = Number(underReviewInSession) || 0;
@@ -110,6 +112,20 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
             textColor: 'text-red-600',
             iconBg: 'bg-red-100',
             filterKey: 'REJECTED'
+        },
+        {
+            title: 'Completed',
+            value: completed,
+            icon: (
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                </svg>
+            ),
+            color: 'teal',
+            bgColor: 'bg-teal-50',
+            textColor: 'text-teal-600',
+            iconBg: 'bg-teal-100',
+            filterKey: 'COMPLETE'
         }
     ];
 
@@ -139,7 +155,7 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
                 {stats.map((stat, index) => (
                     <motion.div
                         key={stat.title}
@@ -151,7 +167,8 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
                                     stat.color === 'green' ? 'ring-2 ring-green-500 ring-offset-2' :
                                         stat.color === 'yellow' ? 'ring-2 ring-yellow-500 ring-offset-2' :
                                             stat.color === 'red' ? 'ring-2 ring-red-500 ring-offset-2' :
-                                                stat.color === 'gray' ? 'ring-2 ring-gray-500 ring-offset-2' : 'ring-2 ring-blue-500 ring-offset-2'
+                                                stat.color === 'teal' ? 'ring-2 ring-teal-500 ring-offset-2' :
+                                                    stat.color === 'gray' ? 'ring-2 ring-gray-500 ring-offset-2' : 'ring-2 ring-blue-500 ring-offset-2'
                                 : ''
                             }`}
                         onClick={() => onStatClick && stat.filterKey && onStatClick(stat.filterKey)}

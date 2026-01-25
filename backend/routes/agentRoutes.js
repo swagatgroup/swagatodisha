@@ -990,8 +990,17 @@ router.get("/my-submitted-applications", async (req, res) => {
         reviewStatus = 'partially_reviewed';
       }
 
+      // If any document is rejected, the application status should be REJECTED
+      // Update the status in the response if documents are rejected but status is not REJECTED
+      let effectiveStatus = app.status;
+      if (rejectedDocs > 0 && app.status !== 'REJECTED') {
+        effectiveStatus = 'REJECTED';
+        console.log(`⚠️ Application ${app.applicationId} has ${rejectedDocs} rejected document(s) but status is ${app.status}. Should be REJECTED.`);
+      }
+
       return {
         ...app.toObject(),
+        status: effectiveStatus, // Use effective status
         documentStats: {
           total: totalDocs,
           reviewed: reviewedDocs,

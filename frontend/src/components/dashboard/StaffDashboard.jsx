@@ -64,6 +64,7 @@ const EnhancedStaffDashboard = () => {
         pendingVerification: 0,
         approvedInSession: 0,
         rejectedInSession: 0,
+        completedInSession: 0,
         draftInSession: 0,
         submittedInSession: 0,
         underReviewInSession: 0,
