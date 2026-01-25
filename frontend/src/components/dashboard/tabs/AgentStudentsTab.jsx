@@ -26,6 +26,8 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
   const [resubmitting, setResubmitting] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingStudent, setViewingStudent] = useState(null);
+  const [colleges, setColleges] = useState([]);
+  const [loadingColleges, setLoadingColleges] = useState(false);
   const [filters, setFilters] = useState({
     search: "",
     status: initialFilter !== 'all' ? initialFilter : "",
@@ -59,6 +61,59 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSession]);
+
+  // Fetch colleges for course details
+  const fetchColleges = async () => {
+    try {
+      setLoadingColleges(true);
+      const response = await api.get('/api/colleges/public');
+      if (response.data.success) {
+        setColleges(response.data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching colleges:', error);
+    } finally {
+      setLoadingColleges(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchColleges();
+  }, []);
+
+  // Get courses for selected college
+  const getCoursesForCollege = () => {
+    if (!editData.courseDetails?.selectedCollege) {
+      return [];
+    }
+    const selectedCollegeData = colleges.find(
+      (college) => college._id === editData.courseDetails.selectedCollege
+    );
+    return selectedCollegeData?.courses || [];
+  };
+
+  // Get streams for selected course
+  const getStreamsForCourse = () => {
+    if (!editData.courseDetails?.selectedCourse) {
+      return [];
+    }
+    const availableCourses = getCoursesForCollege();
+    const selectedCourse = availableCourses.find(
+      (course) => course.courseName === editData.courseDetails.selectedCourse
+    );
+    return selectedCourse?.streams || [];
+  };
+
+  // Get campuses for selected college
+  const getCampusesForCollege = () => {
+    if (!editData.courseDetails?.selectedCollege) {
+      return [];
+    }
+    const selectedCollegeData = colleges.find(
+      (college) => college._id === editData.courseDetails.selectedCollege
+    );
+    return selectedCollegeData?.campuses || [];
+  };
 
   // Apply initial filter when component mounts or filter changes
   useEffect(() => {
@@ -172,6 +227,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
     
     setSelectedStudent(student);
     setEditData({
+      status: student.status || '',
       personalDetails: {
         fullName: student.personalDetails?.fullName || '',
         fathersName: student.personalDetails?.fathersName || '',
@@ -179,25 +235,47 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
         gender: student.personalDetails?.gender || '',
         dateOfBirth: student.personalDetails?.dateOfBirth || '',
         aadharNumber: student.personalDetails?.aadharNumber || '',
-        status: student.personalDetails?.status || ''
+        category: student.personalDetails?.category || ''
       },
       contactDetails: {
         primaryPhone: student.contactDetails?.primaryPhone || '',
         secondaryPhone: student.contactDetails?.secondaryPhone || '',
+        whatsappNumber: student.contactDetails?.whatsappNumber || '',
         email: student.contactDetails?.email || '',
-        address: student.contactDetails?.address || '',
-        city: student.contactDetails?.city || '',
-        state: student.contactDetails?.state || '',
-        pincode: student.contactDetails?.pincode || ''
+        permanentAddress: student.contactDetails?.permanentAddress || {
+          street: student.contactDetails?.address || '',
+          city: student.contactDetails?.city || '',
+          district: student.contactDetails?.district || '',
+          state: student.contactDetails?.state || '',
+          pincode: student.contactDetails?.pincode || '',
+          country: student.contactDetails?.permanentAddress?.country || 'India'
+        },
+        currentAddress: student.contactDetails?.currentAddress || {
+          street: '',
+          city: '',
+          state: '',
+          pincode: '',
+          country: 'India'
+        }
       },
       courseDetails: {
+        selectedCollege: typeof student.courseDetails?.selectedCollege === 'object' 
+          ? student.courseDetails.selectedCollege._id 
+          : student.courseDetails?.selectedCollege || '',
         selectedCourse: student.courseDetails?.selectedCourse || '',
+        customCourse: student.courseDetails?.customCourse || '',
+        stream: student.courseDetails?.stream || '',
+        campus: typeof student.courseDetails?.campus === 'object'
+          ? student.courseDetails.campus._id
+          : student.courseDetails?.campus || '',
+        institutionName: student.courseDetails?.institutionName || '',
         preferredLanguage: student.courseDetails?.preferredLanguage || ''
       },
       guardianDetails: {
         guardianName: student.guardianDetails?.guardianName || '',
         guardianPhone: student.guardianDetails?.guardianPhone || '',
-        guardianRelation: student.guardianDetails?.guardianRelation || ''
+        guardianEmail: student.guardianDetails?.guardianEmail || '',
+        relationship: student.guardianDetails?.relationship || student.guardianDetails?.guardianRelation || ''
       }
     });
     console.log('✅ Setting showEditModal to true');
@@ -218,7 +296,61 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
     try {
       showLoading('Updating student...');
       
-      const response = await api.put(`/api/agents/students/${selectedStudent._id}`, editData);
+      // Structure the data properly for the backend
+      const updatePayload = {
+        status: editData.status || selectedStudent?.status,
+        personalDetails: {
+          fullName: editData.personalDetails?.fullName,
+          fathersName: editData.personalDetails?.fathersName,
+          mothersName: editData.personalDetails?.mothersName,
+          dateOfBirth: editData.personalDetails?.dateOfBirth,
+          gender: editData.personalDetails?.gender,
+          category: editData.personalDetails?.category,
+          aadharNumber: editData.personalDetails?.aadharNumber
+        },
+        contactDetails: {
+          primaryPhone: editData.contactDetails?.primaryPhone,
+          secondaryPhone: editData.contactDetails?.secondaryPhone,
+          whatsappNumber: editData.contactDetails?.whatsappNumber,
+          email: editData.contactDetails?.email,
+          permanentAddress: {
+            street: editData.contactDetails?.permanentAddress?.street || '',
+            city: editData.contactDetails?.permanentAddress?.city || '',
+            district: editData.contactDetails?.permanentAddress?.district || '',
+            state: editData.contactDetails?.permanentAddress?.state || '',
+            pincode: editData.contactDetails?.permanentAddress?.pincode || '',
+            country: editData.contactDetails?.permanentAddress?.country || 'India'
+          },
+          ...(editData.contactDetails?.currentAddress && Object.keys(editData.contactDetails.currentAddress).some(key => editData.contactDetails.currentAddress[key])) && {
+            currentAddress: {
+              street: editData.contactDetails?.currentAddress?.street || '',
+              city: editData.contactDetails?.currentAddress?.city || '',
+              state: editData.contactDetails?.currentAddress?.state || '',
+              pincode: editData.contactDetails?.currentAddress?.pincode || '',
+              country: editData.contactDetails?.currentAddress?.country || 'India'
+            }
+          }
+        },
+        courseDetails: {
+          institutionName: colleges.find(c => c._id === editData.courseDetails?.selectedCollege)?.name || editData.courseDetails?.institutionName || '',
+          selectedCollege: editData.courseDetails?.selectedCollege,
+          selectedCourse: editData.courseDetails?.selectedCourse,
+          courseName: editData.courseDetails?.courseName,
+          stream: editData.courseDetails?.stream,
+          campus: editData.courseDetails?.campus,
+          customCourse: editData.courseDetails?.customCourse
+        },
+        guardianDetails: {
+          guardianName: editData.guardianDetails?.guardianName,
+          guardianPhone: editData.guardianDetails?.guardianPhone,
+          guardianEmail: editData.guardianDetails?.guardianEmail,
+          relationship: editData.guardianDetails?.relationship
+        }
+      };
+      
+      // Agents can now edit all fields including Aadhaar and course details (like super admin)
+      
+      const response = await api.put(`/api/agents/students/${selectedStudent._id}`, updatePayload);
       
       if (response.data.success) {
         // If the application was rejected, ask if they want to resubmit
@@ -749,26 +881,66 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                         View
                       </button>
 
-                      {/* Edit - Only for DRAFT and REJECTED */}
-                      {(student.status === 'DRAFT' || student.status === 'REJECTED') ? (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('🖱️ Edit button clicked directly, student:', student);
-                            handleEditStudent(student);
-                          }}
-                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
-                          title={student.status === 'REJECTED' ? 'Edit and resubmit application' : 'Edit application'}
-                        >
-                          <PencilIcon className="h-4 w-4 mr-1" />
-                          {student.status === 'REJECTED' ? 'Edit' : 'Edit'}
-                        </button>
-                      ) : (
-                        <span className="text-xs text-gray-400" title={`Cannot edit: Status is ${student.status}. Only DRAFT and REJECTED can be edited.`}>
-                          Edit (N/A)
-                        </span>
-                      )}
+                      {/* Edit - DRAFT, REJECTED, SUBMITTED (with UNDER_REVIEW), or UNDER_REVIEW (documents not all approved) */}
+                      {(() => {
+                        const isDraft = student.status === 'DRAFT';
+                        const isRejected = student.status === 'REJECTED';
+                        const isSubmitted = student.status === 'SUBMITTED';
+                        const isUnderReviewStatus = student.status === 'UNDER_REVIEW';
+                        const isApproved = student.status === 'APPROVED';
+                        
+                        // Check if documents are all approved
+                        const documentsAllApproved = student.reviewStatus?.overallDocumentReviewStatus === 'ALL_APPROVED' || 
+                                                      student.reviewStatus?.documentsVerified === true;
+                        
+                        // Check if currentStage is UNDER_REVIEW - check multiple possible locations
+                        const currentStageValue = student.currentStage || 
+                                                  student.workflowStatus?.currentStage || 
+                                                  student.workflow?.currentStage;
+                        const isUnderReviewStage = currentStageValue === 'UNDER_REVIEW';
+                        
+                        // Debug logging for SUBMITTED status
+                        if (isSubmitted) {
+                          console.log('🔍 SUBMITTED application check:', {
+                            status: student.status,
+                            currentStage: currentStageValue,
+                            isUnderReviewStage,
+                            documentsAllApproved,
+                            reviewStatus: student.reviewStatus
+                          });
+                        }
+                        
+                        // Allow editing for:
+                        // 1. DRAFT - always
+                        // 2. REJECTED - always
+                        // 3. SUBMITTED - allow (backend will check if documents are approved)
+                        // 4. UNDER_REVIEW status - always
+                        const canEdit = isDraft || 
+                                       isRejected || 
+                                       isSubmitted ||
+                                       isUnderReviewStatus;
+                        
+                        if (canEdit) {
+                          return (
+                            <button
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                console.log('🖱️ Edit button clicked directly, student:', student);
+                                handleEditStudent(student);
+                              }}
+                              className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
+                              title="Edit application"
+                            >
+                              <PencilIcon className="h-4 w-4 mr-1" />
+                              Edit
+                            </button>
+                          );
+                        } else {
+                          console.log('❌ Edit button NOT showing for:', student.personalDetails?.fullName, 'Status:', student.status);
+                          return null;
+                        }
+                      })()}
 
                       {/* View Rejection - Only for REJECTED */}
                       {student.status === 'REJECTED' && (
@@ -821,17 +993,23 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
           }}
         >
           <div 
-            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative"
-            style={{ zIndex: 10000 }}
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
+            style={{ zIndex: 10000, maxHeight: '90vh', height: '90vh', display: 'flex', flexDirection: 'column' }}
             onClick={(e) => {
               e.stopPropagation();
             }}
           >
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Edit Student: {selectedStudent.personalDetails?.fullName || 'Unknown'}
-                </h3>
+            {/* Header */}
+            <div className="p-6 border-b border-gray-200 flex-shrink-0">
+              <div className="flex justify-between items-center">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Edit Student: {selectedStudent.personalDetails?.fullName || 'Unknown'}
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Edit all student information fields below
+                  </p>
+                </div>
                 <button
                   onClick={() => {
                     console.log('❌ Close button clicked');
@@ -846,7 +1024,10 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                   </svg>
                 </button>
               </div>
+            </div>
 
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto flex-1 p-6" style={{ maxHeight: 'calc(90vh - 200px)', overflowX: 'hidden', minHeight: '500px' }}>
               {/* Info about restricted fields */}
               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-800">
@@ -855,7 +1036,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                 </p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-6 pb-4">
                 {/* Personal Details */}
                 <div className="border border-gray-200 rounded-lg p-4">
                   <h4 className="text-md font-semibold text-gray-900 mb-4">Personal Details</h4>
@@ -910,6 +1091,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                         <option value="Male">Male</option>
                         <option value="Female">Female</option>
                         <option value="Other">Other</option>
+                        <option value="Prefer not to say">Prefer not to say</option>
                       </select>
                     </div>
                     <div>
@@ -925,17 +1107,60 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                       />
                     </div>
                     <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                      <select
+                        value={editData.personalDetails?.category || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: { ...editData.personalDetails, category: e.target.value }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Category</option>
+                        <option value="General">General</option>
+                        <option value="OBC">OBC</option>
+                        <option value="SC">SC</option>
+                        <option value="ST">ST</option>
+                        <option value="PwD">PwD</option>
+                      </select>
+                    </div>
+                    <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Aadhaar Number
-                        <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
                       </label>
                       <input
                         type="text"
                         value={editData.personalDetails?.aadharNumber || ''}
-                        disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
-                        title="Aadhaar number can only be edited by admin"
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          personalDetails: {
+                            ...editData.personalDetails,
+                            aadharNumber: e.target.value
+                          }
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Status *</label>
+                      <select
+                        value={editData.status || selectedStudent?.status || ''}
+                        onChange={(e) => setEditData({
+                          ...editData,
+                          status: e.target.value
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value="">Select Status</option>
+                        <option value="DRAFT">Draft</option>
+                        <option value="SUBMITTED">Submitted</option>
+                        <option value="PENDING">Pending</option>
+                        <option value="UNDER_REVIEW">Under Review</option>
+                        <option value="IN_PROGRESS">In Progress</option>
+                        <option value="APPROVED">Approved</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="COMPLETED">Completed</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -945,14 +1170,18 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                   <h4 className="text-md font-semibold text-gray-900 mb-4">Contact Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Primary Phone</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Primary Phone *</label>
                       <input
                         type="tel"
                         value={editData.contactDetails?.primaryPhone || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value }
-                        })}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setEditData({
+                            ...editData,
+                            contactDetails: { ...editData.contactDetails, primaryPhone: value }
+                          });
+                        }}
+                        maxLength="10"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
@@ -961,15 +1190,35 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                       <input
                         type="tel"
                         value={editData.contactDetails?.secondaryPhone || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          contactDetails: { ...editData.contactDetails, secondaryPhone: e.target.value }
-                        })}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setEditData({
+                            ...editData,
+                            contactDetails: { ...editData.contactDetails, secondaryPhone: value }
+                          });
+                        }}
+                        maxLength="10"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
+                      <input
+                        type="tel"
+                        value={editData.contactDetails?.whatsappNumber || ''}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setEditData({
+                            ...editData,
+                            contactDetails: { ...editData.contactDetails, whatsappNumber: value }
+                          });
+                        }}
+                        maxLength="10"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                       <input
                         type="email"
                         value={editData.contactDetails?.email || ''}
@@ -980,98 +1229,365 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-                      <textarea
-                        value={editData.contactDetails?.address || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          contactDetails: { ...editData.contactDetails, address: e.target.value }
-                        })}
-                        rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
+                  </div>
+
+                  {/* Permanent Address */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Permanent Address</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                        <textarea
+                          value={editData.contactDetails?.permanentAddress?.street || ''}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              permanentAddress: {
+                                ...editData.contactDetails?.permanentAddress,
+                                street: e.target.value
+                              }
+                            }
+                          })}
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.permanentAddress?.city || ''}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              permanentAddress: {
+                                ...editData.contactDetails?.permanentAddress,
+                                city: e.target.value
+                              }
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">District *</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.permanentAddress?.district || ''}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              permanentAddress: {
+                                ...editData.contactDetails?.permanentAddress,
+                                district: e.target.value
+                              }
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.permanentAddress?.state || ''}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              permanentAddress: {
+                                ...editData.contactDetails?.permanentAddress,
+                                state: e.target.value
+                              }
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.permanentAddress?.pincode || ''}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                            setEditData({
+                              ...editData,
+                              contactDetails: {
+                                ...editData.contactDetails,
+                                permanentAddress: {
+                                  ...editData.contactDetails?.permanentAddress,
+                                  pincode: value
+                                }
+                              }
+                            });
+                          }}
+                          maxLength="6"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.permanentAddress?.country || 'India'}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              permanentAddress: {
+                                ...editData.contactDetails?.permanentAddress,
+                                country: e.target.value
+                              }
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                      <input
-                        type="text"
-                        value={editData.contactDetails?.city || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          contactDetails: { ...editData.contactDetails, city: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                      <input
-                        type="text"
-                        value={editData.contactDetails?.state || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          contactDetails: { ...editData.contactDetails, state: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
-                      <input
-                        type="text"
-                        value={editData.contactDetails?.pincode || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          contactDetails: { ...editData.contactDetails, pincode: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
+                  </div>
+
+                  {/* Current Address (Optional) */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Current Address (Optional - if different from permanent)</h5>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                        <textarea
+                          value={editData.contactDetails?.currentAddress?.street || ''}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              currentAddress: {
+                                ...editData.contactDetails?.currentAddress,
+                                street: e.target.value
+                              }
+                            }
+                          })}
+                          rows={2}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.currentAddress?.city || ''}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              currentAddress: {
+                                ...editData.contactDetails?.currentAddress,
+                                city: e.target.value
+                              }
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.currentAddress?.state || ''}
+                          onChange={(e) => setEditData({
+                            ...editData,
+                            contactDetails: {
+                              ...editData.contactDetails,
+                              currentAddress: {
+                                ...editData.contactDetails?.currentAddress,
+                                state: e.target.value
+                              }
+                            }
+                          })}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                        <input
+                          type="text"
+                          value={editData.contactDetails?.currentAddress?.pincode || ''}
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                            setEditData({
+                              ...editData,
+                              contactDetails: {
+                                ...editData.contactDetails,
+                                currentAddress: {
+                                  ...editData.contactDetails?.currentAddress,
+                                  pincode: value
+                                }
+                              }
+                            });
+                          }}
+                          maxLength="6"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Course Details */}
+                {/* Education Details Section - RESTRICTED for Agents */}
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">Course Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <h4 className="text-md font-semibold text-gray-900 mb-4">
+                    Education Details <span className="text-xs font-normal text-gray-500">(Read-only for Agents)</span>
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Selected Course
-                        <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
+                        Institution Name *
+                      </label>
+                      <select
+                        value={editData.courseDetails?.selectedCollege || ''}
+                        onChange={(e) => setEditData((prev) => ({
+                          ...prev,
+                          courseDetails: {
+                            ...prev.courseDetails,
+                            selectedCollege: e.target.value,
+                            selectedCourse: "",
+                            stream: "",
+                            campus: "",
+                            institutionName: colleges.find(c => c._id === e.target.value)?.name || ''
+                          },
+                        }))}
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        title="Institution can only be changed by admin"
+                      >
+                        <option value="">{loadingColleges ? "Loading institutions..." : "Select Institution"}</option>
+                        {colleges.map((college) => (
+                          <option key={college._id} value={college._id}>
+                            {college.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Course Name *
                       </label>
                       <select
                         value={editData.courseDetails?.selectedCourse || ''}
+                        onChange={(e) => setEditData((prev) => ({
+                          ...prev,
+                          courseDetails: {
+                            ...prev.courseDetails,
+                            selectedCourse: e.target.value,
+                            courseName: e.target.value,
+                            stream: "",
+                          },
+                        }))}
                         disabled
                         className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
-                        title="Course selection can only be changed by admin"
+                        title="Course can only be changed by admin"
                       >
-                        <option value="">Select Course</option>
-                        <option value="B.Tech">B.Tech</option>
-                        <option value="M.Tech">M.Tech</option>
-                        <option value="MBA">MBA</option>
-                        <option value="BBA">BBA</option>
-                        <option value="BCA">BCA</option>
-                        <option value="MCA">MCA</option>
+                        <option value="">
+                          {!editData.courseDetails?.selectedCollege
+                            ? "Select institution first"
+                            : getCoursesForCollege().length === 0
+                              ? "No courses available"
+                              : "Select Course"}
+                        </option>
+                        {getCoursesForCollege().map((course) => (
+                          <option key={course._id} value={course.courseName}>
+                            {course.courseName}
+                          </option>
+                        ))}
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Language</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Campus *
+                      </label>
                       <select
-                        value={editData.courseDetails?.preferredLanguage || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          courseDetails: { ...editData.courseDetails, preferredLanguage: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={editData.courseDetails?.campus || ""}
+                        onChange={(e) => setEditData((prev) => ({
+                          ...prev,
+                          courseDetails: {
+                            ...prev.courseDetails,
+                            campus: e.target.value,
+                          },
+                        }))}
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        title="Campus can only be changed by admin"
                       >
-                        <option value="">Select Language</option>
-                        <option value="English">English</option>
-                        <option value="Hindi">Hindi</option>
-                        <option value="Odia">Odia</option>
+                        <option value="">
+                          {!editData.courseDetails?.selectedCollege
+                            ? "Select institution first"
+                            : getCampusesForCollege().length === 0
+                              ? "No campuses available"
+                              : "Select Campus"}
+                        </option>
+                        {getCampusesForCollege().length > 0 && getCampusesForCollege().map((campus) => (
+                          <option key={campus._id} value={campus._id}>
+                            {campus.name} {campus.code ? `(${campus.code})` : ''}
+                          </option>
+                        ))}
                       </select>
                     </div>
                   </div>
+                  
+                  {/* Stream Field - Below the three columns */}
+                  {getStreamsForCourse().length > 0 && (
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Stream (Optional)
+                      </label>
+                      <select
+                        value={editData.courseDetails?.stream || ''}
+                        onChange={(e) => setEditData((prev) => ({
+                          ...prev,
+                          courseDetails: {
+                            ...prev.courseDetails,
+                            stream: e.target.value,
+                          },
+                        }))}
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        title="Stream can only be changed by admin"
+                      >
+                        <option value="">Select Stream (Optional)</option>
+                        {getStreamsForCourse().map((stream) => (
+                          <option key={stream} value={stream}>
+                            {stream}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  
+                  {/* Custom Course Field - Show if "Other" is selected */}
+                  {editData.courseDetails?.selectedCourse === 'Other' && (
+                    <div className="mt-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Custom Course (if Other selected)
+                      </label>
+                      <input
+                        type="text"
+                        value={editData.courseDetails?.customCourse || ''}
+                        onChange={(e) => setEditData((prev) => ({
+                          ...prev,
+                          courseDetails: {
+                            ...prev.courseDetails,
+                            customCourse: e.target.value,
+                          },
+                        }))}
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        placeholder="Enter custom course name if 'Other' is selected"
+                        title="Custom course can only be changed by admin"
+                      />
+                    </div>
+                  )}
+                  
                   <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
                     <p className="text-xs text-yellow-800">
                       <strong>Note:</strong> Course selection, institution, stream, and campus can only be changed by admin. 
@@ -1101,27 +1617,48 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                       <input
                         type="tel"
                         value={editData.guardianDetails?.guardianPhone || ''}
+                        onChange={(e) => {
+                          const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                          setEditData({
+                            ...editData,
+                            guardianDetails: { ...editData.guardianDetails, guardianPhone: value }
+                          });
+                        }}
+                        maxLength="10"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Email</label>
+                      <input
+                        type="email"
+                        value={editData.guardianDetails?.guardianEmail || ''}
                         onChange={(e) => setEditData({
                           ...editData,
-                          guardianDetails: { ...editData.guardianDetails, guardianPhone: e.target.value }
+                          guardianDetails: { ...editData.guardianDetails, guardianEmail: e.target.value }
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Relation</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Relationship</label>
                       <select
-                        value={editData.guardianDetails?.guardianRelation || ''}
+                        value={editData.guardianDetails?.relationship || ''}
                         onChange={(e) => setEditData({
                           ...editData,
-                          guardianDetails: { ...editData.guardianDetails, guardianRelation: e.target.value }
+                          guardianDetails: { ...editData.guardianDetails, relationship: e.target.value }
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
-                        <option value="">Select Relation</option>
+                        <option value="">Select Relationship</option>
                         <option value="Father">Father</option>
                         <option value="Mother">Mother</option>
-                        <option value="Guardian">Guardian</option>
+                        <option value="Brother">Brother</option>
+                        <option value="Sister">Sister</option>
+                        <option value="Uncle">Uncle</option>
+                        <option value="Aunt">Aunt</option>
+                        <option value="Grandfather">Grandfather</option>
+                        <option value="Grandmother">Grandmother</option>
                         <option value="Other">Other</option>
                       </select>
                     </div>
@@ -1144,11 +1681,17 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                   </ol>
                 </div>
               </div>
+            </div>
 
-              {/* Modal Actions */}
-              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+            {/* Footer with Actions */}
+            <div className="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+              <div className="flex justify-end space-x-3">
                 <button
-                  onClick={() => setShowEditModal(false)}
+                  onClick={() => {
+                    setShowEditModal(false);
+                    setSelectedStudent(null);
+                    setEditData({});
+                  }}
                   className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancel

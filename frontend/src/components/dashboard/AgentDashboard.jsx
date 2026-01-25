@@ -124,6 +124,13 @@ const EnhancedAgentDashboard = () => {
     loadDashboardData(selectedSession);
   }, [selectedSession]);
 
+  // Reload data when switching back to dashboard tab
+  useEffect(() => {
+    if (activeTab === 'dashboard' && selectedSession) {
+      loadDashboardData(selectedSession, false); // Don't show loading spinner on tab switch
+    }
+  }, [activeTab]);
+
   const loadDashboardData = async (session = selectedSession, showLoading = true) => {
     // Prevent multiple simultaneous calls
     if (isLoadingRef.current) {
@@ -237,6 +244,11 @@ const EnhancedAgentDashboard = () => {
         student._id === updatedStudent._id ? updatedStudent : student
       );
     });
+    // Refresh dashboard data after student update with current session
+    // This ensures the session is preserved and data is refreshed
+    if (activeTab === 'dashboard' && selectedSession) {
+      loadDashboardData(selectedSession, false);
+    }
   };
 
 
@@ -364,7 +376,7 @@ const EnhancedAgentDashboard = () => {
                 </h3>
               </div>
               <div className="p-6">
-                <AgentApplicationsTab applications={applications} onRefresh={() => loadDashboardData(false)} />
+                <AgentApplicationsTab applications={applications} onRefresh={() => loadDashboardData(selectedSession, false)} />
               </div>
             </motion.div>
           </>

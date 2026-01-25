@@ -27,10 +27,28 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
     const [passwordData, setPasswordData] = useState({ newPassword: '' });
     const [saving, setSaving] = useState(false);
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [staffList, setStaffList] = useState([]);
 
     useEffect(() => {
         fetchUsers();
     }, [userType, currentPage, searchTerm, filterStatus]);
+
+    useEffect(() => {
+        if (userType === 'agents' && showEditModal) {
+            fetchStaffList();
+        }
+    }, [userType, showEditModal]);
+
+    const fetchStaffList = async () => {
+        try {
+            const response = await api.get('/api/admin/staff/for-assignment');
+            if (response.data.success) {
+                setStaffList(response.data.data);
+            }
+        } catch (error) {
+            console.error('Error fetching staff list:', error);
+        }
+    };
 
     const fetchUsers = async () => {
         try {
@@ -169,8 +187,10 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
         setSelectedUser(user);
         setEditData({
             name: user.name || user.fullName,
+            fullName: user.fullName || user.name,
             email: user.email,
             phone: user.phone || user.phoneNumber,
+            phoneNumber: user.phoneNumber || user.phone,
             status: user.status,
             ...(userType === 'students' && {
                 course: user.course,
@@ -178,7 +198,17 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                 guardianName: user.guardianName
             }),
             ...(userType === 'agents' && {
-                referralCode: user.referralCode
+                referralCode: user.referralCode,
+                gender: user.gender || '',
+                dateOfBirth: user.dateOfBirth || '',
+                assignedStaff: user.assignedStaff?._id || user.assignedStaff || '',
+                address: user.address || {
+                    street: '',
+                    city: '',
+                    state: '',
+                    pincode: '',
+                    country: 'India'
+                }
             }),
             ...(userType === 'staff' && {
                 department: user.department
@@ -202,7 +232,39 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                 endpoint = `/api/admin/staff/${selectedUser._id || selectedUser.id}`;
             }
 
-            await api.put(endpoint, editData);
+            // Prepare data for API call
+            let payload = { ...editData };
+            
+            // For agents, ensure proper field names and structure
+            if (userType === 'agents') {
+                payload = {
+                    fullName: payload.fullName || payload.name,
+                    email: payload.email,
+                    phoneNumber: payload.phoneNumber || payload.phone,
+                    status: payload.status,
+                    gender: payload.gender || '',
+                    dateOfBirth: payload.dateOfBirth || '',
+                    assignedStaff: payload.assignedStaff || '',
+                    address: payload.address || {
+                        street: '',
+                        city: '',
+                        state: '',
+                        pincode: '',
+                        country: 'India'
+                    },
+                    referralCode: payload.referralCode || ''
+                };
+            } else {
+                // For other user types, clean up the payload
+                if (payload.name && !payload.fullName) {
+                    payload.fullName = payload.name;
+                }
+                if (payload.phone && !payload.phoneNumber) {
+                    payload.phoneNumber = payload.phone;
+                }
+            }
+
+            await api.put(endpoint, payload);
 
             // Update local state
             setUsers(prev => prev.map(user =>
@@ -535,63 +597,229 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
             {/* Edit Modal */}
             {showEditModal && selectedUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+                    <div className={`relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md bg-white dark:bg-gray-800 ${userType === 'agents' ? 'max-w-3xl w-full mx-4' : 'w-96'}`}>
                         <div className="mt-3">
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Edit User</h3>
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Edit {userType === 'agents' ? 'Agent' : userType === 'staff' ? 'Staff' : 'User'}</h3>
+                                <button
+                                    onClick={() => setShowEditModal(false)}
+                                    className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
 
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Name *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={editData.name}
-                                        onChange={(e) => setEditData(prev => ({ ...prev, name: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    />
+                            <div className="space-y-4 max-h-[70vh] overflow-y-auto">
+                                {/* Basic Information */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            {userType === 'agents' ? 'Full Name' : 'Name'} *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={userType === 'agents' ? (editData.fullName || '') : (editData.name || '')}
+                                            onChange={(e) => setEditData(prev => ({ 
+                                                ...prev, 
+                                                ...(userType === 'agents' ? { fullName: e.target.value } : { name: e.target.value })
+                                            }))}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Email *
+                                        </label>
+                                        <input
+                                            type="email"
+                                            value={editData.email || ''}
+                                            onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Email *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        value={editData.email}
-                                        onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Phone *
+                                        </label>
+                                        <input
+                                            type="tel"
+                                            value={userType === 'agents' ? (editData.phoneNumber || '') : (editData.phone || '')}
+                                            onChange={(e) => {
+                                                const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                                                setEditData(prev => ({ 
+                                                    ...prev, 
+                                                    ...(userType === 'agents' ? { phoneNumber: value } : { phone: value })
+                                                }));
+                                            }}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            maxLength="10"
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                            Status *
+                                        </label>
+                                        <select
+                                            value={editData.status || 'active'}
+                                            onChange={(e) => setEditData(prev => ({ ...prev, status: e.target.value }))}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        >
+                                            <option value="active">Active</option>
+                                            <option value="inactive">Inactive</option>
+                                            <option value="pending">Pending</option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Phone *
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        value={editData.phone}
-                                        onChange={(e) => setEditData(prev => ({ ...prev, phone: e.target.value.replace(/\D/g, '').slice(0, 10) }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        maxLength="10"
-                                    />
-                                </div>
+                                {/* Agent-specific fields */}
+                                {userType === 'agents' && (
+                                    <>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Gender
+                                                </label>
+                                                <select
+                                                    value={editData.gender || ''}
+                                                    onChange={(e) => setEditData(prev => ({ ...prev, gender: e.target.value }))}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                >
+                                                    <option value="">Select Gender</option>
+                                                    <option value="male">Male</option>
+                                                    <option value="female">Female</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                            </div>
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                        Status *
-                                    </label>
-                                    <select
-                                        value={editData.status}
-                                        onChange={(e) => setEditData(prev => ({ ...prev, status: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    >
-                                        <option value="active">Active</option>
-                                        <option value="inactive">Inactive</option>
-                                        <option value="pending">Pending</option>
-                                    </select>
-                                </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Date of Birth
+                                                </label>
+                                                <input
+                                                    type="date"
+                                                    value={editData.dateOfBirth || ''}
+                                                    onChange={(e) => setEditData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                />
+                                            </div>
+                                        </div>
 
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Assign to Staff (Optional)
+                                            </label>
+                                            <select
+                                                value={editData.assignedStaff || ''}
+                                                onChange={(e) => setEditData(prev => ({ ...prev, assignedStaff: e.target.value }))}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            >
+                                                <option value="">Select Staff Member</option>
+                                                {staffList.map(staff => (
+                                                    <option key={staff._id} value={staff._id}>
+                                                        {staff.firstName} {staff.lastName} - {staff.department} {staff.employeeId ? `(${staff.employeeId})` : ''}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Referral Code
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.referralCode || ''}
+                                                onChange={(e) => setEditData(prev => ({ ...prev, referralCode: e.target.value }))}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                readOnly
+                                            />
+                                        </div>
+
+                                        {/* Address Fields */}
+                                        <div className="space-y-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+                                            <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">Address Information</h4>
+                                            
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Street Address
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    value={editData.address?.street || ''}
+                                                    onChange={(e) => setEditData(prev => ({
+                                                        ...prev,
+                                                        address: { ...prev.address, street: e.target.value }
+                                                    }))}
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                    placeholder="Enter street address"
+                                                />
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                        City
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={editData.address?.city || ''}
+                                                        onChange={(e) => setEditData(prev => ({
+                                                            ...prev,
+                                                            address: { ...prev.address, city: e.target.value }
+                                                        }))}
+                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                        placeholder="Enter city"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                        State
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={editData.address?.state || ''}
+                                                        onChange={(e) => setEditData(prev => ({
+                                                            ...prev,
+                                                            address: { ...prev.address, state: e.target.value }
+                                                        }))}
+                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                        placeholder="Enter state"
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                        Pincode
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={editData.address?.pincode || ''}
+                                                        onChange={(e) => {
+                                                            const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                                                            setEditData(prev => ({
+                                                                ...prev,
+                                                                address: { ...prev.address, pincode: value }
+                                                            }));
+                                                        }}
+                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                        placeholder="Enter pincode"
+                                                        maxLength="6"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+
+                                {/* Student-specific fields */}
                                 {userType === 'students' && (
                                     <>
                                         <div>
@@ -619,20 +847,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                     </>
                                 )}
 
-                                {userType === 'agents' && (
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                            Referral Code
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={editData.referralCode || ''}
-                                            onChange={(e) => setEditData(prev => ({ ...prev, referralCode: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        />
-                                    </div>
-                                )}
-
+                                {/* Staff-specific fields */}
                                 {userType === 'staff' && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -648,10 +863,10 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                 )}
                             </div>
 
-                            <div className="flex justify-end space-x-3 mt-6">
+                            <div className="flex justify-end space-x-3 mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
                                 <button
                                     onClick={() => setShowEditModal(false)}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-600"
                                 >
                                     Cancel
                                 </button>

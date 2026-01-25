@@ -1250,36 +1250,77 @@ router.put('/students/:id', async (req, res) => {
       });
     }
 
-    // Check if application can be edited
-    // Agents can only edit: DRAFT (before submission) and REJECTED (to fix and resubmit)
-    // Once SUBMITTED, it's with staff for review, so agents cannot edit
-    // Block editing: SUBMITTED, UNDER_REVIEW, APPROVED
-    const editableStatuses = ['DRAFT', 'REJECTED'];
-    if (!editableStatuses.includes(application.status)) {
+    // Agents can edit based on status and document approval:
+    // - DRAFT: Always editable
+    // - REJECTED: Always editable (to fix and resubmit)
+    // - SUBMITTED && UNDER_REVIEW: Editable (when currentStage is UNDER_REVIEW AND documents are NOT all approved)
+    // - UNDER_REVIEW: Editable (when documents are NOT all approved)
+    // - APPROVED: Not editable
+    // - SUBMITTED with all documents approved: Not editable
+    
+    const isDraft = application.status === 'DRAFT';
+    const isRejected = application.status === 'REJECTED';
+    const isSubmitted = application.status === 'SUBMITTED';
+    const isUnderReviewStatus = application.status === 'UNDER_REVIEW';
+    const isApproved = application.status === 'APPROVED';
+    
+    // Check if documents are all approved
+    const documentsAllApproved = application.reviewStatus?.overallDocumentReviewStatus === 'ALL_APPROVED' || 
+                                  application.reviewStatus?.documentsVerified === true;
+    
+    // Check if currentStage is UNDER_REVIEW
+    const isUnderReviewStage = application.currentStage === 'UNDER_REVIEW';
+    
+    let canEdit = false;
+    let errorMessage = '';
+    
+    if (isDraft || isRejected) {
+      canEdit = true;
+    } else if (isSubmitted) {
+      // SUBMITTED: Allow editing (backend will check document approval)
+      // If currentStage is UNDER_REVIEW and documents are all approved, block editing
+      if (isUnderReviewStage && documentsAllApproved) {
+        canEdit = false;
+        errorMessage = 'Cannot edit application when status is SUBMITTED, currentStage is UNDER_REVIEW, and all documents are approved.';
+      } else {
+        // SUBMITTED - allow editing (even if currentStage is not UNDER_REVIEW)
+        canEdit = true;
+      }
+    } else if (isUnderReviewStatus) {
+      // UNDER_REVIEW status: Always allow editing (agent can make corrections during review)
+      canEdit = true;
+    } else if (isApproved) {
+      // APPROVED && DOCUMENTS APPROVED: Not allow
+      canEdit = false;
+      errorMessage = 'Cannot edit application when status is APPROVED.';
+    } else {
+      // Any other status
+      canEdit = false;
+      errorMessage = `Cannot edit application when status is ${application.status}.`;
+    }
+    
+    if (!canEdit) {
       return res.status(400).json({
         success: false,
-        message: `Cannot edit application when status is ${application.status}. You can only edit applications with status: DRAFT (before submission) or REJECTED (to fix and resubmit).`
+        message: errorMessage || `Cannot edit application when status is ${application.status}. You can only edit applications with status: DRAFT (before submission), REJECTED (to fix and resubmit), or SUBMITTED (when under review and documents not yet approved).`
       });
     }
 
+    console.log(`✅ Agent ${agentId} editing application ${applicationId} with status: ${application.status}`);
+
     const updateData = req.body;
 
-    // SECURITY: Agents cannot update status or currentStage - these are controlled by staff/admin only
-    if (updateData.status || updateData.currentStage) {
-      return res.status(403).json({
-        success: false,
-        message: 'Agents cannot update application status. Status can only be changed by staff/admin through the review process.'
-      });
+    // SECURITY: Agents cannot update currentStage - this is controlled by staff/admin only
+    // Note: Status can now be updated by agents
+    if (updateData.currentStage) {
+      delete updateData.currentStage;
     }
 
     // Update personal details
     if (updateData.personalDetails) {
       const personalDetailsUpdate = { ...updateData.personalDetails };
       
-      // SECURITY: Agents cannot update Aadhar number - this is admin-only
-      if (personalDetailsUpdate.aadharNumber !== undefined) {
-        delete personalDetailsUpdate.aadharNumber;
-      }
+      // Agents can now update all personal details including Aadhar number (like super admin)
       
       // Update each field individually
       Object.keys(personalDetailsUpdate).forEach(key => {
@@ -1298,18 +1339,9 @@ router.put('/students/:id', async (req, res) => {
     if (updateData.courseDetails) {
       const courseDetailsUpdate = { ...updateData.courseDetails };
       
-      // SECURITY: Agents cannot update institute, course, stream, or campus - these are admin-only
-      const restrictedFields = ['institutionName', 'selectedCollege', 'selectedCourse', 'courseName', 'stream', 'campus'];
-      
-      restrictedFields.forEach(field => {
-        if (courseDetailsUpdate[field] !== undefined) {
-          delete courseDetailsUpdate[field];
-        }
-      });
-      
-      // Only update non-restricted fields
+      // Agents can now update all course details (like super admin)
       Object.keys(courseDetailsUpdate).forEach(key => {
-        if (!restrictedFields.includes(key) && courseDetailsUpdate[key] !== undefined) {
+        if (courseDetailsUpdate[key] !== undefined && courseDetailsUpdate[key] !== null) {
           application.courseDetails[key] = courseDetailsUpdate[key];
         }
       });
@@ -1323,6 +1355,11 @@ router.put('/students/:id', async (req, res) => {
     // Update financial details
     if (updateData.financialDetails) {
       Object.assign(application.financialDetails, updateData.financialDetails);
+    }
+
+    // Update status if provided
+    if (updateData.status) {
+      application.status = updateData.status;
     }
 
     // Mark nested objects as modified for Mongoose to save them properly
