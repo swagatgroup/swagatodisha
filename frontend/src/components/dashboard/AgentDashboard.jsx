@@ -298,12 +298,12 @@ const EnhancedAgentDashboard = () => {
                   <p className="text-2xl font-semibold text-blue-600 dark:text-blue-400">{stats.totalStudents}</p>
                 </div>
 
-                {/* Pending - Clickable */}
+                {/* Submitted - Clickable */}
                 <div
                   className={`bg-yellow-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'SUBMITTED' ? 'ring-2 ring-yellow-500' : ''}`}
                   onClick={() => handleStatClick('SUBMITTED')}
                 >
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
+                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Submitted</p>
                   <p className="text-2xl font-semibold text-yellow-600 dark:text-yellow-400">{stats.pendingStudents}</p>
                 </div>
 
