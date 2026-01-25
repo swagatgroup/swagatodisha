@@ -4,7 +4,6 @@ import { useAuth } from "../../contexts/AuthContext";
 import { useSession } from "../../contexts/SessionContext";
 import DashboardLayout from "./DashboardLayout";
 import StudentRegistrationWorkflow from "./tabs/StudentRegistrationWorkflow";
-import AgentApplicationsTab from "./tabs/AgentApplicationsTab";
 import AgentApplicationStatus from "./tabs/AgentApplicationStatus";
 import AgentStudentsTab from "./tabs/AgentStudentsTab";
 import StudentTable from "./components/StudentTable";
@@ -17,7 +16,6 @@ const EnhancedAgentDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [studentTableFilter, setStudentTableFilter] = useState("all");
   const [students, setStudents] = useState([]);
-  const [applications, setApplications] = useState([]);
   const [stats, setStats] = useState({
     totalStudents: 0,
     pendingStudents: 0,
@@ -162,15 +160,13 @@ const EnhancedAgentDashboard = () => {
 
       console.log('📤 API params:', params);
 
-      const [studentsRes, statsRes, applicationsRes] = await Promise.all([
+      const [studentsRes, statsRes] = await Promise.all([
         api.get("/api/agents/my-students", { params }),
-        api.get("/api/agents/stats", { params: { session } }),
-        api.get("/api/agents/my-submitted-applications", { params: { session } })
+        api.get("/api/agents/stats", { params: { session } })
       ]);
 
       console.log('📥 Students response:', studentsRes.data);
       console.log('📥 Stats response:', statsRes.data);
-      console.log('📥 Applications response:', applicationsRes.data);
 
       if (studentsRes.data.success) {
         const list = studentsRes.data.data?.students ?? studentsRes.data.data ?? [];
@@ -190,15 +186,6 @@ const EnhancedAgentDashboard = () => {
       } else {
         console.error('❌ Students API not successful:', studentsRes.data);
         setStudents([]);
-      }
-
-      if (applicationsRes.data.success) {
-        const applicationsData = applicationsRes.data.data?.applications || applicationsRes.data.data || [];
-        console.log('✅ Applications loaded:', applicationsData.length);
-        setApplications(Array.isArray(applicationsData) ? applicationsData : []);
-      } else {
-        console.error('❌ Applications API not successful:', applicationsRes.data);
-        setApplications([]);
       }
 
       if (statsRes.data.success) {
@@ -236,7 +223,6 @@ const EnhancedAgentDashboard = () => {
       console.error("❌ Error details:", error.response?.data || error.message);
       // Set empty arrays on error
       setStudents([]);
-      setApplications([]);
     } finally {
       setLoading(false);
       isLoadingRef.current = false;
@@ -366,23 +352,6 @@ const EnhancedAgentDashboard = () => {
                   showActions={true}
                   initialFilter={studentTableFilter}
                 />
-              </div>
-            </motion.div>
-
-            {/* Applications Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow mt-6"
-            >
-              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Recent Applications
-                </h3>
-              </div>
-              <div className="p-6">
-                <AgentApplicationsTab applications={applications} onRefresh={() => loadDashboardData(selectedSession, false)} />
               </div>
             </motion.div>
           </>
