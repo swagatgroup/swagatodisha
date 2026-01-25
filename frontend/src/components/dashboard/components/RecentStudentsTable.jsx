@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from '../../../contexts/SessionContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -67,6 +68,11 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
         fetchRecentStudents();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, selectedSession, searchTerm, sortBy]);
+
+    // Debug edit modal state changes
+    useEffect(() => {
+        console.log('🔍 Edit modal state changed (RecentStudentsTable):', { showEditModal, selectedStudent: selectedStudent?._id });
+    }, [showEditModal, selectedStudent]);
 
     // Document selection and generation handlers
     const toggleDocumentSelection = (documentId) => {
@@ -387,6 +393,16 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     };
 
     const handleEditStudent = (student) => {
+        console.log('✏️ Edit button clicked for student (RecentStudentsTable):', student);
+        console.log('📋 Student data:', JSON.stringify(student, null, 2));
+        
+        // Verify student has required data
+        if (!student) {
+            console.error('❌ No student data provided!');
+            showError('No student data available');
+            return;
+        }
+        
         setSelectedStudent(student);
         setEditData({
             personalDetails: {
@@ -424,6 +440,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                 guardianEmail: student.guardianDetails?.guardianEmail || ''
             }
         });
+        console.log('✅ Setting showEditModal to true (RecentStudentsTable)');
         setShowEditModal(true);
     };
 
@@ -848,7 +865,12 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 {/* Staff can only edit when status is UNDER_REVIEW */}
                                                 {student.status === 'UNDER_REVIEW' && (
                                                     <button
-                                                        onClick={() => handleEditStudent(student)}
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            console.log('🖱️ Edit button clicked directly (RecentStudentsTable), student:', student);
+                                                            handleEditStudent(student);
+                                                        }}
                                                         className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
                                                         title="Edit"
                                                     >
@@ -1504,15 +1526,32 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                 )}
             </AnimatePresence>
 
-            {/* Edit Student Modal */}
-            {showEditModal && selectedStudent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6">
-                            <div className="flex justify-between items-center mb-6">
+            {/* Edit Student Modal - Using Portal */}
+            {showEditModal && selectedStudent && createPortal(
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4"
+                    style={{ zIndex: 9999, position: 'fixed' }}
+                    onClick={() => {
+                        console.log('🖱️ Modal backdrop clicked, closing modal (RecentStudentsTable)');
+                        setShowEditModal(false);
+                        setSelectedStudent(null);
+                        setEditData({});
+                    }}
+                >
+                    <div 
+                        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col relative"
+                        style={{ zIndex: 10000 }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
+                        {/* Header - Fixed */}
+                        <div className="p-6 flex-shrink-0 border-b border-gray-200 dark:border-gray-700">
+                            <div className="flex justify-between items-center">
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Student</h3>
                                 <button
                                     onClick={() => {
+                                        console.log('❌ Close button clicked (RecentStudentsTable)');
                                         setShowEditModal(false);
                                         setEditData({});
                                         setSelectedStudent(null);
@@ -1524,72 +1563,324 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     </svg>
                                 </button>
                             </div>
+                        </div>
 
-                            {/* Personal Details */}
-                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Personal Details</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
-                                        <input
-                                            type="text"
-                                            value={editData.personalDetails?.fullName || ''}
-                                            onChange={(e) => setEditData({
-                                                ...editData,
-                                                personalDetails: { ...editData.personalDetails, fullName: e.target.value }
-                                            })}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        />
+                        {/* Scrollable Content Area */}
+                        <div className="flex-1 overflow-y-auto p-6" style={{ maxHeight: 'calc(90vh - 180px)' }}>
+                            {/* Info about restricted fields */}
+                            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                                <p className="text-sm text-blue-800 dark:text-blue-200">
+                                    <strong>Note:</strong> You can edit most fields. However, the following fields can only be changed by admin: 
+                                    <strong> Aadhaar Number</strong>, <strong>Course Selection</strong>, <strong>Institution</strong>, <strong>Stream</strong>, and <strong>Campus</strong>.
+                                </p>
+                            </div>
+
+                            <div className="space-y-6">
+                                {/* Personal Details */}
+                                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Personal Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.fullName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, fullName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Father's Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.fathersName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Mother's Name
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.mothersName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Gender</label>
+                                            <select
+                                                value={editData.personalDetails?.gender || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, gender: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            >
+                                                <option value="">Select Gender</option>
+                                                <option value="Male">Male</option>
+                                                <option value="Female">Female</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date of Birth</label>
+                                            <input
+                                                type="date"
+                                                value={editData.personalDetails?.dateOfBirth || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Aadhaar Number
+                                                <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.aadharNumber || ''}
+                                                disabled
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                                title="Aadhaar number can only be edited by admin"
+                                            />
+                                        </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aadhar Number</label>
-                                        <input
-                                            type="text"
-                                            value={editData.personalDetails?.aadharNumber || ''}
-                                            onChange={(e) => setEditData({
-                                                ...editData,
-                                                personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12) }
-                                            })}
-                                            maxLength="12"
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        />
+                                </div>
+
+                                {/* Contact Details */}
+                                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Primary Phone</label>
+                                            <input
+                                                type="tel"
+                                                value={editData.contactDetails?.primaryPhone || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Secondary Phone</label>
+                                            <input
+                                                type="tel"
+                                                value={editData.contactDetails?.whatsappNumber || editData.contactDetails?.secondaryPhone || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, secondaryPhone: e.target.value, whatsappNumber: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                                            <input
+                                                type="email"
+                                                value={editData.contactDetails?.email || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { ...editData.contactDetails, email: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
+                                            <textarea
+                                                value={editData.contactDetails?.permanentAddress?.street || editData.contactDetails?.address || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { 
+                                                        ...editData.contactDetails, 
+                                                        address: e.target.value,
+                                                        permanentAddress: {
+                                                            ...editData.contactDetails?.permanentAddress,
+                                                            street: e.target.value
+                                                        }
+                                                    }
+                                                })}
+                                                rows={3}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                                            <input
+                                                type="text"
+                                                value={editData.contactDetails?.permanentAddress?.city || editData.contactDetails?.city || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { 
+                                                        ...editData.contactDetails, 
+                                                        city: e.target.value,
+                                                        permanentAddress: {
+                                                            ...editData.contactDetails?.permanentAddress,
+                                                            city: e.target.value
+                                                        }
+                                                    }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                                            <input
+                                                type="text"
+                                                value={editData.contactDetails?.permanentAddress?.state || editData.contactDetails?.state || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { 
+                                                        ...editData.contactDetails, 
+                                                        state: e.target.value,
+                                                        permanentAddress: {
+                                                            ...editData.contactDetails?.permanentAddress,
+                                                            state: e.target.value
+                                                        }
+                                                    }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pincode</label>
+                                            <input
+                                                type="text"
+                                                value={editData.contactDetails?.permanentAddress?.pincode || editData.contactDetails?.pincode || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    contactDetails: { 
+                                                        ...editData.contactDetails, 
+                                                        pincode: e.target.value,
+                                                        permanentAddress: {
+                                                            ...editData.contactDetails?.permanentAddress,
+                                                            pincode: e.target.value
+                                                        }
+                                                    }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Course Details */}
+                                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Course Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                Selected Course
+                                                <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.courseDetails?.selectedCourse || editData.courseDetails?.courseName || ''}
+                                                disabled
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                                title="Course selection can only be changed by admin"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Preferred Language</label>
+                                            <select
+                                                value={editData.courseDetails?.preferredLanguage || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    courseDetails: { ...editData.courseDetails, preferredLanguage: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            >
+                                                <option value="">Select Language</option>
+                                                <option value="English">English</option>
+                                                <option value="Hindi">Hindi</option>
+                                                <option value="Odia">Odia</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
+                                        <p className="text-xs text-yellow-800 dark:text-yellow-200">
+                                            <strong>Note:</strong> Course selection, institution, stream, and campus can only be changed by admin. 
+                                            Contact admin if you need to modify these fields.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Guardian Details */}
+                                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Guardian Details</h4>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guardian Name</label>
+                                            <input
+                                                type="text"
+                                                value={editData.guardianDetails?.guardianName || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guardian Phone</label>
+                                            <input
+                                                type="tel"
+                                                value={editData.guardianDetails?.guardianPhone || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    guardianDetails: { ...editData.guardianDetails, guardianPhone: e.target.value }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Guardian Relation</label>
+                                            <select
+                                                value={editData.guardianDetails?.relationship || editData.guardianDetails?.guardianRelation || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    guardianDetails: { 
+                                                        ...editData.guardianDetails, 
+                                                        relationship: e.target.value,
+                                                        guardianRelation: e.target.value
+                                                    }
+                                                })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                            >
+                                                <option value="">Select Relation</option>
+                                                <option value="Father">Father</option>
+                                                <option value="Mother">Mother</option>
+                                                <option value="Guardian">Guardian</option>
+                                                <option value="Other">Other</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Contact Details */}
-                            <div className="border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
-                                <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Contact Details</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
-                                        <input
-                                            type="email"
-                                            value={editData.contactDetails?.email || ''}
-                                            onChange={(e) => setEditData({
-                                                ...editData,
-                                                contactDetails: { ...editData.contactDetails, email: e.target.value }
-                                            })}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Primary Phone</label>
-                                        <input
-                                            type="tel"
-                                            value={editData.contactDetails?.primaryPhone || ''}
-                                            onChange={(e) => setEditData({
-                                                ...editData,
-                                                contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value }
-                                            })}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Footer */}
-                            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+                        {/* Footer - Fixed */}
+                        <div className="p-6 flex-shrink-0 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
                                 <button
                                     onClick={() => {
                                         setShowEditModal(false);
@@ -1609,7 +1900,8 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
 
             {/* Status Update Modal */}

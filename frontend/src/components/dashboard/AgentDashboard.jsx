@@ -29,10 +29,17 @@ const EnhancedAgentDashboard = () => {
   const isLoadingRef = useRef(false);
 
   const handleStatClick = (filterKey) => {
-    // Stay on dashboard and set the student table filter
+    // Navigate to students tab with the filter applied
     setStudentTableFilter(filterKey);
-    setActiveTab("dashboard");
+    setActiveTab("students");
   };
+
+  // Reset filter when returning to dashboard
+  useEffect(() => {
+    if (activeTab === "dashboard") {
+      setStudentTableFilter("all");
+    }
+  }, [activeTab]);
 
   const sidebarItems = [
     {
@@ -364,7 +371,7 @@ const EnhancedAgentDashboard = () => {
         );
       case "students":
         return (
-          <AgentStudentsTab />
+          <AgentStudentsTab initialFilter={studentTableFilter} />
         );
       case "registration":
         return (

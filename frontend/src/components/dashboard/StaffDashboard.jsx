@@ -111,13 +111,21 @@ const EnhancedStaffDashboard = () => {
     ];
 
     const handleStatClick = (filterKey) => {
-        // Toggle filter: if same filter is clicked, reset to 'all', otherwise set the new filter
-        const newFilter = filterStatus === filterKey ? 'all' : filterKey;
+        // Navigate to student-management tab with the filter applied
+        const newFilter = filterKey === 'all' ? 'all' : filterKey;
         setStudentTableFilter(newFilter);
         setFilterStatus(newFilter);
         setCurrentPage(1); // Reset to first page when filter changes
-        setActiveTab('dashboard');
+        setActiveTab('student-management');
     };
+
+    // Reset filter when returning to dashboard
+    useEffect(() => {
+        if (activeTab === 'dashboard') {
+            setStudentTableFilter('all');
+            setFilterStatus('all');
+        }
+    }, [activeTab]);
 
     const refreshStats = async (session = selectedSession) => {
         try {
@@ -732,7 +740,7 @@ const EnhancedStaffDashboard = () => {
                     </>
                 );
             case 'student-management':
-                return <StudentManagement />;
+                return <StudentManagement initialFilter={studentTableFilter} />;
             case 'applications':
                 return <ApplicationReview />;
             case 'new-registration':

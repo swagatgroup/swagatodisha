@@ -50,6 +50,11 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
         console.log('📋 Personal details:', students[0].personalDetails);
     }
 
+    // Debug edit modal state changes
+    useEffect(() => {
+        console.log('🔍 Edit modal state changed (StudentTable):', { showEditModal, selectedStudent: selectedStudent?._id });
+    }, [showEditModal, selectedStudent]);
+
     const handleSort = (key) => {
         let direction = 'asc';
         if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -694,6 +699,8 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                                 guardianEmail: student.guardianDetails?.guardianEmail || ''
                                                             }
                                                         });
+                                                        console.log('✏️ Edit button clicked for student (StudentTable):', student);
+                                                        console.log('✅ Setting showEditModal to true (StudentTable)');
                                                         setShowEditModal(true);
                                                     }}
                                                     className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
@@ -1107,13 +1114,29 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
 
             {/* Edit Modal - Simplified version */}
             {showEditModal && selectedStudent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4"
+                    style={{ zIndex: 9999 }}
+                    onClick={() => {
+                        console.log('🖱️ Modal backdrop clicked, closing modal (StudentTable)');
+                        setShowEditModal(false);
+                        setEditData({});
+                        setSelectedStudent(null);
+                    }}
+                >
+                    <div 
+                        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative"
+                        style={{ zIndex: 10000 }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                        }}
+                    >
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Student</h3>
                                 <button
                                     onClick={() => {
+                                        console.log('❌ Close button clicked (StudentTable)');
                                         setShowEditModal(false);
                                         setEditData({});
                                         setSelectedStudent(null);
