@@ -244,9 +244,9 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
         email: student.contactDetails?.email || '',
         permanentAddress: student.contactDetails?.permanentAddress || {
           street: student.contactDetails?.address || '',
-          city: student.contactDetails?.city || '',
+        city: student.contactDetails?.city || '',
           district: student.contactDetails?.district || '',
-          state: student.contactDetails?.state || '',
+        state: student.contactDetails?.state || '',
           pincode: student.contactDetails?.pincode || '',
           country: student.contactDetails?.permanentAddress?.country || 'India'
         },
@@ -926,19 +926,19 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                         
                         if (canEdit) {
                           return (
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                console.log('🖱️ Edit button clicked directly, student:', student);
-                                handleEditStudent(student);
-                              }}
-                              className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('🖱️ Edit button clicked directly, student:', student);
+                            handleEditStudent(student);
+                          }}
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
                               title="Edit application"
-                            >
-                              <PencilIcon className="h-4 w-4 mr-1" />
+                        >
+                          <PencilIcon className="h-4 w-4 mr-1" />
                               Edit
-                            </button>
+                        </button>
                           );
                         } else {
                           console.log('❌ Edit button NOT showing for:', student.personalDetails?.fullName, 'Status:', student.status);
@@ -1007,9 +1007,9 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
             <div className="p-6 border-b border-gray-200 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Edit Student: {selectedStudent.personalDetails?.fullName || 'Unknown'}
-                  </h3>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Edit Student: {selectedStudent.personalDetails?.fullName || 'Unknown'}
+                </h3>
                   <p className="text-sm text-gray-500 mt-1">
                     Edit all student information fields below
                   </p>
@@ -1028,7 +1028,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                   </svg>
                 </button>
               </div>
-            </div>
+              </div>
 
             {/* Scrollable Content */}
             <div className="overflow-y-auto flex-1 p-6" style={{ maxHeight: 'calc(90vh - 200px)', overflowX: 'hidden', minHeight: '500px' }}>
@@ -1181,7 +1181,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                         onChange={(e) => {
                           const value = e.target.value.replace(/\D/g, '').slice(0, 10);
                           setEditData({
-                            ...editData,
+                          ...editData,
                             contactDetails: { ...editData.contactDetails, primaryPhone: value }
                           });
                         }}
@@ -1197,7 +1197,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                         onChange={(e) => {
                           const value = e.target.value.replace(/\D/g, '').slice(0, 10);
                           setEditData({
-                            ...editData,
+                          ...editData,
                             contactDetails: { ...editData.contactDetails, secondaryPhone: value }
                           });
                         }}
@@ -1254,10 +1254,10 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                             }
                           })}
                           rows={2}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                      <div>
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
                         <input
                           type="text"
@@ -1360,10 +1360,10 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
-                        <textarea
+                      <textarea
                           value={editData.contactDetails?.currentAddress?.street || ''}
-                          onChange={(e) => setEditData({
-                            ...editData,
+                        onChange={(e) => setEditData({
+                          ...editData,
                             contactDetails: {
                               ...editData.contactDetails,
                               currentAddress: {
@@ -1371,18 +1371,18 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                                 street: e.target.value
                               }
                             }
-                          })}
+                        })}
                           rows={2}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
-                        <input
-                          type="text"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                      <input
+                        type="text"
                           value={editData.contactDetails?.currentAddress?.city || ''}
-                          onChange={(e) => setEditData({
-                            ...editData,
+                        onChange={(e) => setEditData({
+                          ...editData,
                             contactDetails: {
                               ...editData.contactDetails,
                               currentAddress: {
@@ -1390,17 +1390,17 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                                 city: e.target.value
                               }
                             }
-                          })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
-                        <input
-                          type="text"
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                      <input
+                        type="text"
                           value={editData.contactDetails?.currentAddress?.state || ''}
-                          onChange={(e) => setEditData({
-                            ...editData,
+                        onChange={(e) => setEditData({
+                          ...editData,
                             contactDetails: {
                               ...editData.contactDetails,
                               currentAddress: {
@@ -1408,19 +1408,19 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                                 state: e.target.value
                               }
                             }
-                          })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
-                        <input
-                          type="text"
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                      <input
+                        type="text"
                           value={editData.contactDetails?.currentAddress?.pincode || ''}
                           onChange={(e) => {
                             const value = e.target.value.replace(/\D/g, '').slice(0, 6);
                             setEditData({
-                              ...editData,
+                          ...editData,
                               contactDetails: {
                                 ...editData.contactDetails,
                                 currentAddress: {
@@ -1431,8 +1431,8 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                             });
                           }}
                           maxLength="6"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
                       </div>
                     </div>
                   </div>
@@ -1684,8 +1684,8 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                     <li>After all documents are uploaded, you can resubmit the application</li>
                   </ol>
                 </div>
+                </div>
               </div>
-            </div>
 
             {/* Footer with Actions */}
             <div className="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">

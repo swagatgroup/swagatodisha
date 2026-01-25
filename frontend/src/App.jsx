@@ -31,6 +31,7 @@ import AboutUsPage from './components/AboutUsPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
 import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
+import SendMessage from './components/SendMessage'
 import TermsAndConditions from './components/legal/TermsAndConditions'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoolGhantiguda'
@@ -186,11 +187,6 @@ const AppContent = () => {
                 </div>
             </section>
 
-            {/* 6. Contact Form with Logo & Company Info */}
-            <section className="bg-criss-cross">
-                <ContactUs />
-            </section>
-
             {/* Footer */}
             <section className="bg-criss-cross">
                 <Footer />
@@ -210,6 +206,7 @@ function App() {
                             <Route path="/about" element={<AboutUsPage />} />
                             <Route path="/gallery" element={<Gallery />} />
                             <Route path="/contact" element={<ContactPage />} />
+                            <Route path="/send-message" element={<SendMessage />} />
                             <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
                             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
