@@ -108,7 +108,7 @@ const HeroCarousel = () => {
         <section
             id="hero"
             ref={containerRef}
-            className="relative w-full h-[18vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[65vh] mt-20 sm:mt-16 md:mt-16 overflow-hidden"
+            className="relative w-1/2 md:w-full h-[18vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[65vh] mt-20 sm:mt-16 md:mt-16 overflow-hidden mx-auto"
             style={{
                 isolation: 'isolate',
                 transform: 'none',

@@ -509,12 +509,21 @@ const SuperAdminDashboard = () => {
     };
 
     const handleStatClick = (filter) => {
-        // Toggle filter: if same filter is clicked, reset to 'all', otherwise set the new filter
-        const newFilter = filterStatus === filter ? 'all' : filter;
+        // Navigate to students sidebar item with the filter applied
+        const newFilter = filter === 'all' ? 'all' : filter;
         setStudentTableFilter(newFilter);
         setFilterStatus(newFilter);
         setCurrentPage(1); // Reset to first page when filter changes
+        setActiveSidebarItem('students');
     };
+
+    // Reset filter when returning to dashboard
+    useEffect(() => {
+        if (activeSidebarItem === 'dashboard') {
+            setStudentTableFilter('all');
+            setFilterStatus('all');
+        }
+    }, [activeSidebarItem]);
 
     const renderSidebarContent = () => {
         switch (activeSidebarItem) {
@@ -529,7 +538,7 @@ const SuperAdminDashboard = () => {
                         {/* Stats Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div
-                                onClick={() => setActiveSidebarItem('students')}
+                                onClick={() => handleStatClick('all')}
                                 className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200"
                             >
                                 <div className="flex items-center">
@@ -1197,7 +1206,7 @@ const SuperAdminDashboard = () => {
                 return (
                     <div className="dark:text-gray-100">
                         <ErrorBoundary>
-                            <StudentManagement />
+                            <StudentManagement initialFilter={studentTableFilter} />
                         </ErrorBoundary>
                     </div>
                 );

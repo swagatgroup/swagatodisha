@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useSession } from "../../../contexts/SessionContext";
@@ -12,7 +13,7 @@ import {
   ExclamationTriangleIcon
 } from "@heroicons/react/24/outline";
 
-const AgentStudentsTab = () => {
+const AgentStudentsTab = ({ initialFilter = 'all' }) => {
   const { user } = useAuth();
   const { selectedSession } = useSession();
   const [students, setStudents] = useState([]);
@@ -27,7 +28,7 @@ const AgentStudentsTab = () => {
   const [viewingStudent, setViewingStudent] = useState(null);
   const [filters, setFilters] = useState({
     search: "",
-    status: "",
+    status: initialFilter !== 'all' ? initialFilter : "",
     course: "",
   });
   const [stats, setStats] = useState({
@@ -42,6 +43,11 @@ const AgentStudentsTab = () => {
     console.log('📊 Stats state updated:', stats);
   }, [stats]);
 
+  // Debug edit modal state changes
+  useEffect(() => {
+    console.log('🔍 Edit modal state changed:', { showEditModal, selectedStudent: selectedStudent?._id });
+  }, [showEditModal, selectedStudent]);
+
   useEffect(() => {
     if (selectedSession) {
       loadStudents();
@@ -53,6 +59,25 @@ const AgentStudentsTab = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSession]);
+
+  // Apply initial filter when component mounts or filter changes
+  useEffect(() => {
+    if (initialFilter && initialFilter !== 'all') {
+      console.log('🔍 Applying initial filter:', initialFilter);
+      // Keep COMPLETED as COMPLETED in filter state (for UI dropdown), will map to APPROVED in API call
+      setFilters(prev => ({
+        ...prev,
+        status: initialFilter
+      }));
+      // Trigger a reload if we have a session
+      if (selectedSession) {
+        setTimeout(() => {
+          loadStudents();
+        }, 100);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialFilter]);
 
   // Reload when filters change (but not on initial mount)
   useEffect(() => {
@@ -74,6 +99,9 @@ const AgentStudentsTab = () => {
 
     try {
       setLoading(true);
+      // Map COMPLETED to APPROVED for API call (completed = approved)
+      const statusForApi = filters.status === 'COMPLETED' ? 'APPROVED' : filters.status;
+      
       const params = {
         page: 1,
         limit: 1000,
@@ -81,7 +109,7 @@ const AgentStudentsTab = () => {
         sortOrder: 'desc',
         session: selectedSession,
         ...(filters.search && { search: filters.search }),
-        ...(filters.status && { status: filters.status }),
+        ...(statusForApi && { status: statusForApi }),
         ...(filters.course && { course: filters.course }),
       };
 
@@ -132,6 +160,16 @@ const AgentStudentsTab = () => {
   };
 
   const handleEditStudent = (student) => {
+    console.log('✏️ Edit button clicked for student:', student);
+    console.log('📋 Student data:', JSON.stringify(student, null, 2));
+    
+    // Verify student has required data
+    if (!student) {
+      console.error('❌ No student data provided!');
+      showError('No student data available');
+      return;
+    }
+    
     setSelectedStudent(student);
     setEditData({
       personalDetails: {
@@ -162,7 +200,18 @@ const AgentStudentsTab = () => {
         guardianRelation: student.guardianDetails?.guardianRelation || ''
       }
     });
+    console.log('✅ Setting showEditModal to true');
     setShowEditModal(true);
+    console.log('✅ Edit modal state should be true now');
+    
+    // Force a re-render check
+    setTimeout(() => {
+      console.log('🔍 State check after 100ms:', { 
+        showEditModal: true, 
+        selectedStudent: student._id,
+        studentName: student.personalDetails?.fullName 
+      });
+    }, 100);
   };
 
   const handleSaveEdit = async () => {
@@ -701,15 +750,24 @@ const AgentStudentsTab = () => {
                       </button>
 
                       {/* Edit - Only for DRAFT and REJECTED */}
-                      {(student.status === 'DRAFT' || student.status === 'REJECTED') && (
+                      {(student.status === 'DRAFT' || student.status === 'REJECTED') ? (
                         <button
-                          onClick={() => handleEditStudent(student)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('🖱️ Edit button clicked directly, student:', student);
+                            handleEditStudent(student);
+                          }}
                           className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
                           title={student.status === 'REJECTED' ? 'Edit and resubmit application' : 'Edit application'}
                         >
                           <PencilIcon className="h-4 w-4 mr-1" />
                           {student.status === 'REJECTED' ? 'Edit' : 'Edit'}
                         </button>
+                      ) : (
+                        <span className="text-xs text-gray-400" title={`Cannot edit: Status is ${student.status}. Only DRAFT and REJECTED can be edited.`}>
+                          Edit (N/A)
+                        </span>
                       )}
 
                       {/* View Rejection - Only for REJECTED */}
@@ -750,23 +808,51 @@ const AgentStudentsTab = () => {
         </div>
       </div>
 
-      {/* Edit Student Modal */}
-      {showEditModal && selectedStudent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      {/* Edit Student Modal - Using Portal */}
+      {showEditModal && selectedStudent && createPortal(
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4"
+          style={{ zIndex: 9999, position: 'fixed' }}
+          onClick={() => {
+            console.log('🖱️ Modal backdrop clicked, closing modal');
+            setShowEditModal(false);
+            setSelectedStudent(null);
+            setEditData({});
+          }}
+        >
+          <div 
+            className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative"
+            style={{ zIndex: 10000 }}
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Edit Student: {selectedStudent.personalDetails?.fullName}
+                  Edit Student: {selectedStudent.personalDetails?.fullName || 'Unknown'}
                 </h3>
                 <button
-                  onClick={() => setShowEditModal(false)}
+                  onClick={() => {
+                    console.log('❌ Close button clicked');
+                    setShowEditModal(false);
+                    setSelectedStudent(null);
+                    setEditData({});
+                  }}
                   className="text-gray-400 hover:text-gray-600"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
+              </div>
+
+              {/* Info about restricted fields */}
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-800">
+                  <strong>Note:</strong> You can edit most fields. However, the following fields can only be changed by admin: 
+                  <strong> Aadhaar Number</strong>, <strong>Course Selection</strong>, <strong>Institution</strong>, <strong>Stream</strong>, and <strong>Campus</strong>.
+                </p>
               </div>
 
               <div className="space-y-6">
@@ -839,15 +925,16 @@ const AgentStudentsTab = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Aadhaar Number</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Aadhaar Number
+                        <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
+                      </label>
                       <input
                         type="text"
                         value={editData.personalDetails?.aadharNumber || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        title="Aadhaar number can only be edited by admin"
                       />
                     </div>
                   </div>
@@ -949,14 +1036,15 @@ const AgentStudentsTab = () => {
                   <h4 className="text-md font-semibold text-gray-900 mb-4">Course Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Selected Course</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Selected Course
+                        <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
+                      </label>
                       <select
                         value={editData.courseDetails?.selectedCourse || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          courseDetails: { ...editData.courseDetails, selectedCourse: e.target.value }
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        title="Course selection can only be changed by admin"
                       >
                         <option value="">Select Course</option>
                         <option value="B.Tech">B.Tech</option>
@@ -983,6 +1071,12 @@ const AgentStudentsTab = () => {
                         <option value="Odia">Odia</option>
                       </select>
                     </div>
+                  </div>
+                  <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md">
+                    <p className="text-xs text-yellow-800">
+                      <strong>Note:</strong> Course selection, institution, stream, and campus can only be changed by admin. 
+                      Contact admin if you need to modify these fields.
+                    </p>
                   </div>
                 </div>
 
@@ -1068,7 +1162,8 @@ const AgentStudentsTab = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Rejection Details Modal */}

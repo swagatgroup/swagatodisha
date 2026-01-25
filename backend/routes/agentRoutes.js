@@ -1274,7 +1274,19 @@ router.put('/students/:id', async (req, res) => {
 
     // Update personal details
     if (updateData.personalDetails) {
-      Object.assign(application.personalDetails, updateData.personalDetails);
+      const personalDetailsUpdate = { ...updateData.personalDetails };
+      
+      // SECURITY: Agents cannot update Aadhar number - this is admin-only
+      if (personalDetailsUpdate.aadharNumber !== undefined) {
+        delete personalDetailsUpdate.aadharNumber;
+      }
+      
+      // Update each field individually
+      Object.keys(personalDetailsUpdate).forEach(key => {
+        if (personalDetailsUpdate[key] !== undefined && personalDetailsUpdate[key] !== null) {
+          application.personalDetails[key] = personalDetailsUpdate[key];
+        }
+      });
     }
 
     // Update contact details
@@ -1284,7 +1296,23 @@ router.put('/students/:id', async (req, res) => {
 
     // Update course details
     if (updateData.courseDetails) {
-      Object.assign(application.courseDetails, updateData.courseDetails);
+      const courseDetailsUpdate = { ...updateData.courseDetails };
+      
+      // SECURITY: Agents cannot update institute, course, stream, or campus - these are admin-only
+      const restrictedFields = ['institutionName', 'selectedCollege', 'selectedCourse', 'courseName', 'stream', 'campus'];
+      
+      restrictedFields.forEach(field => {
+        if (courseDetailsUpdate[field] !== undefined) {
+          delete courseDetailsUpdate[field];
+        }
+      });
+      
+      // Only update non-restricted fields
+      Object.keys(courseDetailsUpdate).forEach(key => {
+        if (!restrictedFields.includes(key) && courseDetailsUpdate[key] !== undefined) {
+          application.courseDetails[key] = courseDetailsUpdate[key];
+        }
+      });
     }
 
     // Update guardian details
@@ -1295,6 +1323,23 @@ router.put('/students/:id', async (req, res) => {
     // Update financial details
     if (updateData.financialDetails) {
       Object.assign(application.financialDetails, updateData.financialDetails);
+    }
+
+    // Mark nested objects as modified for Mongoose to save them properly
+    if (updateData.personalDetails) {
+      application.markModified('personalDetails');
+    }
+    if (updateData.contactDetails) {
+      application.markModified('contactDetails');
+    }
+    if (updateData.courseDetails) {
+      application.markModified('courseDetails');
+    }
+    if (updateData.guardianDetails) {
+      application.markModified('guardianDetails');
+    }
+    if (updateData.financialDetails) {
+      application.markModified('financialDetails');
     }
 
     // Add edit note

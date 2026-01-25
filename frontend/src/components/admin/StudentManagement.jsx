@@ -12,7 +12,7 @@ import {
     handleApiError
 } from '../../utils/sweetAlert';
 
-const StudentManagement = () => {
+const StudentManagement = ({ initialFilter = 'all' }) => {
     const { selectedSession } = useSession();
     const { user } = useAuth();
     const [students, setStudents] = useState([]);
@@ -53,7 +53,7 @@ const StudentManagement = () => {
     const isSuperAdmin = user?.role === 'super_admin';
     
     // Filter state variables (matching ApplicationReview filters)
-    const [filterStatus, setFilterStatus] = useState('all');
+    const [filterStatus, setFilterStatus] = useState(initialFilter !== 'all' ? initialFilter : 'all');
     const [filterCourse, setFilterCourse] = useState('all');
     const [filterCategory, setFilterCategory] = useState('all');
     const [filterCollege, setFilterCollege] = useState('all');
@@ -70,6 +70,23 @@ const StudentManagement = () => {
         // Reset to page 1 when session changes (but not on initial mount)
         setCurrentPage(1);
     }, [selectedSession]);
+
+    // Apply initial filter when component mounts or filter changes
+    useEffect(() => {
+        if (initialFilter && initialFilter !== 'all') {
+            console.log('🔍 StudentManagement: Applying initial filter:', initialFilter);
+            // Map COMPLETED to APPROVED for filter (completed = approved)
+            const filterToApply = initialFilter === 'COMPLETED' ? 'APPROVED' : initialFilter;
+            setFilterStatus(filterToApply);
+            // Trigger a reload if we have a session
+            if (selectedSession) {
+                setTimeout(() => {
+                    fetchStudents();
+                }, 100);
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [initialFilter]);
 
     // Fetch colleges
     const fetchColleges = async () => {
