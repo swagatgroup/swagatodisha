@@ -68,17 +68,21 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             setLoading(true);
             
             // Map tab IDs to status values
-            // Note: When agents submit, applications go to UNDER_REVIEW status
-            const statusMap = {
-                'submitted': 'UNDER_REVIEW', // Submitted applications are in UNDER_REVIEW status
-                'approved': 'APPROVED',
-                'rejected': 'REJECTED'
+            // Backend now supports multiple statuses for "submitted" tab
+            let params = {
+                session: selectedSession
             };
             
-            const params = {
-                session: selectedSession,
-                ...(activeTab !== 'all' && statusMap[activeTab] && { status: statusMap[activeTab] })
-            };
+            if (activeTab !== 'all') {
+                const statusMap = {
+                    'submitted': 'SUBMITTED', // Backend will handle SUBMITTED + UNDER_REVIEW
+                    'approved': 'APPROVED',
+                    'rejected': 'REJECTED'
+                };
+                if (statusMap[activeTab]) {
+                    params.status = statusMap[activeTab];
+                }
+            }
 
             console.log('📤 Fetching agent applications with params:', params);
             const response = await api.get('/api/agents/my-submitted-applications', { params });
@@ -87,6 +91,11 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                 const applicationsData = response.data.data?.applications || response.data.data || [];
                 setApplications(Array.isArray(applicationsData) ? applicationsData : []);
                 console.log('✅ Applications loaded:', applicationsData.length, 'items');
+                console.log('📋 Application statuses:', applicationsData.map(app => ({ 
+                    id: app.applicationId, 
+                    status: app.status,
+                    name: app.personalDetails?.fullName 
+                })));
             } else {
                 console.error('❌ Applications API not successful:', response.data);
                 showError('Failed to load applications: ' + (response.data.message || 'Unknown error'));

@@ -876,9 +876,24 @@ router.get("/my-submitted-applications", async (req, res) => {
     }
 
     // Build base query filters
-    const baseFilters = { submittedBy: agentId };
+    // Include applications submitted by agent, referred by agent, or assigned to agent
+    const baseFilters = {
+      $or: [
+        { submittedBy: agentId },
+        { 'referralInfo.referredBy': new mongoose.Types.ObjectId(agentId) },
+        { assignedAgent: new mongoose.Types.ObjectId(agentId) }
+      ]
+    };
+    
+    // Handle status filter - support multiple statuses for "submitted" (SUBMITTED or UNDER_REVIEW)
     if (status && status !== "all") {
-      baseFilters.status = status.toUpperCase();
+      const statusUpper = status.toUpperCase();
+      if (statusUpper === 'SUBMITTED') {
+        // For submitted, include both SUBMITTED and UNDER_REVIEW
+        baseFilters.status = { $in: ['SUBMITTED', 'UNDER_REVIEW'] };
+      } else {
+        baseFilters.status = statusUpper;
+      }
     }
 
     // Add session filter - REQUIRED
