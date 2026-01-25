@@ -119,7 +119,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
   useEffect(() => {
     if (initialFilter && initialFilter !== 'all') {
       console.log('🔍 Applying initial filter:', initialFilter);
-      // Keep COMPLETED as COMPLETED in filter state (for UI dropdown), will map to APPROVED in API call
+      // Keep COMPLETED as COMPLETED in filter state (for UI dropdown), will map to COMPLETE in API call
       setFilters(prev => ({
         ...prev,
         status: initialFilter
@@ -154,8 +154,8 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
 
     try {
       setLoading(true);
-      // Map COMPLETED to APPROVED for API call (completed = approved)
-      const statusForApi = filters.status === 'COMPLETED' ? 'APPROVED' : filters.status;
+      // COMPLETED is a separate status (COMPLETE), not the same as APPROVED
+      const statusForApi = filters.status === 'COMPLETED' ? 'COMPLETE' : filters.status;
       
       const params = {
         page: 1,
@@ -451,15 +451,17 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
 
   const getStatusColor = (status) => {
     switch (status) {
+      case "DRAFT":
       case "PENDING":
       case "SUBMITTED":
         return "bg-yellow-100 text-yellow-800";
       case "IN_PROGRESS":
       case "UNDER_REVIEW":
         return "bg-blue-100 text-blue-800";
-      case "COMPLETED":
       case "APPROVED":
         return "bg-green-100 text-green-800";
+      case "COMPLETE":
+        return "bg-teal-100 text-teal-800";
       case "REJECTED":
         return "bg-red-100 text-red-800";
       default:
@@ -470,14 +472,16 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
   const getStatusText = (status) => {
     console.log('🏷️ Converting status:', status, 'type:', typeof status);
     switch (status) {
+      case "DRAFT":
       case "PENDING":
       case "SUBMITTED":
         return "Pending";
       case "IN_PROGRESS":
       case "UNDER_REVIEW":
         return "In Progress";
-      case "COMPLETED":
       case "APPROVED":
+        return "Approved";
+      case "COMPLETE":
         return "Completed";
       case "REJECTED":
         return "Rejected";
@@ -513,7 +517,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
       student.status === filters.status.toUpperCase() ||
       (filters.status === 'PENDING' && (student.status === 'SUBMITTED' || student.status === 'PENDING')) ||
       (filters.status === 'IN_PROGRESS' && (student.status === 'UNDER_REVIEW' || student.status === 'IN_PROGRESS')) ||
-      (filters.status === 'COMPLETED' && (student.status === 'APPROVED' || student.status === 'COMPLETED'));
+      (filters.status === 'COMPLETED' && student.status === 'COMPLETE');
 
     // Course filter
     const matchesCourse =

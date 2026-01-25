@@ -177,6 +177,15 @@ const EnhancedAgentDashboard = () => {
         console.log('✅ Students loaded:', list.length);
         console.log('📋 Sample student data:', list[0]);
         console.log('📋 All student statuses:', list.map(s => ({ id: s._id, status: s.status, name: s.personalDetails?.fullName })));
+        
+        // Count statuses in frontend for comparison
+        const statusCounts = list.reduce((acc, s) => {
+          const status = s.status || 'UNKNOWN';
+          acc[status] = (acc[status] || 0) + 1;
+          return acc;
+        }, {});
+        console.log('📊 Frontend status counts:', statusCounts);
+        
         setStudents(Array.isArray(list) ? list : []);
       } else {
         console.error('❌ Students API not successful:', studentsRes.data);
@@ -197,22 +206,19 @@ const EnhancedAgentDashboard = () => {
         const statsData = statsRes.data.data;
 
         // Map backend field names to frontend field names
-        setStats({
+        // Completed is separate from Approved (COMPLETE status = graduated students)
+        const mappedStats = {
           totalStudents: statsData.total || 0,
-          pendingStudents: statsData.pending || statsData.submitted || 0,
+          pendingStudents: statsData.pending || 0, // Remove fallback to submitted - backend should handle DRAFT + SUBMITTED
           underReviewStudents: statsData.underReview || 0,
           approvedStudents: statsData.approved || 0,
           rejectedStudents: statsData.rejected || 0,
-          completedStudents: statsData.completed || statsData.approved || 0,
-        });
-        console.log('📊 AgentDashboard - Stats mapped:', {
-          totalStudents: statsData.total || 0,
-          pendingStudents: statsData.pending || statsData.submitted || 0,
-          underReviewStudents: statsData.underReview || 0,
-          approvedStudents: statsData.approved || 0,
-          rejectedStudents: statsData.rejected || 0,
-          completedStudents: statsData.completed || statsData.approved || 0,
-        });
+          completedStudents: statsData.completed || 0, // Only use completed, not approved
+        };
+        
+        setStats(mappedStats);
+        console.log('📊 AgentDashboard - Stats mapped:', mappedStats);
+        console.log('📊 AgentDashboard - Raw backend stats:', statsData);
       } else {
         console.error('❌ AgentDashboard - Stats not successful:', statsRes.data);
         // Set default stats if API fails
