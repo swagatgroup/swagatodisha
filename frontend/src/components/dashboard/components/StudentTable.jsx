@@ -124,14 +124,17 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
         const normalizedStatus = typeof status === 'string' ? status.toLowerCase() : 'unknown';
 
         switch (normalizedStatus) {
-            case 'completed':
+            case 'complete':
+                return 'bg-teal-100 dark:bg-teal-900 text-teal-800 dark:text-teal-200';
             case 'approved':
                 return 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200';
+            case 'draft':
             case 'pending':
             case 'submitted':
+                return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
             case 'under_review':
             case 'in_progress':
-                return 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200';
+                return 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200';
             case 'rejected':
             case 'failed':
                 return 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200';
@@ -145,12 +148,12 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
         const normalizedStatus = typeof status === 'string' ? status.toLowerCase() : 'unknown';
 
         switch (normalizedStatus) {
-            case 'completed':
-                return 'Complete';
+            case 'complete':
+                return 'Completed';
             case 'approved':
                 return 'Approved';
+            case 'draft':
             case 'pending':
-                return 'Pending';
             case 'submitted':
                 return 'Pending';
             case 'under_review':
@@ -387,8 +390,8 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
         if (statusFilter === 'all') {
             statusMatch = true;
         } else if (statusFilter === 'COMPLETED') {
-            // Completed = Approved
-            statusMatch = student.status === 'APPROVED' || student.workflowStatus?.currentStage === 'APPROVED';
+            // Completed = COMPLETE status (graduated students, separate from APPROVED)
+            statusMatch = student.status === 'COMPLETE';
         } else {
             statusMatch = student.workflowStatus?.currentStage === statusFilter ||
                 student.status === statusFilter;

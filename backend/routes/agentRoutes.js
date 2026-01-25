@@ -594,10 +594,21 @@ router.get("/stats", async (req, res) => {
     }
 
     const totalStudents = await StudentApplication.countDocuments(agentQuery);
+    
+    // Get actual status distribution for debugging
+    const statusDistribution = await StudentApplication.aggregate([
+      { $match: agentQuery },
+      { $group: { _id: "$status", count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
+    console.log("📊 Status distribution for agent:", JSON.stringify(statusDistribution, null, 2));
+    
+    // Pending = DRAFT or SUBMITTED status (both are shown as "Pending" in UI)
     const pendingStudents = await StudentApplication.countDocuments({
       ...agentQuery,
-      status: "UNDER_REVIEW",
+      status: { $in: ["DRAFT", "SUBMITTED"] },
     });
+    // Under Review = UNDER_REVIEW status
     const underReviewStudents = await StudentApplication.countDocuments({
       ...agentQuery,
       status: "UNDER_REVIEW",
@@ -610,18 +621,28 @@ router.get("/stats", async (req, res) => {
       ...agentQuery,
       status: "REJECTED",
     });
-    // Completed = Approved (approved applications are considered completed)
-    const completedStudents = approvedStudents;
+    // Completed = COMPLETE status (graduated students, separate from APPROVED)
+    const completedStudents = await StudentApplication.countDocuments({
+      ...agentQuery,
+      status: "COMPLETE",
+    });
 
     // Debug logging
     console.log("📊 Stats Debug - Agent ID:", req.user._id);
-    console.log("📊 Total students query:", agentQuery);
+    console.log("📊 Session:", sessionParam);
+    console.log("📊 Total students query:", JSON.stringify(agentQuery, null, 2));
     console.log("📊 Total students count:", totalStudents);
-    console.log("📊 Pending (SUBMITTED) count:", pendingStudents);
+    console.log("📊 Pending (DRAFT + SUBMITTED) count:", pendingStudents);
     console.log("📊 Under Review count:", underReviewStudents);
     console.log("📊 Approved count:", approvedStudents);
     console.log("📊 Rejected count:", rejectedStudents);
     console.log("📊 Completed count:", completedStudents);
+    
+    // Count each status individually for debugging
+    const draftCount = await StudentApplication.countDocuments({ ...agentQuery, status: "DRAFT" });
+    const submittedCount = await StudentApplication.countDocuments({ ...agentQuery, status: "SUBMITTED" });
+    console.log("📊 DRAFT count:", draftCount);
+    console.log("📊 SUBMITTED count:", submittedCount);
 
     res.status(200).json({
       success: true,
