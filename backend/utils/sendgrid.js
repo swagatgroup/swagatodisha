@@ -1,8 +1,19 @@
 const sgMail = require('@sendgrid/mail');
 require('dotenv').config();
 
-// Set SendGrid API key
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+// Set SendGrid API key with validation
+if (process.env.SENDGRID_API_KEY) {
+    // Remove any whitespace or newlines from the API key
+    const apiKey = process.env.SENDGRID_API_KEY.trim();
+    if (apiKey && apiKey.length > 0) {
+        sgMail.setApiKey(apiKey);
+        console.log('✅ SendGrid API key configured (length: ' + apiKey.length + ')');
+    } else {
+        console.warn('⚠️ SendGrid API key is empty');
+    }
+} else {
+    console.warn('⚠️ SendGrid API key not found in environment variables');
+}
 
 // Email templates
 const emailTemplates = {
@@ -156,8 +167,14 @@ const emailTemplates = {
 // Send email function
 const sendEmail = async (templateName, data) => {
     try {
-        if (!process.env.SENDGRID_API_KEY) {
-            throw new Error('SendGrid API key not configured (SENDGRID_API_KEY missing)');
+        const apiKey = process.env.SENDGRID_API_KEY?.trim();
+        if (!apiKey || apiKey.length === 0) {
+            throw new Error('SendGrid API key not configured (SENDGRID_API_KEY missing or empty)');
+        }
+
+        // Validate API key format (SendGrid API keys start with 'SG.')
+        if (!apiKey.startsWith('SG.')) {
+            console.warn('⚠️ SendGrid API key does not start with "SG." - may be invalid');
         }
 
         if (!process.env.FROM_EMAIL) {
@@ -197,16 +214,28 @@ const sendEmail = async (templateName, data) => {
             template: templateName
         };
     } catch (error) {
-        console.error(`❌ Email sending failed (${templateName}):`, {
-            message: error.message,
-            response: error.response?.body || error.response,
-            code: error.code,
-            statusCode: error.response?.statusCode
-        });
+        // Enhanced error logging for 401 Unauthorized
+        if (error.response?.statusCode === 401 || error.code === 401) {
+            const errorDetails = error.response?.body || {};
+            console.error(`❌ SendGrid Authentication Failed (${templateName}):`, {
+                message: error.message,
+                statusCode: error.response?.statusCode || error.code,
+                errors: errorDetails.errors || errorDetails,
+                hint: 'Check if SENDGRID_API_KEY is valid and not expired. Verify the API key in SendGrid dashboard.'
+            });
+        } else {
+            console.error(`❌ Email sending failed (${templateName}):`, {
+                message: error.message,
+                response: error.response?.body || error.response,
+                code: error.code,
+                statusCode: error.response?.statusCode
+            });
+        }
         return {
             success: false,
             error: error.message,
             details: error.response?.body || error.response,
+            statusCode: error.response?.statusCode || error.code,
             template: templateName
         };
     }

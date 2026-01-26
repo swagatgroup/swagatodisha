@@ -17,6 +17,9 @@ const { protect } = require('./middleware/auth');
 const app = express();
 const server = http.createServer(app);
 
+// Trust proxy - Required for rate limiting behind reverse proxy (Render, Vercel, etc.)
+app.set('trust proxy', true);
+
 // CORS Fix for undefined origin - Add this FIRST
 app.use((req, res, next) => {
     const origin = req.headers.origin;

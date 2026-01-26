@@ -1,13 +1,13 @@
 import axios from 'axios';
 import { API_BASE_URL, API_TIMEOUT, IS_DEVELOPMENT } from '../config/environment';
 
-// Log API configuration in development
-if (IS_DEVELOPMENT) {
-    console.log('🌐 API Configuration:', {
-        baseURL: API_BASE_URL || '(empty - using relative URLs)',
-        timeout: API_TIMEOUT
-    });
-}
+// Log API configuration (both dev and prod for debugging)
+console.log('🌐 API Configuration:', {
+    baseURL: API_BASE_URL || '(empty - using relative URLs)',
+    timeout: API_TIMEOUT,
+    isDevelopment: IS_DEVELOPMENT,
+    fullURL: API_BASE_URL ? `${API_BASE_URL}/api/contact/submit` : '/api/contact/submit'
+});
 
 // API Configuration
 const api = axios.create({
@@ -52,8 +52,27 @@ api.interceptors.response.use(
         return response;
     },
     (error) => {
-        console.log('🌐 API Error - URL:', error.config?.url, 'Status:', error.response?.status);
+        const fullURL = error.config?.baseURL 
+            ? `${error.config.baseURL}${error.config.url}` 
+            : error.config?.url || 'unknown';
+        
+        console.log('🌐 API Error - URL:', error.config?.url);
+        console.log('🌐 API Error - Full URL:', fullURL);
+        console.log('🌐 API Error - Base URL:', error.config?.baseURL || '(empty - relative)');
+        console.log('🌐 API Error - Status:', error.response?.status || 'No response');
         console.log('🌐 API Error - Message:', error.response?.data?.message || error.message);
+        console.log('🌐 API Error - Code:', error.code);
+        console.log('🌐 API Error - Request made:', !!error.request);
+        console.log('🌐 API Error - Response received:', !!error.response);
+        
+        // Handle network errors (common in production)
+        if (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || !error.response) {
+            console.error('🌐 Network Error - Possible causes:', {
+                baseURL: error.config?.baseURL || '(not set - check VITE_API_BASE_URL)',
+                url: error.config?.url,
+                message: 'Check if backend is accessible and CORS is configured correctly'
+            });
+        }
         
         // Handle 401 Unauthorized errors
         if (error.response?.status === 401) {

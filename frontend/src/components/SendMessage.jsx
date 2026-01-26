@@ -316,6 +316,13 @@ const SendMessage = () => {
                 }
             }
 
+            // Log the full request URL for debugging
+            const fullUrl = api.defaults.baseURL 
+                ? `${api.defaults.baseURL}/api/contact/submit` 
+                : '/api/contact/submit';
+            console.log('📤 Submitting to:', fullUrl);
+            console.log('📤 API Base URL:', api.defaults.baseURL || '(empty - relative)');
+            
             // Don't set Content-Type manually - let browser set it with boundary for FormData
             const response = await api.post('/api/contact/submit', formDataToSend, {
                 timeout: 60000 // 60 second timeout for file uploads
@@ -355,7 +362,10 @@ const SendMessage = () => {
                 statusText: error.response?.statusText,
                 url: error.config?.url,
                 baseURL: error.config?.baseURL,
-                method: error.config?.method
+                fullURL: error.config?.baseURL ? `${error.config.baseURL}${error.config.url}` : error.config?.url,
+                method: error.config?.method,
+                requestMade: !!error.request,
+                responseReceived: !!error.response
             });
             closeLoading();
 
