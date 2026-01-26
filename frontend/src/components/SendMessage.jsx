@@ -316,10 +316,8 @@ const SendMessage = () => {
                 }
             }
 
+            // Don't set Content-Type manually - let browser set it with boundary for FormData
             const response = await api.post('/api/contact/submit', formDataToSend, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
                 timeout: 60000 // 60 second timeout for file uploads
             });
 
@@ -350,6 +348,15 @@ const SendMessage = () => {
             console.error('Form submission error:', error);
             console.error('Error response data:', error.response?.data);
             console.error('Validation errors:', error.response?.data?.errors);
+            console.error('Error details:', {
+                message: error.message,
+                code: error.code,
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                url: error.config?.url,
+                baseURL: error.config?.baseURL,
+                method: error.config?.method
+            });
             closeLoading();
 
             if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
