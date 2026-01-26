@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import {
     showSuccess,
     showError,
@@ -9,9 +10,12 @@ import {
 } from '../utils/sweetAlert';
 import api from '../utils/api';
 import BackToMainWebsite from './BackToMainWebsite';
+import { useAuth } from '../contexts/AuthContext';
 import { CONTACT_INFO } from '../utils/constants';
 
 const SendMessage = () => {
+    const navigate = useNavigate();
+    const { user, isAuthenticated } = useAuth();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -22,6 +26,25 @@ const SendMessage = () => {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [recaptchaLoaded, setRecaptchaLoaded] = useState(false);
+
+    // Get dashboard route based on user role
+    const getDashboardRoute = () => {
+        if (!user || !user.role) return '/dashboard';
+        
+        switch (user.role) {
+            case 'agent':
+                return '/dashboard/agent';
+            case 'staff':
+                return '/dashboard/staff';
+            case 'super_admin':
+                return '/dashboard/admin';
+            case 'user':
+            case 'student':
+                return '/dashboard/student';
+            default:
+                return '/dashboard';
+        }
+    };
 
     // Load Google reCAPTCHA v3
     useEffect(() => {
@@ -378,7 +401,50 @@ const SendMessage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
-            <BackToMainWebsite variant="floating" />
+            {/* Navigation Buttons */}
+            {isAuthenticated && user ? (
+                <>
+                    {/* Back to Dashboard - Top Left */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="fixed top-6 left-6 z-50"
+                    >
+                        <button
+                            onClick={() => navigate(getDashboardRoute())}
+                            className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl group"
+                        >
+                            <motion.div
+                                whileHover={{ x: -3 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full"
+                            >
+                                <i className="fa-solid fa-arrow-left text-sm"></i>
+                            </motion.div>
+                            <motion.span
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3, delay: 0.1 }}
+                                className="hidden sm:block"
+                            >
+                                Back to Dashboard
+                            </motion.span>
+                            <motion.div
+                                whileHover={{ x: 3 }}
+                                transition={{ duration: 0.2 }}
+                                className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full"
+                            >
+                                <i className="fa-solid fa-gauge-high text-sm"></i>
+                            </motion.div>
+                        </button>
+                    </motion.div>
+                    {/* Back to Main Website - Top Right */}
+                    <BackToMainWebsite variant="floating" position="top-right" />
+                </>
+            ) : (
+                <BackToMainWebsite variant="floating" position="top-right" />
+            )}
             
             {/* Enhanced Background Elements */}
             <div className="absolute inset-0 overflow-hidden">
