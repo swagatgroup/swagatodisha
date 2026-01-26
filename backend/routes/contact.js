@@ -274,7 +274,24 @@ router.post('/submit', [
 
         // Background job: send emails using SendGrid and then cleanup files
         setImmediate(async () => {
+            let adminEmailSent = false;
+            let userEmailSent = false;
+            
             try {
+                // Check email configuration
+                const hasSendGrid = !!process.env.SENDGRID_API_KEY;
+                const hasFromEmail = !!process.env.FROM_EMAIL;
+                const hasSMTP = !!transporter;
+                
+                console.log('📧 Email Configuration Check:', {
+                    hasSendGrid,
+                    hasFromEmail,
+                    hasSMTP,
+                    fromEmail: process.env.FROM_EMAIL || 'NOT SET',
+                    contactEmail: process.env.CONTACT_EMAIL || 'NOT SET',
+                    emailUser: process.env.EMAIL_USER || 'NOT SET'
+                });
+
                 // Prepare data for SendGrid templates
                 const emailData = {
                     name,
@@ -289,52 +306,91 @@ router.post('/submit', [
                 };
 
                 // Send admin notification email
-                const adminResult = await sendEmail('contactFormAdmin', emailData);
-                if (adminResult.success) {
-                    console.log('✅ Contact form admin email sent via SendGrid');
-                } else {
-                    console.error('❌ SendGrid admin email failed, falling back to SMTP');
-                    // Fallback to SMTP if SendGrid fails
-                    if (transporter) {
-                        try {
-                            await transporter.sendMail(mailOptions);
-                            console.log('✅ Contact form admin email sent via SMTP fallback');
-                        } catch (smtpError) {
-                            console.error('❌ SMTP fallback also failed:', smtpError);
-                        }
+                if (hasSendGrid && hasFromEmail) {
+                    const adminResult = await sendEmail('contactFormAdmin', emailData);
+                    if (adminResult.success) {
+                        console.log('✅ Contact form admin email sent via SendGrid');
+                        adminEmailSent = true;
+                    } else {
+                        console.error('❌ SendGrid admin email failed:', adminResult.error);
                     }
+                } else {
+                    console.warn('⚠️ SendGrid not configured (missing SENDGRID_API_KEY or FROM_EMAIL)');
+                }
+
+                // Fallback to SMTP for admin email if SendGrid failed
+                if (!adminEmailSent && transporter) {
+                    try {
+                        await transporter.sendMail(mailOptions);
+                        console.log('✅ Contact form admin email sent via SMTP fallback');
+                        adminEmailSent = true;
+                    } catch (smtpError) {
+                        console.error('❌ SMTP fallback also failed:', {
+                            message: smtpError.message,
+                            code: smtpError.code,
+                            response: smtpError.response,
+                            stack: smtpError.stack
+                        });
+                    }
+                } else if (!adminEmailSent && !transporter) {
+                    console.error('❌ No email method available - SMTP not configured');
                 }
 
                 // Send user confirmation email
-                const userResult = await sendEmail('contactFormUser', emailData);
-                if (userResult.success) {
-                    console.log('✅ Contact form user confirmation sent via SendGrid');
-                } else {
-                    console.error('❌ SendGrid user email failed, falling back to SMTP');
-                    // Fallback to SMTP if SendGrid fails
-                    if (transporter) {
-                        try {
-                            const userMailOptions = {
-                                from: process.env.EMAIL_USER,
-                                to: email,
-                                replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
-                                subject: 'Thank you for contacting Swagat Odisha',
-                                html: `
-                                    <h2>Thank you for contacting us!</h2>
-                                    <p>Dear ${name},</p>
-                                    <p>We have received your message and will get back to you within 24 hours.</p>
-                                    <p><strong>Your message:</strong></p>
-                                    <p>${message.replace(/\n/g, '<br>')}</p>
-                                    <p>Best regards,<br>Swagat Odisha Team</p>
-                                `
-                            };
-                            await transporter.sendMail(userMailOptions);
-                            console.log('✅ Contact form user confirmation sent via SMTP fallback');
-                        } catch (smtpError) {
-                            console.error('❌ SMTP user email fallback also failed:', smtpError);
-                        }
+                if (hasSendGrid && hasFromEmail) {
+                    const userResult = await sendEmail('contactFormUser', emailData);
+                    if (userResult.success) {
+                        console.log('✅ Contact form user confirmation sent via SendGrid');
+                        userEmailSent = true;
+                    } else {
+                        console.error('❌ SendGrid user email failed:', userResult.error);
                     }
                 }
+
+                // Fallback to SMTP for user email if SendGrid failed
+                if (!userEmailSent && transporter) {
+                    try {
+                        const userMailOptions = {
+                            from: process.env.EMAIL_USER,
+                            to: email,
+                            replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
+                            subject: 'Thank you for contacting Swagat Odisha',
+                            html: `
+                                <h2>Thank you for contacting us!</h2>
+                                <p>Dear ${name},</p>
+                                <p>We have received your message and will get back to you within 24 hours.</p>
+                                <p><strong>Your message:</strong></p>
+                                <p>${message.replace(/\n/g, '<br>')}</p>
+                                <p>Best regards,<br>Swagat Odisha Team</p>
+                            `
+                        };
+                        await transporter.sendMail(userMailOptions);
+                        console.log('✅ Contact form user confirmation sent via SMTP fallback');
+                        userEmailSent = true;
+                    } catch (smtpError) {
+                        console.error('❌ SMTP user email fallback also failed:', {
+                            message: smtpError.message,
+                            code: smtpError.code,
+                            response: smtpError.response,
+                            stack: smtpError.stack
+                        });
+                    }
+                } else if (!userEmailSent && !transporter) {
+                    console.error('❌ No email method available for user confirmation - SMTP not configured');
+                }
+
+                // Final summary
+                console.log('📧 Email Sending Summary:', {
+                    adminEmailSent,
+                    userEmailSent,
+                    recipientEmail: email
+                });
+
+            } catch (error) {
+                console.error('❌ Unexpected error in email sending background job:', {
+                    message: error.message,
+                    stack: error.stack
+                });
             } finally {
                 // Always cleanup files
                 for (const file of documents) {
