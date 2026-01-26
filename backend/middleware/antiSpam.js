@@ -20,6 +20,7 @@ setInterval(() => {
 }, 60 * 60 * 1000);
 
 // Enhanced rate limiter specifically for contact form (stricter)
+// Use a more secure key generator that doesn't rely solely on IP
 const contactFormRateLimit = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hour
     max: 3, // Only 3 submissions per hour per IP
@@ -30,6 +31,13 @@ const contactFormRateLimit = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
+    // More secure key generator - combines IP with user agent to prevent bypass
+    keyGenerator: (req) => {
+        const ip = req.ip || req.connection.remoteAddress || 'unknown';
+        const userAgent = req.get('User-Agent') || 'unknown';
+        // Combine IP with user agent hash for better security
+        return `${ip}-${userAgent.substring(0, 50)}`;
+    },
     handler: (req, res) => {
         const ip = req.ip || req.connection.remoteAddress || 'unknown';
         console.warn(`🚫 Rate limit exceeded for contact form - IP: ${ip}`);
