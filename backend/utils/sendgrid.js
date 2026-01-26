@@ -157,7 +157,11 @@ const emailTemplates = {
 const sendEmail = async (templateName, data) => {
     try {
         if (!process.env.SENDGRID_API_KEY) {
-            throw new Error('SendGrid API key not configured');
+            throw new Error('SendGrid API key not configured (SENDGRID_API_KEY missing)');
+        }
+
+        if (!process.env.FROM_EMAIL) {
+            throw new Error('FROM_EMAIL environment variable not configured');
         }
 
         const template = emailTemplates[templateName];
@@ -167,6 +171,14 @@ const sendEmail = async (templateName, data) => {
 
         const emailData = template(data);
 
+        // Validate email data
+        if (!emailData.to) {
+            throw new Error(`Email template '${templateName}' missing 'to' field`);
+        }
+        if (!emailData.from) {
+            throw new Error(`Email template '${templateName}' missing 'from' field (FROM_EMAIL not set)`);
+        }
+
         // Add EU Data Residency if needed
         if (process.env.SENDGRID_EU_DATA_RESIDENCY === 'true') {
             emailData.setDataResidency = true;
@@ -174,17 +186,27 @@ const sendEmail = async (templateName, data) => {
 
         const result = await sgMail.send(emailData);
 
-        console.log(`✅ Email sent successfully: ${templateName}`);
+        console.log(`✅ Email sent successfully: ${templateName}`, {
+            to: emailData.to,
+            from: emailData.from,
+            subject: emailData.subject
+        });
         return {
             success: true,
             messageId: result[0].headers['x-message-id'],
             template: templateName
         };
     } catch (error) {
-        console.error(`❌ Email sending failed (${templateName}):`, error.message);
+        console.error(`❌ Email sending failed (${templateName}):`, {
+            message: error.message,
+            response: error.response?.body || error.response,
+            code: error.code,
+            statusCode: error.response?.statusCode
+        });
         return {
             success: false,
             error: error.message,
+            details: error.response?.body || error.response,
             template: templateName
         };
     }
