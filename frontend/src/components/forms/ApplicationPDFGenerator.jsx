@@ -25,39 +25,35 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
         fetchColleges();
     }, []);
 
-    // Helper function to add footer and page numbers
+    // Helper function to add footer and page numbers (Compact for 2 pages)
     const addFooter = (pdf, pageNum, totalPages, pdfContent, pageWidth, pageHeight) => {
-        const footerY = pageHeight - 20;
+        const footerY = pageHeight - 10;
         
-        // Footer background with elegant gradient
-        pdf.setFillColor(248, 250, 252); // Light gray-blue
-        pdf.rect(0, footerY - 8, pageWidth, 20, 'F');
+        // Compact footer background
+        pdf.setFillColor(248, 250, 252);
+        pdf.rect(0, footerY - 5, pageWidth, 10, 'F');
         
         // Top border line
         pdf.setDrawColor(220, 220, 220);
-        pdf.setLineWidth(0.5);
-        pdf.line(15, footerY - 8, pageWidth - 15, footerY - 8);
+        pdf.setLineWidth(0.3);
+        pdf.line(10, footerY - 5, pageWidth - 10, footerY - 5);
         
         // Left side - Application info
-        pdf.setFontSize(7);
+        pdf.setFontSize(6);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(100, 100, 100);
-        pdf.text(`App ID: ${pdfContent.applicationId}`, 20, footerY - 4);
+        pdf.text(`App ID: ${pdfContent.applicationId}`, 12, footerY - 1);
         
         // Center - Company info
         pdf.setTextColor(120, 120, 120);
-        pdf.setFontSize(7);
-        pdf.text('SWAGAT ODISHA - Educational Excellence Platform', pageWidth / 2, footerY - 4, { align: 'center' });
+        pdf.setFontSize(6);
+        pdf.text('SWAGAT ODISHA', pageWidth / 2, footerY - 1, { align: 'center' });
         
         // Right side - Page number
         pdf.setTextColor(100, 100, 100);
         pdf.setFont('helvetica', 'bold');
-        pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 20, footerY - 4, { align: 'right' });
-        
-        // Bottom decorative line
-        pdf.setDrawColor(200, 200, 200);
-        pdf.setLineWidth(0.3);
-        pdf.line(15, footerY + 2, pageWidth - 15, footerY + 2);
+        pdf.setFontSize(6);
+        pdf.text(`Page ${pageNum} of ${totalPages}`, pageWidth - 12, footerY - 1, { align: 'right' });
     };
 
     const generatePDF = async () => {
@@ -103,286 +99,209 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // Create a comprehensive PDF content
             const pdfContent = createPDFContent(formData, application);
 
-            // Generate premium PDF using jsPDF
+            // Generate premium PDF using jsPDF - LIMITED TO 2 PAGES
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
+            const maxYPage1 = pageHeight - 15; // Leave space for footer
+            const maxYPage2 = pageHeight - 15;
             let yPosition = 0;
 
             // Set premium fonts
             pdf.setFont('helvetica');
 
             // ============================================
-            // CLEAN PROFESSIONAL HEADER
+            // COMPACT HEADER (Reduced from 40mm to 25mm)
             // ============================================
             
-            // Simple header background
+            // Compact header background
             pdf.setFillColor(79, 70, 229);
-            pdf.rect(0, 0, pageWidth, 40, 'F');
+            pdf.rect(0, 0, pageWidth, 25, 'F');
             
-            // Main title
+            // Main title - smaller
             pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(24);
+            pdf.setFontSize(18);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('SWAGAT ODISHA', pageWidth / 2, 12, { align: 'center' });
+            pdf.text('SWAGAT ODISHA', pageWidth / 2, 9, { align: 'center' });
             
-            // Subtitle
-            pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'normal');
-            pdf.setTextColor(255, 255, 255);
-            pdf.text('Educational Excellence Platform', pageWidth / 2, 18, { align: 'center' });
-            
-            // Form title
-            pdf.setFontSize(12);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('STUDENT APPLICATION FORM', pageWidth / 2, 25, { align: 'center' });
-            
-            // Application info
+            // Subtitle - smaller
             pdf.setFontSize(8);
             pdf.setFont('helvetica', 'normal');
-            pdf.text(`Application ID: ${pdfContent.applicationId}`, 20, 33);
-            pdf.text(`Generated: ${pdfContent.generatedDate}`, pageWidth - 20, 33, { align: 'right' });
+            pdf.setTextColor(255, 255, 255);
+            pdf.text('Educational Excellence Platform', pageWidth / 2, 14, { align: 'center' });
             
-            // Simple bottom border
-            pdf.setFillColor(255, 255, 255);
-            pdf.rect(0, 40, pageWidth, 1, 'F');
-            
-            yPosition = 50;
-
-            // ============================================
-            // SECTION 1: PERSONAL DETAILS
-            // ============================================
-            
-            // Simple section header
-            pdf.setFillColor(79, 70, 229);
-            pdf.rect(15, yPosition, pageWidth - 30, 10, 'F');
-            
-            // Section number and title
-            pdf.setFillColor(255, 255, 255);
-            pdf.circle(20, yPosition + 5, 4, 'F');
-            pdf.setTextColor(79, 70, 229);
+            // Form title - smaller
             pdf.setFontSize(10);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('1', 20, yPosition + 6.5, { align: 'center' });
+            pdf.text('STUDENT APPLICATION FORM', pageWidth / 2, 19, { align: 'center' });
+            
+            // Application info - compact
+            pdf.setFontSize(7);
+            pdf.setFont('helvetica', 'normal');
+            pdf.text(`App ID: ${pdfContent.applicationId}`, 15, 23);
+            pdf.text(`Date: ${pdfContent.generatedDate}`, pageWidth - 15, 23, { align: 'right' });
+            
+            yPosition = 30;
+
+            // ============================================
+            // SECTION 1: PERSONAL DETAILS (Two-column layout)
+            // ============================================
+            
+            // Compact section header
+            pdf.setFillColor(79, 70, 229);
+            pdf.rect(10, yPosition, pageWidth - 20, 6, 'F');
             
             pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(12);
+            pdf.setFontSize(9);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('PERSONAL DETAILS', 28, yPosition + 6.5);
+            pdf.text('1. PERSONAL DETAILS', 15, yPosition + 4.5);
             
-            yPosition += 13;
+            yPosition += 8;
             
-            // Premium content container - start position
-            let personalStartY = yPosition;
-            yPosition += 5;
-
-            // Beautiful personal details with better formatting
+            // Two-column layout for personal details
+            const col1X = 12;
+            const col2X = pageWidth / 2 + 5;
+            const colWidth = (pageWidth - 30) / 2;
+            let col1Y = yPosition;
+            let col2Y = yPosition;
+            
             const personalDetails = [
-                { label: 'Full Name', value: pdfContent.personalDetails.fullName || 'N/A', icon: '👤' },
-                { label: 'Date of Birth', value: pdfContent.personalDetails.dateOfBirth || 'N/A', icon: '📅' },
-                { label: 'Gender', value: pdfContent.personalDetails.gender || 'N/A', icon: '⚧' },
-                { label: 'Aadhar Number', value: pdfContent.personalDetails.aadharNumber || 'N/A', icon: '🆔' },
-                { label: 'Category', value: pdfContent.personalDetails.status || pdfContent.personalDetails.category || 'N/A', icon: '📋' },
-                { label: 'Father\'s Name', value: pdfContent.personalDetails.fathersName || 'N/A', icon: '👨' },
-                { label: 'Mother\'s Name', value: pdfContent.personalDetails.mothersName || 'N/A', icon: '👩' }
+                { label: 'Full Name', value: pdfContent.personalDetails.fullName || 'N/A' },
+                { label: 'DOB', value: pdfContent.personalDetails.dateOfBirth || 'N/A' },
+                { label: 'Gender', value: pdfContent.personalDetails.gender || 'N/A' },
+                { label: 'Aadhar', value: pdfContent.personalDetails.aadharNumber || 'N/A' },
+                { label: 'Category', value: pdfContent.personalDetails.status || pdfContent.personalDetails.category || 'N/A' },
+                { label: 'Father', value: pdfContent.personalDetails.fathersName || 'N/A' },
+                { label: 'Mother', value: pdfContent.personalDetails.mothersName || 'N/A' }
             ];
 
             personalDetails.forEach((item, index) => {
-                // Check if we need a new page
-                if (yPosition > pageHeight - 40) {
-                    pdf.addPage();
-                    yPosition = 20;
-                    personalStartY = yPosition;
-                }
+                const isCol1 = index < 4; // First 4 in column 1, rest in column 2
+                const currentX = isCol1 ? col1X : col2X;
+                let currentY = isCol1 ? col1Y : col2Y;
                 
-                // Simple row design
-                const rowHeight = 8;
-                
-                // Alternating row background
-                if (index % 2 === 0) {
-                    pdf.setFillColor(255, 255, 255);
-                } else {
-                    pdf.setFillColor(249, 250, 251);
-                }
-                pdf.rect(18, yPosition, pageWidth - 36, rowHeight, 'F');
-                
-                // Simple left accent bar
-                pdf.setFillColor(79, 70, 229);
-                pdf.rect(18, yPosition, 2, rowHeight, 'F');
+                // Compact row
+                const rowHeight = 5;
                 
                 // Label
                 pdf.setFont('helvetica', 'bold');
                 pdf.setTextColor(30, 30, 30);
-                pdf.setFontSize(10);
-                pdf.text(item.label + ':', 24, yPosition + 5.5);
+                pdf.setFontSize(8);
+                pdf.text(item.label + ':', currentX, currentY + 3.5);
                 
                 // Value
                 pdf.setFont('helvetica', 'normal');
                 pdf.setTextColor(50, 50, 50);
-                pdf.setFontSize(10);
-                const valueX = 80;
-                const maxWidth = pageWidth - valueX - 25;
+                pdf.setFontSize(8);
+                const valueX = currentX + 35;
+                const maxWidth = colWidth - 40;
                 
                 const valueLines = pdf.splitTextToSize(item.value || 'N/A', maxWidth);
                 valueLines.forEach((line, lineIndex) => {
-                    pdf.text(line, valueX, yPosition + 5.5 + (lineIndex * 5));
+                    pdf.text(line, valueX, currentY + 3.5 + (lineIndex * 4));
                 });
                 
-                // Simple divider
-                pdf.setDrawColor(230, 230, 230);
-                pdf.setLineWidth(0.3);
-                pdf.line(20, yPosition + rowHeight, pageWidth - 20, yPosition + rowHeight);
-                
-                yPosition += Math.max(rowHeight + 1, valueLines.length * 5 + 2);
+                if (isCol1) {
+                    col1Y += Math.max(rowHeight, valueLines.length * 4) + 2;
+                } else {
+                    col2Y += Math.max(rowHeight, valueLines.length * 4) + 2;
+                }
             });
-
-            // Simple border
-            const personalHeight = yPosition - personalStartY + 5;
-            pdf.setDrawColor(200, 200, 200);
-            pdf.setLineWidth(0.5);
-            pdf.rect(15, personalStartY - 2, pageWidth - 30, personalHeight, 'D');
             
-            yPosition += 10;
+            yPosition = Math.max(col1Y, col2Y) + 7;
 
             // ============================================
-            // PREMIUM SECTION 2: CONTACT DETAILS
+            // SECTION 2: CONTACT DETAILS (Two-column layout)
             // ============================================
             
-            // Check if we need a new page
-            if (yPosition > pageHeight - 100) {
+            // Check if we need to move to page 2
+            if (yPosition > maxYPage1 - 50) {
                 pdf.addPage();
                 yPosition = 20;
             }
 
-            // Simple section header for Contact Details
+            // Compact section header
             pdf.setFillColor(16, 185, 129);
-            pdf.rect(15, yPosition, pageWidth - 30, 10, 'F');
-            
-            pdf.setFillColor(255, 255, 255);
-            pdf.circle(20, yPosition + 5, 4, 'F');
-            pdf.setTextColor(16, 185, 129);
-            pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('2', 20, yPosition + 6.5, { align: 'center' });
+            pdf.rect(10, yPosition, pageWidth - 20, 6, 'F');
             
             pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(12);
+            pdf.setFontSize(9);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('CONTACT DETAILS', 28, yPosition + 6.5);
+            pdf.text('2. CONTACT DETAILS', 15, yPosition + 4.5);
             
-            yPosition += 13;
+            yPosition += 8;
             
-            let contactStartY = yPosition;
-
-            pdf.setFontSize(10);
-            pdf.setTextColor(0, 0, 0);
-            yPosition += 5;
+            // Two-column layout
+            col1Y = yPosition;
+            col2Y = yPosition;
 
             const contactDetails = [
-                { label: 'Email', value: pdfContent.contactDetails.email || 'N/A', icon: '📧' },
-                { label: 'Primary Phone', value: pdfContent.contactDetails.primaryPhone || 'N/A', icon: '📱' },
-                { label: 'WhatsApp', value: pdfContent.contactDetails.whatsappNumber || 'N/A', icon: '💬' },
-                { label: 'Street Address', value: pdfContent.contactDetails.permanentAddress?.street || 'N/A', icon: '📍' },
-                { label: 'City', value: pdfContent.contactDetails.permanentAddress?.city || 'N/A', icon: '🏙️' },
-                { label: 'District', value: pdfContent.contactDetails.permanentAddress?.district || 'N/A', icon: '🏛️' },
-                { label: 'State', value: pdfContent.contactDetails.permanentAddress?.state || 'N/A', icon: '🗺️' },
-                { label: 'Pincode', value: pdfContent.contactDetails.permanentAddress?.pincode || 'N/A', icon: '📮' }
+                { label: 'Email', value: pdfContent.contactDetails.email || 'N/A' },
+                { label: 'Phone', value: pdfContent.contactDetails.primaryPhone || 'N/A' },
+                { label: 'WhatsApp', value: pdfContent.contactDetails.whatsappNumber || 'N/A' },
+                { label: 'Address', value: pdfContent.contactDetails.permanentAddress?.street || 'N/A' },
+                { label: 'City', value: pdfContent.contactDetails.permanentAddress?.city || 'N/A' },
+                { label: 'District', value: pdfContent.contactDetails.permanentAddress?.district || 'N/A' },
+                { label: 'State', value: pdfContent.contactDetails.permanentAddress?.state || 'N/A' },
+                { label: 'Pincode', value: pdfContent.contactDetails.permanentAddress?.pincode || 'N/A' }
             ];
 
             contactDetails.forEach((item, index) => {
-                // Check if we need a new page
-                if (yPosition > pageHeight - 40) {
-                    pdf.addPage();
-                    yPosition = 20;
-                    contactStartY = yPosition;
-                }
+                const isCol1 = index < 4;
+                const currentX = isCol1 ? col1X : col2X;
+                let currentY = isCol1 ? col1Y : col2Y;
                 
-                // Simple row design
-                const rowHeight = 8;
-                if (index % 2 === 0) {
-                    pdf.setFillColor(255, 255, 255);
-                } else {
-                    pdf.setFillColor(240, 253, 250);
-                }
-                pdf.rect(18, yPosition, pageWidth - 36, rowHeight, 'F');
+                const rowHeight = 5;
                 
-                // Simple left accent bar
-                pdf.setFillColor(16, 185, 129);
-                pdf.rect(18, yPosition, 2, rowHeight, 'F');
-                
-                // Label
                 pdf.setFont('helvetica', 'bold');
                 pdf.setTextColor(30, 30, 30);
-                pdf.setFontSize(10);
-                pdf.text(item.label + ':', 24, yPosition + 5.5);
+                pdf.setFontSize(8);
+                pdf.text(item.label + ':', currentX, currentY + 3.5);
                 
-                // Value
                 pdf.setFont('helvetica', 'normal');
                 pdf.setTextColor(50, 50, 50);
-                pdf.setFontSize(10);
-                const valueX = 80;
-                const maxWidth = pageWidth - valueX - 25;
+                pdf.setFontSize(8);
+                const valueX = currentX + 35;
+                const maxWidth = colWidth - 40;
                 
                 const valueLines = pdf.splitTextToSize(item.value || 'N/A', maxWidth);
                 valueLines.forEach((line, lineIndex) => {
-                    pdf.text(line, valueX, yPosition + 5.5 + (lineIndex * 5));
+                    pdf.text(line, valueX, currentY + 3.5 + (lineIndex * 4));
                 });
                 
-                // Simple divider
-                pdf.setDrawColor(230, 230, 230);
-                pdf.setLineWidth(0.3);
-                pdf.line(20, yPosition + rowHeight, pageWidth - 20, yPosition + rowHeight);
-                
-                yPosition += Math.max(rowHeight + 1, valueLines.length * 5 + 2);
+                if (isCol1) {
+                    col1Y += Math.max(rowHeight, valueLines.length * 4) + 2;
+                } else {
+                    col2Y += Math.max(rowHeight, valueLines.length * 4) + 2;
+                }
             });
-
-            // Simple border
-            const contactHeight = yPosition - contactStartY + 5;
-            pdf.setDrawColor(200, 200, 200);
-            pdf.setLineWidth(0.5);
-            pdf.rect(15, contactStartY - 2, pageWidth - 30, contactHeight, 'D');
             
-            yPosition += 10;
-
-            // Check if we need a new page
-            if (yPosition > pageHeight - 100) {
-                pdf.addPage();
-                yPosition = 30;
-            }
+            yPosition = Math.max(col1Y, col2Y) + 7;
 
             // ============================================
-            // SECTION 3: FAMILY & ACADEMIC DETAILS
+            // SECTION 3: FAMILY & ACADEMIC DETAILS (Two-column)
             // ============================================
             
-            // Check if we need a new page
-            if (yPosition > pageHeight - 100) {
+            // Check if we need to move to page 2
+            if (yPosition > maxYPage1 - 50) {
                 pdf.addPage();
                 yPosition = 20;
             }
 
-            // Simple section header
+            // Compact section header
             pdf.setFillColor(234, 88, 12);
-            pdf.rect(15, yPosition, pageWidth - 30, 10, 'F');
-            
-            pdf.setFillColor(255, 255, 255);
-            pdf.circle(20, yPosition + 5, 4, 'F');
-            pdf.setTextColor(234, 88, 12);
-            pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('3', 20, yPosition + 6.5, { align: 'center' });
+            pdf.rect(10, yPosition, pageWidth - 20, 6, 'F');
             
             pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(12);
+            pdf.setFontSize(9);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('FAMILY & ACADEMIC DETAILS', 28, yPosition + 6.5);
+            pdf.text('3. FAMILY & ACADEMIC DETAILS', 15, yPosition + 4.5);
             
-            yPosition += 13;
+            yPosition += 8;
             
-            let familyStartY = yPosition;
-
-            pdf.setFontSize(10);
-            pdf.setTextColor(0, 0, 0);
-            yPosition += 5;
+            // Two-column layout
+            col1Y = yPosition;
+            col2Y = yPosition;
 
             // Get college name if available
             const collegeName = pdfContent.courseDetails.selectedCollege 
@@ -390,430 +309,290 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 : (pdfContent.courseDetails.institutionName || 'N/A');
 
             const familyDetails = [
-                { label: 'Father\'s Name', value: pdfContent.personalDetails.fathersName || 'N/A', icon: '👨' },
-                { label: 'Mother\'s Name', value: pdfContent.personalDetails.mothersName || 'N/A', icon: '👩' },
-                { label: 'Guardian Name', value: pdfContent.guardianDetails.guardianName || 'N/A', icon: '👤' },
-                { label: 'Relationship', value: pdfContent.guardianDetails.relationship || 'N/A', icon: '🔗' },
-                { label: 'Guardian Phone', value: pdfContent.guardianDetails.guardianPhone || 'N/A', icon: '📞' },
-                { label: 'Guardian Email', value: pdfContent.guardianDetails.guardianEmail || 'N/A', icon: '✉️' },
-                { label: 'College Name', value: collegeName, icon: '🏫' },
-                { label: 'Course Name', value: pdfContent.courseDetails.selectedCourse || pdfContent.courseDetails.courseName || 'N/A', icon: '📚' },
-                { label: 'Stream', value: pdfContent.courseDetails.stream || 'N/A', icon: '📖' }
+                { label: 'Guardian', value: pdfContent.guardianDetails.guardianName || 'N/A' },
+                { label: 'Relation', value: pdfContent.guardianDetails.relationship || 'N/A' },
+                { label: 'G. Phone', value: pdfContent.guardianDetails.guardianPhone || 'N/A' },
+                { label: 'G. Email', value: pdfContent.guardianDetails.guardianEmail || 'N/A' },
+                { label: 'College', value: collegeName },
+                { label: 'Course', value: pdfContent.courseDetails.selectedCourse || pdfContent.courseDetails.courseName || 'N/A' },
+                { label: 'Stream', value: pdfContent.courseDetails.stream || 'N/A' }
             ];
 
+            if (pdfContent.referralCode) {
+                familyDetails.push({ label: 'Referral', value: pdfContent.referralCode });
+            }
+
             familyDetails.forEach((item, index) => {
-                // Check if we need a new page
-                if (yPosition > pageHeight - 25) {
-                    pdf.addPage();
-                    yPosition = 20;
-                    familyStartY = yPosition;
-                }
+                const isCol1 = index < 4;
+                const currentX = isCol1 ? col1X : col2X;
+                let currentY = isCol1 ? col1Y : col2Y;
                 
-                // Simple row design
-                const rowHeight = 8;
-                if (index % 2 === 0) {
-                    pdf.setFillColor(255, 255, 255);
-                } else {
-                    pdf.setFillColor(255, 247, 237);
-                }
-                pdf.rect(18, yPosition, pageWidth - 36, rowHeight, 'F');
+                const rowHeight = 5;
                 
-                // Simple left accent bar
-                pdf.setFillColor(234, 88, 12);
-                pdf.rect(18, yPosition, 2, rowHeight, 'F');
-                
-                // Label
                 pdf.setFont('helvetica', 'bold');
                 pdf.setTextColor(30, 30, 30);
-                pdf.setFontSize(10);
-                pdf.text(item.label + ':', 24, yPosition + 5.5);
+                pdf.setFontSize(8);
+                pdf.text(item.label + ':', currentX, currentY + 3.5);
                 
-                // Value
                 pdf.setFont('helvetica', 'normal');
                 pdf.setTextColor(50, 50, 50);
-                pdf.setFontSize(10);
-                const valueX = 80;
-                const maxWidth = pageWidth - valueX - 25;
+                pdf.setFontSize(8);
+                const valueX = currentX + 35;
+                const maxWidth = colWidth - 40;
                 
                 const valueLines = pdf.splitTextToSize(item.value || 'N/A', maxWidth);
                 valueLines.forEach((line, lineIndex) => {
-                    pdf.text(line, valueX, yPosition + 5.5 + (lineIndex * 5));
+                    pdf.text(line, valueX, currentY + 3.5 + (lineIndex * 4));
                 });
                 
-                // Simple divider
-                pdf.setDrawColor(230, 230, 230);
-                pdf.setLineWidth(0.3);
-                pdf.line(20, yPosition + rowHeight, pageWidth - 20, yPosition + rowHeight);
-                
-                yPosition += Math.max(rowHeight + 1, valueLines.length * 5 + 2);
-            });
-
-            // Simple border
-            const familyHeight = yPosition - familyStartY + 5;
-            pdf.setDrawColor(200, 200, 200);
-            pdf.setLineWidth(0.5);
-            pdf.rect(15, familyStartY - 2, pageWidth - 30, familyHeight, 'D');
-            
-            yPosition += 10;
-
-            // Simple Referral Code Badge
-            if (pdfContent.referralCode) {
-                if (yPosition > pageHeight - 20) {
-                    pdf.addPage();
-                    yPosition = 20;
+                if (isCol1) {
+                    col1Y += Math.max(rowHeight, valueLines.length * 4) + 2;
+                } else {
+                    col2Y += Math.max(rowHeight, valueLines.length * 4) + 2;
                 }
-                
-                yPosition += 5;
-                pdf.setFillColor(168, 85, 247);
-                pdf.rect(15, yPosition, pageWidth - 30, 8, 'F');
-                
-                pdf.setFont('helvetica', 'bold');
-                pdf.setTextColor(255, 255, 255);
-                pdf.setFontSize(10);
-                pdf.text('Referral Code:', 20, yPosition + 5.5);
-                pdf.text(pdfContent.referralCode, 70, yPosition + 5.5);
-                
-                yPosition += 10;
-            }
-
-            yPosition += 5;
-
-            // Check if we need a new page
-            if (yPosition > pageHeight - 80) {
-                pdf.addPage();
-                yPosition = 30;
-            }
+            });
+            
+            yPosition = Math.max(col1Y, col2Y) + 7;
 
             // ============================================
-            // SECTION 4: UPLOADED DOCUMENTS
+            // SECTION 4: UPLOADED DOCUMENTS (Compact grid)
             // ============================================
             
-            // Check if we need a new page
-            if (yPosition > pageHeight - 80) {
+            // Check if we need to move to page 2
+            if (yPosition > maxYPage1 - 40) {
                 pdf.addPage();
                 yPosition = 20;
             }
 
-            // Simple section header
+            // Compact section header
             pdf.setFillColor(37, 99, 235);
-            pdf.rect(15, yPosition, pageWidth - 30, 10, 'F');
-            
-            pdf.setFillColor(255, 255, 255);
-            pdf.circle(20, yPosition + 5, 4, 'F');
-            pdf.setTextColor(37, 99, 235);
-            pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('4', 20, yPosition + 6.5, { align: 'center' });
+            pdf.rect(10, yPosition, pageWidth - 20, 6, 'F');
             
             pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(12);
+            pdf.setFontSize(9);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('UPLOADED DOCUMENTS', 28, yPosition + 6.5);
+            pdf.text('4. UPLOADED DOCUMENTS', 15, yPosition + 4.5);
             
-            yPosition += 13;
+            yPosition += 10;
 
-            pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'normal');
-
-            // Simple documents list with clickable links
             const documents = Object.entries(pdfContent.documents || {});
             
-            // Debug: Log documents to console
-            console.log('PDF Generator - Documents received:', documents);
-            console.log('PDF Generator - pdfContent.documents:', pdfContent.documents);
-            
             const documentNames = {
-                'passport_photo': 'Passport Size Photo',
+                'passport_photo': 'Passport Photo',
                 'aadhar_card': 'Aadhar Card',
-                'birth_certificate': 'Birth Certificate',
-                'marksheet_10th': '10th Marksheet cum Certificate',
-                'marksheet_12th': '12th Marksheet cum Certificate',
-                'transfer_certificate': 'Transfer Certificate',
-                'caste_certificate': 'Caste Certificate',
-                'income_certificate': 'Income Certificate',
-                'resident_certificate': 'Resident Certificate',
-                'pm_kisan_enrollment': 'PM Kisan Enrollment',
-                'cm_kisan_enrollment': 'CM Kisan Enrollment'
+                'birth_certificate': 'Birth Cert',
+                'marksheet_10th': '10th Marksheet',
+                'marksheet_12th': '12th Marksheet',
+                'transfer_certificate': 'Transfer Cert',
+                'caste_certificate': 'Caste Cert',
+                'income_certificate': 'Income Cert',
+                'resident_certificate': 'Resident Cert',
+                'pm_kisan_enrollment': 'PM Kisan',
+                'cm_kisan_enrollment': 'CM Kisan'
             };
 
             if (documents.length > 0) {
-                console.log('Processing documents, count:', documents.length);
-                yPosition += 5;
-                const docsStartY = yPosition;
-                
-                // Use beautiful grid layout with boxes
+                // Compact two-column grid
+                let currentPage = 1;
                 documents.forEach(([key, doc], index) => {
-                    console.log(`Document ${index + 1}: key="${key}", doc=`, doc);
-                    const docName = documentNames[key] || key.replace(/_/g, ' ').toUpperCase();
-                    const fileName = doc.name || doc.fileName || 'Not Uploaded';
-                    const fileSize = doc.size ? `${(doc.size / 1024).toFixed(1)} KB` : 'N/A';
-                    console.log(`  → docName: "${docName}", fileName: "${fileName}", fileSize: "${fileSize}"`);
-                    
-                    // Two-column layout
+                    const docName = documentNames[key] || key.replace(/_/g, ' ').substring(0, 15);
                     const col = index % 2;
                     const row = Math.floor(index / 2);
-                    const boxWidth = (pageWidth - 50) / 2;
-                    const boxHeight = 12;
-                    const xPos = 20 + (col * (boxWidth + 10));
-                    let currentY = yPosition + (row * 15);
+                    const boxWidth = (pageWidth - 30) / 2;
+                    const boxHeight = 8;
+                    const xPos = 12 + (col * (boxWidth + 6));
+                    let currentY = yPosition + (row * 11);
                     
-                    // Check if we need a new page
-                    if (row > 0 && col === 0 && currentY + boxHeight > pageHeight - 80) {
+                    // Check if we need page 2
+                    if (currentPage === 1 && currentY + boxHeight > maxYPage1) {
                         pdf.addPage();
-                        yPosition = 30;
-                        currentY = yPosition + (row % 5 * 15);
+                        currentPage = 2;
+                        yPosition = 20;
+                        currentY = yPosition + ((row % 4) * 10);
                     }
                     
-                    // Simple document card
+                    // Compact document box
                     pdf.setDrawColor(200, 200, 200);
-                    pdf.setLineWidth(0.5);
+                    pdf.setLineWidth(0.3);
                     pdf.setFillColor(239, 246, 255);
                     pdf.rect(xPos, currentY, boxWidth, boxHeight, 'FD');
                     
-                    // Simple left accent bar
                     pdf.setFillColor(37, 99, 235);
-                    pdf.rect(xPos, currentY, 3, boxHeight, 'F');
+                    pdf.rect(xPos, currentY, 2, boxHeight, 'F');
                     
-                    // Document name
                     pdf.setFont('helvetica', 'bold');
-                    pdf.setFontSize(9);
-                    pdf.setTextColor(25, 25, 25);
-                    const docNameLines = pdf.splitTextToSize(docName, boxWidth - 20);
-                    docNameLines.forEach((line, idx) => {
-                        pdf.text(line, xPos + 8, currentY + 4 + (idx * 4));
-                    });
-                    
-                    // File name
-                    pdf.setFont('helvetica', 'normal');
-                    pdf.setFontSize(8);
-                    pdf.setTextColor(80, 80, 80);
-                    const fileNameLines = pdf.splitTextToSize(fileName, boxWidth - 20);
-                    const startY = currentY + 4 + (docNameLines.length * 4);
-                    fileNameLines.forEach((line, idx) => {
-                        pdf.text(line, xPos + 8, startY + 1 + (idx * 3));
-                    });
-                    
-                    // File size
-                    pdf.setFillColor(37, 99, 235);
-                    pdf.rect(xPos + boxWidth - 30, currentY + boxHeight - 6, 28, 5, 'F');
                     pdf.setFontSize(7);
-                    pdf.setFont('helvetica', 'bold');
-                    pdf.setTextColor(255, 255, 255);
-                    pdf.text(fileSize, xPos + boxWidth - 16, currentY + boxHeight - 3, { align: 'center' });
+                    pdf.setTextColor(25, 25, 25);
+                    pdf.text(docName, xPos + 5, currentY + 3);
                     
-                    // Clickable link if available
-                    if (doc.downloadUrl || doc.filePath) {
-                        pdf.link(xPos, currentY, boxWidth, boxHeight, {
-                            url: doc.downloadUrl || doc.filePath
-                        });
+                    pdf.setFont('helvetica', 'normal');
+                    pdf.setFontSize(6);
+                    pdf.setTextColor(80, 80, 80);
+                    const fileName = (doc.name || doc.fileName || 'Uploaded').substring(0, 25);
+                    pdf.text(fileName, xPos + 5, currentY + 5.5);
+                    
+                    // Add clickable link if document URL is available
+                    if (doc.downloadUrl || doc.url || doc.filePath) {
+                        const docUrl = doc.downloadUrl || doc.url || doc.filePath;
+                        // Make the entire box clickable
+                        try {
+                            pdf.link(xPos, currentY, boxWidth, boxHeight, {
+                                url: docUrl
+                            });
+                        } catch (e) {
+                            console.log('Link creation error:', e);
+                        }
                     }
                 });
                 
-                // Update yPosition for next section
                 const totalRows = Math.ceil(documents.length / 2);
-                yPosition = docsStartY + (totalRows * 15) + 5;
+                yPosition += (totalRows * 11) + 7;
             } else {
-                pdf.setFillColor(255, 250, 250);
-                pdf.setDrawColor(200, 200, 200);
-                pdf.setLineWidth(0.5);
-                pdf.rect(20, yPosition, pageWidth - 40, 10, 'FD');
                 pdf.setFont('helvetica', 'normal');
-                pdf.setFontSize(10);
+                pdf.setFontSize(8);
                 pdf.setTextColor(150, 150, 150);
-                pdf.text('No documents uploaded yet', pageWidth / 2, yPosition + 6, { align: 'center' });
-                yPosition += 12;
-            }
-
-            yPosition += 10;
-
-            // Check if we need a new page
-            if (yPosition > pageHeight - 120) {
-                pdf.addPage();
-                yPosition = 30;
+                pdf.text('No documents uploaded', pageWidth / 2, yPosition + 4, { align: 'center' });
+                yPosition += 10;
             }
 
             // ============================================
-            // SECTION 5: TERMS AND CONDITIONS
+            // SECTION 5: TERMS AND CONDITIONS (Compact)
             // ============================================
             
-            // Check if we need a new page
-            if (yPosition > pageHeight - 120) {
+            // Check if we need to move to page 2
+            if (yPosition > maxYPage1 - 60) {
                 pdf.addPage();
                 yPosition = 20;
             }
 
-            // Simple section header
+            // Compact section header
             pdf.setFillColor(147, 51, 234);
-            pdf.rect(15, yPosition, pageWidth - 30, 10, 'F');
-            
-            pdf.setFillColor(255, 255, 255);
-            pdf.circle(20, yPosition + 5, 4, 'F');
-            pdf.setTextColor(147, 51, 234);
-            pdf.setFontSize(10);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('5', 20, yPosition + 6.5, { align: 'center' });
+            pdf.rect(10, yPosition, pageWidth - 20, 6, 'F');
             
             pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(12);
-            pdf.setFont('helvetica', 'bold');
-            pdf.text('TERMS AND CONDITIONS', 28, yPosition + 6.5);
-            
-            yPosition += 13;
-
-            // Premium terms content box
-            pdf.setDrawColor(200, 200, 200);
-            pdf.setFillColor(250, 245, 255);
-            const termsStartY = yPosition;
-            yPosition += 8;
-
             pdf.setFontSize(9);
-            pdf.setTextColor(30, 30, 30);
+            pdf.setFont('helvetica', 'bold');
+            pdf.text('5. TERMS AND CONDITIONS', 15, yPosition + 4.5);
+            
+            yPosition += 10;
+
+            // Compact terms - summarized version
+            pdf.setFontSize(7);
+            pdf.setTextColor(40, 40, 40);
+            pdf.setFont('helvetica', 'normal');
 
             const terms = [
-                { num: '1', text: 'Application Submission: I hereby declare that all information provided in this application is true and correct to the best of my knowledge.' },
-                { num: '2', text: 'Document Verification: I understand that all submitted documents will be verified and any false information may result in rejection of the application.' },
-                { num: '3', text: 'Fee Payment: I agree to pay all applicable fees as per the institution\'s fee structure and payment schedule.' },
-                { num: '4', text: 'Academic Performance: I understand that admission is subject to meeting the minimum academic requirements and availability of seats.' },
-                { num: '5', text: 'Code of Conduct: I agree to abide by the institution\'s rules, regulations, and code of conduct during my tenure.' },
-                { num: '6', text: 'Data Privacy: I consent to the collection, processing, and storage of my personal data for academic and administrative purposes.' },
-                { num: '7', text: 'Refund Policy: I understand the institution\'s refund policy and agree to the terms and conditions regarding fee refunds.' },
-                { num: '8', text: 'Medical Fitness: I declare that I am medically fit to pursue the selected course and will provide medical certificates if required.' }
+                '1. I declare all information is true and correct.',
+                '2. Documents will be verified; false info may result in rejection.',
+                '3. I agree to pay all applicable fees as per schedule.',
+                '4. Admission subject to meeting academic requirements.',
+                '5. I agree to abide by institution rules and code of conduct.',
+                '6. I consent to data collection for academic purposes.',
+                '7. I understand the refund policy.',
+                '8. I declare medical fitness to pursue the course.'
             ];
 
+            let currentPage = pdf.internal.getNumberOfPages();
             terms.forEach((term, index) => {
-                if (yPosition > pageHeight - 50) {
+                // Check if we need page 2
+                if (currentPage === 1 && yPosition > maxYPage1 - 10) {
                     pdf.addPage();
+                    currentPage = 2;
                     yPosition = 20;
                 }
                 
-                // Simple term number badge
-                pdf.setFillColor(147, 51, 234);
-                pdf.circle(22, yPosition + 1, 4, 'F');
-                pdf.setFillColor(255, 255, 255);
-                pdf.circle(22, yPosition + 1, 2.5, 'F');
-                pdf.setTextColor(147, 51, 234);
-                pdf.setFont('helvetica', 'bold');
-                pdf.setFontSize(8);
-                pdf.text(term.num, 22, yPosition + 2.5, { align: 'center' });
-                
-                // Term text
-                pdf.setTextColor(40, 40, 40);
-                pdf.setFont('helvetica', 'normal');
-                pdf.setFontSize(9);
-                const lines = pdf.splitTextToSize(term.text, pageWidth - 50);
-                lines.forEach((line, lineIndex) => {
-                    pdf.text(line, 30, yPosition + 2 + (lineIndex * 5));
-                });
-                
-                yPosition += (lines.length * 5) + 4;
-                
-                // Simple separator line
-                if (index < terms.length - 1) {
-                    pdf.setDrawColor(220, 220, 220);
-                    pdf.setLineWidth(0.3);
-                    pdf.line(22, yPosition, pageWidth - 25, yPosition);
-                    yPosition += 3;
-                }
+                pdf.text(term, 15, yPosition + 3);
+                yPosition += 5;
             });
-
-            // Simple border
-            const termsHeight = yPosition - termsStartY + 5;
-            pdf.setDrawColor(200, 200, 200);
-            pdf.setLineWidth(0.5);
-            pdf.rect(15, termsStartY - 2, pageWidth - 30, termsHeight, 'D');
             
-            yPosition += 10;
-
-            // Check if we need a new page for signatures
-            if (yPosition > pageHeight - 60) {
-                pdf.addPage();
-                yPosition = 30;
-            }
+            yPosition += 5;
 
             // ============================================
-            // SIGNATURE SECTION
+            // SIGNATURE SECTION (Compact)
             // ============================================
             
-            // Check if we need a new page
-            if (yPosition > pageHeight - 60) {
+            // Check if we need page 2
+            const currentPageNum = pdf.internal.getNumberOfPages();
+            if (currentPageNum === 1 && yPosition > maxYPage1 - 25) {
                 pdf.addPage();
                 yPosition = 20;
+            } else if (currentPageNum === 2 && yPosition > maxYPage2 - 25) {
+                yPosition = maxYPage2 - 25;
             }
 
-            yPosition += 10;
-            
-            // Simple signature section header
+            // Compact signature section
             pdf.setFillColor(168, 85, 247);
-            pdf.rect(15, yPosition, pageWidth - 30, 10, 'F');
+            pdf.rect(10, yPosition, pageWidth - 20, 5, 'F');
             pdf.setTextColor(255, 255, 255);
-            pdf.setFontSize(12);
+            pdf.setFontSize(8);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('SIGNATURES', 20, yPosition + 6.5);
+            pdf.text('SIGNATURES', 15, yPosition + 3.5);
             
-            yPosition += 15;
+            yPosition += 7;
             
-            // Simple signature boxes
-            const sigBoxWidth = (pageWidth - 50) / 2;
-            const sigBoxHeight = 30;
+            // Compact signature boxes
+            const sigBoxWidth = (pageWidth - 30) / 2;
+            const sigBoxHeight = 20;
             
             // Student signature box
             pdf.setDrawColor(200, 200, 200);
             pdf.setFillColor(255, 255, 255);
-            pdf.setLineWidth(0.5);
-            pdf.rect(20, yPosition, sigBoxWidth, sigBoxHeight, 'FD');
+            pdf.setLineWidth(0.3);
+            pdf.rect(12, yPosition, sigBoxWidth, sigBoxHeight, 'FD');
             
-            // Simple top accent
             pdf.setFillColor(79, 70, 229);
-            pdf.rect(20, yPosition, sigBoxWidth, 3, 'F');
-            
-            pdf.setFontSize(11);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setTextColor(30, 30, 30);
-            pdf.text('Student Signature', 20 + sigBoxWidth / 2, yPosition + 8, { align: 'center' });
-            
-            // Signature line
-            pdf.setDrawColor(150, 150, 150);
-            pdf.setLineWidth(0.8);
-            pdf.line(20 + 10, yPosition + 15, 20 + sigBoxWidth - 10, yPosition + 15);
+            pdf.rect(12, yPosition, sigBoxWidth, 2, 'F');
             
             pdf.setFontSize(8);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(30, 30, 30);
+            pdf.text('Student', 12 + sigBoxWidth / 2, yPosition + 5, { align: 'center' });
+            
+            pdf.setDrawColor(150, 150, 150);
+            pdf.setLineWidth(0.5);
+            pdf.line(12 + 5, yPosition + 10, 12 + sigBoxWidth - 5, yPosition + 10);
+            
+            pdf.setFontSize(6);
             pdf.setFont('helvetica', 'normal');
             pdf.setTextColor(100, 100, 100);
-            pdf.text('Date: _______________', 20 + sigBoxWidth / 2, yPosition + 22, { align: 'center' });
+            pdf.text('Date: _______', 12 + sigBoxWidth / 2, yPosition + 15, { align: 'center' });
             
             // Parent/Guardian signature box
             pdf.setDrawColor(200, 200, 200);
             pdf.setFillColor(255, 255, 255);
-            pdf.setLineWidth(0.5);
-            pdf.rect(30 + sigBoxWidth, yPosition, sigBoxWidth, sigBoxHeight, 'FD');
+            pdf.setLineWidth(0.3);
+            pdf.rect(18 + sigBoxWidth, yPosition, sigBoxWidth, sigBoxHeight, 'FD');
             
-            // Simple top accent
             pdf.setFillColor(79, 70, 229);
-            pdf.rect(30 + sigBoxWidth, yPosition, sigBoxWidth, 3, 'F');
-            
-            pdf.setFontSize(11);
-            pdf.setFont('helvetica', 'bold');
-            pdf.setTextColor(30, 30, 30);
-            pdf.text('Parent/Guardian Signature', 30 + sigBoxWidth + sigBoxWidth / 2, yPosition + 8, { align: 'center' });
-            
-            // Signature line
-            pdf.setDrawColor(150, 150, 150);
-            pdf.setLineWidth(0.8);
-            pdf.line(30 + sigBoxWidth + 10, yPosition + 15, 30 + sigBoxWidth + sigBoxWidth - 10, yPosition + 15);
+            pdf.rect(18 + sigBoxWidth, yPosition, sigBoxWidth, 2, 'F');
             
             pdf.setFontSize(8);
+            pdf.setFont('helvetica', 'bold');
+            pdf.setTextColor(30, 30, 30);
+            pdf.text('Parent/Guardian', 18 + sigBoxWidth + sigBoxWidth / 2, yPosition + 5, { align: 'center' });
+            
+            pdf.setDrawColor(150, 150, 150);
+            pdf.setLineWidth(0.5);
+            pdf.line(18 + sigBoxWidth + 5, yPosition + 10, 18 + sigBoxWidth + sigBoxWidth - 5, yPosition + 10);
+            
+            pdf.setFontSize(6);
             pdf.setFont('helvetica', 'normal');
             pdf.setTextColor(100, 100, 100);
-            pdf.text('Date: _______________', 30 + sigBoxWidth + sigBoxWidth / 2, yPosition + 22, { align: 'center' });
+            pdf.text('Date: _______', 18 + sigBoxWidth + sigBoxWidth / 2, yPosition + 15, { align: 'center' });
             
-            yPosition += sigBoxHeight + 15;
+            yPosition += sigBoxHeight + 5;
 
             // ============================================
-            // ENHANCED FOOTER - Add to all pages
+            // ENHANCED FOOTER - Add to all pages (Max 2 pages)
             // ============================================
             
-            // Calculate total pages
-            const totalPagesCount = pdf.internal.getNumberOfPages();
+            // Ensure we only have 2 pages maximum
+            const totalPagesCount = Math.min(pdf.internal.getNumberOfPages(), 2);
+            
+            // Remove any extra pages beyond 2
+            while (pdf.internal.getNumberOfPages() > 2) {
+                pdf.deletePage(3);
+            }
             
             // Add footer to all pages
             for (let i = 1; i <= totalPagesCount; i++) {
@@ -821,7 +600,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 addFooter(pdf, i, totalPagesCount, pdfContent, pageWidth, pageHeight);
             }
             
-            // Return to last page for any final additions
+            // Return to last page
             pdf.setPage(totalPagesCount);
 
             // Generate PDF blob
