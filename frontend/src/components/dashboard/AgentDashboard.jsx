@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useSession } from "../../contexts/SessionContext";
 import DashboardLayout from "./DashboardLayout";
@@ -12,6 +13,7 @@ import api from "../../utils/api";
 const EnhancedAgentDashboard = () => {
   const { user } = useAuth();
   const { selectedSession } = useSession();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [studentTableFilter, setStudentTableFilter] = useState("all");
@@ -112,6 +114,26 @@ const EnhancedAgentDashboard = () => {
             strokeLinejoin="round"
             strokeWidth={2}
             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: "send-message",
+      name: "Send Message",
+      href: "/send-message",
+      icon: (
+        <svg
+          className="mr-3 h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
           />
         </svg>
       ),
@@ -389,13 +411,24 @@ const EnhancedAgentDashboard = () => {
     );
   }
 
+  const handleItemClick = (itemId) => {
+    // Check if the clicked item has an href (for external navigation)
+    const item = sidebarItems.find(i => i.id === itemId);
+    if (item && item.href) {
+      navigate(item.href);
+    } else {
+      // Otherwise, handle as a tab switch
+      setActiveTab(itemId);
+    }
+  };
+
   return (
     <DashboardLayout
       title="Agent Dashboard"
       sidebarItems={sidebarItems}
       activeItem={activeTab}
       showSessionSelector={true}
-      onItemClick={setActiveTab}
+      onItemClick={handleItemClick}
     >
       {renderDashboardContent()}
     </DashboardLayout>
