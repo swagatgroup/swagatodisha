@@ -5,7 +5,6 @@ const fs = require('fs');
 const fsp = fs.promises;
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
-const { sendEmail } = require('../utils/sendgrid');
 const { contactFormRateLimit, checkHoneypot, antiSpamMiddleware } = require('../middleware/antiSpam');
 const router = express.Router();
 
@@ -417,54 +416,30 @@ router.post('/submit', [
             }
         });
 
-        // Background job: send emails using SendGrid and then cleanup files
+        // Background job: send emails using SMTP and then cleanup files
         setImmediate(async () => {
             let adminEmailSent = false;
             let userEmailSent = false;
             
             try {
-                // Check email configuration
-                const hasSendGrid = !!process.env.SENDGRID_API_KEY;
-                const hasFromEmail = !!process.env.FROM_EMAIL;
+                // Check SMTP configuration
                 const hasSMTP = !!transporter;
                 
-                console.log('📧 Email Configuration Check:', {
-                    hasSendGrid,
-                    hasFromEmail,
+                console.log('📧 SMTP Configuration Check:', {
                     hasSMTP,
-                    fromEmail: process.env.FROM_EMAIL || 'NOT SET',
                     contactEmail: process.env.CONTACT_EMAIL || 'NOT SET',
-                    emailUser: process.env.EMAIL_USER || 'NOT SET'
+                    emailUser: process.env.EMAIL_USER || 'NOT SET',
+                    smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
+                    smtpPort: process.env.SMTP_PORT || '587 (default)'
                 });
 
-                // Prepare data for SendGrid templates
-                const emailData = {
-                    name,
-                    email,
-                    phone,
-                    subject,
-                    message,
-                    documents: documents.map(file => ({
-                        originalname: file.originalname,
-                        size: file.size
-                    }))
-                };
-
-                // Send admin notification email
-                if (hasSendGrid && hasFromEmail) {
-                    const adminResult = await sendEmail('contactFormAdmin', emailData);
-                    if (adminResult.success) {
-                        console.log('✅ Contact form admin email sent via SendGrid');
-                        adminEmailSent = true;
-                    } else {
-                        console.error('❌ SendGrid admin email failed:', adminResult.error);
-                    }
-                } else {
-                    console.warn('⚠️ SendGrid not configured (missing SENDGRID_API_KEY or FROM_EMAIL)');
+                if (!transporter) {
+                    console.error('❌ SMTP not configured - EMAIL_USER and EMAIL_PASS required');
+                    return;
                 }
 
-                // Fallback to SMTP for admin email if SendGrid failed
-                if (!adminEmailSent && transporter) {
+                // Send admin notification email via SMTP
+                if (transporter) {
                     // Retry logic for SMTP (up to 3 attempts)
                     let smtpAttempts = 0;
                     const maxSmtpAttempts = 3;
@@ -505,7 +480,7 @@ router.post('/submit', [
                             }
                             
                             await transporter.sendMail(mailOptions);
-                            console.log('✅ Contact form admin email sent via SMTP fallback');
+                            console.log('✅ Contact form admin email sent via SMTP');
                             adminEmailSent = true;
                             smtpSuccess = true;
                         } catch (smtpError) {
@@ -545,19 +520,8 @@ router.post('/submit', [
                     console.error('❌ No email method available - SMTP not configured');
                 }
 
-                // Send user confirmation email
-                if (hasSendGrid && hasFromEmail) {
-                    const userResult = await sendEmail('contactFormUser', emailData);
-                    if (userResult.success) {
-                        console.log('✅ Contact form user confirmation sent via SendGrid');
-                        userEmailSent = true;
-                    } else {
-                        console.error('❌ SendGrid user email failed:', userResult.error);
-                    }
-                }
-
-                // Fallback to SMTP for user email if SendGrid failed
-                if (!userEmailSent && transporter) {
+                // Send user confirmation email via SMTP
+                if (transporter) {
                     // Retry logic for SMTP (up to 3 attempts)
                     let smtpAttempts = 0;
                     const maxSmtpAttempts = 3;
@@ -584,7 +548,7 @@ router.post('/submit', [
                             console.log(`📧 SMTP attempt ${smtpAttempts}/${maxSmtpAttempts} for user confirmation email...`);
                             
                             await transporter.sendMail(userMailOptions);
-                            console.log('✅ Contact form user confirmation sent via SMTP fallback');
+                            console.log('✅ Contact form user confirmation sent via SMTP');
                             userEmailSent = true;
                             smtpSuccess = true;
                         } catch (smtpError) {
@@ -617,10 +581,11 @@ router.post('/submit', [
                 }
 
                 // Final summary
-                console.log('📧 Email Sending Summary:', {
+                console.log('📧 SMTP Email Sending Summary:', {
                     adminEmailSent,
                     userEmailSent,
-                    recipientEmail: email
+                    recipientEmail: email,
+                    method: 'SMTP'
                 });
 
             } catch (error) {
@@ -657,74 +622,6 @@ router.post('/submit', [
         res.status(500).json({
             success: false,
             message: 'Failed to submit contact form. Please try again later.'
-        });
-    }
-});
-
-// Test SendGrid configuration endpoint
-// @route   GET /api/contact/test-sendgrid
-// @access  Public (for debugging)
-router.get('/test-sendgrid', async (req, res) => {
-    try {
-        const hasSendGrid = !!process.env.SENDGRID_API_KEY;
-        const hasFromEmail = !!process.env.FROM_EMAIL;
-        
-        if (!hasSendGrid) {
-            return res.status(400).json({
-                success: false,
-                message: 'SendGrid not configured',
-                details: {
-                    hasSendGrid: false,
-                    hasFromEmail,
-                    hint: 'Set SENDGRID_API_KEY in production environment variables'
-                }
-            });
-        }
-        
-        if (!hasFromEmail) {
-            return res.status(400).json({
-                success: false,
-                message: 'FROM_EMAIL not configured',
-                details: {
-                    hasSendGrid: true,
-                    hasFromEmail: false,
-                    hint: 'Set FROM_EMAIL in production environment variables (must be verified in SendGrid)'
-                }
-            });
-        }
-        
-        // Test SendGrid
-        const { testEmail } = require('../utils/sendgrid');
-        const result = await testEmail();
-        
-        if (result.success) {
-            return res.status(200).json({
-                success: true,
-                message: 'SendGrid is working correctly',
-                details: {
-                    messageId: result.messageId,
-                    fromEmail: process.env.FROM_EMAIL,
-                    contactEmail: process.env.CONTACT_EMAIL || process.env.FROM_EMAIL
-                }
-            });
-        } else {
-            return res.status(400).json({
-                success: false,
-                message: 'SendGrid test failed',
-                error: result.error,
-                details: result.details,
-                troubleshooting: {
-                    'If statusCode is 401': 'Invalid SENDGRID_API_KEY - check if it\'s correct and active',
-                    'If FROM_EMAIL error': 'FROM_EMAIL must be verified in SendGrid dashboard',
-                    'How to fix': '1. Go to SendGrid dashboard 2. Verify sender email 3. Create/verify API key 4. Set both in production environment'
-                }
-            });
-        }
-    } catch (error) {
-        return res.status(500).json({
-            success: false,
-            message: 'Error testing SendGrid',
-            error: error.message
         });
     }
 });
@@ -789,7 +686,7 @@ router.get('/test-smtp', async (req, res) => {
     }
 });
 
-// Test email endpoint to validate SendGrid configuration
+// Test email endpoint - SMTP only
 // @route   POST /api/contact/test-email
 // @access  Private (guarded by a simple token if provided)
 router.post('/test-email', async (req, res) => {
@@ -801,51 +698,47 @@ router.post('/test-email', async (req, res) => {
             return res.status(403).json({ success: false, message: 'Forbidden' });
         }
 
-        // Test SendGrid first
-        const { testEmail } = require('../utils/sendgrid');
-        const sendGridResult = await testEmail();
-
-        if (sendGridResult.success) {
-            return res.status(200).json({
-                success: true,
-                message: 'SendGrid test email sent successfully',
-                provider: 'SendGrid',
-                messageId: sendGridResult.messageId
-            });
-        }
-
-        // Fallback to SMTP if SendGrid fails
-        console.log('SendGrid failed, trying SMTP fallback...');
+        // Test SMTP
         const transporter = buildTransporter();
         if (!transporter) {
             return res.status(400).json({
                 success: false,
-                message: 'Both SendGrid and SMTP not configured',
-                sendGridError: sendGridResult.error
+                message: 'SMTP not configured',
+                details: {
+                    hasEmailUser: !!process.env.EMAIL_USER,
+                    hasEmailPass: !!process.env.EMAIL_PASS,
+                    hint: 'Set EMAIL_USER and EMAIL_PASS in environment variables'
+                }
             });
         }
 
         const to = process.env.CONTACT_EMAIL || process.env.EMAIL_USER;
         if (!to) {
-            return res.status(400).json({ success: false, message: 'CONTACT_EMAIL or EMAIL_USER not set' });
+            return res.status(400).json({ 
+                success: false, 
+                message: 'CONTACT_EMAIL or EMAIL_USER not set' 
+            });
         }
 
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to,
-            subject: 'Test Email: Swagat Odisha Contact (SMTP Fallback)',
+            subject: 'Test Email: Swagat Odisha Contact (SMTP)',
             html: `<p>This is a test email from the Swagat Odisha backend at ${new Date().toISOString()}.</p>`
         });
 
         return res.status(200).json({
             success: true,
-            message: 'Test email sent via SMTP fallback',
-            provider: 'SMTP',
-            sendGridError: sendGridResult.error
+            message: 'Test email sent via SMTP',
+            provider: 'SMTP'
         });
     } catch (err) {
         console.error('Test email failed:', err);
-        return res.status(500).json({ success: false, message: 'Test email failed', error: err.message });
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Test email failed', 
+            error: err.message 
+        });
     }
 });
 
