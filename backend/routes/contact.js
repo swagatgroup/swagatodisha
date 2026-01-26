@@ -24,6 +24,7 @@ const buildTransporter = () => {
     }
     
     if (process.env.EMAIL_USER && emailPass) {
+        // If custom SMTP is configured, use it (works with Mailgun, Sendinblue, AWS SES, etc.)
         if (hasCustomSMTP) {
             const portNum = parseInt(process.env.SMTP_PORT, 10) || 587;
             const isSecure = portNum === 465;
@@ -51,14 +52,31 @@ const buildTransporter = () => {
             };
             
             // For non-secure ports, require STARTTLS
-            if (!isSecure && portNum === 587) {
+            if (!isSecure && (portNum === 587 || portNum === 2525)) {
                 transporterConfig.requireTLS = true;
+            }
+            
+            // Special handling for common SMTP providers that work on cloud platforms
+            const smtpHost = process.env.SMTP_HOST.toLowerCase();
+            if (smtpHost.includes('mailgun')) {
+                console.log('📧 Using Mailgun SMTP (cloud-friendly)');
+            } else if (smtpHost.includes('brevo') || smtpHost.includes('sendinblue')) {
+                console.log('📧 Using Sendinblue/Brevo SMTP (cloud-friendly)');
+            } else if (smtpHost.includes('amazonaws') || smtpHost.includes('ses')) {
+                console.log('📧 Using AWS SES SMTP (cloud-friendly)');
+            } else if (smtpHost.includes('mailjet')) {
+                console.log('📧 Using Mailjet SMTP (cloud-friendly)');
+            } else if (smtpHost.includes('sparkpost')) {
+                console.log('📧 Using SparkPost SMTP (cloud-friendly)');
+            } else {
+                console.log('📧 Using custom SMTP provider');
             }
             
             console.log('📧 Creating SMTP transporter with custom settings:', {
                 host: process.env.SMTP_HOST,
                 port: portNum,
                 secure: isSecure,
+                requireTLS: transporterConfig.requireTLS,
                 user: process.env.EMAIL_USER
             });
             
@@ -69,16 +87,29 @@ const buildTransporter = () => {
         // This works better in cloud environments
         const isProduction = process.env.NODE_ENV === 'production';
         
-        // Try port 465 (SSL) first in production, as port 587 is often blocked on cloud platforms
-        const usePort465 = isProduction && process.env.SMTP_USE_SSL !== 'false';
-        const smtpPort = usePort465 ? 465 : 587;
-        const isSecure = usePort465;
+        // Gmail SMTP port configuration
+        // Port 2525 is Gmail's alternative TLS port that may work on cloud platforms
+        let smtpPort = 587; // Default to 587 for local
+        let isSecure = false;
+        
+        if (process.env.SMTP_PORT) {
+            // Explicit port set in environment
+            smtpPort = parseInt(process.env.SMTP_PORT, 10);
+            isSecure = smtpPort === 465;
+        } else if (isProduction) {
+            // Production: Try port 2525 first (Gmail alternative TLS port)
+            // This port is sometimes not blocked on cloud platforms
+            smtpPort = 2525;
+            isSecure = false;
+            console.log('📧 Production: Using Gmail port 2525 (alternative TLS - may work on cloud platforms)');
+            console.log('💡 If this fails, explicitly set SMTP_PORT=465 or SMTP_PORT=587');
+        }
         
         const gmailConfig = {
             host: 'smtp.gmail.com',
             port: smtpPort,
-            secure: isSecure, // true for 465 (SSL), false for 587 (TLS)
-            requireTLS: !isSecure, // Only require TLS for port 587
+            secure: isSecure, // true for 465 (SSL), false for 587/2525 (TLS)
+            requireTLS: !isSecure && (smtpPort === 587 || smtpPort === 2525), // Require TLS for ports 587 and 2525
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: emailPass // Use cleaned password
@@ -98,16 +129,22 @@ const buildTransporter = () => {
             }
         };
         
-        if (isProduction) {
-            console.log(`📧 Production: Using port ${smtpPort} (${isSecure ? 'SSL' : 'TLS'}) for Gmail SMTP`);
-        }
+        const portType = smtpPort === 2525 ? 'Alternative TLS (may work on cloud platforms)' : 
+                        smtpPort === 465 ? 'SSL' : 'TLS';
         
         console.log('📧 Creating Gmail SMTP transporter:', {
             host: gmailConfig.host,
-            port: gmailConfig.port,
+            port: `${gmailConfig.port} (${portType})`,
+            secure: gmailConfig.secure,
+            requireTLS: gmailConfig.requireTLS,
             user: process.env.EMAIL_USER,
             isProduction
         });
+        
+        if (isProduction && smtpPort === 2525) {
+            console.log('💡 Using Gmail port 2525 - alternative TLS port (may work on cloud platforms)');
+            console.log('💡 If this fails, try explicitly setting SMTP_PORT=465 or SMTP_PORT=587');
+        }
         
         return nodemailer.createTransport(gmailConfig);
     }
@@ -620,6 +657,74 @@ router.post('/submit', [
         res.status(500).json({
             success: false,
             message: 'Failed to submit contact form. Please try again later.'
+        });
+    }
+});
+
+// Test SendGrid configuration endpoint
+// @route   GET /api/contact/test-sendgrid
+// @access  Public (for debugging)
+router.get('/test-sendgrid', async (req, res) => {
+    try {
+        const hasSendGrid = !!process.env.SENDGRID_API_KEY;
+        const hasFromEmail = !!process.env.FROM_EMAIL;
+        
+        if (!hasSendGrid) {
+            return res.status(400).json({
+                success: false,
+                message: 'SendGrid not configured',
+                details: {
+                    hasSendGrid: false,
+                    hasFromEmail,
+                    hint: 'Set SENDGRID_API_KEY in production environment variables'
+                }
+            });
+        }
+        
+        if (!hasFromEmail) {
+            return res.status(400).json({
+                success: false,
+                message: 'FROM_EMAIL not configured',
+                details: {
+                    hasSendGrid: true,
+                    hasFromEmail: false,
+                    hint: 'Set FROM_EMAIL in production environment variables (must be verified in SendGrid)'
+                }
+            });
+        }
+        
+        // Test SendGrid
+        const { testEmail } = require('../utils/sendgrid');
+        const result = await testEmail();
+        
+        if (result.success) {
+            return res.status(200).json({
+                success: true,
+                message: 'SendGrid is working correctly',
+                details: {
+                    messageId: result.messageId,
+                    fromEmail: process.env.FROM_EMAIL,
+                    contactEmail: process.env.CONTACT_EMAIL || process.env.FROM_EMAIL
+                }
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: 'SendGrid test failed',
+                error: result.error,
+                details: result.details,
+                troubleshooting: {
+                    'If statusCode is 401': 'Invalid SENDGRID_API_KEY - check if it\'s correct and active',
+                    'If FROM_EMAIL error': 'FROM_EMAIL must be verified in SendGrid dashboard',
+                    'How to fix': '1. Go to SendGrid dashboard 2. Verify sender email 3. Create/verify API key 4. Set both in production environment'
+                }
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error testing SendGrid',
+            error: error.message
         });
     }
 });
