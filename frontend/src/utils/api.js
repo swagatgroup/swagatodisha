@@ -1,5 +1,13 @@
 import axios from 'axios';
-import { API_BASE_URL, API_TIMEOUT } from '../config/environment';
+import { API_BASE_URL, API_TIMEOUT, IS_DEVELOPMENT } from '../config/environment';
+
+// Log API configuration in development
+if (IS_DEVELOPMENT) {
+    console.log('🌐 API Configuration:', {
+        baseURL: API_BASE_URL || '(empty - using relative URLs)',
+        timeout: API_TIMEOUT
+    });
+}
 
 // API Configuration
 const api = axios.create({
@@ -16,6 +24,14 @@ api.interceptors.request.use(
         const token = localStorage.getItem('token');
         console.log('🌐 API Request - URL:', config.url);
         console.log('🌐 API Request - Token:', token ? 'Present' : 'Missing');
+        
+        // If the data is FormData, don't set Content-Type - let browser set it with boundary
+        if (config.data instanceof FormData) {
+            // Remove Content-Type header to let browser set it automatically with boundary
+            delete config.headers['Content-Type'];
+            console.log('🌐 API Request - FormData detected, letting browser set Content-Type');
+        }
+        
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
             console.log('🌐 API Request - Authorization header set');
