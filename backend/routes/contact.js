@@ -16,35 +16,80 @@ const buildTransporter = () => {
         if (hasCustomSMTP) {
             const portNum = parseInt(process.env.SMTP_PORT, 10) || 587;
             const isSecure = portNum === 465;
-            return nodemailer.createTransport({
+            
+            // For production, use explicit TLS settings
+            const transporterConfig = {
                 host: process.env.SMTP_HOST,
                 port: portNum,
-                secure: isSecure,
+                secure: isSecure, // true for 465, false for other ports
                 auth: {
                     user: process.env.EMAIL_USER,
                     pass: process.env.EMAIL_PASS
                 },
-                connectionTimeout: 10000, // 10 seconds
-                greetingTimeout: 10000,
-                socketTimeout: 10000,
-                pool: true,
-                maxConnections: 1,
-                maxMessages: 3
+                // Increased timeouts for cloud environments
+                connectionTimeout: 30000, // 30 seconds
+                greetingTimeout: 30000,
+                socketTimeout: 30000,
+                // Retry configuration
+                pool: false, // Disable pooling for cloud environments
+                // TLS options for better compatibility
+                tls: {
+                    rejectUnauthorized: false, // Accept self-signed certificates if needed
+                    ciphers: 'SSLv3'
+                }
+            };
+            
+            // For non-secure ports, require STARTTLS
+            if (!isSecure && portNum === 587) {
+                transporterConfig.requireTLS = true;
+            }
+            
+            console.log('📧 Creating SMTP transporter with custom settings:', {
+                host: process.env.SMTP_HOST,
+                port: portNum,
+                secure: isSecure,
+                user: process.env.EMAIL_USER
             });
+            
+            return nodemailer.createTransport(transporterConfig);
         }
-        return nodemailer.createTransport({
-            service: 'gmail',
+        
+        // Gmail configuration - use explicit settings instead of service: 'gmail'
+        // This works better in cloud environments
+        const isProduction = process.env.NODE_ENV === 'production';
+        
+        const gmailConfig = {
+            host: 'smtp.gmail.com',
+            port: 587,
+            secure: false, // Use TLS
+            requireTLS: true,
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
             },
-            connectionTimeout: 10000, // 10 seconds
-            greetingTimeout: 10000,
-            socketTimeout: 10000,
-            pool: true,
+            // Increased timeouts for production
+            connectionTimeout: isProduction ? 30000 : 10000,
+            greetingTimeout: isProduction ? 30000 : 10000,
+            socketTimeout: isProduction ? 30000 : 10000,
+            // Disable pooling in production (causes issues on some cloud platforms)
+            pool: !isProduction,
             maxConnections: 1,
-            maxMessages: 3
+            maxMessages: 3,
+            // TLS options
+            tls: {
+                rejectUnauthorized: false,
+                ciphers: 'SSLv3'
+            }
+        };
+        
+        console.log('📧 Creating Gmail SMTP transporter:', {
+            host: gmailConfig.host,
+            port: gmailConfig.port,
+            user: process.env.EMAIL_USER,
+            isProduction
         });
+        
+        return nodemailer.createTransport(gmailConfig);
     }
     return null;
 };
@@ -238,7 +283,16 @@ router.post('/submit', [
         // Create email transporter (with fallback if email not configured)
         let transporter = buildTransporter();
         if (!transporter) {
-            console.warn('Email configuration not found. Contact form will be logged but not emailed.');
+            console.warn('⚠️ Email configuration not found. Contact form will be logged but not emailed.');
+            console.warn('⚠️ Required: EMAIL_USER and EMAIL_PASS (or SMTP_HOST, SMTP_PORT)');
+        } else {
+            // Log SMTP configuration (without sensitive data)
+            console.log('📧 SMTP transporter created successfully');
+            if (process.env.SMTP_HOST) {
+                console.log('📧 Using custom SMTP:', process.env.SMTP_HOST + ':' + process.env.SMTP_PORT);
+            } else {
+                console.log('📧 Using Gmail SMTP');
+            }
         }
 
         // Prepare email content
@@ -332,17 +386,50 @@ router.post('/submit', [
 
                 // Fallback to SMTP for admin email if SendGrid failed
                 if (!adminEmailSent && transporter) {
-                    try {
-                        await transporter.sendMail(mailOptions);
-                        console.log('✅ Contact form admin email sent via SMTP fallback');
-                        adminEmailSent = true;
-                    } catch (smtpError) {
-                        console.error('❌ SMTP fallback also failed:', {
-                            message: smtpError.message,
-                            code: smtpError.code,
-                            response: smtpError.response,
-                            stack: smtpError.stack
-                        });
+                    // Retry logic for SMTP (up to 3 attempts)
+                    let smtpAttempts = 0;
+                    const maxSmtpAttempts = 3;
+                    let smtpSuccess = false;
+                    
+                    while (smtpAttempts < maxSmtpAttempts && !smtpSuccess) {
+                        try {
+                            smtpAttempts++;
+                            console.log(`📧 SMTP attempt ${smtpAttempts}/${maxSmtpAttempts} for admin email...`);
+                            
+                            // Verify connection before sending (only on first attempt)
+                            if (smtpAttempts === 1) {
+                                await transporter.verify();
+                                console.log('✅ SMTP connection verified');
+                            }
+                            
+                            await transporter.sendMail(mailOptions);
+                            console.log('✅ Contact form admin email sent via SMTP fallback');
+                            adminEmailSent = true;
+                            smtpSuccess = true;
+                        } catch (smtpError) {
+                            console.error(`❌ SMTP attempt ${smtpAttempts} failed:`, {
+                                message: smtpError.message,
+                                code: smtpError.code,
+                                command: smtpError.command,
+                                response: smtpError.response,
+                                responseCode: smtpError.responseCode
+                            });
+                            
+                            // If it's a connection timeout and we have retries left, wait and retry
+                            if (smtpError.code === 'ETIMEDOUT' || smtpError.code === 'ECONNRESET') {
+                                if (smtpAttempts < maxSmtpAttempts) {
+                                    console.log(`⏳ Waiting 2 seconds before retry...`);
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
+                                }
+                            } else {
+                                // For other errors, don't retry
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!smtpSuccess) {
+                        console.error('❌ All SMTP attempts failed for admin email');
                     }
                 } else if (!adminEmailSent && !transporter) {
                     console.error('❌ No email method available - SMTP not configured');
@@ -361,31 +448,59 @@ router.post('/submit', [
 
                 // Fallback to SMTP for user email if SendGrid failed
                 if (!userEmailSent && transporter) {
-                    try {
-                        const userMailOptions = {
-                            from: process.env.EMAIL_USER,
-                            to: email,
-                            replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
-                            subject: 'Thank you for contacting Swagat Odisha',
-                            html: `
-                                <h2>Thank you for contacting us!</h2>
-                                <p>Dear ${name},</p>
-                                <p>We have received your message and will get back to you within 24 hours.</p>
-                                <p><strong>Your message:</strong></p>
-                                <p>${message.replace(/\n/g, '<br>')}</p>
-                                <p>Best regards,<br>Swagat Odisha Team</p>
-                            `
-                        };
-                        await transporter.sendMail(userMailOptions);
-                        console.log('✅ Contact form user confirmation sent via SMTP fallback');
-                        userEmailSent = true;
-                    } catch (smtpError) {
-                        console.error('❌ SMTP user email fallback also failed:', {
-                            message: smtpError.message,
-                            code: smtpError.code,
-                            response: smtpError.response,
-                            stack: smtpError.stack
-                        });
+                    // Retry logic for SMTP (up to 3 attempts)
+                    let smtpAttempts = 0;
+                    const maxSmtpAttempts = 3;
+                    let smtpSuccess = false;
+                    
+                    const userMailOptions = {
+                        from: process.env.EMAIL_USER,
+                        to: email,
+                        replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
+                        subject: 'Thank you for contacting Swagat Odisha',
+                        html: `
+                            <h2>Thank you for contacting us!</h2>
+                            <p>Dear ${name},</p>
+                            <p>We have received your message and will get back to you within 24 hours.</p>
+                            <p><strong>Your message:</strong></p>
+                            <p>${message.replace(/\n/g, '<br>')}</p>
+                            <p>Best regards,<br>Swagat Odisha Team</p>
+                        `
+                    };
+                    
+                    while (smtpAttempts < maxSmtpAttempts && !smtpSuccess) {
+                        try {
+                            smtpAttempts++;
+                            console.log(`📧 SMTP attempt ${smtpAttempts}/${maxSmtpAttempts} for user confirmation email...`);
+                            
+                            await transporter.sendMail(userMailOptions);
+                            console.log('✅ Contact form user confirmation sent via SMTP fallback');
+                            userEmailSent = true;
+                            smtpSuccess = true;
+                        } catch (smtpError) {
+                            console.error(`❌ SMTP attempt ${smtpAttempts} failed for user email:`, {
+                                message: smtpError.message,
+                                code: smtpError.code,
+                                command: smtpError.command,
+                                response: smtpError.response,
+                                responseCode: smtpError.responseCode
+                            });
+                            
+                            // If it's a connection timeout and we have retries left, wait and retry
+                            if (smtpError.code === 'ETIMEDOUT' || smtpError.code === 'ECONNRESET') {
+                                if (smtpAttempts < maxSmtpAttempts) {
+                                    console.log(`⏳ Waiting 2 seconds before retry...`);
+                                    await new Promise(resolve => setTimeout(resolve, 2000));
+                                }
+                            } else {
+                                // For other errors, don't retry
+                                break;
+                            }
+                        }
+                    }
+                    
+                    if (!smtpSuccess) {
+                        console.error('❌ All SMTP attempts failed for user confirmation email');
                     }
                 } else if (!userEmailSent && !transporter) {
                     console.error('❌ No email method available for user confirmation - SMTP not configured');
