@@ -476,33 +476,48 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             
             yPosition += 10;
 
-            // Compact terms - summarized version
+            // Full terms and conditions as originally specified
             pdf.setFontSize(7);
             pdf.setTextColor(40, 40, 40);
             pdf.setFont('helvetica', 'normal');
 
             const terms = [
-                '1. I declare all information is true and correct.',
-                '2. Documents will be verified; false info may result in rejection.',
-                '3. I agree to pay all applicable fees as per schedule.',
-                '4. Admission subject to meeting academic requirements.',
-                '5. I agree to abide by institution rules and code of conduct.',
-                '6. I consent to data collection for academic purposes.',
-                '7. I understand the refund policy.',
-                '8. I declare medical fitness to pursue the course.'
+                { num: '1', text: 'Application Submission: I hereby declare that all information provided in this application is true and correct to the best of my knowledge.' },
+                { num: '2', text: 'Document Verification: I understand that all submitted documents will be verified and any false information may result in rejection of the application.' },
+                { num: '3', text: 'Fee Payment: I agree to pay all applicable fees as per the institution\'s fee structure and payment schedule.' },
+                { num: '4', text: 'Academic Performance: I understand that admission is subject to meeting the minimum academic requirements and availability of seats.' },
+                { num: '5', text: 'Code of Conduct: I agree to abide by the institution\'s rules, regulations, and code of conduct during my tenure.' },
+                { num: '6', text: 'Data Privacy: I consent to the collection, processing, and storage of my personal data for academic and administrative purposes.' },
+                { num: '7', text: 'Refund Policy: I understand the institution\'s refund policy and agree to the terms and conditions regarding fee refunds.' },
+                { num: '8', text: 'Medical Fitness: I declare that I am medically fit to pursue the selected course and will provide medical certificates if required.' }
             ];
 
             let currentPage = pdf.internal.getNumberOfPages();
             terms.forEach((term, index) => {
                 // Check if we need page 2
-                if (currentPage === 1 && yPosition > maxYPage1 - 10) {
+                if (currentPage === 1 && yPosition > maxYPage1 - 15) {
                     pdf.addPage();
                     currentPage = 2;
                     yPosition = 20;
                 }
                 
-                pdf.text(term, 15, yPosition + 3);
-                yPosition += 5;
+                // Term number
+                pdf.setFont('helvetica', 'bold');
+                pdf.setFontSize(7);
+                pdf.setTextColor(147, 51, 234);
+                pdf.text(term.num + '.', 15, yPosition + 3);
+                
+                // Term text - split into multiple lines if needed
+                pdf.setFont('helvetica', 'normal');
+                pdf.setTextColor(40, 40, 40);
+                pdf.setFontSize(7);
+                const maxWidth = pageWidth - 30;
+                const lines = pdf.splitTextToSize(term.text, maxWidth);
+                lines.forEach((line, lineIndex) => {
+                    pdf.text(line, 20, yPosition + 3 + (lineIndex * 4));
+                });
+                
+                yPosition += (lines.length * 4) + 3;
             });
             
             yPosition += 5;
