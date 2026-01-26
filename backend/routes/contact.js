@@ -12,7 +12,18 @@ const router = express.Router();
 // Helper: build a robust SMTP transporter from env
 const buildTransporter = () => {
     const hasCustomSMTP = process.env.SMTP_HOST && process.env.SMTP_PORT;
-    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    
+    // Clean email password - remove all spaces (Gmail app passwords are displayed with spaces but used without)
+    let emailPass = process.env.EMAIL_PASS;
+    if (emailPass) {
+        const originalLength = emailPass.length;
+        emailPass = emailPass.replace(/\s+/g, ''); // Remove all spaces
+        if (originalLength !== emailPass.length) {
+            console.warn('⚠️ EMAIL_PASS contained spaces - automatically removed. Original length:', originalLength, 'Cleaned length:', emailPass.length);
+        }
+    }
+    
+    if (process.env.EMAIL_USER && emailPass) {
         if (hasCustomSMTP) {
             const portNum = parseInt(process.env.SMTP_PORT, 10) || 587;
             const isSecure = portNum === 465;
@@ -24,7 +35,7 @@ const buildTransporter = () => {
                 secure: isSecure, // true for 465, false for other ports
                 auth: {
                     user: process.env.EMAIL_USER,
-                    pass: process.env.EMAIL_PASS
+                    pass: emailPass // Use cleaned password
                 },
                 // Increased timeouts for cloud environments
                 connectionTimeout: 30000, // 30 seconds
@@ -65,7 +76,7 @@ const buildTransporter = () => {
             requireTLS: true,
             auth: {
                 user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS
+                pass: emailPass // Use cleaned password
             },
             // Increased timeouts for production
             connectionTimeout: isProduction ? 30000 : 10000,
@@ -285,6 +296,17 @@ router.post('/submit', [
         if (!transporter) {
             console.warn('⚠️ Email configuration not found. Contact form will be logged but not emailed.');
             console.warn('⚠️ Required: EMAIL_USER and EMAIL_PASS (or SMTP_HOST, SMTP_PORT)');
+            console.warn('⚠️ Current values:', {
+                hasEmailUser: !!process.env.EMAIL_USER,
+                hasEmailPass: !!process.env.EMAIL_PASS,
+                emailUserLength: process.env.EMAIL_USER?.length || 0,
+                emailPassLength: process.env.EMAIL_PASS?.length || 0,
+                emailUser: process.env.EMAIL_USER || 'NOT SET',
+                // Don't log password, but log if it has spaces or looks wrong
+                emailPassHasSpaces: process.env.EMAIL_PASS?.includes(' ') || false,
+                emailPassStartsWithSpace: process.env.EMAIL_PASS?.startsWith(' ') || false,
+                emailPassEndsWithSpace: process.env.EMAIL_PASS?.endsWith(' ') || false
+            });
         } else {
             // Log SMTP configuration (without sensitive data)
             console.log('📧 SMTP transporter created successfully');
@@ -292,6 +314,17 @@ router.post('/submit', [
                 console.log('📧 Using custom SMTP:', process.env.SMTP_HOST + ':' + process.env.SMTP_PORT);
             } else {
                 console.log('📧 Using Gmail SMTP');
+            }
+            // Validate app password format (Gmail app passwords are 16 characters, no spaces)
+            if (process.env.EMAIL_PASS) {
+                const pass = process.env.EMAIL_PASS.trim();
+                if (pass.includes(' ')) {
+                    console.warn('⚠️ WARNING: EMAIL_PASS contains spaces! Gmail app passwords should have no spaces.');
+                    console.warn('⚠️ Make sure to copy the 16-character password without any spaces.');
+                }
+                if (pass.length !== 16 && !process.env.SMTP_HOST) {
+                    console.warn(`⚠️ WARNING: EMAIL_PASS length is ${pass.length}, expected 16 for Gmail app password.`);
+                }
             }
         }
 
@@ -398,8 +431,31 @@ router.post('/submit', [
                             
                             // Verify connection before sending (only on first attempt)
                             if (smtpAttempts === 1) {
-                                await transporter.verify();
-                                console.log('✅ SMTP connection verified');
+                                try {
+                                    await transporter.verify();
+                                    console.log('✅ SMTP connection verified');
+                                } catch (verifyError) {
+                                    console.error('❌ SMTP verification failed:', {
+                                        message: verifyError.message,
+                                        code: verifyError.code,
+                                        command: verifyError.command,
+                                        response: verifyError.response,
+                                        responseCode: verifyError.responseCode
+                                    });
+                                    
+                                    // Common Gmail authentication errors
+                                    if (verifyError.responseCode === 535 || verifyError.message.includes('Invalid login')) {
+                                        console.error('❌ AUTHENTICATION FAILED - Check your EMAIL_PASS (App Password)');
+                                        console.error('❌ Make sure:');
+                                        console.error('   1. You are using a Gmail App Password (16 characters, no spaces)');
+                                        console.error('   2. The password is copied correctly without extra spaces');
+                                        console.error('   3. 2-Step Verification is enabled on your Google account');
+                                        console.error('   4. The app password was created for "Mail"');
+                                        break; // Don't retry auth errors
+                                    }
+                                    
+                                    // Continue to try sending anyway
+                                }
                             }
                             
                             await transporter.sendMail(mailOptions);
@@ -414,6 +470,14 @@ router.post('/submit', [
                                 response: smtpError.response,
                                 responseCode: smtpError.responseCode
                             });
+                            
+                            // Check for authentication errors
+                            if (smtpError.responseCode === 535 || smtpError.message.includes('Invalid login') || smtpError.message.includes('authentication')) {
+                                console.error('❌ AUTHENTICATION ERROR - Invalid credentials');
+                                console.error('❌ Check your EMAIL_USER and EMAIL_PASS in production environment variables');
+                                console.error('❌ For Gmail, make sure you are using an App Password, not your regular password');
+                                break; // Don't retry auth errors
+                            }
                             
                             // If it's a connection timeout and we have retries left, wait and retry
                             if (smtpError.code === 'ETIMEDOUT' || smtpError.code === 'ECONNRESET') {
@@ -547,6 +611,65 @@ router.post('/submit', [
         res.status(500).json({
             success: false,
             message: 'Failed to submit contact form. Please try again later.'
+        });
+    }
+});
+
+// Test SMTP connection endpoint
+// @route   GET /api/contact/test-smtp
+// @access  Public (for debugging)
+router.get('/test-smtp', async (req, res) => {
+    try {
+        const transporter = buildTransporter();
+        if (!transporter) {
+            return res.status(400).json({
+                success: false,
+                message: 'SMTP not configured',
+                details: {
+                    hasEmailUser: !!process.env.EMAIL_USER,
+                    hasEmailPass: !!process.env.EMAIL_PASS,
+                    emailUser: process.env.EMAIL_USER || 'NOT SET',
+                    emailPassLength: process.env.EMAIL_PASS?.length || 0,
+                    emailPassHasSpaces: process.env.EMAIL_PASS?.includes(' ') || false
+                }
+            });
+        }
+
+        // Test connection
+        try {
+            await transporter.verify();
+            return res.status(200).json({
+                success: true,
+                message: 'SMTP connection successful',
+                details: {
+                    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+                    port: process.env.SMTP_PORT || '587',
+                    user: process.env.EMAIL_USER,
+                    passLength: process.env.EMAIL_PASS?.length || 0
+                }
+            });
+        } catch (verifyError) {
+            return res.status(400).json({
+                success: false,
+                message: 'SMTP connection failed',
+                error: {
+                    message: verifyError.message,
+                    code: verifyError.code,
+                    responseCode: verifyError.responseCode,
+                    command: verifyError.command
+                },
+                troubleshooting: {
+                    'If responseCode is 535': 'Invalid credentials - check EMAIL_PASS (App Password)',
+                    'If code is ETIMEDOUT': 'Connection timeout - check firewall/network',
+                    'If message includes "Invalid login"': 'Use Gmail App Password, not regular password'
+                }
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error testing SMTP',
+            error: error.message
         });
     }
 });
