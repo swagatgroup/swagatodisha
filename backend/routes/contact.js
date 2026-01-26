@@ -69,11 +69,16 @@ const buildTransporter = () => {
         // This works better in cloud environments
         const isProduction = process.env.NODE_ENV === 'production';
         
+        // Try port 465 (SSL) first in production, as port 587 is often blocked on cloud platforms
+        const usePort465 = isProduction && process.env.SMTP_USE_SSL !== 'false';
+        const smtpPort = usePort465 ? 465 : 587;
+        const isSecure = usePort465;
+        
         const gmailConfig = {
             host: 'smtp.gmail.com',
-            port: 587,
-            secure: false, // Use TLS
-            requireTLS: true,
+            port: smtpPort,
+            secure: isSecure, // true for 465 (SSL), false for 587 (TLS)
+            requireTLS: !isSecure, // Only require TLS for port 587
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: emailPass // Use cleaned password
@@ -83,15 +88,19 @@ const buildTransporter = () => {
             greetingTimeout: isProduction ? 30000 : 10000,
             socketTimeout: isProduction ? 30000 : 10000,
             // Disable pooling in production (causes issues on some cloud platforms)
-            pool: !isProduction,
+            pool: false, // Always disable pooling in production
             maxConnections: 1,
             maxMessages: 3,
-            // TLS options
+            // TLS/SSL options
             tls: {
                 rejectUnauthorized: false,
                 ciphers: 'SSLv3'
             }
         };
+        
+        if (isProduction) {
+            console.log(`📧 Production: Using port ${smtpPort} (${isSecure ? 'SSL' : 'TLS'}) for Gmail SMTP`);
+        }
         
         console.log('📧 Creating Gmail SMTP transporter:', {
             host: gmailConfig.host,
@@ -660,8 +669,9 @@ router.get('/test-smtp', async (req, res) => {
                 },
                 troubleshooting: {
                     'If responseCode is 535': 'Invalid credentials - check EMAIL_PASS (App Password)',
-                    'If code is ETIMEDOUT': 'Connection timeout - check firewall/network',
-                    'If message includes "Invalid login"': 'Use Gmail App Password, not regular password'
+                    'If code is ETIMEDOUT': 'Port 587 is blocked. Code now uses port 465 (SSL) in production. If still failing, check firewall/network restrictions.',
+                    'If message includes "Invalid login"': 'Use Gmail App Password, not regular password',
+                    'Cloud Platform Note': 'Many cloud platforms (Render, Vercel) block port 587. The code now automatically uses port 465 in production.'
                 }
             });
         }
