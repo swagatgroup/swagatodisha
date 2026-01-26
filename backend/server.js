@@ -18,7 +18,8 @@ const app = express();
 const server = http.createServer(app);
 
 // Trust proxy - Required for rate limiting behind reverse proxy (Render, Vercel, etc.)
-app.set('trust proxy', true);
+// Only trust Render's proxy (more secure than trusting all proxies)
+app.set('trust proxy', 1); // Trust only the first proxy (Render's load balancer)
 
 // CORS Fix for undefined origin - Add this FIRST
 app.use((req, res, next) => {
