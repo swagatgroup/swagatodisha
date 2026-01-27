@@ -2089,7 +2089,17 @@ const uploadApplicationPDF = async (req, res) => {
     try {
         const { applicationId } = req.params;
         
+        console.log('📤 PDF Upload Request:', {
+            applicationId,
+            hasFile: !!req.file,
+            fileSize: req.file?.size,
+            mimetype: req.file?.mimetype,
+            userId: req.user?._id,
+            userRole: req.user?.role
+        });
+        
         if (!req.file) {
+            console.error('❌ No file provided in request');
             return res.status(400).json({
                 success: false,
                 message: 'No PDF file provided'
@@ -2097,6 +2107,7 @@ const uploadApplicationPDF = async (req, res) => {
         }
 
         if (req.file.mimetype !== 'application/pdf') {
+            console.error('❌ Invalid file type:', req.file.mimetype);
             return res.status(400).json({
                 success: false,
                 message: 'File must be a PDF'
@@ -2105,6 +2116,7 @@ const uploadApplicationPDF = async (req, res) => {
 
         const application = await StudentApplication.findOne({ applicationId });
         if (!application) {
+            console.error('❌ Application not found:', applicationId);
             return res.status(404).json({
                 success: false,
                 message: 'Application not found'
@@ -2115,6 +2127,11 @@ const uploadApplicationPDF = async (req, res) => {
         if (application.user.toString() !== req.user._id.toString() && 
             req.user.role !== 'super_admin' && 
             req.user.role !== 'staff') {
+            console.error('❌ Unauthorized PDF upload attempt:', {
+                applicationUserId: application.user.toString(),
+                requestUserId: req.user._id.toString(),
+                userRole: req.user.role
+            });
             return res.status(403).json({
                 success: false,
                 message: 'Not authorized to upload PDF for this application'
@@ -2125,7 +2142,10 @@ const uploadApplicationPDF = async (req, res) => {
         const cloudinary = require('cloudinary').v2;
         const streamifier = require('streamifier');
 
-        console.log('📄 Uploading application PDF to Cloudinary...');
+        console.log('📄 Uploading application PDF to Cloudinary...', {
+            fileSize: req.file.size,
+            applicationId
+        });
         
         const cloudinaryResult = await new Promise((resolve, reject) => {
             const uploadStream = cloudinary.uploader.upload_stream(
@@ -2141,6 +2161,7 @@ const uploadApplicationPDF = async (req, res) => {
                         console.error('❌ Cloudinary upload error:', error);
                         reject(error);
                     } else {
+                        console.log('✅ Cloudinary upload successful:', result.secure_url);
                         resolve(result);
                     }
                 }
@@ -2160,6 +2181,8 @@ const uploadApplicationPDF = async (req, res) => {
         application.progress.applicationPdfGenerated = true;
         await application.save();
 
+        console.log('✅ Application updated with PDF URL:', application.applicationId);
+
         return res.status(200).json({
             success: true,
             message: 'Application PDF uploaded and stored successfully',
@@ -2170,7 +2193,8 @@ const uploadApplicationPDF = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error('Upload application PDF error:', error);
+        console.error('❌ Upload application PDF error:', error);
+        console.error('Error stack:', error.stack);
         return res.status(500).json({
             success: false,
             message: 'Failed to upload application PDF',
