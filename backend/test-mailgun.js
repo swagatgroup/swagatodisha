@@ -1,0 +1,128 @@
+/**
+ * Test Mailgun Integration
+ * 
+ * Usage: node test-mailgun.js
+ * 
+ * This script tests the Mailgun email integration by sending a test email.
+ * Make sure you have set the following environment variables:
+ * - MAILGUN_API_KEY
+ * - MAILGUN_DOMAIN
+ * - MAILGUN_FROM_EMAIL (optional, defaults to noreply@MAILGUN_DOMAIN)
+ * - CONTACT_EMAIL (or MAILGUN_FROM_EMAIL)
+ */
+
+require('dotenv').config();
+const { sendEmail, testEmail } = require('./utils/mailgun');
+
+async function testMailgun() {
+    console.log('\n📧 Testing Mailgun Integration\n');
+    console.log('Configuration Check:');
+    console.log('  MAILGUN_API_KEY:', process.env.MAILGUN_API_KEY ? `Set (${process.env.MAILGUN_API_KEY.length} chars)` : '❌ NOT SET');
+    console.log('  MAILGUN_DOMAIN:', process.env.MAILGUN_DOMAIN || '❌ NOT SET');
+    console.log('  MAILGUN_FROM_EMAIL:', process.env.MAILGUN_FROM_EMAIL || `noreply@${process.env.MAILGUN_DOMAIN || 'NOT SET'}`);
+    console.log('  CONTACT_EMAIL:', process.env.CONTACT_EMAIL || '❌ NOT SET');
+    console.log('');
+
+    if (!process.env.MAILGUN_API_KEY || !process.env.MAILGUN_DOMAIN) {
+        console.error('❌ Mailgun not configured properly!');
+        console.error('   Please set MAILGUN_API_KEY and MAILGUN_DOMAIN in your .env file');
+        process.exit(1);
+    }
+
+    const testEmailAddress = process.env.CONTACT_EMAIL || process.env.MAILGUN_FROM_EMAIL;
+    if (!testEmailAddress) {
+        console.error('❌ No test email address found!');
+        console.error('   Please set CONTACT_EMAIL or MAILGUN_FROM_EMAIL in your .env file');
+        process.exit(1);
+    }
+
+    console.log(`📤 Sending test email to: ${testEmailAddress}\n`);
+
+    try {
+        // Test 1: Simple test email
+        console.log('Test 1: Sending simple test email...');
+        const result1 = await testEmail();
+        
+        if (result1.success) {
+            console.log('✅ Test email sent successfully!');
+            console.log('   Message ID:', result1.messageId);
+        } else {
+            console.error('❌ Test email failed:', result1.error);
+            if (result1.details) {
+                console.error('   Details:', JSON.stringify(result1.details, null, 2));
+            }
+        }
+
+        console.log('\n');
+
+        // Test 2: Contact form admin email
+        console.log('Test 2: Sending contact form admin email...');
+        const result2 = await sendEmail('contactFormAdmin', {
+            name: 'Test User',
+            email: testEmailAddress,
+            phone: '1234567890',
+            subject: 'Test Contact Form',
+            message: 'This is a test message from the Mailgun integration test script.'
+        });
+
+        if (result2.success) {
+            console.log('✅ Contact form admin email sent successfully!');
+            console.log('   Message ID:', result2.messageId);
+        } else {
+            console.error('❌ Contact form admin email failed:', result2.error);
+            if (result2.details) {
+                console.error('   Details:', JSON.stringify(result2.details, null, 2));
+            }
+        }
+
+        console.log('\n');
+
+        // Test 3: Contact form user confirmation email
+        console.log('Test 3: Sending contact form user confirmation email...');
+        const result3 = await sendEmail('contactFormUser', {
+            name: 'Test User',
+            email: testEmailAddress,
+            phone: '1234567890',
+            subject: 'Test Contact Form',
+            message: 'This is a test message from the Mailgun integration test script.'
+        });
+
+        if (result3.success) {
+            console.log('✅ Contact form user confirmation email sent successfully!');
+            console.log('   Message ID:', result3.messageId);
+        } else {
+            console.error('❌ Contact form user confirmation email failed:', result3.error);
+            if (result3.details) {
+                console.error('   Details:', JSON.stringify(result3.details, null, 2));
+            }
+        }
+
+        console.log('\n');
+        console.log('📧 Mailgun Test Summary:');
+        console.log('  Test 1 (Simple):', result1.success ? '✅ PASSED' : '❌ FAILED');
+        console.log('  Test 2 (Admin):', result2.success ? '✅ PASSED' : '❌ FAILED');
+        console.log('  Test 3 (User):', result3.success ? '✅ PASSED' : '❌ FAILED');
+        console.log('');
+
+        if (result1.success && result2.success && result3.success) {
+            console.log('🎉 All tests passed! Mailgun integration is working correctly.');
+            console.log(`   Check your inbox at: ${testEmailAddress}`);
+        } else {
+            console.log('⚠️  Some tests failed. Please check the error messages above.');
+            process.exit(1);
+        }
+
+    } catch (error) {
+        console.error('\n❌ Unexpected error during testing:');
+        console.error('   Error:', error.message);
+        console.error('   Stack:', error.stack);
+        process.exit(1);
+    }
+}
+
+// Run the test
+testMailgun().catch(error => {
+    console.error('Fatal error:', error);
+    process.exit(1);
+});
+

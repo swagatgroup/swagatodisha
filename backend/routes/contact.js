@@ -6,6 +6,7 @@ const fsp = fs.promises;
 const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const { contactFormRateLimit, checkHoneypot, antiSpamMiddleware } = require('../middleware/antiSpam');
+const { sendEmail: sendResendEmail } = require('../utils/resend');
 const router = express.Router();
 
 // Helper: build a robust SMTP transporter from env
@@ -416,177 +417,217 @@ router.post('/submit', [
             }
         });
 
-        // Background job: send emails using SMTP and then cleanup files
+        // Background job: send emails using Resend (primary) or SMTP (fallback) and then cleanup files
         setImmediate(async () => {
             let adminEmailSent = false;
             let userEmailSent = false;
             
             try {
-                // Check SMTP configuration
+                // Check Resend configuration (primary - easiest setup, no subscription)
+                const hasResend = !!process.env.RESEND_API_KEY;
                 const hasSMTP = !!transporter;
                 
-                console.log('📧 SMTP Configuration Check:', {
+                console.log('📧 Email Configuration Check:', {
+                    hasResend,
                     hasSMTP,
                     contactEmail: process.env.CONTACT_EMAIL || 'NOT SET',
-                    emailUser: process.env.EMAIL_USER || 'NOT SET',
-                    smtpHost: process.env.SMTP_HOST || 'smtp.gmail.com',
-                    smtpPort: process.env.SMTP_PORT || '587 (default)'
+                    emailUser: process.env.EMAIL_USER || 'NOT SET'
                 });
 
-                if (!transporter) {
-                    console.error('❌ SMTP not configured - EMAIL_USER and EMAIL_PASS required');
-                    return;
-                }
+                // Try Resend first (primary method - easiest, free tier: 3,000 emails/month)
+                if (hasResend) {
+                    try {
+                        console.log('📧 Attempting to send emails via Resend...');
+                        console.log('📧 Form Data Received:', {
+                            name,
+                            email,
+                            phone,
+                            subject,
+                            messageLength: message?.length || 0,
+                            documentsCount: documents?.length || 0,
+                            documentNames: documents?.map(d => d.originalname) || []
+                        });
+                        
+                        // Prepare attachments for Resend
+                        const attachments = documents.map(file => ({
+                            filename: file.originalname,
+                            path: file.path,
+                            contentType: file.mimetype,
+                            originalname: file.originalname
+                        }));
 
-                // Send admin notification email via SMTP
-                if (transporter) {
-                    // Retry logic for SMTP (up to 3 attempts)
-                    let smtpAttempts = 0;
-                    const maxSmtpAttempts = 3;
-                    let smtpSuccess = false;
-                    
-                    while (smtpAttempts < maxSmtpAttempts && !smtpSuccess) {
-                        try {
-                            smtpAttempts++;
-                            console.log(`📧 SMTP attempt ${smtpAttempts}/${maxSmtpAttempts} for admin email...`);
-                            
-                            // Verify connection before sending (only on first attempt)
-                            if (smtpAttempts === 1) {
-                                try {
-                                    await transporter.verify();
-                                    console.log('✅ SMTP connection verified');
-                                } catch (verifyError) {
-                                    console.error('❌ SMTP verification failed:', {
-                                        message: verifyError.message,
-                                        code: verifyError.code,
-                                        command: verifyError.command,
-                                        response: verifyError.response,
-                                        responseCode: verifyError.responseCode
-                                    });
-                                    
-                                    // Common Gmail authentication errors
-                                    if (verifyError.responseCode === 535 || verifyError.message.includes('Invalid login')) {
-                                        console.error('❌ AUTHENTICATION FAILED - Check your EMAIL_PASS (App Password)');
-                                        console.error('❌ Make sure:');
-                                        console.error('   1. You are using a Gmail App Password (16 characters, no spaces)');
-                                        console.error('   2. The password is copied correctly without extra spaces');
-                                        console.error('   3. 2-Step Verification is enabled on your Google account');
-                                        console.error('   4. The app password was created for "Mail"');
-                                        break; // Don't retry auth errors
-                                    }
-                                    
-                                    // Continue to try sending anyway
-                                }
-                            }
-                            
-                            await transporter.sendMail(mailOptions);
-                            console.log('✅ Contact form admin email sent via SMTP');
+                        console.log('📧 Prepared attachments:', attachments.map(a => ({
+                            filename: a.filename,
+                            hasPath: !!a.path,
+                            contentType: a.contentType
+                        })));
+
+                        // Send admin notification email via Resend with ALL form data
+                        const adminResult = await sendResendEmail('contactFormAdmin', {
+                            name,
+                            email,
+                            phone,
+                            subject,
+                            message,
+                            documents: documents.map(doc => ({
+                                originalname: doc.originalname,
+                                size: doc.size
+                            }))
+                        }, attachments);
+
+                        if (adminResult.success) {
+                            console.log('✅ Contact form admin email sent via Resend');
                             adminEmailSent = true;
-                            smtpSuccess = true;
-                        } catch (smtpError) {
-                            console.error(`❌ SMTP attempt ${smtpAttempts} failed:`, {
-                                message: smtpError.message,
-                                code: smtpError.code,
-                                command: smtpError.command,
-                                response: smtpError.response,
-                                responseCode: smtpError.responseCode
-                            });
-                            
-                            // Check for authentication errors
-                            if (smtpError.responseCode === 535 || smtpError.message.includes('Invalid login') || smtpError.message.includes('authentication')) {
-                                console.error('❌ AUTHENTICATION ERROR - Invalid credentials');
-                                console.error('❌ Check your EMAIL_USER and EMAIL_PASS in production environment variables');
-                                console.error('❌ For Gmail, make sure you are using an App Password, not your regular password');
-                                break; // Don't retry auth errors
-                            }
-                            
-                            // If it's a connection timeout and we have retries left, wait and retry
-                            if (smtpError.code === 'ETIMEDOUT' || smtpError.code === 'ECONNRESET') {
-                                if (smtpAttempts < maxSmtpAttempts) {
-                                    console.log(`⏳ Waiting 2 seconds before retry...`);
-                                    await new Promise(resolve => setTimeout(resolve, 2000));
-                                }
-                            } else {
-                                // For other errors, don't retry
-                                break;
-                            }
+                        } else {
+                            console.error('❌ Resend admin email failed:', adminResult.error);
                         }
-                    }
-                    
-                    if (!smtpSuccess) {
-                        console.error('❌ All SMTP attempts failed for admin email');
-                    }
-                } else if (!adminEmailSent && !transporter) {
-                    console.error('❌ No email method available - SMTP not configured');
-                }
 
-                // Send user confirmation email via SMTP
-                if (transporter) {
-                    // Retry logic for SMTP (up to 3 attempts)
-                    let smtpAttempts = 0;
-                    const maxSmtpAttempts = 3;
-                    let smtpSuccess = false;
-                    
-                    const userMailOptions = {
-                        from: process.env.EMAIL_USER,
-                        to: email,
-                        replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
-                        subject: 'Thank you for contacting Swagat Odisha',
-                        html: `
-                            <h2>Thank you for contacting us!</h2>
-                            <p>Dear ${name},</p>
-                            <p>We have received your message and will get back to you within 24 hours.</p>
-                            <p><strong>Your message:</strong></p>
-                            <p>${message.replace(/\n/g, '<br>')}</p>
-                            <p>Best regards,<br>Swagat Odisha Team</p>
-                        `
-                    };
-                    
-                    while (smtpAttempts < maxSmtpAttempts && !smtpSuccess) {
-                        try {
-                            smtpAttempts++;
-                            console.log(`📧 SMTP attempt ${smtpAttempts}/${maxSmtpAttempts} for user confirmation email...`);
-                            
-                            await transporter.sendMail(userMailOptions);
-                            console.log('✅ Contact form user confirmation sent via SMTP');
+                        // Send user confirmation email via Resend with ALL form data
+                        const userResult = await sendResendEmail('contactFormUser', {
+                            name,
+                            email,
+                            phone,
+                            subject,
+                            message,
+                            documents: documents.map(doc => ({
+                                originalname: doc.originalname,
+                                size: doc.size
+                            }))
+                        });
+
+                        if (userResult.success) {
+                            console.log('✅ Contact form user confirmation sent via Resend');
                             userEmailSent = true;
-                            smtpSuccess = true;
-                        } catch (smtpError) {
-                            console.error(`❌ SMTP attempt ${smtpAttempts} failed for user email:`, {
-                                message: smtpError.message,
-                                code: smtpError.code,
-                                command: smtpError.command,
-                                response: smtpError.response,
-                                responseCode: smtpError.responseCode
-                            });
-                            
-                            // If it's a connection timeout and we have retries left, wait and retry
-                            if (smtpError.code === 'ETIMEDOUT' || smtpError.code === 'ECONNRESET') {
-                                if (smtpAttempts < maxSmtpAttempts) {
-                                    console.log(`⏳ Waiting 2 seconds before retry...`);
-                                    await new Promise(resolve => setTimeout(resolve, 2000));
+                        } else {
+                            console.error('❌ Resend user email failed:', userResult.error);
+                        }
+
+                        // Final summary
+                        console.log('📧 Resend Email Sending Summary:', {
+                            adminEmailSent,
+                            userEmailSent,
+                            recipientEmail: email,
+                            method: 'Resend HTTP API'
+                        });
+
+                    } catch (resendError) {
+                        console.error('❌ Resend error:', resendError);
+                        console.log('📧 Falling back to SMTP...');
+                    }
+                }
+
+                // Fallback to SMTP if Resend failed or not configured
+                if ((!adminEmailSent || !userEmailSent) && hasSMTP) {
+                    console.log('📧 Using SMTP fallback...');
+
+                    // Send admin notification email via SMTP (if not sent via Mailgun)
+                    if (!adminEmailSent) {
+                        // Retry logic for SMTP (up to 3 attempts)
+                        let smtpAttempts = 0;
+                        const maxSmtpAttempts = 3;
+                        let smtpSuccess = false;
+                        
+                        while (smtpAttempts < maxSmtpAttempts && !smtpSuccess) {
+                            try {
+                                smtpAttempts++;
+                                console.log(`📧 SMTP attempt ${smtpAttempts}/${maxSmtpAttempts} for admin email...`);
+                                
+                                // Verify connection before sending (only on first attempt)
+                                if (smtpAttempts === 1) {
+                                    try {
+                                        await transporter.verify();
+                                        console.log('✅ SMTP connection verified');
+                                    } catch (verifyError) {
+                                        console.error('❌ SMTP verification failed:', {
+                                            message: verifyError.message,
+                                            code: verifyError.code
+                                        });
+                                    }
                                 }
-                            } else {
-                                // For other errors, don't retry
-                                break;
+                                
+                                await transporter.sendMail(mailOptions);
+                                console.log('✅ Contact form admin email sent via SMTP (fallback)');
+                                adminEmailSent = true;
+                                smtpSuccess = true;
+                            } catch (smtpError) {
+                                console.error(`❌ SMTP attempt ${smtpAttempts} failed:`, {
+                                    message: smtpError.message,
+                                    code: smtpError.code
+                                });
+                                
+                                // If it's a connection timeout and we have retries left, wait and retry
+                                if (smtpError.code === 'ETIMEDOUT' || smtpError.code === 'ECONNRESET') {
+                                    if (smtpAttempts < maxSmtpAttempts) {
+                                        console.log(`⏳ Waiting 2 seconds before retry...`);
+                                        await new Promise(resolve => setTimeout(resolve, 2000));
+                                    }
+                                } else {
+                                    break;
+                                }
                             }
                         }
                     }
-                    
-                    if (!smtpSuccess) {
-                        console.error('❌ All SMTP attempts failed for user confirmation email');
-                    }
-                } else if (!userEmailSent && !transporter) {
-                    console.error('❌ No email method available for user confirmation - SMTP not configured');
-                }
 
-                // Final summary
-                console.log('📧 SMTP Email Sending Summary:', {
-                    adminEmailSent,
-                    userEmailSent,
-                    recipientEmail: email,
-                    method: 'SMTP'
-                });
+                    // Send user confirmation email via SMTP (if not sent via Mailgun)
+                    if (!userEmailSent) {
+                        // Retry logic for SMTP (up to 3 attempts)
+                        let smtpAttempts = 0;
+                        const maxSmtpAttempts = 3;
+                        let smtpSuccess = false;
+                        
+                        const userMailOptions = {
+                            from: process.env.EMAIL_USER,
+                            to: email,
+                            replyTo: process.env.CONTACT_EMAIL || process.env.EMAIL_USER,
+                            subject: 'Thank you for contacting Swagat Odisha',
+                            html: `
+                                <h2>Thank you for contacting us!</h2>
+                                <p>Dear ${name},</p>
+                                <p>We have received your message and will get back to you within 24 hours.</p>
+                                <p><strong>Your message:</strong></p>
+                                <p>${message.replace(/\n/g, '<br>')}</p>
+                                <p>Best regards,<br>Swagat Odisha Team</p>
+                            `
+                        };
+                        
+                        while (smtpAttempts < maxSmtpAttempts && !smtpSuccess) {
+                            try {
+                                smtpAttempts++;
+                                console.log(`📧 SMTP attempt ${smtpAttempts}/${maxSmtpAttempts} for user confirmation email...`);
+                                
+                                await transporter.sendMail(userMailOptions);
+                                console.log('✅ Contact form user confirmation sent via SMTP (fallback)');
+                                userEmailSent = true;
+                                smtpSuccess = true;
+                            } catch (smtpError) {
+                                console.error(`❌ SMTP attempt ${smtpAttempts} failed for user email:`, {
+                                    message: smtpError.message,
+                                    code: smtpError.code
+                                });
+                                
+                                // If it's a connection timeout and we have retries left, wait and retry
+                                if (smtpError.code === 'ETIMEDOUT' || smtpError.code === 'ECONNRESET') {
+                                    if (smtpAttempts < maxSmtpAttempts) {
+                                        console.log(`⏳ Waiting 2 seconds before retry...`);
+                                        await new Promise(resolve => setTimeout(resolve, 2000));
+                                    }
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Final summary
+                    console.log('📧 Email Sending Summary:', {
+                        adminEmailSent,
+                        userEmailSent,
+                        recipientEmail: email,
+                        method: adminEmailSent && userEmailSent ? 'Resend HTTP API' : 'SMTP (fallback)'
+                    });
+                } else if (!hasResend && !hasSMTP) {
+                    console.error('❌ No email method available - Resend or SMTP not configured');
+                }
 
             } catch (error) {
                 console.error('❌ Unexpected error in email sending background job:', {
@@ -730,6 +771,155 @@ router.post('/test-email', async (req, res) => {
         return res.status(200).json({
             success: true,
             message: 'Test email sent via SMTP',
+            provider: 'SMTP'
+        });
+    } catch (err) {
+        console.error('Test email failed:', err);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Test email failed', 
+            error: err.message 
+        });
+    }
+});
+
+// Test Resend endpoint
+// @route   GET /api/contact/test-resend
+// @access  Public (for debugging)
+router.get('/test-resend', async (req, res) => {
+    try {
+        const hasResend = !!process.env.RESEND_API_KEY;
+        
+        if (!hasResend) {
+            return res.status(400).json({
+                success: false,
+                message: 'Resend not configured',
+                details: {
+                    hasResendApiKey: !!process.env.RESEND_API_KEY,
+                    resendApiKeyLength: process.env.RESEND_API_KEY?.length || 0,
+                    hint: 'Set RESEND_API_KEY in environment variables',
+                    note: 'Get free API key from https://resend.com (3,000 emails/month free)'
+                }
+            });
+        }
+
+        const testEmail = process.env.CONTACT_EMAIL || process.env.RESEND_FROM_EMAIL;
+        if (!testEmail) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'CONTACT_EMAIL or RESEND_FROM_EMAIL not set' 
+            });
+        }
+
+        // Test sending email via Resend
+        const result = await sendResendEmail('contactFormUser', {
+            name: 'Test User',
+            email: testEmail,
+            phone: '1234567890',
+            subject: 'Test Email',
+            message: `This is a test email from the Swagat Odisha backend at ${new Date().toISOString()}.`
+        });
+
+        if (result.success) {
+            return res.status(200).json({
+                success: true,
+                message: 'Test email sent via Resend',
+                provider: 'Resend',
+                method: 'HTTP REST API',
+                messageId: result.messageId,
+                details: {
+                    to: testEmail,
+                    from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+                    freeTier: '3,000 emails/month free'
+                }
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: 'Resend test email failed',
+                error: result.error,
+                details: result.details
+            });
+        }
+    } catch (error) {
+        console.error('Resend test failed:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Resend test failed',
+            error: error.message
+        });
+    }
+});
+
+// Test email endpoint - tries Mailgun first, then SMTP
+// @route   POST /api/contact/test-email
+// @access  Private (guarded by a simple token if provided)
+router.post('/test-email', async (req, res) => {
+    try {
+        // Optional lightweight guard
+        const provided = req.body && req.body.token;
+        const expected = process.env.CONTACT_TEST_TOKEN;
+        if (expected && provided !== expected) {
+            return res.status(403).json({ success: false, message: 'Forbidden' });
+        }
+
+        const testEmail = process.env.CONTACT_EMAIL || process.env.RESEND_FROM_EMAIL || process.env.EMAIL_USER;
+        if (!testEmail) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'CONTACT_EMAIL, MAILGUN_FROM_EMAIL, or EMAIL_USER not set' 
+            });
+        }
+
+        // Try Resend first (easiest, free tier)
+        const hasResend = !!process.env.RESEND_API_KEY;
+        if (hasResend) {
+            try {
+                const result = await sendResendEmail('contactFormUser', {
+                    name: 'Test User',
+                    email: testEmail,
+                    phone: '1234567890',
+                    subject: 'Test Email',
+                    message: `This is a test email from the Swagat Odisha backend at ${new Date().toISOString()}.`
+                });
+
+                if (result.success) {
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Test email sent via Resend',
+                        provider: 'Resend',
+                        messageId: result.messageId
+                    });
+                }
+            } catch (resendError) {
+                console.log('Resend test failed, falling back to SMTP:', resendError.message);
+            }
+        }
+
+        // Fallback to SMTP
+        const transporter = buildTransporter();
+        if (!transporter) {
+            return res.status(400).json({
+                success: false,
+                message: 'Neither Resend nor SMTP configured',
+                details: {
+                    hasResend: hasResend,
+                    hasSMTP: !!transporter,
+                    hint: 'Set RESEND_API_KEY (recommended - free tier), or EMAIL_USER and EMAIL_PASS'
+                }
+            });
+        }
+
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: testEmail,
+            subject: 'Test Email: Swagat Odisha Contact (SMTP)',
+            html: `<p>This is a test email from the Swagat Odisha backend at ${new Date().toISOString()}.</p>`
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Test email sent via SMTP (fallback)',
             provider: 'SMTP'
         });
     } catch (err) {
