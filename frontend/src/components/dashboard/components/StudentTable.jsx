@@ -733,8 +733,8 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     </button>
                                                 )}
 
-                                                {/* Reject Button - Only for SUBMITTED and UNDER_REVIEW */}
-                                                {(student.workflowStatus?.currentStage === 'SUBMITTED' || student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
+                                                {/* Reject Button - Only for SUBMITTED and UNDER_REVIEW - Hidden for agents */}
+                                                {!isAgent && (student.workflowStatus?.currentStage === 'SUBMITTED' || student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
                                                     <button
                                                         onClick={() => {
                                                             setSelectedStudent(student);
