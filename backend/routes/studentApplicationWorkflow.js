@@ -37,7 +37,28 @@ router.put('/:applicationId/save-draft', protect, saveDraft);
 router.put('/:applicationId/submit', protect, submitApplication);
 router.post('/:applicationId/generate-pdf', protect, generateApplicationPDF);
 router.get('/:applicationId/download-pdf', protect, downloadApplicationPDF);
-// PDF upload/storage endpoints removed - PDFs are generated client-side only
+
+// PDF upload/storage endpoints removed - return 404 for any requests to removed endpoints
+router.post('/:applicationId/upload-pdf', protect, (req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'PDF upload endpoint has been removed. PDFs are generated client-side only and not stored on the server.'
+    });
+});
+
+router.get('/:applicationId/pdf', protect, (req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'PDF retrieval endpoint has been removed. PDFs are generated client-side only and not stored on the server.'
+    });
+});
+
+router.get('/:applicationId/pdf-file', protect, (req, res) => {
+    res.status(404).json({
+        success: false,
+        message: 'PDF file endpoint has been removed. PDFs are generated client-side only and not stored on the server.'
+    });
+});
 
 // Agent/Staff routes - get applications they submitted
 router.get('/submitted-by-me', protect, getSubmittedApplications);
