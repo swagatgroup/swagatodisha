@@ -23,9 +23,7 @@ const {
     getApplicationReview,
     getDocumentRequirements,
     getDocumentUploadStatus,
-    uploadApplicationPDF,
-    getApplicationPDF,
-    serveApplicationPDF
+    // PDF upload/storage functions removed
 } = require('../controllers/studentApplicationWorkflowController');
 
 const { fixApplicationDataIntegrity } = require('../scripts/fixApplicationDataIntegrity');
@@ -39,9 +37,7 @@ router.put('/:applicationId/save-draft', protect, saveDraft);
 router.put('/:applicationId/submit', protect, submitApplication);
 router.post('/:applicationId/generate-pdf', protect, generateApplicationPDF);
 router.get('/:applicationId/download-pdf', protect, downloadApplicationPDF);
-router.post('/:applicationId/upload-pdf', protect, require('../middleware/upload').uploadSingle('pdf'), uploadApplicationPDF);
-router.get('/:applicationId/pdf', protect, getApplicationPDF);
-router.get('/:applicationId/pdf-file', protect, serveApplicationPDF);
+// PDF upload/storage endpoints removed - PDFs are generated client-side only
 
 // Agent/Staff routes - get applications they submitted
 router.get('/submitted-by-me', protect, getSubmittedApplications);

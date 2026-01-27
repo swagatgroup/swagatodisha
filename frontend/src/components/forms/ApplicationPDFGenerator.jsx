@@ -661,57 +661,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 }
             }
             
-            // Upload PDF to backend if we have an applicationId
-            if (appId && appId !== 'DRAFT') {
-                try {
-                    console.log('📤 Uploading PDF to backend for application:', appId);
-                    const formDataToUpload = new FormData();
-                    formDataToUpload.append('pdf', pdfBlob, `application_${appId}.pdf`);
-                    
-                    const uploadResponse = await api.post(
-                        `/api/student-application/${appId}/upload-pdf`,
-                        formDataToUpload,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            },
-                            timeout: 60000 // 60 second timeout for large PDFs
-                        }
-                    );
-                    
-                    if (uploadResponse.data.success) {
-                        console.log('✅ PDF uploaded successfully:', uploadResponse.data.data.pdfUrl);
-                        // Store PDF URL for later access
-                        if (onPDFGenerated) {
-                            onPDFGenerated(url, uploadResponse.data.data.pdfUrl);
-                        }
-                        return; // Exit early on success
-                    } else {
-                        throw new Error('PDF upload response was not successful');
-                    }
-                } catch (uploadError) {
-                    console.error('❌ PDF upload error:', uploadError);
-                    console.error('Upload error details:', {
-                        message: uploadError.message,
-                        response: uploadError.response?.data,
-                        status: uploadError.response?.status,
-                        code: uploadError.code
-                    });
-                    
-                    // Show error to user
-                    setError(`PDF upload failed: ${uploadError.response?.data?.message || uploadError.message}. PDF was generated but not saved. Please try again.`);
-                    
-                    // Still call callback with PDF URL so user can download it
-                    if (onPDFGenerated) {
-                        onPDFGenerated(url);
-                    }
-                    return;
-                }
-            } else {
-                console.log('⚠️ No applicationId available for PDF upload');
-            }
-            
-            // Call the callback even if no applicationId (PDF generated but not uploaded)
+            // PDF generated successfully - just call callback with URL
             if (onPDFGenerated) {
                 onPDFGenerated(url);
             }

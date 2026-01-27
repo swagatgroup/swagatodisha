@@ -18,7 +18,6 @@ const SinglePageStudentRegistration = ({
     const navigate = useNavigate();
     const [pdfGenerated, setPdfGenerated] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
-    const [storedPdfUrl, setStoredPdfUrl] = useState(null); // PDF URL from backend
     const [showPDFGenerator, setShowPDFGenerator] = useState(false);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -441,7 +440,7 @@ const SinglePageStudentRegistration = ({
     };
 
     const handlePDFGenerated = (pdfBlobUrl, backendPdfUrl = null, newApplication = null) => {
-        console.log('📄 PDF Generated callback:', { pdfBlobUrl, backendPdfUrl, newApplication });
+        console.log('📄 PDF Generated callback:', { pdfBlobUrl, newApplication });
         setPdfUrl(pdfBlobUrl);
         
         // If a new application was created, update the application state
@@ -450,42 +449,9 @@ const SinglePageStudentRegistration = ({
             setApplication(newApplication);
         }
         
-        if (backendPdfUrl) {
-            console.log('✅ Setting stored PDF URL:', backendPdfUrl);
-            setStoredPdfUrl(backendPdfUrl);
-        } else {
-            console.log('⚠️ No backend PDF URL received');
-            // Try to fetch PDF URL if we have an application
-            const appId = newApplication?.applicationId || application?.applicationId;
-            if (appId) {
-                fetchStoredPDFUrl(appId);
-            }
-        }
         setPdfGenerated(true);
         setShowPDFGenerator(false);
-        const message = backendPdfUrl 
-            ? "PDF generated and saved successfully! You can now download or preview it."
-            : "PDF generated successfully! You can now download or preview it.";
-        showSuccessToast(message);
-    };
-
-    // Function to fetch stored PDF URL
-    const fetchStoredPDFUrl = async (applicationId) => {
-        try {
-            console.log('🔍 Fetching stored PDF URL for application:', applicationId);
-            const pdfResponse = await api.get(
-                `/api/student-application/${applicationId}/pdf`
-            );
-            if (pdfResponse.data.success && pdfResponse.data.data?.pdfUrl) {
-                console.log('✅ Found stored PDF URL:', pdfResponse.data.data.pdfUrl);
-                setStoredPdfUrl(pdfResponse.data.data.pdfUrl);
-            } else {
-                console.log('ℹ️ No stored PDF found yet');
-            }
-        } catch (pdfError) {
-            console.log('ℹ️ PDF not yet uploaded or not found:', pdfError.response?.data?.message || pdfError.message);
-            // Not a critical error, continue
-        }
+        showSuccessToast("PDF generated successfully! You can now download or preview it.");
     };
 
     const downloadPDF = () => {
@@ -689,46 +655,7 @@ const SinglePageStudentRegistration = ({
         try {
             setLoading(true);
 
-            // Ensure PDF is uploaded before submission
-            let currentAppId = application?.applicationId || application?._id;
-            
-            // If we have a PDF but no stored URL, upload it first
-            if (pdfUrl && !storedPdfUrl && currentAppId && currentAppId !== 'DRAFT') {
-                try {
-                    console.log('📤 Uploading PDF before submission...');
-                    showLoading('Uploading PDF...');
-                    
-                    // Convert blob URL to blob
-                    const blob = await fetch(pdfUrl).then(r => r.blob());
-                    const formDataToUpload = new FormData();
-                    formDataToUpload.append('pdf', blob, `application_${currentAppId}.pdf`);
-                    
-                    const uploadResponse = await api.post(
-                        `/api/student-application/${currentAppId}/upload-pdf`,
-                        formDataToUpload,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        }
-                    );
-                    
-                    if (uploadResponse.data.success) {
-                        console.log('✅ PDF uploaded before submission:', uploadResponse.data.data.pdfUrl);
-                        setStoredPdfUrl(uploadResponse.data.data.pdfUrl);
-                        closeLoading();
-                    } else {
-                        throw new Error('PDF upload failed');
-                    }
-                } catch (uploadError) {
-                    closeLoading();
-                    console.error('❌ Failed to upload PDF before submission:', uploadError);
-                    const errorMsg = uploadError.response?.data?.message || 'Failed to upload PDF. Please try generating PDF again.';
-                    showErrorToast(errorMsg);
-                    setLoading(false);
-                    return; // Stop submission if PDF upload fails
-                }
-            }
+            // PDF generation check - no upload needed
 
             // If an application already exists, save latest data then submit
             if (application && (application.applicationId || application._id)) {
@@ -968,59 +895,6 @@ const SinglePageStudentRegistration = ({
             if (response.data.success) {
                 setApplication(response.data.data);
                 
-                // Upload PDF if not already uploaded
-                if (response.data.data?.applicationId && pdfUrl && !storedPdfUrl) {
-                    try {
-                        console.log('📤 Uploading PDF after submission...');
-                        showLoading('Uploading PDF...');
-                        
-                        // Convert blob URL to blob
-                        const blob = await fetch(pdfUrl).then(r => r.blob());
-                        const formData = new FormData();
-                        formData.append('pdf', blob, `application_${response.data.data.applicationId}.pdf`);
-                        
-                        const uploadResponse = await api.post(
-                            `/api/student-application/${response.data.data.applicationId}/upload-pdf`,
-                            formData,
-                            {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                }
-                            }
-                        );
-                        
-                        if (uploadResponse.data.success) {
-                            console.log('✅ PDF uploaded after submission:', uploadResponse.data.data.pdfUrl);
-                            setStoredPdfUrl(uploadResponse.data.data.pdfUrl);
-                            closeLoading();
-                        } else {
-                            throw new Error('PDF upload failed');
-                        }
-                    } catch (uploadError) {
-                        closeLoading();
-                        console.error('❌ Failed to upload PDF after submission:', uploadError);
-                        const errorMsg = uploadError.response?.data?.message || 'PDF upload failed, but application was submitted.';
-                        showErrorToast(errorMsg);
-                        // Continue with submission even if PDF upload fails
-                    }
-                }
-                
-                // Fetch stored PDF URL if available (double-check)
-                if (response.data.data?.applicationId && !storedPdfUrl) {
-                    try {
-                        const pdfResponse = await api.get(
-                            `/api/student-application/${response.data.data.applicationId}/pdf`
-                        );
-                        if (pdfResponse.data.success && pdfResponse.data.data?.pdfUrl) {
-                            console.log('✅ Found stored PDF URL:', pdfResponse.data.data.pdfUrl);
-                            setStoredPdfUrl(pdfResponse.data.data.pdfUrl);
-                        }
-                    } catch (pdfError) {
-                        console.log('ℹ️ PDF not yet uploaded or not found:', pdfError.response?.data?.message || pdfError.message);
-                        // Not a critical error, continue
-                    }
-                }
-                
                 showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
 
                 // Call the update callback if provided
@@ -1149,38 +1023,6 @@ const SinglePageStudentRegistration = ({
                             </svg>
                             <p className="text-green-800 dark:text-green-200 font-medium">PDF generated successfully! You can now submit your application.</p>
                         </div>
-                        {storedPdfUrl ? (
-                            <div className="mt-3 pt-3 border-t border-green-300 dark:border-green-700">
-                                <p className="text-sm text-green-700 dark:text-green-300 mb-2">Your PDF has been saved and can be accessed anytime:</p>
-                                <a 
-                                    href={storedPdfUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="text-sm text-green-800 dark:text-green-200 underline hover:text-green-900 dark:hover:text-green-100 flex items-center"
-                                >
-                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                    </svg>
-                                    View Stored PDF
-                                </a>
-                            </div>
-                        ) : application?.applicationId && (
-                            <div className="mt-3 pt-3 border-t border-green-300 dark:border-green-700">
-                                <p className="text-sm text-green-700 dark:text-green-300 mb-2">
-                                    PDF will be saved automatically after submission.
-                                </p>
-                                <button
-                                    type="button"
-                                    onClick={() => fetchStoredPDFUrl(application.applicationId)}
-                                    className="text-sm text-green-800 dark:text-green-200 underline hover:text-green-900 dark:hover:text-green-100 flex items-center"
-                                >
-                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                    Check for Stored PDF
-                                </button>
-                            </div>
-                        )}
                     </div>
 
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
