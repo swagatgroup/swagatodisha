@@ -246,6 +246,16 @@ const SinglePageStudentRegistration = ({
         };
     }, [user, token]);
 
+    // Helper function to normalize guardian relationship to valid enum value
+    const normalizeGuardianRelationship = (relationship) => {
+        const validRelationships = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'];
+        if (!relationship || !validRelationships.includes(relationship)) {
+            console.warn(`Invalid guardian relationship "${relationship}", defaulting to "Other"`);
+            return 'Other';
+        }
+        return relationship;
+    };
+
     const validateForm = () => {
         const newErrors = {};
 

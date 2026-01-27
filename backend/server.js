@@ -491,6 +491,16 @@ app.post('/api/application/create', protect, async (req, res) => {
             referralInfo: referralInfo
         };
 
+        // Normalize guardian relationship to valid enum value
+        const validRelationships = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'];
+        if (applicationData.guardianDetails && applicationData.guardianDetails.relationship && !validRelationships.includes(applicationData.guardianDetails.relationship)) {
+            console.warn(`Invalid guardian relationship "${applicationData.guardianDetails.relationship}", defaulting to "Other"`);
+            applicationData.guardianDetails = {
+                ...applicationData.guardianDetails,
+                relationship: 'Other'
+            };
+        }
+
         // Generate applicationId if not provided
         if (!applicationData.applicationId) {
             const year = new Date().getFullYear().toString().substr(-2);
@@ -622,13 +632,24 @@ app.post('/api/student-application/create', protect, async (req, res) => {
             }
         }
 
+        // Normalize guardian relationship to valid enum value
+        const validRelationships = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'];
+        let guardianDetails = req.body.guardianDetails || {};
+        if (guardianDetails.relationship && !validRelationships.includes(guardianDetails.relationship)) {
+            console.warn(`Invalid guardian relationship "${guardianDetails.relationship}", defaulting to "Other"`);
+            guardianDetails = {
+                ...guardianDetails,
+                relationship: 'Other'
+            };
+        }
+
         // Create application in database
         const applicationData = {
             user: req.user._id, // Use authenticated user ID
             personalDetails: req.body.personalDetails || {},
             contactDetails: req.body.contactDetails || {},
             courseDetails: req.body.courseDetails || {},
-            guardianDetails: req.body.guardianDetails || {},
+            guardianDetails: guardianDetails,
             financialDetails: req.body.financialDetails || {},
             submittedBy: req.user._id,
             submitterRole: req.user.role || 'student',
