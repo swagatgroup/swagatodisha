@@ -2389,7 +2389,5 @@ module.exports = {
     getApplicationReview,
     getDocumentRequirements,
     getDocumentUploadStatus,
-    uploadApplicationPDF,
-    getApplicationPDF,
-    serveApplicationPDF,
+    // PDF upload/storage functions removed - PDFs are generated client-side only
 };

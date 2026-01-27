@@ -15,6 +15,7 @@
         "test:current": "node scripts/testCurrentSystem.js",
         "test:fixed": "node scripts/testFixedSystem.js",
         "test:server": "node test-server.js",
+        "test:production": "node test-production-endpoints.js",
         "test:endpoints": "echo 'Use test-endpoints.http with REST Client extension'",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
