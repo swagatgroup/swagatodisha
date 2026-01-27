@@ -6,7 +6,7 @@ import api from "../../utils/api";
 import SimpleDocumentUpload from "../forms/SimpleDocumentUpload";
 import ApplicationPDFGenerator from "../forms/ApplicationPDFGenerator";
 import TermsAndConditions from "../legal/TermsAndConditions";
-import { showSuccessToast, showErrorToast } from "../../utils/sweetAlert";
+import { showSuccessToast, showErrorToast, showLoading, closeLoading } from "../../utils/sweetAlert";
 import { formatDateForInput } from "../../utils/dateUtils";
 
 const SinglePageStudentRegistration = ({
@@ -369,7 +369,10 @@ const SinglePageStudentRegistration = ({
                                 personalDetails: personalDetailsForSave,
                                 contactDetails: formData.contactDetails,
                                 courseDetails: formData.courseDetails,
-                                guardianDetails: formData.guardianDetails,
+                                guardianDetails: {
+                                    ...formData.guardianDetails,
+                                    relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
+                                },
                                 documents: formData.documents,
                             },
                             stage: "REGISTRATION",
@@ -386,7 +389,10 @@ const SinglePageStudentRegistration = ({
                             personalDetails: personalDetailsForSubmit,
                             contactDetails: formData.contactDetails,
                             courseDetails: formData.courseDetails,
-                            guardianDetails: formData.guardianDetails,
+                            guardianDetails: {
+                                ...formData.guardianDetails,
+                                relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
+                            },
                             financialDetails: {},
                             referralCode: formData.referralCode || undefined,
                         });
@@ -563,7 +569,7 @@ const SinglePageStudentRegistration = ({
         
         const categories = ["General", "OBC", "SC", "ST", "EWS"];
         const genders = ["Male", "Female", "Other"];
-        const relationships = ["Father", "Mother", "Guardian", "Uncle", "Aunt"];
+        const relationships = ["Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Grandfather", "Grandmother", "Other"];
         const courses = ["Bachelor of Technology", "Bachelor of Science", "Bachelor of Arts", "Bachelor of Commerce", "Master of Technology", "Master of Science"];
         const streams = ["Computer Science", "Electronics", "Mechanical", "Civil", "Electrical", "Information Technology", "Data Science", "Artificial Intelligence"];
         
@@ -657,8 +663,62 @@ const SinglePageStudentRegistration = ({
             return;
         }
 
+        // Check if PDF was generated (warn but allow submission if PDF exists locally)
+        if (!pdfGenerated || !pdfUrl) {
+            const confirmed = window.confirm(
+                "PDF has not been generated yet. Do you want to generate it first? (Click Cancel to proceed without PDF)"
+            );
+            if (confirmed) {
+                setLoading(false);
+                return;
+            }
+            // User chose to proceed without PDF - show warning
+            showErrorToast("Warning: PDF not generated. Application will be submitted without PDF.");
+        }
+
         try {
             setLoading(true);
+
+            // Ensure PDF is uploaded before submission
+            let currentAppId = application?.applicationId || application?._id;
+            
+            // If we have a PDF but no stored URL, upload it first
+            if (pdfUrl && !storedPdfUrl && currentAppId && currentAppId !== 'DRAFT') {
+                try {
+                    console.log('📤 Uploading PDF before submission...');
+                    showLoading('Uploading PDF...');
+                    
+                    // Convert blob URL to blob
+                    const blob = await fetch(pdfUrl).then(r => r.blob());
+                    const formDataToUpload = new FormData();
+                    formDataToUpload.append('pdf', blob, `application_${currentAppId}.pdf`);
+                    
+                    const uploadResponse = await api.post(
+                        `/api/student-application/${currentAppId}/upload-pdf`,
+                        formDataToUpload,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    );
+                    
+                    if (uploadResponse.data.success) {
+                        console.log('✅ PDF uploaded before submission:', uploadResponse.data.data.pdfUrl);
+                        setStoredPdfUrl(uploadResponse.data.data.pdfUrl);
+                        closeLoading();
+                    } else {
+                        throw new Error('PDF upload failed');
+                    }
+                } catch (uploadError) {
+                    closeLoading();
+                    console.error('❌ Failed to upload PDF before submission:', uploadError);
+                    const errorMsg = uploadError.response?.data?.message || 'Failed to upload PDF. Please try generating PDF again.';
+                    showErrorToast(errorMsg);
+                    setLoading(false);
+                    return; // Stop submission if PDF upload fails
+                }
+            }
 
             // If an application already exists, save latest data then submit
             if (application && (application.applicationId || application._id)) {
@@ -707,7 +767,10 @@ const SinglePageStudentRegistration = ({
                                             institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
                                             courseName: formData.courseDetails?.selectedCourse || ''
                                         },
-                                        guardianDetails: formData.guardianDetails,
+                                        guardianDetails: {
+                                            ...formData.guardianDetails,
+                                            relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
+                                        },
                                         documents: documentsArray,
                                     },
                                     stage: "APPLICATION_PDF",
@@ -793,7 +856,8 @@ const SinglePageStudentRegistration = ({
                     },
                     guardianDetails: {
                         ...formData.guardianDetails,
-                        guardianPhone: sanitizePhone(formData.guardianDetails?.guardianPhone)
+                        guardianPhone: sanitizePhone(formData.guardianDetails?.guardianPhone),
+                        relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
                     }
                 };
                 console.log('Submitting application with data:', submitData);
@@ -851,7 +915,10 @@ const SinglePageStudentRegistration = ({
                                                     institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
                                                     courseName: formData.courseDetails?.selectedCourse || ''
                                                 },
-                                                guardianDetails: formData.guardianDetails,
+                                                guardianDetails: {
+                                                    ...formData.guardianDetails,
+                                                    relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
+                                                },
                                                 documents: documentsArray,
                                             },
                                             stage: "APPLICATION_PDF",
@@ -891,10 +958,12 @@ const SinglePageStudentRegistration = ({
             if (response.data.success) {
                 setApplication(response.data.data);
                 
-                // If PDF was generated but not uploaded, upload it now
+                // Upload PDF if not already uploaded
                 if (response.data.data?.applicationId && pdfUrl && !storedPdfUrl) {
                     try {
                         console.log('📤 Uploading PDF after submission...');
+                        showLoading('Uploading PDF...');
+                        
                         // Convert blob URL to blob
                         const blob = await fetch(pdfUrl).then(r => r.blob());
                         const formData = new FormData();
@@ -913,15 +982,21 @@ const SinglePageStudentRegistration = ({
                         if (uploadResponse.data.success) {
                             console.log('✅ PDF uploaded after submission:', uploadResponse.data.data.pdfUrl);
                             setStoredPdfUrl(uploadResponse.data.data.pdfUrl);
+                            closeLoading();
+                        } else {
+                            throw new Error('PDF upload failed');
                         }
                     } catch (uploadError) {
+                        closeLoading();
                         console.error('❌ Failed to upload PDF after submission:', uploadError);
-                        // Not critical, continue
+                        const errorMsg = uploadError.response?.data?.message || 'PDF upload failed, but application was submitted.';
+                        showErrorToast(errorMsg);
+                        // Continue with submission even if PDF upload fails
                     }
                 }
                 
-                // Fetch stored PDF URL if available
-                if (response.data.data?.applicationId) {
+                // Fetch stored PDF URL if available (double-check)
+                if (response.data.data?.applicationId && !storedPdfUrl) {
                     try {
                         const pdfResponse = await api.get(
                             `/api/student-application/${response.data.data.applicationId}/pdf`

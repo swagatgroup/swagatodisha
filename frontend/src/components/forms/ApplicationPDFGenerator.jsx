@@ -674,7 +674,8 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                         {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
-                            }
+                            },
+                            timeout: 60000 // 60 second timeout for large PDFs
                         }
                     );
                     
@@ -685,21 +686,32 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                             onPDFGenerated(url, uploadResponse.data.data.pdfUrl);
                         }
                         return; // Exit early on success
+                    } else {
+                        throw new Error('PDF upload response was not successful');
                     }
                 } catch (uploadError) {
                     console.error('❌ PDF upload error:', uploadError);
                     console.error('Upload error details:', {
                         message: uploadError.message,
                         response: uploadError.response?.data,
-                        status: uploadError.response?.status
+                        status: uploadError.response?.status,
+                        code: uploadError.code
                     });
-                    // Don't fail the whole process if upload fails
+                    
+                    // Show error to user
+                    setError(`PDF upload failed: ${uploadError.response?.data?.message || uploadError.message}. PDF was generated but not saved. Please try again.`);
+                    
+                    // Still call callback with PDF URL so user can download it
+                    if (onPDFGenerated) {
+                        onPDFGenerated(url);
+                    }
+                    return;
                 }
             } else {
                 console.log('⚠️ No applicationId available for PDF upload');
             }
             
-            // Call the callback even if upload failed or no applicationId
+            // Call the callback even if no applicationId (PDF generated but not uploaded)
             if (onPDFGenerated) {
                 onPDFGenerated(url);
             }
