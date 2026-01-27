@@ -639,18 +639,7 @@ const SinglePageStudentRegistration = ({
             return;
         }
 
-        // Check if PDF was generated (warn but allow submission if PDF exists locally)
-        if (!pdfGenerated || !pdfUrl) {
-            const confirmed = window.confirm(
-                "PDF has not been generated yet. Do you want to generate it first? (Click Cancel to proceed without PDF)"
-            );
-            if (confirmed) {
-                setLoading(false);
-                return;
-            }
-            // User chose to proceed without PDF - show warning
-            showErrorToast("Warning: PDF not generated. Application will be submitted without PDF.");
-        }
+        // PDF generation is optional - no check needed for submission
 
         try {
             setLoading(true);
@@ -2025,7 +2014,7 @@ const SinglePageStudentRegistration = ({
                     <button
                         type="button"
                         onClick={handleSubmit}
-                        disabled={loading || !formData.termsAccepted || !pdfGenerated}
+                        disabled={loading || !formData.termsAccepted}
                         className="w-full sm:w-auto px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? "Submitting..." : "Submit Application"}
