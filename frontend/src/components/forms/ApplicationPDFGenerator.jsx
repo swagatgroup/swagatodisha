@@ -99,7 +99,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // Create a comprehensive PDF content
             const pdfContent = createPDFContent(formData, application);
 
-            // Generate premium PDF using jsPDF - LIMITED TO 2 PAGES
+            // Generate premium PDF using jsPDF - EXACTLY 2 PAGES
+            // PAGE 1: All form details (Personal, Contact, Family/Academic, Documents)
+            // PAGE 2: Terms and Conditions + Signatures
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
@@ -208,17 +210,12 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 }
             });
             
-            yPosition = Math.max(col1Y, col2Y) + 7;
+            yPosition = Math.max(col1Y, col2Y) + 5; // Reduced spacing
 
             // ============================================
             // SECTION 2: CONTACT DETAILS (Two-column layout)
             // ============================================
-            
-            // Check if we need to move to page 2
-            if (yPosition > maxYPage1 - 50) {
-                pdf.addPage();
-                yPosition = 20;
-            }
+            // NOTE: All sections 1-4 must stay on PAGE 1
 
             // Compact section header
             pdf.setFillColor(16, 185, 129);
@@ -276,17 +273,12 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 }
             });
             
-            yPosition = Math.max(col1Y, col2Y) + 7;
+            yPosition = Math.max(col1Y, col2Y) + 5; // Reduced spacing
 
             // ============================================
             // SECTION 3: FAMILY & ACADEMIC DETAILS (Two-column)
             // ============================================
-            
-            // Check if we need to move to page 2
-            if (yPosition > maxYPage1 - 50) {
-                pdf.addPage();
-                yPosition = 20;
-            }
+            // NOTE: All sections 1-4 must stay on PAGE 1
 
             // Compact section header
             pdf.setFillColor(234, 88, 12);
@@ -352,17 +344,13 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 }
             });
             
-            yPosition = Math.max(col1Y, col2Y) + 7;
+            yPosition = Math.max(col1Y, col2Y) + 5; // Reduced spacing
 
             // ============================================
             // SECTION 4: UPLOADED DOCUMENTS (Compact grid)
             // ============================================
-            
-            // Check if we need to move to page 2
-            if (yPosition > maxYPage1 - 40) {
-                pdf.addPage();
-                yPosition = 20;
-            }
+            // NOTE: All sections 1-4 must stay on PAGE 1
+            // Optimize spacing to ensure everything fits on page 1
 
             // Compact section header
             pdf.setFillColor(37, 99, 235);
@@ -392,24 +380,25 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             };
 
             if (documents.length > 0) {
-                // Compact two-column grid
-                let currentPage = 1;
+                // Compact two-column grid - MUST stay on page 1
+                // Calculate max rows that fit on page 1
+                const boxHeight = 8;
+                const rowSpacing = 11;
+                const maxRowsOnPage1 = Math.floor((maxYPage1 - yPosition - 10) / rowSpacing);
+                const maxDocsOnPage1 = maxRowsOnPage1 * 2;
+                
                 documents.forEach(([key, doc], index) => {
+                    // Only show documents that fit on page 1
+                    if (index >= maxDocsOnPage1) {
+                        return; // Skip documents that don't fit
+                    }
+                    
                     const docName = documentNames[key] || key.replace(/_/g, ' ').substring(0, 15);
                     const col = index % 2;
                     const row = Math.floor(index / 2);
                     const boxWidth = (pageWidth - 30) / 2;
-                    const boxHeight = 8;
                     const xPos = 12 + (col * (boxWidth + 6));
-                    let currentY = yPosition + (row * 11);
-                    
-                    // Check if we need page 2
-                    if (currentPage === 1 && currentY + boxHeight > maxYPage1) {
-                        pdf.addPage();
-                        currentPage = 2;
-                        yPosition = 20;
-                        currentY = yPosition + ((row % 4) * 10);
-                    }
+                    const currentY = yPosition + (row * rowSpacing);
                     
                     // Compact document box
                     pdf.setDrawColor(200, 200, 200);
@@ -445,8 +434,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     }
                 });
                 
-                const totalRows = Math.ceil(documents.length / 2);
-                yPosition += (totalRows * 11) + 7;
+                // Calculate final position based on actual documents shown
+                const docsShown = Math.min(documents.length, maxDocsOnPage1);
+                const totalRows = Math.ceil(docsShown / 2);
+                yPosition += (totalRows * rowSpacing) + 5; // Reduced spacing
             } else {
                 pdf.setFont('helvetica', 'normal');
                 pdf.setFontSize(8);
@@ -458,12 +449,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // ============================================
             // SECTION 5: TERMS AND CONDITIONS (Compact)
             // ============================================
-            
-            // Check if we need to move to page 2
-            if (yPosition > maxYPage1 - 60) {
-                pdf.addPage();
-                yPosition = 20;
-            }
+            // FORCE PAGE 2 - Terms and Conditions always on page 2
+            pdf.addPage();
+            yPosition = 20;
 
             // Compact section header
             pdf.setFillColor(147, 51, 234);
@@ -492,13 +480,12 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 { num: '8', text: 'Medical Fitness: I declare that I am medically fit to pursue the selected course and will provide medical certificates if required.' }
             ];
 
-            let currentPage = pdf.internal.getNumberOfPages();
+            // Terms are always on page 2 (already on page 2)
             terms.forEach((term, index) => {
-                // Check if we need page 2
-                if (currentPage === 1 && yPosition > maxYPage1 - 15) {
-                    pdf.addPage();
-                    currentPage = 2;
-                    yPosition = 20;
+                // Check if we're running out of space on page 2
+                if (yPosition > maxYPage2 - 15) {
+                    // Reduce spacing if needed
+                    yPosition -= 2;
                 }
                 
                 // Term number
@@ -525,14 +512,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // ============================================
             // SIGNATURE SECTION (Compact)
             // ============================================
-            
-            // Check if we need page 2
-            const currentPageNum = pdf.internal.getNumberOfPages();
-            if (currentPageNum === 1 && yPosition > maxYPage1 - 25) {
-                pdf.addPage();
-                yPosition = 20;
-            } else if (currentPageNum === 2 && yPosition > maxYPage2 - 25) {
-                yPosition = maxYPage2 - 25;
+            // Signatures are always on page 2 (already on page 2)
+            // Ensure we have enough space for signatures
+            if (yPosition > maxYPage2 - 30) {
+                yPosition = maxYPage2 - 30;
             }
 
             // Compact signature section
@@ -623,7 +606,100 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             const url = URL.createObjectURL(pdfBlob);
             setPdfUrl(url);
 
-            // Call the callback if provided
+            // Try to create or get application, then upload PDF
+            let appId = application?.applicationId || formData?.applicationId;
+            
+            // If no application exists, try to create a draft application
+            if (!appId || appId === 'DRAFT') {
+                try {
+                    console.log('📝 No application found, creating draft application...');
+                    
+                    // Convert date format if needed (DD/MM/YYYY to YYYY-MM-DD)
+                    const convertDate = (dateStr) => {
+                        if (!dateStr) return null;
+                        // Check if already in YYYY-MM-DD format
+                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+                        // Convert from DD/MM/YYYY
+                        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                            const [day, month, year] = dateStr.split('/');
+                            return `${year}-${month}-${day}`;
+                        }
+                        return dateStr;
+                    };
+                    
+                    const personalDetailsForCreate = {
+                        ...formData.personalDetails,
+                        dateOfBirth: convertDate(formData.personalDetails?.dateOfBirth),
+                        registrationDate: convertDate(formData.personalDetails?.registrationDate),
+                    };
+                    
+                    const createResponse = await api.post('/api/student-application/create', {
+                        personalDetails: personalDetailsForCreate,
+                        contactDetails: formData.contactDetails || {},
+                        courseDetails: formData.courseDetails || {},
+                        guardianDetails: formData.guardianDetails || {},
+                        financialDetails: {},
+                        referralCode: formData.referralCode || undefined,
+                    });
+                    
+                    if (createResponse.data.success && createResponse.data.data?.applicationId) {
+                        appId = createResponse.data.data.applicationId;
+                        console.log('✅ Draft application created:', appId);
+                        // Update application in parent component via callback
+                        if (onPDFGenerated) {
+                            // Pass application data to callback
+                            onPDFGenerated(url, null, createResponse.data.data);
+                        }
+                    }
+                } catch (createError) {
+                    console.error('❌ Failed to create draft application:', createError);
+                    console.error('Create error details:', {
+                        message: createError.message,
+                        response: createError.response?.data,
+                        status: createError.response?.status
+                    });
+                }
+            }
+            
+            // Upload PDF to backend if we have an applicationId
+            if (appId && appId !== 'DRAFT') {
+                try {
+                    console.log('📤 Uploading PDF to backend for application:', appId);
+                    const formDataToUpload = new FormData();
+                    formDataToUpload.append('pdf', pdfBlob, `application_${appId}.pdf`);
+                    
+                    const uploadResponse = await api.post(
+                        `/api/student-application/${appId}/upload-pdf`,
+                        formDataToUpload,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    );
+                    
+                    if (uploadResponse.data.success) {
+                        console.log('✅ PDF uploaded successfully:', uploadResponse.data.data.pdfUrl);
+                        // Store PDF URL for later access
+                        if (onPDFGenerated) {
+                            onPDFGenerated(url, uploadResponse.data.data.pdfUrl);
+                        }
+                        return; // Exit early on success
+                    }
+                } catch (uploadError) {
+                    console.error('❌ PDF upload error:', uploadError);
+                    console.error('Upload error details:', {
+                        message: uploadError.message,
+                        response: uploadError.response?.data,
+                        status: uploadError.response?.status
+                    });
+                    // Don't fail the whole process if upload fails
+                }
+            } else {
+                console.log('⚠️ No applicationId available for PDF upload');
+            }
+            
+            // Call the callback even if upload failed or no applicationId
             if (onPDFGenerated) {
                 onPDFGenerated(url);
             }

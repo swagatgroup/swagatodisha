@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import api from '../../../utils/api';
+import { showError } from '../../../utils/sweetAlert';
 
 const StudentsTab = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -266,13 +268,14 @@ const StudentsTab = () => {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referral</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PDF</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {loading ? (
                                 <tr>
-                                    <td colSpan="9" className="px-6 py-4 text-center">
+                                    <td colSpan="10" className="px-6 py-4 text-center">
                                         <div className="flex items-center justify-center">
                                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
                                             <span className="ml-2">Loading students...</span>
@@ -281,7 +284,7 @@ const StudentsTab = () => {
                                 </tr>
                             ) : filteredStudents.length === 0 ? (
                                 <tr>
-                                    <td colSpan="9" className="px-6 py-4 text-center text-gray-500">
+                                    <td colSpan="10" className="px-6 py-4 text-center text-gray-500">
                                         No students found
                                     </td>
                                 </tr>
@@ -325,6 +328,68 @@ const StudentsTab = () => {
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
                                                     Direct
                                                 </span>
+                                            )}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                            {/* PDF Button - Show if student has applicationId */}
+                                            {(student.applicationId || student._id) ? (
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            const appId = student.applicationId || student._id;
+                                                            const studentName = (student.fullName || 'application').replace(/[^a-zA-Z0-9]/g, '_');
+                                                            
+                                                            // Fetch PDF with authentication token
+                                                            const response = await api.get(
+                                                                `/api/student-application/${appId}/pdf-file`,
+                                                                {
+                                                                    responseType: 'blob' // Important: get as blob
+                                                                }
+                                                            );
+                                                            
+                                                            // Create blob URL from response
+                                                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                                                            const blobUrl = window.URL.createObjectURL(blob);
+                                                            
+                                                            // Open in new tab
+                                                            const newWindow = window.open(blobUrl, '_blank');
+                                                            
+                                                            // Clean up blob URL after a delay (browser will cache it)
+                                                            setTimeout(() => {
+                                                                if (newWindow) {
+                                                                    // Revoke after window opens
+                                                                    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+                                                                } else {
+                                                                    // If popup blocked, create download link
+                                                                    const link = document.createElement('a');
+                                                                    link.href = blobUrl;
+                                                                    link.download = `Application_${appId}_${studentName}.pdf`;
+                                                                    document.body.appendChild(link);
+                                                                    link.click();
+                                                                    document.body.removeChild(link);
+                                                                    window.URL.revokeObjectURL(blobUrl);
+                                                                }
+                                                            }, 100);
+                                                        } catch (error) {
+                                                            console.error('Error fetching PDF:', error);
+                                                            if (error.response?.status === 401) {
+                                                                showError('Please log in to view PDF');
+                                                            } else if (error.response?.status === 404) {
+                                                                showError('PDF not found. Please generate the PDF first.');
+                                                            } else {
+                                                                showError('Failed to load PDF. It may not be generated yet.');
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="text-red-600 hover:text-red-900"
+                                                    title="View Application PDF"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </button>
+                                            ) : (
+                                                <span className="text-gray-400 text-xs">N/A</span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

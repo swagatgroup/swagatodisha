@@ -2084,6 +2084,253 @@ const getDocumentUploadStatus = async (req, res) => {
     }
 };
 
+// Upload application PDF (from frontend-generated PDF)
+const uploadApplicationPDF = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: 'No PDF file provided'
+            });
+        }
+
+        if (req.file.mimetype !== 'application/pdf') {
+            return res.status(400).json({
+                success: false,
+                message: 'File must be a PDF'
+            });
+        }
+
+        const application = await StudentApplication.findOne({ applicationId });
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        // Check if user owns this application
+        if (application.user.toString() !== req.user._id.toString() && 
+            req.user.role !== 'super_admin' && 
+            req.user.role !== 'staff') {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to upload PDF for this application'
+            });
+        }
+
+        // Upload to Cloudinary
+        const cloudinary = require('cloudinary').v2;
+        const streamifier = require('streamifier');
+
+        console.log('📄 Uploading application PDF to Cloudinary...');
+        
+        const cloudinaryResult = await new Promise((resolve, reject) => {
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    resource_type: 'raw',
+                    folder: `swagat-odisha/application-pdfs/${applicationId}`,
+                    public_id: `application_${applicationId}_${Date.now()}`,
+                    use_filename: false,
+                    unique_filename: true
+                },
+                (error, result) => {
+                    if (error) {
+                        console.error('❌ Cloudinary upload error:', error);
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+                }
+            );
+
+            streamifier.createReadStream(req.file.buffer).pipe(uploadStream);
+        });
+
+        console.log('✅ Application PDF uploaded to Cloudinary:', cloudinaryResult.secure_url);
+
+        // Update application with PDF URL
+        application.applicationPdf = {
+            filePath: cloudinaryResult.secure_url,
+            generatedAt: new Date(),
+            version: '1.0'
+        };
+        application.progress.applicationPdfGenerated = true;
+        await application.save();
+
+        return res.status(200).json({
+            success: true,
+            message: 'Application PDF uploaded and stored successfully',
+            data: {
+                pdfUrl: cloudinaryResult.secure_url,
+                applicationId: application.applicationId,
+                generatedAt: application.applicationPdf.generatedAt
+            }
+        });
+    } catch (error) {
+        console.error('Upload application PDF error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to upload application PDF',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Get application PDF URL
+const getApplicationPDF = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+
+        const application = await StudentApplication.findOne({ applicationId });
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        // Check if user owns this application
+        if (application.user.toString() !== req.user._id.toString() && 
+            req.user.role !== 'super_admin' && 
+            req.user.role !== 'staff') {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to view PDF for this application'
+            });
+        }
+
+        if (!application.applicationPdf || !application.applicationPdf.filePath) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application PDF not found. Please generate the PDF first.'
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Application PDF retrieved successfully',
+            data: {
+                pdfUrl: application.applicationPdf.filePath,
+                generatedAt: application.applicationPdf.generatedAt,
+                version: application.applicationPdf.version,
+                applicationId: application.applicationId
+            }
+        });
+    } catch (error) {
+        console.error('Get application PDF error:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Failed to retrieve application PDF',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Download/Serve application PDF with proper headers
+const serveApplicationPDF = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+
+        const application = await StudentApplication.findOne({ applicationId });
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        // Check if user owns this application
+        if (application.user.toString() !== req.user._id.toString() && 
+            req.user.role !== 'super_admin' && 
+            req.user.role !== 'staff') {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to view PDF for this application'
+            });
+        }
+
+        if (!application.applicationPdf || !application.applicationPdf.filePath) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application PDF not found. Please generate the PDF first.'
+            });
+        }
+
+        const pdfUrl = application.applicationPdf.filePath;
+        const studentName = (application.personalDetails?.fullName || 'application').replace(/[^a-zA-Z0-9]/g, '_');
+        const filename = `Application_${application.applicationId}_${studentName}.pdf`;
+
+        // Fetch PDF from Cloudinary and stream to response
+        const https = require('https');
+        const http = require('http');
+        
+        return new Promise((resolve, reject) => {
+            try {
+                const parsedUrl = new URL(pdfUrl);
+                const client = parsedUrl.protocol === 'https:' ? https : http;
+                
+                client.get(pdfUrl, (response) => {
+                    if (response.statusCode !== 200) {
+                        res.status(404).json({
+                            success: false,
+                            message: 'PDF file not found on server'
+                        });
+                        return resolve();
+                    }
+
+                    // Set proper headers for PDF viewing/downloading
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+                    res.setHeader('Cache-Control', 'public, max-age=3600');
+                    
+                    // Pipe the PDF to response
+                    response.on('end', () => resolve());
+                    response.on('error', (err) => {
+                        console.error('Error streaming PDF:', err);
+                        if (!res.headersSent) {
+                            res.status(500).json({
+                                success: false,
+                                message: 'Failed to stream PDF file'
+                            });
+                        }
+                        resolve();
+                    });
+                    
+                    response.pipe(res);
+                }).on('error', (error) => {
+                    console.error('Error fetching PDF from Cloudinary:', error);
+                    if (!res.headersSent) {
+                        res.status(500).json({
+                            success: false,
+                            message: 'Failed to retrieve PDF file'
+                        });
+                    }
+                    resolve();
+                });
+            } catch (urlError) {
+                console.error('Error parsing PDF URL:', urlError);
+                res.status(500).json({
+                    success: false,
+                    message: 'Invalid PDF URL'
+                });
+                resolve();
+            }
+        });
+    } catch (error) {
+        console.error('Serve application PDF error:', error);
+        if (!res.headersSent) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to serve application PDF',
+                error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+            });
+        }
+    }
+};
+
 module.exports = {
     createApplication,
     updateApplication,
@@ -2107,4 +2354,7 @@ module.exports = {
     getApplicationReview,
     getDocumentRequirements,
     getDocumentUploadStatus,
+    uploadApplicationPDF,
+    getApplicationPDF,
+    serveApplicationPDF,
 };
