@@ -151,13 +151,24 @@ const createApplication = async (req, res) => {
             personalDetails.registrationDate = new Date(personalDetails.registrationDate);
         }
 
+        // Normalize guardian relationship to valid enum value
+        const validRelationships = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'];
+        let normalizedGuardianDetails = guardianDetails || {};
+        if (normalizedGuardianDetails.relationship && !validRelationships.includes(normalizedGuardianDetails.relationship)) {
+            console.warn(`Invalid guardian relationship "${normalizedGuardianDetails.relationship}", defaulting to "Other"`);
+            normalizedGuardianDetails = {
+                ...normalizedGuardianDetails,
+                relationship: 'Other'
+            };
+        }
+
         // Create application
         const applicationData = {
             user: req.user._id,
             personalDetails,
             contactDetails,
             courseDetails,
-            guardianDetails,
+            guardianDetails: normalizedGuardianDetails,
             financialDetails,
             referralInfo,
             submittedBy: req.user._id,
