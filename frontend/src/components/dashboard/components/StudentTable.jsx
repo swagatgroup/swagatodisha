@@ -719,6 +719,65 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                 </svg>
                                             </button>
+                                            
+                                            {/* PDF Button - Show if application has stored PDF */}
+                                            {student.applicationId && (
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            const appId = student.applicationId;
+                                                            const studentName = (student.personalDetails?.fullName || 'application').replace(/[^a-zA-Z0-9]/g, '_');
+                                                            
+                                                            // Fetch PDF with authentication token
+                                                            const response = await api.get(
+                                                                `/api/student-application/${appId}/pdf-file`,
+                                                                {
+                                                                    responseType: 'blob' // Important: get as blob
+                                                                }
+                                                            );
+                                                            
+                                                            // Create blob URL from response
+                                                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                                                            const blobUrl = window.URL.createObjectURL(blob);
+                                                            
+                                                            // Open in new tab
+                                                            const newWindow = window.open(blobUrl, '_blank');
+                                                            
+                                                            // Clean up blob URL after a delay (browser will cache it)
+                                                            setTimeout(() => {
+                                                                if (newWindow) {
+                                                                    // Revoke after window opens
+                                                                    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+                                                                } else {
+                                                                    // If popup blocked, create download link
+                                                                    const link = document.createElement('a');
+                                                                    link.href = blobUrl;
+                                                                    link.download = `Application_${appId}_${studentName}.pdf`;
+                                                                    document.body.appendChild(link);
+                                                                    link.click();
+                                                                    document.body.removeChild(link);
+                                                                    window.URL.revokeObjectURL(blobUrl);
+                                                                }
+                                                            }, 100);
+                                                        } catch (error) {
+                                                            console.error('Error fetching PDF:', error);
+                                                            if (error.response?.status === 401) {
+                                                                showError('Please log in to view PDF');
+                                                            } else if (error.response?.status === 404) {
+                                                                showError('PDF not found. Please generate the PDF first.');
+                                                            } else {
+                                                                showError('Failed to load PDF. It may not be generated yet.');
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                                    title="View Application PDF"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                </button>
+                                            )}
                                                 {/* Accept Button - Only for SUBMITTED and UNDER_REVIEW */}
                                                 {(student.workflowStatus?.currentStage === 'SUBMITTED' || student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
                                                     <button
@@ -1278,6 +1337,72 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                             </p>
                                         </div>
                                     </div>
+                                    
+                                    {/* Application PDF Link */}
+                                    {selectedStudent.applicationId && (
+                                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 block">Application PDF</label>
+                                            <div className="flex space-x-2">
+                                                <button
+                                                    onClick={async () => {
+                                                        try {
+                                                            showLoading('Loading PDF...');
+                                                            const appId = selectedStudent.applicationId;
+                                                            const studentName = (selectedStudent.personalDetails?.fullName || 'application').replace(/[^a-zA-Z0-9]/g, '_');
+                                                            
+                                                            // Fetch PDF with authentication token
+                                                            const response = await api.get(
+                                                                `/api/student-application/${appId}/pdf-file`,
+                                                                {
+                                                                    responseType: 'blob' // Important: get as blob
+                                                                }
+                                                            );
+                                                            closeLoading();
+                                                            
+                                                            // Create blob URL from response
+                                                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                                                            const blobUrl = window.URL.createObjectURL(blob);
+                                                            
+                                                            // Open in new tab
+                                                            const newWindow = window.open(blobUrl, '_blank');
+                                                            
+                                                            // Clean up blob URL after a delay
+                                                            setTimeout(() => {
+                                                                if (newWindow) {
+                                                                    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+                                                                } else {
+                                                                    // If popup blocked, create download link
+                                                                    const link = document.createElement('a');
+                                                                    link.href = blobUrl;
+                                                                    link.download = `Application_${appId}_${studentName}.pdf`;
+                                                                    document.body.appendChild(link);
+                                                                    link.click();
+                                                                    document.body.removeChild(link);
+                                                                    window.URL.revokeObjectURL(blobUrl);
+                                                                }
+                                                            }, 100);
+                                                        } catch (error) {
+                                                            closeLoading();
+                                                            console.error('Error fetching PDF:', error);
+                                                            if (error.response?.status === 401) {
+                                                                showError('Please log in to view PDF');
+                                                            } else if (error.response?.status === 404) {
+                                                                showError('PDF not found. Please generate the PDF first.');
+                                                            } else {
+                                                                showError('Failed to load PDF. It may not be generated yet.');
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                                                >
+                                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    View Application PDF
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

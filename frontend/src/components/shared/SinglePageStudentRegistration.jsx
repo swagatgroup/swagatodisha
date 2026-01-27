@@ -18,6 +18,7 @@ const SinglePageStudentRegistration = ({
     const navigate = useNavigate();
     const [pdfGenerated, setPdfGenerated] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
+    const [storedPdfUrl, setStoredPdfUrl] = useState(null); // PDF URL from backend
     const [showPDFGenerator, setShowPDFGenerator] = useState(false);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -423,11 +424,52 @@ const SinglePageStudentRegistration = ({
         setShowPDFGenerator(true);
     };
 
-    const handlePDFGenerated = (pdfBlobUrl) => {
+    const handlePDFGenerated = (pdfBlobUrl, backendPdfUrl = null, newApplication = null) => {
+        console.log('📄 PDF Generated callback:', { pdfBlobUrl, backendPdfUrl, newApplication });
         setPdfUrl(pdfBlobUrl);
+        
+        // If a new application was created, update the application state
+        if (newApplication) {
+            console.log('✅ Updating application state:', newApplication);
+            setApplication(newApplication);
+        }
+        
+        if (backendPdfUrl) {
+            console.log('✅ Setting stored PDF URL:', backendPdfUrl);
+            setStoredPdfUrl(backendPdfUrl);
+        } else {
+            console.log('⚠️ No backend PDF URL received');
+            // Try to fetch PDF URL if we have an application
+            const appId = newApplication?.applicationId || application?.applicationId;
+            if (appId) {
+                fetchStoredPDFUrl(appId);
+            }
+        }
         setPdfGenerated(true);
         setShowPDFGenerator(false);
-        showSuccessToast("PDF generated successfully! You can now download or preview it.");
+        const message = backendPdfUrl 
+            ? "PDF generated and saved successfully! You can now download or preview it."
+            : "PDF generated successfully! You can now download or preview it.";
+        showSuccessToast(message);
+    };
+
+    // Function to fetch stored PDF URL
+    const fetchStoredPDFUrl = async (applicationId) => {
+        try {
+            console.log('🔍 Fetching stored PDF URL for application:', applicationId);
+            const pdfResponse = await api.get(
+                `/api/student-application/${applicationId}/pdf`
+            );
+            if (pdfResponse.data.success && pdfResponse.data.data?.pdfUrl) {
+                console.log('✅ Found stored PDF URL:', pdfResponse.data.data.pdfUrl);
+                setStoredPdfUrl(pdfResponse.data.data.pdfUrl);
+            } else {
+                console.log('ℹ️ No stored PDF found yet');
+            }
+        } catch (pdfError) {
+            console.log('ℹ️ PDF not yet uploaded or not found:', pdfError.response?.data?.message || pdfError.message);
+            // Not a critical error, continue
+        }
     };
 
     const downloadPDF = () => {
@@ -467,58 +509,146 @@ const SinglePageStudentRegistration = ({
     };
 
     const fillMockData = () => {
+        // Random name generators
+        const firstNames = ["Raj", "Priya", "Amit", "Sneha", "Vikram", "Anjali", "Rohit", "Kavya", "Arjun", "Divya", "Siddharth", "Meera", "Karan", "Isha", "Aditya", "Riya", "Nikhil", "Pooja", "Rahul", "Shreya"];
+        const lastNames = ["Kumar", "Sharma", "Patel", "Singh", "Reddy", "Verma", "Gupta", "Mehta", "Jain", "Shah", "Rao", "Nair", "Malhotra", "Chopra", "Agarwal", "Bansal", "Kapoor", "Tiwari", "Yadav", "Mishra"];
+        
+        const getRandomElement = (arr) => arr[Math.floor(Math.random() * arr.length)];
+        const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const getRandomPhone = () => {
+            const prefix = [6, 7, 8, 9][Math.floor(Math.random() * 4)];
+            return `${prefix}${getRandomInt(100000000, 999999999)}`;
+        };
+        const getRandomAadhar = () => {
+            return Array.from({ length: 12 }, () => getRandomInt(0, 9)).join('');
+        };
+        const getRandomPincode = () => {
+            return getRandomInt(100000, 999999).toString();
+        };
+        
+        // Random date between 1995 and 2010
+        const year = getRandomInt(1995, 2010);
+        const month = String(getRandomInt(1, 12)).padStart(2, '0');
+        const day = String(getRandomInt(1, 28)).padStart(2, '0');
+        const dateOfBirth = `${year}-${month}-${day}`;
+        
+        // Random registration date (recent)
+        const regYear = getRandomInt(2020, 2024);
+        const regMonth = String(getRandomInt(1, 12)).padStart(2, '0');
+        const regDay = String(getRandomInt(1, 28)).padStart(2, '0');
+        const registrationDate = `${regYear}-${regMonth}-${regDay}`;
+        
+        const firstName = getRandomElement(firstNames);
+        const lastName = getRandomElement(lastNames);
+        const fullName = `${firstName} ${lastName}`;
+        const fatherName = `${getRandomElement(firstNames)} ${lastName}`;
+        const motherName = `${getRandomElement(firstNames)} ${lastName}`;
+        const guardianName = `${getRandomElement(firstNames)} ${lastName}`;
+        
+        const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(1, 999)}@example.com`;
+        const guardianEmail = `${guardianName.split(' ')[0].toLowerCase()}.${lastName.toLowerCase()}${getRandomInt(1, 999)}@example.com`;
+        
+        const primaryPhone = getRandomPhone();
+        const whatsappNumber = getRandomPhone();
+        const guardianPhone = getRandomPhone();
+        
+        const cities = ["Mumbai", "Delhi", "Bangalore", "Hyderabad", "Chennai", "Kolkata", "Pune", "Ahmedabad", "Jaipur", "Lucknow", "Bhubaneswar", "Cuttack", "Rourkela", "Berhampur", "Sambalpur"];
+        const states = ["Maharashtra", "Delhi", "Karnataka", "Telangana", "Tamil Nadu", "West Bengal", "Maharashtra", "Gujarat", "Rajasthan", "Uttar Pradesh", "Odisha", "Odisha", "Odisha", "Odisha", "Odisha"];
+        const streets = ["Main Road", "MG Road", "Park Street", "Church Street", "Market Street", "Station Road", "College Road", "Hospital Road", "Temple Street", "Gandhi Nagar"];
+        
+        const cityIndex = getRandomInt(0, cities.length - 1);
+        const city = cities[cityIndex];
+        const state = states[cityIndex];
+        const street = `${getRandomInt(1, 999)} ${getRandomElement(streets)}`;
+        
+        const categories = ["General", "OBC", "SC", "ST", "EWS"];
+        const genders = ["Male", "Female", "Other"];
+        const relationships = ["Father", "Mother", "Guardian", "Uncle", "Aunt"];
+        const courses = ["Bachelor of Technology", "Bachelor of Science", "Bachelor of Arts", "Bachelor of Commerce", "Master of Technology", "Master of Science"];
+        const streams = ["Computer Science", "Electronics", "Mechanical", "Civil", "Electrical", "Information Technology", "Data Science", "Artificial Intelligence"];
+        
+        const referralCode = Array.from({ length: 8 }, () => {
+            const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            return chars[Math.floor(Math.random() * chars.length)];
+        }).join('');
+        
         const mockData = {
             personalDetails: {
-                fullName: "John Doe",
-                dateOfBirth: "2000-01-15",
-                gender: "Male",
-                aadharNumber: "123456789012",
-                category: "OBC",
-                fathersName: "Robert Doe",
-                mothersName: "Mary Doe",
+                fullName: fullName,
+                dateOfBirth: dateOfBirth,
+                registrationDate: registrationDate,
+                gender: getRandomElement(genders),
+                aadharNumber: getRandomAadhar(),
+                category: getRandomElement(categories),
+                fathersName: fatherName,
+                mothersName: motherName,
             },
             contactDetails: {
-                email: "john.doe@example.com",
-                primaryPhone: "9876543210",
-                whatsappNumber: "9876543210",
+                email: email,
+                primaryPhone: primaryPhone,
+                whatsappNumber: whatsappNumber,
                 communicationMode: ["Email", "WhatsApp"],
                 permanentAddress: {
-                    street: "123 Main Street, Block A",
-                    city: "Mumbai",
-                    state: "Maharashtra",
-                    pincode: "400001",
+                    street: street,
+                    city: city,
+                    state: state,
+                    pincode: getRandomPincode(),
                 },
                 presentAddress: {
-                    street: "123 Main Street, Block A",
-                    city: "Mumbai",
-                    state: "Maharashtra",
-                    pincode: "400001",
+                    street: street,
+                    city: city,
+                    state: state,
+                    pincode: getRandomPincode(),
                 },
             },
             courseDetails: {
-                institutionName: "Sample College",
-                courseName: "Bachelor of Technology",
-                stream: "Computer Science",
+                institutionName: `${city} College`,
+                courseName: getRandomElement(courses),
+                stream: getRandomElement(streams),
             },
             guardianDetails: {
-                guardianName: "Robert Doe",
-                relationship: "Father",
-                guardianPhone: "9876543211",
-                guardianEmail: "robert.doe@example.com",
+                guardianName: guardianName,
+                relationship: getRandomElement(relationships),
+                guardianPhone: guardianPhone,
+                guardianEmail: guardianEmail,
             },
-            referralCode: "age87a25",
+            referralCode: referralCode,
             documents: {
-                passport_photo: { name: "passport-photo.jpg", size: 512000, downloadUrl: "http://example.com/passport-photo.jpg" },
-                aadhar_card: { name: "aadhar-card.pdf", size: 1024000, downloadUrl: "http://example.com/aadhar-card.pdf" },
-                caste_certificate: { name: "caste-certificate.pdf", size: 1536000, downloadUrl: "http://example.com/caste-certificate.pdf" },
-                income_certificate: { name: "income-certificate.pdf", size: 2048000, downloadUrl: "http://example.com/income-certificate.pdf" },
-                marksheet_10th: { name: "10th-marksheet.pdf", size: 1792000, downloadUrl: "http://example.com/10th-marksheet.pdf" },
-                resident_certificate: { name: "resident-certificate.pdf", size: 1280000, downloadUrl: "http://example.com/resident-certificate.pdf" },
+                passport_photo: { 
+                    name: `passport-photo-${getRandomInt(1000, 9999)}.jpg`, 
+                    size: getRandomInt(200000, 800000), 
+                    downloadUrl: `http://example.com/passport-photo-${getRandomInt(1000, 9999)}.jpg` 
+                },
+                aadhar_card: { 
+                    name: `aadhar-card-${getRandomInt(1000, 9999)}.pdf`, 
+                    size: getRandomInt(500000, 2000000), 
+                    downloadUrl: `http://example.com/aadhar-card-${getRandomInt(1000, 9999)}.pdf` 
+                },
+                caste_certificate: { 
+                    name: `caste-certificate-${getRandomInt(1000, 9999)}.pdf`, 
+                    size: getRandomInt(800000, 2500000), 
+                    downloadUrl: `http://example.com/caste-certificate-${getRandomInt(1000, 9999)}.pdf` 
+                },
+                income_certificate: { 
+                    name: `income-certificate-${getRandomInt(1000, 9999)}.pdf`, 
+                    size: getRandomInt(1000000, 3000000), 
+                    downloadUrl: `http://example.com/income-certificate-${getRandomInt(1000, 9999)}.pdf` 
+                },
+                marksheet_10th: { 
+                    name: `10th-marksheet-${getRandomInt(1000, 9999)}.pdf`, 
+                    size: getRandomInt(900000, 2500000), 
+                    downloadUrl: `http://example.com/10th-marksheet-${getRandomInt(1000, 9999)}.pdf` 
+                },
+                resident_certificate: { 
+                    name: `resident-certificate-${getRandomInt(1000, 9999)}.pdf`, 
+                    size: getRandomInt(600000, 2000000), 
+                    downloadUrl: `http://example.com/resident-certificate-${getRandomInt(1000, 9999)}.pdf` 
+                },
             },
         };
 
         setFormData(mockData);
-        showSuccessToast("Mock data filled successfully! You can now test PDF generation.");
+        showSuccessToast(`Random mock data filled for ${fullName}! You can now test PDF generation.`);
     };
 
     const handleSubmit = async () => {
@@ -760,6 +890,52 @@ const SinglePageStudentRegistration = ({
 
             if (response.data.success) {
                 setApplication(response.data.data);
+                
+                // If PDF was generated but not uploaded, upload it now
+                if (response.data.data?.applicationId && pdfUrl && !storedPdfUrl) {
+                    try {
+                        console.log('📤 Uploading PDF after submission...');
+                        // Convert blob URL to blob
+                        const blob = await fetch(pdfUrl).then(r => r.blob());
+                        const formData = new FormData();
+                        formData.append('pdf', blob, `application_${response.data.data.applicationId}.pdf`);
+                        
+                        const uploadResponse = await api.post(
+                            `/api/student-application/${response.data.data.applicationId}/upload-pdf`,
+                            formData,
+                            {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            }
+                        );
+                        
+                        if (uploadResponse.data.success) {
+                            console.log('✅ PDF uploaded after submission:', uploadResponse.data.data.pdfUrl);
+                            setStoredPdfUrl(uploadResponse.data.data.pdfUrl);
+                        }
+                    } catch (uploadError) {
+                        console.error('❌ Failed to upload PDF after submission:', uploadError);
+                        // Not critical, continue
+                    }
+                }
+                
+                // Fetch stored PDF URL if available
+                if (response.data.data?.applicationId) {
+                    try {
+                        const pdfResponse = await api.get(
+                            `/api/student-application/${response.data.data.applicationId}/pdf`
+                        );
+                        if (pdfResponse.data.success && pdfResponse.data.data?.pdfUrl) {
+                            console.log('✅ Found stored PDF URL:', pdfResponse.data.data.pdfUrl);
+                            setStoredPdfUrl(pdfResponse.data.data.pdfUrl);
+                        }
+                    } catch (pdfError) {
+                        console.log('ℹ️ PDF not yet uploaded or not found:', pdfError.response?.data?.message || pdfError.message);
+                        // Not a critical error, continue
+                    }
+                }
+                
                 showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
 
                 // Call the update callback if provided
@@ -888,6 +1064,38 @@ const SinglePageStudentRegistration = ({
                             </svg>
                             <p className="text-green-800 dark:text-green-200 font-medium">PDF generated successfully! You can now submit your application.</p>
                         </div>
+                        {storedPdfUrl ? (
+                            <div className="mt-3 pt-3 border-t border-green-300 dark:border-green-700">
+                                <p className="text-sm text-green-700 dark:text-green-300 mb-2">Your PDF has been saved and can be accessed anytime:</p>
+                                <a 
+                                    href={storedPdfUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="text-sm text-green-800 dark:text-green-200 underline hover:text-green-900 dark:hover:text-green-100 flex items-center"
+                                >
+                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                    View Stored PDF
+                                </a>
+                            </div>
+                        ) : application?.applicationId && (
+                            <div className="mt-3 pt-3 border-t border-green-300 dark:border-green-700">
+                                <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+                                    PDF will be saved automatically after submission.
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => fetchStoredPDFUrl(application.applicationId)}
+                                    className="text-sm text-green-800 dark:text-green-200 underline hover:text-green-900 dark:hover:text-green-100 flex items-center"
+                                >
+                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                    Check for Stored PDF
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">

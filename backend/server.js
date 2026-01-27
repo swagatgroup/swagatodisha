@@ -639,6 +639,12 @@ app.post('/api/student-application/create', protect, async (req, res) => {
             }
         };
 
+        // Generate applicationId if not provided
+        if (!applicationData.applicationId) {
+            const year = new Date().getFullYear().toString().substr(-2);
+            const random = Math.random().toString().substr(2, 6).toUpperCase();
+            applicationData.applicationId = `APP${year}${random}`;
+        }
 
         const application = new StudentApplication(applicationData);
         await application.save();

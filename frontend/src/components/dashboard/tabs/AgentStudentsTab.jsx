@@ -790,6 +790,9 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                   Registration Date
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  PDF
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -797,7 +800,7 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
+                  <td colSpan="7" className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -872,6 +875,68 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(student.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    {/* PDF Button - Show if student has applicationId */}
+                    {(student.applicationId || student._id) ? (
+                      <button
+                        onClick={async () => {
+                          try {
+                            const appId = student.applicationId || student._id;
+                            const studentName = (student.personalDetails?.fullName || 'application').replace(/[^a-zA-Z0-9]/g, '_');
+                            
+                            // Fetch PDF with authentication token
+                            const response = await api.get(
+                              `/api/student-application/${appId}/pdf-file`,
+                              {
+                                responseType: 'blob' // Important: get as blob
+                              }
+                            );
+                            
+                            // Create blob URL from response
+                            const blob = new Blob([response.data], { type: 'application/pdf' });
+                            const blobUrl = window.URL.createObjectURL(blob);
+                            
+                            // Open in new tab
+                            const newWindow = window.open(blobUrl, '_blank');
+                            
+                            // Clean up blob URL after a delay (browser will cache it)
+                            setTimeout(() => {
+                              if (newWindow) {
+                                // Revoke after window opens
+                                setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+                              } else {
+                                // If popup blocked, create download link
+                                const link = document.createElement('a');
+                                link.href = blobUrl;
+                                link.download = `Application_${appId}_${studentName}.pdf`;
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                                window.URL.revokeObjectURL(blobUrl);
+                              }
+                            }, 100);
+                          } catch (error) {
+                            console.error('Error fetching PDF:', error);
+                            if (error.response?.status === 401) {
+                              showError('Please log in to view PDF');
+                            } else if (error.response?.status === 404) {
+                              showError('PDF not found. Please generate the PDF first.');
+                            } else {
+                              showError('Failed to load PDF. It may not be generated yet.');
+                            }
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                        title="View Application PDF"
+                      >
+                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </button>
+                    ) : (
+                      <span className="text-gray-400 text-xs">N/A</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center space-x-2">

@@ -22,7 +22,10 @@ const {
     generateDocumentsZIP,
     getApplicationReview,
     getDocumentRequirements,
-    getDocumentUploadStatus
+    getDocumentUploadStatus,
+    uploadApplicationPDF,
+    getApplicationPDF,
+    serveApplicationPDF
 } = require('../controllers/studentApplicationWorkflowController');
 
 const { fixApplicationDataIntegrity } = require('../scripts/fixApplicationDataIntegrity');
@@ -36,6 +39,9 @@ router.put('/:applicationId/save-draft', protect, saveDraft);
 router.put('/:applicationId/submit', protect, submitApplication);
 router.post('/:applicationId/generate-pdf', protect, generateApplicationPDF);
 router.get('/:applicationId/download-pdf', protect, downloadApplicationPDF);
+router.post('/:applicationId/upload-pdf', protect, require('../middleware/upload').uploadSingle('pdf'), uploadApplicationPDF);
+router.get('/:applicationId/pdf', protect, getApplicationPDF);
+router.get('/:applicationId/pdf-file', protect, serveApplicationPDF);
 
 // Agent/Staff routes - get applications they submitted
 router.get('/submitted-by-me', protect, getSubmittedApplications);
