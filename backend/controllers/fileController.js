@@ -3,6 +3,7 @@ const cloudinary = require('cloudinary').v2;
 const { generateUniqueFileName, getFileCategory } = require('../middleware/upload');
 const { asyncHandler } = require('../middleware/errorHandler');
 const StudentApplication = require('../models/StudentApplication');
+const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -258,10 +259,26 @@ const getFileById = asyncHandler(async (req, res) => {
 // @route   DELETE /api/files/:id
 // @access  Public
 const deleteFile = asyncHandler(async (req, res) => {
+    let auditLogId = null;
     try {
+        // Log delete attempt
+        auditLogId = await logDeleteAttempt({
+            req,
+            resourceType: 'File',
+            targetId: req.params.id
+        });
+        
         const file = await File.findById(req.params.id);
 
         if (!file) {
+            // Log failed result
+            if (auditLogId) {
+                await logDeleteResult(auditLogId, {
+                    success: false,
+                    message: 'File not found',
+                    statusCode: 404
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: 'File not found'
@@ -281,6 +298,15 @@ const deleteFile = asyncHandler(async (req, res) => {
         // Delete from database
         await File.findByIdAndDelete(req.params.id);
 
+        // Log successful result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: true,
+                message: 'File deleted successfully',
+                statusCode: 200
+            });
+        }
+
         res.json({
             success: true,
             message: 'File deleted successfully'
@@ -288,6 +314,17 @@ const deleteFile = asyncHandler(async (req, res) => {
 
     } catch (error) {
         console.error('Delete file error:', error);
+        
+        // Log failed result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: false,
+                message: 'Failed to delete file',
+                error: error.message,
+                statusCode: 500
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Failed to delete file',

@@ -4,6 +4,7 @@ const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
 const Campus = require('../models/Campus');
 const { protect, authorize } = require('../middleware/auth');
+const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 const router = express.Router();
 
@@ -1116,6 +1117,7 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 // @access  Private - Super Admin only
 // IMPORTANT: This route must come before /:id to avoid route conflicts
 router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next) => {
+    let auditLogId = null;
     try {
         console.log('🗑️ ========== BULK DELETE ROUTE HIT ==========');
         console.log('🗑️ Bulk delete request received');
@@ -1130,6 +1132,17 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
 
         // Handle both req.body and req.body.data (some clients send data nested)
         let studentIds = req.body?.studentIds || req.body?.data?.studentIds || req.body?.ids || [];
+        
+        // Log delete attempt
+        auditLogId = await logDeleteAttempt({
+            req,
+            resourceType: 'StudentApplication',
+            targetIds: Array.isArray(studentIds) ? studentIds : [],
+            metadata: {
+                isBulk: true,
+                studentIdsCount: Array.isArray(studentIds) ? studentIds.length : 0
+            }
+        });
         
         // If studentIds is not an array, try to parse it
         if (!Array.isArray(studentIds)) {
@@ -1237,8 +1250,32 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
         if (userIds.length > 0) {
             try {
                 console.log('🗑️ Deleting user accounts...');
+                
+                // Log user deletion attempt
+                const userDeleteLogId = await logDeleteAttempt({
+                    req,
+                    resourceType: 'User',
+                    targetIds: userIds.map(id => id.toString()),
+                    metadata: {
+                        isBulk: true,
+                        associatedWith: 'StudentApplication',
+                        applicationIds: validIds.map(id => id.toString())
+                    }
+                });
+                
                 const userDeleteResult = await User.deleteMany({ _id: { $in: userIds } });
                 console.log(`✅ Deleted ${userDeleteResult.deletedCount} associated user account(s)`);
+                
+                // Log user deletion result
+                if (userDeleteLogId) {
+                    await logDeleteResult(userDeleteLogId, {
+                        success: true,
+                        message: `Deleted ${userDeleteResult.deletedCount} associated user account(s)`,
+                        deletedCount: userDeleteResult.deletedCount,
+                        statusCode: 200,
+                        isBulk: true
+                    });
+                }
             } catch (userDeleteError) {
                 console.error('⚠️ Error deleting user accounts (continuing with application deletion):', userDeleteError.message);
                 // Continue with application deletion even if user deletion fails
@@ -1253,6 +1290,17 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
 
         console.log(`✅ Successfully deleted ${deleteResult.deletedCount} student application(s)`);
 
+        // Log successful delete result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: true,
+                message: `Successfully deleted ${deleteResult.deletedCount} student application(s)`,
+                deletedCount: deleteResult.deletedCount,
+                statusCode: 200,
+                isBulk: true
+            });
+        }
+
         res.json({
             success: true,
             message: `Successfully deleted ${deleteResult.deletedCount} student application(s)`,
@@ -1262,6 +1310,17 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
 
     } catch (error) {
         console.error('❌ Bulk delete student applications error:', error);
+        
+        // Log failed delete result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: false,
+                message: 'Failed to delete student applications',
+                error: error.message,
+                statusCode: 500,
+                isBulk: true
+            });
+        }
         console.error('❌ Error name:', error?.name || 'Unknown');
         console.error('❌ Error message:', error?.message || 'Unknown error');
         console.error('❌ Error code:', error?.code || 'No code');
@@ -1296,9 +1355,25 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
 // @route   DELETE /api/admin/students/:id
 // @access  Private - Staff/Super Admin only  
 router.delete('/:id', protect, authorize('staff', 'super_admin'), async (req, res) => {
+    let auditLogId = null;
     try {
+        // Log delete attempt
+        auditLogId = await logDeleteAttempt({
+            req,
+            resourceType: 'StudentApplication',
+            targetId: req.params.id
+        });
+
         const application = await StudentApplication.findById(req.params.id);
         if (!application) {
+            // Log failed result
+            if (auditLogId) {
+                await logDeleteResult(auditLogId, {
+                    success: false,
+                    message: 'Student application not found',
+                    statusCode: 404
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: 'Student application not found'
@@ -1307,6 +1382,15 @@ router.delete('/:id', protect, authorize('staff', 'super_admin'), async (req, re
 
         await StudentApplication.findByIdAndDelete(req.params.id);
 
+        // Log successful result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: true,
+                message: 'Student application deleted successfully',
+                statusCode: 200
+            });
+        }
+
         res.json({
             success: true,
             message: 'Student application deleted successfully'
@@ -1314,6 +1398,17 @@ router.delete('/:id', protect, authorize('staff', 'super_admin'), async (req, re
 
     } catch (error) {
         console.error('Delete student application error:', error);
+        
+        // Log failed result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: false,
+                message: 'Failed to delete student application',
+                error: error.message,
+                statusCode: 500
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Failed to delete student application',

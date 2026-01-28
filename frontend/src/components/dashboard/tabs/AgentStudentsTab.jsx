@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -13,7 +13,7 @@ import {
   ExclamationTriangleIcon
 } from "@heroicons/react/24/outline";
 
-const AgentStudentsTab = ({ initialFilter = 'all' }) => {
+const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
   const { user } = useAuth();
   const { selectedSession } = useSession();
   const [students, setStudents] = useState([]);
@@ -59,6 +59,23 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
       setStudents([]);
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSession]);
+
+  // Listen for refresh events from parent component
+  useEffect(() => {
+    const handleRefresh = () => {
+      console.log('🔄 Refresh event received, reloading students list');
+      if (selectedSession) {
+        setTimeout(() => {
+          loadStudents();
+          loadStats();
+        }, 500); // Small delay to ensure backend has processed the update
+      }
+    };
+    
+    window.addEventListener('refreshStudentsList', handleRefresh);
+    return () => window.removeEventListener('refreshStudentsList', handleRefresh);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSession]);
 

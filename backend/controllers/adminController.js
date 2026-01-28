@@ -7,6 +7,7 @@ const bcrypt = require('bcryptjs');
 const { uploadToCloudinary } = require('../utils/cloudinary');
 const { mockStaff, mockAgents } = require('./mockData');
 const { getSessionDateRange, getCurrentSession } = require('../utils/sessionHelper');
+const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 // Dashboard Statistics
 exports.getDashboardStats = async (req, res) => {
@@ -273,6 +274,7 @@ exports.updateStudent = async (req, res) => {
 };
 
 exports.deleteStudent = async (req, res) => {
+    let auditLogId = null;
     try {
         const { studentId } = req.params;
 
@@ -284,8 +286,23 @@ exports.deleteStudent = async (req, res) => {
             });
         }
 
+        // Log delete attempt
+        auditLogId = await logDeleteAttempt({
+            req,
+            resourceType: 'Student',
+            targetId: studentId
+        });
+
         const student = await Student.findById(studentId);
         if (!student) {
+            // Log failed result
+            if (auditLogId) {
+                await logDeleteResult(auditLogId, {
+                    success: false,
+                    message: 'Student not found',
+                    statusCode: 404
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: 'Student not found'
@@ -298,12 +315,32 @@ exports.deleteStudent = async (req, res) => {
         // Delete student record
         await Student.findByIdAndDelete(studentId);
 
+        // Log successful result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: true,
+                message: 'Student record deleted successfully',
+                statusCode: 200
+            });
+        }
+
         res.json({
             success: true,
             message: 'Student record deleted successfully'
         });
     } catch (error) {
         console.error('Error deleting student:', error);
+        
+        // Log failed result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: false,
+                message: 'Server error while deleting student',
+                error: error.message,
+                statusCode: 500
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Server error while deleting student',
@@ -554,6 +591,7 @@ exports.updateAgent = async (req, res) => {
 };
 
 exports.deleteAgent = async (req, res) => {
+    let auditLogId = null;
     try {
         const { agentId } = req.params;
 
@@ -565,8 +603,24 @@ exports.deleteAgent = async (req, res) => {
             });
         }
 
+        // Log delete attempt
+        auditLogId = await logDeleteAttempt({
+            req,
+            resourceType: 'User',
+            targetId: agentId,
+            metadata: { userType: 'agent' }
+        });
+
         const agent = await User.findById(agentId);
         if (!agent) {
+            // Log failed result
+            if (auditLogId) {
+                await logDeleteResult(auditLogId, {
+                    success: false,
+                    message: 'Agent not found',
+                    statusCode: 404
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: 'Agent not found'
@@ -582,12 +636,32 @@ exports.deleteAgent = async (req, res) => {
         // Delete agent
         await User.findByIdAndDelete(agentId);
 
+        // Log successful result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: true,
+                message: 'Agent deleted successfully',
+                statusCode: 200
+            });
+        }
+
         res.json({
             success: true,
             message: 'Agent deleted successfully'
         });
     } catch (error) {
         console.error('Error deleting agent:', error);
+        
+        // Log failed result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: false,
+                message: 'Server error while deleting agent',
+                error: error.message,
+                statusCode: 500
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Server error while deleting agent',
