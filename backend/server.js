@@ -69,6 +69,7 @@ const fileRoutes = require('./routes/fileRoutes');
 const analyticsRoutes = require('./routes/analytics');
 const agentRoutes = require('./routes/agentRoutes');
 const staffRoutes = require('./routes/staffRoutes');
+const auditLogRoutes = require('./routes/auditLogs');
 
 // Import security middleware
 const {
@@ -938,6 +939,7 @@ app.use('/api/admin/fix', apiRateLimit, require('./routes/fixCollegeIndex'));
 app.use('/api/dashboard', apiRateLimit, dashboardRoutes);
 app.use('/api/security', apiRateLimit, securityRoutes);
 app.use('/api/performance', apiRateLimit, performanceRoutes);
+app.use('/api/audit-logs', apiRateLimit, auditLogRoutes);
 // Contact routes use stricter rate limiting defined in the route itself
 app.use('/api/contact', contactRoutes);
 app.use('/api/files', uploadRateLimit, fileRoutes);

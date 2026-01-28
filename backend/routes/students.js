@@ -12,6 +12,7 @@ const {
     canModifySensitiveFields,
     canDelete
 } = require('../middleware/auth');
+const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 const router = express.Router();
 
@@ -355,10 +356,26 @@ router.put('/:id', [
 // @route   DELETE /api/students/:id
 // @access  Private - Super Admin only
 router.delete('/:id', protect, isSuperAdmin, canDelete, async (req, res) => {
+    let auditLogId = null;
     try {
+        // Log delete attempt
+        auditLogId = await logDeleteAttempt({
+            req,
+            resourceType: 'Student',
+            targetId: req.params.id
+        });
+        
         const student = await Student.findById(req.params.id);
 
         if (!student) {
+            // Log failed result
+            if (auditLogId) {
+                await logDeleteResult(auditLogId, {
+                    success: false,
+                    message: 'Student not found',
+                    statusCode: 404
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: 'Student not found'
@@ -371,6 +388,15 @@ router.delete('/:id', protect, isSuperAdmin, canDelete, async (req, res) => {
         // Delete student
         await Student.findByIdAndDelete(req.params.id);
 
+        // Log successful result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: true,
+                message: 'Student deleted successfully',
+                statusCode: 200
+            });
+        }
+
         res.json({
             success: true,
             message: 'Student deleted successfully'
@@ -378,6 +404,17 @@ router.delete('/:id', protect, isSuperAdmin, canDelete, async (req, res) => {
 
     } catch (error) {
         console.error('Delete student error:', error);
+        
+        // Log failed result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: false,
+                message: 'Server error while deleting student',
+                error: error.message,
+                statusCode: 500
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Server error while deleting student'

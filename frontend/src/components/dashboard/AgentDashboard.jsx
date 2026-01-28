@@ -252,17 +252,27 @@ const EnhancedAgentDashboard = () => {
   };
 
   const handleStudentUpdate = (updatedStudent) => {
-    setStudents((prev) => {
-      if (!Array.isArray(prev)) return [];
-      return prev.map((student) =>
-        student._id === updatedStudent._id ? updatedStudent : student
-      );
-    });
-    // Refresh dashboard data after student update with current session
+    // If updatedStudent has an _id that exists in current list, update it
+    // Otherwise, refresh the entire list to include new submissions
+    const studentExists = students.some(s => s._id === updatedStudent._id);
+    
+    if (studentExists) {
+      setStudents((prev) => {
+        if (!Array.isArray(prev)) return [];
+        return prev.map((student) =>
+          student._id === updatedStudent._id ? updatedStudent : student
+        );
+      });
+    }
+    
+    // Always refresh dashboard data after student update to ensure new submissions appear
     // This ensures the session is preserved and data is refreshed
-    if (activeTab === 'dashboard' && selectedSession) {
+    if (selectedSession) {
       loadDashboardData(selectedSession, false);
     }
+    
+    // Trigger a custom event to refresh Students tab if it's active
+    window.dispatchEvent(new CustomEvent('refreshStudentsList'));
   };
 
 
@@ -380,7 +390,10 @@ const EnhancedAgentDashboard = () => {
         );
       case "students":
         return (
-          <AgentStudentsTab initialFilter={studentTableFilter} />
+          <AgentStudentsTab 
+            initialFilter={studentTableFilter}
+            onStudentUpdate={handleStudentUpdate}
+          />
         );
       case "registration":
         return (

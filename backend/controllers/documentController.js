@@ -5,6 +5,7 @@ const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
 const cloudinary = require('cloudinary').v2;
+const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -313,11 +314,28 @@ const downloadDocument = async (req, res) => {
 
 // Delete document
 const deleteDocument = async (req, res) => {
+    let auditLogId = null;
     try {
         const { documentId } = req.params;
+        
+        // Log delete attempt
+        auditLogId = await logDeleteAttempt({
+            req,
+            resourceType: 'Document',
+            targetId: documentId
+        });
+        
         const document = await Document.findById(documentId);
 
         if (!document) {
+            // Log failed result
+            if (auditLogId) {
+                await logDeleteResult(auditLogId, {
+                    success: false,
+                    message: 'Document not found',
+                    statusCode: 404
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: 'Document not found'
@@ -326,6 +344,14 @@ const deleteDocument = async (req, res) => {
 
         // Check if user has access to this document
         if (document.uploadedBy.toString() !== req.user._id.toString()) {
+            // Log failed result
+            if (auditLogId) {
+                await logDeleteResult(auditLogId, {
+                    success: false,
+                    message: 'Access denied',
+                    statusCode: 403
+                });
+            }
             return res.status(403).json({
                 success: false,
                 message: 'Access denied'
@@ -340,6 +366,15 @@ const deleteDocument = async (req, res) => {
         // Delete document record
         await Document.findByIdAndDelete(documentId);
 
+        // Log successful result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: true,
+                message: 'Document deleted successfully',
+                statusCode: 200
+            });
+        }
+
         res.status(200).json({
             success: true,
             message: 'Document deleted successfully'
@@ -347,6 +382,17 @@ const deleteDocument = async (req, res) => {
 
     } catch (error) {
         console.error('Delete document error:', error);
+        
+        // Log failed result
+        if (auditLogId) {
+            await logDeleteResult(auditLogId, {
+                success: false,
+                message: 'Failed to delete document',
+                error: error.message,
+                statusCode: 500
+            });
+        }
+        
         res.status(500).json({
             success: false,
             message: 'Failed to delete document',
