@@ -152,9 +152,10 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                 return 'Completed';
             case 'approved':
                 return 'Approved';
+            case 'submitted':
+                return 'Submitted';
             case 'draft':
             case 'pending':
-            case 'submitted':
                 return 'Pending';
             case 'under_review':
                 return 'Under Review';

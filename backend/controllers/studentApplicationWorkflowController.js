@@ -214,6 +214,21 @@ const createApplication = async (req, res) => {
                 code: error.code,
             });
 
+            // Handle duplicate Aadhaar (Mongo duplicate key)
+            if (error && error.code === 11000) {
+                const aadhar =
+                    error.keyValue?.["personalDetails.aadharNumber"] ||
+                    error.keyValue?.aadharNumber ||
+                    undefined;
+                return res.status(409).json({
+                    success: false,
+                    message: "Aadhaar number already exists. Please use a different Aadhaar or search the existing application.",
+                    error: process.env.NODE_ENV === "development" ? error.message : "Duplicate key",
+                    key: error.keyValue,
+                    aadharNumber: aadhar,
+                });
+            }
+
             res.status(500).json({
                 success: false,
                 message: "Failed to create application",
@@ -390,7 +405,7 @@ const submitApplication = async (req, res) => {
         }
 
         // Validate that application is not already submitted/reviewed
-        if (application.status === 'UNDER_REVIEW' || application.status === 'APPROVED') {
+        if (application.status === 'SUBMITTED' || application.status === 'UNDER_REVIEW' || application.status === 'APPROVED') {
             return res.status(400).json({
                 success: false,
                 message: `Application is already ${application.status.toLowerCase()}`,
@@ -446,20 +461,20 @@ const submitApplication = async (req, res) => {
             });
         }
 
-        // Update application status - goes directly to UNDER_REVIEW for staff to check
-        application.status = "UNDER_REVIEW";
-        application.currentStage = "UNDER_REVIEW";
+        // Update application status to SUBMITTED
+        application.status = "SUBMITTED";
+        application.currentStage = "SUBMITTED";
         application.submittedAt = new Date();
         application.termsAccepted = termsAccepted;
         application.termsAcceptedAt = new Date();
 
         // Add workflow history entry
         application.workflowHistory.push({
-            stage: 'UNDER_REVIEW',
-            status: 'UNDER_REVIEW',
+            stage: 'SUBMITTED',
+            status: 'SUBMITTED',
             updatedBy: req.user._id,
             action: 'SUBMIT',
-            remarks: 'Application submitted and moved to review',
+            remarks: 'Application submitted successfully',
             timestamp: new Date()
         });
 

@@ -533,18 +533,18 @@ studentApplicationSchema.methods.saveDraft = function (updatedBy) {
 };
 
 studentApplicationSchema.methods.submitApplication = function (updatedBy) {
-    // When agent submits, it goes directly to UNDER_REVIEW for staff to check
-    this.status = 'UNDER_REVIEW';
-    this.currentStage = 'UNDER_REVIEW';
+    // Set status to SUBMITTED when application is submitted
+    this.status = 'SUBMITTED';
+    this.currentStage = 'SUBMITTED';
     this.submittedAt = new Date();
     this.progress.submitted = true;
 
     this.workflowHistory.push({
-        stage: 'UNDER_REVIEW',
-        status: 'UNDER_REVIEW',
+        stage: 'SUBMITTED',
+        status: 'SUBMITTED',
         updatedBy,
         action: 'SUBMIT',
-        remarks: 'Application submitted by agent and moved to review',
+        remarks: 'Application submitted successfully',
         timestamp: new Date()
     });
     this.lastModified = new Date();
