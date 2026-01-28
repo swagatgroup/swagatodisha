@@ -606,65 +606,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             const url = URL.createObjectURL(pdfBlob);
             setPdfUrl(url);
 
-            // Try to create or get application, then upload PDF
-            let appId = application?.applicationId || formData?.applicationId;
-            
-            // If no application exists, try to create a draft application
-            if (!appId || appId === 'DRAFT') {
-                try {
-                    console.log('📝 No application found, creating draft application...');
-                    
-                    // Convert date format if needed (DD/MM/YYYY to YYYY-MM-DD)
-                    const convertDate = (dateStr) => {
-                        if (!dateStr) return null;
-                        // Check if already in YYYY-MM-DD format
-                        if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-                        // Convert from DD/MM/YYYY
-                        if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
-                            const [day, month, year] = dateStr.split('/');
-                            return `${year}-${month}-${day}`;
-                        }
-                        return dateStr;
-                    };
-                    
-                    const personalDetailsForCreate = {
-                        ...formData.personalDetails,
-                        dateOfBirth: convertDate(formData.personalDetails?.dateOfBirth),
-                        registrationDate: convertDate(formData.personalDetails?.registrationDate),
-                    };
-                    
-                    const createResponse = await api.post('/api/student-application/create', {
-                        personalDetails: personalDetailsForCreate,
-                        contactDetails: formData.contactDetails || {},
-                        courseDetails: formData.courseDetails || {},
-                        guardianDetails: formData.guardianDetails || {},
-                        financialDetails: {},
-                        referralCode: formData.referralCode || undefined,
-                    });
-                    
-                    if (createResponse.data.success && createResponse.data.data?.applicationId) {
-                        appId = createResponse.data.data.applicationId;
-                        console.log('✅ Draft application created:', appId);
-                        // Update application in parent component via callback
-                        if (onPDFGenerated) {
-                            // Pass application data to callback
-                            onPDFGenerated(url, null, createResponse.data.data);
-                        }
-                    }
-                } catch (createError) {
-                    console.error('❌ Failed to create draft application:', createError);
-                    console.error('Create error details:', {
-                        message: createError.message,
-                        response: createError.response?.data,
-                        status: createError.response?.status
-                    });
-                }
-            }
-            
-            // PDF generated successfully - just call callback with URL
-            if (onPDFGenerated) {
-                onPDFGenerated(url);
-            }
+            // PDF generation should be client-only. Creating draft applications here caused
+            // accidental duplicate registrations (PDF generate + submit).
+            // Notify parent once.
+            if (onPDFGenerated) onPDFGenerated(url);
 
         } catch (err) {
             console.error('PDF generation error:', err);

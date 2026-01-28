@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -21,6 +21,7 @@ const SinglePageStudentRegistration = ({
     const [showPDFGenerator, setShowPDFGenerator] = useState(false);
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
+    const submitInFlightRef = useRef(false);
     const [application, setApplication] = useState(null);
     const [errors, setErrors] = useState({});
     const [colleges, setColleges] = useState([]);
@@ -634,6 +635,9 @@ const SinglePageStudentRegistration = ({
     };
 
     const handleSubmit = async () => {
+        // Hard guard against double-click/double-trigger submissions
+        if (submitInFlightRef.current) return;
+
         if (!validateForm()) {
             showErrorToast("Please fill in all required fields correctly");
             return;
@@ -642,6 +646,7 @@ const SinglePageStudentRegistration = ({
         // PDF generation is optional - no check needed for submission
 
         try {
+            submitInFlightRef.current = true;
             setLoading(true);
 
             // PDF generation check - no upload needed
@@ -735,171 +740,85 @@ const SinglePageStudentRegistration = ({
                 }
             }
 
-            // Use MongoDB endpoint directly
-            let response;
-            try {
-                // Convert documents object to array format expected by backend
-                const documentsArray = Object.entries(formData.documents || {}).map(([key, doc]) => ({
-                    documentType: key,
-                    fileName: doc.name || doc.fileName || 'unknown',
-                    filePath: doc.downloadUrl || doc.filePath || '',
-                    fileSize: doc.size || 0,
-                    mimeType: doc.type || doc.mimeType || 'application/octet-stream',
-                    status: 'PENDING' // Valid enum: PENDING, APPROVED, REJECTED
-                }));
+            // Always use workflow endpoints (create -> save-draft -> submit)
+            // This prevents duplicate registrations caused by mixing endpoints.
+            // Convert documents object to array format expected by backend
+            const documentsArray = Object.entries(formData.documents || {}).map(([key, doc]) => ({
+                documentType: key,
+                fileName: doc.name || doc.fileName || 'unknown',
+                filePath: doc.downloadUrl || doc.filePath || '',
+                fileSize: doc.size || 0,
+                mimeType: doc.type || doc.mimeType || 'application/octet-stream',
+                status: 'PENDING'
+            }));
 
-                // Sanitize phone numbers (remove spaces, +, -, etc.)
-                const sanitizePhone = (phone) => {
-                    if (!phone) return phone;
-                    return phone.toString().replace(/[\s\+\-\(\)]/g, '').trim();
-                };
+            // Sanitize phone numbers (remove spaces, +, -, etc.)
+            const sanitizePhone = (phone) => {
+                if (!phone) return phone;
+                return phone.toString().replace(/[\s\+\-\(\)]/g, '').trim();
+            };
 
-                // Get college and course names for backend compatibility
-                const selectedCollegeData = colleges.find(c => c._id === formData.courseDetails?.selectedCollege);
-                // Convert date format from DD/MM/YYYY to ISO (YYYY-MM-DD) before submitting
-                const personalDetailsForSubmit = {
-                    ...formData.personalDetails,
-                    dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-                    registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
-                };
-                const submitData = {
-                    ...formData,
+            // Convert date format from DD/MM/YYYY to ISO (YYYY-MM-DD) before submitting
+            const personalDetailsForSubmit = {
+                ...formData.personalDetails,
+                dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
+                registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+            };
+
+            // Ensure we have an applicationId (create draft if needed)
+            let appId = application?.applicationId;
+            if (!appId) {
+                const createRes = await api.post("/api/student-application/create", {
                     personalDetails: personalDetailsForSubmit,
-                    documents: documentsArray,
-                    termsAccepted: true,
-                    courseDetails: {
-                        selectedCollege: formData.courseDetails?.selectedCollege || '',
-                        selectedCourse: formData.courseDetails?.selectedCourse || '',
-                        stream: formData.courseDetails?.stream || '',
-                        campus: formData.courseDetails?.campus || '',
-                        institutionName: selectedCollegeData?.name || '',
-                        courseName: formData.courseDetails?.selectedCourse || ''
+                    contactDetails: formData.contactDetails,
+                    courseDetails: formData.courseDetails,
+                    guardianDetails: {
+                        ...formData.guardianDetails,
+                        relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
                     },
+                    financialDetails: {},
+                    referralCode: formData.referralCode || undefined,
+                });
+
+                if (!createRes.data?.success || !createRes.data?.data?.applicationId) {
+                    showErrorToast(createRes.data?.message || "Failed to create draft application");
+                    return;
+                }
+
+                setApplication(createRes.data.data);
+                appId = createRes.data.data.applicationId;
+            }
+
+            // Save latest data before submit
+            await api.put(`/api/student-application/${appId}/save-draft`, {
+                data: {
+                    personalDetails: personalDetailsForSubmit,
                     contactDetails: {
                         ...formData.contactDetails,
                         primaryPhone: sanitizePhone(formData.contactDetails?.primaryPhone),
                         whatsappNumber: sanitizePhone(formData.contactDetails?.whatsappNumber)
                     },
+                    courseDetails: formData.courseDetails,
                     guardianDetails: {
                         ...formData.guardianDetails,
                         guardianPhone: sanitizePhone(formData.guardianDetails?.guardianPhone),
                         relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
-                    }
-                };
-                console.log('Submitting application with data:', submitData);
-                console.log('Guardian phone validation:', {
-                    phone: submitData.guardianDetails?.guardianPhone,
-                    length: submitData.guardianDetails?.guardianPhone?.length,
-                    regexTest: /^[6-9]\d{9}$/.test(submitData.guardianDetails?.guardianPhone || ''),
-                    match: submitData.guardianDetails?.guardianPhone?.match(/^[6-9]\d{9}$/)
-                });
-                response = await api.post("/api/application/create", submitData);
-            } catch (error) {
-                if (error.response?.status === 400) {
-                    const serverMsg = error.response?.data?.message || "";
-                    if (
-                        serverMsg?.toLowerCase().includes("already have an application")
-                    ) {
-                        try {
-                            const existing = await api.get(
-                                "/api/student-application/my-application"
-                            );
-                            if (
-                                existing.data?.success &&
-                                existing.data?.data?.applicationId
-                            ) {
-                                setApplication(existing.data.data);
-                                // Save draft with latest data then submit
-                                try {
-                                    // Convert documents object to array format expected by backend
-                                    const documentsArray = Object.entries(formData.documents || {}).map(([key, doc]) => ({
-                                        documentType: key,
-                                        fileName: doc.name || doc.fileName || 'unknown',
-                                        filePath: doc.downloadUrl || doc.filePath || '',
-                                        fileSize: doc.size || 0,
-                                        mimeType: doc.type || doc.mimeType || 'application/octet-stream',
-                                        status: 'PENDING' // Valid enum: PENDING, APPROVED, REJECTED
-                                    }));
+                    },
+                    documents: documentsArray,
+                },
+                stage: "SUBMITTED",
+            });
 
-                                    // Convert date format from DD/MM/YYYY to ISO (YYYY-MM-DD) before saving
-                                    const personalDetailsForSave2 = {
-                                        ...formData.personalDetails,
-                                        dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-                                        registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
-                                    };
-                                    await api.put(
-                                        `/api/student-application/${existing.data.data.applicationId}/save-draft`,
-                                        {
-                                            data: {
-                                                personalDetails: personalDetailsForSave2,
-                                                contactDetails: formData.contactDetails,
-                                                courseDetails: {
-                                                    selectedCollege: formData.courseDetails?.selectedCollege || '',
-                                                    selectedCourse: formData.courseDetails?.selectedCourse || '',
-                                                    stream: formData.courseDetails?.stream || '',
-                                                    campus: formData.courseDetails?.campus || '',
-                                                    institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
-                                                    courseName: formData.courseDetails?.selectedCourse || ''
-                                                },
-                                                guardianDetails: {
-                                                    ...formData.guardianDetails,
-                                                    relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
-                                                },
-                                                documents: documentsArray,
-                                            },
-                                            stage: "APPLICATION_PDF",
-                                        }
-                                    );
-                                } catch (_) { }
-                                const submitRes = await api.put(
-                                    `/api/student-application/${existing.data.data.applicationId}/submit`,
-                                    {
-                                        termsAccepted: true,
-                                    }
-                                );
-                                if (submitRes.data.success) {
-                                    showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
-                                    if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+            const submitRes = await api.put(`/api/student-application/${appId}/submit`, {
+                termsAccepted: true,
+            });
 
-                                    // Redirect to dashboard after brief delay
-                                    setTimeout(() => {
-                                        navigate('/dashboard');
-                                    }, 1500);
-                                }
-                                return;
-                            }
-                        } catch (loadErr) {
-                            console.error(
-                                "Failed to load existing application after 400:",
-                                loadErr
-                            );
-                        }
-                    }
-                    throw error;
-                } else {
-                    throw error;
-                }
-            }
-
-            if (response.data.success) {
-                setApplication(response.data.data);
-                
+            if (submitRes.data?.success) {
                 showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
-
-                // Call the update callback if provided
-                if (onStudentUpdate) {
-                    onStudentUpdate(response.data.data);
-                }
-
-                // Redirect to dashboard after brief delay
-                setTimeout(() => {
-                    navigate('/dashboard');
-                }, 1500);
+                if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+                setTimeout(() => navigate('/dashboard'), 1500);
             } else {
-                console.error("Application creation failed:", response.data);
-                showErrorToast(
-                    response.data.message || "Failed to create application. Please try again."
-                );
+                showErrorToast(submitRes.data?.message || "Failed to submit application");
             }
         } catch (error) {
             console.error("Submit error:", error);
@@ -912,6 +831,7 @@ const SinglePageStudentRegistration = ({
             showErrorToast(serverMessage);
         } finally {
             setLoading(false);
+            submitInFlightRef.current = false;
         }
     };
 

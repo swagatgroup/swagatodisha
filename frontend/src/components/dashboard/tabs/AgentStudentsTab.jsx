@@ -472,9 +472,10 @@ const AgentStudentsTab = ({ initialFilter = 'all' }) => {
   const getStatusText = (status) => {
     console.log('🏷️ Converting status:', status, 'type:', typeof status);
     switch (status) {
+      case "SUBMITTED":
+        return "Submitted";
       case "DRAFT":
       case "PENDING":
-      case "SUBMITTED":
         return "Pending";
       case "IN_PROGRESS":
       case "UNDER_REVIEW":

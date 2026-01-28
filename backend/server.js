@@ -519,6 +519,21 @@ app.post('/api/application/create', protect, async (req, res) => {
         });
     } catch (error) {
         console.error('Error creating application:', error);
+
+        // Duplicate Aadhaar -> return 409 (avoid scary 500s in production)
+        if (error && error.code === 11000) {
+            const aadhar =
+                error.keyValue?.["personalDetails.aadharNumber"] ||
+                error.keyValue?.aadharNumber ||
+                undefined;
+            return res.status(409).json({
+                success: false,
+                message: 'Aadhaar number already exists. Please use a different Aadhaar or search the existing application.',
+                aadharNumber: aadhar,
+                error: process.env.NODE_ENV === 'development' ? error.message : 'Duplicate key'
+            });
+        }
+
         res.status(500).json({
             success: false,
             message: 'Failed to create application',
@@ -566,153 +581,11 @@ app.get('/api/application/status/:applicationId', protect, async (req, res) => {
     }
 });
 
-// Updated endpoint for student application with proper auth
-app.post('/api/student-application/create', protect, async (req, res) => {
-    console.log('=== STUDENT APPLICATION CREATE ===');
-    console.log('Headers:', req.headers);
-    console.log('Body:', req.body);
-    console.log('User:', req.user);
-
-    try {
-        // Check if user is authenticated
-        if (!req.user || !req.user._id) {
-            return res.status(401).json({
-                success: false,
-                message: 'User not authenticated'
-            });
-        }
-
-        // Import the StudentApplication model
-        const StudentApplication = require('./models/StudentApplication');
-
-        // Debug logging
-        console.log('Application endpoint - User role:', req.user.role);
-        console.log('Application endpoint - User ID:', req.user._id);
-        console.log('Application endpoint - User type:', req.userType);
-        console.log('Application endpoint - User object keys:', Object.keys(req.user));
-
-        // Check if user already has an application (only for students)
-        if (req.user.role === 'student') {
-            const existingApplication = await StudentApplication.findOne({ user: req.user._id });
-            if (existingApplication) {
-                console.log('Found existing application for student:', existingApplication.applicationId);
-                return res.status(400).json({
-                    success: false,
-                    message: 'You already have an application. Please update the existing one.',
-                    applicationId: existingApplication.applicationId
-                });
-            }
-        } else {
-            console.log('User is not a student, skipping application check');
-        }
-
-        // Convert date string to Date object
-        if (req.body.personalDetails && req.body.personalDetails.dateOfBirth) {
-            req.body.personalDetails.dateOfBirth = new Date(req.body.personalDetails.dateOfBirth);
-        }
-        if (req.body.personalDetails && req.body.personalDetails.registrationDate) {
-            req.body.personalDetails.registrationDate = new Date(req.body.personalDetails.registrationDate);
-        }
-
-        // Validate phone number - maximum 2 students per phone number
-        if (req.body.contactDetails && req.body.contactDetails.primaryPhone) {
-            const phoneNumber = req.body.contactDetails.primaryPhone.replace(/\D/g, ''); // Remove non-digits
-            if (phoneNumber.length === 10) {
-                const existingApplications = await StudentApplication.countDocuments({
-                    'contactDetails.primaryPhone': phoneNumber,
-                    status: { $ne: 'REJECTED' } // Count only non-rejected applications
-                });
-                
-                if (existingApplications >= 2) {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'This phone number has already been used by 2 students. Each phone number can only be used by a maximum of 2 students.'
-                    });
-                }
-            }
-        }
-
-        // Normalize guardian relationship to valid enum value
-        const validRelationships = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'];
-        let guardianDetails = req.body.guardianDetails || {};
-        if (guardianDetails.relationship && !validRelationships.includes(guardianDetails.relationship)) {
-            console.warn(`Invalid guardian relationship "${guardianDetails.relationship}", defaulting to "Other"`);
-            guardianDetails = {
-                ...guardianDetails,
-                relationship: 'Other'
-            };
-        }
-
-        // Create application in database
-        const applicationData = {
-            user: req.user._id, // Use authenticated user ID
-            personalDetails: req.body.personalDetails || {},
-            contactDetails: req.body.contactDetails || {},
-            courseDetails: req.body.courseDetails || {},
-            guardianDetails: guardianDetails,
-            financialDetails: req.body.financialDetails || {},
-            submittedBy: req.user._id,
-            submitterRole: req.user.role || 'student',
-            status: 'DRAFT',
-            currentStage: 'REGISTRATION',
-            progress: {
-                registrationComplete: true
-            }
-        };
-
-        // Generate applicationId if not provided
-        if (!applicationData.applicationId) {
-            const year = new Date().getFullYear().toString().substr(-2);
-            const random = Math.random().toString().substr(2, 6).toUpperCase();
-            applicationData.applicationId = `APP${year}${random}`;
-        }
-
-        const application = new StudentApplication(applicationData);
-        await application.save();
-        await application.populate('user', 'fullName email phoneNumber');
-
-
-        res.status(201).json({
-            success: true,
-            message: 'Application created successfully',
-            data: application
-        });
-    } catch (error) {
-        console.error('Error creating application:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Failed to create application',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-        });
-    }
-});
-
-// Get applications for student review
-app.get('/api/student-application/my-application', async (req, res) => {
-    try {
-        const StudentApplication = require('./models/StudentApplication');
-        const applications = await StudentApplication.find({}).sort({ createdAt: -1 }).limit(1);
-
-        if (applications.length > 0) {
-            res.json({
-                success: true,
-                data: applications[0]
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: 'No application found'
-            });
-        }
-    } catch (error) {
-        console.error('Error getting applications:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error retrieving applications',
-            error: error.message
-        });
-    }
-});
+// NOTE:
+// The student application workflow routes are mounted later via:
+//   app.use('/api/student-application', ..., studentApplicationWorkflowRoutes);
+// Do not define overlapping routes here (they override the router and can cause
+// incorrect "my application" lookups + accidental duplicate registrations).
 
 // Get applications for staff dashboard
 app.get('/api/staff/applications', async (req, res) => {
