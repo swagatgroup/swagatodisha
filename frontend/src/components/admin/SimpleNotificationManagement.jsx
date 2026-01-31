@@ -59,6 +59,18 @@ const SimpleNotificationManagement = () => {
         }
     };
 
+    // Helper function to get file URL from notification
+    const getFileUrl = (notification) => {
+        if (notification.pdfDocument) {
+            return notification.pdfDocument;
+        } else if (notification.image) {
+            return notification.image;
+        } else if (notification.attachments && notification.attachments.length > 0) {
+            return notification.attachments[0].url;
+        }
+        return null;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -303,17 +315,21 @@ const SimpleNotificationManagement = () => {
                                                         {new Date(notification.publishDate).toLocaleDateString()}
                                                     </span>
                                                 )}
-                                                {(notification.pdfDocument || notification.image) && (
-                                                    <a
-                                                        href={notification.pdfDocument || notification.image}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="text-blue-600 dark:text-blue-400 hover:underline"
-                                                    >
-                                                        <i className="fa-solid fa-file mr-1"></i>
-                                                        View File
-                                                    </a>
-                                                )}
+                                                {(notification.pdfDocument || notification.image || (notification.attachments && notification.attachments.length > 0)) && (() => {
+                                                    const fileUrl = getFileUrl(notification);
+                                                    return fileUrl ? (
+                                                        <a
+                                                            href={fileUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                                            title="Click to view file in new tab"
+                                                        >
+                                                            <i className="fa-solid fa-file mr-1"></i>
+                                                            View File
+                                                        </a>
+                                                    ) : null;
+                                                })()}
                                             </div>
                                         </div>
                                         <div className="flex space-x-2 ml-4">
@@ -339,6 +355,7 @@ const SimpleNotificationManagement = () => {
                     )}
                 </div>
             )}
+
         </div>
     );
 };

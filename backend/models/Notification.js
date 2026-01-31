@@ -59,10 +59,22 @@ const notificationSchema = new mongoose.Schema({
 
     // Media and attachments
     attachments: [{
-        name: String,
-        url: String,
-        type: String,
-        size: Number
+        name: {
+            type: String,
+            required: false
+        },
+        url: {
+            type: String,
+            required: false
+        },
+        type: {
+            type: String,
+            required: false
+        },
+        size: {
+            type: Number,
+            required: false
+        }
     }],
     image: String,
     pdfDocument: String,
@@ -122,12 +134,21 @@ const notificationSchema = new mongoose.Schema({
     },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin',
+        refPath: 'createdByModel',
         required: true
+    },
+    createdByModel: {
+        type: String,
+        enum: ['Admin', 'User'],
+        default: 'Admin'
     },
     modifiedBy: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Admin'
+        refPath: 'modifiedByModel'
+    },
+    modifiedByModel: {
+        type: String,
+        enum: ['Admin', 'User']
     }
 }, {
     timestamps: true

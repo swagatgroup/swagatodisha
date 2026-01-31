@@ -99,9 +99,29 @@ const getNotificationById = async (req, res) => {
 
 // Create new notification
 const createNotification = async (req, res) => {
+    const startTime = Date.now();
+    let notificationId = null;
+    
     try {
+        console.log('📝 [NOTIFICATION CREATE] Starting notification creation');
+        console.log('📝 [NOTIFICATION CREATE] User:', {
+            id: req.user._id,
+            role: req.user.role,
+            email: req.user.email || req.user.fullName || 'N/A'
+        });
+        console.log('📝 [NOTIFICATION CREATE] Request body:', {
+            title: req.body.title,
+            type: req.body.type,
+            hasFile: !!req.file,
+            fileType: req.file?.mimetype
+        });
+
         // Validate required fields
         if (!req.body.title || !req.body.content) {
+            console.error('❌ [NOTIFICATION CREATE] Validation failed: Missing required fields', {
+                hasTitle: !!req.body.title,
+                hasContent: !!req.body.content
+            });
             return res.status(400).json({
                 success: false,
                 message: 'Title and content are required'
@@ -110,16 +130,41 @@ const createNotification = async (req, res) => {
 
         // Ensure targetAudience is set (required field)
         if (!req.body.targetAudience) {
+            console.log('📝 [NOTIFICATION CREATE] Setting default targetAudience: All');
             req.body.targetAudience = 'All';
         }
 
         // Remove any attachments from req.body if it exists (it might be a string from FormData)
         // We'll set it properly below based on file upload
         const cleanBody = { ...req.body };
-        delete cleanBody.attachments; // Explicitly delete to prevent string attachments
+        if (cleanBody.attachments) {
+            console.log('📝 [NOTIFICATION CREATE] Removing attachments from req.body (will be set from file upload)');
+            delete cleanBody.attachments;
+        }
+
+        // Check if user is Admin or User - only Admin/Staff can create notifications
+        if (!['super_admin', 'staff'].includes(req.user.role)) {
+            console.error('❌ [NOTIFICATION CREATE] Authorization failed:', {
+                userRole: req.user.role,
+                requiredRoles: ['super_admin', 'staff']
+            });
+            return res.status(403).json({
+                success: false,
+                message: 'Only staff and super admin can create notifications'
+            });
+        }
+
+        // Determine user model type from req.userType or check if it's Admin model
+        const userModelType = req.userType === 'admin' ? 'Admin' : 'User';
+        // If user has staff/super_admin role but is from User model, still allow but use User model
+        const isAdminModel = req.user.constructor.modelName === 'Admin' || req.userType === 'admin';
+        const finalUserModelType = isAdminModel ? 'Admin' : 'User';
         
-        console.log('🔍 req.body.attachments:', req.body.attachments);
-        console.log('🔍 cleanBody.attachments:', cleanBody.attachments);
+        console.log('📝 [NOTIFICATION CREATE] User model type:', {
+            userType: req.userType,
+            modelName: req.user.constructor.modelName,
+            finalModelType: finalUserModelType
+        });
 
         const notificationData = {
             title: cleanBody.title,
@@ -130,60 +175,206 @@ const createNotification = async (req, res) => {
             isActive: cleanBody.isActive !== 'false' && cleanBody.isActive !== false,
             publishDate: cleanBody.publishDate ? new Date(cleanBody.publishDate) : new Date(),
             createdBy: req.user._id,
+            createdByModel: finalUserModelType,
             lastModified: new Date(),
-            modifiedBy: req.user._id
+            modifiedBy: req.user._id,
+            modifiedByModel: finalUserModelType
             // Don't set attachments here - we'll set it only if there's a file
         };
 
         // Handle file upload if present
         if (req.file && req.file.cloudinaryUrl) {
-            const fileUrl = req.file.cloudinaryUrl;
-            const isPDF = req.file.isPDF;
+            try {
+                console.log('📎 [NOTIFICATION CREATE] Processing uploaded file:', {
+                    originalName: req.file.originalname,
+                    mimetype: req.file.mimetype,
+                    size: req.file.size,
+                    cloudinaryUrl: req.file.cloudinaryUrl,
+                    isPDF: req.file.isPDF
+                });
 
-            if (isPDF) {
-                notificationData.pdfDocument = fileUrl;
-            } else {
-                notificationData.image = fileUrl;
+                const fileUrl = req.file.cloudinaryUrl;
+                const isPDF = req.file.isPDF;
+
+                if (isPDF) {
+                    notificationData.pdfDocument = fileUrl;
+                    console.log('📎 [NOTIFICATION CREATE] Set PDF document URL');
+                } else {
+                    notificationData.image = fileUrl;
+                    console.log('📎 [NOTIFICATION CREATE] Set image URL');
+                }
+
+                // Add to attachments array (ensure it's always an array of plain objects)
+                // Create a completely fresh plain object to avoid any reference issues
+                const attachmentObj = Object.assign({}, {
+                    name: String(req.file.originalname || 'uploaded-file'),
+                    url: String(fileUrl),
+                    type: String(req.file.mimetype || 'application/octet-stream'),
+                    size: Number(req.file.size || 0)
+                });
+                
+                notificationData.attachments = [attachmentObj];
+                
+                console.log('✅ [NOTIFICATION CREATE] Created attachment object:', {
+                    name: attachmentObj.name,
+                    url: attachmentObj.url,
+                    type: attachmentObj.type,
+                    size: attachmentObj.size,
+                    isPlainObject: attachmentObj.constructor === Object,
+                    attachmentType: typeof attachmentObj
+                });
+            } catch (fileError) {
+                console.error('❌ [NOTIFICATION CREATE] Error processing file:', {
+                    error: fileError.message,
+                    stack: fileError.stack,
+                    file: req.file
+                });
+                // Continue without file attachment if file processing fails
+                console.warn('⚠️ [NOTIFICATION CREATE] Continuing without file attachment');
             }
-
-            // Add to attachments array (ensure it's always an array of objects)
-            notificationData.attachments = [{
-                name: req.file.originalname || 'uploaded-file',
-                url: fileUrl,
-                type: req.file.mimetype || 'application/octet-stream',
-                size: req.file.size || 0
-            }];
+        } else {
+            console.log('📝 [NOTIFICATION CREATE] No file uploaded');
         }
         // If no file, attachments will be undefined, which Mongoose will handle as empty array
 
         // Final check: ensure attachments is never a string and is properly formatted
         if (notificationData.attachments) {
-            if (typeof notificationData.attachments === 'string') {
-                console.error('❌ ERROR: attachments is a string! Value:', notificationData.attachments);
-                delete notificationData.attachments;
-            } else if (!Array.isArray(notificationData.attachments)) {
-                console.error('❌ ERROR: attachments is not an array! Type:', typeof notificationData.attachments);
+            try {
+                if (typeof notificationData.attachments === 'string') {
+                    console.error('❌ [NOTIFICATION CREATE] ERROR: attachments is a string!', {
+                        value: notificationData.attachments,
+                        type: typeof notificationData.attachments
+                    });
+                    delete notificationData.attachments;
+                } else if (!Array.isArray(notificationData.attachments)) {
+                    console.error('❌ [NOTIFICATION CREATE] ERROR: attachments is not an array!', {
+                        type: typeof notificationData.attachments,
+                        value: notificationData.attachments
+                    });
+                    delete notificationData.attachments;
+                } else {
+                    console.log('📝 [NOTIFICATION CREATE] Validating attachments array:', {
+                        length: notificationData.attachments.length,
+                        items: notificationData.attachments.map((att, idx) => ({
+                            index: idx,
+                            type: typeof att,
+                            isObject: typeof att === 'object',
+                            isArray: Array.isArray(att),
+                            constructor: att?.constructor?.name
+                        }))
+                    });
+
+                    // Ensure each attachment is a proper plain object (not a string or array)
+                    const validAttachments = notificationData.attachments
+                        .filter((att, idx) => {
+                            const isValid = att && typeof att === 'object' && !Array.isArray(att) && att.constructor === Object;
+                            if (!isValid) {
+                                console.warn(`⚠️ [NOTIFICATION CREATE] Invalid attachment at index ${idx} filtered out:`, {
+                                    attachment: att,
+                                    type: typeof att,
+                                    isArray: Array.isArray(att),
+                                    constructor: att?.constructor?.name
+                                });
+                            }
+                            return isValid;
+                        })
+                        .map((att, idx) => {
+                            try {
+                                // Create a completely fresh plain object with explicit type conversions
+                                // Use Object.assign to ensure it's a plain object, not a Mongoose document
+                                const cleanAtt = Object.assign({}, {
+                                    name: String(att.name || 'file'),
+                                    url: String(att.url || ''),
+                                    type: String(att.type || 'application/octet-stream'),
+                                    size: Number(att.size || 0)
+                                });
+                                console.log(`✅ [NOTIFICATION CREATE] Cleaned attachment ${idx}:`, cleanAtt);
+                                return cleanAtt;
+                            } catch (cleanError) {
+                                console.error(`❌ [NOTIFICATION CREATE] Error cleaning attachment ${idx}:`, {
+                                    error: cleanError.message,
+                                    attachment: att
+                                });
+                                return null;
+                            }
+                        })
+                        .filter(att => att !== null);
+                    
+                    if (validAttachments.length > 0) {
+                        notificationData.attachments = validAttachments;
+                        console.log('✅ [NOTIFICATION CREATE] Valid attachments prepared:', {
+                            count: validAttachments.length,
+                            attachments: validAttachments
+                        });
+                    } else {
+                        console.warn('⚠️ [NOTIFICATION CREATE] No valid attachments after filtering, removing attachments field');
+                        delete notificationData.attachments;
+                    }
+                }
+            } catch (attachmentError) {
+                console.error('❌ [NOTIFICATION CREATE] Error processing attachments:', {
+                    error: attachmentError.message,
+                    stack: attachmentError.stack,
+                    attachments: notificationData.attachments
+                });
+                // Remove attachments if processing fails
                 delete notificationData.attachments;
             }
         }
 
-        // Ensure we never pass attachments as undefined or string to Mongoose
-        // Only include it if it's a valid array
-        const finalData = { ...notificationData };
-        if (!finalData.attachments || typeof finalData.attachments === 'string' || !Array.isArray(finalData.attachments)) {
-            // Don't include attachments at all - let Mongoose use the default
-            delete finalData.attachments;
+        // Ensure attachments are properly formatted before creating notification
+        if (notificationData.attachments && Array.isArray(notificationData.attachments) && notificationData.attachments.length > 0) {
+            // Clean and format attachments array - ensure all are plain objects
+            notificationData.attachments = notificationData.attachments.map((att) => {
+                // Return a completely fresh plain object
+                return {
+                    name: String(att.name || 'file'),
+                    url: String(att.url || ''),
+                    type: String(att.type || 'application/octet-stream'),
+                    size: Number(att.size || 0)
+                };
+            });
+            
+            console.log('📝 [NOTIFICATION CREATE] Cleaned attachments array:', {
+                count: notificationData.attachments.length,
+                attachments: notificationData.attachments,
+                isArray: Array.isArray(notificationData.attachments),
+                firstItemType: notificationData.attachments[0] ? typeof notificationData.attachments[0] : 'none',
+                firstItemConstructor: notificationData.attachments[0]?.constructor?.name
+            });
+        } else {
+            // If no attachments, set to empty array explicitly
+            notificationData.attachments = [];
         }
 
-        // Create notification without attachments first, then set it
-        const { attachments: attachmentsData, ...dataWithoutAttachments } = finalData;
-        const notification = new Notification(dataWithoutAttachments);
+        // Log final notification data before creating
+        console.log('📋 [NOTIFICATION CREATE] Final notification data:', {
+            title: notificationData.title,
+            type: notificationData.type,
+            hasAttachments: notificationData.attachments.length > 0,
+            attachmentsCount: notificationData.attachments.length,
+            attachmentsType: typeof notificationData.attachments,
+            attachmentsIsArray: Array.isArray(notificationData.attachments),
+            hasPdfDocument: !!notificationData.pdfDocument,
+            hasImage: !!notificationData.image
+        });
+
+        // Create notification with all data including attachments
+        console.log('📝 [NOTIFICATION CREATE] Creating Notification model instance...');
+        const notification = new Notification(notificationData);
+        notificationId = notification._id;
         
-        // Set attachments separately if it exists and is a valid array
-        if (attachmentsData && Array.isArray(attachmentsData) && attachmentsData.length > 0) {
-            notification.attachments = attachmentsData;
-        }
+        console.log('📝 [NOTIFICATION CREATE] Saving notification to database...');
         await notification.save();
+        
+        const duration = Date.now() - startTime;
+        console.log('✅ [NOTIFICATION CREATE] Notification created successfully:', {
+            id: notification._id,
+            title: notification.title,
+            duration: `${duration}ms`,
+            hasAttachments: notification.attachments?.length > 0,
+            attachmentsCount: notification.attachments?.length || 0
+        });
 
         res.status(201).json({
             success: true,
@@ -191,20 +382,66 @@ const createNotification = async (req, res) => {
             data: notification
         });
     } catch (error) {
-        console.error('Create notification error:', error);
-        console.error('Error details:', {
-            message: error.message,
+        const duration = Date.now() - startTime;
+        
+        console.error('❌ [NOTIFICATION CREATE] Error creating notification:', {
+            error: error.message,
             name: error.name,
-            stack: error.stack
+            stack: error.stack,
+            duration: `${duration}ms`,
+            notificationId: notificationId,
+            user: {
+                id: req.user?._id,
+                role: req.user?.role
+            },
+            requestData: {
+                title: req.body?.title,
+                type: req.body?.type,
+                hasFile: !!req.file
+            }
         });
-        res.status(500).json({
+
+        // Log validation errors if present
+        if (error.errors) {
+            console.error('❌ [NOTIFICATION CREATE] Validation errors:', {
+                errors: Object.keys(error.errors).map(key => ({
+                    field: key,
+                    message: error.errors[key].message,
+                    value: error.errors[key].value,
+                    kind: error.errors[key].kind
+                }))
+            });
+        }
+
+        // Determine error type and provide appropriate response
+        let statusCode = 500;
+        let errorMessage = 'Failed to create notification';
+        let errorDetails = undefined;
+
+        if (error.name === 'ValidationError') {
+            statusCode = 400;
+            errorMessage = 'Notification validation failed';
+            errorDetails = process.env.NODE_ENV === 'development' ? {
+                errors: Object.keys(error.errors).map(key => ({
+                    field: key,
+                    message: error.errors[key].message
+                }))
+            } : undefined;
+        } else if (error.name === 'CastError') {
+            statusCode = 400;
+            errorMessage = 'Invalid data format';
+            errorDetails = process.env.NODE_ENV === 'development' ? {
+                field: error.path,
+                value: error.value,
+                kind: error.kind
+            } : undefined;
+        }
+
+        res.status(statusCode).json({
             success: false,
-            message: 'Failed to create notification',
+            message: errorMessage,
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
-            details: process.env.NODE_ENV === 'development' ? {
-                name: error.name,
-                validationErrors: error.errors
-            } : undefined
+            details: errorDetails
         });
     }
 };
@@ -213,10 +450,16 @@ const createNotification = async (req, res) => {
 const updateNotification = async (req, res) => {
     try {
         const { notificationId } = req.params;
+        
+        // Determine user model type
+        const isAdminModel = req.user.constructor.modelName === 'Admin' || req.userType === 'admin';
+        const finalUserModelType = isAdminModel ? 'Admin' : 'User';
+        
         const updateData = {
             ...req.body,
             lastModified: new Date(),
-            modifiedBy: req.user._id
+            modifiedBy: req.user._id,
+            modifiedByModel: finalUserModelType
         };
 
         // Handle file upload if present
