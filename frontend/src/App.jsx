@@ -187,6 +187,11 @@ const AppContent = () => {
                 </div>
             </section>
 
+            {/* 6. Contact Form */}
+            <section id="contact" className="bg-white dark:bg-gray-900">
+                <ContactUs />
+            </section>
+
             {/* Footer */}
             <section className="bg-criss-cross">
                 <Footer />

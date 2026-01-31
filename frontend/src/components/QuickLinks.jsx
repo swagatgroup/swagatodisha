@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CONTACT_INFO } from '../utils/constants'
+import api from '../utils/api'
 
 // Register ScrollTrigger only on client side
 if (typeof window !== 'undefined') {
@@ -22,86 +23,69 @@ const QuickLinks = () => {
     const [showAllCareers, setShowAllCareers] = useState(new Set())
     const scrollContainerRef = useRef(null)
     const careerModalTimeoutRef = useRef(null)
+    const [documents, setDocuments] = useState([])
+    const [loadingDocuments, setLoadingDocuments] = useState(true)
 
-    // Document categories with multiple links for each category
+    // Fetch real documents from API
+    useEffect(() => {
+        const fetchDocuments = async () => {
+            try {
+                setLoadingDocuments(true)
+                const response = await api.get('/api/admin/quick-access/public')
+                if (response.data.success) {
+                    setDocuments(response.data.data || [])
+                }
+            } catch (error) {
+                console.error('Error fetching documents:', error)
+                // If API fails, use empty array (no dummy data)
+                setDocuments([])
+            } finally {
+                setLoadingDocuments(false)
+            }
+        }
+        fetchDocuments()
+    }, [])
+
+    // Organize documents by type
     const documentSections = {
         timetable: {
             title: "📅 Time Tables & Schedules",
             description: "Academic schedules from different universities",
-            documents: [
-                {
-                    name: "Main University Time Table",
-                    file: "Date-Sheet.pdf",
-                    type: "pdf",
-                    description: "Primary academic schedule"
-                },
-                {
-                    name: "OSBME Information Booklet",
-                    file: "OSBME-Information-Booklet.pdf",
-                    type: "pdf",
-                    description: "Complete OSBME program schedule"
-                },
-                {
-                    name: "Semester Schedule",
-                    file: "Date-Sheet.pdf",
-                    type: "pdf",
-                    description: "Detailed semester-wise schedule"
-                }
-            ]
+            documents: documents
+                .filter(doc => doc.type === 'timetable' && doc.isActive)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map(doc => ({
+                    name: doc.title,
+                    file: doc.file,
+                    type: doc.file?.endsWith('.pdf') ? 'pdf' : doc.file?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'image' : 'pdf',
+                    description: doc.description || doc.title
+                }))
         },
         notifications: {
             title: "📢 Important Notifications",
             description: "Latest updates and announcements",
-            documents: [
-                {
-                    name: "Declaration for No Minimum Qualification",
-                    file: "Declaration for no  minimum qualification.pdf",
-                    type: "pdf",
-                    description: "Important declaration regarding admission criteria"
-                },
-                {
-                    name: "Declaration for Document Genuineness",
-                    file: "Declaration For The Genuineness of Documents.pdf",
-                    type: "pdf",
-                    description: "Document verification requirements"
-                },
-                {
-                    name: "NOC for New Institution",
-                    file: "NOC for opening of new institution to impart DMLT.pdf",
-                    type: "pdf",
-                    description: "No Objection Certificate for new programs"
-                },
-                {
-                    name: "Board Affiliation DMLT",
-                    file: "Board affiliation concerning the DMLTDMRT.pdf",
-                    type: "pdf",
-                    description: "Board affiliation details for DMLT program"
-                }
-            ]
+            documents: documents
+                .filter(doc => doc.type === 'notification' && doc.isActive)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map(doc => ({
+                    name: doc.title,
+                    file: doc.file,
+                    type: doc.file?.endsWith('.pdf') ? 'pdf' : doc.file?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'image' : 'pdf',
+                    description: doc.description || doc.title
+                }))
         },
         results: {
             title: "📊 Results & Admissions",
             description: "Academic results and admission information",
-            documents: [
-                {
-                    name: "OSBME DEP Admission Form",
-                    file: "OSBME-DEP-Admission-Form.pdf",
-                    type: "pdf",
-                    description: "Admission form for OSBME DEP program"
-                },
-                {
-                    name: "AI Center Affiliation",
-                    file: "Affilation of AI center of Patrachar Siksha Parishad.jpg",
-                    type: "jpg",
-                    description: "Affiliation certificate for AI center"
-                },
-                {
-                    name: "University Results Portal",
-                    file: "OSBME-Information-Booklet.pdf",
-                    type: "pdf",
-                    description: "Access to results and grades"
-                }
-            ]
+            documents: documents
+                .filter(doc => doc.type === 'result' && doc.isActive)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .map(doc => ({
+                    name: doc.title,
+                    file: doc.file,
+                    type: doc.file?.endsWith('.pdf') ? 'pdf' : doc.file?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'image' : 'pdf',
+                    description: doc.description || doc.title
+                }))
         }
     }
 
@@ -117,16 +101,12 @@ const QuickLinks = () => {
         }, 3000) // Blink for 3 seconds
     }
 
-    const handleDocumentClick = (documentName, fileName) => {
+    const handleDocumentClick = (documentName, fileUrl) => {
         // Document clicked
         startBlinking(documentName)
 
-        // Open PDF viewer
-        setPdfViewer({
-            isOpen: true,
-            file: fileName,
-            name: documentName
-        })
+        // Open file in new tab
+        window.open(fileUrl, '_blank', 'noopener,noreferrer')
     }
 
     const handleDocumentHover = (documentName) => {
@@ -636,8 +616,20 @@ const QuickLinks = () => {
                                                     animationPlayState: isUserScrolling ? 'paused' : 'running'
                                                 }}
                                             >
-                                                {/* First set of documents */}
-                                                {documentSections[link.category].documents.map((doc, docIndex) => (
+                                                {loadingDocuments ? (
+                                                    <div className="text-center py-8 text-gray-500">
+                                                        <i className="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                                                        <p className="text-sm">Loading documents...</p>
+                                                    </div>
+                                                ) : documentSections[link.category].documents.length === 0 ? (
+                                                    <div className="text-center py-8 text-gray-500">
+                                                        <i className="fa-solid fa-file text-2xl mb-2"></i>
+                                                        <p className="text-sm">No documents available</p>
+                                                    </div>
+                                                ) : (
+                                                    <>
+                                                        {/* First set of documents */}
+                                                        {documentSections[link.category].documents.map((doc, docIndex) => (
                                                     <motion.div
                                                         key={doc.name}
                                                         initial={{ opacity: 0, x: -20 }}
@@ -648,12 +640,13 @@ const QuickLinks = () => {
                                                         <motion.button
                                                             onClick={() => handleDocumentClick(doc.name, doc.file)}
                                                             onMouseEnter={() => handleDocumentHover(doc.name)}
+                                                            disabled={loadingDocuments}
                                                             className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
                                                                 ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
                                                                 : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                                                                }`}
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
+                                                                } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                            whileHover={loadingDocuments ? {} : { scale: 1.02 }}
+                                                            whileTap={loadingDocuments ? {} : { scale: 0.98 }}
                                                         >
                                                             <div className="flex items-center">
                                                                 <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-md flex items-center justify-center mr-2">
@@ -681,8 +674,8 @@ const QuickLinks = () => {
                                                     </motion.div>
                                                 ))}
 
-                                                {/* Duplicate set for seamless loop */}
-                                                {documentSections[link.category].documents.map((doc, docIndex) => (
+                                                        {/* Duplicate set for seamless loop - only show if there are multiple items */}
+                                                        {documentSections[link.category].documents.length > 1 && documentSections[link.category].documents.map((doc, docIndex) => (
                                                     <motion.div
                                                         key={`${doc.name}-duplicate`}
                                                         initial={{ opacity: 0, x: -20 }}
@@ -693,12 +686,13 @@ const QuickLinks = () => {
                                                         <motion.button
                                                             onClick={() => handleDocumentClick(doc.name, doc.file)}
                                                             onMouseEnter={() => handleDocumentHover(doc.name)}
+                                                            disabled={loadingDocuments}
                                                             className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
                                                                 ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
                                                                 : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                                                                }`}
-                                                            whileHover={{ scale: 1.02 }}
-                                                            whileTap={{ scale: 0.98 }}
+                                                                } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                            whileHover={loadingDocuments ? {} : { scale: 1.02 }}
+                                                            whileTap={loadingDocuments ? {} : { scale: 0.98 }}
                                                         >
                                                             <div className="flex items-center">
                                                                 <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-md flex items-center justify-center mr-2">
@@ -725,6 +719,8 @@ const QuickLinks = () => {
                                                         </motion.button>
                                                     </motion.div>
                                                 ))}
+                                                    </>
+                                                )}
                                             </div>
                                         </div>
                                     </motion.div>
@@ -1028,10 +1024,10 @@ const QuickLinks = () => {
                                     {/* Download Button */}
                                     <motion.button
                                         onClick={() => {
-                                            const fileUrl = `/${pdfViewer.file}`
+                                            const fileUrl = pdfViewer.file
                                             const link = document.createElement('a')
                                             link.href = fileUrl
-                                            link.download = pdfViewer.file
+                                            link.download = pdfViewer.name || 'document'
                                             link.target = '_blank'
                                             link.style.display = 'none'
                                             document.body.appendChild(link)
@@ -1060,9 +1056,9 @@ const QuickLinks = () => {
 
                             {/* PDF Content */}
                             <div className="h-[calc(90vh-120px)] overflow-hidden">
-                                {pdfViewer.file.endsWith('.pdf') ? (
+                                {pdfViewer.file?.endsWith('.pdf') || pdfViewer.file?.includes('.pdf') || pdfViewer.file?.match(/\.pdf(\?|$)/i) ? (
                                     <iframe
-                                        src={`/${pdfViewer.file}#toolbar=1&navpanes=1&scrollbar=1`}
+                                        src={`${pdfViewer.file}#toolbar=1&navpanes=1&scrollbar=1`}
                                         className="w-full h-full border-0"
                                         title={pdfViewer.name}
                                         onError={(e) => {
@@ -1075,7 +1071,7 @@ const QuickLinks = () => {
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
                                         <img
-                                            src={`/${pdfViewer.file}`}
+                                            src={pdfViewer.file}
                                             alt={pdfViewer.name}
                                             className="max-w-full max-h-full object-contain"
                                             onError={(e) => {
