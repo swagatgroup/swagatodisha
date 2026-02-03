@@ -68,10 +68,10 @@ const createQuickAccessDoc = asyncHandler(async (req, res) => {
     const { type, title, description, publishDate, order, isActive } = req.body;
 
     // Validate type
-    if (!['timetable', 'notification', 'result'].includes(type)) {
+    if (!['timetable', 'career', 'notification', 'result'].includes(type)) {
         return res.status(400).json({
             success: false,
-            message: 'Invalid document type. Must be timetable, notification, or result'
+            message: 'Invalid document type. Must be timetable, career, notification, or result'
         });
     }
 
@@ -136,7 +136,10 @@ const updateQuickAccessDoc = asyncHandler(async (req, res) => {
         // Delete old file from Cloudinary if it exists
         if (doc.cloudinaryPublicId) {
             try {
-                await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: 'raw' });
+                // Determine resource type based on old file URL
+                const isOldPDF = doc.file && (doc.file.includes('.pdf') || doc.file.includes('/raw/'));
+                const resourceType = isOldPDF ? 'raw' : 'image';
+                await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: resourceType });
                 console.log('🗑️ Old file deleted from Cloudinary:', doc.cloudinaryPublicId);
             } catch (error) {
                 console.log('⚠️ Failed to delete old file from Cloudinary:', error.message);
@@ -190,7 +193,10 @@ const deleteQuickAccessDoc = asyncHandler(async (req, res) => {
     // Delete file from Cloudinary if it exists
     if (doc.cloudinaryPublicId) {
         try {
-            await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: 'raw' });
+            // Determine resource type based on file URL
+            const isPDF = doc.file && (doc.file.includes('.pdf') || doc.file.includes('/raw/'));
+            const resourceType = isPDF ? 'raw' : 'image';
+            await cloudinary.uploader.destroy(doc.cloudinaryPublicId, { resource_type: resourceType });
             console.log('🗑️ File deleted from Cloudinary:', doc.cloudinaryPublicId);
         } catch (error) {
             console.log('⚠️ Failed to delete file from Cloudinary:', error.message);
