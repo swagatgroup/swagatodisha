@@ -40,11 +40,34 @@ const uploadToCloudinary = async (req, res, next) => {
             return next();
         }
 
-        console.log('📄 Uploading quick access file to Cloudinary...');
+        console.log('📄 Uploading quick access file to Cloudinary...', {
+            fileName: req.file.originalname,
+            mimetype: req.file.mimetype,
+            size: `${(req.file.buffer.length / 1024 / 1024).toFixed(2)} MB`
+        });
 
         // Determine resource type based on file type
         const isPDF = req.file.mimetype === 'application/pdf';
         const resourceType = isPDF ? 'raw' : 'image';
+        
+        // Extract file extension from original filename
+        const fileExtension = req.file.originalname.split('.').pop()?.toLowerCase() || '';
+        const hasValidExtension = fileExtension && ['pdf', 'jpg', 'jpeg', 'png', 'webp'].includes(fileExtension);
+        
+        // Generate public_id with extension for PDFs
+        const basePublicId = `quickaccess_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
+        const publicId = isPDF && hasValidExtension 
+            ? `${basePublicId}.${fileExtension}`
+            : (isPDF ? `${basePublicId}.pdf` : basePublicId);
+
+        console.log('📄 [QUICK ACCESS UPLOAD] File type determined:', {
+            isPDF: isPDF,
+            resourceType: resourceType,
+            mimetype: req.file.mimetype,
+            originalName: req.file.originalname,
+            fileExtension: fileExtension,
+            publicId: publicId
+        });
 
         // Upload to Cloudinary
         const cloudinaryResult = await new Promise((resolve, reject) => {
@@ -52,13 +75,14 @@ const uploadToCloudinary = async (req, res, next) => {
                 {
                     resource_type: resourceType,
                     folder: 'swagat-odisha/quick-access',
-                    public_id: `quickaccess_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
-                    use_filename: true,
-                    unique_filename: true
+                    public_id: publicId,
+                    use_filename: false, // We're setting public_id manually
+                    unique_filename: false, // We're setting public_id manually
+                    timeout: 60000 // Cloudinary timeout
                 },
                 (error, result) => {
                     if (error) {
-                        console.error('Cloudinary upload error:', error);
+                        console.error('❌ Cloudinary upload error:', error);
                         reject(error);
                     } else {
                         resolve(result);

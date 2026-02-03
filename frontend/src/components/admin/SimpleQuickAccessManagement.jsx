@@ -347,9 +347,9 @@ const SimpleQuickAccessManagement = () => {
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 Supported formats: PDF, JPG, PNG (Max 10MB)
                             </p>
-                            {editingDoc && editingDoc.filePath && (
+                            {editingDoc && editingDoc.file && (
                                 <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                                    Current: <a href={editingDoc.filePath} target="_blank" rel="noopener noreferrer" className="underline">View current file</a>
+                                    Current: <a href={editingDoc.file} target="_blank" rel="noopener noreferrer" className="underline">View current file</a>
                                 </p>
                             )}
                         </div>
@@ -433,9 +433,9 @@ const SimpleQuickAccessManagement = () => {
                                                 </p>
                                             )}
                                             <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
-                                                {doc.filePath && (
+                                                {doc.file && (
                                                     <a
-                                                        href={doc.filePath}
+                                                        href={doc.file}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
                                                         className="text-blue-600 dark:text-blue-400 hover:underline"

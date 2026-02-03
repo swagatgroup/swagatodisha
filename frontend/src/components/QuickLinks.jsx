@@ -54,12 +54,20 @@ const QuickLinks = () => {
             documents: documents
                 .filter(doc => doc.type === 'timetable' && doc.isActive)
                 .sort((a, b) => (a.order || 0) - (b.order || 0))
-                .map(doc => ({
-                    name: doc.title,
-                    file: doc.file,
-                    type: doc.file?.endsWith('.pdf') ? 'pdf' : doc.file?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'image' : 'pdf',
-                    description: doc.description || doc.title
-                }))
+                .map(doc => {
+                    // Determine file type - check for PDF in URL or file extension
+                    const isPDF = doc.file?.includes('.pdf') || 
+                                  doc.file?.includes('/raw/') || 
+                                  doc.fileName?.toLowerCase().endsWith('.pdf') ||
+                                  doc.file?.match(/\.pdf(\?|$)/i);
+                    const isImage = doc.file?.match(/\.(jpg|jpeg|png|gif|webp)(\?|$)/i);
+                    return {
+                        name: doc.title,
+                        file: doc.file,
+                        type: isPDF ? 'pdf' : (isImage ? 'image' : 'pdf'), // Default to PDF if uncertain
+                        description: doc.description || doc.title
+                    };
+                })
         },
         notifications: {
             title: "📢 Important Notifications",
@@ -67,12 +75,20 @@ const QuickLinks = () => {
             documents: documents
                 .filter(doc => doc.type === 'notification' && doc.isActive)
                 .sort((a, b) => (a.order || 0) - (b.order || 0))
-                .map(doc => ({
-                    name: doc.title,
-                    file: doc.file,
-                    type: doc.file?.endsWith('.pdf') ? 'pdf' : doc.file?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'image' : 'pdf',
-                    description: doc.description || doc.title
-                }))
+                .map(doc => {
+                    // Determine file type - check for PDF in URL or file extension
+                    const isPDF = doc.file?.includes('.pdf') || 
+                                  doc.file?.includes('/raw/') || 
+                                  doc.fileName?.toLowerCase().endsWith('.pdf') ||
+                                  doc.file?.match(/\.pdf(\?|$)/i);
+                    const isImage = doc.file?.match(/\.(jpg|jpeg|png|gif|webp)(\?|$)/i);
+                    return {
+                        name: doc.title,
+                        file: doc.file,
+                        type: isPDF ? 'pdf' : (isImage ? 'image' : 'pdf'), // Default to PDF if uncertain
+                        description: doc.description || doc.title
+                    };
+                })
         },
         results: {
             title: "📊 Results & Admissions",
@@ -80,12 +96,20 @@ const QuickLinks = () => {
             documents: documents
                 .filter(doc => doc.type === 'result' && doc.isActive)
                 .sort((a, b) => (a.order || 0) - (b.order || 0))
-                .map(doc => ({
-                    name: doc.title,
-                    file: doc.file,
-                    type: doc.file?.endsWith('.pdf') ? 'pdf' : doc.file?.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'image' : 'pdf',
-                    description: doc.description || doc.title
-                }))
+                .map(doc => {
+                    // Determine file type - check for PDF in URL or file extension
+                    const isPDF = doc.file?.includes('.pdf') || 
+                                  doc.file?.includes('/raw/') || 
+                                  doc.fileName?.toLowerCase().endsWith('.pdf') ||
+                                  doc.file?.match(/\.pdf(\?|$)/i);
+                    const isImage = doc.file?.match(/\.(jpg|jpeg|png|gif|webp)(\?|$)/i);
+                    return {
+                        name: doc.title,
+                        file: doc.file,
+                        type: isPDF ? 'pdf' : (isImage ? 'image' : 'pdf'), // Default to PDF if uncertain
+                        description: doc.description || doc.title
+                    };
+                })
         }
     }
 
