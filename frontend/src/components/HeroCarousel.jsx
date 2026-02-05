@@ -1,11 +1,21 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { CAROUSEL_IMAGES } from '../utils/constants';
 import api from '../utils/api';
 import { normalizeImageUrl } from '../utils/imageUtils';
+// Import vertical slider images
+import verticalSlider1 from '../assets/images/vertical slider.png';
+import verticalSlider2 from '../assets/images/vertical slider 2.png';
+import verticalSlider3 from '../assets/images/vertical slider 3.png';
+
+// Default vertical slider images
+const DEFAULT_VERTICAL_SLIDES = [
+    verticalSlider1,
+    verticalSlider2,
+    verticalSlider3
+];
 
 const HeroCarousel = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
-    const [slides, setSlides] = useState(CAROUSEL_IMAGES);
+    const [slides, setSlides] = useState(DEFAULT_VERTICAL_SLIDES);
     const [isTransitioning, setIsTransitioning] = useState(false);
     const timerRef = useRef(null);
     const containerRef = useRef(null);
@@ -36,16 +46,19 @@ const HeroCarousel = () => {
                     if (apiSlides.length > 0) {
                         setSlides(apiSlides);
                     } else {
-                        console.warn('⚠️ No active sliders found, using default images');
+                        console.warn('⚠️ No active sliders found, using default vertical slider images');
+                        setSlides(DEFAULT_VERTICAL_SLIDES);
                     }
                 } else {
-                    console.warn('⚠️ No sliders returned from API, using default images');
+                    console.warn('⚠️ No sliders returned from API, using default vertical slider images');
                     console.warn('⚠️ Response:', response.data);
+                    setSlides(DEFAULT_VERTICAL_SLIDES);
                 }
             } catch (error) {
                 console.error('❌ Error fetching sliders:', error);
                 console.error('❌ Error details:', error.response?.data || error.message);
-                // Fallback to default images if API fails
+                // Fallback to default vertical slider images if API fails
+                setSlides(DEFAULT_VERTICAL_SLIDES);
             }
         };
 
