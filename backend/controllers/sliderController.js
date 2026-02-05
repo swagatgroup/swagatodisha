@@ -59,7 +59,7 @@ const createSlider = asyncHandler(async (req, res) => {
         });
     }
 
-    const { title, description, link, order, isActive } = req.body;
+    const { title, description, link, order, isActive, sliderType } = req.body;
 
     // Use Cloudinary URL if available, otherwise fallback to local path
     const imageUrl = req.file.cloudinaryUrl || `/uploads/sliders/${req.file.filename}`;
@@ -75,6 +75,9 @@ const createSlider = asyncHandler(async (req, res) => {
         }
     }
 
+    // Validate and set sliderType (default to horizontal if not provided)
+    const type = sliderType === 'vertical' ? 'vertical' : 'horizontal';
+
     const slider = await Slider.create({
         title,
         description,
@@ -83,6 +86,7 @@ const createSlider = asyncHandler(async (req, res) => {
         link,
         order: order || 0,
         isActive: activeStatus,
+        sliderType: type,
         createdBy: req.user._id,
         updatedBy: req.user._id
     });
@@ -116,7 +120,7 @@ const updateSlider = asyncHandler(async (req, res) => {
         });
     }
 
-    const { title, description, link, order, isActive } = req.body;
+    const { title, description, link, order, isActive, sliderType } = req.body;
 
     // Properly parse isActive boolean (FormData sends strings)
     let activeStatus = slider.isActive; // Keep existing value by default
@@ -128,6 +132,12 @@ const updateSlider = asyncHandler(async (req, res) => {
         }
     }
 
+    // Validate and set sliderType
+    let type = slider.sliderType; // Keep existing value by default
+    if (sliderType !== undefined && sliderType !== null) {
+        type = sliderType === 'vertical' ? 'vertical' : 'horizontal';
+    }
+
     // Prepare update data
     const updateData = {
         title: title !== undefined ? title : slider.title,
@@ -135,6 +145,7 @@ const updateSlider = asyncHandler(async (req, res) => {
         link: link !== undefined ? link : slider.link,
         order: order !== undefined ? order : slider.order,
         isActive: activeStatus,
+        sliderType: type,
         updatedBy: req.user._id
     };
 

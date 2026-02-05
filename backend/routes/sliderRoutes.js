@@ -15,16 +15,25 @@ const { asyncHandler } = require('../middleware/errorHandler');
 // Public route - Get active sliders for homepage
 router.get('/public', asyncHandler(async (req, res) => {
     const Slider = require('../models/Slider');
+    const { sliderType } = req.query; // Get sliderType from query params
 
-    // Only get active sliders with valid images
-    const sliders = await Slider.find({ 
+    // Build filter query
+    const filter = { 
         isActive: true,
         image: { $exists: true, $ne: null, $ne: '' } // Ensure image exists
-    })
+    };
+
+    // Filter by sliderType if provided (horizontal or vertical)
+    if (sliderType && (sliderType === 'horizontal' || sliderType === 'vertical')) {
+        filter.sliderType = sliderType;
+    }
+
+    // Only get active sliders with valid images
+    const sliders = await Slider.find(filter)
         .sort({ order: 1, createdAt: -1 })
         .select('-createdBy -updatedBy'); // Exclude populated fields for public access
 
-    console.log(`📸 [PUBLIC SLIDERS] Found ${sliders.length} active sliders`);
+    console.log(`📸 [PUBLIC SLIDERS] Found ${sliders.length} active sliders${sliderType ? ` (type: ${sliderType})` : ''}`);
     
     res.status(200).json({
         success: true,

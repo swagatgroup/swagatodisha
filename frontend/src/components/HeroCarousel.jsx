@@ -17,16 +17,35 @@ const HeroCarousel = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
     const [slides, setSlides] = useState(DEFAULT_VERTICAL_SLIDES);
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [viewportWidth, setViewportWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1920);
+    const [sliderType, setSliderType] = useState(viewportWidth > 1000 ? 'horizontal' : 'vertical');
     const timerRef = useRef(null);
     const containerRef = useRef(null);
 
-    // Fetch sliders from API
+    // Monitor viewport width changes
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            setViewportWidth(width);
+            setSliderType(width > 1000 ? 'horizontal' : 'vertical');
+        };
+
+        window.addEventListener('resize', handleResize);
+        // Set initial viewport width
+        handleResize();
+
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+
+    // Fetch sliders from API based on sliderType
     useEffect(() => {
         const fetchSliders = async () => {
             try {
-                // Use public endpoint (no auth required)
-                const response = await api.get('/api/sliders/public');
-                console.log('📸 Sliders API Response:', response.data);
+                // Use public endpoint with sliderType query parameter
+                const response = await api.get(`/api/sliders/public?sliderType=${sliderType}`);
+                console.log(`📸 Sliders API Response (${sliderType}):`, response.data);
                 
                 if (response.data.success && response.data.data && response.data.data.length > 0) {
                     const apiSlides = response.data.data
@@ -40,25 +59,45 @@ const HeroCarousel = () => {
                         })
                         .filter(Boolean); // Remove null/empty values
                     
-                    console.log('📸 Processed slides:', apiSlides);
-                    console.log(`📸 Total active sliders: ${apiSlides.length}`);
+                    console.log(`📸 Processed ${sliderType} slides:`, apiSlides);
+                    console.log(`📸 Total active ${sliderType} sliders: ${apiSlides.length}`);
                     
                     if (apiSlides.length > 0) {
                         setSlides(apiSlides);
+                        // Reset to first slide when slider type changes
+                        setCurrentSlide(0);
                     } else {
-                        console.warn('⚠️ No active sliders found, using default vertical slider images');
-                        setSlides(DEFAULT_VERTICAL_SLIDES);
+                        // If no sliders found for current type, use defaults for vertical only
+                        if (sliderType === 'vertical') {
+                            console.warn('⚠️ No vertical sliders found, using default vertical slider images');
+                            setSlides(DEFAULT_VERTICAL_SLIDES);
+                            setCurrentSlide(0);
+                        } else {
+                            console.warn('⚠️ No horizontal sliders found');
+                            setSlides([]);
+                        }
                     }
                 } else {
-                    console.warn('⚠️ No sliders returned from API, using default vertical slider images');
-                    console.warn('⚠️ Response:', response.data);
-                    setSlides(DEFAULT_VERTICAL_SLIDES);
+                    // If no sliders returned, use defaults for vertical only
+                    if (sliderType === 'vertical') {
+                        console.warn('⚠️ No sliders returned from API, using default vertical slider images');
+                        setSlides(DEFAULT_VERTICAL_SLIDES);
+                        setCurrentSlide(0);
+                    } else {
+                        console.warn('⚠️ No horizontal sliders returned from API');
+                        setSlides([]);
+                    }
                 }
             } catch (error) {
                 console.error('❌ Error fetching sliders:', error);
                 console.error('❌ Error details:', error.response?.data || error.message);
                 // Fallback to default vertical slider images if API fails
-                setSlides(DEFAULT_VERTICAL_SLIDES);
+                if (sliderType === 'vertical') {
+                    setSlides(DEFAULT_VERTICAL_SLIDES);
+                    setCurrentSlide(0);
+                } else {
+                    setSlides([]);
+                }
             }
         };
 
@@ -67,7 +106,7 @@ const HeroCarousel = () => {
         // Refresh sliders every 30 seconds to pick up new uploads
         const interval = setInterval(fetchSliders, 30000);
         return () => clearInterval(interval);
-    }, []);
+    }, [sliderType]);
 
     // Preload images to prevent glitches
     useEffect(() => {
@@ -118,11 +157,16 @@ const HeroCarousel = () => {
         return null;
     }
 
+    // Determine height based on slider type
+    const heightClass = sliderType === 'horizontal' 
+        ? 'h-screen' // 100vh for horizontal (full screen)
+        : 'h-[70vh]'; // 70vh for vertical
+
     return (
         <section
             id="hero"
             ref={containerRef}
-            className="relative w-1/2 md:w-full h-[18vh] sm:h-[40vh] md:h-[50vh] lg:h-[60vh] xl:h-[65vh] mt-20 sm:mt-16 md:mt-16 overflow-hidden mx-auto"
+            className={`relative w-full ${heightClass} mt-20 sm:mt-16 md:mt-16 overflow-hidden`}
             style={{
                 isolation: 'isolate',
                 transform: 'none',
