@@ -20,18 +20,18 @@ const HeroCarousel = () => {
                 
                 if (response.data.success && response.data.data && response.data.data.length > 0) {
                     const apiSlides = response.data.data
-                        .filter(slider => slider.isActive !== false) // Only active sliders
+                        .filter(slider => slider.isActive !== false && slider.image) // Only active sliders with images
                         .sort((a, b) => (a.order || 0) - (b.order || 0))
                         .map(slider => {
                             // Use utility function to normalize image URL
-                            if (slider.image) {
-                                return normalizeImageUrl(slider.image);
-                            }
-                            return null;
+                            const normalizedUrl = normalizeImageUrl(slider.image);
+                            console.log(`📸 Slider "${slider.title}": ${slider.image} -> ${normalizedUrl}`);
+                            return normalizedUrl;
                         })
-                        .filter(Boolean); // Remove null values
+                        .filter(Boolean); // Remove null/empty values
                     
                     console.log('📸 Processed slides:', apiSlides);
+                    console.log(`📸 Total active sliders: ${apiSlides.length}`);
                     
                     if (apiSlides.length > 0) {
                         setSlides(apiSlides);
@@ -40,6 +40,7 @@ const HeroCarousel = () => {
                     }
                 } else {
                     console.warn('⚠️ No sliders returned from API, using default images');
+                    console.warn('⚠️ Response:', response.data);
                 }
             } catch (error) {
                 console.error('❌ Error fetching sliders:', error);
