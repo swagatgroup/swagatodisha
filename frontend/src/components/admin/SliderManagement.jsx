@@ -15,15 +15,29 @@ import { normalizeImageUrl } from '../../utils/imageUtils';
 const SliderManagement = () => {
     const [sliders, setSliders] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [uploading, setUploading] = useState(false);
+    const [uploading, setUploading] = useState({ horizontal: false, vertical: false });
     const [editingSlider, setEditingSlider] = useState(null);
-    const [formData, setFormData] = useState({
+    const [activeSection, setActiveSection] = useState('horizontal'); // 'horizontal' or 'vertical'
+    
+    // Separate form data for each section
+    const [horizontalFormData, setHorizontalFormData] = useState({
         title: '',
         description: '',
         link: '',
         order: 0,
-        isActive: true
+        isActive: true,
+        sliderType: 'horizontal'
     });
+    
+    const [verticalFormData, setVerticalFormData] = useState({
+        title: '',
+        description: '',
+        link: '',
+        order: 0,
+        isActive: true,
+        sliderType: 'vertical'
+    });
+    
     const [previewImage, setPreviewImage] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
 
@@ -43,6 +57,20 @@ const SliderManagement = () => {
             showError('Error', 'Failed to fetch sliders');
         } finally {
             setLoading(false);
+        }
+    };
+
+    // Get current form data based on active section
+    const getCurrentFormData = () => {
+        return activeSection === 'horizontal' ? horizontalFormData : verticalFormData;
+    };
+
+    // Set current form data based on active section
+    const setCurrentFormData = (data) => {
+        if (activeSection === 'horizontal') {
+            setHorizontalFormData(data);
+        } else {
+            setVerticalFormData(data);
         }
     };
 
@@ -80,8 +108,11 @@ const SliderManagement = () => {
             return;
         }
 
+        const formData = getCurrentFormData();
+        const isHorizontal = activeSection === 'horizontal';
+
         try {
-            setUploading(true);
+            setUploading(prev => ({ ...prev, [activeSection]: true }));
             showLoading('Processing...', 'Uploading and optimizing image...');
 
             const formDataToSend = new FormData();
@@ -94,8 +125,8 @@ const SliderManagement = () => {
             formDataToSend.append('description', formData.description || '');
             formDataToSend.append('link', formData.link || '');
             formDataToSend.append('order', formData.order || 0);
-            // Ensure isActive is sent as a string boolean (FormData converts to string)
             formDataToSend.append('isActive', formData.isActive ? 'true' : 'false');
+            formDataToSend.append('sliderType', isHorizontal ? 'horizontal' : 'vertical');
 
             let response;
             if (editingSlider) {
@@ -123,19 +154,30 @@ const SliderManagement = () => {
             console.error('Error saving slider:', error);
             showError('Error', error.response?.data?.message || 'Failed to save slider');
         } finally {
-            setUploading(false);
+            setUploading(prev => ({ ...prev, [activeSection]: false }));
         }
     };
 
     const handleEdit = (slider) => {
         setEditingSlider(slider);
-        setFormData({
+        const formData = {
             title: slider.title || '',
             description: slider.description || '',
             link: slider.link || '',
             order: slider.order || 0,
-            isActive: slider.isActive !== false
-        });
+            isActive: slider.isActive !== false,
+            sliderType: slider.sliderType || 'horizontal'
+        };
+        
+        // Set the active section based on slider type
+        if (slider.sliderType === 'vertical') {
+            setActiveSection('vertical');
+            setVerticalFormData(formData);
+        } else {
+            setActiveSection('horizontal');
+            setHorizontalFormData(formData);
+        }
+        
         // Use utility function to normalize image URL
         setPreviewImage(normalizeImageUrl(slider.image));
         setSelectedFile(null);
@@ -174,6 +216,7 @@ const SliderManagement = () => {
             formDataToSend.append('link', slider.link || '');
             formDataToSend.append('order', slider.order || 0);
             formDataToSend.append('isActive', (!slider.isActive).toString());
+            formDataToSend.append('sliderType', slider.sliderType || 'horizontal');
             
             const response = await api.put(
                 `/api/admin/sliders/${slider._id}`,
@@ -193,50 +236,58 @@ const SliderManagement = () => {
     };
 
     const resetForm = () => {
-        setFormData({
-            title: '',
-            description: '',
-            link: '',
-            order: 0,
-            isActive: true
-        });
+        if (activeSection === 'horizontal') {
+            setHorizontalFormData({
+                title: '',
+                description: '',
+                link: '',
+                order: 0,
+                isActive: true,
+                sliderType: 'horizontal'
+            });
+        } else {
+            setVerticalFormData({
+                title: '',
+                description: '',
+                link: '',
+                order: 0,
+                isActive: true,
+                sliderType: 'vertical'
+            });
+        }
         setPreviewImage(null);
         setSelectedFile(null);
         setEditingSlider(null);
     };
 
-    if (loading) {
+    // Filter sliders by type
+    const horizontalSliders = sliders.filter(s => (s.sliderType || 'horizontal') === 'horizontal');
+    const verticalSliders = sliders.filter(s => s.sliderType === 'vertical');
+
+    // Render form for a specific section
+    const renderForm = (sectionType) => {
+        const formData = sectionType === 'horizontal' ? horizontalFormData : verticalFormData;
+        const setFormData = sectionType === 'horizontal' ? setHorizontalFormData : setVerticalFormData;
+        const isActive = activeSection === sectionType;
+        const isUploading = uploading[sectionType];
+
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-            </div>
-        );
-    }
-
-    return (
-        <div className="space-y-6">
-            {/* Info Box */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                <div className="flex items-start">
-                    <i className="fa-solid fa-info-circle text-blue-600 dark:text-blue-400 text-xl mr-3 mt-1"></i>
-                    <div>
-                        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Image Guidelines</h3>
-                        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
-                            <li>• Recommended dimensions: 1920 x 600 pixels</li>
-                            <li>• Supported formats: JPG, PNG, WebP</li>
-                            <li>• Maximum file size: 10MB</li>
-                            <li>• Images will be automatically resized to 1920x600 and optimized</li>
-                            <li>• Images will be uploaded to Cloudinary and auto-compressed</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            {/* Form */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+            <div className={`bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 ${!isActive ? 'hidden' : ''}`}>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                    {editingSlider ? 'Edit Slider' : 'Add New Slider'}
+                    {sectionType === 'horizontal' ? '🖥️ Horizontal Slider' : '📱 Vertical Slider'}
+                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
+                        ({sectionType === 'horizontal' ? 'For screens above 1000px width' : 'For screens below 1000px width'})
+                    </span>
                 </h2>
+
+                {editingSlider && editingSlider.sliderType === sectionType && (
+                    <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                        <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                            <i className="fa-solid fa-edit mr-2"></i>
+                            Editing: {editingSlider.title}
+                        </p>
+                    </div>
+                )}
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -318,12 +369,12 @@ const SliderManagement = () => {
                     <div className="flex items-center">
                         <input
                             type="checkbox"
-                            id="isActive"
+                            id={`isActive-${sectionType}`}
                             checked={formData.isActive}
                             onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                             className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                         />
-                        <label htmlFor="isActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                        <label htmlFor={`isActive-${sectionType}`} className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                             Active
                         </label>
                     </div>
@@ -331,12 +382,12 @@ const SliderManagement = () => {
                     <div className="flex space-x-3">
                         <button
                             type="submit"
-                            disabled={uploading}
+                            disabled={isUploading}
                             className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {uploading ? 'Saving...' : editingSlider ? 'Update Slider' : 'Create Slider'}
+                            {isUploading ? 'Saving...' : editingSlider && editingSlider.sliderType === sectionType ? 'Update Slider' : 'Create Slider'}
                         </button>
-                        {editingSlider && (
+                        {editingSlider && editingSlider.sliderType === sectionType && (
                             <button
                                 type="button"
                                 onClick={resetForm}
@@ -348,20 +399,24 @@ const SliderManagement = () => {
                     </div>
                 </form>
             </div>
+        );
+    };
 
-            {/* Sliders List */}
+    // Render slider list for a specific section
+    const renderSliderList = (sectionType, slidersList) => {
+        return (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-                    Current Sliders ({sliders.length})
+                    {sectionType === 'horizontal' ? '🖥️ Horizontal Sliders' : '📱 Vertical Sliders'} ({slidersList.length})
                 </h2>
 
-                {sliders.length === 0 ? (
+                {slidersList.length === 0 ? (
                     <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-                        No sliders found. Create your first slider above.
+                        No {sectionType} sliders found. Create your first {sectionType} slider above.
                     </p>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {sliders.map((slider) => (
+                        {slidersList.map((slider) => (
                             <motion.div
                                 key={slider._id}
                                 initial={{ opacity: 0, y: 20 }}
@@ -382,6 +437,9 @@ const SliderManagement = () => {
                                             Inactive
                                         </div>
                                     )}
+                                    <div className="absolute top-2 left-2 bg-purple-500 text-white px-2 py-1 rounded text-xs">
+                                        {slider.sliderType === 'vertical' ? '📱 Vertical' : '🖥️ Horizontal'}
+                                    </div>
                                 </div>
                                 <div className="p-4">
                                     <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
@@ -426,9 +484,105 @@ const SliderManagement = () => {
                     </div>
                 )}
             </div>
+        );
+    };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="space-y-6">
+            {/* Info Box */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="flex items-start">
+                    <i className="fa-solid fa-info-circle text-blue-600 dark:text-blue-400 text-xl mr-3 mt-1"></i>
+                    <div>
+                        <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Slider Guidelines</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-blue-800 dark:text-blue-200">
+                            <div>
+                                <h4 className="font-semibold mb-1">🖥️ Horizontal Sliders (Desktop &gt;1000px)</h4>
+                                <ul className="space-y-1">
+                                    <li>• Recommended: 1920 x 1080 pixels</li>
+                                    <li>• Covers full screen height (100vh)</li>
+                                    <li>• Activated above 1000px viewport width</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold mb-1">📱 Vertical Sliders (Mobile/Tablet &lt;1000px)</h4>
+                                <ul className="space-y-1">
+                                    <li>• Recommended: 600 x 840 pixels</li>
+                                    <li>• Covers 70vh height</li>
+                                    <li>• Activated below 1000px viewport width</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div className="mt-3 text-sm">
+                            <p>• Supported formats: JPG, PNG, WebP</p>
+                            <p>• Maximum file size: 10MB</p>
+                            <p>• Images will be automatically resized and optimized</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Section Tabs */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="border-b border-gray-200 dark:border-gray-700">
+                    <nav className="flex space-x-8 px-6">
+                        <button
+                            onClick={() => {
+                                if (editingSlider && editingSlider.sliderType !== 'horizontal') {
+                                    resetForm();
+                                }
+                                setActiveSection('horizontal');
+                            }}
+                            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeSection === 'horizontal'
+                                    ? 'border-purple-500 text-purple-600 dark:text-purple-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                }`}
+                        >
+                            <i className="fa-solid fa-desktop mr-2"></i>
+                            Horizontal Sliders (Desktop)
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (editingSlider && editingSlider.sliderType !== 'vertical') {
+                                    resetForm();
+                                }
+                                setActiveSection('vertical');
+                            }}
+                            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeSection === 'vertical'
+                                    ? 'border-purple-500 text-purple-600 dark:text-purple-400'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                }`}
+                        >
+                            <i className="fa-solid fa-mobile-screen-button mr-2"></i>
+                            Vertical Sliders (Mobile/Tablet)
+                        </button>
+                    </nav>
+                </div>
+
+                <div className="p-6">
+                    {/* Horizontal Slider Form */}
+                    {renderForm('horizontal')}
+                    
+                    {/* Vertical Slider Form */}
+                    {renderForm('vertical')}
+                </div>
+            </div>
+
+            {/* Horizontal Sliders List */}
+            {renderSliderList('horizontal', horizontalSliders)}
+
+            {/* Vertical Sliders List */}
+            {renderSliderList('vertical', verticalSliders)}
         </div>
     );
 };
 
 export default SliderManagement;
-

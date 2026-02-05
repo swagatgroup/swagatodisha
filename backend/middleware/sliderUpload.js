@@ -25,7 +25,9 @@ const upload = multer({
 
 /**
  * Image Optimization and Cloudinary Upload Middleware
- * Resizes images to 1920x600 dimensions and uploads to Cloudinary
+ * Resizes images based on sliderType:
+ * - Horizontal: 1920x1080 (full screen landscape for >1000px viewport)
+ * - Vertical: 600x840 (vertical portrait for <1000px viewport)
  * Auto-compresses images using Cloudinary's optimization
  */
 const optimizeSliderImage = async (req, res, next) => {
@@ -36,9 +38,38 @@ const optimizeSliderImage = async (req, res, next) => {
 
         console.log('🖼️ Processing slider image for Cloudinary upload...');
 
-        // Resize and optimize image to 1920x600 (as per requirements)
+        // Get sliderType from request body (FormData sends as string)
+        const sliderType = req.body.sliderType || 'horizontal';
+        
+        // Define dimensions based on slider type
+        let width, height, transformation;
+        if (sliderType === 'vertical') {
+            // Vertical slider: 600x840 (portrait orientation for mobile/tablet)
+            width = 600;
+            height = 840;
+            transformation = [
+                { width: 600, height: 840, crop: 'fill' },
+                { quality: 'auto:good' },
+                { fetch_format: 'auto' },
+                { flags: 'progressive' }
+            ];
+            console.log('📱 Processing vertical slider image (600x840)');
+        } else {
+            // Horizontal slider: 1920x1080 (full HD landscape for desktop)
+            width = 1920;
+            height = 1080;
+            transformation = [
+                { width: 1920, height: 1080, crop: 'fill' },
+                { quality: 'auto:good' },
+                { fetch_format: 'auto' },
+                { flags: 'progressive' }
+            ];
+            console.log('🖥️ Processing horizontal slider image (1920x1080)');
+        }
+
+        // Resize and optimize image
         const optimizedBuffer = await sharp(req.file.buffer)
-            .resize(1920, 600, {
+            .resize(width, height, {
                 fit: 'cover', // Crop to fit
                 position: 'center'
             })
@@ -48,20 +79,15 @@ const optimizeSliderImage = async (req, res, next) => {
             })
             .toBuffer();
 
-        console.log('✅ Image resized to 1920x600 and optimized');
+        console.log(`✅ Image resized to ${width}x${height} and optimized`);
 
         // Upload to Cloudinary
         const cloudinaryResult = await CloudinaryService.uploadImage(
             optimizedBuffer,
-            'swagat-odisha/sliders',
+            `swagat-odisha/sliders/${sliderType}`,
             {
-                public_id: `slider_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
-                transformation: [
-                    { width: 1920, height: 600, crop: 'fill' },
-                    { quality: 'auto:good' },
-                    { fetch_format: 'auto' },
-                    { flags: 'progressive' }
-                ]
+                public_id: `${sliderType}_slider_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+                transformation: transformation
             }
         );
 

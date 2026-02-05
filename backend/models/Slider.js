@@ -30,6 +30,12 @@ const sliderSchema = new mongoose.Schema({
         type: String,
         trim: true // Optional link when slider is clicked
     },
+    sliderType: {
+        type: String,
+        enum: ['horizontal', 'vertical'],
+        required: true,
+        default: 'horizontal' // Horizontal for screens >1000px, vertical for <1000px
+    },
     createdBy: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Admin'
@@ -44,6 +50,7 @@ const sliderSchema = new mongoose.Schema({
 
 // Add index for faster queries
 sliderSchema.index({ order: 1, isActive: 1 });
+sliderSchema.index({ sliderType: 1, isActive: 1 });
 
 module.exports = mongoose.model('Slider', sliderSchema);
 
