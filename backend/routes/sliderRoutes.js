@@ -16,11 +16,16 @@ const { asyncHandler } = require('../middleware/errorHandler');
 router.get('/public', asyncHandler(async (req, res) => {
     const Slider = require('../models/Slider');
 
-    // Only get active sliders
-    const sliders = await Slider.find({ isActive: true })
+    // Only get active sliders with valid images
+    const sliders = await Slider.find({ 
+        isActive: true,
+        image: { $exists: true, $ne: null, $ne: '' } // Ensure image exists
+    })
         .sort({ order: 1, createdAt: -1 })
         .select('-createdBy -updatedBy'); // Exclude populated fields for public access
 
+    console.log(`📸 [PUBLIC SLIDERS] Found ${sliders.length} active sliders`);
+    
     res.status(200).json({
         success: true,
         count: sliders.length,

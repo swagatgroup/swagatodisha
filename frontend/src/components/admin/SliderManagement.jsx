@@ -167,15 +167,28 @@ const SliderManagement = () => {
 
     const handleToggleActive = async (slider) => {
         try {
-            const response = await api.put(`/api/admin/sliders/${slider._id}`, {
-                isActive: !slider.isActive
-            });
+            // Use FormData to match the route expectations
+            const formDataToSend = new FormData();
+            formDataToSend.append('title', slider.title || '');
+            formDataToSend.append('description', slider.description || '');
+            formDataToSend.append('link', slider.link || '');
+            formDataToSend.append('order', slider.order || 0);
+            formDataToSend.append('isActive', (!slider.isActive).toString());
+            
+            const response = await api.put(
+                `/api/admin/sliders/${slider._id}`,
+                formDataToSend,
+                {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                }
+            );
             if (response.data.success) {
+                showSuccessToast(`Slider ${!slider.isActive ? 'activated' : 'deactivated'} successfully!`);
                 fetchSliders();
             }
         } catch (error) {
             console.error('Error updating slider:', error);
-            showError('Error', 'Failed to update slider status');
+            showError('Error', error.response?.data?.message || 'Failed to update slider status');
         }
     };
 
