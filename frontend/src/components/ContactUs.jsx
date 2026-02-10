@@ -156,7 +156,7 @@ const ContactUs = () => {
     return (
         <section id="contact" className="relative py-20 overflow-hidden">
             {/* Background Elements */}
-            <div className="absolute inset-0">
+            <div className="absolute inset-0 dark:bg-gray-900/90">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 dark:from-purple-900/10 dark:to-blue-900/10 rounded-full blur-3xl"></div>
