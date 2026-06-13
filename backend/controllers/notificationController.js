@@ -169,11 +169,26 @@ const createNotification = async (req, res) => {
         const notificationData = {
             title: cleanBody.title,
             content: cleanBody.content,
+            shortDescription: cleanBody.shortDescription,
             type: cleanBody.type || 'General',
-            priority: cleanBody.priority || 'Medium',
+            category: cleanBody.category || 'Notification',
             targetAudience: cleanBody.targetAudience || 'All',
-            isActive: cleanBody.isActive !== 'false' && cleanBody.isActive !== false,
+            targetInstitutions: cleanBody.targetInstitutions || [],
+            targetCourses: cleanBody.targetCourses || [],
+            priority: cleanBody.priority || 'Medium',
+            isUrgent: cleanBody.isUrgent === 'true' || cleanBody.isUrgent === true,
+            isImportant: cleanBody.isImportant === 'true' || cleanBody.isImportant === true,
             publishDate: cleanBody.publishDate ? new Date(cleanBody.publishDate) : new Date(),
+            expiryDate: cleanBody.expiryDate && String(cleanBody.expiryDate).trim() !== '' ? new Date(cleanBody.expiryDate) : undefined,
+            eventDate: cleanBody.eventDate && String(cleanBody.eventDate).trim() !== '' ? new Date(cleanBody.eventDate) : undefined,
+            status: cleanBody.status || 'Draft',
+            isActive: cleanBody.isActive !== 'false' && cleanBody.isActive !== false,
+            displayOrder: parseInt(cleanBody.displayOrder) || 0,
+            showOnHomepage: cleanBody.showOnHomepage === 'true' || cleanBody.showOnHomepage === true,
+            showInQuickLinks: cleanBody.showInQuickLinks === 'true' || cleanBody.showInQuickLinks === true,
+            seoTitle: cleanBody.seoTitle,
+            seoDescription: cleanBody.seoDescription,
+            seoKeywords: Array.isArray(cleanBody.seoKeywords) ? cleanBody.seoKeywords : (cleanBody.seoKeywords ? String(cleanBody.seoKeywords).split(',').map(k => k.trim()) : []),
             createdBy: req.user._id,
             createdByModel: finalUserModelType,
             lastModified: new Date(),
@@ -572,7 +587,7 @@ const deleteNotification = async (req, res) => {
     try {
         const { notificationId } = req.params;
 
-        const notification = await Notification.findByIdAndDelete(notificationId);
+        const notification = await Notification.findById(notificationId);
 
         if (!notification) {
             return res.status(404).json({
@@ -580,6 +595,68 @@ const deleteNotification = async (req, res) => {
                 message: 'Notification not found'
             });
         }
+
+        // Delete associated files from Cloudinary if any
+        const CloudinaryService = require('../utils/cloudinary');
+        
+        if (notification.pdfDocument) {
+            let publicId = null;
+            if (notification.pdfDocument.includes('cloudinary.com')) {
+                const match = notification.pdfDocument.match(/\/v\d+\/(.+?)(?:\.pdf)?$/);
+                if (match) publicId = match[1];
+            }
+            if (publicId) {
+                try {
+                    await CloudinaryService.deleteFile(publicId);
+                    console.log('🗑️ Deleted PDF from Cloudinary on notification delete');
+                } catch (err) {
+                    console.log('⚠️ Could not delete PDF from Cloudinary:', err.message);
+                }
+            }
+        }
+        
+        if (notification.image) {
+            let publicId = null;
+            if (notification.image.includes('cloudinary.com')) {
+                const match = notification.image.match(/\/v\d+\/(.+?)(?:\.(jpg|png|webp|jpeg))?$/);
+                if (match) publicId = match[1];
+            }
+            if (publicId) {
+                try {
+                    await CloudinaryService.deleteImage(publicId);
+                    console.log('🗑️ Deleted image from Cloudinary on notification delete');
+                } catch (err) {
+                    console.log('⚠️ Could not delete image from Cloudinary:', err.message);
+                }
+            }
+        }
+
+        if (notification.attachments && notification.attachments.length > 0) {
+            for (const att of notification.attachments) {
+                if (att.url) {
+                    let publicId = null;
+                    const isPDF = att.type?.includes('pdf') || att.name?.toLowerCase().endsWith('.pdf');
+                    if (att.url.includes('cloudinary.com')) {
+                        const match = att.url.match(/\/v\d+\/(.+?)(?:\.[^.]+)?$/);
+                        if (match) publicId = match[1];
+                    }
+                    if (publicId) {
+                        try {
+                            if (isPDF) {
+                                await CloudinaryService.deleteFile(publicId);
+                            } else {
+                                await CloudinaryService.deleteImage(publicId);
+                            }
+                            console.log(`🗑️ Deleted attachment ${att.name} from Cloudinary`);
+                        } catch (err) {
+                            console.log(`⚠️ Could not delete attachment ${att.name} from Cloudinary:`, err.message);
+                        }
+                    }
+                }
+            }
+        }
+
+        await Notification.findByIdAndDelete(notificationId);
 
         res.status(200).json({
             success: true,
@@ -641,9 +718,21 @@ const getPublicNotifications = async (req, res) => {
         let query = {
             status: 'Published',
             isActive: true,
-            $or: [
-                { publishDate: { $lte: new Date() } },
-                { publishDate: { $exists: false } }
+            $and: [
+                {
+                    $or: [
+                        { publishDate: { $lte: new Date() } },
+                        { publishDate: { $exists: false } },
+                        { publishDate: null }
+                    ]
+                },
+                {
+                    $or: [
+                        { expiryDate: { $gt: new Date() } },
+                        { expiryDate: { $exists: false } },
+                        { expiryDate: null }
+                    ]
+                }
             ]
         };
 

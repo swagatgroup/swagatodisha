@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
+const { protect, isStaff } = require('../middleware/auth');
 const {
     getNotifications,
     getNotificationById,
@@ -20,11 +20,11 @@ router.get('/stats', getNotificationStats);
 router.get('/:notificationId', getNotificationById);
 router.post('/:notificationId/click', incrementClickCount);
 
-// Protected routes (Admin only)
-router.get('/', protect, getNotifications);
-router.post('/', protect, upload.single('file'), uploadToCloudinary, createNotification);
-router.put('/:notificationId', protect, upload.single('file'), uploadToCloudinary, updateNotification);
-router.delete('/:notificationId', protect, deleteNotification);
-router.put('/:notificationId/status', protect, updateNotificationStatus);
+// Protected routes (Admin/Staff only)
+router.get('/', protect, isStaff, getNotifications);
+router.post('/', protect, isStaff, upload.single('file'), uploadToCloudinary, createNotification);
+router.put('/:notificationId', protect, isStaff, upload.single('file'), uploadToCloudinary, updateNotification);
+router.delete('/:notificationId', protect, isStaff, deleteNotification);
+router.put('/:notificationId/status', protect, isStaff, updateNotificationStatus);
 
 module.exports = router;
