@@ -234,9 +234,11 @@ class DatabaseOptimization {
                 await Notification.collection.createIndex({ userId: 1, read: 1 });
             }
 
-            // TTL index for auto-deletion of old notifications
-            if (!indexNames.includes('createdAt_1')) {
-                await Notification.collection.createIndex({ createdAt: 1 }, { expireAfterSeconds: 2592000 }); // 30 days
+            // Drop TTL index for auto-deletion of old notifications if it exists
+            if (indexNames.includes('createdAt_1')) {
+                console.log('🗑️ Dropping Notification TTL index (createdAt_1) to disable auto-delete...');
+                await Notification.collection.dropIndex('createdAt_1');
+                console.log('✅ Notification TTL index dropped successfully');
             }
         } catch (error) {
             console.warn('Warning: Could not create Notification indexes:', error.message);
@@ -391,26 +393,11 @@ class DatabaseOptimization {
         try {
             console.log('🧹 Starting database cleanup...');
 
-            const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-
-            // Clean up old notifications
-            const Notification = require('../models/Notification');
-            const deletedNotifications = await Notification.deleteMany({
-                createdAt: { $lt: thirtyDaysAgo },
-                read: true
-            });
-
-            console.log(`✅ Cleaned up ${deletedNotifications.deletedCount} old notifications`);
-
-            // Clean up old logs (if you have a logs collection)
-            // const Log = require('../models/Log');
-            // const deletedLogs = await Log.deleteMany({
-            //     createdAt: { $lt: thirtyDaysAgo }
-            // });
+            // Do not automatically delete old notifications as requested by user
+            console.log('ℹ️ Automatic notification cleanup skipped (manual delete only)');
 
             return {
-                notifications: deletedNotifications.deletedCount,
-                // logs: deletedLogs.deletedCount
+                notifications: 0
             };
         } catch (error) {
             console.error('❌ Error during cleanup:', error);
