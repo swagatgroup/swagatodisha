@@ -785,6 +785,52 @@ router.get('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
     }
 });
 
+// @desc    Update student financial status
+// @route   PUT /api/admin/students/:id/financial
+// @access  Private - Staff/Super Admin only
+router.put('/:id/financial', protect, authorize('staff', 'super_admin'), async (req, res) => {
+    try {
+        const { totalFees, paidAmount, dueAmount, paymentStatus, receiptUrl } = req.body;
+
+        const application = await StudentApplication.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student application not found'
+            });
+        }
+
+        // Initialize if doesn't exist
+        if (!application.financialStatus) {
+            application.financialStatus = {};
+        }
+
+        if (totalFees !== undefined) application.financialStatus.totalFees = Number(totalFees);
+        if (paidAmount !== undefined) application.financialStatus.paidAmount = Number(paidAmount);
+        if (dueAmount !== undefined) application.financialStatus.dueAmount = Number(dueAmount);
+        if (paymentStatus) application.financialStatus.paymentStatus = paymentStatus;
+        if (receiptUrl) application.financialStatus.receiptUrl = receiptUrl; // Just saving if they want to track receipts directly on the object
+
+        application.financialStatus.lastPaymentDate = new Date();
+
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            data: application,
+            message: 'Financial status updated successfully'
+        });
+
+    } catch (error) {
+        console.error('Update financial status error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update financial status',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
 // @desc    Update student application status
 // @route   PUT /api/admin/students/:id/status
 // @access  Private - Staff/Super Admin only
@@ -798,7 +844,7 @@ router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req
             rejectionDetails = []
         } = req.body;
 
-        if (!status || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'CANCELLED'].includes(status)) {
+        if (!status || !['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'CANCELLED', 'COMPLETE'].includes(status)) {
             return res.status(400).json({
                 success: false,
                 message: 'Valid status is required'

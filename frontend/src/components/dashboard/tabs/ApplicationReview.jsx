@@ -32,6 +32,10 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
     const [activeTab, setActiveTab] = useState(initialTab);
     const [showDocumentViewer, setShowDocumentViewer] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalItems, setTotalItems] = useState(0);
+    const itemsPerPage = 20; // The required 20 applications per page
     const [documentDecisions, setDocumentDecisions] = useState({});
     const [tabStats, setTabStats] = useState({
         all_submission: 0,
@@ -120,7 +124,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             fetchAllApplicationsForStats();
             fetchApplications();
         }
-    }, [activeTab, selectedSession]);
+    }, [activeTab, selectedSession, currentPage]);
 
     // Note: Auto-refresh removed to prevent rate limiting issues
     // Staff can use the manual "Refresh" button to get latest data
@@ -151,12 +155,12 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
 
         applicationsData.forEach(app => {
             const status = app.status?.toUpperCase();
-            
+
             // Count all submissions (excluding DRAFT)
             if (status && status !== 'DRAFT') {
                 allSubmission++;
             }
-            
+
             // Count under review - applications with status UNDER_REVIEW or SUBMITTED with documents being reviewed
             if (status === 'UNDER_REVIEW') {
                 underReview++;
@@ -167,24 +171,24 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                 const rejectedDocs = documentStats.rejected || 0;
                 const pendingDocs = documentStats.pending || 0;
                 const totalDocs = approvedDocs + rejectedDocs + pendingDocs;
-                
+
                 // If there are documents and not all are approved/rejected, it's under review
                 if (totalDocs > 0 && (pendingDocs > 0 || (approvedDocs > 0 && rejectedDocs === 0 && approvedDocs < totalDocs))) {
                     underReview++;
                 }
             }
-            
+
             // Count approved
             if (status === 'APPROVED') {
                 approved++;
             }
-            
+
             // Count rejected - include applications with status REJECTED OR applications with rejected documents
             const rejectedDocs = app.documentStats?.rejected || 0;
             const documents = app.documents || [];
             const rejectedDocsFromArray = documents.filter(doc => doc.status === 'REJECTED').length;
             const hasRejectedDocs = rejectedDocs > 0 || rejectedDocsFromArray > 0;
-            
+
             if (status === 'REJECTED' || (hasRejectedDocs && status !== 'APPROVED' && status !== 'COMPLETE' && status !== 'UNDER_REVIEW')) {
                 rejected++;
                 if (status !== 'REJECTED') {
@@ -224,14 +228,16 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             const status = statusMap[activeTab] || 'all';
             const params = new URLSearchParams({
                 session: selectedSession,
-                status: status
+                status: status,
+                page: currentPage,
+                limit: itemsPerPage
             });
 
             const response = await api.get(`/api/student-application/applications?${params.toString()}`);
 
             if (response.data?.success) {
                 let applicationsData = response.data.data.applications || [];
-                
+
                 // For "all_submission", filter out DRAFT status
                 if (activeTab === 'all_submission') {
                     applicationsData = applicationsData.filter(app => {
@@ -239,17 +245,17 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         return appStatus && appStatus !== 'DRAFT';
                     });
                 }
-                
+
                 // For "under_review", include UNDER_REVIEW status and SUBMITTED with documents being reviewed
                 if (activeTab === 'under_review') {
                     applicationsData = applicationsData.filter(app => {
                         const appStatus = app.status?.toUpperCase();
-                        
+
                         // Include applications with UNDER_REVIEW status
                         if (appStatus === 'UNDER_REVIEW') {
                             return true;
                         }
-                        
+
                         // Include SUBMITTED applications with documents being reviewed
                         if (appStatus === 'SUBMITTED') {
                             const documentStats = app.documentStats || {};
@@ -257,19 +263,24 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                             const rejectedDocs = documentStats.rejected || 0;
                             const pendingDocs = documentStats.pending || 0;
                             const totalDocs = approvedDocs + rejectedDocs + pendingDocs;
-                            
+
                             // If there are documents and not all are approved/rejected, it's under review
                             if (totalDocs > 0 && (pendingDocs > 0 || (approvedDocs > 0 && rejectedDocs === 0 && approvedDocs < totalDocs))) {
                                 return true;
                             }
                         }
-                        
+
                         return false;
                     });
                 }
-                
+
                 console.log(`Fetched applications for ${activeTab} (status: ${status}) in session ${selectedSession}:`, applicationsData.length, applicationsData);
                 setApplications(applicationsData);
+                
+                if (response.data.data.pagination) {
+                    setTotalPages(response.data.data.pagination.totalPages || 1);
+                    setTotalItems(response.data.data.pagination.totalItems || applicationsData.length);
+                }
             }
         } catch (error) {
             console.error('Error fetching applications:', error);
@@ -319,9 +330,15 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             });
 
             if (response.data?.success) {
-                showSuccess(response.data.message);
-                await fetchApplicationDetails(selectedApplication.applicationId);
-                await fetchApplications();
+                // ... (existing filtering logic)
+
+                setApplications(applicationsData);
+
+                // Add this to capture backend pagination data
+                if (response.data.data.pagination) {
+                    setTotalPages(response.data.data.pagination.totalPages || 1);
+                    setTotalItems(response.data.data.pagination.totalItems || applicationsData.length);
+                }
             }
         } catch (error) {
             console.error('Error verifying application:', error);
@@ -1116,7 +1133,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Courses</option>
-                        {[...new Set(applications.map(app => 
+                        {[...new Set(applications.map(app =>
                             app.courseDetails?.selectedCourse || app.courseDetails?.courseName || ''
                         ).filter(Boolean))].sort().map(course => (
                             <option key={course} value={course}>{course}</option>
@@ -1128,7 +1145,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Categories</option>
-                        {[...new Set(applications.map(app => 
+                        {[...new Set(applications.map(app =>
                             app.personalDetails?.category || ''
                         ).filter(Boolean))].sort().map(category => (
                             <option key={category} value={category}>{category}</option>
@@ -1140,7 +1157,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Gender</option>
-                        {[...new Set(applications.map(app => 
+                        {[...new Set(applications.map(app =>
                             app.personalDetails?.gender || ''
                         ).filter(Boolean))].sort().map(gender => (
                             <option key={gender} value={gender}>{gender}</option>
@@ -1156,7 +1173,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All States</option>
-                        {[...new Set(applications.map(app => 
+                        {[...new Set(applications.map(app =>
                             app.contactDetails?.permanentAddress?.state || ''
                         ).filter(Boolean))].sort().map(state => (
                             <option key={state} value={state}>{state}</option>
@@ -1168,7 +1185,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Districts</option>
-                        {[...new Set(applications.map(app => 
+                        {[...new Set(applications.map(app =>
                             app.contactDetails?.permanentAddress?.district || ''
                         ).filter(Boolean))].sort().map(district => (
                             <option key={district} value={district}>{district}</option>
@@ -1180,7 +1197,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Cities</option>
-                        {[...new Set(applications.map(app => 
+                        {[...new Set(applications.map(app =>
                             app.contactDetails?.permanentAddress?.city || ''
                         ).filter(Boolean))].sort().map(city => (
                             <option key={city} value={city}>{city}</option>
@@ -1192,7 +1209,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
                         <option value="all">All Streams</option>
-                        {[...new Set(applications.map(app => 
+                        {[...new Set(applications.map(app =>
                             app.courseDetails?.stream || ''
                         ).filter(Boolean))].sort().map(stream => (
                             <option key={stream} value={stream}>{stream}</option>
@@ -1261,7 +1278,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                                 // Search filter
                                 if (searchQuery.trim()) {
                                     const query = searchQuery.toLowerCase();
-                                    const matches = 
+                                    const matches =
                                         (app.personalDetails?.fullName || '').toLowerCase().includes(query) ||
                                         (app.applicationId || '').toLowerCase().includes(query) ||
                                         (app.user?.email || '').toLowerCase().includes(query) ||
@@ -1269,84 +1286,84 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                                         (app.courseDetails?.selectedCourse || '').toLowerCase().includes(query);
                                     if (!matches) return false;
                                 }
-                                
+
                                 // Course filter
                                 if (filterCourse !== 'all') {
                                     const course = app.courseDetails?.selectedCourse || app.courseDetails?.courseName || '';
                                     if (course !== filterCourse) return false;
                                 }
-                                
+
                                 // Category filter
                                 if (filterCategory !== 'all') {
                                     const category = app.personalDetails?.category || '';
                                     if (category !== filterCategory) return false;
                                 }
-                                
+
                                 // College filter
                                 if (filterCollege !== 'all') {
-                                    const collegeId = typeof app.courseDetails?.selectedCollege === 'object' 
-                                        ? app.courseDetails.selectedCollege._id 
+                                    const collegeId = typeof app.courseDetails?.selectedCollege === 'object'
+                                        ? app.courseDetails.selectedCollege._id
                                         : app.courseDetails?.selectedCollege;
                                     if (collegeId !== filterCollege) return false;
                                 }
-                                
+
                                 // Gender filter
                                 if (filterGender !== 'all') {
                                     const gender = app.personalDetails?.gender || '';
                                     if (gender !== filterGender) return false;
                                 }
-                                
+
                                 // District filter
                                 if (filterDistrict !== 'all') {
                                     const district = app.contactDetails?.permanentAddress?.district || '';
                                     if (district !== filterDistrict) return false;
                                 }
-                                
+
                                 // City filter
                                 if (filterCity !== 'all') {
                                     const city = app.contactDetails?.permanentAddress?.city || '';
                                     if (city !== filterCity) return false;
                                 }
-                                
+
                                 // State filter
                                 if (filterState !== 'all') {
                                     const state = app.contactDetails?.permanentAddress?.state || '';
                                     if (state !== filterState) return false;
                                 }
-                                
+
                                 // Stream filter
                                 if (filterStream !== 'all') {
                                     const stream = app.courseDetails?.stream || '';
                                     if (stream !== filterStream) return false;
                                 }
-                                
+
                                 // Campus filter
                                 if (filterCampus !== 'all') {
-                                    const campusId = typeof app.courseDetails?.campus === 'object' 
-                                        ? app.courseDetails.campus._id 
+                                    const campusId = typeof app.courseDetails?.campus === 'object'
+                                        ? app.courseDetails.campus._id
                                         : app.courseDetails?.campus;
                                     if (campusId !== filterCampus) return false;
                                 }
-                                
+
                                 return true;
                             });
-                            
+
                             // Sort applications
                             filtered.sort((a, b) => {
                                 let aValue = a;
                                 let bValue = b;
-                                
+
                                 const keys = sortBy.split('.');
                                 keys.forEach(key => {
                                     aValue = aValue?.[key];
                                     bValue = bValue?.[key];
                                 });
-                                
+
                                 if (aValue < bValue) return sortOrder === 'asc' ? -1 : 1;
                                 if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
                                 return 0;
                             });
-                            
+
                             return filtered.length;
                         })()})
                     </h3>
@@ -1356,7 +1373,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                             let filtered = applications.filter(app => {
                                 if (searchQuery.trim()) {
                                     const query = searchQuery.toLowerCase();
-                                    const matches = 
+                                    const matches =
                                         (app.personalDetails?.fullName || '').toLowerCase().includes(query) ||
                                         (app.applicationId || '').toLowerCase().includes(query) ||
                                         (app.user?.email || '').toLowerCase().includes(query) ||
@@ -1373,14 +1390,14 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                                     if (category !== filterCategory) return false;
                                 }
                                 if (filterCollege !== 'all') {
-                                    const collegeId = typeof app.courseDetails?.selectedCollege === 'object' 
-                                        ? app.courseDetails.selectedCollege._id 
+                                    const collegeId = typeof app.courseDetails?.selectedCollege === 'object'
+                                        ? app.courseDetails.selectedCollege._id
                                         : app.courseDetails?.selectedCollege;
                                     if (collegeId !== filterCollege) return false;
                                 }
                                 return true;
                             });
-                            
+
                             // Sort applications
                             filtered.sort((a, b) => {
                                 let aValue = a;
@@ -1394,7 +1411,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                                 if (aValue > bValue) return sortOrder === 'asc' ? 1 : -1;
                                 return 0;
                             });
-                            
+
                             return filtered.length === 0 ? (
                                 <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                                     No applications found
@@ -1404,6 +1421,45 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                             );
                         })()}
                     </div>
+
+                    {/* Pagination UI */}
+                    {totalPages > 1 && (
+                        <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex flex-col items-center space-y-3">
+                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                                Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
+                            </div>
+                            <div className="flex items-center space-x-1">
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 text-xs"
+                                >
+                                    Prev
+                                </button>
+                                <div className="flex space-x-1">
+                                    {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+                                        <button
+                                            key={pageNum}
+                                            onClick={() => setCurrentPage(pageNum)}
+                                            className={`px-2 py-1 border rounded text-xs ${currentPage === pageNum
+                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 border-gray-300 dark:border-gray-600'
+                                                }`}
+                                        >
+                                            {pageNum}
+                                        </button>
+                                    ))}
+                                </div>
+                                <button
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 text-xs"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Application Details */}

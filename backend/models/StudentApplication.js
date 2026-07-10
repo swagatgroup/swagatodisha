@@ -475,6 +475,20 @@ const studentApplicationSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         }
+    },
+
+    // Payment & Financial Tracking
+    financialStatus: {
+        totalFees: { type: Number, default: 0 },
+        paidAmount: { type: Number, default: 0 },
+        dueAmount: { type: Number, default: 0 },
+        lastPaymentDate: { type: Date },
+        receiptUrl: { type: String },
+        paymentStatus: {
+            type: String,
+            enum: ['PENDING', 'PARTIAL', 'COMPLETED', 'OVERDUE'],
+            default: 'PENDING'
+        }
     }
 }, {
     timestamps: true,
