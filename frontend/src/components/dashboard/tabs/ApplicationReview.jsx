@@ -278,8 +278,8 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                 setApplications(applicationsData);
                 
                 if (response.data.data.pagination) {
-                    setTotalPages(response.data.data.pagination.totalPages || 1);
-                    setTotalItems(response.data.data.pagination.totalItems || applicationsData.length);
+                    setTotalPages(response.data.data.pagination.pages || 1);
+                    setTotalItems(response.data.data.pagination.total || applicationsData.length);
                 }
             }
         } catch (error) {
@@ -334,10 +334,9 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
 
                 setApplications(applicationsData);
 
-                // Add this to capture backend pagination data
                 if (response.data.data.pagination) {
-                    setTotalPages(response.data.data.pagination.totalPages || 1);
-                    setTotalItems(response.data.data.pagination.totalItems || applicationsData.length);
+                    setTotalPages(response.data.data.pagination.pages || 1);
+                    setTotalItems(response.data.data.pagination.total || applicationsData.length);
                 }
             }
         } catch (error) {
