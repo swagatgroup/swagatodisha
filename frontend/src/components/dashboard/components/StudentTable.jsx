@@ -1166,7 +1166,29 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName || 'Swagat Group of Institutions'}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {(() => {
+                                                    const inst = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
+                                                    if (inst) {
+                                                        if (typeof inst === 'object') return inst.name || inst.institutionName || 'Swagat Group of Institutions';
+                                                        if (/^[0-9a-fA-F]{24}$/.test(inst)) {
+                                                            const matched = colleges.find(c => c._id === inst);
+                                                            if (matched) return matched.name;
+                                                        }
+                                                        return inst;
+                                                    }
+                                                    const college = selectedStudent.courseDetails?.selectedCollege;
+                                                    if (college) {
+                                                        if (typeof college === 'object') return college.name || college.institutionName || 'Swagat Group of Institutions';
+                                                        if (/^[0-9a-fA-F]{24}$/.test(college)) {
+                                                            const matched = colleges.find(c => c._id === college);
+                                                            if (matched) return matched.name;
+                                                        }
+                                                        return college;
+                                                    }
+                                                    return 'Swagat Group of Institutions';
+                                                })()}
+                                            </p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>

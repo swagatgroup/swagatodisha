@@ -1390,11 +1390,19 @@ const SuperAdminDashboard = () => {
                                                     const institution = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
                                                     if (institution) {
                                                         if (typeof institution === 'object') return institution.name || institution.institutionName || 'Swagat Group of Institutions';
+                                                        if (/^[0-9a-fA-F]{24}$/.test(institution)) {
+                                                            const matched = colleges.find(c => c._id === institution);
+                                                            if (matched) return matched.name;
+                                                        }
                                                         return institution;
                                                     }
                                                     const college = selectedStudent.courseDetails?.selectedCollege;
                                                     if (college) {
                                                         if (typeof college === 'object') return college.name || college.institutionName || 'Swagat Group of Institutions';
+                                                        if (/^[0-9a-fA-F]{24}$/.test(college)) {
+                                                            const matched = colleges.find(c => c._id === college);
+                                                            if (matched) return matched.name;
+                                                        }
                                                         return college;
                                                     }
                                                     return 'Swagat Group of Institutions';
