@@ -489,7 +489,18 @@ const studentApplicationSchema = new mongoose.Schema({
             type: String,
             enum: ['PENDING', 'PARTIAL', 'COMPLETED', 'OVERDUE'],
             default: 'PENDING'
-        }
+        },
+        installments: [{
+            installmentNumber: Number,
+            amount: Number,
+            date: { type: Date, default: Date.now },
+            receiptUrl: String,
+            status: { type: String, enum: ['PENDING', 'VERIFIED', 'REJECTED'], default: 'PENDING' },
+            verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+            verifiedAt: Date,
+            remarks: String,
+            paymentMethod: { type: String, default: 'Bank Transfer' }
+        }]
     }
 }, {
     timestamps: true,

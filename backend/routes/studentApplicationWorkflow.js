@@ -23,6 +23,7 @@ const {
     getApplicationReview,
     getDocumentRequirements,
     getDocumentUploadStatus,
+    uploadInstallmentReceipt,
     // PDF upload/storage functions removed
 } = require('../controllers/studentApplicationWorkflowController');
 
@@ -37,6 +38,7 @@ router.put('/:applicationId/save-draft', protect, saveDraft);
 router.put('/:applicationId/submit', protect, submitApplication);
 router.post('/:applicationId/generate-pdf', protect, generateApplicationPDF);
 router.get('/:applicationId/download-pdf', protect, downloadApplicationPDF);
+router.put('/:applicationId/upload-installment-receipt', protect, uploadInstallmentReceipt);
 
 // PDF upload/storage endpoints removed - return 404 for any requests to removed endpoints
 router.post('/:applicationId/upload-pdf', protect, (req, res) => {

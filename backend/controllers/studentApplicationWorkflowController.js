@@ -2110,6 +2110,59 @@ const getDocumentUploadStatus = async (req, res) => {
     }
 };
 
+// Upload a receipt for a specific installment
+const uploadInstallmentReceipt = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        const { installmentNumber, receiptUrl } = req.body;
+
+        const application = await StudentApplication.findOne({
+            _id: applicationId,
+            $or: [{ user: req.user._id }, { submittedBy: req.user._id }]
+        });
+
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+
+        if (!application.financialStatus || !application.financialStatus.installments) {
+            return res.status(400).json({ success: false, message: 'No installments found for this application' });
+        }
+
+        const installmentIndex = application.financialStatus.installments.findIndex(
+            inst => inst.installmentNumber === Number(installmentNumber)
+        );
+
+        if (installmentIndex === -1) {
+            return res.status(404).json({ success: false, message: 'Installment not found' });
+        }
+
+        if (application.financialStatus.installments[installmentIndex].status === 'VERIFIED') {
+            return res.status(400).json({ success: false, message: 'Cannot upload receipt for a verified installment' });
+        }
+
+        application.financialStatus.installments[installmentIndex].receiptUrl = receiptUrl;
+        application.financialStatus.installments[installmentIndex].status = 'PENDING';
+
+        application.markModified('financialStatus');
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            data: application.financialStatus,
+            message: 'Receipt uploaded successfully'
+        });
+
+    } catch (error) {
+        console.error('Upload installment receipt error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to upload installment receipt',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 // PDF upload/storage functions removed - PDFs are generated client-side only
 
 module.exports = {
@@ -2135,5 +2188,6 @@ module.exports = {
     getApplicationReview,
     getDocumentRequirements,
     getDocumentUploadStatus,
+    uploadInstallmentReceipt,
     // PDF upload/storage functions removed - PDFs are generated client-side only
 };

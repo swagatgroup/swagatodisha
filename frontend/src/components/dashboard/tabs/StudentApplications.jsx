@@ -27,6 +27,13 @@ const StudentApplications = () => {
   const [pdfBlobUrl, setPdfBlobUrl] = useState("");
   const [userRole, setUserRole] = useState("student");
 
+  // State for Installments/Receipt Upload
+  const [showInstallmentsModal, setShowInstallmentsModal] = useState(false);
+  const [selectedAppForInstallments, setSelectedAppForInstallments] = useState(null);
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+  const [receiptFile, setReceiptFile] = useState(null);
+  const [targetInstallmentNum, setTargetInstallmentNum] = useState(null);
+
   const courses = [
     "DMLT (Diploma in Medical Laboratory Technology)",
     "BMLT (Bachelor in Medical Laboratory Technology)",
@@ -107,6 +114,212 @@ const StudentApplications = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+
+  const openInstallmentsModal = (app) => {
+    setSelectedAppForInstallments(app);
+    setShowInstallmentsModal(true);
+    setReceiptFile(null);
+    setTargetInstallmentNum(null);
+  };
+
+  const handleReceiptUpload = async () => {
+    if (!receiptFile || !targetInstallmentNum || !selectedAppForInstallments) {
+        showErrorToast("Please select a file to upload");
+        return;
+    }
+
+    try {
+        setUploadingReceipt(true);
+        const formData = new FormData();
+        formData.append("file", receiptFile);
+        
+        // Upload the file first
+        const uploadResponse = await api.post("/api/files/upload", formData, {
+            headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        if (uploadResponse.data?.success) {
+            const fileUrl = uploadResponse.data.data.url;
+
+            // Submit the URL to the new installment endpoint
+            const res = await api.put(`/api/student-application/${selectedAppForInstallments._id}/upload-installment-receipt`, {
+                installmentNumber: targetInstallmentNum,
+                receiptUrl: fileUrl
+            });
+
+            if (res.data?.success) {
+                showSuccess("Receipt uploaded successfully!");
+                // Update local state so it reflects immediately
+                setSelectedAppForInstallments(prev => ({
+                    ...prev,
+                    financialStatus: res.data.data
+                }));
+                // Also refetch all applications
+                fetchApplications();
+                setReceiptFile(null);
+                setTargetInstallmentNum(null);
+            }
+        }
+    } catch (error) {
+        console.error("Error uploading receipt:", error);
+        showErrorToast(error.response?.data?.message || "Failed to upload receipt");
+    } finally {
+        setUploadingReceipt(false);
+    }
+  };
+
+  const printInvoice = (app) => {
+    if (!app) return;
+    const printWindow = window.open('', '_blank');
+    const finStatus = app.financialStatus || { totalFees: 0, paidAmount: 0, dueAmount: 0, paymentStatus: 'PENDING', installments: [] };
+    
+    let installmentsHtml = '';
+    if (finStatus.installments && finStatus.installments.length > 0) {
+        installmentsHtml = `
+            <div style="margin-top: 30px; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: #4b5563;">Installment Details</div>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                        <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Inst #</th>
+                        <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Date</th>
+                        <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Method</th>
+                        <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Status</th>
+                        <th style="padding: 10px; text-align: right; font-size: 12px; font-weight: 600; color: #475569;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${finStatus.installments.map(inst => `
+                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                            <td style="padding: 10px; font-size: 13px; color: #334155;">${inst.installmentNumber}</td>
+                            <td style="padding: 10px; font-size: 13px; color: #334155;">${new Date(inst.date).toLocaleDateString('en-IN')}</td>
+                            <td style="padding: 10px; font-size: 13px; color: #334155;">${inst.paymentMethod || 'N/A'}</td>
+                            <td style="padding: 10px; font-size: 13px; color: #334155;">
+                                <span style="font-weight: 600; color: ${inst.status === 'VERIFIED' ? '#059669' : inst.status === 'REJECTED' ? '#dc2626' : '#d97706'}">${inst.status}</span>
+                            </td>
+                            <td style="padding: 10px; text-align: right; font-size: 13px; font-weight: 600; color: #334155;">₹${inst.amount}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+    
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Payment Invoice - ${app.personalDetails?.fullName || 'N/A'}</title>
+                <style>
+                    body { font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; color: #333; background-color: #fff; }
+                    .receipt-container { padding: 40px; max-width: 800px; margin: 0 auto; }
+                    .header-container { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px; }
+                    .logo-col { display: flex; flex-direction: column; }
+                    .logo { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px; }
+                    .sub-logo { font-size: 13px; color: #64748b; }
+                    .invoice-badge { font-size: 32px; font-weight: 300; color: #cbd5e1; letter-spacing: 2px; text-transform: uppercase; }
+                    .grid-info { display: grid; grid-template-cols: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+                    .info-box { background-color: #f8fafc; padding: 20px; border-radius: 6px; }
+                    .label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px; }
+                    .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
+                    .amount-summary { margin-top: 30px; margin-left: auto; width: 300px; }
+                    .amount-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+                    .amount-label { color: #64748b; font-weight: 500; }
+                    .amount-value { font-weight: 600; color: #0f172a; }
+                    .amount-total { font-size: 18px; color: #0f172a; border-top: 2px solid #e2e8f0; padding-top: 12px; margin-top: 12px; font-weight: 700; }
+                    .status-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+                    .status-completed { background-color: #dcfce7; color: #166534; }
+                    .status-partial { background-color: #fef9c3; color: #854d0e; }
+                    .status-overdue { background-color: #fee2e2; color: #991b1b; }
+                    .status-pending { background-color: #f1f5f9; color: #475569; }
+                    .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+                    @media print {
+                        body { margin: 0; }
+                        .receipt-container { max-width: 100%; padding: 20px; }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="receipt-container">
+                    <div class="header-container">
+                        <div class="logo-col">
+                            <div class="logo">Swagat Group of Institutions</div>
+                            <div class="sub-logo">Official Payment Invoice</div>
+                        </div>
+                        <div class="invoice-badge">INVOICE</div>
+                    </div>
+                    
+                    <div class="grid-info">
+                        <div class="info-box">
+                            <div class="label">Billed To</div>
+                            <div class="value" style="font-size: 18px;">${app.personalDetails?.fullName || 'N/A'}</div>
+                            <div class="label" style="margin-top: 15px;">Application ID</div>
+                            <div class="value" style="margin-bottom: 0;">${app.applicationId || 'N/A'}</div>
+                        </div>
+                        <div class="info-box">
+                            <div class="label">Course Details</div>
+                            <div class="value">${app.courseDetails?.selectedCourse || 'N/A'}</div>
+                            <div class="label" style="margin-top: 15px;">Date of Issue</div>
+                            <div class="value" style="margin-bottom: 0;">${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
+                        </div>
+                    </div>
+                    
+                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <thead>
+                            <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
+                                <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Description</th>
+                                <th style="padding: 12px; text-align: right; font-size: 13px; font-weight: 600; color: #475569;">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #f1f5f9;">
+                                <td style="padding: 15px 12px; font-size: 14px; color: #334155; font-weight: 500;">Course Tuition & Registration Fees</td>
+                                <td style="padding: 15px 12px; text-align: right; font-size: 14px; color: #0f172a; font-weight: 600;">₹${finStatus.totalFees}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    ${installmentsHtml}
+
+                    <div class="amount-summary">
+                        <div class="amount-row">
+                            <div class="amount-label">Subtotal</div>
+                            <div class="amount-value">₹${finStatus.totalFees}</div>
+                        </div>
+                        <div class="amount-row">
+                            <div class="amount-label" style="color: #059669;">Total Paid</div>
+                            <div class="amount-value" style="color: #059669;">- ₹${finStatus.paidAmount}</div>
+                        </div>
+                        <div class="amount-row amount-total">
+                            <div class="amount-label">Balance Due</div>
+                            <div class="amount-value">₹${finStatus.dueAmount}</div>
+                        </div>
+                        <div class="amount-row" style="margin-top: 20px; align-items: center;">
+                            <div class="amount-label">Status</div>
+                            <div>
+                                <span class="status-badge status-${finStatus.paymentStatus.toLowerCase()}">${finStatus.paymentStatus}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="footer">
+                        <p>This is a computer-generated document. No physical signature is required.</p>
+                        <p>Swagat Group of Institutions &copy; ${new Date().getFullYear()} &bull; All Rights Reserved</p>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() {
+                        setTimeout(function() {
+                            window.print();
+                        }, 500);
+                        window.onafterprint = function() {
+                            window.close();
+                        };
+                    };
+                </script>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
   };
 
   const handleNewApplication = async () => {
@@ -358,6 +571,20 @@ const StudentApplications = () => {
                           >
                             View PDF
                           </button>
+                          <button
+                            onClick={() => printInvoice(application)}
+                            className="px-4 py-2 text-sm text-purple-700 bg-purple-100 border border-purple-200 hover:bg-purple-200 rounded-lg font-medium shadow-sm flex items-center"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-17V7a4 4 0 00-8 0v4h8z" /></svg>
+                            Invoice
+                          </button>
+                          <button
+                            onClick={() => openInstallmentsModal(application)}
+                            className="px-4 py-2 text-sm text-blue-700 bg-blue-100 border border-blue-200 hover:bg-blue-200 rounded-lg font-medium shadow-sm flex items-center"
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                            Upload Slip
+                          </button>
                         </div>
                       </div>
 
@@ -518,6 +745,18 @@ const StudentApplications = () => {
                         >
                           View PDF
                         </button>
+                        <button
+                          onClick={() => printInvoice(application)}
+                          className="px-3 py-1 text-sm text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-lg font-medium"
+                        >
+                          Invoice
+                        </button>
+                        <button
+                          onClick={() => openInstallmentsModal(application)}
+                          className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg font-medium"
+                        >
+                          Upload Slip
+                        </button>
                       </div>
                     </div>
                   </motion.div>
@@ -647,6 +886,149 @@ const StudentApplications = () => {
                   No PDF to display
                 </div>
               )}
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Installments & Upload Receipt Modal */}
+      {showInstallmentsModal && selectedAppForInstallments && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+          >
+            <div className="p-4 border-b flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Payment Installments
+              </h3>
+              <button
+                onClick={() => setShowInstallmentsModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <span className="sr-only">Close</span>
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6 bg-gray-50">
+                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Inst #</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Receipt</th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {(selectedAppForInstallments.financialStatus?.installments || []).map((inst) => (
+                                <tr key={inst._id || inst.installmentNumber}>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        #{inst.installmentNumber}
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {new Date(inst.date).toLocaleDateString('en-IN')}
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                                        ₹{inst.amount}
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap">
+                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
+                                            inst.status === 'VERIFIED' ? 'bg-green-100 text-green-800' :
+                                            inst.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
+                                            'bg-yellow-100 text-yellow-800'
+                                        }`}>
+                                            {inst.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm">
+                                        {inst.receiptUrl ? (
+                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline">
+                                                View Slip
+                                            </a>
+                                        ) : (
+                                            <span className="text-gray-400">No Slip</span>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        {inst.status !== 'VERIFIED' && (
+                                            <button
+                                                onClick={() => setTargetInstallmentNum(inst.installmentNumber)}
+                                                className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded-md"
+                                            >
+                                                Upload New Slip
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                            {(!selectedAppForInstallments.financialStatus?.installments || selectedAppForInstallments.financialStatus.installments.length === 0) && (
+                                <tr>
+                                    <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
+                                        No installments found for this application.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+
+                {targetInstallmentNum && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-6 bg-white p-5 rounded-lg border border-indigo-200 shadow-sm"
+                    >
+                        <h4 className="text-md font-medium text-gray-900 mb-4">Upload Receipt for Installment #{targetInstallmentNum}</h4>
+                        <div className="flex items-center space-x-4">
+                            <input
+                                type="file"
+                                accept=".pdf,image/*"
+                                onChange={(e) => setReceiptFile(e.target.files[0])}
+                                className="block w-full text-sm text-gray-500
+                                file:mr-4 file:py-2 file:px-4
+                                file:rounded-md file:border-0
+                                file:text-sm file:font-semibold
+                                file:bg-indigo-50 file:text-indigo-700
+                                hover:file:bg-indigo-100"
+                            />
+                            <button
+                                onClick={handleReceiptUpload}
+                                disabled={!receiptFile || uploadingReceipt}
+                                className={`px-4 py-2 rounded-md text-white font-medium whitespace-nowrap ${
+                                    !receiptFile || uploadingReceipt ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+                                }`}
+                            >
+                                {uploadingReceipt ? 'Uploading...' : 'Submit Receipt'}
+                            </button>
+                        </div>
+                        {receiptFile && (
+                            <p className="mt-2 text-sm text-gray-600">Selected file: {receiptFile.name}</p>
+                        )}
+                        <button 
+                            onClick={() => { setTargetInstallmentNum(null); setReceiptFile(null); }}
+                            className="mt-4 text-sm text-gray-500 hover:text-gray-700 underline"
+                        >
+                            Cancel
+                        </button>
+                    </motion.div>
+                )}
+            </div>
+            
+            <div className="p-4 border-t bg-gray-50 flex justify-end">
+              <button
+                onClick={() => setShowInstallmentsModal(false)}
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+              >
+                Close
+              </button>
             </div>
           </motion.div>
         </div>

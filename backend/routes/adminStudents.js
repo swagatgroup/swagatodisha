@@ -871,7 +871,7 @@ router.get('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 // @access  Private - Staff/Super Admin only
 router.put('/:id/financial', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
-        const { totalFees, paidAmount, dueAmount, paymentStatus, receiptUrl } = req.body;
+        const { totalFees, paidAmount, dueAmount, paymentStatus, receiptUrl, installments } = req.body;
 
         const application = await StudentApplication.findById(req.params.id);
         if (!application) {
@@ -890,7 +890,11 @@ router.put('/:id/financial', protect, authorize('staff', 'super_admin'), async (
         if (paidAmount !== undefined) application.financialStatus.paidAmount = Number(paidAmount);
         if (dueAmount !== undefined) application.financialStatus.dueAmount = Number(dueAmount);
         if (paymentStatus) application.financialStatus.paymentStatus = paymentStatus;
-        if (receiptUrl) application.financialStatus.receiptUrl = receiptUrl; // Just saving if they want to track receipts directly on the object
+        if (receiptUrl !== undefined) application.financialStatus.receiptUrl = receiptUrl;
+        
+        if (installments && Array.isArray(installments)) {
+            application.financialStatus.installments = installments;
+        }
 
         application.financialStatus.lastPaymentDate = new Date();
 
