@@ -8,30 +8,39 @@ const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 const router = express.Router();
 
-// Debug endpoint to test database connection
+// Debug endpoint to test database connection and print routes
 router.get('/test', async (req, res) => {
     try {
         console.log('🧪 Testing database connection...');
 
-        // Test direct collection access
         const totalCount = await StudentApplication.countDocuments({});
-        console.log('📊 Total count:', totalCount);
 
-        // Get sample documents
-        const samples = await StudentApplication.find({}).limit(3).lean();
-        console.log('📊 Sample docs:', samples.length);
+        // Extract registered routes
+        const routes = [];
+        const printRoutes = (stack, prefix = '') => {
+            stack.forEach(layer => {
+                if (layer.route) {
+                    const methods = Object.keys(layer.route.methods).map(m => m.toUpperCase()).join(',');
+                    routes.push(`${methods} ${prefix}${layer.route.path}`);
+                } else if (layer.name === 'router' && layer.handle.stack) {
+                    let routerPrefix = prefix;
+                    if (layer.regexp) {
+                        const match = layer.regexp.toString().match(/^\/\^\\(.*?)\\\/?\(\?\:=\\\/\|\$\)/);
+                        if (match && match[1]) {
+                            routerPrefix = prefix + match[1].replace(/\\/g, '');
+                        }
+                    }
+                    printRoutes(layer.handle.stack, routerPrefix);
+                }
+            });
+        };
+        printRoutes(req.app._router.stack);
 
         res.json({
             success: true,
-            message: 'Database test',
+            message: 'Database and Route test',
             totalCount,
-            sampleCount: samples.length,
-            samples: samples.map(doc => ({
-                id: doc._id,
-                applicationId: doc.applicationId,
-                status: doc.status,
-                fullName: doc.personalDetails?.fullName
-            }))
+            routes: routes.filter(r => r.includes('admin') || r.includes('students'))
         });
     } catch (error) {
         console.error('❌ Test error:', error);
