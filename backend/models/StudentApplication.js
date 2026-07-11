@@ -40,7 +40,8 @@ const studentApplicationSchema = new mongoose.Schema({
             'SUBMITTED',
             'UNDER_REVIEW',
             'APPROVED',
-            'REJECTED'
+            'REJECTED',
+            'COMPLETE'
         ],
         default: 'REGISTRATION'
     },
