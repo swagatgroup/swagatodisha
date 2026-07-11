@@ -199,9 +199,13 @@ const PaymentManagement = () => {
         const paid = parseFloat(val) || 0;
         
         let newStatus = formData.paymentStatus;
-        if (paid === 0) newStatus = 'PENDING';
-        else if (paid >= total) newStatus = 'COMPLETED';
-        else newStatus = 'PARTIAL';
+        if (paid === 0) {
+            newStatus = 'PENDING';
+        } else if (total > 0 && paid >= total) {
+            newStatus = 'COMPLETED';
+        } else {
+            newStatus = 'PARTIAL';
+        }
 
         setFormData({
             ...formData,
@@ -246,9 +250,13 @@ const PaymentManagement = () => {
             
             if (field === 'status' || field === 'amount') {
                 newDueAmount = Math.max(0, prev.totalFees - newPaidAmount);
-                if (newPaidAmount === 0) newPaymentStatus = 'PENDING';
-                else if (newPaidAmount >= prev.totalFees) newPaymentStatus = 'COMPLETED';
-                else newPaymentStatus = 'PARTIAL';
+                if (newPaidAmount === 0 && updated.length === 0) {
+                    newPaymentStatus = 'PENDING';
+                } else if (prev.totalFees > 0 && newPaidAmount >= prev.totalFees) {
+                    newPaymentStatus = 'COMPLETED';
+                } else {
+                    newPaymentStatus = 'PARTIAL';
+                }
             }
 
             return { 
@@ -274,9 +282,13 @@ const PaymentManagement = () => {
 
             const newDueAmount = Math.max(0, prev.totalFees - newPaidAmount);
             let newPaymentStatus = prev.paymentStatus;
-            if (newPaidAmount === 0) newPaymentStatus = 'PENDING';
-            else if (newPaidAmount >= prev.totalFees) newPaymentStatus = 'COMPLETED';
-            else newPaymentStatus = 'PARTIAL';
+            if (newPaidAmount === 0 && updated.length === 0) {
+                newPaymentStatus = 'PENDING';
+            } else if (prev.totalFees > 0 && newPaidAmount >= prev.totalFees) {
+                newPaymentStatus = 'COMPLETED';
+            } else {
+                newPaymentStatus = 'PARTIAL';
+            }
 
             return {
                 ...prev,
@@ -609,8 +621,8 @@ const PaymentManagement = () => {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">
                                                 ₹{finStatus.paidAmount}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 font-semibold">
-                                                ₹{finStatus.dueAmount}
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400 font-semibold">
+                                                ₹{finStatus.dueAmount !== undefined && finStatus.dueAmount !== null ? finStatus.dueAmount : (finStatus.totalFees || 0)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
