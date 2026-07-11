@@ -40,7 +40,7 @@ router.get('/test', async (req, res) => {
             success: true,
             message: 'Database and Route test',
             totalCount,
-            routes: routes.filter(r => r.includes('admin') || r.includes('students'))
+            routes: routes
         });
     } catch (error) {
         console.error('❌ Test error:', error);
