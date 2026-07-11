@@ -53,6 +53,16 @@ router.get('/test', async (req, res) => {
             userDoc = await User.findById(targetId).lean();
         }
 
+        // Group and count applications by status
+        const statusGroups = await StudentApplication.aggregate([
+            {
+                $group: {
+                    _id: '$status',
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
         res.json({
             success: true,
             message: 'Database and Route test',
@@ -66,6 +76,7 @@ router.get('/test', async (req, res) => {
             } : null,
             foundInStudent: !!studentDoc,
             foundInUser: !!userDoc,
+            statusGroups,
             routes: routes
         });
     } catch (error) {
