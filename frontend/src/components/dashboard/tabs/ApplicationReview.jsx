@@ -137,7 +137,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
 
         try {
             // Fetch all applications to calculate stats
-            const response = await api.get(`/api/student-application/applications?session=${encodeURIComponent(selectedSession)}&status=all`);
+            const response = await api.get(`/api/student-application/applications?session=${encodeURIComponent(selectedSession)}&status=all&limit=999999`);
             if (response.data?.success) {
                 const allApplications = response.data.data.applications || [];
                 calculateStatsFromApplicationsData(allApplications);
@@ -338,6 +338,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                     setTotalPages(response.data.data.pagination.pages || 1);
                     setTotalItems(response.data.data.pagination.total || applicationsData.length);
                 }
+                fetchAllApplicationsForStats();
             }
         } catch (error) {
             console.error('Error verifying application:', error);
@@ -462,6 +463,8 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
 
                 console.log('🔄 Refreshing applications list...');
                 await fetchApplications();
+
+                fetchAllApplicationsForStats();
 
                 console.log('✅ All data refreshed - changes persisted');
             } else {
