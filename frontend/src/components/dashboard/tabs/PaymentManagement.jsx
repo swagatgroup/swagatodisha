@@ -197,10 +197,17 @@ const PaymentManagement = () => {
         const val = e.target.value;
         const total = parseFloat(formData.totalFees) || 0;
         const paid = parseFloat(val) || 0;
+        
+        let newStatus = formData.paymentStatus;
+        if (paid === 0) newStatus = 'PENDING';
+        else if (paid >= total) newStatus = 'COMPLETED';
+        else newStatus = 'PARTIAL';
+
         setFormData({
             ...formData,
             paidAmount: val,
-            dueAmount: Math.max(0, total - paid)
+            dueAmount: Math.max(0, total - paid),
+            paymentStatus: newStatus
         });
     };
 
@@ -234,11 +241,22 @@ const PaymentManagement = () => {
                 }, 0);
             }
 
+            let newPaymentStatus = prev.paymentStatus;
+            let newDueAmount = prev.dueAmount;
+            
+            if (field === 'status' || field === 'amount') {
+                newDueAmount = Math.max(0, prev.totalFees - newPaidAmount);
+                if (newPaidAmount === 0) newPaymentStatus = 'PENDING';
+                else if (newPaidAmount >= prev.totalFees) newPaymentStatus = 'COMPLETED';
+                else newPaymentStatus = 'PARTIAL';
+            }
+
             return { 
                 ...prev, 
                 installments: updated,
                 paidAmount: field === 'status' || field === 'amount' ? newPaidAmount : prev.paidAmount,
-                dueAmount: field === 'status' || field === 'amount' ? Math.max(0, prev.totalFees - newPaidAmount) : prev.dueAmount
+                dueAmount: newDueAmount,
+                paymentStatus: newPaymentStatus
             };
         });
     };
@@ -254,11 +272,18 @@ const PaymentManagement = () => {
                 return inst.status === 'VERIFIED' ? sum + (parseFloat(inst.amount) || 0) : sum;
             }, 0);
 
+            const newDueAmount = Math.max(0, prev.totalFees - newPaidAmount);
+            let newPaymentStatus = prev.paymentStatus;
+            if (newPaidAmount === 0) newPaymentStatus = 'PENDING';
+            else if (newPaidAmount >= prev.totalFees) newPaymentStatus = 'COMPLETED';
+            else newPaymentStatus = 'PARTIAL';
+
             return {
                 ...prev,
                 installments: updated,
                 paidAmount: newPaidAmount,
-                dueAmount: Math.max(0, prev.totalFees - newPaidAmount)
+                dueAmount: newDueAmount,
+                paymentStatus: newPaymentStatus
             };
         });
     };
@@ -271,27 +296,27 @@ const PaymentManagement = () => {
         let installmentsHtml = '';
         if (finStatus.installments && finStatus.installments.length > 0) {
             installmentsHtml = `
-                <div style="margin-top: 30px; margin-bottom: 10px; font-size: 14px; font-weight: 600; color: #4b5563;">Installment Details</div>
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <div style="margin-top: 15px; margin-bottom: 8px; font-size: 12px; font-weight: 600; color: #4b5563;">Installment Details</div>
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
                     <thead>
                         <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                            <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Inst #</th>
-                            <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Date</th>
-                            <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Method</th>
-                            <th style="padding: 10px; text-align: left; font-size: 12px; font-weight: 600; color: #475569;">Status</th>
-                            <th style="padding: 10px; text-align: right; font-size: 12px; font-weight: 600; color: #475569;">Amount</th>
+                            <th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #475569;">Inst #</th>
+                            <th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #475569;">Date</th>
+                            <th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #475569;">Method</th>
+                            <th style="padding: 8px; text-align: left; font-size: 10px; font-weight: 600; color: #475569;">Status</th>
+                            <th style="padding: 8px; text-align: right; font-size: 10px; font-weight: 600; color: #475569;">Amount</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${finStatus.installments.map(inst => `
                             <tr style="border-bottom: 1px solid #f1f5f9;">
-                                <td style="padding: 10px; font-size: 13px; color: #334155;">${inst.installmentNumber}</td>
-                                <td style="padding: 10px; font-size: 13px; color: #334155;">${new Date(inst.date).toLocaleDateString('en-IN')}</td>
-                                <td style="padding: 10px; font-size: 13px; color: #334155;">${inst.paymentMethod || 'N/A'}</td>
-                                <td style="padding: 10px; font-size: 13px; color: #334155;">
+                                <td style="padding: 8px; font-size: 11px; color: #334155;">${inst.installmentNumber}</td>
+                                <td style="padding: 8px; font-size: 11px; color: #334155;">${new Date(inst.date).toLocaleDateString('en-IN')}</td>
+                                <td style="padding: 8px; font-size: 11px; color: #334155;">${inst.paymentMethod || 'N/A'}</td>
+                                <td style="padding: 8px; font-size: 11px; color: #334155;">
                                     <span style="font-weight: 600; color: ${inst.status === 'VERIFIED' ? '#059669' : inst.status === 'REJECTED' ? '#dc2626' : '#d97706'}">${inst.status}</span>
                                 </td>
-                                <td style="padding: 10px; text-align: right; font-size: 13px; font-weight: 600; color: #334155;">₹${inst.amount}</td>
+                                <td style="padding: 8px; text-align: right; font-size: 11px; font-weight: 600; color: #334155;">₹${inst.amount}</td>
                             </tr>
                         `).join('')}
                     </tbody>
@@ -304,28 +329,28 @@ const PaymentManagement = () => {
                 <head>
                     <title>Payment Invoice - ${selectedApp.personalDetails?.fullName || 'N/A'}</title>
                     <style>
-                        body { font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 40px; color: #333; background-color: #fff; }
-                        .receipt-container { padding: 40px; max-width: 800px; margin: 0 auto; }
-                        .header-container { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px; }
+                        body { font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; color: #333; background-color: #fff; }
+                        .receipt-container { padding: 20px; max-width: 800px; margin: 0 auto; }
+                        .header-container { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 15px; }
                         .logo-col { display: flex; flex-direction: column; }
-                        .logo { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px; letter-spacing: -0.5px; }
-                        .sub-logo { font-size: 13px; color: #64748b; }
-                        .invoice-badge { font-size: 32px; font-weight: 300; color: #cbd5e1; letter-spacing: 2px; text-transform: uppercase; }
-                        .grid-info { display: grid; grid-template-cols: 1fr 1fr; gap: 40px; margin-bottom: 40px; }
-                        .info-box { background-color: #f8fafc; padding: 20px; border-radius: 6px; }
-                        .label { font-size: 11px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px; letter-spacing: 0.5px; }
-                        .value { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 12px; }
-                        .amount-summary { margin-top: 30px; margin-left: auto; width: 300px; }
-                        .amount-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px; }
+                        .logo { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 2px; letter-spacing: -0.5px; }
+                        .sub-logo { font-size: 11px; color: #64748b; }
+                        .invoice-badge { font-size: 24px; font-weight: 300; color: #cbd5e1; letter-spacing: 2px; text-transform: uppercase; }
+                        .grid-info { display: grid; grid-template-cols: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+                        .info-box { background-color: #f8fafc; padding: 12px; border-radius: 6px; }
+                        .label { font-size: 10px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 2px; letter-spacing: 0.5px; }
+                        .value { font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 8px; }
+                        .amount-summary { margin-top: 15px; margin-left: auto; width: 250px; }
+                        .amount-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
                         .amount-label { color: #64748b; font-weight: 500; }
                         .amount-value { font-weight: 600; color: #0f172a; }
-                        .amount-total { font-size: 18px; color: #0f172a; border-top: 2px solid #e2e8f0; padding-top: 12px; margin-top: 12px; font-weight: 700; }
-                        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+                        .amount-total { font-size: 15px; color: #0f172a; border-top: 2px solid #e2e8f0; padding-top: 8px; margin-top: 8px; font-weight: 700; }
+                        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
                         .status-completed { background-color: #dcfce7; color: #166534; }
                         .status-partial { background-color: #fef9c3; color: #854d0e; }
                         .status-overdue { background-color: #fee2e2; color: #991b1b; }
                         .status-pending { background-color: #f1f5f9; color: #475569; }
-                        .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 20px; }
+                        .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #e2e8f0; padding-top: 10px; }
                         @media print {
                             body { margin: 0; }
                             .receipt-container { max-width: 100%; padding: 20px; }
@@ -345,29 +370,29 @@ const PaymentManagement = () => {
                         <div class="grid-info">
                             <div class="info-box">
                                 <div class="label">Billed To</div>
-                                <div class="value" style="font-size: 18px;">${selectedApp.personalDetails?.fullName || 'N/A'}</div>
-                                <div class="label" style="margin-top: 15px;">Application ID</div>
+                                <div class="value" style="font-size: 15px;">${selectedApp.personalDetails?.fullName || 'N/A'}</div>
+                                <div class="label" style="margin-top: 10px;">Application ID</div>
                                 <div class="value" style="margin-bottom: 0;">${selectedApp.applicationId || 'N/A'}</div>
                             </div>
                             <div class="info-box">
                                 <div class="label">Course Details</div>
                                 <div class="value">${selectedApp.courseDetails?.selectedCourse || 'N/A'}</div>
-                                <div class="label" style="margin-top: 15px;">Date of Issue</div>
+                                <div class="label" style="margin-top: 10px;">Date of Issue</div>
                                 <div class="value" style="margin-bottom: 0;">${new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</div>
                             </div>
                         </div>
                         
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
                             <thead>
                                 <tr style="background-color: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                    <th style="padding: 12px; text-align: left; font-size: 13px; font-weight: 600; color: #475569;">Description</th>
-                                    <th style="padding: 12px; text-align: right; font-size: 13px; font-weight: 600; color: #475569;">Amount</th>
+                                    <th style="padding: 8px; text-align: left; font-size: 11px; font-weight: 600; color: #475569;">Description</th>
+                                    <th style="padding: 8px; text-align: right; font-size: 11px; font-weight: 600; color: #475569;">Amount</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr style="border-bottom: 1px solid #f1f5f9;">
-                                    <td style="padding: 15px 12px; font-size: 14px; color: #334155; font-weight: 500;">Course Tuition & Registration Fees</td>
-                                    <td style="padding: 15px 12px; text-align: right; font-size: 14px; color: #0f172a; font-weight: 600;">₹${finStatus.totalFees}</td>
+                                    <td style="padding: 10px 8px; font-size: 12px; color: #334155; font-weight: 500;">Course Tuition & Registration Fees</td>
+                                    <td style="padding: 10px 8px; text-align: right; font-size: 12px; color: #0f172a; font-weight: 600;">₹${finStatus.totalFees}</td>
                                 </tr>
                             </tbody>
                         </table>
