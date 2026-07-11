@@ -117,12 +117,14 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             submitterRole,
             session: sessionParam,
             sortBy = 'createdAt',
-            sortOrder = 'desc'
+            sortOrder = 'desc',
+            paymentStatus
         } = req.query;
 
         // Build filter query
         const filter = {};
         const andConditions = []; // Array to collect all conditions that need to be ANDed together
+        let paymentStats = { ALL: 0, PENDING: 0, PARTIAL: 0, OVERDUE: 0, COMPLETED: 0 };
 
         // SESSION IS REQUIRED - Always filter by session
         if (!sessionParam) {
@@ -182,6 +184,32 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             };
             
             andConditions.push(sessionDateFilter);
+
+            // Group and count applications by payment status for the session
+            try {
+                const statsAggregation = await StudentApplication.aggregate([
+                    { $match: sessionDateFilter },
+                    {
+                        $group: {
+                            _id: '$financialStatus.paymentStatus',
+                            count: { $sum: 1 }
+                        }
+                    }
+                ]);
+
+                statsAggregation.forEach(item => {
+                    const statusKey = item._id || 'PENDING';
+                    if (statusKey === 'PARTIAL') paymentStats.PARTIAL = item.count;
+                    else if (statusKey === 'OVERDUE') paymentStats.OVERDUE = item.count;
+                    else if (statusKey === 'COMPLETED') paymentStats.COMPLETED = item.count;
+                    else {
+                        paymentStats.PENDING += item.count;
+                    }
+                    paymentStats.ALL += item.count;
+                });
+            } catch (err) {
+                console.error('Error calculating payment stats:', err);
+            }
         } catch (error) {
             console.error('❌ Session date range error:', error);
             return res.status(400).json({
@@ -208,6 +236,11 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         // Filter by status
         if (status && status !== 'all') {
             filter.status = status;
+        }
+
+        // Filter by paymentStatus
+        if (paymentStatus && paymentStatus !== 'all') {
+            filter['financialStatus.paymentStatus'] = paymentStatus.toUpperCase();
         }
 
         // Filter by course
@@ -634,6 +667,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 courseDetails: appObj.courseDetails,
                 guardianDetails: appObj.guardianDetails,
                 financialDetails: appObj.financialDetails,
+                financialStatus: appObj.financialStatus,
                 documents: appObj.documents,
                 reviewInfo: appObj.referralInfo,
                 workflowHistory: appObj.workflowHistory,
@@ -651,7 +685,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                     totalItems: total,
                     itemsPerPage: parseInt(limit)
                 },
-                filters: filterOptions
+                filters: filterOptions,
+                paymentStats: paymentStats
             }
         });
 
@@ -858,6 +893,9 @@ router.put('/:id/financial', protect, authorize('staff', 'super_admin'), async (
         if (receiptUrl) application.financialStatus.receiptUrl = receiptUrl; // Just saving if they want to track receipts directly on the object
 
         application.financialStatus.lastPaymentDate = new Date();
+
+        // Force Mongoose to recognize updates to nested object
+        application.markModified('financialStatus');
 
         await application.save();
 
