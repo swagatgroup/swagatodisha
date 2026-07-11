@@ -36,10 +36,36 @@ router.get('/test', async (req, res) => {
         };
         printRoutes(req.app._router.stack);
 
+        // Search for specific ID in different collections
+        const targetId = '6a2cedae8d895ca607ef3904';
+        const mongoose = require('mongoose');
+        const isValidId = mongoose.Types.ObjectId.isValid(targetId);
+        
+        let appDoc = null;
+        let studentDoc = null;
+        let userDoc = null;
+        
+        if (isValidId) {
+            const Student = require('../models/Student');
+            const User = require('../models/User');
+            appDoc = await StudentApplication.findById(targetId).lean();
+            studentDoc = await Student.findById(targetId).lean();
+            userDoc = await User.findById(targetId).lean();
+        }
+
         res.json({
             success: true,
             message: 'Database and Route test',
             totalCount,
+            targetId,
+            isValidId,
+            foundInApplication: !!appDoc,
+            applicationDetails: appDoc ? {
+                status: appDoc.status,
+                fullName: appDoc.personalDetails?.fullName
+            } : null,
+            foundInStudent: !!studentDoc,
+            foundInUser: !!userDoc,
             routes: routes
         });
     } catch (error) {
