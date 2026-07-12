@@ -12,6 +12,7 @@ import PaymentManagement from './tabs/PaymentManagement';
 import StudentTable from './components/StudentTable';
 import ProcessingStats from './components/ProcessingStats';
 import StudentManagement from '../admin/StudentManagement';
+import ProgressPieChart from './ProgressPieChart';
 import api from '../../utils/api';
 import {
     showSuccess,
@@ -358,6 +359,20 @@ const EnhancedStaffDashboard = () => {
                             className="mb-8"
                         >
                             <ProcessingStats data={processingStats} onStatClick={handleStatClick} activeFilter={filterStatus} />
+                        </motion.div>
+
+                        {/* 3D Progress Chart */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.15 }}
+                            className="mb-8 w-full lg:w-1/2 mx-auto"
+                        >
+                            <ProgressPieChart 
+                                pending={processingStats.pendingVerification || processingStats.submittedInSession + processingStats.underReviewInSession} 
+                                approved={processingStats.approvedInSession} 
+                                complete={processingStats.completedInSession} 
+                            />
                         </motion.div>
 
                         {/* Students Table */}

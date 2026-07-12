@@ -12,6 +12,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ApplicationReview from './tabs/ApplicationReview';
 import PaymentManagement from './tabs/PaymentManagement';
+import ProgressPieChart from './ProgressPieChart';
 import {
     showSuccess,
     showError,
@@ -611,6 +612,15 @@ const SuperAdminDashboard = () => {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+
+                        {/* 3D Progress Chart */}
+                        <div className="w-full lg:w-1/2 mx-auto">
+                            <ProgressPieChart 
+                                pending={stats.pendingApplications || stats.submittedApplications + stats.underReviewApplications} 
+                                approved={stats.approvedApplications} 
+                                complete={stats.completeApplications} 
+                            />
                         </div>
 
                         {/* Filter Buttons */}

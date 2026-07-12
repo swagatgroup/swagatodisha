@@ -8,6 +8,7 @@ import StudentRegistrationWorkflow from "./tabs/StudentRegistrationWorkflow";
 import AgentApplicationStatus from "./tabs/AgentApplicationStatus";
 import AgentStudentsTab from "./tabs/AgentStudentsTab";
 import StudentTable from "./components/StudentTable";
+import ProgressPieChart from "./ProgressPieChart";
 import api from "../../utils/api";
 
 const EnhancedAgentDashboard = () => {
@@ -361,6 +362,20 @@ const EnhancedAgentDashboard = () => {
                   <p className="text-2xl font-semibold text-teal-600 dark:text-teal-400">{stats.completedStudents}</p>
                 </div>
               </div>
+            </motion.div>
+
+            {/* 3D Progress Chart */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mb-6 w-full lg:w-1/2 mx-auto"
+            >
+              <ProgressPieChart 
+                pending={stats.pendingStudents + stats.underReviewStudents} 
+                approved={stats.approvedStudents} 
+                complete={stats.completedStudents} 
+              />
             </motion.div>
 
             {/* Commission panel removed as requested */}
