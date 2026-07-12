@@ -95,7 +95,11 @@ exports.getDashboardStats = async (req, res) => {
             underReviewApplications,
             rejectedApplications,
             completeApplications,
-            recentStudents
+            recentStudents,
+            selfRegistered,
+            agentReferred,
+            staffReferred,
+            studentReferred
         ] = await Promise.all([
             // Total Students in this session
             StudentApplication.countDocuments(sessionQuery),
@@ -131,7 +135,19 @@ exports.getDashboardStats = async (req, res) => {
             StudentApplication.find(sessionQuery)
                 .populate('user', 'fullName email phoneNumber')
                 .sort({ createdAt: -1 })
-                .limit(5)
+                .limit(5),
+
+            // Self Registered (No referral info)
+            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referredBy': null })),
+
+            // Referred by Agent
+            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'agent' })),
+
+            // Referred by Staff
+            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'staff' })),
+
+            // Referred by Student
+            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'student' }))
         ]);
 
         res.json({
@@ -148,6 +164,14 @@ exports.getDashboardStats = async (req, res) => {
                 underReviewApplications,
                 rejectedApplications,
                 completeApplications,
+                recentStudents,
+                referralStats: {
+                    selfRegistered,
+                    agentReferred,
+                    staffReferred,
+                    studentReferred,
+                    totalReferred: agentReferred + staffReferred + studentReferred
+                },
                 session: sessionParam,
                 sessionStartDate: yearStart,
                 sessionEndDate: yearEnd

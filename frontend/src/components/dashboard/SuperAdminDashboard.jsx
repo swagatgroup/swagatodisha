@@ -709,6 +709,36 @@ const SuperAdminDashboard = () => {
                             </button>
                         </div>
 
+                        {/* Referral Statistics */}
+                        {stats.referralStats && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.05 }}
+                                className="mt-8 mb-4"
+                            >
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Registration & Referral Tracking</h3>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Self Registered</p>
+                                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.referralStats.selfRegistered || 0}</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Referred by Agent</p>
+                                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.referralStats.agentReferred || 0}</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Referred by Staff</p>
+                                        <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">{stats.referralStats.staffReferred || 0}</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Referred by Student</p>
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.referralStats.studentReferred || 0}</p>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
                         {/* Students Table - Step One */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
