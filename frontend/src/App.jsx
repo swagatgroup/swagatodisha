@@ -37,6 +37,7 @@ import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoolGhantiguda'
 import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
 import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
+import GatewayLoader from './components/GatewayLoader'
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -96,6 +97,11 @@ const DashboardRouter = () => {
 // Main App Component
 const AppContent = () => {
     const [isNavOpen, setIsNavOpen] = useState(false)
+    const [showGateway, setShowGateway] = useState(true)
+
+    if (showGateway) {
+        return <GatewayLoader onEnterMainSite={() => setShowGateway(false)} />
+    }
 
     return (
         <div className="App relative m-0 p-0 bg-white dark:bg-gray-900">
