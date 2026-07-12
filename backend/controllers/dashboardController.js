@@ -7,7 +7,7 @@ const getStudentDashboard = async (req, res) => {
     try {
         const student = await Student.findOne({ user: req.user._id })
             .populate('user', 'firstName lastName email phone profilePicture')
-            .populate('agentReferral.agent', 'firstName lastName referralCode');
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode');
 
         if (!student) {
             return res.status(404).json({
@@ -37,7 +37,7 @@ const getStudentDashboard = async (req, res) => {
                     studentId: student.studentId,
                     user: student.user,
                     academicSummary,
-                    agentInfo: student.agentReferral,
+                    agentInfo: student.referralInfo,
                     recentActivities
                 }
             }
@@ -66,7 +66,7 @@ const getAgentDashboard = async (req, res) => {
 
         // Get referral statistics
         const referralStats = await Student.aggregate([
-            { $match: { 'agentReferral.agent': req.user._id } },
+            { $match: { 'referralInfo.referredBy': req.user._id } },
             {
                 $group: {
                     _id: null,
@@ -84,7 +84,7 @@ const getAgentDashboard = async (req, res) => {
         };
 
         // Get recent referrals
-        const recentReferrals = await Student.find({ 'agentReferral.agent': req.user._id })
+        const recentReferrals = await Student.find({ 'referralInfo.referredBy': req.user._id })
             .populate('user', 'firstName lastName email phone')
             .sort({ createdAt: -1 })
             .limit(10);
@@ -171,7 +171,7 @@ const getStaffDashboard = async (req, res) => {
             // Recent Applications
             Student.find({ status: 'pending' })
                 .populate('user', 'firstName lastName email phone')
-                .populate('agentReferral.agent', 'firstName lastName referralCode')
+                .populate('referralInfo.referredBy', 'firstName lastName referralCode')
                 .sort({ createdAt: -1 })
                 .limit(10),
 
@@ -182,7 +182,7 @@ const getStaffDashboard = async (req, res) => {
                     $lookup: {
                         from: 'students',
                         localField: '_id',
-                        foreignField: 'agentReferral.agent',
+                        foreignField: 'referralInfo.referredBy',
                         as: 'referrals'
                     }
                 },
@@ -299,7 +299,7 @@ const getSuperAdminDashboard = async (req, res) => {
             // Recent Students
             Student.find({ status: 'active' })
                 .populate('user', 'firstName lastName email phone')
-                .populate('agentReferral.agent', 'firstName lastName referralCode')
+                .populate('referralInfo.referredBy', 'firstName lastName referralCode')
                 .sort({ createdAt: -1 })
                 .limit(10),
 
@@ -316,7 +316,7 @@ const getSuperAdminDashboard = async (req, res) => {
                     $lookup: {
                         from: 'students',
                         localField: '_id',
-                        foreignField: 'agentReferral.agent',
+                        foreignField: 'referralInfo.referredBy',
                         as: 'referrals'
                     }
                 },

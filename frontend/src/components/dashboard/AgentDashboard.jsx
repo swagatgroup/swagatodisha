@@ -9,6 +9,7 @@ import AgentApplicationStatus from "./tabs/AgentApplicationStatus";
 import AgentStudentsTab from "./tabs/AgentStudentsTab";
 import StudentTable from "./components/StudentTable";
 import ProgressPieChart from "./ProgressPieChart";
+import ReferralDashboard from "./tabs/ReferralDashboard";
 import api from "../../utils/api";
 
 const EnhancedAgentDashboard = () => {
@@ -135,6 +136,25 @@ const EnhancedAgentDashboard = () => {
             strokeLinejoin="round"
             strokeWidth={2}
             d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+          />
+        </svg>
+      ),
+    },
+    {
+      id: "referrals",
+      name: "Refer & Earn",
+      icon: (
+        <svg
+          className="mr-3 h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
           />
         </svg>
       ),
@@ -372,9 +392,14 @@ const EnhancedAgentDashboard = () => {
               className="mb-6 w-full lg:w-1/2 mx-auto"
             >
               <ProgressPieChart 
-                pending={stats.pendingStudents + stats.underReviewStudents} 
-                approved={stats.approvedStudents} 
-                complete={stats.completedStudents} 
+                chartData={[
+                  { label: 'Submitted', value: stats.pendingStudents, color: '#facc15', filterKey: 'SUBMITTED' },
+                  { label: 'Under Review', value: stats.underReviewStudents, color: '#f97316', filterKey: 'UNDER_REVIEW' },
+                  { label: 'Approved', value: stats.approvedStudents, color: '#22c55e', filterKey: 'APPROVED' },
+                  { label: 'Rejected', value: stats.rejectedStudents, color: '#ef4444', filterKey: 'REJECTED' },
+                  { label: 'Completed', value: stats.completedStudents, color: '#14b8a6', filterKey: 'COMPLETE' },
+                ]}
+                onSectionClick={handleStatClick}
               />
             </motion.div>
 
@@ -417,6 +442,10 @@ const EnhancedAgentDashboard = () => {
       case "application-status":
         return (
           <AgentApplicationStatus />
+        );
+      case "referrals":
+        return (
+          <ReferralDashboard />
         );
       default:
         return null;

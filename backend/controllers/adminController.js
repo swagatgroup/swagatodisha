@@ -193,8 +193,8 @@ exports.getAllStudents = async (req, res) => {
         if (status) filter.status = status;
         if (currentClass) filter.currentClass = currentClass;
         if (academicYear) filter.academicYear = academicYear;
-        if (hasAgent === 'true') filter['agentReferral.agent'] = { $exists: true, $ne: null };
-        if (hasAgent === 'false') filter['agentReferral.agent'] = { $exists: false };
+        if (hasAgent === 'true') filter['referralInfo.referredBy'] = { $exists: true, $ne: null };
+        if (hasAgent === 'false') filter['referralInfo.referredBy'] = { $exists: false };
 
         // Build sort object
         const sort = {};
@@ -204,7 +204,7 @@ exports.getAllStudents = async (req, res) => {
 
         const students = await Student.find(filter)
             .populate('user', 'firstName lastName email phone profilePicture')
-            .populate('agentReferral.agent', 'firstName lastName referralCode')
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode')
             .sort(sort)
             .skip(skip)
             .limit(parseInt(limit));
@@ -249,7 +249,7 @@ exports.updateStudent = async (req, res) => {
             updateData,
             { new: true, runValidators: true }
         ).populate('user', 'firstName lastName email phone')
-            .populate('agentReferral.agent', 'firstName lastName referralCode');
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode');
 
         if (!student) {
             return res.status(404).json({
@@ -629,8 +629,8 @@ exports.deleteAgent = async (req, res) => {
 
         // Update all students referred by this agent
         await Student.updateMany(
-            { 'agentReferral.agent': agentId },
-            { $unset: { agentReferral: 1 } }
+            { 'referralInfo.referredBy': agentId },
+            { $unset: { referralInfo: 1 } }
         );
 
         // Delete agent

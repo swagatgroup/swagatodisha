@@ -790,7 +790,7 @@ router.post('/complete-profile', [
             },
             { new: true, runValidators: true }
         ).populate('user', 'firstName lastName email phone')
-            .populate('agentReferral.agent', 'firstName lastName referralCode');
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode');
 
         res.json({
             success: true,
@@ -818,7 +818,7 @@ router.get('/profile-status', protect, async (req, res) => {
         const Student = require('../models/Student');
         const student = await Student.findOne({ user: req.user._id })
             .populate('user', 'firstName lastName email phone')
-            .populate('agentReferral.agent', 'firstName lastName referralCode');
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode');
 
         if (!student) {
             return res.status(404).json({

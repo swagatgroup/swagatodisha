@@ -23,7 +23,7 @@ const ReferralDashboard = () => {
     const loadReferralData = async () => {
         try {
             setLoading(true);
-            const response = await api.get('/api/students/referral-data');
+            const response = await api.get('/api/referral/data');
             if (response.data.success) {
                 setReferralData(response.data.data);
             }

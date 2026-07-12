@@ -614,12 +614,17 @@ const SuperAdminDashboard = () => {
                             </div>
                         </div>
 
-                        {/* 3D Progress Chart */}
                         <div className="w-full lg:w-1/2 mx-auto">
                             <ProgressPieChart 
-                                pending={stats.pendingApplications || stats.submittedApplications + stats.underReviewApplications} 
-                                approved={stats.approvedApplications} 
-                                complete={stats.completeApplications} 
+                                chartData={[
+                                    { label: 'Draft', value: stats.draftApplications, color: '#9ca3af', filterKey: 'DRAFT' },
+                                    { label: 'Submitted', value: stats.submittedApplications, color: '#facc15', filterKey: 'SUBMITTED' },
+                                    { label: 'Under Review', value: stats.underReviewApplications, color: '#f97316', filterKey: 'UNDER_REVIEW' },
+                                    { label: 'Approved', value: stats.approvedApplications, color: '#22c55e', filterKey: 'APPROVED' },
+                                    { label: 'Rejected', value: stats.rejectedApplications, color: '#ef4444', filterKey: 'REJECTED' },
+                                    { label: 'Completed', value: stats.completeApplications, color: '#14b8a6', filterKey: 'COMPLETE' },
+                                ]}
+                                onSectionClick={handleStatClick}
                             />
                         </div>
 

@@ -361,7 +361,6 @@ const EnhancedStaffDashboard = () => {
                             <ProcessingStats data={processingStats} onStatClick={handleStatClick} activeFilter={filterStatus} />
                         </motion.div>
 
-                        {/* 3D Progress Chart */}
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -369,9 +368,14 @@ const EnhancedStaffDashboard = () => {
                             className="mb-8 w-full lg:w-1/2 mx-auto"
                         >
                             <ProgressPieChart 
-                                pending={processingStats.pendingVerification || processingStats.submittedInSession + processingStats.underReviewInSession} 
-                                approved={processingStats.approvedInSession} 
-                                complete={processingStats.completedInSession} 
+                                chartData={[
+                                    { label: 'Submitted', value: processingStats.submittedInSession, color: '#facc15', filterKey: 'SUBMITTED' },
+                                    { label: 'Under Review', value: processingStats.underReviewInSession, color: '#f97316', filterKey: 'UNDER_REVIEW' },
+                                    { label: 'Approved', value: processingStats.approvedInSession, color: '#22c55e', filterKey: 'APPROVED' },
+                                    { label: 'Rejected', value: processingStats.rejectedInSession, color: '#ef4444', filterKey: 'REJECTED' },
+                                    { label: 'Completed', value: processingStats.completedInSession, color: '#14b8a6', filterKey: 'COMPLETE' },
+                                ]}
+                                onSectionClick={handleStatClick}
                             />
                         </motion.div>
 

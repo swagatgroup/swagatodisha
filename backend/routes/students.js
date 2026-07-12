@@ -81,10 +81,10 @@ router.post('/', [
         if (referralCode) {
             const agent = await User.findOne({ referralCode, role: 'agent' });
             if (agent) {
-                student.agentReferral = {
-                    agent: agent._id,
+                student.referralInfo = {
+                    referredBy: agent._id,
                     referralCode: referralCode,
-                    referralDate: new Date()
+                    referralType: 'agent'
                 };
             }
         }
@@ -94,7 +94,7 @@ router.post('/', [
         // Populate the response
         const populatedStudent = await Student.findById(student._id)
             .populate('user', 'firstName lastName email phone')
-            .populate('agentReferral.agent', 'firstName lastName referralCode');
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode');
 
         // Transform data for frontend
         const transformedStudent = {
@@ -106,7 +106,7 @@ router.post('/', [
             address: populatedStudent.address,
             class: populatedStudent.class,
             dob: populatedStudent.dob,
-            referralCode: populatedStudent.agentReferral?.referralCode || null,
+            referralCode: populatedStudent.referralInfo?.referralCode || null,
             status: populatedStudent.status,
             enrollmentDate: populatedStudent.enrollmentDate
         };
@@ -160,9 +160,9 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         if (academicYear) filter.academicYear = academicYear;
 
         if (hasAgent === 'true') {
-            filter['agentReferral.agent'] = { $exists: true, $ne: null };
+            filter['referralInfo.referredBy'] = { $exists: true, $ne: null };
         } else if (hasAgent === 'false') {
-            filter['agentReferral.agent'] = { $exists: false };
+            filter['referralInfo.referredBy'] = { $exists: false };
         }
 
         // Build sort query
@@ -172,7 +172,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         // Execute query with pagination
         const students = await Student.find(filter)
             .populate('user', 'firstName lastName email phone')
-            .populate('agentReferral.agent', 'firstName lastName referralCode')
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode')
             .sort(sort)
             .limit(limit * 1)
             .skip((page - 1) * limit)
@@ -191,7 +191,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             address: student.address,
             class: student.class,
             dob: student.dob,
-            referralCode: student.agentReferral?.referralCode || null,
+            referralCode: student.referralInfo?.referralCode || null,
             status: student.status,
             enrollmentDate: student.enrollmentDate
         }));
@@ -223,7 +223,7 @@ router.get('/:id', protect, checkOwnership('Student'), async (req, res) => {
     try {
         const student = await Student.findById(req.params.id)
             .populate('user', 'firstName lastName email phone profilePicture')
-            .populate('agentReferral.agent', 'firstName lastName referralCode')
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode')
             .populate('createdBy', 'firstName lastName')
             .populate('updatedBy', 'firstName lastName');
 
@@ -303,14 +303,14 @@ router.put('/:id', [
             if (updateData.referralCode) {
                 const agent = await User.findOne({ referralCode: updateData.referralCode, role: 'agent' });
                 if (agent) {
-                    student.agentReferral = {
-                        agent: agent._id,
+                    student.referralInfo = {
+                        referredBy: agent._id,
                         referralCode: updateData.referralCode,
-                        referralDate: new Date()
+                        referralType: 'agent'
                     };
                 }
             } else {
-                student.agentReferral = undefined;
+                student.referralInfo = undefined;
             }
         }
 
@@ -320,7 +320,7 @@ router.put('/:id', [
         // Populate updated data
         const updatedStudent = await Student.findById(student._id)
             .populate('user', 'firstName lastName email phone profilePicture')
-            .populate('agentReferral.agent', 'firstName lastName referralCode');
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode');
 
         // Transform data for frontend
         const transformedStudent = {
@@ -332,7 +332,7 @@ router.put('/:id', [
             address: updatedStudent.address,
             class: updatedStudent.class,
             dob: updatedStudent.dob,
-            referralCode: updatedStudent.agentReferral?.referralCode || null,
+            referralCode: updatedStudent.referralInfo?.referralCode || null,
             status: updatedStudent.status,
             enrollmentDate: updatedStudent.enrollmentDate
         };
@@ -429,7 +429,7 @@ router.get('/stats/overview', protect, authorize('staff', 'super_admin'), async 
     try {
         const totalStudents = await Student.countDocuments();
         const activeStudents = await Student.countDocuments({ status: 'active' });
-        const studentsWithAgent = await Student.countDocuments({ 'agentReferral.agent': { $exists: true, $ne: null } });
+        const studentsWithAgent = await Student.countDocuments({ 'referralInfo.referredBy': { $exists: true, $ne: null } });
         const studentsWithoutAgent = totalStudents - studentsWithAgent;
 
         // Class-wise distribution
@@ -497,9 +497,9 @@ router.get('/agent/:agentId', protect, async (req, res) => {
             });
         }
 
-        const students = await Student.find({ 'agentReferral.agent': agentId })
+        const students = await Student.find({ 'referralInfo.referredBy': agentId })
             .populate('user', 'firstName lastName email phone')
-            .populate('agentReferral.agent', 'firstName lastName referralCode')
+            .populate('referralInfo.referredBy', 'firstName lastName referralCode')
             .sort({ enrollmentDate: -1 });
 
         res.json({
