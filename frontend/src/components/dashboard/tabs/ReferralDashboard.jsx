@@ -46,7 +46,7 @@ const ReferralDashboard = () => {
 
     const shareReferralLink = () => {
         const referralLink = `${window.location.origin}/register?ref=${referralData.referralCode}`;
-        const shareText = `Join Swagat Group of Institutions! Use my referral code: ${referralData.referralCode} and get ₹500 bonus when you enroll! 🎓✨`;
+        const shareText = `Join Swagat Group of Institutions! Use my referral code: ${referralData.referralCode} to register. 🎓✨`;
 
         if (navigator.share) {
             navigator.share({
@@ -79,34 +79,34 @@ const ReferralDashboard = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 pb-10">
             {/* Header */}
             <div className="text-center">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Refer & Earn</h2>
-                <p className="text-gray-600">Invite your friends to join Swagat and earn ₹500 for each successful referral!</p>
+                <p className="text-gray-600">Invite students to join Swagat and unlock exciting tiered rewards for each successful referral!</p>
             </div>
 
             {/* Referral Code Card */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white"
+                className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white shadow-lg"
             >
                 <div className="text-center">
                     <h3 className="text-xl font-semibold mb-2">Your Referral Code</h3>
                     <div className="flex items-center justify-center space-x-4 mb-4">
-                        <div className="bg-white/20 rounded-lg px-4 py-2 text-2xl font-mono font-bold">
-                            {referralData.referralCode}
+                        <div className="bg-white/20 rounded-lg px-4 py-2 text-2xl font-mono font-bold tracking-wider">
+                            {referralData.referralCode || 'N/A'}
                         </div>
                         <button
                             onClick={copyReferralCode}
-                            className="bg-white/20 hover:bg-white/30 rounded-lg px-4 py-2 transition-colors duration-200"
+                            className="bg-white/20 hover:bg-white/30 rounded-lg px-4 py-2 transition-colors duration-200 font-medium"
                         >
                             {copied ? 'Copied!' : 'Copy'}
                         </button>
                     </div>
                     <p className="text-blue-100 text-sm">
-                        Share this code with your friends to earn rewards!
+                        Share this code to earn massive rewards!
                     </p>
                 </div>
             </motion.div>
@@ -117,17 +117,15 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
-                        <div className="p-3 bg-blue-100 rounded-lg">
-                            <svg className="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
+                        <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                            <i className="fa-solid fa-users text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Total Referrals</p>
-                            <p className="text-2xl font-semibold text-gray-900">{referralData.totalReferrals}</p>
+                            <p className="text-sm font-medium text-gray-500">Total Referrals</p>
+                            <p className="text-2xl font-bold text-gray-900">{referralData.totalReferrals}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -136,17 +134,15 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
-                        <div className="p-3 bg-green-100 rounded-lg">
-                            <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                        <div className="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
+                            <i className="fa-solid fa-check-circle text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Successful</p>
-                            <p className="text-2xl font-semibold text-gray-900">{referralData.successfulReferrals}</p>
+                            <p className="text-sm font-medium text-gray-500">Successful</p>
+                            <p className="text-2xl font-bold text-gray-900">{referralData.successfulReferrals}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -155,17 +151,15 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
-                        <div className="p-3 bg-yellow-100 rounded-lg">
-                            <svg className="w-6 h-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                        <div className="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600">
+                            <i className="fa-solid fa-hourglass-half text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Pending</p>
-                            <p className="text-2xl font-semibold text-gray-900">{referralData.pendingReferrals}</p>
+                            <p className="text-sm font-medium text-gray-500">Pending</p>
+                            <p className="text-2xl font-bold text-gray-900">{referralData.pendingReferrals}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -174,17 +168,15 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
-                        <div className="p-3 bg-purple-100 rounded-lg">
-                            <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                            </svg>
+                        <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+                            <i className="fa-solid fa-wallet text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Total Earnings</p>
-                            <p className="text-2xl font-semibold text-gray-900">₹{referralData.totalEarnings}</p>
+                            <p className="text-sm font-medium text-gray-500">Total Earnings</p>
+                            <p className="text-2xl font-bold text-gray-900">₹{referralData.totalEarnings}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -195,28 +187,103 @@ const ReferralDashboard = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white rounded-lg shadow-sm border border-gray-100 p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Share Your Referral Code</h3>
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Share Your Referral Code</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
                         onClick={shareReferralLink}
-                        className="flex items-center justify-center p-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                        className="flex items-center justify-center p-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-sm font-medium"
                     >
-                        <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                        </svg>
+                        <i className="fa-solid fa-share-nodes mr-3 text-lg"></i>
                         Share via Social Media
                     </button>
                     <button
                         onClick={copyReferralCode}
-                        className="flex items-center justify-center p-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+                        className="flex items-center justify-center p-4 bg-gray-800 text-white rounded-xl hover:bg-gray-900 transition-colors shadow-sm font-medium"
                     >
-                        <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
+                        <i className="fa-regular fa-copy mr-3 text-lg"></i>
                         Copy Referral Code
                     </button>
+                </div>
+            </motion.div>
+
+            {/* Rewards Tiers */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden"
+            >
+                <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+                    <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                        <i className="fa-solid fa-gift text-purple-600 mr-3"></i> 
+                        Referral Benefits Tier 
+                        {user?.role === 'agent' && (
+                            <span className="text-sm text-red-500 font-semibold ml-3 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">* Terms & conditions apply</span>
+                        )}
+                    </h3>
+                </div>
+                
+                <div className="p-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        {/* Tier 1 */}
+                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">1</div>
+                            <h4 className="font-semibold text-gray-800 text-sm">1 - 10 Referrals</h4>
+                            <p className="text-2xl font-bold text-green-600 mt-2">₹2,000</p>
+                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                        </div>
+                        
+                        {/* Tier 2 */}
+                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">2</div>
+                            <h4 className="font-semibold text-gray-800 text-sm">11 - 25 Referrals</h4>
+                            <p className="text-2xl font-bold text-green-600 mt-2">₹3,000</p>
+                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                        </div>
+                        
+                        {/* Tier 3 */}
+                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">3</div>
+                            <h4 className="font-semibold text-gray-800 text-sm">26 - 40 Referrals</h4>
+                            <p className="text-2xl font-bold text-green-600 mt-2">₹4,000</p>
+                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                        </div>
+                        
+                        {/* Tier 4 */}
+                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">4</div>
+                            <h4 className="font-semibold text-gray-800 text-sm">40 - 100 Referrals</h4>
+                            <p className="text-2xl font-bold text-green-600 mt-2">₹5,000</p>
+                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                        </div>
+                        
+                        {/* Ultimate Tier */}
+                        <div className="border-2 border-purple-400 bg-purple-50 rounded-xl p-5 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-500 text-[10px] font-bold px-3 py-1 rounded-bl-xl text-yellow-900 shadow-sm">ULTIMATE</div>
+                            <div className="w-12 h-12 bg-purple-200 text-purple-700 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">
+                                <i className="fa-solid fa-motorcycle"></i>
+                            </div>
+                            <h4 className="font-bold text-purple-900 text-sm">100+ Referrals</h4>
+                            <p className="text-base font-extrabold text-purple-700 mt-2 leading-tight">Royal Enfield 350</p>
+                            <p className="text-xs text-purple-500 font-semibold mt-0.5 tracking-tight">or iPhone 17 Pro Max</p>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 bg-blue-50/80 border-l-4 border-blue-500 p-5 rounded-r-xl">
+                        <div className="flex">
+                            <div className="flex-shrink-0">
+                                <i className="fa-solid fa-circle-info text-blue-500 mt-0.5 text-lg"></i>
+                            </div>
+                            <div className="ml-4">
+                                <h3 className="text-sm font-bold text-blue-900 uppercase tracking-wider mb-1">Future Years Benefit</h3>
+                                <div className="text-sm text-blue-800 leading-relaxed">
+                                    <p>If referred students continue their courses in the second year and third year (where applicable), you will get the <span className="font-bold">same referral amount again!</span> However, if anyone discontinues the course, the referrer will not receive the amount for those future years.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </motion.div>
 
@@ -224,81 +291,48 @@ const ReferralDashboard = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="bg-white rounded-lg shadow"
+                transition={{ delay: 0.7 }}
+                className="bg-white rounded-lg shadow-sm border border-gray-100"
             >
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">Recent Referrals</h3>
+                <div className="px-6 py-5 border-b border-gray-100">
+                    <h3 className="text-lg font-bold text-gray-900">Recent Referrals</h3>
                 </div>
                 <div className="p-6">
                     {referralData.recentReferrals.length > 0 ? (
-                        <div className="space-y-4">
+                        <div className="space-y-3">
                             {referralData.recentReferrals.map((referral, index) => (
-                                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                    <div className="flex items-center">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                            <span className="text-blue-600 font-semibold text-sm">
+                                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors">
+                                    <div className="flex items-center mb-3 sm:mb-0">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center shadow-inner">
+                                            <span className="text-blue-700 font-bold text-sm">
                                                 {referral.name.charAt(0)}
                                             </span>
                                         </div>
                                         <div className="ml-4">
-                                            <p className="text-sm font-medium text-gray-900">{referral.name}</p>
-                                            <p className="text-sm text-gray-500">{referral.course}</p>
+                                            <p className="text-sm font-bold text-gray-900">{referral.name}</p>
+                                            <p className="text-xs text-gray-500 font-medium">{referral.course}</p>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${referral.status === 'SUCCESSFUL' ? 'bg-green-100 text-green-800' :
-                                                referral.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-red-100 text-red-800'
+                                    <div className="text-left sm:text-right ml-14 sm:ml-0">
+                                        <span className={`inline-flex px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full ${referral.status === 'SUCCESSFUL' ? 'bg-green-100 text-green-800 border border-green-200' :
+                                                referral.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
+                                                    'bg-red-100 text-red-800 border border-red-200'
                                             }`}>
                                             {referral.status}
                                         </span>
-                                        <p className="text-sm text-gray-500 mt-1">{formatDate(referral.date)}</p>
+                                        <p className="text-xs text-gray-500 font-medium mt-1.5">{formatDate(referral.date)}</p>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-8">
-                            <svg className="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            <p className="text-gray-500">No referrals yet. Start sharing your code!</p>
+                        <div className="text-center py-10">
+                            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i className="fa-solid fa-users-slash text-2xl text-gray-400"></i>
+                            </div>
+                            <p className="text-gray-500 font-medium">No referrals yet. Start sharing your code to earn rewards!</p>
                         </div>
                     )}
-                </div>
-            </motion.div>
-
-            {/* How it Works */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                className="bg-white rounded-lg shadow p-6"
-            >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">How Refer & Earn Works</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center">
-                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <span className="text-blue-600 font-bold text-lg">1</span>
-                        </div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Share Your Code</h4>
-                        <p className="text-sm text-gray-600">Share your referral code with friends and family</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <span className="text-green-600 font-bold text-lg">2</span>
-                        </div>
-                        <h4 className="font-semibold text-gray-900 mb-2">They Enroll</h4>
-                        <p className="text-sm text-gray-600">Your friend uses your code to register and enroll</p>
-                    </div>
-                    <div className="text-center">
-                        <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                            <span className="text-purple-600 font-bold text-lg">3</span>
-                        </div>
-                        <h4 className="font-semibold text-gray-900 mb-2">Earn ₹500</h4>
-                        <p className="text-sm text-gray-600">You get ₹500 bonus when they successfully enroll</p>
-                    </div>
                 </div>
             </motion.div>
         </div>

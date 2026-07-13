@@ -456,14 +456,20 @@ const UniversalStudentRegistration = ({
 
       case 5: // Document Upload
         // Check if required documents are uploaded
-        const requiredDocuments = [
+        const selectedCollegeData = colleges.find(c => c._id === formData.courseDetails.selectedCollege);
+        const isPaid = selectedCollegeData?.feeType === 'Paid';
+        
+        let requiredDocuments = [
           "passport_photo",
           "aadhar_card",
           "marksheet_10th", // This is the key used by SimpleDocumentUpload
           "tenth_marksheet_certificate", // Also check backend key for compatibility
-          "caste_certificate",
-          "income_certificate",
         ];
+        
+        if (!isPaid) {
+            requiredDocuments.push("caste_certificate", "income_certificate");
+        }
+        
         const missingDocuments = requiredDocuments.filter(
           (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
         );
@@ -494,26 +500,32 @@ const UniversalStudentRegistration = ({
         break;
       case 6: // PDF Generation / Submit
         // Validate mandatory documents before final submission
-        const mandatoryDocuments = [
+        const selectedCollegeDataSubmit = colleges.find(c => c._id === formData.courseDetails.selectedCollege);
+        const isPaidSubmit = selectedCollegeDataSubmit?.feeType === 'Paid';
+        
+        let mandatoryDocuments = [
           "passport_photo",
           "aadhar_card",
           "marksheet_10th",
           "tenth_marksheet_certificate",
-          "caste_certificate",
-          "income_certificate",
         ];
+        
+        if (!isPaidSubmit) {
+            mandatoryDocuments.push("caste_certificate", "income_certificate");
+        }
+        
         const missingMandatory = mandatoryDocuments.filter(
           (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
         );
         // Check if at least one 10th marksheet variant exists
-        const has10thMarksheet = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
-        const actualMissing = missingMandatory.filter(doc => 
+        const has10thMarksheetSubmit = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
+        const actualMissingSubmit = missingMandatory.filter(doc => 
           doc !== "marksheet_10th" && doc !== "tenth_marksheet_certificate"
         );
-        if (!has10thMarksheet) {
-          actualMissing.push("marksheet_10th");
+        if (!has10thMarksheetSubmit) {
+          actualMissingSubmit.push("marksheet_10th");
         }
-        if (actualMissing.length > 0) {
+        if (actualMissingSubmit.length > 0) {
           const docLabels = {
             "passport_photo": "Passport Size Photo",
             "aadhar_card": "Aadhar Card",
@@ -522,7 +534,7 @@ const UniversalStudentRegistration = ({
             "caste_certificate": "Caste Certificate",
             "income_certificate": "Income Certificate",
           };
-          const missingLabels = actualMissing.map(doc => docLabels[doc] || doc);
+          const missingLabels = actualMissingSubmit.map(doc => docLabels[doc] || doc);
           newErrors[
             "documents"
           ] = `Cannot submit application. Please upload all mandatory documents: ${missingLabels.join(
