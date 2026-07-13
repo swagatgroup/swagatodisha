@@ -695,8 +695,8 @@ const InstituteCourseManagement = () => {
                                                 )}
                                             </div>
                                             {college.feeType && (
-                                                <span className={`text-xs px-2 py-0.5 rounded-full inline-block mt-1 ${college.feeType === 'Paid' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'}`}>
-                                                    {college.feeType}
+                                                <span className="text-xs text-gray-500 dark:text-gray-400 block mt-1">
+                                                    Fee: {college.feeType}
                                                 </span>
                                             )}
                                         </div>
