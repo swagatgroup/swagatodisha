@@ -599,7 +599,7 @@ const StudentApplications = () => {
                           <div>
                             <p className="text-sm text-gray-600 mb-1">Campus</p>
                             <p className="text-base font-semibold text-gray-900">
-                              {application.courseDetails.campus}
+                              {typeof application.courseDetails.campus === 'object' ? application.courseDetails.campus.name : application.courseDetails.campus}
                             </p>
                           </div>
                         )}
@@ -709,7 +709,7 @@ const StudentApplications = () => {
                             <span>Application ID: {application.applicationId}</span>
                           )}
                           {application.courseDetails?.campus && (
-                            <span>Campus: {application.courseDetails.campus}</span>
+                            <span>Campus: {typeof application.courseDetails.campus === 'object' ? application.courseDetails.campus.name : application.courseDetails.campus}</span>
                           )}
                         </div>
                         {application.notes && (

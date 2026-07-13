@@ -511,7 +511,9 @@ const getApplication = async (req, res) => {
         const application = await StudentApplication.findOne({
             applicationId,
             user: req.user._id,
-        }).populate("user", "fullName email phoneNumber");
+        })
+            .populate("user", "fullName email phoneNumber")
+            .populate("courseDetails.campus", "name type location");
 
         if (!application) {
             return res.status(404).json({
@@ -542,6 +544,7 @@ const getUserApplications = async (req, res) => {
         })
             .populate("user", "fullName email phoneNumber")
             .populate("submittedBy", "fullName email role")
+            .populate("courseDetails.campus", "name type location")
             .sort({ createdAt: -1 });
 
         res.status(200).json({
