@@ -19,7 +19,7 @@ const InstituteCourseManagement = () => {
 
     const [collegeFormData, setCollegeFormData] = useState({
         name: '',
-        code: '',
+        feeType: 'Paid',
         isActive: true
     });
 
@@ -100,17 +100,12 @@ const InstituteCourseManagement = () => {
                 : '/api/colleges';
             const method = editingCollege ? 'put' : 'post';
 
-            // Prepare data - only include code if it has a value
+            // Prepare data
             const submitData = {
                 name: collegeFormData.name.trim(),
+                feeType: collegeFormData.feeType,
                 isActive: collegeFormData.isActive
             };
-            // Only include code if it's a non-empty string (not null, undefined, or empty)
-            const codeValue = collegeFormData.code;
-            if (codeValue && typeof codeValue === 'string' && codeValue.trim().length > 0) {
-                submitData.code = codeValue.trim();
-            }
-            // Explicitly don't send code field if empty to avoid null conflicts
 
             const response = await api[method](url, submitData);
             if (response.data.success) {
@@ -121,7 +116,7 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCollegeForm(false);
                 setEditingCollege(null);
-                setCollegeFormData({ name: '', code: '', isActive: true });
+                setCollegeFormData({ name: '', feeType: 'Paid', isActive: true });
                 fetchColleges();
             }
         } catch (error) {
@@ -177,7 +172,7 @@ const InstituteCourseManagement = () => {
         setEditingCollege(college);
         setCollegeFormData({
             name: college.name || '',
-            code: college.code || '',
+            feeType: college.feeType || 'Paid',
             isActive: college.isActive !== false
         });
         setShowCollegeForm(true);
@@ -358,7 +353,7 @@ const InstituteCourseManagement = () => {
                         onClick={() => {
                             setShowCollegeForm(true);
                             setEditingCollege(null);
-                            setCollegeFormData({ name: '', code: '', isActive: true });
+                            setCollegeFormData({ name: '', feeType: 'Paid', isActive: true });
                         }}
                         className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                     >
@@ -406,17 +401,19 @@ const InstituteCourseManagement = () => {
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Institute Code (Optional)
+                                        Fee Type *
                                     </label>
-                                    <input
-                                        type="text"
-                                        value={collegeFormData.code}
-                                        onChange={(e) => setCollegeFormData(prev => ({ ...prev, code: e.target.value }))}
-                                        placeholder="Leave empty if not needed"
+                                    <select
+                                        value={collegeFormData.feeType}
+                                        onChange={(e) => setCollegeFormData(prev => ({ ...prev, feeType: e.target.value }))}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                    />
+                                        required
+                                    >
+                                        <option value="Paid">Paid</option>
+                                        <option value="Free">Free</option>
+                                    </select>
                                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        Unique code for this institute. Leave empty if not needed.
+                                        Select whether this institute offers free or paid courses.
                                     </p>
                                 </div>
                                 <div className="flex items-center">
@@ -697,10 +694,10 @@ const InstituteCourseManagement = () => {
                                                     </span>
                                                 )}
                                             </div>
-                                            {college.code && (
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                                    Code: {college.code}
-                                                </p>
+                                            {college.feeType && (
+                                                <span className={`text-xs px-2 py-0.5 rounded-full inline-block mt-1 ${college.feeType === 'Paid' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'}`}>
+                                                    {college.feeType}
+                                                </span>
                                             )}
                                         </div>
                                         <div className="flex space-x-2 ml-4">

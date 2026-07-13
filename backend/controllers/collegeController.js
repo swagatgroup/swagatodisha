@@ -58,7 +58,7 @@ const getCollege = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/colleges
 // @access  Private (Super Admin, Staff)
 const createCollege = asyncHandler(async (req, res) => {
-    const { name, code, description, isActive } = req.body;
+    const { name, feeType, description, isActive } = req.body;
 
     // Validate name
     if (!name || !name.trim()) {
@@ -81,37 +81,17 @@ const createCollege = asyncHandler(async (req, res) => {
         });
     }
 
-    // Check if college with same code exists (if code is provided)
-    if (code && code.trim()) {
-        const existingCodeCollege = await College.findOne({
-            code: code.trim().toUpperCase()
-        });
 
-        if (existingCodeCollege) {
-            return res.status(400).json({
-                success: false,
-                message: `A college with the code "${code.trim().toUpperCase()}" already exists. Please use a different code.`,
-                field: 'code'
-            });
-        }
-    }
 
     try {
-        // Normalize code - convert empty strings, null, or whitespace to undefined
-        // Only include code field if it has a valid value
         const collegeData = {
             name: name.trim(),
+            feeType: feeType === 'Paid' ? 'Paid' : 'Free',
             description: description ? description.trim() : undefined,
             isActive: isActive !== 'false' && isActive !== false,
             createdBy: req.user._id,
             updatedBy: req.user._id
         };
-
-        // Only add code if it's a valid non-empty string
-        if (code !== undefined && code !== null && code !== '' && typeof code === 'string' && code.trim()) {
-            collegeData.code = code.trim().toUpperCase();
-        }
-        // If code is not provided or is empty, don't include it (allows sparse index to work)
 
         const college = await College.create(collegeData);
 
@@ -136,14 +116,7 @@ const createCollege = asyncHandler(async (req, res) => {
             
             if (duplicateField === 'name') {
                 message = `A college with the name "${duplicateValue}" already exists. Please use a different name.`;
-            } else if (duplicateField === 'code') {
-                // Handle null/undefined values properly
-                if (duplicateValue === null || duplicateValue === undefined || duplicateValue === 'null') {
-                    // This shouldn't happen with sparse index, but handle it gracefully
-                    message = 'A college without a code already exists. Please provide a unique code or contact support.';
-                } else {
-                    message = `A college with the code "${duplicateValue}" already exists. Please use a different code.`;
-                }
+
             } else {
                 message = `A college with this ${duplicateField} already exists. Please use a different value.`;
             }
@@ -172,7 +145,7 @@ const updateCollege = asyncHandler(async (req, res) => {
         });
     }
 
-    const { name, code, description, isActive } = req.body;
+    const { name, feeType, description, isActive } = req.body;
 
     // Check if another college with same name exists
     if (name) {
@@ -196,15 +169,8 @@ const updateCollege = asyncHandler(async (req, res) => {
         updatedBy: req.user._id
     };
 
-    // Handle code update - only include if it has a value, or remove it if explicitly set to empty
-    if (code !== undefined) {
-        if (code === null || code === '' || (typeof code === 'string' && !code.trim())) {
-            // Explicitly unset code field (remove it) - prevents storing as null
-            updateData.$unset = { code: '' };
-        } else if (typeof code === 'string' && code.trim()) {
-            // Set code to the provided value
-            updateData.code = code.trim().toUpperCase();
-        }
+    if (feeType !== undefined) {
+        updateData.feeType = feeType === 'Paid' ? 'Paid' : 'Free';
     }
 
     college = await College.findByIdAndUpdate(
@@ -269,7 +235,7 @@ const getCollegeCourses = asyncHandler(async (req, res) => {
 
     const courses = await CollegeCourse.find(filter)
         .sort({ courseName: 1 })
-        .populate('college', 'name code')
+        .populate('college', name feeType)
         .populate('createdBy', 'fullName email')
         .populate('updatedBy', 'fullName email');
 
@@ -325,7 +291,7 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
         updatedBy: req.user._id
     });
 
-    await course.populate('college', 'name code');
+    await course.populate('college', name feeType);
     await course.populate('createdBy', 'fullName email');
     await course.populate('updatedBy', 'fullName email');
 
@@ -394,7 +360,7 @@ const updateCollegeCourse = asyncHandler(async (req, res) => {
         courseId,
         updateData,
         { new: true, runValidators: true }
-    ).populate('college', 'name code')
+    ).populate('college', name feeType)
         .populate('createdBy', 'fullName email')
         .populate('updatedBy', 'fullName email');
 
@@ -458,7 +424,7 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                 isActive: true
             })
                 .sort({ name: 1 })
-                .select('name code');
+                .select(name feeType);
 
             return {
                 _id: college._id,

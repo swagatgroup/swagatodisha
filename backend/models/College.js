@@ -7,11 +7,10 @@ const collegeSchema = new mongoose.Schema({
         trim: true,
         unique: true
     },
-    code: {
+    feeType: {
         type: String,
-        trim: true,
-        uppercase: true,
-        sparse: true
+        enum: ['Free', 'Paid'],
+        default: 'Free'
     },
     description: {
         type: String,
@@ -43,8 +42,8 @@ const collegeSchema = new mongoose.Schema({
 // Indexes
 collegeSchema.index({ name: 1 });
 collegeSchema.index({ isActive: 1 });
-// Unique sparse index on code - allows multiple null/undefined values
-collegeSchema.index({ code: 1 }, { unique: true, sparse: true });
+// Index on feeType
+collegeSchema.index({ feeType: 1 });
 
 module.exports = mongoose.model('College', collegeSchema);
 
