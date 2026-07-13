@@ -31,6 +31,7 @@ import AboutUsPage from './components/AboutUsPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
 import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
+import ApplicationStatusSearch from './components/ApplicationStatusSearch'
 import SendMessage from './components/SendMessage'
 import TermsAndConditions from './components/legal/TermsAndConditions'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
@@ -115,6 +116,10 @@ const AppContent = () => {
                 <HeroCarousel />
             </section>
 
+            {/* Application Status Search */}
+            <section className="bg-gray-50 border-b border-gray-200">
+                <ApplicationStatusSearch />
+            </section>
 
             {/* 2. Quick Access */}
             <section className="bg-white dark:bg-gray-800">

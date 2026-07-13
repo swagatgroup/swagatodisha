@@ -16,6 +16,61 @@ const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
 
 const router = express.Router();
 
+// @desc    Check student application status (Public)
+// @route   GET /api/students/public/status
+// @access  Public
+router.get('/public/status', async (req, res) => {
+    try {
+        const { query } = req.query;
+        if (!query) {
+            return res.status(400).json({
+                success: false,
+                message: 'Search query (Application ID, Mobile Number, or Aadhar Number) is required'
+            });
+        }
+
+        const trimmedQuery = query.trim();
+
+        // Query the StudentApplication model
+        const StudentApplication = require('../models/StudentApplication');
+        
+        // Find application matching any of the fields
+        const application = await StudentApplication.findOne({
+            $or: [
+                { applicationId: trimmedQuery },
+                { 'personalDetails.aadharNumber': trimmedQuery },
+                { 'contactDetails.primaryPhone': trimmedQuery }
+            ]
+        });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'No student application found matching the provided details'
+            });
+        }
+
+        // Extremely safe data exposure: ONLY return applicationId, status, currentStage, course name, and updated time
+        return res.status(200).json({
+            success: true,
+            data: {
+                applicationId: application.applicationId,
+                status: application.status,
+                currentStage: application.currentStage,
+                course: application.courseDetails?.selectedCourse || 'N/A',
+                updatedAt: application.updatedAt
+            }
+        });
+
+    } catch (error) {
+        console.error('Error checking application status:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error'
+        });
+    }
+});
+
 // @desc    Create new student (Admin only)
 // @route   POST /api/students
 // @access  Private - Admin only

@@ -246,7 +246,7 @@ const ReferralDashboard = () => {
                         {/* Tier 3 */}
                         <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
                             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">3</div>
-                            <h4 className="font-semibold text-gray-800 text-sm">26 - 40 Referrals</h4>
+                            <h4 className="font-semibold text-gray-800 text-sm">26 - 50 Referrals</h4>
                             <p className="text-2xl font-bold text-green-600 mt-2">₹4,000</p>
                             <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                         </div>
@@ -254,7 +254,7 @@ const ReferralDashboard = () => {
                         {/* Tier 4 */}
                         <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
                             <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">4</div>
-                            <h4 className="font-semibold text-gray-800 text-sm">40 - 100 Referrals</h4>
+                            <h4 className="font-semibold text-gray-800 text-sm">51 - 100 Referrals</h4>
                             <p className="text-2xl font-bold text-green-600 mt-2">₹5,000</p>
                             <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                         </div>
