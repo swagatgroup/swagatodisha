@@ -1,5 +1,6 @@
 const Student = require('../models/Student');
 const Payment = require('../models/Payment');
+const StudentApplication = require('../models/StudentApplication');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
 
@@ -145,6 +146,106 @@ const getPaymentHistory = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to get payment history',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Get installments from StudentApplication
+const getInstallments = async (req, res) => {
+    try {
+        const studentId = req.user._id;
+        const application = await StudentApplication.findOne({ user: studentId });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student application not found'
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: {
+                financialStatus: application.financialStatus || {
+                    totalFees: 0,
+                    paidAmount: 0,
+                    dueAmount: 0,
+                    installments: []
+                }
+            }
+        });
+
+    } catch (error) {
+        console.error('Get installments error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to get installments',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+// Upload a manual payment slip as an installment
+const uploadInstallmentSlip = async (req, res) => {
+    try {
+        const studentId = req.user._id;
+        const { amount, paymentMethod, remarks, receiptUrl } = req.body;
+
+        if (!receiptUrl || !amount) {
+            return res.status(400).json({
+                success: false,
+                message: 'Receipt URL and amount are required'
+            });
+        }
+
+        const application = await StudentApplication.findOne({ user: studentId });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student application not found'
+            });
+        }
+
+        if (!application.financialStatus) {
+            application.financialStatus = {
+                totalFees: 0,
+                paidAmount: 0,
+                dueAmount: 0,
+                installments: []
+            };
+        }
+
+        if (!application.financialStatus.installments) {
+            application.financialStatus.installments = [];
+        }
+
+        const nextInstallmentNumber = application.financialStatus.installments.length + 1;
+
+        application.financialStatus.installments.push({
+            installmentNumber: nextInstallmentNumber,
+            amount: Number(amount),
+            date: new Date(),
+            receiptUrl,
+            status: 'PENDING',
+            paymentMethod: paymentMethod || 'Bank Transfer',
+            remarks: remarks || 'Uploaded by student'
+        });
+
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Payment slip uploaded successfully',
+            data: application.financialStatus
+        });
+
+    } catch (error) {
+        console.error('Upload installment slip error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to upload payment slip',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }
@@ -345,5 +446,7 @@ module.exports = {
     getPaymentHistory,
     getPaymentInfo,
     generatePaymentReceipt,
+    getInstallments,
+    uploadInstallmentSlip,
     paymentWebhook
 };

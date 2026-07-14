@@ -10,8 +10,10 @@ import {
   PencilIcon, 
   ArrowPathIcon,
   DocumentTextIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  CurrencyRupeeIcon
 } from "@heroicons/react/24/outline";
+import AgentStudentFinancialsModal from "./AgentStudentFinancialsModal";
 
 const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
   const { user } = useAuth();
@@ -26,6 +28,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
   const [resubmitting, setResubmitting] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewingStudent, setViewingStudent] = useState(null);
+  const [showFinancialsModal, setShowFinancialsModal] = useState(false);
+  const [financialStudent, setFinancialStudent] = useState(null);
   const [colleges, setColleges] = useState([]);
   const [loadingColleges, setLoadingColleges] = useState(false);
   const [filters, setFilters] = useState({
@@ -963,6 +967,20 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           return null;
                         }
                       })()}
+
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setFinancialStudent(student);
+                          setShowFinancialsModal(true);
+                        }}
+                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-md transition-colors"
+                        title="View Financials"
+                      >
+                        <CurrencyRupeeIcon className="h-4 w-4 mr-1" />
+                        Financials
+                      </button>
 
                       {/* View Rejection - Only for REJECTED */}
                       {student.status === 'REJECTED' && (
@@ -2038,6 +2056,18 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Financials Modal */}
+      {showFinancialsModal && (
+        <AgentStudentFinancialsModal
+          student={financialStudent}
+          onClose={() => {
+            setShowFinancialsModal(false);
+            setFinancialStudent(null);
+          }}
+          onUpdate={loadStudents}
+        />
       )}
     </div>
   );

@@ -5,7 +5,9 @@ const {
     generatePaymentQR,
     checkPaymentStatus,
     getPaymentInfo,
-    generatePaymentReceipt
+    generatePaymentReceipt,
+    getInstallments,
+    uploadInstallmentSlip
 } = require('../controllers/paymentController');
 
 const router = express.Router();
@@ -15,6 +17,12 @@ router.use(protect);
 
 // Get payment history
 router.get('/', getPaymentHistory);
+
+// Get installments from StudentApplication
+router.get('/installments', getInstallments);
+
+// Upload a manual payment slip as an installment
+router.post('/installments/upload', uploadInstallmentSlip);
 
 // Get payment info (amount, course fees, etc.)
 router.get('/info', getPaymentInfo);

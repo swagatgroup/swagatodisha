@@ -10,6 +10,90 @@ const Payment = require("../models/Payment");
 // All routes are protected
 router.use(protect);
 
+// Get installments for an agent's student
+router.get("/students/:studentId/installments", async (req, res) => {
+  try {
+    const agentId = req.user._id;
+    const { studentId } = req.params;
+
+    const application = await StudentApplication.findOne({
+      user: studentId,
+      $or: [{ assignedAgent: agentId }, { "referralInfo.referredBy": agentId }]
+    });
+
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Student application not found or unauthorized" });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        financialStatus: application.financialStatus || {
+          totalFees: 0,
+          paidAmount: 0,
+          dueAmount: 0,
+          installments: []
+        }
+      }
+    });
+  } catch (error) {
+    console.error("Get agent student installments error:", error);
+    res.status(500).json({ success: false, message: "Failed to get installments" });
+  }
+});
+
+// Upload installment slip for an agent's student
+router.post("/students/:studentId/installments/upload", async (req, res) => {
+  try {
+    const agentId = req.user._id;
+    const { studentId } = req.params;
+    const { amount, paymentMethod, remarks, receiptUrl } = req.body;
+
+    if (!receiptUrl || !amount) {
+      return res.status(400).json({ success: false, message: "Receipt URL and amount are required" });
+    }
+
+    const application = await StudentApplication.findOne({
+      user: studentId,
+      $or: [{ assignedAgent: agentId }, { "referralInfo.referredBy": agentId }]
+    });
+
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Student application not found or unauthorized" });
+    }
+
+    if (!application.financialStatus) {
+      application.financialStatus = { totalFees: 0, paidAmount: 0, dueAmount: 0, installments: [] };
+    }
+    if (!application.financialStatus.installments) {
+      application.financialStatus.installments = [];
+    }
+
+    const nextInstallmentNumber = application.financialStatus.installments.length + 1;
+
+    application.financialStatus.installments.push({
+      installmentNumber: nextInstallmentNumber,
+      amount: Number(amount),
+      date: new Date(),
+      receiptUrl,
+      status: "PENDING",
+      paymentMethod: paymentMethod || "Bank Transfer",
+      remarks: remarks || "Uploaded by agent"
+    });
+
+    await application.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment slip uploaded successfully",
+      data: application.financialStatus
+    });
+  } catch (error) {
+    console.error("Upload agent student installment error:", error);
+    res.status(500).json({ success: false, message: "Failed to upload slip" });
+  }
+});
+
 // Debug endpoint to check agent data
 router.get("/debug", async (req, res) => {
   try {
