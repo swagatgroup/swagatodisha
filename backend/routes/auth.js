@@ -87,8 +87,13 @@ router.post('/register', async (req, res) => {
         // Create an empty Draft StudentApplication if the user is a student
         if (role === 'student') {
             const StudentApplication = require('../models/StudentApplication');
+            const year = new Date().getFullYear().toString().substr(-2);
+            const random = Math.random().toString().substr(2, 6).toUpperCase();
+            const applicationId = `APP${year}${random}`;
+
             const newApplication = new StudentApplication({
                 user: savedUser._id,
+                applicationId: applicationId,
                 status: 'DRAFT',
                 currentStage: 'REGISTRATION',
                 personalDetails: {
