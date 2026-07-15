@@ -84,6 +84,27 @@ router.post('/register', async (req, res) => {
         const newUser = new User(userData);
         const savedUser = await newUser.save();
 
+        // Create an empty Draft StudentApplication if the user is a student
+        if (role === 'student') {
+            const StudentApplication = require('../models/StudentApplication');
+            const newApplication = new StudentApplication({
+                user: savedUser._id,
+                status: 'DRAFT',
+                currentStage: 'REGISTRATION',
+                personalDetails: {
+                    fullName: savedUser.fullName,
+                    registrationDate: new Date()
+                },
+                contactDetails: {
+                    primaryPhone: savedUser.phoneNumber,
+                    email: savedUser.email
+                },
+                submittedBy: savedUser._id,
+                submitterRole: 'student'
+            });
+            await newApplication.save();
+        }
+
         // Generate JWT token with 7-day expiration
         const token = generateToken(savedUser._id, savedUser.role);
         const refreshToken = generateRefreshToken(savedUser._id);

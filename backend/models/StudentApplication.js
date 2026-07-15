@@ -55,17 +55,17 @@ const studentApplicationSchema = new mongoose.Schema({
         },
         fathersName: {
             type: String,
-            required: true,
+            required: function() { return this.status !== 'DRAFT'; },
             trim: true
         },
         mothersName: {
             type: String,
-            required: true,
+            required: function() { return this.status !== 'DRAFT'; },
             trim: true
         },
         dateOfBirth: {
             type: Date,
-            required: true
+            required: function() { return this.status !== 'DRAFT'; }
         },
         registrationDate: {
             type: Date,
@@ -74,11 +74,11 @@ const studentApplicationSchema = new mongoose.Schema({
         gender: {
             type: String,
             enum: ['Male', 'Female', 'Other', 'Prefer not to say'],
-            required: true
+            required: function() { return this.status !== 'DRAFT'; }
         },
         aadharNumber: {
             type: String,
-            required: true,
+            required: function() { return this.status !== 'DRAFT'; },
             validate: {
                 validator: function (v) { return /^\d{12}$/.test(v); },
                 message: 'Aadhar number must be 12 digits'
@@ -136,13 +136,13 @@ const studentApplicationSchema = new mongoose.Schema({
             trim: true
         },
         permanentAddress: {
-            street: { type: String, required: true },
-            city: { type: String, required: true },
-            district: { type: String, required: true, trim: true },
-            state: { type: String, required: true },
+            street: { type: String, required: function() { return this.status !== 'DRAFT'; } },
+            city: { type: String, required: function() { return this.status !== 'DRAFT'; } },
+            district: { type: String, required: function() { return this.status !== 'DRAFT'; }, trim: true },
+            state: { type: String, required: function() { return this.status !== 'DRAFT'; } },
             pincode: {
                 type: String,
-                required: true,
+                required: function() { return this.status !== 'DRAFT'; },
                 validate: {
                     validator: function (v) { return /^\d{6}$/.test(v); },
                     message: 'Pincode must be 6 digits'
@@ -173,7 +173,7 @@ const studentApplicationSchema = new mongoose.Schema({
     courseDetails: {
         selectedCourse: {
             type: String,
-            required: true
+            required: function() { return this.status !== 'DRAFT'; }
         },
         customCourse: String,
         institutionName: String,
@@ -192,17 +192,17 @@ const studentApplicationSchema = new mongoose.Schema({
     guardianDetails: {
         guardianName: {
             type: String,
-            required: true,
+            required: function() { return this.status !== 'DRAFT'; },
             trim: true
         },
         relationship: {
             type: String,
             enum: ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'],
-            required: true
+            required: function() { return this.status !== 'DRAFT'; }
         },
         guardianPhone: {
             type: String,
-            required: true,
+            required: function() { return this.status !== 'DRAFT'; },
             validate: {
                 validator: function (v) { return /^[6-9]\d{9}$/.test(v); },
                 message: 'Guardian phone must be a valid 10-digit Indian mobile number'
