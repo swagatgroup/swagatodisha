@@ -69,7 +69,7 @@ const ApplicationStatusSearch = () => {
 
         return (
             <div className="mt-10 relative">
-                <div className="overflow-hidden">
+                <div className="py-2 overflow-visible">
                     <div className="flex justify-between relative z-10">
                         {steps.map((step, index) => {
                             const isCompleted = index <= activeStep;
