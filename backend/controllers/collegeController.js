@@ -235,7 +235,7 @@ const getCollegeCourses = asyncHandler(async (req, res) => {
 
     const courses = await CollegeCourse.find(filter)
         .sort({ courseName: 1 })
-        .populate('college', name feeType)
+        .populate('college', 'name feeType')
         .populate('createdBy', 'fullName email')
         .populate('updatedBy', 'fullName email');
 
@@ -291,7 +291,7 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
         updatedBy: req.user._id
     });
 
-    await course.populate('college', name feeType);
+    await course.populate('college', 'name feeType');
     await course.populate('createdBy', 'fullName email');
     await course.populate('updatedBy', 'fullName email');
 
@@ -360,7 +360,7 @@ const updateCollegeCourse = asyncHandler(async (req, res) => {
         courseId,
         updateData,
         { new: true, runValidators: true }
-    ).populate('college', name feeType)
+    ).populate('college', 'name feeType')
         .populate('createdBy', 'fullName email')
         .populate('updatedBy', 'fullName email');
 
@@ -424,7 +424,7 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                 isActive: true
             })
                 .sort({ name: 1 })
-                .select(name feeType);
+                .select('name feeType');
 
             return {
                 _id: college._id,
