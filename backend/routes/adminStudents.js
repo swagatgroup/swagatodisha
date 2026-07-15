@@ -118,7 +118,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             session: sessionParam,
             sortBy = 'createdAt',
             sortOrder = 'desc',
-            paymentStatus
+            paymentStatus,
+            listType = 'main'
         } = req.query;
 
         // Build filter query
@@ -308,6 +309,27 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 // It's a role - filter by role
                 filter.submitterRole = submitterRole;
             }
+        }
+
+        // Filter by listType (Main vs Direct)
+        if (listType === 'direct') {
+            // Direct Students: submitted by student AND (referralType is null or student)
+            andConditions.push({
+                submitterRole: 'student',
+                $or: [
+                    { 'referralInfo.referralType': { $exists: false } },
+                    { 'referralInfo.referralType': null },
+                    { 'referralInfo.referralType': 'student' }
+                ]
+            });
+        } else if (listType === 'main') {
+            // Main Students: submitted by non-student OR referralType is non-student
+            andConditions.push({
+                $or: [
+                    { submitterRole: { $in: ['agent', 'staff', 'super_admin'] } },
+                    { 'referralInfo.referralType': { $in: ['agent', 'staff', 'super_admin'] } }
+                ]
+            });
         }
 
         // Combine all filters: if we have AND conditions, combine them with simple filters

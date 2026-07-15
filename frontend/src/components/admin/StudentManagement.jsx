@@ -12,7 +12,7 @@ import {
     handleApiError
 } from '../../utils/sweetAlert';
 
-const StudentManagement = ({ initialFilter = 'all' }) => {
+const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
     const { selectedSession } = useSession();
     const { user } = useAuth();
     const [students, setStudents] = useState([]);
@@ -166,13 +166,12 @@ const StudentManagement = ({ initialFilter = 'all' }) => {
         
         // Update ref for next comparison
         prevSortByRef.current = sortBy;
-        
         fetchStudents();
         fetchRejectionReasons();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, debouncedSearchTerm, sortBy, selectedSession, filterStatus, filterCourse, 
         filterCategory, filterCollege, filterGender, filterDistrict, filterCity, 
-        filterState, filterStream, filterCampus, filterSubmitterRole]);
+        filterState, filterStream, filterCampus, filterSubmitterRole, listType]);
 
     const fetchRejectionReasons = async () => {
         try {
@@ -460,7 +459,8 @@ const StudentManagement = ({ initialFilter = 'all' }) => {
                 ...(filterState !== 'all' && { state: filterState }),
                 ...(filterStream !== 'all' && { stream: filterStream }),
                 ...(filterCampus !== 'all' && { campus: filterCampus }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
+                listType: listType // Add listType to params
             });
 
             console.log('🔍 Fetching students from:', `/api/admin/students?${params}`);
@@ -1125,10 +1125,12 @@ const StudentManagement = ({ initialFilter = 'all' }) => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        Student Management
+                        {listType === 'direct' ? 'Direct Students' : 'Student Management'}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        View and manage all student applications from agents, students, staff, and super admins
+                        {listType === 'direct' 
+                            ? 'View and manage self-registered students and student-to-student referrals' 
+                            : 'View and manage all verified student applications from agents, staff, and super admins'}
                     </p>
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
