@@ -721,8 +721,8 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 </svg>
                                             </button>
                                             
-                                                {/* Accept Button - Only for SUBMITTED and UNDER_REVIEW */}
-                                                {(student.workflowStatus?.currentStage === 'SUBMITTED' || student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
+                                                {/* Accept Button - Only for UNDER_REVIEW */}
+                                                {(student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'UNDER_REVIEW') && (
                                                     <button
                                                         onClick={() => handleAcceptApplication(student)}
                                                         className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
@@ -734,8 +734,8 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     </button>
                                                 )}
 
-                                                {/* Reject Button - Only for SUBMITTED and UNDER_REVIEW - Hidden for agents */}
-                                                {!isAgent && (student.workflowStatus?.currentStage === 'SUBMITTED' || student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
+                                                {/* Reject Button - Only for UNDER_REVIEW - Hidden for agents */}
+                                                {!isAgent && (student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'UNDER_REVIEW') && (
                                                     <button
                                                         onClick={() => {
                                                             setSelectedStudent(student);

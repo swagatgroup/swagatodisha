@@ -947,6 +947,22 @@ router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req
             });
         }
 
+        // Enforce strict workflow: SUBMITTED -> UNDER_REVIEW -> APPROVED
+        if (status === 'APPROVED' && application.status !== 'UNDER_REVIEW') {
+            return res.status(400).json({
+                success: false,
+                message: 'Application must be reviewed (Status: UNDER_REVIEW) before it can be approved.'
+            });
+        }
+        
+        // Enforce strict workflow: SUBMITTED -> UNDER_REVIEW -> REJECTED
+        if (status === 'REJECTED' && application.status !== 'UNDER_REVIEW') {
+            return res.status(400).json({
+                success: false,
+                message: 'Application must be reviewed (Status: UNDER_REVIEW) before it can be rejected.'
+            });
+        }
+
         // Handle rejection with specific reasons
         if (status === 'REJECTED') {
             if (!rejectionReason) {
