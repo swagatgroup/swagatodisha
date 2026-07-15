@@ -217,7 +217,8 @@ const getStaffDashboard = async (req, res) => {
                     email: staff.email,
                     role: staff.role,
                     department: staff.department,
-                    designation: staff.designation
+                    designation: staff.designation,
+                    referralCode: staff.referralCode
                 },
                 stats: {
                     totalStudents,
@@ -356,7 +357,8 @@ const getSuperAdminDashboard = async (req, res) => {
                     firstName: superAdmin.firstName,
                     lastName: superAdmin.lastName,
                     email: superAdmin.email,
-                    role: superAdmin.role
+                    role: superAdmin.role,
+                    referralCode: superAdmin.referralCode
                 },
                 overview: {
                     totalStudents,

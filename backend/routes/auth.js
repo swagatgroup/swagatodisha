@@ -238,12 +238,14 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Ensure agent has a referral code
-        if (user.role === 'agent' && !user.referralCode) {
+        // Ensure EVERY user has a referral code
+        if (!user.referralCode) {
             try {
                 user.referralCode = user.generateReferralCode();
-                user.isReferralActive = true;
-            } catch (e) { }
+                if (user.role === 'agent') {
+                    user.isReferralActive = true;
+                }
+            } catch (e) { console.error('Error generating referralCode:', e); }
         }
 
         // Update last login WITHOUT validation (and persist possible referral code assignment)
@@ -974,15 +976,17 @@ router.get('/me', async (req, res) => {
             });
         }
 
-        // Ensure agent has a referral code (auto-generate on first fetch)
+        // Ensure EVERY user has a referral code (auto-generate on first fetch)
         let generatedNow = false;
-        if (user.role === 'agent' && !user.referralCode) {
+        if (!user.referralCode) {
             try {
                 user.referralCode = user.generateReferralCode();
-                user.isReferralActive = true;
+                if (user.role === 'agent') {
+                    user.isReferralActive = true;
+                }
                 await user.save({ validateBeforeSave: false });
                 generatedNow = true;
-            } catch (e) { }
+            } catch (e) { console.error('Error generating referralCode:', e); }
         }
 
         // Prepare user data
