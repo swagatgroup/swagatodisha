@@ -37,10 +37,21 @@ const getReferralData = async (req, res) => {
 
         // Ensure user has a referralCode
         let user = await User.findById(userId);
-        
+        if (!user) {
+            const Admin = require('../models/Admin');
+            user = await Admin.findById(userId);
+        }
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
         if (!user.referralCode) {
-            // It will be auto-generated in the pre-save hook
-            await user.save();
+            // It will be auto-generated in the pre-save hook or generate method
+            try {
+                user.referralCode = user.generateReferralCode();
+                await user.save({ validateBeforeSave: false });
+            } catch (e) { console.error('Error auto-generating referral code', e); }
         }
 
         const referralCode = user.referralCode;
@@ -137,10 +148,15 @@ const getReferralStats = async (req, res) => {
             totalReferrals += stat.total;
             totalSuccessful += stat.successful;
             
-            const user = await User.findById(stat._id).select('fullName email');
+            let user = await User.findById(stat._id).select('fullName email firstName lastName');
+            if (!user) {
+                const Admin = require('../models/Admin');
+                user = await Admin.findById(stat._id).select('firstName lastName email');
+            }
             if (user) {
+                const fullName = user.fullName || `${user.firstName} ${user.lastName}`;
                 topReferrers.push({
-                    studentId: user,
+                    studentId: { _id: user._id, fullName, email: user.email },
                     successfulReferrals: stat.successful,
                     totalReferrals: stat.total,
                     totalEarnings: stat.successful * 500
