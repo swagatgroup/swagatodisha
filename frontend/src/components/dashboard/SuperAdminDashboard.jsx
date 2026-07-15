@@ -70,7 +70,7 @@ const SuperAdminDashboard = () => {
     });
     const [showRejectionForm, setShowRejectionForm] = useState(false);
     const [filters, setFilters] = useState({
-        statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
+        statuses: ['DRAFT', 'SUBMITTED', 'REJECTED', 'UNDER_REVIEW', 'APPROVED', 'COMPLETE'],
         courses: ['Bachelor of Technology', 'Bachelor of Commerce', 'Bachelor of Arts', 'Bachelor of Science'],
         submitters: []
     });
@@ -280,7 +280,7 @@ const SuperAdminDashboard = () => {
                 setTotalItems(pagination.totalItems || 0);
                 setItemsPerPage(pagination.itemsPerPage || 20);
                 setFilters(response.data.data.filters || {
-                    statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
+                    statuses: ['DRAFT', 'SUBMITTED', 'REJECTED', 'UNDER_REVIEW', 'APPROVED', 'COMPLETE'],
                     courses: [],
                     categories: [],
                     submitters: []
@@ -619,9 +619,9 @@ const SuperAdminDashboard = () => {
                                 chartData={[
                                     { label: 'Draft', value: stats.draftApplications, color: '#9ca3af', filterKey: 'DRAFT' },
                                     { label: 'Submitted', value: stats.submittedApplications, color: '#facc15', filterKey: 'SUBMITTED' },
+                                    { label: 'Rejected', value: stats.rejectedApplications, color: '#ef4444', filterKey: 'REJECTED' },
                                     { label: 'Under Review', value: stats.underReviewApplications, color: '#f97316', filterKey: 'UNDER_REVIEW' },
                                     { label: 'Approved', value: stats.approvedApplications, color: '#22c55e', filterKey: 'APPROVED' },
-                                    { label: 'Rejected', value: stats.rejectedApplications, color: '#ef4444', filterKey: 'REJECTED' },
                                     { label: 'Completed', value: stats.completeApplications, color: '#14b8a6', filterKey: 'COMPLETE' },
                                 ]}
                                 onSectionClick={handleStatClick}
@@ -657,6 +657,19 @@ const SuperAdminDashboard = () => {
                             </button>
 
                             <button
+                                onClick={() => handleStatClick('REJECTED')}
+                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'REJECTED'
+                                    ? 'bg-red-600 text-white shadow-lg'
+                                    : 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-gray-600'
+                                    }`}
+                            >
+                                <div className="flex flex-col items-center">
+                                    <span className="text-xs font-medium mb-0.5">Rejected</span>
+                                    <span className="text-base font-semibold">{stats.rejectedApplications || 0}</span>
+                                </div>
+                            </button>
+
+                            <button
                                 onClick={() => handleStatClick('UNDER_REVIEW')}
                                 className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'UNDER_REVIEW'
                                     ? 'bg-yellow-600 text-white shadow-lg'
@@ -679,19 +692,6 @@ const SuperAdminDashboard = () => {
                                 <div className="flex flex-col items-center">
                                     <span className="text-xs font-medium mb-0.5">Approved</span>
                                     <span className="text-base font-semibold">{stats.approvedApplications || 0}</span>
-                                </div>
-                            </button>
-
-                            <button
-                                onClick={() => handleStatClick('REJECTED')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'REJECTED'
-                                    ? 'bg-red-600 text-white shadow-lg'
-                                    : 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <span className="text-xs font-medium mb-0.5">Rejected</span>
-                                    <span className="text-base font-semibold">{stats.rejectedApplications || 0}</span>
                                 </div>
                             </button>
 
