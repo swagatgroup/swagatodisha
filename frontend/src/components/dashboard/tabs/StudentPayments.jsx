@@ -25,6 +25,14 @@ const StudentPayments = () => {
     const [receiptFile, setReceiptFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
+    const [showUpdateModal, setShowUpdateModal] = useState(false);
+    const [selectedInstallment, setSelectedInstallment] = useState(null);
+    const [updateData, setUpdateData] = useState({
+        amount: '',
+        paymentMethod: '',
+        remarks: ''
+    });
+
     useEffect(() => {
         fetchInstallments();
     }, []);
@@ -99,6 +107,54 @@ const StudentPayments = () => {
         } catch (error) {
             console.error('Error uploading payment slip:', error);
             showError(error.response?.data?.message || 'Failed to upload payment slip');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleUpdateSlip = async (e) => {
+        e.preventDefault();
+        if (!updateData.amount) {
+            showError('Please enter the payment amount');
+            return;
+        }
+
+        try {
+            setUploading(true);
+            let receiptUrl = selectedInstallment.receiptUrl;
+            
+            // 1. Upload new file if provided
+            if (receiptFile) {
+                const formDataFile = new FormData();
+                formDataFile.append('file', receiptFile);
+                
+                const uploadRes = await api.post('/api/files/upload', formDataFile, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                if (!uploadRes.data?.success) {
+                    throw new Error('File upload failed');
+                }
+                receiptUrl = uploadRes.data.data.url;
+            }
+
+            // 2. Submit installment update
+            await api.put(`/api/students/payments/installments/${selectedInstallment._id}`, {
+                amount: updateData.amount,
+                paymentMethod: updateData.paymentMethod,
+                remarks: updateData.remarks,
+                receiptUrl
+            });
+
+            showSuccess('Payment slip updated successfully!');
+            setShowUpdateModal(false);
+            setUpdateData({ amount: '', paymentMethod: '', remarks: '' });
+            setReceiptFile(null);
+            setSelectedInstallment(null);
+            fetchInstallments();
+        } catch (error) {
+            console.error('Error updating payment slip:', error);
+            showError(error.response?.data?.message || 'Failed to update payment slip');
         } finally {
             setUploading(false);
         }
@@ -252,6 +308,23 @@ const StudentPayments = () => {
                                                 View Slip
                                             </a>
                                         )}
+                                        {inst.status !== 'VERIFIED' && (
+                                            <button 
+                                                onClick={() => {
+                                                    setSelectedInstallment(inst);
+                                                    setUpdateData({
+                                                        amount: inst.amount || '',
+                                                        paymentMethod: inst.paymentMethod || 'Bank Transfer',
+                                                        remarks: inst.remarks || ''
+                                                    });
+                                                    setReceiptFile(null);
+                                                    setShowUpdateModal(true);
+                                                }}
+                                                className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors"
+                                            >
+                                                Update
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </motion.div>
@@ -269,6 +342,91 @@ const StudentPayments = () => {
                     )}
                 </div>
             </motion.div>
+
+            {/* Update Slip Modal */}
+            {showUpdateModal && selectedInstallment && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                        <div className="p-4 border-b flex items-center justify-between">
+                            <h3 className="text-xl font-semibold text-gray-900">Update Payment Slip</h3>
+                            <button onClick={() => setShowUpdateModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        <form onSubmit={handleUpdateSlip} className="p-4 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Amount Paid (₹)*</label>
+                                <input
+                                    type="number"
+                                    required
+                                    min="1"
+                                    value={updateData.amount}
+                                    onChange={(e) => setUpdateData({ ...updateData, amount: e.target.value })}
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    placeholder="Enter amount"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method*</label>
+                                <select
+                                    value={updateData.paymentMethod}
+                                    onChange={(e) => setUpdateData({ ...updateData, paymentMethod: e.target.value })}
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                >
+                                    <option value="Bank Transfer">Bank Transfer / NEFT / RTGS</option>
+                                    <option value="UPI">UPI</option>
+                                    <option value="Cheque">Cheque</option>
+                                    <option value="Cash">Cash Deposit</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Upload New Receipt/Slip (Optional)</label>
+                                <input
+                                    type="file"
+                                    accept="image/*,.pdf"
+                                    onChange={handleFileChange}
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                />
+                                <p className="text-xs text-gray-500 mt-1">Leave blank to keep existing receipt.</p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks/Notes</label>
+                                <textarea
+                                    value={updateData.remarks}
+                                    onChange={(e) => setUpdateData({ ...updateData, remarks: e.target.value })}
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    placeholder="Any transaction IDs or notes..."
+                                    rows="2"
+                                ></textarea>
+                            </div>
+                            <div className="pt-4 flex justify-end gap-3 border-t">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowUpdateModal(false)}
+                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={uploading}
+                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center"
+                                >
+                                    {uploading ? (
+                                        <>
+                                            <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Updating...
+                                        </>
+                                    ) : 'Update Slip'}
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </div>
+            )}
 
             {/* Upload Slip Modal */}
             {showUploadModal && (

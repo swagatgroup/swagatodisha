@@ -94,6 +94,58 @@ router.post("/students/:studentId/installments/upload", async (req, res) => {
   }
 });
 
+// Update a manual payment slip as an installment for agent's student
+router.put("/students/:studentId/installments/:installmentId", async (req, res) => {
+  try {
+    const agentId = req.user._id;
+    const { studentId, installmentId } = req.params;
+    const { amount, paymentMethod, remarks, receiptUrl } = req.body;
+
+    const application = await StudentApplication.findOne({
+      user: studentId,
+      $or: [{ assignedAgent: agentId }, { "referralInfo.referredBy": agentId }]
+    });
+
+    if (!application) {
+      return res.status(404).json({ success: false, message: "Student application not found or unauthorized" });
+    }
+
+    if (!application.financialStatus || !application.financialStatus.installments) {
+      return res.status(404).json({ success: false, message: "No installments found" });
+    }
+
+    const installment = application.financialStatus.installments.id(installmentId);
+    
+    if (!installment) {
+      return res.status(404).json({ success: false, message: "Installment not found" });
+    }
+
+    if (installment.status === 'VERIFIED') {
+      return res.status(400).json({ success: false, message: "Cannot update a verified payment slip" });
+    }
+
+    if (amount !== undefined) installment.amount = Number(amount);
+    if (paymentMethod !== undefined) installment.paymentMethod = paymentMethod;
+    if (remarks !== undefined) installment.remarks = remarks;
+    if (receiptUrl !== undefined) installment.receiptUrl = receiptUrl;
+    
+    installment.status = "PENDING";
+    installment.date = new Date();
+
+    await application.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Payment slip updated successfully",
+      data: application.financialStatus
+    });
+  } catch (error) {
+    console.error("Update agent student installment error:", error);
+    res.status(500).json({ success: false, message: "Failed to update slip" });
+  }
+});
+
+
 // Debug endpoint to check agent data
 router.get("/debug", async (req, res) => {
   try {

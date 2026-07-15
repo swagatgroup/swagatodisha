@@ -893,6 +893,23 @@ router.put('/:id/financial', protect, authorize('staff', 'super_admin'), async (
         if (receiptUrl !== undefined) application.financialStatus.receiptUrl = receiptUrl;
         
         if (installments && Array.isArray(installments)) {
+            // Check for deleted verified installments
+            if (application.financialStatus && application.financialStatus.installments) {
+                const oldInstallments = application.financialStatus.installments;
+                const newIds = installments.map(i => i._id?.toString()).filter(Boolean);
+                
+                for (const oldInst of oldInstallments) {
+                    if (oldInst._id && !newIds.includes(oldInst._id.toString())) {
+                        // This installment was deleted
+                        if (oldInst.status === 'VERIFIED' && req.user.role !== 'super_admin') {
+                            return res.status(403).json({
+                                success: false,
+                                message: 'Only Super Admin can delete an approved payment slip.'
+                            });
+                        }
+                    }
+                }
+            }
             application.financialStatus.installments = installments;
         }
 

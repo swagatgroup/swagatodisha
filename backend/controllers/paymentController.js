@@ -251,6 +251,71 @@ const uploadInstallmentSlip = async (req, res) => {
     }
 };
 
+// Update a manual payment slip as an installment
+const updateInstallmentSlip = async (req, res) => {
+    try {
+        const studentId = req.user._id;
+        const { installmentId } = req.params;
+        const { amount, paymentMethod, remarks, receiptUrl } = req.body;
+
+        const application = await StudentApplication.findOne({ user: studentId });
+
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Student application not found'
+            });
+        }
+
+        if (!application.financialStatus || !application.financialStatus.installments) {
+            return res.status(404).json({
+                success: false,
+                message: 'No installments found'
+            });
+        }
+
+        const installment = application.financialStatus.installments.id(installmentId);
+        
+        if (!installment) {
+            return res.status(404).json({
+                success: false,
+                message: 'Installment not found'
+            });
+        }
+
+        if (installment.status === 'VERIFIED') {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot update a verified payment slip'
+            });
+        }
+
+        if (amount !== undefined) installment.amount = Number(amount);
+        if (paymentMethod !== undefined) installment.paymentMethod = paymentMethod;
+        if (remarks !== undefined) installment.remarks = remarks;
+        if (receiptUrl !== undefined) installment.receiptUrl = receiptUrl;
+        
+        installment.status = 'PENDING';
+        installment.date = new Date();
+
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Payment slip updated successfully',
+            data: application.financialStatus
+        });
+
+    } catch (error) {
+        console.error('Update installment slip error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update payment slip',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 // Get payment info
 const getPaymentInfo = async (req, res) => {
     try {
@@ -448,5 +513,6 @@ module.exports = {
     generatePaymentReceipt,
     getInstallments,
     uploadInstallmentSlip,
+    updateInstallmentSlip,
     paymentWebhook
 };

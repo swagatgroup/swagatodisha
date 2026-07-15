@@ -21,6 +21,14 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
     const [receiptFile, setReceiptFile] = useState(null);
     const [uploading, setUploading] = useState(false);
 
+    const [showUpdateForm, setShowUpdateForm] = useState(false);
+    const [selectedInstallment, setSelectedInstallment] = useState(null);
+    const [updateData, setUpdateData] = useState({
+        amount: '',
+        paymentMethod: 'Bank Transfer',
+        remarks: ''
+    });
+
     useEffect(() => {
         if (student) {
             fetchInstallments();
@@ -96,6 +104,50 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
         } catch (error) {
             console.error('Error uploading payment slip:', error);
             showError(error.response?.data?.message || 'Failed to upload payment slip');
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    const handleUpdateSlip = async (e) => {
+        e.preventDefault();
+        
+        try {
+            setUploading(true);
+            let receiptUrl = selectedInstallment.receiptUrl;
+
+            // 1. Upload new file if provided
+            if (receiptFile) {
+                const formDataFile = new FormData();
+                formDataFile.append('file', receiptFile);
+                
+                const uploadRes = await api.post('/api/files/upload', formDataFile, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+
+                if (!uploadRes.data?.success) {
+                    throw new Error('File upload failed');
+                }
+                receiptUrl = uploadRes.data.data.url;
+            }
+
+            // 2. Submit installment update
+            await api.put(`/api/agents/students/${student._id}/installments/${selectedInstallment._id}`, {
+                amount: updateData.amount,
+                paymentMethod: updateData.paymentMethod,
+                remarks: updateData.remarks,
+                receiptUrl
+            });
+
+            showSuccess('Payment slip updated successfully!');
+            setShowUpdateForm(false);
+            setUpdateData({ amount: '', paymentMethod: 'Bank Transfer', remarks: '' });
+            setReceiptFile(null);
+            setSelectedInstallment(null);
+            fetchInstallments();
+        } catch (error) {
+            console.error('Error updating payment slip:', error);
+            showError('Failed to update payment slip');
         } finally {
             setUploading(false);
         }
@@ -253,6 +305,76 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                         </div>
                                     )}
 
+                                    {/* Update Form */}
+                                    {showUpdateForm && selectedInstallment && (
+                                        <div className="p-4 bg-indigo-50 border-b border-indigo-100">
+                                            <div className="flex justify-between items-center mb-4">
+                                                <h4 className="font-semibold text-indigo-900">Update Installment #{selectedInstallment.installmentNumber}</h4>
+                                                <button onClick={() => setShowUpdateForm(false)} className="text-gray-500 hover:text-gray-700 text-sm">Cancel</button>
+                                            </div>
+                                            <form onSubmit={handleUpdateSlip} className="space-y-4">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Amount Paid (₹)*</label>
+                                                        <input
+                                                            type="number"
+                                                            required
+                                                            min="1"
+                                                            value={updateData.amount}
+                                                            onChange={(e) => setUpdateData({ ...updateData, amount: e.target.value })}
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method*</label>
+                                                        <select
+                                                            value={updateData.paymentMethod}
+                                                            onChange={(e) => setUpdateData({ ...updateData, paymentMethod: e.target.value })}
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                        >
+                                                            <option value="Bank Transfer">Bank Transfer / NEFT</option>
+                                                            <option value="UPI">UPI</option>
+                                                            <option value="Cheque">Cheque</option>
+                                                            <option value="Cash">Cash Deposit</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload New Receipt/Slip (Optional)</label>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*,.pdf"
+                                                        onChange={handleFileChange}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-sm"
+                                                    />
+                                                    <p className="text-xs text-gray-500 mt-1">Leave blank to keep existing receipt.</p>
+                                                </div>
+                                                
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">Remarks</label>
+                                                    <textarea
+                                                        value={updateData.remarks}
+                                                        onChange={(e) => setUpdateData({ ...updateData, remarks: e.target.value })}
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                        rows="2"
+                                                        placeholder="Transaction ID or notes..."
+                                                    ></textarea>
+                                                </div>
+
+                                                <div className="flex justify-end gap-2">
+                                                    <button
+                                                        type="submit"
+                                                        disabled={uploading}
+                                                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+                                                    >
+                                                        {uploading ? 'Updating...' : 'Update Slip'}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    )}
+
                                     <div className="divide-y divide-gray-200">
                                         {financialStatus.installments && financialStatus.installments.length > 0 ? (
                                             financialStatus.installments.map((inst, index) => (
@@ -273,16 +395,36 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                             {inst.remarks && <p className="italic text-gray-600 mt-1">{inst.remarks}</p>}
                                                         </div>
                                                     </div>
-                                                    {inst.receiptUrl && (
-                                                        <a 
-                                                            href={inst.receiptUrl} 
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                                                        >
-                                                            View Slip
-                                                        </a>
-                                                    )}
+                                                    <div className="flex gap-2 flex-col sm:flex-row">
+                                                        {inst.receiptUrl && (
+                                                            <a 
+                                                                href={inst.receiptUrl} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                                                            >
+                                                                View Slip
+                                                            </a>
+                                                        )}
+                                                        {inst.status !== 'VERIFIED' && (
+                                                            <button
+                                                                onClick={() => {
+                                                                    setSelectedInstallment(inst);
+                                                                    setUpdateData({
+                                                                        amount: inst.amount || '',
+                                                                        paymentMethod: inst.paymentMethod || 'Bank Transfer',
+                                                                        remarks: inst.remarks || ''
+                                                                    });
+                                                                    setReceiptFile(null);
+                                                                    setShowUpdateForm(true);
+                                                                    setShowUploadForm(false);
+                                                                }}
+                                                                className="inline-flex items-center justify-center px-3 py-1.5 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+                                                            >
+                                                                Update
+                                                            </button>
+                                                        )}
+                                                    </div>
                                                 </div>
                                             ))
                                         ) : (

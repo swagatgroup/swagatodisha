@@ -7,7 +7,8 @@ const {
     getPaymentInfo,
     generatePaymentReceipt,
     getInstallments,
-    uploadInstallmentSlip
+    uploadInstallmentSlip,
+    updateInstallmentSlip
 } = require('../controllers/paymentController');
 
 const router = express.Router();
@@ -23,6 +24,9 @@ router.get('/installments', getInstallments);
 
 // Upload a manual payment slip as an installment
 router.post('/installments/upload', uploadInstallmentSlip);
+
+// Update an existing payment slip
+router.put('/installments/:installmentId', updateInstallmentSlip);
 
 // Get payment info (amount, course fees, etc.)
 router.get('/info', getPaymentInfo);
