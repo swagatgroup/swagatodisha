@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContextSimple';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import Swal from 'sweetalert2';
 
@@ -21,7 +21,17 @@ const Register = () => {
     const { register } = useAuth();
     const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
+    const location = useLocation();
     const dropdownRef = useRef(null);
+
+    // Capture referral code from URL
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const refCode = params.get('ref');
+        if (refCode) {
+            localStorage.setItem('pendingReferralCode', refCode);
+        }
+    }, [location]);
 
     // Course list removed
 

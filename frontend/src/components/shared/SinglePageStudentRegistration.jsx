@@ -144,6 +144,7 @@ const SinglePageStudentRegistration = ({
         },
         documents: [],
         termsAccepted: false,
+        referralCode: "",
     });
 
     // Fetch colleges on mount
@@ -231,10 +232,15 @@ const SinglePageStudentRegistration = ({
                             guardianDetails: existingData.guardianDetails || formData.guardianDetails,
                             documents: existingData.documents || [],
                             termsAccepted: existingData.termsAccepted || false,
+                            referralCode: existingData.referralInfo?.referralCode || localStorage.getItem('pendingReferralCode') || "",
                         });
                     }
                 } catch (error) {
                     console.log("No existing application found");
+                    const pendingCode = localStorage.getItem('pendingReferralCode');
+                    if (pendingCode) {
+                        setFormData(prev => ({ ...prev, referralCode: pendingCode }));
+                    }
                 }
             }
         };
@@ -814,6 +820,7 @@ const SinglePageStudentRegistration = ({
             });
 
             if (submitRes.data?.success) {
+                localStorage.removeItem('pendingReferralCode');
                 showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
                 if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
                 setTimeout(() => navigate('/dashboard'), 1500);
@@ -1683,6 +1690,41 @@ const SinglePageStudentRegistration = ({
                     </div>
                 )}
             </motion.div>
+
+            {formData.referralCode && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.25 }}
+                    className="space-y-6"
+                >
+                    <div className="bg-gray-50/50 dark:bg-gray-800/30 p-6 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                                <i className="fa-solid fa-gift text-indigo-600 dark:text-indigo-400"></i>
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                    Referral Code Applied
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    A referral code has been linked to this application.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <input
+                                    type="text"
+                                    value={formData.referralCode}
+                                    disabled
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-mono tracking-widest cursor-not-allowed"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Guardian Details Section */}
             <motion.div
