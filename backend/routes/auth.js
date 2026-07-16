@@ -150,9 +150,12 @@ router.post('/register', async (req, res) => {
 
         // MongoDB duplicate key error
         if (error.code === 11000) {
+            const duplicateField = Object.keys(error.keyValue || {})[0] || 'unknown';
+            console.error('E11000 duplicate key on field:', duplicateField, 'value:', error.keyValue);
             return res.status(409).json({
                 message: 'User already exists with this email or phone number',
-                type: 'DuplicateKey'
+                type: 'DuplicateKey',
+                _debug_field: duplicateField
             });
         }
 
