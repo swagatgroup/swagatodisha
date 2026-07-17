@@ -211,7 +211,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // ============================================
             // BOXED FIELD HELPER
             // ============================================
-            const drawBoxedField = (label, value, x, y, w, h = 8) => {
+            const drawBoxedField = (label, value, x, y, w, h = 10) => {
                 pdf.setFont('times', 'normal');
                 pdf.setFontSize(8);
                 pdf.setTextColor(0, 0, 0);
@@ -229,10 +229,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 
                 // Truncate if too long, or split
                 const textStr = (value || 'N/A').toString();
-                let textY = y + 5.5;
+                let textY = y + 7;
                 const splitText = pdf.splitTextToSize(textStr, w - 4);
                 
-                if (splitText.length > 1 && h < 10) {
+                if (splitText.length > 1 && h < 12) {
                     pdf.setFontSize(7);
                     pdf.text(splitText[0], x + 2, textY - 1);
                 } else {
@@ -257,14 +257,14 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 const halfWidth = (leftWidth - 5) / 2;
                 
                 drawBoxedField('Course', pdfContent.courseDetails.selectedCourse || pdfContent.courseDetails.courseName, leftColX, currentY, leftWidth);
-                currentY += 12;
+                currentY += 16;
                 
                 drawBoxedField('College', collegeName, leftColX, currentY, leftWidth);
-                currentY += 12;
+                currentY += 16;
                 
                 drawBoxedField('Stream', pdfContent.courseDetails.stream, leftColX, currentY, halfWidth);
                 drawBoxedField('Session', "2024-2025", leftColX + halfWidth + 5, currentY, halfWidth);
-                currentY += 12;
+                currentY += 16;
                 
                 // Make sure we clear the photo
                 if (currentY < photoY + photoBoxHeight + 5) {
@@ -283,43 +283,43 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             
             drawBoxedField('First Name', pdfContent.personalDetails.fullName, leftColX, currentY, halfW);
             drawBoxedField('Father/Husband Name', pdfContent.personalDetails.fathersName, leftColX + halfW + 5, currentY, halfW);
-            currentY += 12;
+            currentY += 16;
             
             drawBoxedField('Aadhar Card No.', pdfContent.personalDetails.aadharNumber, leftColX, currentY, thirdW);
             drawBoxedField('Gender', pdfContent.personalDetails.gender, leftColX + thirdW + 5, currentY, thirdW);
             drawBoxedField('Birth Date', pdfContent.personalDetails.dateOfBirth, leftColX + (thirdW * 2) + 10, currentY, thirdW);
-            currentY += 12;
+            currentY += 16;
             
             drawBoxedField('Category', pdfContent.personalDetails.category || pdfContent.personalDetails.status, leftColX, currentY, thirdW);
             drawBoxedField('Email Id', pdfContent.contactDetails.email, leftColX + thirdW + 5, currentY, thirdW * 2 + 5);
-            currentY += 12;
+            currentY += 16;
             
             drawBoxedField('Primary Phone', pdfContent.contactDetails.primaryPhone, leftColX, currentY, thirdW);
             drawBoxedField('WhatsApp Number', pdfContent.contactDetails.whatsappNumber, leftColX + thirdW + 5, currentY, thirdW);
             drawBoxedField('Guardian Phone', pdfContent.guardianDetails.guardianPhone, leftColX + (thirdW * 2) + 10, currentY, thirdW);
-            currentY += 15;
+            currentY += 24;
             
             // Address Blocks
             pdf.setFont('times', 'bold');
             pdf.setFontSize(10);
             pdf.setTextColor(0,0,0);
             pdf.text('Correspondence Address:', leftColX, currentY);
-            currentY += 4;
+            currentY += 5;
             
             drawBoxedField('Address Line 1', pdfContent.contactDetails.permanentAddress?.street, leftColX, currentY, halfW + thirdW);
             drawBoxedField('State', pdfContent.contactDetails.permanentAddress?.state, leftColX + halfW + thirdW + 5, currentY, fullWidth - (halfW + thirdW + 5));
-            currentY += 12;
+            currentY += 16;
             
             drawBoxedField('City / District', (pdfContent.contactDetails.permanentAddress?.city || '') + ' / ' + (pdfContent.contactDetails.permanentAddress?.district || ''), leftColX, currentY, halfW);
             drawBoxedField('Pin Code', pdfContent.contactDetails.permanentAddress?.pincode, leftColX + halfW + 5, currentY, thirdW);
             drawBoxedField('Country', 'India', leftColX + halfW + thirdW + 10, currentY, fullWidth - (halfW + thirdW + 10));
-            currentY += 15;
+            currentY += 24;
             
             // Previous Qualifications Table
             pdf.setFont('times', 'bold');
             pdf.setFontSize(10);
             pdf.text('Previous Qualification / Documents:', leftColX, currentY);
-            currentY += 4;
+            currentY += 5;
             
             const docs = Object.entries(pdfContent.documents || {});
             if (docs.length > 0) {
@@ -341,39 +341,104 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 docs.forEach(([k, docItem], i) => {
                     if (i > 0 && i % 4 === 0) {
                         docX = leftColX;
-                        docY += 12;
+                        docY += 16;
                     }
                     drawBoxedField('Uploaded Document', documentNames[k] || k.replace(/_/g, ' '), docX, docY, docBoxW);
                     docX += docBoxW + 5;
                 });
-                currentY = docY + 16;
+                currentY = docY + 24;
             } else {
                 pdf.setFont('times', 'normal');
                 pdf.setFontSize(9);
-                pdf.text('No documents uploaded', leftColX, currentY + 4);
-                currentY += 12;
+                pdf.text('No documents uploaded', leftColX, currentY + 5);
+                currentY += 16;
             }
 
-            // Declaration box at bottom
-            currentY = pageHeight - 55;
+            // ============================================
+            // PAGE 2: TERMS, CONDITIONS, & SIGNATURES
+            // ============================================
+            pdf.addPage();
+            drawPageBorders(pdf);
             
+            let page2Y = 25;
+            
+            // Page Title
+            pdf.setTextColor(25, 42, 86);
             pdf.setFont('times', 'bold');
-            pdf.setFontSize(14);
-            pdf.text('☑', leftColX, currentY); // Checkbox
+            pdf.setFontSize(16);
+            pdf.text('TERMS AND CONDITIONS', pageWidth / 2, page2Y, { align: 'center' });
             
+            const p2TitleWidth = pdf.getTextWidth('TERMS AND CONDITIONS');
+            pdf.setLineWidth(0.5);
+            pdf.line((pageWidth - p2TitleWidth)/2, page2Y + 1.5, (pageWidth + p2TitleWidth)/2, page2Y + 1.5);
+            
+            page2Y += 15;
+            
+            // Terms Content
+            pdf.setTextColor(0, 0, 0);
+            pdf.setFontSize(10);
+            pdf.setFont('times', 'bold');
+            
+            const terms = [
+                { title: '1. Application Submission:', body: 'I hereby declare that all information provided in this application is true and correct to the best of my knowledge and belief.' },
+                { title: '2. Document Verification:', body: 'I understand that all submitted documents will be verified and any false information or tampered documents may result in immediate rejection of the application and cancellation of admission at any stage.' },
+                { title: '3. Fee Payment:', body: 'I agree to pay all applicable fees as per the institution\'s fee structure and payment schedule. I understand that failure to pay fees on time may lead to penalties or suspension of my enrollment.' },
+                { title: '4. Academic Performance:', body: 'I understand that admission is strictly subject to meeting the minimum academic requirements, availability of seats, and approval from the respective university or board.' },
+                { title: '5. Code of Conduct:', body: 'I agree to abide by the institution\'s rules, regulations, and code of conduct during my entire tenure. Any disciplinary violation may result in strict action including rustication.' },
+                { title: '6. Data Privacy:', body: 'I consent to the collection, processing, and storage of my personal data for academic, administrative, and compliance purposes by Swagat Odisha and affiliated institutions.' },
+                { title: '7. Refund Policy:', body: 'I have read and understand the institution\'s refund policy and agree to the terms and conditions regarding fee refunds in case of cancellation or withdrawal.' },
+                { title: '8. Medical Fitness:', body: 'I declare that I am medically fit to pursue the selected course and will provide necessary medical certificates if required by the college authorities.' },
+                { title: '9. Dispute Resolution:', body: 'Any disputes arising out of the admission process or during the course of study will be subject to the exclusive jurisdiction of the courts in Odisha.' }
+            ];
+            
+            terms.forEach((term, idx) => {
+                // Title
+                pdf.setFont('times', 'bold');
+                pdf.text(term.title, leftColX, page2Y);
+                
+                // Body
+                pdf.setFont('times', 'normal');
+                const splitBody = pdf.splitTextToSize(term.body, fullWidth - pdf.getTextWidth(term.title) - 2);
+                pdf.text(splitBody, leftColX + pdf.getTextWidth(term.title) + 2, page2Y);
+                
+                // Calculate height dynamically based on lines
+                const lines = splitBody.length;
+                page2Y += (lines * 5) + 12; // Adequate vertical spacing between terms to fill the page
+            });
+            
+            // Declaration Text (to fill extra space before signatures)
+            page2Y += 10;
+            pdf.setFont('times', 'bold');
+            pdf.setFontSize(12);
+            pdf.text('DECLARATION', leftColX, page2Y);
+            page2Y += 6;
+            
+            pdf.setFontSize(10);
             pdf.setFont('times', 'normal');
-            pdf.setFontSize(8);
-            const declarationText = "I hereby declared that information provided above is true and complete to the best of my knowledge and belief and my admission may be cancelled at any state if it is found to be incorrect. I also undertake to abide by all the rules and regulations of the university from time to time.";
-            const decLines = pdf.splitTextToSize(declarationText, fullWidth - 10);
-            pdf.text(decLines, leftColX + 5, currentY - 2);
+            const declarationText = "I have carefully read and understood all the above terms and conditions. I hereby declare that the information provided in this admission form is true and complete to the best of my knowledge and belief. My admission may be cancelled at any stage if it is found to be incorrect. I also undertake to abide by all the rules and regulations of the university and college from time to time.";
+            const decLines = pdf.splitTextToSize(declarationText, fullWidth);
+            pdf.text(decLines, leftColX, page2Y);
             
-            // Signatures
-            currentY = pageHeight - 25;
+            // Signatures at the bottom
+            const bottomY = pageHeight - 35;
+            
             pdf.setFont('times', 'bold');
             pdf.setFontSize(10);
-            pdf.text("Student's Signature", pageWidth - 15, currentY, { align: 'right' });
-
-            const totalPagesCount = Math.min(pdf.internal.getNumberOfPages(), 2);
+            
+            // Left Signature
+            pdf.text("Signature of Parent / Guardian", leftColX + 20, bottomY, { align: 'center' });
+            pdf.setLineWidth(0.3);
+            pdf.setDrawColor(100, 100, 100);
+            pdf.line(leftColX, bottomY - 5, leftColX + 40, bottomY - 5);
+            
+            // Center Date
+            pdf.text("Date: ___ / ___ / 20__", pageWidth / 2, bottomY, { align: 'center' });
+            
+            // Right Signature
+            pdf.text("Signature of Applicant", pageWidth - leftColX - 20, bottomY, { align: 'center' });
+            pdf.line(pageWidth - leftColX - 40, bottomY - 5, pageWidth - leftColX, bottomY - 5);
+            
+            const totalPagesCount = pdf.internal.getNumberOfPages();
             
             // Remove any extra pages beyond 2
             while (pdf.internal.getNumberOfPages() > 2) {
