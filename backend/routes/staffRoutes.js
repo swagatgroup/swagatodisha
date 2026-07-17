@@ -267,6 +267,30 @@ router.get("/processing-stats", async (req, res) => {
     });
     console.log('🔍 Under Review:', underReviewInSession);
 
+    // ── Direct Students (submitterRole: 'student') breakdown ──
+    const [
+      directTotal, directDraft, directSubmitted, directUnderReview,
+      directApproved, directRejected, directComplete,
+      ourTotal, ourDraft, ourSubmitted, ourUnderReview,
+      ourApproved, ourRejected, ourComplete
+    ] = await Promise.all([
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: 'student' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: 'student', status: 'DRAFT' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: 'student', status: 'SUBMITTED' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: 'student', status: 'UNDER_REVIEW' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: 'student', status: 'APPROVED' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: 'student', status: 'REJECTED' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: 'student', status: 'COMPLETE' }),
+      // ── Our Students (registered by admin/staff/agent) ──
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: { $in: ['super_admin', 'staff', 'agent'] } }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'DRAFT' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'SUBMITTED' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'UNDER_REVIEW' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'APPROVED' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'REJECTED' }),
+      StudentApplication.countDocuments({ ...sessionQuery, submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'COMPLETE' }),
+    ]);
+
     // Calculate average processing time from workflow history (for this session)
     // Get all approved applications with workflow history in this session
     const approvedApplications = await StudentApplication.find({
@@ -367,6 +391,26 @@ router.get("/processing-stats", async (req, res) => {
         submittedInSession,
         underReviewInSession,
         averageProcessingTime: finalAverageProcessingTime,
+        // Direct Students breakdown (submitterRole: 'student')
+        directStudents: {
+          total: directTotal,
+          draft: directDraft,
+          submitted: directSubmitted,
+          underReview: directUnderReview,
+          approved: directApproved,
+          rejected: directRejected,
+          complete: directComplete,
+        },
+        // Our Students breakdown (registered by admin/staff/agent)
+        ourStudents: {
+          total: ourTotal,
+          draft: ourDraft,
+          submitted: ourSubmitted,
+          underReview: ourUnderReview,
+          approved: ourApproved,
+          rejected: ourRejected,
+          complete: ourComplete,
+        },
         session: sessionParam,
         sessionStartDate: yearStart,
         sessionEndDate: yearEnd

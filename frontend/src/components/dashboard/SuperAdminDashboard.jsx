@@ -31,6 +31,7 @@ const SuperAdminDashboard = () => {
     const { selectedSession } = useSession();
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
     const [loading, setLoading] = useState(true);
+    const [studentView, setStudentView] = useState('combined'); // 'combined' | 'direct' | 'our'
     const [stats, setStats] = useState({
         totalStudents: 0,
         totalAgents: 0,
@@ -42,7 +43,9 @@ const SuperAdminDashboard = () => {
         underReviewApplications: 0,
         approvedApplications: 0,
         rejectedApplications: 0,
-        completeApplications: 0
+        completeApplications: 0,
+        directStudents: { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
+        ourStudents:    { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
     });
     const [studentTableFilter, setStudentTableFilter] = useState('all');
 
@@ -633,100 +636,113 @@ const SuperAdminDashboard = () => {
                             </div>
                         </div>
 
-                        <div className="w-full lg:w-1/2 mx-auto">
-                            <ProgressPieChart 
-                                chartData={[
-                                    { label: 'Draft', value: stats.draftApplications, color: '#6b7280', filterKey: 'DRAFT' },
-                                    { label: 'Submitted', value: stats.submittedApplications, color: '#2563eb', filterKey: 'SUBMITTED' },
-                                    { label: 'Rejected', value: stats.rejectedApplications, color: '#dc2626', filterKey: 'REJECTED' },
-                                    { label: 'Under Review', value: stats.underReviewApplications, color: '#eab308', filterKey: 'UNDER_REVIEW' },
-                                    { label: 'Approved', value: stats.approvedApplications, color: '#16a34a', filterKey: 'APPROVED' },
-                                    { label: 'Completed', value: stats.completeApplications, color: '#059669', filterKey: 'COMPLETE' },
-                                ]}
-                                onSectionClick={handleStatClick}
-                            />
-                        </div>
+                        {/* ── Student View Toggle ── */}
+                        {(() => {
+                            const viewData = {
+                                combined: {
+                                    label: '🎓 All Students',
+                                    total: stats.totalStudents,
+                                    draft: stats.draftApplications,
+                                    submitted: stats.submittedApplications,
+                                    underReview: stats.underReviewApplications,
+                                    approved: stats.approvedApplications,
+                                    rejected: stats.rejectedApplications,
+                                    complete: stats.completeApplications,
+                                },
+                                direct: {
+                                    label: '🌐 Direct Students',
+                                    ...stats.directStudents,
+                                },
+                                our: {
+                                    label: '🏫 Our Students',
+                                    ...stats.ourStudents,
+                                },
+                            };
+                            const active = viewData[studentView];
+                            return (
+                                <div className="mt-2">
+                                    {/* View Toggle Tabs */}
+                                    <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
+                                        {[['combined','🎓 All Students'],['direct','🌐 Direct Students'],['our','🏫 Our Students']].map(([key, label]) => (
+                                            <button
+                                                key={key}
+                                                onClick={() => setStudentView(key)}
+                                                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                                                    studentView === key
+                                                        ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-md'
+                                                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                                                }`}
+                                            >
+                                                {label}
+                                            </button>
+                                        ))}
+                                    </div>
 
-                        {/* Filter Buttons */}
-                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-6">
-                            <button
-                                onClick={() => handleStatClick('DRAFT')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'DRAFT'
-                                    ? 'bg-gray-600 text-white shadow-lg'
-                                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <span className="text-xs font-medium mb-0.5">Draft</span>
-                                    <span className="text-base font-semibold">{stats.draftApplications || 0}</span>
-                                </div>
-                            </button>
+                                    {/* Description */}
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                        {studentView === 'combined' && 'Showing all students in this session.'}
+                                        {studentView === 'direct' && 'Students who self-registered or used a student referral code.'}
+                                        {studentView === 'our' && 'Students registered via dashboard by Super Admin, Staff, or Agent — or via their referral codes.'}
+                                    </p>
 
-                            <button
-                                onClick={() => handleStatClick('SUBMITTED')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'SUBMITTED'
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <span className="text-xs font-medium mb-0.5">Submitted</span>
-                                    <span className="text-base font-semibold">{stats.submittedApplications || 0}</span>
-                                </div>
-                            </button>
+                                    {/* Summary Cards */}
+                                    <div className="grid grid-cols-3 gap-3 mb-4">
+                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm">
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+                                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
+                                        </div>
+                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-green-200 dark:border-green-800 text-center shadow-sm">
+                                            <p className="text-xs text-green-600 dark:text-green-400">Approved</p>
+                                            <p className="text-2xl font-bold text-green-700 dark:text-green-300">{active.approved || 0}</p>
+                                        </div>
+                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm">
+                                            <p className="text-xs text-blue-600 dark:text-blue-400">Submitted</p>
+                                            <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{active.submitted || 0}</p>
+                                        </div>
+                                    </div>
 
-                            <button
-                                onClick={() => handleStatClick('REJECTED')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'REJECTED'
-                                    ? 'bg-red-600 text-white shadow-lg'
-                                    : 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <span className="text-xs font-medium mb-0.5">Rejected</span>
-                                    <span className="text-base font-semibold">{stats.rejectedApplications || 0}</span>
-                                </div>
-                            </button>
+                                    {/* Pie Chart */}
+                                    <div className="w-full lg:w-1/2 mx-auto">
+                                        <ProgressPieChart
+                                            chartData={[
+                                                { label: 'Draft',       value: active.draft       || 0, color: '#6b7280', filterKey: 'DRAFT' },
+                                                { label: 'Submitted',   value: active.submitted   || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
+                                                { label: 'Under Review',value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                                                { label: 'Approved',    value: active.approved    || 0, color: '#16a34a', filterKey: 'APPROVED' },
+                                                { label: 'Rejected',    value: active.rejected    || 0, color: '#dc2626', filterKey: 'REJECTED' },
+                                                { label: 'Completed',   value: active.complete    || 0, color: '#059669', filterKey: 'COMPLETE' },
+                                            ]}
+                                            onSectionClick={handleStatClick}
+                                        />
+                                    </div>
 
-                            <button
-                                onClick={() => handleStatClick('UNDER_REVIEW')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'UNDER_REVIEW'
-                                    ? 'bg-yellow-600 text-white shadow-lg'
-                                    : 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <span className="text-xs font-medium mb-0.5">Under Review</span>
-                                    <span className="text-base font-semibold">{stats.underReviewApplications || 0}</span>
+                                    {/* Status Filter Buttons */}
+                                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-4">
+                                        {[
+                                            { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white', inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200' },
+                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-blue-600 text-white',  inactiveClass: 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300 hover:bg-blue-200' },
+                                            { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',   inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200' },
+                                            { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white',inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200' },
+                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-600 text-white', inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200' },
+                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-emerald-600 text-white',inactiveClass: 'bg-emerald-100 dark:bg-gray-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200' },
+                                        ].map(({ key, label, count, activeClass, inactiveClass }) => (
+                                            <button
+                                                key={key}
+                                                onClick={() => handleStatClick(key)}
+                                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm shadow-sm ${
+                                                    filterStatus === key ? activeClass + ' shadow-lg' : inactiveClass
+                                                }`}
+                                            >
+                                                <div className="flex flex-col items-center">
+                                                    <span className="text-xs font-medium mb-0.5">{label}</span>
+                                                    <span className="text-base font-semibold">{count || 0}</span>
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </button>
-
-                            <button
-                                onClick={() => handleStatClick('APPROVED')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'APPROVED'
-                                    ? 'bg-green-600 text-white shadow-lg'
-                                    : 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <span className="text-xs font-medium mb-0.5">Approved</span>
-                                    <span className="text-base font-semibold">{stats.approvedApplications || 0}</span>
-                                </div>
-                            </button>
-
-                            <button
-                                onClick={() => handleStatClick('COMPLETE')}
-                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm ${filterStatus === 'COMPLETE'
-                                    ? 'bg-emerald-600 text-white shadow-lg'
-                                    : 'bg-emerald-100 dark:bg-gray-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-gray-600'
-                                    }`}
-                            >
-                                <div className="flex flex-col items-center">
-                                    <span className="text-xs font-medium mb-0.5">Complete</span>
-                                    <span className="text-base font-semibold">{stats.completeApplications || 0}</span>
-                                </div>
-                            </button>
-                        </div>
+                            );
+                        })()}
 
                         {/* Referral Statistics */}
                         {stats.referralStats && (

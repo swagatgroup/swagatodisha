@@ -780,6 +780,33 @@ router.get("/stats", async (req, res) => {
     console.log("📊 DRAFT count:", draftCount);
     console.log("📊 SUBMITTED count:", submittedCount);
 
+    // ── Dashboard Registered (agent submitted directly) per-status ──
+    const dashQuery = { $and: [agentQuery.$and ? agentQuery.$and[0] : agentQuery, agentQuery.$and ? agentQuery.$and[1] : {}, { submittedBy: new mongoose.Types.ObjectId(req.user._id) }] };
+    // Simplify: use submittedBy filter layered on session
+    const sessionFilter = agentQuery.$and ? agentQuery.$and[1] : {};
+    const dashBase = { $and: [{ submittedBy: new mongoose.Types.ObjectId(req.user._id) }, sessionFilter] };
+    const refBase  = { $and: [{ 'referralInfo.referredBy': new mongoose.Types.ObjectId(req.user._id), submitterRole: 'student' }, sessionFilter] };
+
+    const [
+      dashTotal, dashDraft, dashSubmitted, dashUnderReview, dashApproved, dashRejected, dashComplete,
+      refTotal,  refDraft,  refSubmitted,  refUnderReview,  refApproved,  refRejected,  refComplete,
+    ] = await Promise.all([
+      StudentApplication.countDocuments(dashBase),
+      StudentApplication.countDocuments({ ...dashBase, status: 'DRAFT' }),
+      StudentApplication.countDocuments({ ...dashBase, status: 'SUBMITTED' }),
+      StudentApplication.countDocuments({ ...dashBase, status: 'UNDER_REVIEW' }),
+      StudentApplication.countDocuments({ ...dashBase, status: 'APPROVED' }),
+      StudentApplication.countDocuments({ ...dashBase, status: 'REJECTED' }),
+      StudentApplication.countDocuments({ ...dashBase, status: 'COMPLETE' }),
+      StudentApplication.countDocuments(refBase),
+      StudentApplication.countDocuments({ ...refBase, status: 'DRAFT' }),
+      StudentApplication.countDocuments({ ...refBase, status: 'SUBMITTED' }),
+      StudentApplication.countDocuments({ ...refBase, status: 'UNDER_REVIEW' }),
+      StudentApplication.countDocuments({ ...refBase, status: 'APPROVED' }),
+      StudentApplication.countDocuments({ ...refBase, status: 'REJECTED' }),
+      StudentApplication.countDocuments({ ...refBase, status: 'COMPLETE' }),
+    ]);
+
     res.status(200).json({
       success: true,
       data: {
@@ -789,6 +816,26 @@ router.get("/stats", async (req, res) => {
         approved: approvedStudents,
         rejected: rejectedStudents,
         completed: completedStudents,
+        // Dashboard registered (agent submitted directly)
+        dashboardRegistered: {
+          total: dashTotal,
+          draft: dashDraft,
+          submitted: dashSubmitted,
+          underReview: dashUnderReview,
+          approved: dashApproved,
+          rejected: dashRejected,
+          complete: dashComplete,
+        },
+        // Referral Code signups (students who self-registered with agent's code)
+        referralSignups: {
+          total: refTotal,
+          draft: refDraft,
+          submitted: refSubmitted,
+          underReview: refUnderReview,
+          approved: refApproved,
+          rejected: refRejected,
+          complete: refComplete,
+        },
       },
     });
   } catch (error) {

@@ -99,7 +99,23 @@ exports.getDashboardStats = async (req, res) => {
             selfRegistered,
             agentReferred,
             staffReferred,
-            studentReferred
+            studentReferred,
+            // Direct Students (submitterRole: 'student') per-status
+            directTotal,
+            directDraft,
+            directSubmitted,
+            directUnderReview,
+            directApproved,
+            directRejected,
+            directComplete,
+            // Our Students (registered by staff/agent/admin) per-status
+            ourTotal,
+            ourDraft,
+            ourSubmitted,
+            ourUnderReview,
+            ourApproved,
+            ourRejected,
+            ourComplete,
         ] = await Promise.all([
             // Total Students in this session
             StudentApplication.countDocuments(sessionQuery),
@@ -147,7 +163,25 @@ exports.getDashboardStats = async (req, res) => {
             StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'staff' })),
 
             // Referred by Student
-            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'student' }))
+            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'student' })),
+
+            // ── Direct Students (submitterRole: 'student') ──
+            StudentApplication.countDocuments(buildQuery({ submitterRole: 'student' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'DRAFT' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'SUBMITTED' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'UNDER_REVIEW' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'APPROVED' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'REJECTED' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'COMPLETE' })),
+
+            // ── Our Students (registered by admin/staff/agent) ──
+            StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] } })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'DRAFT' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'SUBMITTED' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'UNDER_REVIEW' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'APPROVED' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'REJECTED' })),
+            StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'COMPLETE' })),
         ]);
 
         res.json({
@@ -171,6 +205,26 @@ exports.getDashboardStats = async (req, res) => {
                     staffReferred,
                     studentReferred,
                     totalReferred: agentReferred + staffReferred + studentReferred
+                },
+                // Direct Students breakdown (submitterRole: 'student')
+                directStudents: {
+                    total: directTotal,
+                    draft: directDraft,
+                    submitted: directSubmitted,
+                    underReview: directUnderReview,
+                    approved: directApproved,
+                    rejected: directRejected,
+                    complete: directComplete,
+                },
+                // Our Students breakdown (registered by admin/staff/agent)
+                ourStudents: {
+                    total: ourTotal,
+                    draft: ourDraft,
+                    submitted: ourSubmitted,
+                    underReview: ourUnderReview,
+                    approved: ourApproved,
+                    rejected: ourRejected,
+                    complete: ourComplete,
                 },
                 session: sessionParam,
                 sessionStartDate: yearStart,

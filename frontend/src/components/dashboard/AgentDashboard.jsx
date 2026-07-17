@@ -21,6 +21,7 @@ const EnhancedAgentDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [studentTableFilter, setStudentTableFilter] = useState("all");
   const [students, setStudents] = useState([]);
+  const [agentView, setAgentView] = useState('combined'); // 'combined' | 'dashboard' | 'referral'
   const [stats, setStats] = useState({
     totalStudents: 0,
     pendingStudents: 0,
@@ -28,6 +29,8 @@ const EnhancedAgentDashboard = () => {
     approvedStudents: 0,
     rejectedStudents: 0,
     completedStudents: 0,
+    dashboardRegistered: { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
+    referralSignups:     { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
   });
   const isLoadingRef = useRef(false);
 
@@ -254,15 +257,15 @@ const EnhancedAgentDashboard = () => {
         console.log('📊 AgentDashboard - Stats response:', statsRes.data.data);
         const statsData = statsRes.data.data;
 
-        // Map backend field names to frontend field names
-        // Completed is separate from Approved (COMPLETE status = graduated students)
         const mappedStats = {
-          totalStudents: statsData.total || 0,
-          pendingStudents: statsData.pending || 0, // Remove fallback to submitted - backend should handle DRAFT + SUBMITTED
-          underReviewStudents: statsData.underReview || 0,
-          approvedStudents: statsData.approved || 0,
-          rejectedStudents: statsData.rejected || 0,
-          completedStudents: statsData.completed || 0, // Only use completed, not approved
+          totalStudents:      statsData.total         || 0,
+          pendingStudents:    statsData.pending        || 0,
+          underReviewStudents:statsData.underReview   || 0,
+          approvedStudents:   statsData.approved       || 0,
+          rejectedStudents:   statsData.rejected       || 0,
+          completedStudents:  statsData.completed      || 0,
+          dashboardRegistered: statsData.dashboardRegistered || { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
+          referralSignups:     statsData.referralSignups    || { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
         };
         
         setStats(mappedStats);
@@ -403,23 +406,114 @@ const EnhancedAgentDashboard = () => {
               </div>
             </motion.div>
 
-            {/* 3D Progress Chart */}
+            {/* 3D Progress Chart — with view tabs */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="mb-6 w-full lg:w-1/2 mx-auto"
+              className="mb-6"
             >
-              <ProgressPieChart 
-                chartData={[
-                  { label: 'Submitted', value: stats.pendingStudents || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
-                  { label: 'Under Review', value: stats.underReviewStudents || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
-                  { label: 'Approved', value: stats.approvedStudents || 0, color: '#16a34a', filterKey: 'APPROVED' },
-                  { label: 'Rejected', value: stats.rejectedStudents || 0, color: '#dc2626', filterKey: 'REJECTED' },
-                  { label: 'Completed', value: stats.completedStudents || 0, color: '#059669', filterKey: 'COMPLETE' },
-                ]}
-                onSectionClick={handleStatClick}
-              />
+              {(() => {
+                const viewData = {
+                  combined: {
+                    total:       stats.totalStudents,
+                    draft:       0, // combined pending includes draft+submitted
+                    submitted:   stats.pendingStudents,
+                    underReview: stats.underReviewStudents,
+                    approved:    stats.approvedStudents,
+                    rejected:    stats.rejectedStudents,
+                    complete:    stats.completedStudents,
+                  },
+                  dashboard: stats.dashboardRegistered || {},
+                  referral:  stats.referralSignups     || {},
+                };
+                const active = viewData[agentView] || {};
+                return (
+                  <div>
+                    {/* Toggle Tabs */}
+                    <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
+                      {[
+                        ['combined',  '🎓 All My Students'],
+                        ['dashboard', '💻 Dashboard Registered'],
+                        ['referral',  '🔗 Referral Signups'],
+                      ].map(([key, label]) => (
+                        <button
+                          key={key}
+                          onClick={() => setAgentView(key)}
+                          className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                            agentView === key
+                              ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-md'
+                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                      {agentView === 'combined'  && 'All students associated with your account.'}
+                      {agentView === 'dashboard' && 'Students you registered directly from this dashboard.'}
+                      {agentView === 'referral'  && 'Students who self-registered using your referral code.'}
+                    </p>
+
+                    {/* Summary Cards */}
+                    <div className="grid grid-cols-3 gap-3 mb-4">
+                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
+                      </div>
+                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-green-200 dark:border-green-800 text-center shadow-sm">
+                        <p className="text-xs text-green-600 dark:text-green-400">Approved</p>
+                        <p className="text-2xl font-bold text-green-700 dark:text-green-300">{active.approved || 0}</p>
+                      </div>
+                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm">
+                        <p className="text-xs text-blue-600 dark:text-blue-400">Submitted</p>
+                        <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{active.submitted || 0}</p>
+                      </div>
+                    </div>
+
+                    {/* Pie Chart */}
+                    <div className="w-full lg:w-1/2 mx-auto">
+                      <ProgressPieChart
+                        chartData={[
+                          { label: 'Draft',        value: active.draft       || 0, color: '#6b7280', filterKey: 'SUBMITTED' },
+                          { label: 'Submitted',    value: active.submitted   || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
+                          { label: 'Under Review', value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                          { label: 'Approved',     value: active.approved    || 0, color: '#16a34a', filterKey: 'APPROVED' },
+                          { label: 'Rejected',     value: active.rejected    || 0, color: '#dc2626', filterKey: 'REJECTED' },
+                          { label: 'Completed',    value: active.complete    || 0, color: '#059669', filterKey: 'COMPLETE' },
+                        ]}
+                        onSectionClick={handleStatClick}
+                      />
+                    </div>
+
+                    {/* Status Filter Buttons */}
+                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-4">
+                      {[
+                        { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-blue-600 text-white',   inactiveClass: 'bg-blue-100 dark:bg-gray-700 text-blue-700 hover:bg-blue-200' },
+                        { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white', inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 hover:bg-yellow-200' },
+                        { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-600 text-white',  inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 hover:bg-green-200' },
+                        { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',    inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 hover:bg-red-200' },
+                        { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-emerald-600 text-white',inactiveClass: 'bg-emerald-100 dark:bg-gray-700 text-emerald-700 hover:bg-emerald-200' },
+                      ].map(({ key, label, count, activeClass, inactiveClass }) => (
+                        <button
+                          key={key}
+                          onClick={() => handleStatClick(key)}
+                          className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm shadow-sm ${
+                            studentTableFilter === key ? activeClass + ' shadow-lg' : inactiveClass
+                          }`}
+                        >
+                          <div className="flex flex-col items-center">
+                            <span className="text-xs font-medium mb-0.5">{label}</span>
+                            <span className="text-base font-semibold">{count || 0}</span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
             </motion.div>
 
             {/* Commission panel removed as requested */}
