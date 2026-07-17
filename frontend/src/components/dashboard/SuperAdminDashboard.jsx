@@ -636,12 +636,12 @@ const SuperAdminDashboard = () => {
                         <div className="w-full lg:w-1/2 mx-auto">
                             <ProgressPieChart 
                                 chartData={[
-                                    { label: 'Draft', value: stats.draftApplications, color: '#9ca3af', filterKey: 'DRAFT' },
-                                    { label: 'Submitted', value: stats.submittedApplications, color: '#facc15', filterKey: 'SUBMITTED' },
-                                    { label: 'Rejected', value: stats.rejectedApplications, color: '#ef4444', filterKey: 'REJECTED' },
-                                    { label: 'Under Review', value: stats.underReviewApplications, color: '#f97316', filterKey: 'UNDER_REVIEW' },
-                                    { label: 'Approved', value: stats.approvedApplications, color: '#22c55e', filterKey: 'APPROVED' },
-                                    { label: 'Completed', value: stats.completeApplications, color: '#14b8a6', filterKey: 'COMPLETE' },
+                                    { label: 'Draft', value: stats.draftApplications, color: '#6b7280', filterKey: 'DRAFT' },
+                                    { label: 'Submitted', value: stats.submittedApplications, color: '#2563eb', filterKey: 'SUBMITTED' },
+                                    { label: 'Rejected', value: stats.rejectedApplications, color: '#dc2626', filterKey: 'REJECTED' },
+                                    { label: 'Under Review', value: stats.underReviewApplications, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                                    { label: 'Approved', value: stats.approvedApplications, color: '#16a34a', filterKey: 'APPROVED' },
+                                    { label: 'Completed', value: stats.completeApplications, color: '#059669', filterKey: 'COMPLETE' },
                                 ]}
                                 onSectionClick={handleStatClick}
                             />

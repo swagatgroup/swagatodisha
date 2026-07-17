@@ -388,11 +388,12 @@ const EnhancedStaffDashboard = () => {
                         >
                             <ProgressPieChart 
                                 chartData={[
-                                    { label: 'Submitted', value: processingStats.submittedInSession, color: '#facc15', filterKey: 'SUBMITTED' },
-                                    { label: 'Under Review', value: processingStats.underReviewInSession, color: '#f97316', filterKey: 'UNDER_REVIEW' },
-                                    { label: 'Approved', value: processingStats.approvedInSession, color: '#22c55e', filterKey: 'APPROVED' },
-                                    { label: 'Rejected', value: processingStats.rejectedInSession, color: '#ef4444', filterKey: 'REJECTED' },
-                                    { label: 'Completed', value: processingStats.completedInSession, color: '#14b8a6', filterKey: 'COMPLETE' },
+                                    { label: 'Draft', value: processingStats.draftInSession || 0, color: '#6b7280', filterKey: 'DRAFT' },
+                                    { label: 'Submitted', value: processingStats.submittedInSession || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
+                                    { label: 'Under Review', value: processingStats.underReviewInSession || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                                    { label: 'Approved', value: processingStats.approvedInSession || 0, color: '#16a34a', filterKey: 'APPROVED' },
+                                    { label: 'Rejected', value: processingStats.rejectedInSession || 0, color: '#dc2626', filterKey: 'REJECTED' },
+                                    { label: 'Completed', value: processingStats.completedInSession || 0, color: '#059669', filterKey: 'COMPLETE' },
                                 ]}
                                 onSectionClick={handleStatClick}
                             />

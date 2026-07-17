@@ -412,11 +412,11 @@ const EnhancedAgentDashboard = () => {
             >
               <ProgressPieChart 
                 chartData={[
-                  { label: 'Submitted', value: stats.pendingStudents, color: '#facc15', filterKey: 'SUBMITTED' },
-                  { label: 'Under Review', value: stats.underReviewStudents, color: '#f97316', filterKey: 'UNDER_REVIEW' },
-                  { label: 'Approved', value: stats.approvedStudents, color: '#22c55e', filterKey: 'APPROVED' },
-                  { label: 'Rejected', value: stats.rejectedStudents, color: '#ef4444', filterKey: 'REJECTED' },
-                  { label: 'Completed', value: stats.completedStudents, color: '#14b8a6', filterKey: 'COMPLETE' },
+                  { label: 'Submitted', value: stats.pendingStudents || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
+                  { label: 'Under Review', value: stats.underReviewStudents || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                  { label: 'Approved', value: stats.approvedStudents || 0, color: '#16a34a', filterKey: 'APPROVED' },
+                  { label: 'Rejected', value: stats.rejectedStudents || 0, color: '#dc2626', filterKey: 'REJECTED' },
+                  { label: 'Completed', value: stats.completedStudents || 0, color: '#059669', filterKey: 'COMPLETE' },
                 ]}
                 onSectionClick={handleStatClick}
               />
