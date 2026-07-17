@@ -69,7 +69,7 @@ const EnhancedAgentDashboard = () => {
     },
     {
       id: "students",
-      name: "Students",
+      name: "My Students",
       icon: (
         <svg
           className="mr-3 h-5 w-5"
@@ -433,9 +433,9 @@ const EnhancedAgentDashboard = () => {
                     {/* Toggle Tabs */}
                     <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
                       {[
-                        ['combined',  '🎓 All My Students'],
-                        ['dashboard', '💻 Dashboard Registered'],
-                        ['referral',  '🔗 Referral Signups'],
+                        ['combined',  'Dashboard'],
+                        ['dashboard', 'Registered by me'],
+                        ['referral',  'Used my referral code'],
                       ].map(([key, label]) => (
                         <button
                           key={key}

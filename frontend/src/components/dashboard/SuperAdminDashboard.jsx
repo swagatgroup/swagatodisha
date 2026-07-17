@@ -95,7 +95,7 @@ const SuperAdminDashboard = () => {
         },
         {
             id: 'students',
-            name: 'Students',
+            name: 'Our Students',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -663,7 +663,7 @@ const SuperAdminDashboard = () => {
                                 <div className="mt-2">
                                     {/* View Toggle Tabs */}
                                     <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
-                                        {[['combined','🎓 All Students'],['direct','🌐 Direct Students'],['our','🏫 Our Students']].map(([key, label]) => (
+                                        {[['combined','Dashboard'],['our','Our Students'],['direct','Direct Students']].map(([key, label]) => (
                                             <button
                                                 key={key}
                                                 onClick={() => setStudentView(key)}
