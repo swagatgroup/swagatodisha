@@ -1017,6 +1017,17 @@ const initializeConnections = async () => {
         // Connect to MongoDB
         await connectDB();
         console.log('✅ MongoDB Connected Successfully');
+
+        // One-time fix: drop stale aadharNumber index (missing sparse:true) so Mongoose recreates it correctly
+        try {
+            const mongoose = require('mongoose');
+            const col = mongoose.connection.collection('studentapplications');
+            await col.dropIndex('personalDetails.aadharNumber_1');
+            console.log('✅ Dropped stale aadharNumber index — will be recreated with sparse:true');
+        } catch (idxErr) {
+            // Index may not exist or already be correct — safe to ignore
+            console.log('ℹ️  aadharNumber index drop skipped:', idxErr.message);
+        }
     } catch (error) {
         console.error('❌ Connection initialization failed:', error.message);
         // Don't exit the process, let the server run

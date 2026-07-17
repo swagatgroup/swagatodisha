@@ -721,6 +721,7 @@ studentApplicationSchema.index(
     { 'personalDetails.aadharNumber': 1 },
     {
         unique: true,
+        sparse: true,
         partialFilterExpression: { submitterRole: 'student' }
     }
 );
