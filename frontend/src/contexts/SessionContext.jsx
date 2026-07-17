@@ -13,49 +13,19 @@ export const useSession = () => {
 export const SessionProvider = ({ children }) => {
     // Generate current session
     const getCurrentSession = () => {
-        const now = new Date();
-        const currentYear = now.getFullYear();
-        const month = now.getMonth();
-        if (month < 3) {
-            const startYear = currentYear - 1;
-            const endYearShort = currentYear.toString().slice(-2);
-            return `${startYear}-${endYearShort}`;
-        } else {
-            const endYearShort = (currentYear + 1).toString().slice(-2);
-            return `${currentYear}-${endYearShort}`;
-        }
+        // As requested by the client, always start from 26-27
+        return '2026-27';
     };
 
-    // Generate available sessions (current year, last 5 years, and 2 years forward)
+    // Generate available sessions
     const getAvailableSessions = () => {
-        const now = new Date();
-        const currentYear = now.getFullYear();
-        const month = now.getMonth();
-        const sessions = [];
-
-        // Determine current session
-        let currentStartYear;
-        if (month < 3) {
-            currentStartYear = currentYear - 1;
-        } else {
-            currentStartYear = currentYear;
-        }
-
-        // Generate future sessions first (newest first)
-        for (let i = 2; i > 0; i--) {
-            const startYear = currentStartYear + i;
-            const endYearShort = (startYear + 1).toString().slice(-2);
-            sessions.push(`${startYear}-${endYearShort}`);
-        }
-
-        // Generate current and past sessions
-        for (let i = 0; i < 5; i++) {
-            const startYear = currentStartYear - i;
-            const endYearShort = (startYear + 1).toString().slice(-2);
-            sessions.push(`${startYear}-${endYearShort}`);
-        }
-
-        return sessions;
+        // As requested by the client, no dynamic logic - hardcoded to start from 26-27 and 4 years onward
+        return [
+            '2029-30',
+            '2028-29',
+            '2027-28',
+            '2026-27'
+        ];
     };
 
     // Load session from localStorage or use current session
