@@ -1579,56 +1579,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     </svg>
                                                 </button>
 
-                                                {/* Accept Button - Only for SUBMITTED and UNDER_REVIEW */}
-                                                {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
-                                                    <button
-                                                        onClick={() => handleAcceptApplication(student)}
-                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-                                                        title="Accept Application"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                    </button>
-                                                )}
 
-                                                {/* Reject Button - Only for SUBMITTED and UNDER_REVIEW */}
-                                                {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedStudent(student);
-                                                            setStatusData({
-                                                                status: 'REJECTED',
-                                                                notes: '',
-                                                                rejectionReason: '',
-                                                                rejectionMessage: '',
-                                                                rejectionDetails: []
-                                                            });
-                                                            setShowRejectionForm(true);
-                                                            setShowStatusModal(true);
-                                                        }}
-                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                                                        title="Reject Application"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedStudent(student);
-                                                        setStatusData({ status: student.status, notes: '' });
-                                                        setShowStatusModal(true);
-                                                    }}
-                                                    className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
-                                                    title="Update Status"
-                                                >
-                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                </button>
                                                 <button
                                                     onClick={async () => {
                                                         setSelectedStudent(student);
