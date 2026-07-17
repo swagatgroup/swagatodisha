@@ -102,9 +102,9 @@ const adminSchema = new mongoose.Schema({
         validate: {
             validator: function (v) {
                 if (!v) return true; // Allow empty for admins without referral codes
-                return /^[a-z]{3}\d{2}[aost]\d{2}$/.test(v);
+                return /^[a-z0-9]{8,12}$/.test(v);
             },
-            message: 'Invalid referral code format. Must be 8 characters: 3 letters + 2 digits + 1 role letter + 2 year digits'
+            message: 'Invalid referral code format'
         }
     },
     referredBy: {
@@ -227,8 +227,9 @@ adminSchema.pre('save', async function (next) {
 
         // If we couldn't generate a unique code, use a fallback
         if (!this.referralCode) {
-            const timestamp = Date.now().toString().slice(-4);
-            this.referralCode = `adm${timestamp}${this.role.charAt(0)}25`;
+            const timestamp = Date.now().toString().slice(-6);
+            const yr = new Date().getFullYear().toString().slice(-2);
+            this.referralCode = `adm${timestamp}${this.role.charAt(0)}${yr}`;
             this.isReferralActive = true;
         }
     }
@@ -262,8 +263,9 @@ adminSchema.methods.generateReferralCode = function () {
 
     const roleLetter = roleMap[this.role] || 'a'; // a for admin
     const yearSuffix = new Date().getFullYear().toString().slice(-2);
+    const salt = Math.floor(Math.random() * 90 + 10).toString(); // 10-99 random salt
 
-    return `${namePrefix}${phoneSuffix}${roleLetter}${yearSuffix}`;
+    return `${namePrefix}${phoneSuffix}${roleLetter}${yearSuffix}${salt}`;
 };
 
 adminSchema.methods.comparePassword = async function (candidatePassword) {

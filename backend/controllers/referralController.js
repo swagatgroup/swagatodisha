@@ -50,6 +50,7 @@ const getReferralData = async (req, res) => {
             // It will be auto-generated in the pre-save hook or generate method
             try {
                 user.referralCode = user.generateReferralCode();
+                user.isReferralActive = true;
                 await user.save({ validateBeforeSave: false });
             } catch (e) { console.error('Error auto-generating referral code', e); }
         }
