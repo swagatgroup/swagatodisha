@@ -2319,7 +2319,7 @@ const SuperAdminDashboard = () => {
                                                     setStudentView('direct');
                                                     setFilterStatus(selectedStatKey);
                                                     setCurrentPage(1);
-                                                    setActiveSidebarItem('students');
+                                                    setActiveSidebarItem('direct-students');
                                                     setStatModalOpen(false);
                                                 }}
                                                 className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors"
