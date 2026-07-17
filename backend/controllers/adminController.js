@@ -96,6 +96,7 @@ exports.getDashboardStats = async (req, res) => {
             rejectedApplications,
             completeApplications,
             recentStudents,
+            superAdminReferred,
             selfRegistered,
             agentReferred,
             staffReferred,
@@ -153,6 +154,9 @@ exports.getDashboardStats = async (req, res) => {
                 .sort({ createdAt: -1 })
                 .limit(5),
 
+            // Referred by Super Admin
+            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'super_admin' })),
+
             // Self Registered (No referral info)
             StudentApplication.countDocuments(buildQuery({ 'referralInfo.referredBy': null })),
 
@@ -200,11 +204,12 @@ exports.getDashboardStats = async (req, res) => {
                 completeApplications,
                 recentStudents,
                 referralStats: {
+                    superAdminReferred,
                     selfRegistered,
                     agentReferred,
                     staffReferred,
                     studentReferred,
-                    totalReferred: agentReferred + staffReferred + studentReferred
+                    totalReferred: superAdminReferred + selfRegistered + agentReferred + staffReferred + studentReferred
                 },
                 // Direct Students breakdown (submitterRole: 'student')
                 directStudents: {

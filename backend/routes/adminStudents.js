@@ -119,7 +119,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             sortBy = 'createdAt',
             sortOrder = 'desc',
             paymentStatus,
-            listType = 'main'
+            listType = 'main',
+            referralType
         } = req.query;
 
         // Build filter query
@@ -308,6 +309,15 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             } else {
                 // It's a role - filter by role
                 filter.submitterRole = submitterRole;
+            }
+        }
+
+        // Filter by referralType
+        if (referralType && referralType !== 'all') {
+            if (referralType === 'self') {
+                filter['referralInfo.referredBy'] = null;
+            } else {
+                filter['referralInfo.referralType'] = referralType;
             }
         }
 

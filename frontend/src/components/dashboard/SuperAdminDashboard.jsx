@@ -56,6 +56,7 @@ const SuperAdminDashboard = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterCourse, setFilterCourse] = useState('all');
     const [filterSubmitterRole, setFilterSubmitterRole] = useState('all');
+    const [filterReferralType, setFilterReferralType] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -259,7 +260,7 @@ const SuperAdminDashboard = () => {
             fetchStudents();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, selectedSession, activeSidebarItem]);
+    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterReferralType, selectedSession, activeSidebarItem, studentView]);
 
     const fetchStudents = async () => {
         try {
@@ -281,7 +282,8 @@ const SuperAdminDashboard = () => {
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
+                ...(filterReferralType !== 'all' && { referralType: filterReferralType })
             });
 
             const response = await api.get(`/api/admin/students?${params}`);
@@ -745,7 +747,7 @@ const SuperAdminDashboard = () => {
                         })()}
 
                         {/* Referral Statistics */}
-                        {stats.referralStats && (
+                        {stats.referralStats && studentView !== 'direct' && (
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -753,22 +755,41 @@ const SuperAdminDashboard = () => {
                                 className="mt-8 mb-4"
                             >
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Registration & Referral Tracking</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Self Registered</p>
-                                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.referralStats.selfRegistered || 0}</p>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                                    <div 
+                                        className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'student' ? 'ring-2 ring-green-500' : ''}`}
+                                        onClick={() => { setFilterReferralType(filterReferralType === 'student' ? 'all' : 'student'); setCurrentPage(1); }}
+                                    >
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Student</p>
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.referralStats.studentReferred || 0}</p>
                                     </div>
-                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Referred by Agent</p>
+                                    <div 
+                                        className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'agent' ? 'ring-2 ring-blue-500' : ''}`}
+                                        onClick={() => { setFilterReferralType(filterReferralType === 'agent' ? 'all' : 'agent'); setCurrentPage(1); }}
+                                    >
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Agent</p>
                                         <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 mt-1">{stats.referralStats.agentReferred || 0}</p>
                                     </div>
-                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Referred by Staff</p>
+                                    <div 
+                                        className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'staff' ? 'ring-2 ring-purple-500' : ''}`}
+                                        onClick={() => { setFilterReferralType(filterReferralType === 'staff' ? 'all' : 'staff'); setCurrentPage(1); }}
+                                    >
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Staff</p>
                                         <p className="text-2xl font-bold text-purple-600 dark:text-purple-400 mt-1">{stats.referralStats.staffReferred || 0}</p>
                                     </div>
-                                    <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center">
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Referred by Student</p>
-                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.referralStats.studentReferred || 0}</p>
+                                    <div 
+                                        className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'super_admin' ? 'ring-2 ring-gray-900 dark:ring-gray-100' : ''}`}
+                                        onClick={() => { setFilterReferralType(filterReferralType === 'super_admin' ? 'all' : 'super_admin'); setCurrentPage(1); }}
+                                    >
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Super Admin</p>
+                                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.referralStats.superAdminReferred || 0}</p>
+                                    </div>
+                                    <div 
+                                        className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'self' ? 'ring-2 ring-orange-500' : ''}`}
+                                        onClick={() => { setFilterReferralType(filterReferralType === 'self' ? 'all' : 'self'); setCurrentPage(1); }}
+                                    >
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">Direct/Self<br/>Registered</p>
+                                        <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">{stats.referralStats.selfRegistered || 0}</p>
                                     </div>
                                 </div>
                             </motion.div>
