@@ -488,6 +488,7 @@ const EnhancedStaffDashboard = () => {
                                 </div>
                             );
                         })()}
+                        </motion.div>
 
                         {/* Students Table */}
                         <motion.div
