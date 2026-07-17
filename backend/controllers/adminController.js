@@ -155,16 +155,37 @@ exports.getDashboardStats = async (req, res) => {
                 .limit(5),
 
             // Referred by Super Admin
-            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'super_admin' })),
+            StudentApplication.countDocuments(buildQuery({ 
+                $or: [
+                    { submitterRole: 'super_admin' },
+                    { 'referralInfo.referralType': 'super_admin' }
+                ]
+            })),
 
-            // Self Registered (No referral info)
-            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referredBy': null })),
+            // Self Registered (No referral info AND submitted by student)
+            StudentApplication.countDocuments(buildQuery({ 
+                submitterRole: 'student', 
+                $or: [
+                    { 'referralInfo.referredBy': null },
+                    { 'referralInfo.referredBy': { $exists: false } }
+                ]
+            })),
 
             // Referred by Agent
-            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'agent' })),
+            StudentApplication.countDocuments(buildQuery({ 
+                $or: [
+                    { submitterRole: 'agent' },
+                    { 'referralInfo.referralType': 'agent' }
+                ]
+            })),
 
             // Referred by Staff
-            StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'staff' })),
+            StudentApplication.countDocuments(buildQuery({ 
+                $or: [
+                    { submitterRole: 'staff' },
+                    { 'referralInfo.referralType': 'staff' }
+                ]
+            })),
 
             // Referred by Student
             StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'student' })),

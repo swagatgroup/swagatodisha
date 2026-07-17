@@ -315,9 +315,22 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         // Filter by referralType
         if (referralType && referralType !== 'all') {
             if (referralType === 'self') {
-                filter['referralInfo.referredBy'] = null;
+                andConditions.push({
+                    submitterRole: 'student',
+                    $or: [
+                        { 'referralInfo.referredBy': null },
+                        { 'referralInfo.referredBy': { $exists: false } }
+                    ]
+                });
+            } else if (referralType === 'student') {
+                filter['referralInfo.referralType'] = 'student';
             } else {
-                filter['referralInfo.referralType'] = referralType;
+                andConditions.push({
+                    $or: [
+                        { submitterRole: referralType },
+                        { 'referralInfo.referralType': referralType }
+                    ]
+                });
             }
         }
 
