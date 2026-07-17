@@ -86,9 +86,10 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                 throw new Error('File upload failed');
             }
 
-            const receiptUrl = uploadRes.data.data.url;
+            const receiptUrl = uploadRes.data.data.filePath || uploadRes.data.data.downloadUrl;
 
-            await api.post(`/api/agents/students/${student._id || student.user}/installments/upload`, {
+            const targetUserId = typeof student.user === 'object' ? student.user._id : student.user;
+            await api.post(`/api/agents/students/${targetUserId}/installments/upload`, {
                 amount: uploadData.amount,
                 paymentMethod: uploadData.paymentMethod,
                 remarks: uploadData.remarks,
@@ -128,11 +129,12 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                 if (!uploadRes.data?.success) {
                     throw new Error('File upload failed');
                 }
-                receiptUrl = uploadRes.data.data.url;
+                receiptUrl = uploadRes.data.data.filePath || uploadRes.data.data.downloadUrl;
             }
 
+            const targetUserId = typeof student.user === 'object' ? student.user._id : student.user;
             // 2. Submit installment update
-            await api.put(`/api/agents/students/${student._id}/installments/${selectedInstallment._id}`, {
+            await api.put(`/api/agents/students/${targetUserId}/installments/${selectedInstallment._id}`, {
                 amount: updateData.amount,
                 paymentMethod: updateData.paymentMethod,
                 remarks: updateData.remarks,

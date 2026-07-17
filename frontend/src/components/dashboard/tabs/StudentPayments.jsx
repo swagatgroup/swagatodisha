@@ -89,7 +89,7 @@ const StudentPayments = () => {
                 throw new Error('File upload failed');
             }
 
-            const receiptUrl = uploadRes.data.data.url;
+            const receiptUrl = uploadRes.data.data.filePath || uploadRes.data.data.downloadUrl;
 
             // 2. Submit installment
             await api.post('/api/students/payments/installments/upload', {
@@ -135,7 +135,7 @@ const StudentPayments = () => {
                 if (!uploadRes.data?.success) {
                     throw new Error('File upload failed');
                 }
-                receiptUrl = uploadRes.data.data.url;
+                receiptUrl = uploadRes.data.data.filePath || uploadRes.data.data.downloadUrl;
             }
 
             // 2. Submit installment update
