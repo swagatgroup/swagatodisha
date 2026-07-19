@@ -470,25 +470,27 @@ const StudentApplications = () => {
                 <span>Submit for Student</span>
               </button>
             )}
-            <button
-              onClick={() => setShowNewApplicationModal(true)}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center space-x-2"
-            >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              <span>New Application</span>
-            </button>
+            {userRole !== 'student' && (
+                <button
+                onClick={() => setShowNewApplicationModal(true)}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center space-x-2"
+                >
+                <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                </svg>
+                <span>New Application</span>
+                </button>
+            )}
           </div>
         </div>
       </motion.div>
@@ -553,6 +555,11 @@ const StudentApplications = () => {
                             </span>
                             {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
                           </span>
+                          {application.isOwnApplication && (
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                Mine
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center space-x-2">
                           {(application.workflowStatus?.currentStage === "SUBMITTED" || application.status === "pending") && (
@@ -684,6 +691,11 @@ const StudentApplications = () => {
                             </span>
                             {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
                           </span>
+                          {application.isOwnApplication && (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
+                                Mine
+                            </span>
+                          )}
                         </div>
                         <p className="text-gray-600 mb-2">
                           {application.personalDetails?.fullName || application.user?.fullName || 'Student'}

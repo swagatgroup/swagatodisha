@@ -142,13 +142,51 @@ const createApplication = async (req, res) => {
             }
         }
 
+        let finalPersonalDetails = { ...personalDetails };
+        let finalContactDetails = { ...contactDetails };
+        let isOwnApplication = false;
+
+        // Dashboard logic: determine if this is the student's own application or a referral
+        if (req.user.role === 'student') {
+            const existingAppsCount = await StudentApplication.countDocuments({ user: req.user._id });
+            
+            if (existingAppsCount === 0) {
+                isOwnApplication = true;
+                
+                // Pre-fill name and mobile from the user account if not provided
+                const userDoc = await User.findById(req.user._id);
+                if (userDoc) {
+                    if (!finalPersonalDetails.fullName) {
+                        finalPersonalDetails.fullName = userDoc.fullName || `${userDoc.firstName || ''} ${userDoc.lastName || ''}`.trim();
+                    }
+                    if (!finalContactDetails.mobile) {
+                        finalContactDetails.mobile = userDoc.phoneNumber || '';
+                    }
+                }
+            } else {
+                isOwnApplication = false;
+                
+                // Auto-apply their referral code if not explicitly passed
+                if (!referralInfo.referralCode) {
+                    const userDoc = await User.findById(req.user._id);
+                    if (userDoc && userDoc.referralCode) {
+                        referralInfo = {
+                            referredBy: userDoc._id,
+                            referralCode: userDoc.referralCode,
+                            referralType: userDoc.role,
+                        };
+                    }
+                }
+            }
+        }
+
         // Convert date string to Date object for personalDetails.dateOfBirth
-        if (personalDetails && personalDetails.dateOfBirth) {
-            personalDetails.dateOfBirth = new Date(personalDetails.dateOfBirth);
+        if (finalPersonalDetails && finalPersonalDetails.dateOfBirth) {
+            finalPersonalDetails.dateOfBirth = new Date(finalPersonalDetails.dateOfBirth);
         }
         // Convert date string to Date object for personalDetails.registrationDate
-        if (personalDetails && personalDetails.registrationDate) {
-            personalDetails.registrationDate = new Date(personalDetails.registrationDate);
+        if (finalPersonalDetails && finalPersonalDetails.registrationDate) {
+            finalPersonalDetails.registrationDate = new Date(finalPersonalDetails.registrationDate);
         }
 
         // Normalize guardian relationship to valid enum value
@@ -165,12 +203,13 @@ const createApplication = async (req, res) => {
         // Create application
         const applicationData = {
             user: req.user._id,
-            personalDetails,
-            contactDetails,
+            personalDetails: finalPersonalDetails,
+            contactDetails: finalContactDetails,
             courseDetails,
             guardianDetails: normalizedGuardianDetails,
             financialDetails,
             referralInfo,
+            isOwnApplication,
             submittedBy: req.user._id,
             submitterRole: req.user.role || 'student',
             progress: {

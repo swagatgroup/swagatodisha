@@ -14,6 +14,12 @@ const studentApplicationSchema = new mongoose.Schema({
         required: true
     },
 
+    // Is this the student's own application?
+    isOwnApplication: {
+        type: Boolean,
+        default: false
+    },
+
     // Application Status
     status: {
         type: String,
