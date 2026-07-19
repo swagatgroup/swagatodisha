@@ -16,7 +16,6 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
         },
         contactDetails: {
             primaryPhone: "",
-            whatsappNumber: "",
             email: "",
             permanentAddress: {
                 street: "",
@@ -384,19 +383,6 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         maxLength="10"
                     />
                     {errors.primaryPhone && <p className="text-red-500 text-sm mt-1">{errors.primaryPhone}</p>}
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        WhatsApp Number
-                    </label>
-                    <input
-                        type="tel"
-                        value={formData.contactDetails.whatsappNumber}
-                        onChange={(e) => handleInputChange("contactDetails.whatsappNumber", e.target.value.replace(/\D/g, '').slice(0, 10))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        maxLength="10"
-                    />
                 </div>
 
                 <div className="md:col-span-2">

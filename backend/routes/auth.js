@@ -97,8 +97,7 @@ router.post('/register', async (req, res) => {
                 status: 'DRAFT',
                 currentStage: 'REGISTRATION',
                 personalDetails: {
-                    fullName: savedUser.fullName,
-                    registrationDate: new Date()
+                    fullName: savedUser.fullName
                 },
                 contactDetails: {
                     primaryPhone: savedUser.phoneNumber,

@@ -10,7 +10,6 @@ import ApplicationReview from './tabs/ApplicationReview';
 import PaymentManagement from './tabs/PaymentManagement';
 // RealTimeStudentTracking removed - Socket.IO component
 import StudentTable from './components/StudentTable';
-import ProcessingStats from './components/ProcessingStats';
 import StudentManagement from '../admin/StudentManagement';
 import ProgressPieChart from './ProgressPieChart';
 import api from '../../utils/api';
@@ -381,15 +380,7 @@ const EnhancedStaffDashboard = () => {
                             </div>
                         </motion.div>
 
-                        {/* Processing Stats */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                            className="mb-8"
-                        >
-                            <ProcessingStats data={processingStats} onStatClick={handleStatClick} activeFilter={filterStatus} />
-                        </motion.div>
+
 
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -460,10 +451,10 @@ const EnhancedStaffDashboard = () => {
                                             chartData={[
                                                 { label: 'Draft',        value: active.draft       || 0, color: '#6b7280', filterKey: 'DRAFT' },
                                                 { label: 'Submitted',    value: active.submitted   || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
-                                                { label: 'Under Review', value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
-                                                { label: 'Approved',     value: active.approved    || 0, color: '#16a34a', filterKey: 'APPROVED' },
                                                 { label: 'Rejected',     value: active.rejected    || 0, color: '#dc2626', filterKey: 'REJECTED' },
-                                                { label: 'Completed',    value: active.complete    || 0, color: '#059669', filterKey: 'COMPLETE' },
+                                                { label: 'Under Review', value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                                                { label: 'Approved',     value: active.approved    || 0, color: '#4ade80', filterKey: 'APPROVED' },
+                                                { label: 'Completed',    value: active.complete    || 0, color: '#166534', filterKey: 'COMPLETE' },
                                             ]}
                                             onSectionClick={handleStatClick}
                                         />
@@ -476,8 +467,8 @@ const EnhancedStaffDashboard = () => {
                                             { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-blue-600 text-white',   inactiveClass: 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300 hover:bg-blue-200' },
                                             { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',    inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200' },
                                             { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white', inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200' },
-                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-600 text-white',  inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200' },
-                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-emerald-600 text-white',inactiveClass: 'bg-emerald-100 dark:bg-gray-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200' },
+                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-400 text-gray-900',  inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200' },
+                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-green-800 text-white',inactiveClass: 'bg-green-200 dark:bg-gray-700 text-green-900 dark:text-green-100 hover:bg-green-300' },
                                         ].map(({ key, label, count, activeClass, inactiveClass }) => (
                                             <button
                                                 key={key}

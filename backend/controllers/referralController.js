@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const StudentApplication = require('../models/StudentApplication');
+const Student = require('../models/Student');
 
 // Generate referral code for user
 const generateReferralCode = async (req, res) => {
@@ -86,8 +87,14 @@ const getReferralData = async (req, res) => {
             };
         });
 
-        // 500 Rs per successful referral
-        const totalEarnings = successfulReferrals * 500;
+        // Bracket logic for earnings: 
+        // 1-10 referrals = 500 Rs per referral
+        // >10 referrals = 1000 Rs per referral for ALL successful referrals
+        const perReferralAmount = successfulReferrals > 10 ? 1000 : 500;
+        const totalEarnings = successfulReferrals * perReferralAmount;
+
+        // Also fetch user to get financial details
+        const currentUser = await User.findById(userId);
 
         res.status(200).json({
             success: true,
@@ -98,7 +105,8 @@ const getReferralData = async (req, res) => {
                 pendingReferrals,
                 totalEarnings,
                 // Only return top 10 recent
-                recentReferrals: formattedReferrals.slice(0, 10)
+                recentReferrals: formattedReferrals.slice(0, 10),
+                financialDetails: currentUser?.financialDetails || null
             }
         });
     } catch (error) {
@@ -156,11 +164,12 @@ const getReferralStats = async (req, res) => {
             }
             if (user) {
                 const fullName = user.fullName || `${user.firstName} ${user.lastName}`;
+                const pAmount = stat.successful > 10 ? 1000 : 500;
                 topReferrers.push({
                     studentId: { _id: user._id, fullName, email: user.email },
                     successfulReferrals: stat.successful,
                     totalReferrals: stat.total,
-                    totalEarnings: stat.successful * 500
+                    totalEarnings: stat.successful * pAmount
                 });
             }
         }
@@ -168,12 +177,14 @@ const getReferralStats = async (req, res) => {
         // Sort by successful referrals descending
         topReferrers.sort((a, b) => b.successfulReferrals - a.successfulReferrals);
 
+        const globalPerAmount = totalSuccessful > 10 ? 1000 : 500;
+
         res.status(200).json({
             success: true,
             data: {
                 totalReferrals,
                 totalSuccessful,
-                totalEarnings: totalSuccessful * 500,
+                totalEarnings: totalSuccessful * globalPerAmount,
                 topReferrers: topReferrers.slice(0, 10)
             }
         });
@@ -187,10 +198,62 @@ const getReferralStats = async (req, res) => {
     }
 };
 
+// @desc    Update student bank details for referral payment
+// @route   PUT /api/referral/bank-details
+// @access  Private (Student only)
+const updateBankDetails = async (req, res) => {
+    try {
+        const { bankAccountNumber, ifscCode, accountHolderName, bankName } = req.body;
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User profile not found' });
+        }
+
+        let resetToPending = false;
+        if (
+            user.financialDetails.bankAccountNumber !== req.body.bankAccountNumber ||
+            user.financialDetails.ifscCode !== req.body.ifscCode ||
+            user.financialDetails.accountHolderName !== req.body.accountHolderName ||
+            user.financialDetails.bankName !== req.body.bankName
+        ) {
+            if (user.financialDetails.verificationStatus === 'VERIFIED') {
+                resetToPending = true;
+            }
+        }
+
+        user.financialDetails = {
+            ...user.financialDetails,
+            bankAccountNumber,
+            ifscCode,
+            accountHolderName,
+            bankName,
+            verificationStatus: resetToPending ? 'PENDING' : (user.financialDetails.verificationStatus || 'PENDING'),
+            verificationNotes: resetToPending ? '' : user.financialDetails.verificationNotes
+        };
+
+        await user.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Bank details updated successfully',
+            data: user.financialDetails
+        });
+    } catch (error) {
+        console.error('Update bank details error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to update bank details',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 module.exports = {
     generateReferralCode,
     getReferralData,
     trackReferral,
     updateReferralStatus,
-    getReferralStats
+    getReferralStats,
+    updateBankDetails
 };

@@ -105,7 +105,7 @@ const SinglePageStudentRegistration = ({
             fathersName: "",
             mothersName: "",
             dateOfBirth: "",
-            registrationDate: "",
+            
             aadharNumber: "",
             gender: "",
             category: "",
@@ -217,7 +217,7 @@ const SinglePageStudentRegistration = ({
                         const existingPersonalDetails = existingData.personalDetails ? {
                             ...existingData.personalDetails,
                             dateOfBirth: convertISOToDDMMYYYY(existingData.personalDetails.dateOfBirth) || existingData.personalDetails.dateOfBirth,
-                            registrationDate: convertISOToDDMMYYYY(existingData.personalDetails.registrationDate) || existingData.personalDetails.registrationDate || "",
+                            
                         } : formData.personalDetails;
                         setFormData({
                             personalDetails: existingPersonalDetails,
@@ -373,7 +373,7 @@ const SinglePageStudentRegistration = ({
                         const personalDetailsForSave = {
                             ...formData.personalDetails,
                             dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-                            registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                            
                         };
                         await api.put(`/api/student-application/${application.applicationId}/save-draft`, {
                             data: {
@@ -394,7 +394,7 @@ const SinglePageStudentRegistration = ({
                         const personalDetailsForSubmit = {
                             ...formData.personalDetails,
                             dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-                            registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                            
                         };
                         const response = await api.post("/api/student-application/create", {
                             personalDetails: personalDetailsForSubmit,
@@ -560,7 +560,7 @@ const SinglePageStudentRegistration = ({
             personalDetails: {
                 fullName: fullName,
                 dateOfBirth: dateOfBirth,
-                registrationDate: registrationDate,
+                
                 gender: getRandomElement(genders),
                 aadharNumber: getRandomAadhar(),
                 category: getRandomElement(categories),
@@ -763,7 +763,7 @@ const SinglePageStudentRegistration = ({
             const personalDetailsForSubmit = {
                 ...formData.personalDetails,
                 dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-                registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                
             };
 
             // Ensure we have an applicationId (create draft if needed)

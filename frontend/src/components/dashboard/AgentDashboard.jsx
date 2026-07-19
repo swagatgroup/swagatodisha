@@ -24,6 +24,7 @@ const EnhancedAgentDashboard = () => {
   const [agentView, setAgentView] = useState('combined'); // 'combined' | 'dashboard' | 'referral'
   const [stats, setStats] = useState({
     totalStudents: 0,
+    draftStudents: 0,
     pendingStudents: 0,
     underReviewStudents: 0,
     approvedStudents: 0,
@@ -259,7 +260,8 @@ const EnhancedAgentDashboard = () => {
 
         const mappedStats = {
           totalStudents:      statsData.total         || 0,
-          pendingStudents:    statsData.pending        || 0,
+          draftStudents:      statsData.draft         || 0,
+          pendingStudents:    statsData.submitted     || 0, // Maps submitted count directly to pendingStudents to fit UI logic smoothly
           underReviewStudents:statsData.underReview   || 0,
           approvedStudents:   statsData.approved       || 0,
           rejectedStudents:   statsData.rejected       || 0,
@@ -338,73 +340,7 @@ const EnhancedAgentDashboard = () => {
               </p>
             </motion.div>
 
-            {/* Processing Statistics */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 mb-6"
-            >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Processing Statistics</h3>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
-                {/* Total Students - Clickable */}
-                <div
-                  className={`bg-blue-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'all' ? 'ring-2 ring-blue-500' : ''}`}
-                  onClick={() => handleStatClick('all')}
-                >
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Students</p>
-                  <p className="text-2xl font-semibold text-blue-600 dark:text-blue-400">{stats.totalStudents}</p>
-                </div>
-
-                {/* Submitted - Clickable */}
-                <div
-                  className={`bg-yellow-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'SUBMITTED' ? 'ring-2 ring-yellow-500' : ''}`}
-                  onClick={() => handleStatClick('SUBMITTED')}
-                >
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Submitted</p>
-                  <p className="text-2xl font-semibold text-yellow-600 dark:text-yellow-400">{stats.pendingStudents}</p>
-                </div>
-
-                {/* Under Review - Clickable */}
-                <div
-                  className={`bg-orange-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'UNDER_REVIEW' ? 'ring-2 ring-orange-500' : ''}`}
-                  onClick={() => handleStatClick('UNDER_REVIEW')}
-                >
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Under Review</p>
-                  <p className="text-2xl font-semibold text-orange-600 dark:text-orange-400">{stats.underReviewStudents}</p>
-                </div>
-
-                {/* Approved - Clickable */}
-                <div
-                  className={`bg-green-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'APPROVED' ? 'ring-2 ring-green-500' : ''}`}
-                  onClick={() => handleStatClick('APPROVED')}
-                >
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Approved</p>
-                  <p className="text-2xl font-semibold text-green-600 dark:text-green-400">{stats.approvedStudents}</p>
-                </div>
-
-                {/* Rejected - Clickable */}
-                <div
-                  className={`bg-red-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'REJECTED' ? 'ring-2 ring-red-500' : ''}`}
-                  onClick={() => handleStatClick('REJECTED')}
-                >
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Rejected</p>
-                  <p className="text-2xl font-semibold text-red-600 dark:text-red-400">{stats.rejectedStudents}</p>
-                </div>
-
-                {/* Completed - Clickable */}
-                <div
-                  className={`bg-teal-50 dark:bg-gray-700 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-shadow ${studentTableFilter === 'COMPLETED' ? 'ring-2 ring-teal-500' : ''}`}
-                  onClick={() => handleStatClick('COMPLETED')}
-                >
-                  <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
-                  <p className="text-2xl font-semibold text-teal-600 dark:text-teal-400">{stats.completedStudents}</p>
-                </div>
-              </div>
-            </motion.div>
 
             {/* 3D Progress Chart — with view tabs */}
             <motion.div
@@ -417,7 +353,7 @@ const EnhancedAgentDashboard = () => {
                 const viewData = {
                   combined: {
                     total:       stats.totalStudents,
-                    draft:       0, // combined pending includes draft+submitted
+                    draft:       stats.draftStudents,
                     submitted:   stats.pendingStudents,
                     underReview: stats.underReviewStudents,
                     approved:    stats.approvedStudents,
@@ -443,7 +379,7 @@ const EnhancedAgentDashboard = () => {
                           className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                             agentView === key
                               ? 'bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-md'
-                              : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                              : 'text-gray-600 dark:bg-transparent dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                           }`}
                         >
                           {label}
@@ -457,46 +393,31 @@ const EnhancedAgentDashboard = () => {
                       {agentView === 'referral'  && 'Students who self-registered using your referral code.'}
                     </p>
 
-                    {/* Summary Cards */}
-                    <div className="grid grid-cols-3 gap-3 mb-4">
-                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm">
-                        <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
-                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
-                      </div>
-                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-green-200 dark:border-green-800 text-center shadow-sm">
-                        <p className="text-xs text-green-600 dark:text-green-400">Approved</p>
-                        <p className="text-2xl font-bold text-green-700 dark:text-green-300">{active.approved || 0}</p>
-                      </div>
-                      <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm">
-                        <p className="text-xs text-blue-600 dark:text-blue-400">Submitted</p>
-                        <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{active.submitted || 0}</p>
-                      </div>
-                    </div>
-
                     {/* Pie Chart */}
                     <div className="w-full lg:w-1/2 mx-auto">
-                      <ProgressPieChart
-                        chartData={[
-                          { label: 'Draft',        value: active.draft       || 0, color: '#6b7280', filterKey: 'SUBMITTED' },
-                          { label: 'Submitted',    value: active.submitted   || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
-                          { label: 'Under Review', value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
-                          { label: 'Approved',     value: active.approved    || 0, color: '#16a34a', filterKey: 'APPROVED' },
-                          { label: 'Rejected',     value: active.rejected    || 0, color: '#dc2626', filterKey: 'REJECTED' },
-                          { label: 'Completed',    value: active.complete    || 0, color: '#059669', filterKey: 'COMPLETE' },
-                        ]}
-                        onSectionClick={handleStatClick}
-                      />
+                        <ProgressPieChart
+                          chartData={[
+                            { label: 'Draft',        value: active.draft       || 0, color: '#6b7280', filterKey: 'DRAFT' },
+                            { label: 'Submitted',    value: active.submitted   || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
+                            { label: 'Rejected',     value: active.rejected    || 0, color: '#dc2626', filterKey: 'REJECTED' },
+                            { label: 'Under Review', value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                            { label: 'Approved',     value: active.approved    || 0, color: '#4ade80', filterKey: 'APPROVED' },
+                            { label: 'Completed',    value: active.complete    || 0, color: '#166534', filterKey: 'COMPLETE' },
+                          ]}
+                          onSectionClick={handleStatClick}
+                        />
                     </div>
 
                     {/* Status Filter Buttons */}
-                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-4">
-                      {[
-                        { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-blue-600 text-white',   inactiveClass: 'bg-blue-100 dark:bg-gray-700 text-blue-700 hover:bg-blue-200' },
-                        { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white', inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 hover:bg-yellow-200' },
-                        { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-600 text-white',  inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 hover:bg-green-200' },
-                        { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',    inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 hover:bg-red-200' },
-                        { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-emerald-600 text-white',inactiveClass: 'bg-emerald-100 dark:bg-gray-700 text-emerald-700 hover:bg-emerald-200' },
-                      ].map(({ key, label, count, activeClass, inactiveClass }) => (
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-4">
+                        {[
+                          { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white',   inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 hover:bg-gray-200' },
+                          { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-blue-600 text-white',   inactiveClass: 'bg-blue-100 dark:bg-gray-700 text-blue-700 hover:bg-blue-200' },
+                          { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',    inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 hover:bg-red-200' },
+                          { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white', inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 hover:bg-yellow-200' },
+                          { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-400 text-gray-900',  inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 hover:bg-green-200' },
+                          { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-green-800 text-white',inactiveClass: 'bg-green-200 dark:bg-gray-700 text-green-900 hover:bg-green-300' },
+                        ].map(({ key, label, count, activeClass, inactiveClass }) => (
                         <button
                           key={key}
                           onClick={() => handleStatClick(key)}

@@ -305,9 +305,8 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             drawBoxedField('Email Id', pdfContent.contactDetails.email, leftColX + thirdW + 5, currentY, thirdW * 2 + 5);
             currentY += 16;
             
-            drawBoxedField('Primary Phone', pdfContent.contactDetails.primaryPhone, leftColX, currentY, thirdW);
-            drawBoxedField('WhatsApp Number', pdfContent.contactDetails.whatsappNumber, leftColX + thirdW + 5, currentY, thirdW);
-            drawBoxedField('Guardian Phone', pdfContent.guardianDetails.guardianPhone, leftColX + (thirdW * 2) + 10, currentY, thirdW);
+            drawBoxedField('Primary Phone', pdfContent.contactDetails.primaryPhone, leftColX, currentY, halfW);
+            drawBoxedField('Guardian Phone', pdfContent.guardianDetails.guardianPhone, leftColX + halfW + 5, currentY, halfW);
             currentY += 24;
             
             // Address Blocks
@@ -672,12 +671,8 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     <span class="field-value">${content.contactDetails.email || 'N/A'}</span>
                 </div>
                 <div class="field-row">
-                    <span class="field-label">Phone:</span>
+                    <span class="field-label">Primary Phone:</span>
                     <span class="field-value">${content.contactDetails.primaryPhone || 'N/A'}</span>
-                </div>
-                <div class="field-row">
-                    <span class="field-label">WhatsApp:</span>
-                    <span class="field-value">${content.contactDetails.whatsappNumber || 'N/A'}</span>
                 </div>
                 <div class="field-row">
                     <span class="field-label">Address:</span>

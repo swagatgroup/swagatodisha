@@ -545,6 +545,54 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
         }
     };
 
+    const handleBankVerification = async (status, notes = '') => {
+        try {
+            showLoading(`Marking bank details as ${status.toLowerCase()}...`);
+            // Assuming we update based on user ID directly, since we populated user inside StudentApplication
+            // The route is PUT /api/admin/students/:id/bank-verification
+            const targetId = selectedStudent.user?._id || selectedStudent.userId || selectedStudent._id;
+            
+            const response = await api.put(`/api/admin/students/${targetId}/bank-verification`, {
+                status,
+                notes
+            });
+            
+            if (response.data.success) {
+                // Update local state
+                const updatedStudent = { ...selectedStudent };
+                if (updatedStudent.user && updatedStudent.user.financialDetails) {
+                    updatedStudent.user.financialDetails.verificationStatus = status;
+                    updatedStudent.user.financialDetails.verificationNotes = notes;
+                }
+                setSelectedStudent(updatedStudent);
+                
+                // Also update in the list
+                setStudents(students.map(s => {
+                    if (s._id === selectedStudent._id && s.user && s.user.financialDetails) {
+                        return {
+                            ...s,
+                            user: {
+                                ...s.user,
+                                financialDetails: {
+                                    ...s.user.financialDetails,
+                                    verificationStatus: status,
+                                    verificationNotes: notes
+                                }
+                            }
+                        };
+                    }
+                    return s;
+                }));
+                
+                showSuccess(response.data.message || `Bank details ${status.toLowerCase()} successfully`);
+            }
+        } catch (error) {
+            handleApiError(error, 'Failed to update bank verification status');
+        } finally {
+            // closeLoading is handled by sweetAlert on success/error
+        }
+    };
+
     const handleStatusUpdate = async () => {
         if (!statusData.status) {
             showError('Please select a status');
@@ -2242,6 +2290,78 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                 </div>
                                             ))}
                                         </div>
+
+                                  {/* Financial / Bank Information */}
+                                  {selectedStudent.user && selectedStudent.user.financialDetails && selectedStudent.user.financialDetails.bankAccountNumber && (
+                                      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                          <div className="flex justify-between items-start mb-4">
+                                              <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 flex items-center">
+                                                  <i className="fa-solid fa-building-columns text-blue-600 mr-2"></i>
+                                                  Bank Information (For Payouts)
+                                              </h4>
+                                              <div>
+                                                  {selectedStudent.user.financialDetails.verificationStatus === 'VERIFIED' && (
+                                                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Verified</span>
+                                                  )}
+                                                  {selectedStudent.user.financialDetails.verificationStatus === 'PENDING' && (
+                                                      <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
+                                                  )}
+                                                  {selectedStudent.user.financialDetails.verificationStatus === 'REJECTED' && (
+                                                      <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Rejected</span>
+                                                  )}
+                                              </div>
+                                          </div>
+                                          
+                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                              <div>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Account Holder Name</label>
+                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.accountHolderName}</p>
+                                              </div>
+                                              <div>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Bank Name</label>
+                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.bankName}</p>
+                                              </div>
+                                              <div>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Account Number</label>
+                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.bankAccountNumber}</p>
+                                              </div>
+                                              <div>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">IFSC Code</label>
+                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.ifscCode}</p>
+                                              </div>
+                                          </div>
+                                          
+                                          {selectedStudent.user.financialDetails.verificationStatus === 'REJECTED' && selectedStudent.user.financialDetails.verificationNotes && (
+                                              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md">
+                                                  <p className="text-sm text-red-600 dark:text-red-400"><span className="font-semibold">Rejection Reason:</span> {selectedStudent.user.financialDetails.verificationNotes}</p>
+                                              </div>
+                                          )}
+
+                                          <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                              {selectedStudent.user.financialDetails.verificationStatus !== 'VERIFIED' && (
+                                                  <button 
+                                                      onClick={() => handleBankVerification('VERIFIED')}
+                                                      className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition-colors"
+                                                  >
+                                                      Verify Details
+                                                  </button>
+                                              )}
+                                              {selectedStudent.user.financialDetails.verificationStatus !== 'REJECTED' && (
+                                                  <button 
+                                                      onClick={() => {
+                                                          const reason = window.prompt('Enter rejection reason for bank details:');
+                                                          if (reason !== null && reason.trim() !== '') {
+                                                              handleBankVerification('REJECTED', reason);
+                                                          }
+                                                      }}
+                                                      className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 transition-colors"
+                                                  >
+                                                      Reject Details
+                                                  </button>
+                                              )}
+                                          </div>
+                                      </div>
+                                  )}
 
                                         {/* Generate PDF/ZIP Buttons */}
                                         {selectedStudent.documents && selectedStudent.documents.length > 0 && (

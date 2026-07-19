@@ -816,7 +816,9 @@ router.get("/stats", async (req, res) => {
       success: true,
       data: {
         total: totalStudents,
-        pending: pendingStudents,
+        draft: draftCount,
+        submitted: submittedCount,
+        pending: pendingStudents, // keep for backward compatibility if needed
         underReview: underReviewStudents,
         approved: approvedStudents,
         rejected: rejectedStudents,

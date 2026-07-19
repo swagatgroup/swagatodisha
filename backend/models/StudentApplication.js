@@ -73,10 +73,6 @@ const studentApplicationSchema = new mongoose.Schema({
             type: Date,
             required: function() { return this.status !== 'DRAFT'; }
         },
-        registrationDate: {
-            type: Date,
-            required: function() { return this.status !== 'DRAFT'; }
-        },
         gender: {
             type: String,
             enum: ['Male', 'Female', 'Other', 'Prefer not to say'],

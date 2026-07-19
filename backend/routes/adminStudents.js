@@ -375,7 +375,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Execute query with pagination - don't populate submittedBy yet as it might be Admin
         const applications = await StudentApplication.find(finalFilter)
-            .populate('user', 'fullName email phoneNumber')
+            .populate('user', 'fullName email phoneNumber financialDetails')
             .populate('referralInfo.referredBy', 'fullName email phoneNumber referralCode')
             .populate('courseDetails.campus', 'name code')
             .select('+submittedBy') // Ensure submittedBy is included even if populate fails
@@ -884,8 +884,8 @@ router.get('/rejection-reasons', protect, authorize('staff', 'super_admin'), asy
 router.get('/:id', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const application = await StudentApplication.findById(req.params.id)
-            .populate('user', 'firstName lastName email phoneNumber')
-            .populate('referralInfo.referredBy', 'firstName lastName referralCode email phoneNumber')
+            .populate('user', 'firstName lastName fullName email phoneNumber financialDetails')
+            .populate('referralInfo.referredBy', 'firstName lastName fullName referralCode email phoneNumber')
             .populate('courseDetails.campus', 'name code')
             .exec();
 
@@ -1823,6 +1823,66 @@ router.post('/:id/resubmit', protect, async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to resubmit application',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});
+
+// @desc    Update student bank details verification status
+// @route   PUT /api/admin/students/:id/bank-verification
+// @access  Private (Admin/Staff)
+router.put('/:id/bank-verification', protect, authorize('super_admin', 'admin', 'staff'), async (req, res) => {
+    try {
+        const { status, notes } = req.body;
+        
+        if (!['PENDING', 'VERIFIED', 'REJECTED'].includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status' });
+        }
+
+        // We need the User model, since financialDetails is on the User.
+        // But the ID here might be the StudentApplication ID or the User ID.
+        // Based on other routes, :id is usually the StudentApplication ID or Student ID.
+        // Let's assume :id is the User ID directly, or we find the StudentApplication and get the user.
+        // Many admin routes take application ID. Let's find the application, then the user.
+        const application = await StudentApplication.findById(req.params.id);
+        if (!application) {
+            // Fallback: try User ID directly
+            const directUser = await User.findById(req.params.id);
+            if (!directUser) {
+                return res.status(404).json({ success: false, message: 'User or Application not found' });
+            }
+            
+            directUser.financialDetails.verificationStatus = status;
+            if (notes !== undefined) directUser.financialDetails.verificationNotes = notes;
+            await directUser.save();
+            
+            return res.json({
+                success: true,
+                message: `Bank details ${status.toLowerCase()} successfully`,
+                data: directUser.financialDetails
+            });
+        }
+        
+        // If it was application ID, get the associated user
+        const user = await User.findById(application.userId);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User for this application not found' });
+        }
+
+        user.financialDetails.verificationStatus = status;
+        if (notes !== undefined) user.financialDetails.verificationNotes = notes;
+        await user.save();
+
+        res.json({
+            success: true,
+            message: `Bank details ${status.toLowerCase()} successfully`,
+            data: user.financialDetails
+        });
+    } catch (error) {
+        console.error('Bank verification error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while verifying bank details',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }

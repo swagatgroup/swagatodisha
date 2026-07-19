@@ -45,7 +45,7 @@ const UniversalStudentRegistration = ({
       fathersName: "",
       mothersName: "",
       dateOfBirth: "",
-      registrationDate: "",
+      
       aadharNumber: "",
       gender: "",
       category: "",
@@ -269,7 +269,7 @@ const UniversalStudentRegistration = ({
           const loadedPersonalDetails = loadedData.personalDetails ? {
             ...loadedData.personalDetails,
             dateOfBirth: convertISOToDDMMYYYY(loadedData.personalDetails.dateOfBirth) || loadedData.personalDetails.dateOfBirth,
-            registrationDate: convertISOToDDMMYYYY(loadedData.personalDetails.registrationDate) || loadedData.personalDetails.registrationDate || "",
+            
           } : {};
           setFormData((prev) => ({
             ...prev,
@@ -309,7 +309,7 @@ const UniversalStudentRegistration = ({
           dateOfBirth: parsed.personalDetails.dateOfBirth && !parsed.personalDetails.dateOfBirth.includes('/')
             ? convertISOToDDMMYYYY(parsed.personalDetails.dateOfBirth) || parsed.personalDetails.dateOfBirth
             : parsed.personalDetails.dateOfBirth,
-          registrationDate: parsed.personalDetails.registrationDate && !parsed.personalDetails.registrationDate.includes('/')
+          
             ? convertISOToDDMMYYYY(parsed.personalDetails.registrationDate) || parsed.personalDetails.registrationDate || ""
             : parsed.personalDetails.registrationDate || "",
         } : {};
@@ -548,7 +548,7 @@ const UniversalStudentRegistration = ({
         const personalDetailsForSave = {
           ...formData.personalDetails,
           dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-          registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+          
         };
         await api.put(
           `/api/student-application/${application.applicationId}/save-draft`,
@@ -581,7 +581,7 @@ const UniversalStudentRegistration = ({
             const personalDetailsForSubmit = {
               ...formData.personalDetails,
               dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-              registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+              
             };
             const response = await api.post("/api/student-application/create", {
               personalDetails: personalDetailsForSubmit,
@@ -735,7 +735,7 @@ const UniversalStudentRegistration = ({
               const personalDetailsForSubmit = {
                 ...formData.personalDetails,
                 dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-                registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                
               };
               await api.put(
                 `/api/student-application/${appId}/save-draft`,
@@ -762,7 +762,7 @@ const UniversalStudentRegistration = ({
             const personalDetailsForSubmit = {
               ...formData.personalDetails,
               dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-              registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+              
             };
             // Save updated data before submitting
             await api.put(
@@ -818,7 +818,7 @@ const UniversalStudentRegistration = ({
         const personalDetailsForSubmit = {
           ...formData.personalDetails,
           dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-          registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+          
         };
         response = await api.post("/api/application/create", {
           ...formData,
@@ -862,7 +862,7 @@ const UniversalStudentRegistration = ({
                   const personalDetailsForSave = {
                     ...formData.personalDetails,
                     dateOfBirth: convertDDMMYYYYToISO(formData.personalDetails.dateOfBirth) || formData.personalDetails.dateOfBirth,
-                    registrationDate: convertDDMMYYYYToISO(formData.personalDetails.registrationDate) || formData.personalDetails.registrationDate,
+                    
                   };
                   await api.put(
                     `/api/student-application/${existing.data.data.applicationId}/save-draft`,

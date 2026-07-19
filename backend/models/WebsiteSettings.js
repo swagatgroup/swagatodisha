@@ -106,6 +106,25 @@ const websiteSettingsSchema = new mongoose.Schema({
     // Payment Settings
     paymentSettings: {
         qrCodeImage: { type: String, default: '' }
+    },
+
+    // Referral Settings
+    referralSettings: {
+        tiers: {
+            type: [{
+                minReferrals: { type: Number, required: true },
+                maxReferrals: { type: Number, default: null }, // null means infinity (e.g. 100+)
+                amount: { type: Number, required: true },
+                bonusText: { type: String, default: '' } // E.g., 'Bullet and iPhone 17 Pro Max'
+            }],
+            default: [
+                { minReferrals: 1, maxReferrals: 10, amount: 2000 },
+                { minReferrals: 11, maxReferrals: 25, amount: 3000 },
+                { minReferrals: 26, maxReferrals: 50, amount: 4000 },
+                { minReferrals: 51, maxReferrals: 100, amount: 5000 },
+                { minReferrals: 101, maxReferrals: null, amount: 5000, bonusText: 'Bullet and iPhone 17 Pro Max' }
+            ]
+        }
     }
 }, { timestamps: true });
 

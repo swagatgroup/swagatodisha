@@ -184,10 +184,6 @@ const createApplication = async (req, res) => {
         if (finalPersonalDetails && finalPersonalDetails.dateOfBirth) {
             finalPersonalDetails.dateOfBirth = new Date(finalPersonalDetails.dateOfBirth);
         }
-        // Convert date string to Date object for personalDetails.registrationDate
-        if (finalPersonalDetails && finalPersonalDetails.registrationDate) {
-            finalPersonalDetails.registrationDate = new Date(finalPersonalDetails.registrationDate);
-        }
 
         // Normalize guardian relationship to valid enum value
         const validRelationships = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'];
@@ -359,9 +355,6 @@ const saveDraft = async (req, res) => {
                 if (data.personalDetails.dateOfBirth) {
                     data.personalDetails.dateOfBirth = new Date(data.personalDetails.dateOfBirth);
                 }
-                if (data.personalDetails.registrationDate) {
-                    data.personalDetails.registrationDate = new Date(data.personalDetails.registrationDate);
-                }
             }
 
             Object.keys(data).forEach((key) => {
@@ -507,11 +500,6 @@ const submitApplication = async (req, res) => {
         application.termsAccepted = termsAccepted;
         application.termsAcceptedAt = new Date();
         
-        // Automatically set registration date on submission
-        if (application.personalDetails) {
-            application.personalDetails.registrationDate = new Date();
-        }
-
         // Add workflow history entry
         application.workflowHistory.push({
             stage: 'SUBMITTED',

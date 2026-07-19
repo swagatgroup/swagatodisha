@@ -261,7 +261,6 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       contactDetails: {
         primaryPhone: student.contactDetails?.primaryPhone || '',
         secondaryPhone: student.contactDetails?.secondaryPhone || '',
-        whatsappNumber: student.contactDetails?.whatsappNumber || '',
         email: student.contactDetails?.email || '',
         permanentAddress: student.contactDetails?.permanentAddress || {
           street: student.contactDetails?.address || '',
@@ -332,7 +331,6 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
         contactDetails: {
           primaryPhone: editData.contactDetails?.primaryPhone,
           secondaryPhone: editData.contactDetails?.secondaryPhone,
-          whatsappNumber: editData.contactDetails?.whatsappNumber,
           email: editData.contactDetails?.email,
           permanentAddress: {
             street: editData.contactDetails?.permanentAddress?.street || '',
@@ -1235,22 +1233,6 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           setEditData({
                           ...editData,
                             contactDetails: { ...editData.contactDetails, secondaryPhone: value }
-                          });
-                        }}
-                        maxLength="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp Number</label>
-                      <input
-                        type="tel"
-                        value={editData.contactDetails?.whatsappNumber || ''}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\D/g, '').slice(0, 10);
-                          setEditData({
-                            ...editData,
-                            contactDetails: { ...editData.contactDetails, whatsappNumber: value }
                           });
                         }}
                         maxLength="10"

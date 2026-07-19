@@ -2,6 +2,7 @@ import {useState, useEffect} from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../utils/api';
+import { showSuccess, showError } from '../../../utils/sweetAlert';
 
 const ReferralDashboard = () => {
     const { user } = useAuth();
@@ -11,8 +12,18 @@ const ReferralDashboard = () => {
         successfulReferrals: 0,
         pendingReferrals: 0,
         totalEarnings: 0,
-        recentReferrals: []
+        recentReferrals: [],
+        financialDetails: null
     });
+    const [bankDetails, setBankDetails] = useState({
+        bankAccountNumber: '',
+        ifscCode: '',
+        accountHolderName: '',
+        bankName: '',
+        verificationStatus: 'PENDING',
+        verificationNotes: ''
+    });
+    const [savingBank, setSavingBank] = useState(false);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
 
@@ -26,11 +37,45 @@ const ReferralDashboard = () => {
             const response = await api.get('/api/referral/data');
             if (response.data.success) {
                 setReferralData(response.data.data);
+                if (response.data.data.financialDetails) {
+                    setBankDetails({
+                        bankAccountNumber: response.data.data.financialDetails.bankAccountNumber || '',
+                        ifscCode: response.data.data.financialDetails.ifscCode || '',
+                        accountHolderName: response.data.data.financialDetails.accountHolderName || '',
+                        bankName: response.data.data.financialDetails.bankName || '',
+                        verificationStatus: response.data.data.financialDetails.verificationStatus || 'PENDING',
+                        verificationNotes: response.data.data.financialDetails.verificationNotes || ''
+                    });
+                }
             }
         } catch (error) {
             console.error('Error loading referral data:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleBankDetailsSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            setSavingBank(true);
+            const response = await api.put('/api/referral/bank-details', bankDetails);
+            if (response.data.success) {
+                showSuccess(response.data.message || 'Bank details updated successfully');
+                // Update local state if the status changed to PENDING
+                if (response.data.data) {
+                    setBankDetails(prev => ({
+                        ...prev,
+                        verificationStatus: response.data.data.verificationStatus || 'PENDING',
+                        verificationNotes: response.data.data.verificationNotes || ''
+                    }));
+                }
+            }
+        } catch (error) {
+            console.error('Error updating bank details:', error);
+            showError('Failed to update bank details');
+        } finally {
+            setSavingBank(false);
         }
     };
 
@@ -283,6 +328,112 @@ const ReferralDashboard = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </motion.div>
+
+            {/* Bank Details Section */}
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 p-6 mb-6"
+            >
+                <div className="border-b border-gray-100 pb-4 mb-6">
+                    <div className="flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                            <i className="fa-solid fa-building-columns text-blue-600 mr-2"></i>
+                            Bank Account Details for Payouts
+                        </h3>
+                        <div>
+                            {bankDetails.verificationStatus === 'VERIFIED' && (
+                                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Verified</span>
+                            )}
+                            {bankDetails.verificationStatus === 'PENDING' && (
+                                <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Pending Verification</span>
+                            )}
+                            {bankDetails.verificationStatus === 'REJECTED' && (
+                                <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Rejected</span>
+                            )}
+                        </div>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1">Add your bank details to receive referral earnings.</p>
+                    
+                    {bankDetails.verificationStatus === 'REJECTED' && bankDetails.verificationNotes && (
+                        <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                            <p className="text-sm text-red-600"><span className="font-semibold">Rejection Reason:</span> {bankDetails.verificationNotes}</p>
+                        </div>
+                    )}
+                </div>
+
+                <form onSubmit={handleBankDetailsSubmit} className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder's Name</label>
+                            <input
+                                type="text"
+                                required
+                                value={bankDetails.accountHolderName}
+                                onChange={(e) => setBankDetails({...bankDetails, accountHolderName: e.target.value})}
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="As per bank records"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+                            <input
+                                type="text"
+                                required
+                                value={bankDetails.bankName}
+                                onChange={(e) => setBankDetails({...bankDetails, bankName: e.target.value})}
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="e.g. State Bank of India"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
+                            <input
+                                type="text"
+                                required
+                                value={bankDetails.bankAccountNumber}
+                                onChange={(e) => setBankDetails({...bankDetails, bankAccountNumber: e.target.value})}
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="Enter account number"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">IFSC Code</label>
+                            <input
+                                type="text"
+                                required
+                                value={bankDetails.ifscCode}
+                                onChange={(e) => setBankDetails({...bankDetails, ifscCode: e.target.value})}
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="e.g. SBIN0001234"
+                            />
+                        </div>
+                    </div>
+                    
+                    <div className="flex justify-end pt-4 border-t border-gray-100">
+                        <button
+                            type="submit"
+                            disabled={savingBank}
+                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-medium disabled:opacity-50"
+                        >
+                            {savingBank ? 'Saving...' : 'Save Bank Details'}
+                        </button>
+                    </div>
+                </form>
+
+                <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                    <p className="text-sm text-blue-800 font-medium mb-1">Note: Verification Required</p>
+                    <p className="text-sm text-blue-700">Team Swagat Odisha will verify these details. While claiming the amount, once you add everything, please contact Team Swagat Odisha for help.</p>
+                    <div className="mt-3 flex flex-wrap gap-4">
+                        <a href="tel:+919876543210" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-blue-50 transition-colors">
+                            <i className="fa-solid fa-phone mr-2"></i> +91 98765 43210
+                        </a>
+                        <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
+                            <i className="fa-brands fa-whatsapp mr-2"></i> WhatsApp Support
+                        </a>
                     </div>
                 </div>
             </motion.div>

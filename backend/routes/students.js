@@ -720,4 +720,63 @@ router.put('/:id/academic', [
     }
 });
 
+// @desc    Update student bank details
+// @route   PUT /api/students/bank-details
+// @access  Private (Student)
+router.put('/bank-details', protect, isStudent, [
+    body('bankAccountNumber').notEmpty().withMessage('Bank Account Number is required'),
+    body('ifscCode').notEmpty().withMessage('IFSC Code is required'),
+    body('accountHolderName').notEmpty().withMessage('Account Holder Name is required'),
+    body('bankName').notEmpty().withMessage('Bank Name is required')
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ success: false, errors: errors.array() });
+        }
+
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Check if there are changes. If there are changes and previously verified, set to PENDING
+        let resetToPending = false;
+        if (
+            user.financialDetails.bankAccountNumber !== req.body.bankAccountNumber ||
+            user.financialDetails.ifscCode !== req.body.ifscCode ||
+            user.financialDetails.accountHolderName !== req.body.accountHolderName ||
+            user.financialDetails.bankName !== req.body.bankName
+        ) {
+            if (user.financialDetails.verificationStatus === 'VERIFIED') {
+                resetToPending = true;
+            }
+        }
+
+        user.financialDetails = {
+            ...user.financialDetails,
+            bankAccountNumber: req.body.bankAccountNumber,
+            ifscCode: req.body.ifscCode,
+            accountHolderName: req.body.accountHolderName,
+            bankName: req.body.bankName,
+            verificationStatus: resetToPending ? 'PENDING' : (user.financialDetails.verificationStatus || 'PENDING'),
+            verificationNotes: resetToPending ? '' : user.financialDetails.verificationNotes
+        };
+
+        await user.save();
+
+        res.json({
+            success: true,
+            message: resetToPending ? 'Bank details updated. Verification status has been reset to Pending.' : 'Bank details updated successfully.',
+            data: user.financialDetails
+        });
+    } catch (error) {
+        console.error('Update bank details error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while updating bank details'
+        });
+    }
+});
+
 module.exports = router;

@@ -717,10 +717,10 @@ const SuperAdminDashboard = () => {
                                             chartData={[
                                                 { label: 'Draft',       value: active.draft       || 0, color: '#6b7280', filterKey: 'DRAFT' },
                                                 { label: 'Submitted',   value: active.submitted   || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
-                                                { label: 'Under Review',value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
-                                                { label: 'Approved',    value: active.approved    || 0, color: '#16a34a', filterKey: 'APPROVED' },
                                                 { label: 'Rejected',    value: active.rejected    || 0, color: '#dc2626', filterKey: 'REJECTED' },
-                                                { label: 'Completed',   value: active.complete    || 0, color: '#059669', filterKey: 'COMPLETE' },
+                                                { label: 'Under Review',value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
+                                                { label: 'Approved',    value: active.approved    || 0, color: '#4ade80', filterKey: 'APPROVED' },
+                                                { label: 'Completed',   value: active.complete    || 0, color: '#166534', filterKey: 'COMPLETE' },
                                             ]}
                                             onSectionClick={handleStatClick}
                                         />
@@ -733,8 +733,8 @@ const SuperAdminDashboard = () => {
                                             { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-blue-600 text-white',  inactiveClass: 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300 hover:bg-blue-200' },
                                             { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',   inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200' },
                                             { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white',inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200' },
-                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-600 text-white', inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200' },
-                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-emerald-600 text-white',inactiveClass: 'bg-emerald-100 dark:bg-gray-700 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200' },
+                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-400 text-gray-900', inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200' },
+                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-green-800 text-white',inactiveClass: 'bg-green-200 dark:bg-gray-700 text-green-900 dark:text-green-100 hover:bg-green-300' },
                                         ].map(({ key, label, count, activeClass, inactiveClass }) => (
                                             <button
                                                 key={key}
@@ -1170,7 +1170,6 @@ const SuperAdminDashboard = () => {
                                                                                 contactDetails: {
                                                                                     email: student.contactDetails?.email || student.email || '',
                                                                                     primaryPhone: student.contactDetails?.primaryPhone || student.phone || '',
-                                                                                    whatsappNumber: student.contactDetails?.whatsappNumber || '',
                                                                                     permanentAddress: {
                                                                                         street: student.contactDetails?.permanentAddress?.street || student.contactDetails?.address || '',
                                                                                         city: student.contactDetails?.permanentAddress?.city || student.contactDetails?.city || '',
@@ -1412,10 +1411,6 @@ const SuperAdminDashboard = () => {
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">WhatsApp Number</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.whatsappNumber || 'N/A'}</p>
                                         </div>
                                     </div>
                                     {selectedStudent.contactDetails?.permanentAddress && (
@@ -1945,19 +1940,6 @@ const SuperAdminDashboard = () => {
                                             onChange={(e) => setEditData({
                                                 ...editData,
                                                 contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value.replace(/\D/g, '').slice(0, 10) }
-                                            })}
-                                            maxLength="10"
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">WhatsApp Number</label>
-                                        <input
-                                            type="tel"
-                                            value={editData.contactDetails?.whatsappNumber || ''}
-                                            onChange={(e) => setEditData({
-                                                ...editData,
-                                                contactDetails: { ...editData.contactDetails, whatsappNumber: e.target.value.replace(/\D/g, '').slice(0, 10) }
                                             })}
                                             maxLength="10"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"

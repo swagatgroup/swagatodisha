@@ -470,27 +470,6 @@ const StudentApplications = () => {
                 <span>Submit for Student</span>
               </button>
             )}
-            {userRole !== 'student' && (
-                <button
-                onClick={() => setShowNewApplicationModal(true)}
-                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center space-x-2"
-                >
-                <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                    />
-                </svg>
-                <span>New Application</span>
-                </button>
-            )}
           </div>
         </div>
       </motion.div>
@@ -570,6 +549,14 @@ const StudentApplications = () => {
                               className="px-4 py-2 text-sm text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg border border-red-200"
                             >
                               Withdraw
+                            </button>
+                          )}
+                          {application.status === 'DRAFT' && userRole === 'student' && (
+                            <button
+                              onClick={() => setShowNewApplicationModal(true)}
+                              className="px-4 py-2 text-sm text-white bg-green-600 hover:bg-green-700 rounded-lg"
+                            >
+                              Complete Application
                             </button>
                           )}
                           <button
@@ -800,25 +787,27 @@ const StudentApplications = () => {
                   ? 'Get started by creating your application.'
                   : 'Get started by creating your first application.'}
               </p>
-              <button
-                onClick={() => setShowNewApplicationModal(true)}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
-              >
-                <svg
-                  className="h-4 w-4 mr-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+              {userRole !== 'student' && (
+                <button
+                  onClick={() => setShowNewApplicationModal(true)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                  />
-                </svg>
-                {userRole === 'student' ? 'Create Application' : 'New Application'}
-              </button>
+                  <svg
+                    className="h-4 w-4 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  New Application
+                </button>
+              )}
             </div>
           )}
         </motion.div>
