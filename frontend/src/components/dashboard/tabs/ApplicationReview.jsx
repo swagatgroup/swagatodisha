@@ -40,6 +40,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
     const [tabStats, setTabStats] = useState({
         all_submission: 0,
         under_review: 0,
+        approved: 0,
         rejected: 0
     });
     const [showDocumentSelectionModal, setShowDocumentSelectionModal] = useState(false);
@@ -149,6 +150,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
     const calculateStatsFromApplicationsData = (applicationsData) => {
         let allSubmission = 0;
         let underReview = 0;
+        let approved = 0;
         let rejected = 0;
 
         applicationsData.forEach(app => {
@@ -164,17 +166,23 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                 underReview++;
             }
 
+            // Count approved - applications with status APPROVED
+            if (status === 'APPROVED') {
+                approved++;
+            }
+
             // Count rejected - applications with status REJECTED
             if (status === 'REJECTED') {
                 rejected++;
             }
         });
 
-        console.log('Calculated stats:', { allSubmission, underReview, rejected });
+        console.log('Calculated stats:', { allSubmission, underReview, approved, rejected });
 
         setTabStats({
             all_submission: allSubmission,
             under_review: underReview,
+            approved: approved,
             rejected: rejected
         });
     };
@@ -193,6 +201,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             const statusMap = {
                 'all_submission': 'all', // Show all submissions (excluding DRAFT)
                 'under_review': 'UNDER_REVIEW', // Show applications under review
+                'approved': 'APPROVED',
                 'rejected': 'REJECTED'
             };
 
