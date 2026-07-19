@@ -40,7 +40,6 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
     const [tabStats, setTabStats] = useState({
         all_submission: 0,
         under_review: 0,
-        approved: 0,
         rejected: 0
     });
     const [showDocumentSelectionModal, setShowDocumentSelectionModal] = useState(false);
@@ -150,7 +149,6 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
     const calculateStatsFromApplicationsData = (applicationsData) => {
         let allSubmission = 0;
         let underReview = 0;
-        let approved = 0;
         let rejected = 0;
 
         applicationsData.forEach(app => {
@@ -161,48 +159,22 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                 allSubmission++;
             }
 
-            // Count under review - applications with status UNDER_REVIEW or SUBMITTED with documents being reviewed
+            // Count under review - applications with status UNDER_REVIEW
             if (status === 'UNDER_REVIEW') {
                 underReview++;
-            } else if (status === 'SUBMITTED') {
-                // Check if documents are being reviewed (not all approved, not all rejected)
-                const documentStats = app.documentStats || {};
-                const approvedDocs = documentStats.approved || 0;
-                const rejectedDocs = documentStats.rejected || 0;
-                const pendingDocs = documentStats.pending || 0;
-                const totalDocs = approvedDocs + rejectedDocs + pendingDocs;
-
-                // If there are documents and not all are approved/rejected, it's under review
-                if (totalDocs > 0 && (pendingDocs > 0 || (approvedDocs > 0 && rejectedDocs === 0 && approvedDocs < totalDocs))) {
-                    underReview++;
-                }
             }
 
-            // Count approved
-            if (status === 'APPROVED') {
-                approved++;
-            }
-
-            // Count rejected - include applications with status REJECTED OR applications with rejected documents
-            const rejectedDocs = app.documentStats?.rejected || 0;
-            const documents = app.documents || [];
-            const rejectedDocsFromArray = documents.filter(doc => doc.status === 'REJECTED').length;
-            const hasRejectedDocs = rejectedDocs > 0 || rejectedDocsFromArray > 0;
-
-            if (status === 'REJECTED' || (hasRejectedDocs && status !== 'APPROVED' && status !== 'COMPLETE' && status !== 'UNDER_REVIEW')) {
+            // Count rejected - applications with status REJECTED
+            if (status === 'REJECTED') {
                 rejected++;
-                if (status !== 'REJECTED') {
-                    console.log(`📊 Counting as rejected (has rejected docs): ${app.applicationId}, status: ${status}, rejectedDocs: ${rejectedDocs}/${rejectedDocsFromArray}`);
-                }
             }
         });
 
-        console.log('Calculated stats:', { allSubmission, underReview, approved, rejected });
+        console.log('Calculated stats:', { allSubmission, underReview, rejected });
 
         setTabStats({
             all_submission: allSubmission,
             under_review: underReview,
-            approved: approved,
             rejected: rejected
         });
     };
@@ -221,7 +193,6 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             const statusMap = {
                 'all_submission': 'all', // Show all submissions (excluding DRAFT)
                 'under_review': 'UNDER_REVIEW', // Show applications under review
-                'approved': 'APPROVED',
                 'rejected': 'REJECTED'
             };
 
@@ -246,31 +217,11 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                     });
                 }
 
-                // For "under_review", include UNDER_REVIEW status and SUBMITTED with documents being reviewed
+                // For "under_review", only include UNDER_REVIEW status (removed SUBMITTED with documents logic as it contradicts server pagination)
                 if (activeTab === 'under_review') {
                     applicationsData = applicationsData.filter(app => {
                         const appStatus = app.status?.toUpperCase();
-
-                        // Include applications with UNDER_REVIEW status
-                        if (appStatus === 'UNDER_REVIEW') {
-                            return true;
-                        }
-
-                        // Include SUBMITTED applications with documents being reviewed
-                        if (appStatus === 'SUBMITTED') {
-                            const documentStats = app.documentStats || {};
-                            const approvedDocs = documentStats.approved || 0;
-                            const rejectedDocs = documentStats.rejected || 0;
-                            const pendingDocs = documentStats.pending || 0;
-                            const totalDocs = approvedDocs + rejectedDocs + pendingDocs;
-
-                            // If there are documents and not all are approved/rejected, it's under review
-                            if (totalDocs > 0 && (pendingDocs > 0 || (approvedDocs > 0 && rejectedDocs === 0 && approvedDocs < totalDocs))) {
-                                return true;
-                            }
-                        }
-
-                        return false;
+                        return appStatus === 'UNDER_REVIEW';
                     });
                 }
 
