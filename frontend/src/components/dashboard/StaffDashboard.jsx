@@ -839,7 +839,7 @@ const EnhancedStaffDashboard = () => {
             case 'direct-students':
                 return <StudentManagement initialFilter={studentTableFilter} listType="direct" />;
             case 'applications':
-                return <ApplicationReview />;
+                return <ApplicationReview userRole="staff" />;
             case 'payment-management':
                 return <PaymentManagement />;
             case 'new-registration':

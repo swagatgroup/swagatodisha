@@ -707,6 +707,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 {showActions && (
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex space-x-2">
+                                            {/* View Details Button */}
                                             <button
                                                 onClick={() => {
                                                     setSelectedStudent(student);
@@ -721,60 +722,6 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 </svg>
                                             </button>
                                             
-                                                {/* Accept Button - Only for UNDER_REVIEW */}
-                                                {(student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'UNDER_REVIEW') && (
-                                                    <button
-                                                        onClick={() => handleAcceptApplication(student)}
-                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-                                                        title="Accept Application"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-
-                                                {/* Reject Button - Only for UNDER_REVIEW - Hidden for agents */}
-                                                {!isAgent && (student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'UNDER_REVIEW') && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedStudent(student);
-                                                            setStatusData({
-                                                                status: 'REJECTED',
-                                                                notes: '',
-                                                                rejectionReason: '',
-                                                                rejectionMessage: '',
-                                                                rejectionDetails: []
-                                                            });
-                                                            setShowRejectionForm(true);
-                                                            setShowStatusModal(true);
-                                                        }}
-                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                                                        title="Reject Application"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-
-                                                {/* Update Status Button - Hidden for agents */}
-                                                {!isAgent && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedStudent(student);
-                                                            const currentStatus = student.workflowStatus?.currentStage || student.status;
-                                                            setStatusData({ status: currentStatus, notes: '' });
-                                                            setShowStatusModal(true);
-                                                        }}
-                                                        className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
-                                                        title="Update Status"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                        </svg>
-                                                    </button>
-                                                )}
                                                 {/* Edit: DRAFT, REJECTED, SUBMITTED (with UNDER_REVIEW), or UNDER_REVIEW */}
                                                 {(() => {
                                                     const status = student.status || student.workflowStatus?.status;
@@ -2038,111 +1985,6 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                                 >
                                     Save Changes
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Status Update Modal */}
-            {showStatusModal && selectedStudent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                                Update Status - {selectedStudent.personalDetails?.fullName || 'Student'}
-                            </h3>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Status
-                                    </label>
-                                    <select
-                                        value={statusData.status}
-                                        onChange={(e) => {
-                                            const newStatus = e.target.value;
-                                            setStatusData({
-                                                ...statusData,
-                                                status: newStatus,
-                                                rejectionReason: '',
-                                                rejectionMessage: '',
-                                                rejectionDetails: []
-                                            });
-                                            setShowRejectionForm(newStatus === 'REJECTED');
-                                        }}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    >
-                                        <option value="">Select Status</option>
-                                        <option value="DRAFT">Draft</option>
-                                        <option value="SUBMITTED">Submitted</option>
-                                        <option value="UNDER_REVIEW">Under Review</option>
-                                        <option value="APPROVED">Approved</option>
-                                        <option value="REJECTED">Rejected</option>
-                                        <option value="COMPLETE">Complete (Graduated)</option>
-                                    </select>
-                                </div>
-
-                                {showRejectionForm && (
-                                    <div className="border border-red-200 dark:border-red-800 rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
-                                        <h4 className="text-md font-semibold text-red-800 dark:text-red-200 mb-4">
-                                            Rejection Details
-                                        </h4>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Rejection Message *
-                                            </label>
-                                            <textarea
-                                                value={statusData.rejectionMessage}
-                                                onChange={(e) => setStatusData({ ...statusData, rejectionMessage: e.target.value })}
-                                                rows={3}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
-                                                placeholder="Explain what the student needs to do to fix the issues..."
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Notes (Optional)
-                                    </label>
-                                    <textarea
-                                        value={statusData.notes}
-                                        onChange={(e) => setStatusData({ ...statusData, notes: e.target.value })}
-                                        rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                        placeholder="Add any notes about this status change..."
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end space-x-3 mt-6">
-                                <button
-                                    onClick={() => {
-                                        setShowStatusModal(false);
-                                        setShowRejectionForm(false);
-                                        setStatusData({
-                                            status: '',
-                                            notes: '',
-                                            rejectionReason: '',
-                                            rejectionMessage: '',
-                                            rejectionDetails: []
-                                        });
-                                    }}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    onClick={handleStatusUpdate}
-                                    className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 ${statusData.status === 'REJECTED'
-                                        ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-                                        : 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500'
-                                        }`}
-                                >
-                                    {statusData.status === 'REJECTED' ? 'Reject Application' : 'Update Status'}
                                 </button>
                             </div>
                         </div>

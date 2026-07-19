@@ -20,6 +20,7 @@ import Management from './components/Management'
 import Location from './components/Location'
 import ContactUs from './components/ContactUs'
 import Footer from './components/Footer'
+import FloatingContact from './components/FloatingContact'
 import PremiumFloatingElements from './components/PremiumFloatingElements'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
@@ -281,6 +282,7 @@ function App() {
                             {/* Catch all route */}
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
+                        <FloatingContact />
                     </Router>
                 </DarkModeProvider>
             </AuthProvider>

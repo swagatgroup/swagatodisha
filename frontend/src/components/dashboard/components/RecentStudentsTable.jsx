@@ -812,56 +812,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     </svg>
                                                 </button>
 
-                                                {/* Accept Button - Only for UNDER_REVIEW */}
-                                                {student.status === 'UNDER_REVIEW' && (
-                                                    <button
-                                                        onClick={() => handleAcceptApplication(student)}
-                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
-                                                        title="Accept Application"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                    </button>
-                                                )}
 
-                                                {/* Reject Button - Only for UNDER_REVIEW */}
-                                                {student.status === 'UNDER_REVIEW' && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setSelectedStudent(student);
-                                                            setStatusData({
-                                                                status: 'REJECTED',
-                                                                notes: '',
-                                                                rejectionReason: '',
-                                                                rejectionMessage: '',
-                                                                rejectionDetails: []
-                                                            });
-                                                            setShowRejectionForm(true);
-                                                            setShowStatusModal(true);
-                                                        }}
-                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                                                        title="Reject Application"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                    </button>
-                                                )}
-
-                                                <button
-                                                    onClick={() => {
-                                                        setSelectedStudent(student);
-                                                        setStatusData({ status: student.status, notes: '' });
-                                                        setShowStatusModal(true);
-                                                    }}
-                                                    className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
-                                                    title="Update Status"
-                                                >
-                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                </button>
                                                 {/* Staff can only edit when status is UNDER_REVIEW */}
                                                 {student.status === 'UNDER_REVIEW' && (
                                                     <button
@@ -1904,66 +1855,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                 document.body
             )}
 
-            {/* Status Update Modal */}
-            {showStatusModal && selectedStudent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                                Update Status - {(() => {
-                                    const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
-                                    if (!name) return 'Student';
-                                    if (typeof name === 'object') return name.fullName || name.name || 'Student';
-                                    return name;
-                                })()}
-                            </h3>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Status
-                                    </label>
-                                    <select
-                                        value={statusData.status}
-                                        onChange={(e) => {
-                                            const newStatus = e.target.value;
-                                            setStatusData({
-                                                ...statusData,
-                                                status: newStatus,
-                                                rejectionReason: '',
-                                                rejectionMessage: '',
-                                                rejectionDetails: []
-                                            });
-                                            setShowRejectionForm(newStatus === 'REJECTED');
-                                        }}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                    >
-                                        <option value="">Select Status</option>
-                                        <option value="DRAFT">Draft</option>
-                                        <option value="SUBMITTED">Submitted</option>
-                                        <option value="UNDER_REVIEW">Under Review</option>
-                                        <option value="APPROVED">Approved</option>
-                                        <option value="REJECTED">Rejected</option>
-                                        <option value="COMPLETE">Complete (Graduated)</option>
-                                        <option value="CANCELLED">Cancelled</option>
-                                    </select>
-                                </div>
-
-                                {/* Rejection Form */}
-                                {showRejectionForm && (
-                                    <div className="border border-red-200 dark:border-red-800 rounded-lg p-4 bg-red-50 dark:bg-red-900/20">
-                                        <h4 className="text-md font-semibold text-red-800 dark:text-red-200 mb-4">
-                                            Rejection Details
-                                        </h4>
-
-                                        <div className="space-y-4">
-                                            <div>
-                                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                    Rejection Message *
-                                                </label>
-                                                <textarea
-                                                    value={statusData.rejectionMessage}
-                                                    onChange={(e) => setStatusData({ ...statusData, rejectionMessage: e.target.value })}
+            
                                                     rows={3}
                                                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
                                                     placeholder="Explain what the student needs to do to fix the issues..."

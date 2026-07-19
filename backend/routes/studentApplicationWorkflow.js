@@ -24,6 +24,7 @@ const {
     getDocumentRequirements,
     getDocumentUploadStatus,
     uploadInstallmentReceipt,
+    advanceWorkflowStep
     // PDF upload/storage functions removed
 } = require('../controllers/studentApplicationWorkflowController');
 
@@ -72,6 +73,7 @@ router.get('/:applicationId/review', protect, getApplicationReview);
 router.put('/:applicationId/verify', protect, verifyDocuments);
 router.put('/:applicationId/approve', protect, approveApplication);
 router.put('/:applicationId/reject', protect, rejectApplication);
+router.put('/:applicationId/workflow-step', protect, advanceWorkflowStep);
 router.post('/:applicationId/combined-pdf', protect, generateCombinedPDF);
 router.post('/:applicationId/documents-zip', protect, generateDocumentsZIP);
 router.get('/stats', protect, getWorkflowStats);

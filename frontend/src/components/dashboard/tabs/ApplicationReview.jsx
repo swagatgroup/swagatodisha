@@ -16,19 +16,22 @@ import {
     CheckBadgeIcon,
     DocumentIcon,
     EyeSlashIcon,
-    ExclamationTriangleIcon
+    ExclamationTriangleIcon,
+    PlayIcon,
+    FlagIcon
 } from '@heroicons/react/24/outline';
 import { useSession } from '../../../contexts/SessionContext';
 import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
 
-const ApplicationReview = ({ initialTab = 'all_submission' }) => {
+const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
     const { selectedSession } = useSession();
     const [applications, setApplications] = useState([]);
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [loading, setLoading] = useState(true);
     const [verifying, setVerifying] = useState(false);
+    const [workflowLoading, setWorkflowLoading] = useState(false);
     const [activeTab, setActiveTab] = useState(initialTab);
     const [showDocumentViewer, setShowDocumentViewer] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState(null);
@@ -41,8 +44,12 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
         all_submission: 0,
         under_review: 0,
         approved: 0,
-        rejected: 0
+        rejected: 0,
+        completion_requested: 0
     });
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [rejectReason, setRejectReason] = useState('');
+    const [rejectMessage, setRejectMessage] = useState('');
     const [showDocumentSelectionModal, setShowDocumentSelectionModal] = useState(false);
     const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
     const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
@@ -65,7 +72,8 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
         { id: 'all_submission', name: 'All Submission', count: tabStats.all_submission, color: 'blue' },
         { id: 'under_review', name: 'Under Review', count: tabStats.under_review, color: 'yellow' },
         { id: 'approved', name: 'Approved', count: tabStats.approved, color: 'green' },
-        { id: 'rejected', name: 'Rejected', count: tabStats.rejected, color: 'red' }
+        { id: 'rejected', name: 'Rejected', count: tabStats.rejected, color: 'red' },
+        { id: 'completion_requested', name: 'Completion Requests', count: tabStats.completion_requested, color: 'purple' }
     ];
 
     const verificationSteps = [
@@ -152,6 +160,7 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
         let underReview = 0;
         let approved = 0;
         let rejected = 0;
+        let completionRequested = 0;
 
         applicationsData.forEach(app => {
             const status = app.status?.toUpperCase();
@@ -175,15 +184,21 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             if (status === 'REJECTED') {
                 rejected++;
             }
+
+            // Count completion requested
+            if (status === 'COMPLETION_REQUESTED') {
+                completionRequested++;
+            }
         });
 
-        console.log('Calculated stats:', { allSubmission, underReview, approved, rejected });
+        console.log('Calculated stats:', { allSubmission, underReview, approved, rejected, completionRequested });
 
         setTabStats({
             all_submission: allSubmission,
             under_review: underReview,
             approved: approved,
-            rejected: rejected
+            rejected: rejected,
+            completion_requested: completionRequested
         });
     };
 
@@ -202,7 +217,8 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                 'all_submission': 'all', // Show all submissions (excluding DRAFT)
                 'under_review': 'UNDER_REVIEW', // Show applications under review
                 'approved': 'APPROVED',
-                'rejected': 'REJECTED'
+                'rejected': 'REJECTED',
+                'completion_requested': 'COMPLETION_REQUESTED'
             };
 
             const status = statusMap[activeTab] || 'all';
@@ -226,11 +242,19 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                     });
                 }
 
-                // For "under_review", only include UNDER_REVIEW status (removed SUBMITTED with documents logic as it contradicts server pagination)
+                // For "under_review", only include UNDER_REVIEW status
                 if (activeTab === 'under_review') {
                     applicationsData = applicationsData.filter(app => {
                         const appStatus = app.status?.toUpperCase();
                         return appStatus === 'UNDER_REVIEW';
+                    });
+                }
+
+                // For "completion_requested", only include COMPLETION_REQUESTED status
+                if (activeTab === 'completion_requested') {
+                    applicationsData = applicationsData.filter(app => {
+                        const appStatus = app.status?.toUpperCase();
+                        return appStatus === 'COMPLETION_REQUESTED';
                     });
                 }
 
@@ -290,15 +314,10 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             });
 
             if (response.data?.success) {
-                // ... (existing filtering logic)
-
-                setApplications(applicationsData);
-
-                if (response.data.data.pagination) {
-                    setTotalPages(response.data.data.pagination.pages || 1);
-                    setTotalItems(response.data.data.pagination.total || applicationsData.length);
-                }
+                await fetchApplicationDetails(selectedApplication.applicationId);
+                await fetchApplications();
                 fetchAllApplicationsForStats();
+                showSuccess(isVerified ? 'Verified successfully' : 'Unverified');
             }
         } catch (error) {
             console.error('Error verifying application:', error);
@@ -438,6 +457,88 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
             showError(`Failed to review documents: ${errorMessage}`);
         } finally {
             setVerifying(false);
+        }
+    };
+
+    // ─── Sequential Workflow Actions ────────────────────────────────────────────
+    const handleWorkflowAction = async (action) => {
+        if (!selectedApplication) return;
+        const actionLabels = {
+            'START_REVIEW':        'Start Review (move to Under Review)',
+            'APPROVE':             'Approve this application',
+            'REQUEST_COMPLETION':  'Request Completion (notify Super Admin)',
+            'MARK_COMPLETED':      'Mark as Completed (Graduated)'
+        };
+        const result = await showConfirm(
+            'Confirm Action',
+            `Are you sure you want to: ${actionLabels[action]}?`,
+            { confirmButtonText: 'Yes, Proceed', cancelButtonText: 'Cancel' }
+        );
+        if (!result?.isConfirmed) return;
+
+        try {
+            setWorkflowLoading(true);
+            const response = await api.put(
+                `/api/student-application/${selectedApplication.applicationId}/workflow-step`,
+                { action, remarks: actionLabels[action] }
+            );
+            if (response.data?.success) {
+                showSuccess(`✅ ${response.data.message}`);
+                await fetchApplicationDetails(selectedApplication.applicationId);
+                await fetchApplications();
+                fetchAllApplicationsForStats();
+            } else {
+                showError(response.data?.message || 'Action failed');
+            }
+        } catch (error) {
+            showError(error.response?.data?.message || 'Failed to perform action');
+        } finally {
+            setWorkflowLoading(false);
+        }
+    };
+
+    const handleRejectApplication = async () => {
+        if (!selectedApplication) return;
+        if (!rejectReason.trim()) {
+            showError('Please select a rejection reason');
+            return;
+        }
+        if (!rejectMessage.trim()) {
+            showError('Please provide a rejection message');
+            return;
+        }
+        const result = await showConfirm(
+            'Confirm Rejection',
+            `Are you sure you want to REJECT this application? The student will be notified.`,
+            { confirmButtonText: 'Yes, Reject', cancelButtonText: 'Cancel' }
+        );
+        if (!result?.isConfirmed) return;
+
+        try {
+            setWorkflowLoading(true);
+            const response = await api.put(
+                `/api/student-application/${selectedApplication.applicationId}/reject`,
+                {
+                    rejectionReason: rejectReason,
+                    rejectionMessage: rejectMessage,
+                    notes: rejectMessage
+                }
+            );
+            if (response.data?.success) {
+                showSuccess('Application rejected successfully');
+                setShowRejectModal(false);
+                setRejectReason('');
+                setRejectMessage('');
+                await fetchApplicationDetails(selectedApplication.applicationId);
+                await fetchApplications();
+                fetchAllApplicationsForStats();
+            } else {
+                showError(response.data?.message || 'Rejection failed');
+            }
+        } catch (error) {
+            showError(error.response?.data?.message || 'Failed to reject application');
+        } finally {
+            setWorkflowLoading(false);
         }
     };
 
@@ -773,10 +874,12 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
 
     const getStatusColor = (status) => {
         const colors = {
-            'SUBMITTED': 'bg-blue-100 text-blue-800',
+            'SUBMITTED': 'bg-indigo-100 text-indigo-800',
             'UNDER_REVIEW': 'bg-yellow-100 text-yellow-800',
-            'APPROVED': 'bg-green-100 text-green-800',
-            'REJECTED': 'bg-red-100 text-red-800'
+            'APPROVED': 'bg-teal-100 text-teal-800',
+            'REJECTED': 'bg-red-100 text-red-800',
+            'COMPLETION_REQUESTED': 'bg-purple-100 text-purple-800',
+            'COMPLETE': 'bg-green-100 text-green-800'
         };
         return colors[status] || 'bg-gray-100 text-gray-800';
     };
@@ -1447,38 +1550,105 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
                                     </span>
                                 </div>
 
-                                {/* Action Buttons */}
-                                <div className="flex space-x-3">
+                                {/* Sequential Workflow Action Buttons */}
+                                <div className="flex flex-wrap gap-2">
+                                    {/* Refresh */}
                                     <button
                                         onClick={async () => {
-                                            console.log('🔄 Manually refreshing application details...');
                                             await fetchApplicationDetails(selectedApplication.applicationId);
                                             await fetchApplications();
                                             showSuccess('✅ Application data refreshed!');
                                         }}
-                                        className="flex items-center px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
-                                        title="Refresh to see latest document updates"
+                                        className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 text-sm"
+                                        title="Refresh to see latest updates"
                                     >
-                                        <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                         </svg>
                                         Refresh
                                     </button>
+
+                                    {/* STEP 1: SUBMITTED → UNDER_REVIEW */}
+                                    {selectedApplication.status === 'SUBMITTED' && (
+                                        <button
+                                            onClick={() => handleWorkflowAction('START_REVIEW')}
+                                            disabled={workflowLoading}
+                                            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 font-medium text-sm shadow"
+                                            title="Move application to Under Review"
+                                        >
+                                            <PlayIcon className="h-4 w-4 mr-1" />
+                                            {workflowLoading ? 'Processing...' : 'Start Review'}
+                                        </button>
+                                    )}
+
+                                    {/* STEP 1b: Reject at SUBMITTED or UNDER_REVIEW */}
+                                    {(selectedApplication.status === 'SUBMITTED' || selectedApplication.status === 'UNDER_REVIEW') && (
+                                        <button
+                                            onClick={() => setShowRejectModal(true)}
+                                            disabled={workflowLoading}
+                                            className="flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 font-medium text-sm shadow"
+                                            title="Reject this application"
+                                        >
+                                            <XCircleIcon className="h-4 w-4 mr-1" />
+                                            Reject
+                                        </button>
+                                    )}
+
+                                    {/* STEP 2: UNDER_REVIEW → APPROVED (Tick Button) */}
+                                    {selectedApplication.status === 'UNDER_REVIEW' && (
+                                        <button
+                                            onClick={() => handleWorkflowAction('APPROVE')}
+                                            disabled={workflowLoading}
+                                            className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 font-medium text-sm shadow"
+                                            title="Approve application"
+                                        >
+                                            <CheckCircleIcon className="h-4 w-4 mr-1" />
+                                            {workflowLoading ? 'Processing...' : '✓ Approve'}
+                                        </button>
+                                    )}
+
+                                    {/* STEP 3: APPROVED → COMPLETION_REQUESTED (Staff only) */}
+                                    {selectedApplication.status === 'APPROVED' && (
+                                        <button
+                                            onClick={() => handleWorkflowAction('REQUEST_COMPLETION')}
+                                            disabled={workflowLoading}
+                                            className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 font-medium text-sm shadow"
+                                            title="Request Super Admin to mark as Completed"
+                                        >
+                                            <FlagIcon className="h-4 w-4 mr-1" />
+                                            {workflowLoading ? 'Processing...' : 'Request Completion'}
+                                        </button>
+                                    )}
+
+                                    {/* STEP 4: COMPLETION_REQUESTED → COMPLETE (Super Admin only) */}
+                                    {selectedApplication.status === 'COMPLETION_REQUESTED' && userRole === 'super_admin' && (
+                                        <button
+                                            onClick={() => handleWorkflowAction('MARK_COMPLETED')}
+                                            disabled={workflowLoading}
+                                            className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 font-medium text-sm shadow"
+                                            title="Mark as Completed (Graduated)"
+                                        >
+                                            <CheckBadgeIcon className="h-4 w-4 mr-1" />
+                                            {workflowLoading ? 'Processing...' : 'Mark Complete ✓'}
+                                        </button>
+                                    )}
+
+                                    {/* Generate PDF/ZIP */}
                                     <button
                                         onClick={handleGeneratePDF}
-                                        className="flex items-center px-4 py-2 rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700"
+                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700 text-sm"
                                         title="Generate combined PDF of approved documents"
                                     >
-                                        <DocumentTextIcon className="h-4 w-4 mr-2" />
-                                        Generate PDF
+                                        <DocumentTextIcon className="h-4 w-4 mr-1" />
+                                        PDF
                                     </button>
                                     <button
                                         onClick={handleGenerateZIP}
-                                        className="flex items-center px-4 py-2 rounded-lg transition-colors bg-purple-600 text-white hover:bg-purple-700"
+                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-purple-600 text-white hover:bg-purple-700 text-sm"
                                         title="Generate ZIP of approved documents"
                                     >
-                                        <ArchiveBoxIcon className="h-4 w-4 mr-2" />
-                                        Generate ZIP
+                                        <ArchiveBoxIcon className="h-4 w-4 mr-1" />
+                                        ZIP
                                     </button>
                                 </div>
                             </div>
@@ -1861,6 +2031,83 @@ const ApplicationReview = ({ initialTab = 'all_submission' }) => {
 
             {/* Modals */}
             {renderDocumentViewer()}
+
+            {/* Rejection Modal */}
+            <AnimatePresence>
+                {showRejectModal && selectedApplication && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4"
+                        onClick={() => setShowRejectModal(false)}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                                <div>
+                                    <h3 className="text-xl font-bold text-red-600 dark:text-red-400">Reject Application</h3>
+                                    <p className="text-sm text-gray-500 mt-1">{selectedApplication.personalDetails?.fullName}</p>
+                                </div>
+                                <button onClick={() => setShowRejectModal(false)} className="text-gray-400 hover:text-gray-600">
+                                    <XCircleIcon className="h-6 w-6" />
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rejection Reason *</label>
+                                    <select
+                                        value={rejectReason}
+                                        onChange={e => setRejectReason(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                    >
+                                        <option value="">Select a reason...</option>
+                                        <option value="incomplete_documents">Incomplete Documents</option>
+                                        <option value="invalid_documents">Invalid Documents</option>
+                                        <option value="eligibility_criteria">Does Not Meet Eligibility Criteria</option>
+                                        <option value="document_quality">Poor Document Quality</option>
+                                        <option value="missing_information">Missing Required Information</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rejection Message * <span className="text-xs text-gray-400">(visible to student/agent)</span></label>
+                                    <textarea
+                                        value={rejectMessage}
+                                        onChange={e => setRejectMessage(e.target.value)}
+                                        rows={4}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500"
+                                        placeholder="Explain what the student/agent needs to fix and resubmit..."
+                                    />
+                                </div>
+                                <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 text-sm text-amber-800 dark:text-amber-200">
+                                    ⚠️ Once rejected, the submitter (student/agent) will need to fix the issues and resubmit.
+                                </div>
+                            </div>
+                            <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
+                                <button
+                                    onClick={() => setShowRejectModal(false)}
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleRejectApplication}
+                                    disabled={workflowLoading || !rejectReason.trim() || !rejectMessage.trim()}
+                                    className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                                >
+                                    {workflowLoading ? 'Rejecting...' : 'Confirm Rejection'}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Document Selection Modal */}
             <AnimatePresence>

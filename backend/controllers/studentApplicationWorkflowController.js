@@ -788,7 +788,7 @@ const getApplicationsByStatus = async (req, res) => {
             // But for staff review, we typically want to see submitted/review statuses
             query.$and.push({ 
                 status: { 
-                    $in: ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'] 
+                    $in: ['SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETION_REQUESTED', 'COMPLETE'] 
                 } 
             });
         }
@@ -2198,6 +2198,69 @@ const uploadInstallmentReceipt = async (req, res) => {
     }
 };
 
+// Advance workflow to the next step strictly
+const advanceWorkflowStep = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        const { action, remarks } = req.body;
+
+        const application = await StudentApplication.findOne({ applicationId });
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+
+        const validTransitions = {
+            'START_REVIEW': { from: 'SUBMITTED', to: 'UNDER_REVIEW' },
+            'APPROVE': { from: 'UNDER_REVIEW', to: 'APPROVED' },
+            'REQUEST_COMPLETION': { from: 'APPROVED', to: 'COMPLETION_REQUESTED' },
+            'MARK_COMPLETED': { from: 'COMPLETION_REQUESTED', to: 'COMPLETE' }
+        };
+
+        const transition = validTransitions[action];
+        if (!transition) {
+            return res.status(400).json({ success: false, message: 'Invalid action' });
+        }
+
+        if (application.status !== transition.from) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Cannot perform ${action}. Application is currently in ${application.status} status. Expected ${transition.from}.` 
+            });
+        }
+
+        // Only super_admin can mark as complete
+        if (action === 'MARK_COMPLETED' && req.user.role !== 'super_admin') {
+            return res.status(403).json({ success: false, message: 'Only Super Admin can mark application as completed' });
+        }
+
+        application.status = transition.to;
+        application.workflowHistory.push({
+            stage: transition.to,
+            status: transition.to,
+            updatedBy: req.user._id,
+            action: action,
+            remarks: remarks || `Status changed to ${transition.to}`,
+            timestamp: new Date()
+        });
+
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            data: application,
+            message: `Application status updated to ${transition.to}`
+        });
+
+    } catch (error) {
+        console.error('Advance workflow step error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to advance workflow step',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 // PDF upload/storage functions removed - PDFs are generated client-side only
 
 module.exports = {
@@ -2224,5 +2287,6 @@ module.exports = {
     getDocumentRequirements,
     getDocumentUploadStatus,
     uploadInstallmentReceipt,
+    advanceWorkflowStep,
     // PDF upload/storage functions removed - PDFs are generated client-side only
 };
