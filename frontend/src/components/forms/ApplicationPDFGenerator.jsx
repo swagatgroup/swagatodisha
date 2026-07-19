@@ -109,6 +109,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // FETCH IMAGES ASYNC BEFORE PDF GENERATION
             // ==========================================
             let logoBase64 = null;
+            let logoRatio = 1;
             try {
                 const response = await fetch('/Swagat_Logo.png');
                 const blob = await response.blob();
@@ -116,6 +117,12 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     const reader = new FileReader();
                     reader.onloadend = () => resolve(reader.result);
                     reader.readAsDataURL(blob);
+                });
+                logoRatio = await new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => resolve(img.width / img.height);
+                    img.onerror = () => resolve(1);
+                    img.src = logoBase64;
                 });
             } catch(e) { console.log('Logo load failed', e); }
 
@@ -151,8 +158,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 // Add watermark
                 if (logoBase64) {
                     p.setGState(new p.GState({opacity: 0.1}));
-                    const wmSize = 120;
-                    p.addImage(logoBase64, 'PNG', (pageWidth - wmSize)/2, (pageHeight - wmSize)/2, wmSize, wmSize);
+                    const wmHeight = 120;
+                    const wmWidth = wmHeight * logoRatio;
+                    p.addImage(logoBase64, 'PNG', (pageWidth - wmWidth)/2, (pageHeight - wmHeight)/2, wmWidth, wmHeight);
                     p.setGState(new p.GState({opacity: 1.0}));
                 }
             };
@@ -165,7 +173,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             
             // Logo top left
             if (logoBase64) {
-                pdf.addImage(logoBase64, 'PNG', 15, yPosition, 25, 25);
+                const logoHeight = 25;
+                const logoWidth = logoHeight * logoRatio;
+                pdf.addImage(logoBase64, 'PNG', 15, yPosition, logoWidth, logoHeight);
             }
             
             // Center Texts
@@ -250,9 +260,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // --------------------------------------------
             // Fields left of the photo (if overlapping)
             // --------------------------------------------
-            const collegeName = pdfContent.courseDetails.selectedCollege 
-                ? (colleges?.find(c => c._id === pdfContent.courseDetails.selectedCollege)?.name || 'N/A')
-                : (pdfContent.courseDetails.institutionName || 'N/A');
+            const instituteName = pdfContent.courseDetails.institutionName || 'N/A';
 
             if (currentY < photoY + photoBoxHeight + 5) {
                 // Fields to the left of the photo
@@ -262,7 +270,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 drawBoxedField('Course', pdfContent.courseDetails.selectedCourse || pdfContent.courseDetails.courseName, leftColX, currentY, leftWidth);
                 currentY += 16;
                 
-                drawBoxedField('College', collegeName, leftColX, currentY, leftWidth);
+                drawBoxedField('Institute Name', instituteName, leftColX, currentY, leftWidth);
                 currentY += 16;
                 
                 drawBoxedField('Stream', pdfContent.courseDetails.stream, leftColX, currentY, halfWidth);
@@ -406,15 +414,15 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 
                 // Calculate height dynamically based on lines
                 const lines = splitBody.length;
-                page2Y += (lines * 5) + 12; // Adequate vertical spacing between terms to fill the page
+                page2Y += (lines * 4.5) + 5; // Reduced spacing to avoid overlap with signatures
             });
             
             // Declaration Text (to fill extra space before signatures)
-            page2Y += 10;
+            page2Y += 5; // Reduced spacing
             pdf.setFont('times', 'bold');
             pdf.setFontSize(12);
             pdf.text('DECLARATION', leftColX, page2Y);
-            page2Y += 6;
+            page2Y += 5; // Reduced spacing
             
             pdf.setFontSize(10);
             pdf.setFont('times', 'normal');
