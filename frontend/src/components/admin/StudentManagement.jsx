@@ -11,6 +11,7 @@ import {
     closeLoading,
     handleApiError
 } from '../../utils/sweetAlert';
+import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 
 const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
     const { selectedSession } = useSession();
@@ -28,6 +29,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showApplicationPDF, setShowApplicationPDF] = useState(false);
+    const [selectedStudentForPDF, setSelectedStudentForPDF] = useState(null);
     const [editData, setEditData] = useState({});
     const [statusData, setStatusData] = useState({
         status: '',
@@ -1698,6 +1701,63 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
                                                 </button>
+                                                <button
+                                                    onClick={() => {
+                                                        const getCampusId = (campus) => {
+                                                            if (!campus) return '';
+                                                            if (typeof campus === 'string') return campus;
+                                                            if (typeof campus === 'object' && campus._id) return campus._id.toString();
+                                                            return '';
+                                                        };
+                                                        
+                                                        const initialEditData = {
+                                                            personalDetails: {
+                                                                fullName: student.personalDetails?.fullName || student.fullName || '',
+                                                                fathersName: student.personalDetails?.fathersName || '',
+                                                                mothersName: student.personalDetails?.mothersName || '',
+                                                                dateOfBirth: student.personalDetails?.dateOfBirth || '',
+                                                                gender: student.personalDetails?.gender || '',
+                                                                aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
+                                                                category: student.personalDetails?.category || ''
+                                                            },
+                                                            contactDetails: {
+                                                                email: student.contactDetails?.email || student.email || '',
+                                                                primaryPhone: student.contactDetails?.primaryPhone || student.phone || '',
+                                                                permanentAddress: {
+                                                                    street: student.contactDetails?.permanentAddress?.street || student.contactDetails?.address || '',
+                                                                    city: student.contactDetails?.permanentAddress?.city || student.contactDetails?.city || '',
+                                                                    district: student.contactDetails?.permanentAddress?.district || '',
+                                                                    state: student.contactDetails?.permanentAddress?.state || '',
+                                                                    pincode: student.contactDetails?.permanentAddress?.pincode || '',
+                                                                    country: student.contactDetails?.permanentAddress?.country || 'India'
+                                                                }
+                                                            },
+                                                            courseDetails: {
+                                                                selectedCollege: student.courseDetails?.selectedCollege || '',
+                                                                institutionName: student.courseDetails?.institutionName || '',
+                                                                selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
+                                                                customCourse: student.courseDetails?.customCourse || '',
+                                                                stream: student.courseDetails?.stream || '',
+                                                                campus: getCampusId(student.courseDetails?.campus) || ''
+                                                            },
+                                                            guardianDetails: {
+                                                                guardianName: student.guardianDetails?.guardianName || '',
+                                                                relationship: student.guardianDetails?.relationship || '',
+                                                                guardianPhone: student.guardianDetails?.guardianPhone || '',
+                                                                guardianEmail: student.guardianDetails?.guardianEmail || ''
+                                                            },
+                                                            documents: student.documents || {}
+                                                        };
+                                                        setSelectedStudentForPDF({ formData: initialEditData, application: student });
+                                                        setShowApplicationPDF(true);
+                                                    }}
+                                                    className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 ml-2"
+                                                    title="Download Application PDF"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    </svg>
+                                                </button>
                                             </div>
                                         </td>
                                     </motion.tr>
@@ -3210,6 +3270,23 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                 )}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* PDF Generator Modal */}
+            {showApplicationPDF && selectedStudentForPDF && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <ApplicationPDFGenerator
+                            formData={selectedStudentForPDF.formData}
+                            application={selectedStudentForPDF.application}
+                            skipDocumentValidation={true}
+                            onPDFGenerated={() => {
+                                setShowApplicationPDF(false);
+                            }}
+                            onCancel={() => setShowApplicationPDF(false)}
+                        />
                     </div>
                 </div>
             )}

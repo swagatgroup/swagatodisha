@@ -109,16 +109,7 @@ const studentApplicationSchema = new mongoose.Schema({
                 message: 'Phone number must be a valid 10-digit Indian mobile number'
             }
         },
-        whatsappNumber: {
-            type: String,
-            validate: {
-                validator: function (v) {
-                    if (!v) return true;
-                    return /^[6-9]\d{9}$/.test(v);
-                },
-                message: 'WhatsApp number must be a valid 10-digit Indian mobile number'
-            }
-        },
+
         secondaryPhone: {
             type: String,
             validate: {

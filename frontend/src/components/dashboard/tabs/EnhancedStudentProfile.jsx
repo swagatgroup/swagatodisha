@@ -14,7 +14,6 @@ const EnhancedStudentProfile = () => {
         },
         contactDetails: {
             primaryPhone: '',
-            whatsappNumber: '',
             email: '',
             permanentAddress: {
                 street: '',
@@ -155,10 +154,7 @@ const EnhancedStudentProfile = () => {
         setNestedValue(newData, path, value);
         setProfileData(newData);
 
-        // Auto-populate WhatsApp number from phone
-        if (path === 'contactDetails.primaryPhone' && !profileData.contactDetails.whatsappNumber) {
-            setNestedValue(newData, 'contactDetails.whatsappNumber', value);
-        }
+
 
         // Auto-populate bank name from IFSC
         if (path === 'financialDetails.ifscCode') {
@@ -426,17 +422,7 @@ const EnhancedStudentProfile = () => {
                         )}
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">WhatsApp Number</label>
-                        <input
-                            type="tel"
-                            value={profileData.contactDetails.whatsappNumber}
-                            onChange={(e) => handleInputChange('contactDetails.whatsappNumber', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="Enter WhatsApp number (optional)"
-                            maxLength="10"
-                        />
-                    </div>
+
 
                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>

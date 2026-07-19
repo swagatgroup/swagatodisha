@@ -4,7 +4,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import api from '../../utils/api';
 
-const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel }) => {
+const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel, skipDocumentValidation = false }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [error, setError] = useState(null);
@@ -62,6 +62,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
 
         try {
             // Validate mandatory documents before generating PDF
+            if (!skipDocumentValidation) {
             const mandatoryDocuments = [
                 "passport_photo",
                 "aadhar_card",
@@ -94,6 +95,8 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 setError(`Cannot generate PDF. Please upload all mandatory documents: ${missingLabels.join(", ")}`);
                 setIsGenerating(false);
                 return;
+            }
+
             }
 
             // Create a comprehensive PDF content
