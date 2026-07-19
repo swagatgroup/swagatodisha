@@ -467,6 +467,11 @@ const submitApplication = async (req, res) => {
         application.submittedAt = new Date();
         application.termsAccepted = termsAccepted;
         application.termsAcceptedAt = new Date();
+        
+        // Automatically set registration date on submission
+        if (application.personalDetails) {
+            application.personalDetails.registrationDate = new Date();
+        }
 
         // Add workflow history entry
         application.workflowHistory.push({

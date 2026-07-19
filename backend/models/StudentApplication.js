@@ -69,7 +69,7 @@ const studentApplicationSchema = new mongoose.Schema({
         },
         registrationDate: {
             type: Date,
-            required: true
+            required: function() { return this.status !== 'DRAFT'; }
         },
         gender: {
             type: String,

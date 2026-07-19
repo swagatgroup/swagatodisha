@@ -354,18 +354,9 @@ const UniversalStudentRegistration = ({
             "Mother's name is required";
         }
         if (!formData.personalDetails.dateOfBirth) {
-          newErrors["personalDetails.dateOfBirth"] =
-            "Date of birth is required";
+          newErrors["personalDetails.dateOfBirth"] = "Date of birth is required";
         } else if (!validateDDMMYYYY(formData.personalDetails.dateOfBirth)) {
-          newErrors["personalDetails.dateOfBirth"] =
-            "Please enter a valid date in DD/MM/YYYY format";
-        }
-        if (!formData.personalDetails.registrationDate) {
-          newErrors["personalDetails.registrationDate"] =
-            "Registration date is required";
-        } else if (!validateDDMMYYYY(formData.personalDetails.registrationDate)) {
-          newErrors["personalDetails.registrationDate"] =
-            "Please enter a valid date in DD/MM/YYYY format";
+          newErrors["personalDetails.dateOfBirth"] = "Please enter a valid date in DD/MM/YYYY format";
         }
         if (!formData.personalDetails.gender) {
           newErrors["personalDetails.gender"] = "Gender is required";
@@ -1109,41 +1100,7 @@ const UniversalStudentRegistration = ({
           )}
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Registration Date * (DD/MM/YYYY)
-          </label>
-          <input
-            type="text"
-            value={formData.personalDetails.registrationDate}
-            onChange={(e) => {
-              let value = e.target.value;
-              // Allow only numbers and forward slashes
-              value = value.replace(/[^0-9/]/g, '');
-              // Auto-format as user types: DD/MM/YYYY
-              if (value.length === 2 && !value.includes('/')) {
-                value = value + '/';
-              } else if (value.length === 5 && value.split('/').length === 2) {
-                value = value + '/';
-              }
-              setFormData((prev) => ({
-                ...prev,
-                personalDetails: {
-                  ...prev.personalDetails,
-                  registrationDate: value,
-                },
-              }));
-            }}
-            placeholder="DD/MM/YYYY"
-            maxLength={10}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-          />
-          {errors["personalDetails.registrationDate"] && (
-            <p className="text-red-500 text-sm mt-1">
-              {errors["personalDetails.registrationDate"]}
-            </p>
-          )}
-        </div>
+
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -1822,12 +1779,7 @@ const UniversalStudentRegistration = ({
               </strong>{" "}
               {formData.personalDetails.dateOfBirth}
             </div>
-            <div>
-              <strong className="text-gray-900 dark:text-white">
-                Registration Date:
-              </strong>{" "}
-              {formData.personalDetails.registrationDate}
-            </div>
+
             <div>
               <strong className="text-gray-900 dark:text-white">Gender:</strong>{" "}
               {formData.personalDetails.gender}
