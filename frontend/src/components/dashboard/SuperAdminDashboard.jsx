@@ -701,9 +701,9 @@ const SuperAdminDashboard = () => {
                                             <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
                                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
                                         </div>
-                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-green-200 dark:border-green-800 text-center shadow-sm">
-                                            <p className="text-xs text-green-600 dark:text-green-400">Approved</p>
-                                            <p className="text-2xl font-bold text-green-700 dark:text-green-300">{active.approved || 0}</p>
+                                        <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800 text-center shadow-sm">
+                                            <p className="text-xs text-teal-600 dark:text-teal-400">Approved</p>
+                                            <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{active.approved || 0}</p>
                                         </div>
                                         <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm">
                                             <p className="text-xs text-blue-600 dark:text-blue-400">Submitted</p>
@@ -715,12 +715,12 @@ const SuperAdminDashboard = () => {
                                     <div className="w-full lg:w-1/2 mx-auto">
                                         <ProgressPieChart
                                             chartData={[
-                                                { label: 'Draft',       value: active.draft       || 0, color: '#6b7280', filterKey: 'DRAFT' },
-                                                { label: 'Submitted',   value: active.submitted   || 0, color: '#2563eb', filterKey: 'SUBMITTED' },
-                                                { label: 'Rejected',    value: active.rejected    || 0, color: '#dc2626', filterKey: 'REJECTED' },
-                                                { label: 'Under Review',value: active.underReview || 0, color: '#eab308', filterKey: 'UNDER_REVIEW' },
-                                                { label: 'Approved',    value: active.approved    || 0, color: '#4ade80', filterKey: 'APPROVED' },
-                                                { label: 'Completed',   value: active.complete    || 0, color: '#166534', filterKey: 'COMPLETE' },
+                                                { label: 'Draft',       value: active.draft       || 0, color: '#6B7280', filterKey: 'DRAFT' },
+                                                { label: 'Submitted',   value: active.submitted   || 0, color: '#6366F1', filterKey: 'SUBMITTED' },
+                                                { label: 'Rejected',    value: active.rejected    || 0, color: '#EF4444', filterKey: 'REJECTED' },
+                                                { label: 'Under Review',value: active.underReview || 0, color: '#EAB308', filterKey: 'UNDER_REVIEW' },
+                                                { label: 'Approved',    value: active.approved    || 0, color: '#14B8A6', filterKey: 'APPROVED' },
+                                                { label: 'Completed',   value: active.complete    || 0, color: '#22C55E', filterKey: 'COMPLETE' },
                                             ]}
                                             onSectionClick={handleStatClick}
                                         />
@@ -730,11 +730,11 @@ const SuperAdminDashboard = () => {
                                     <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-4">
                                         {[
                                             { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white', inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200' },
-                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-blue-600 text-white',  inactiveClass: 'bg-blue-100 dark:bg-gray-700 text-blue-700 dark:text-blue-300 hover:bg-blue-200' },
+                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-indigo-600 text-white',  inactiveClass: 'bg-indigo-100 dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200' },
                                             { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',   inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200' },
                                             { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white',inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200' },
-                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-green-400 text-gray-900', inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-700 dark:text-green-300 hover:bg-green-200' },
-                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-green-800 text-white',inactiveClass: 'bg-green-200 dark:bg-gray-700 text-green-900 dark:text-green-100 hover:bg-green-300' },
+                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-teal-500 text-white', inactiveClass: 'bg-teal-100 dark:bg-gray-700 text-teal-700 dark:text-teal-300 hover:bg-teal-200' },
+                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-green-600 text-white',inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-800 dark:text-green-200 hover:bg-green-200' },
                                         ].map(({ key, label, count, activeClass, inactiveClass }) => (
                                             <button
                                                 key={key}

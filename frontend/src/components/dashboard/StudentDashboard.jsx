@@ -235,8 +235,8 @@ const StudentDashboard = () => {
                                 className="bg-white dark:bg-gray-800 rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-green-100 rounded-full">
-                                        <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="p-3 bg-teal-100 rounded-full">
+                                        <svg className="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
@@ -318,7 +318,7 @@ const StudentDashboard = () => {
                                             { stage: 'Approval', status: applicationStage === 'APPROVED' ? 'completed' : 'pending', label: 'Final Approval' }
                                         ].map((step, index) => (
                                             <div key={step.stage} className="flex flex-col items-center">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-teal-100 text-teal-800' :
                                                     step.status === 'current' ? 'bg-purple-100 text-purple-800' :
                                                         'bg-gray-100 text-gray-400'
                                                     }`}>
@@ -380,7 +380,7 @@ const StudentDashboard = () => {
                                                     <p className="text-sm text-gray-500">{admission.institution?.name}</p>
                                                     <p className="text-xs text-gray-400">Applied on {new Date(admission.applicationDate).toLocaleDateString()}</p>
                                                 </div>
-                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-green-100 text-green-800' :
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-teal-100 text-teal-800' :
                                                     admission.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                                                         admission.status === 'rejected' ? 'bg-red-100 text-red-800' :
                                                             'bg-gray-100 text-gray-800'
