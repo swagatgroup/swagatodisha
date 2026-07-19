@@ -1282,3 +1282,60 @@ exports.uploadWebsiteImage = async (req, res) => {
         });
     }
 };
+
+// Update course fee for an application
+exports.updateCourseFee = async (req, res) => {
+    try {
+        const { applicationId } = req.params;
+        const { courseFee } = req.body;
+
+        if (courseFee === undefined || isNaN(Number(courseFee))) {
+            return res.status(400).json({
+                success: false,
+                message: 'A valid course fee is required'
+            });
+        }
+
+        const application = await StudentApplication.findById(applicationId);
+        if (!application) {
+            return res.status(404).json({
+                success: false,
+                message: 'Application not found'
+            });
+        }
+
+        if (!['APPROVED', 'COMPLETE'].includes(application.status)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Course fee can only be set for APPROVED or COMPLETE applications'
+            });
+        }
+
+        const feeAmount = Number(courseFee);
+        const paidAmount = application.financialStatus?.paidAmount || 0;
+        
+        application.financialStatus = {
+            ...application.financialStatus,
+            totalFees: feeAmount,
+            dueAmount: feeAmount - paidAmount,
+            paidAmount: paidAmount
+        };
+
+        await application.save();
+
+        res.json({
+            success: true,
+            message: 'Course fee updated successfully',
+            data: application
+        });
+
+    } catch (error) {
+        console.error('Error updating course fee:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while updating course fee',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+

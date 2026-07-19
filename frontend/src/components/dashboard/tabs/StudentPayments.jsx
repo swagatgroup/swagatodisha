@@ -11,6 +11,7 @@ const StudentPayments = () => {
         dueAmount: 0,
         installments: []
     });
+    const [qrCodeImage, setQrCodeImage] = useState('');
     const [loading, setLoading] = useState(true);
     
     // Modal states
@@ -43,6 +44,7 @@ const StudentPayments = () => {
             const response = await api.get('/api/students/payments/installments');
             if (response.data.success) {
                 setFinancialStatus(response.data.data.financialStatus);
+                setQrCodeImage(response.data.data.qrCodeImage);
             }
         } catch (error) {
             console.error('Error fetching installments:', error);
@@ -524,7 +526,7 @@ const StudentPayments = () => {
                             </button>
                         </div>
                         <div className="p-4">
-                            <QRPaymentSystem />
+                            <QRPaymentSystem qrCodeImage={qrCodeImage} amount={financialStatus.dueAmount} />
                         </div>
                     </motion.div>
                 </div>

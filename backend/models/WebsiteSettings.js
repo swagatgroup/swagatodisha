@@ -101,6 +101,11 @@ const websiteSettingsSchema = new mongoose.Schema({
         requireEmailVerification: { type: Boolean, default: false },
         maxFileSize: { type: Number, default: 5242880 }, // 5MB
         allowedFileTypes: { type: [String], default: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'] }
+    },
+
+    // Payment Settings
+    paymentSettings: {
+        qrCodeImage: { type: String, default: '' }
     }
 }, { timestamps: true });
 

@@ -225,7 +225,8 @@ const WebsiteContentManagement = () => {
         { id: 'admission', label: 'Admission Info', icon: <FileTextIcon className="h-4 w-4" /> },
         { id: 'contact', label: 'Contact Info', icon: <SettingsIcon className="h-4 w-4" /> },
         { id: 'seo', label: 'SEO Settings', icon: <BarChartIcon className="h-4 w-4" /> },
-        { id: 'system', label: 'System Settings', icon: <SettingsIcon className="h-4 w-4" /> }
+        { id: 'system', label: 'System Settings', icon: <SettingsIcon className="h-4 w-4" /> },
+        { id: 'payment', label: 'Payment Settings', icon: <SettingsIcon className="h-4 w-4" /> }
     ];
 
     return (
@@ -798,6 +799,97 @@ const WebsiteContentManagement = () => {
                                         <SaveIcon className="h-4 w-4 mr-2 inline" />
                                         {saving ? 'Saving...' : 'Save Changes'}
                                     </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Payment Settings */}
+                    {activeTab === 'payment' && (
+                        <div className="space-y-6">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Payment Settings</h3>
+                                <button
+                                    onClick={() => setEditingSection(editingSection === 'payment' ? null : 'payment')}
+                                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                >
+                                    {editingSection === 'payment' ? <EyeIcon className="h-4 w-4 mr-2 inline" /> : <EditIcon className="h-4 w-4 mr-2 inline" />}
+                                    {editingSection === 'payment' ? 'Preview' : 'Edit'}
+                                </button>
+                            </div>
+
+                            {editingSection === 'payment' ? (
+                                <div className="space-y-6">
+                                    <div className="space-y-4">
+                                        <h4 className="font-medium text-gray-900 dark:text-gray-100">Payment QR Code</h4>
+                                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                                Upload the QR Code image that will be shown to students for collecting payments.
+                                            </p>
+                                            <div className="flex items-center space-x-4">
+                                                {settings.paymentSettings?.qrCodeImage && (
+                                                    <img
+                                                        src={settings.paymentSettings.qrCodeImage}
+                                                        alt="Payment QR Code"
+                                                        className="h-32 object-contain rounded border border-gray-300 dark:border-gray-600 bg-white"
+                                                    />
+                                                )}
+                                                <div>
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        onChange={(e) => {
+                                                            if (e.target.files[0]) {
+                                                                handleImageUpload(e.target.files[0], 'qrCodeImage');
+                                                            }
+                                                        }}
+                                                        className="hidden"
+                                                        id="qr-upload"
+                                                    />
+                                                    <label
+                                                        htmlFor="qr-upload"
+                                                        className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 cursor-pointer inline-flex items-center"
+                                                    >
+                                                        <UploadIcon className="h-4 w-4 mr-2" />
+                                                        Upload New QR
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end space-x-3">
+                                        <button
+                                            onClick={() => setEditingSection(null)}
+                                            className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={() => handleSave({ paymentSettings: settings.paymentSettings })}
+                                            disabled={saving}
+                                            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 inline-flex items-center"
+                                        >
+                                            <SaveIcon className="h-4 w-4 mr-2" />
+                                            {saving ? 'Saving...' : 'Save Changes'}
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="space-y-4">
+                                    <h4 className="font-medium text-gray-900 dark:text-gray-100">Payment QR Code Preview</h4>
+                                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-gray-800 text-center">
+                                        {settings.paymentSettings?.qrCodeImage ? (
+                                            <img
+                                                src={settings.paymentSettings.qrCodeImage}
+                                                alt="Payment QR Code"
+                                                className="mx-auto h-48 object-contain rounded shadow-sm border border-gray-200 bg-white"
+                                            />
+                                        ) : (
+                                            <div className="text-gray-500 dark:text-gray-400">
+                                                No QR Code uploaded. The fallback QR code will be used.
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
                         </div>

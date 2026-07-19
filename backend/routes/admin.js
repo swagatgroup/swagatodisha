@@ -19,7 +19,8 @@ const {
     resetPassword,
     getWebsiteSettings,
     updateWebsiteSettings,
-    uploadWebsiteImage
+    uploadWebsiteImage,
+    updateCourseFee
 } = require('../controllers/adminController');
 
 // Configure multer for file uploads
@@ -67,6 +68,9 @@ router.post('/reset-password', protect, authorize('staff', 'super_admin'), reset
 router.get('/website-settings', protect, authorize('staff', 'super_admin'), getWebsiteSettings); // Staff can now view
 router.put('/website-settings', protect, authorize('staff', 'super_admin'), updateWebsiteSettings); // Staff can now update
 router.post('/upload-website-image', protect, authorize('staff', 'super_admin'), upload.single('image'), uploadWebsiteImage); // Staff can now upload
+
+// Update course fee for an application
+router.put('/applications/:applicationId/course-fee', protect, authorize('staff', 'super_admin'), updateCourseFee);
 
 // Submit application for a student (admin can submit multiple applications)
 router.post('/submit-application', protect, authorize('staff', 'super_admin'), async (req, res) => {

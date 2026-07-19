@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../../utils/api';
 import { showSuccess, showError } from '../../../utils/sweetAlert';
 import { XMarkIcon, CurrencyRupeeIcon, DocumentArrowUpIcon } from '@heroicons/react/24/outline';
+import QRPaymentSystem from './QRPaymentSystem';
 
 const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
     const [financialStatus, setFinancialStatus] = useState({
@@ -11,6 +12,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
         dueAmount: 0,
         installments: []
     });
+    const [qrCodeImage, setQrCodeImage] = useState('');
     const [loading, setLoading] = useState(true);
     const [showUploadForm, setShowUploadForm] = useState(false);
     const [uploadData, setUploadData] = useState({
@@ -41,6 +43,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
             const response = await api.get(`/api/agents/students/${student._id || student.user}/installments`);
             if (response.data.success) {
                 setFinancialStatus(response.data.data.financialStatus);
+                setQrCodeImage(response.data.data.qrCodeImage);
             }
         } catch (error) {
             console.error('Error fetching installments:', error);
@@ -438,6 +441,10 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                 </div>
                             </div>
                         )}
+                        
+                        <div className="mt-8 mb-4 border-t border-gray-200 pt-6">
+                            <QRPaymentSystem qrCodeImage={qrCodeImage} amount={financialStatus.dueAmount} />
+                        </div>
                     </div>
                 </motion.div>
             </div>

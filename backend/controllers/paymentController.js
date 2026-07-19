@@ -1,6 +1,7 @@
 const Student = require('../models/Student');
 const Payment = require('../models/Payment');
 const StudentApplication = require('../models/StudentApplication');
+const WebsiteSettings = require('../models/WebsiteSettings');
 const QRCode = require('qrcode');
 const crypto = require('crypto');
 
@@ -164,6 +165,9 @@ const getInstallments = async (req, res) => {
             });
         }
 
+        const settings = await WebsiteSettings.findOne();
+        const qrCodeImage = settings?.paymentSettings?.qrCodeImage || '';
+
         res.status(200).json({
             success: true,
             data: {
@@ -172,7 +176,8 @@ const getInstallments = async (req, res) => {
                     paidAmount: 0,
                     dueAmount: 0,
                     installments: []
-                }
+                },
+                qrCodeImage
             }
         });
 

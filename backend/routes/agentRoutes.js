@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const { protect } = require("../middleware/auth");
 const Student = require("../models/Student");
 const StudentApplication = require("../models/StudentApplication");
+const WebsiteSettings = require("../models/WebsiteSettings");
 const User = require("../models/User");
 const Payment = require("../models/Payment");
 
@@ -25,6 +26,9 @@ router.get("/students/:studentId/installments", async (req, res) => {
       return res.status(404).json({ success: false, message: "Student application not found or unauthorized" });
     }
 
+    const settings = await WebsiteSettings.findOne();
+    const qrCodeImage = settings?.paymentSettings?.qrCodeImage || "";
+
     res.status(200).json({
       success: true,
       data: {
@@ -33,7 +37,8 @@ router.get("/students/:studentId/installments", async (req, res) => {
           paidAmount: 0,
           dueAmount: 0,
           installments: []
-        }
+        },
+        qrCodeImage
       }
     });
   } catch (error) {

@@ -154,6 +154,14 @@ const websiteContentSchema = new mongoose.Schema({
         ogImage: String
     },
 
+    // Payment Settings
+    paymentSettings: {
+        qrCodeImage: {
+            type: String,
+            default: ''
+        }
+    },
+
     // Timestamps
     lastModified: {
         type: Date,

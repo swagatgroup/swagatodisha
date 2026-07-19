@@ -32,6 +32,11 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
     const [showApplicationPDF, setShowApplicationPDF] = useState(false);
     const [selectedStudentForPDF, setSelectedStudentForPDF] = useState(null);
     const [editData, setEditData] = useState({});
+    
+    // Course Fee states
+    const [editingCourseFee, setEditingCourseFee] = useState(false);
+    const [courseFeeInput, setCourseFeeInput] = useState('');
+    const [savingCourseFee, setSavingCourseFee] = useState(false);
     const [statusData, setStatusData] = useState({
         status: '',
         notes: '',
@@ -510,6 +515,33 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleUpdateCourseFee = async (e) => {
+        e.preventDefault();
+        if (!courseFeeInput || isNaN(courseFeeInput)) {
+            showError('Please enter a valid course fee amount');
+            return;
+        }
+
+        try {
+            setSavingCourseFee(true);
+            const response = await api.put(`/api/admin/applications/${selectedStudent._id}/course-fee`, {
+                courseFee: Number(courseFeeInput)
+            });
+
+            if (response.data.success) {
+                showSuccess('Course fee updated successfully');
+                setEditingCourseFee(false);
+                setSelectedStudent(response.data.data);
+                fetchStudents();
+            }
+        } catch (error) {
+            console.error('Error updating course fee:', error);
+            handleApiError(error, 'Failed to update course fee');
+        } finally {
+            setSavingCourseFee(false);
         }
     };
 
@@ -2094,6 +2126,75 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Email</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianEmail || 'N/A'}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Financial Information */}
+                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
+                                        <div className="flex items-center">
+                                            <svg className="h-5 w-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            Financial Information
+                                        </div>
+                                        {['APPROVED', 'COMPLETE'].includes(selectedStudent.status) && (
+                                            <button
+                                                onClick={() => {
+                                                    setEditingCourseFee(!editingCourseFee);
+                                                    if (!editingCourseFee) {
+                                                        setCourseFeeInput(selectedStudent.financialStatus?.totalFees || '');
+                                                    }
+                                                }}
+                                                className="text-sm px-3 py-1 bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-md"
+                                            >
+                                                {editingCourseFee ? 'Cancel' : 'Set Course Fee'}
+                                            </button>
+                                        )}
+                                    </h4>
+
+                                    {editingCourseFee && (
+                                        <form onSubmit={handleUpdateCourseFee} className="mb-4 p-4 border border-purple-200 bg-white rounded-lg">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Total Course Fee (₹)</label>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="number"
+                                                    value={courseFeeInput}
+                                                    onChange={(e) => setCourseFeeInput(e.target.value)}
+                                                    placeholder="Enter total course fee"
+                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                    required
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    disabled={savingCourseFee}
+                                                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50"
+                                                >
+                                                    {savingCourseFee ? 'Saving...' : 'Save'}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    )}
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700">
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Course Fee</label>
+                                            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                                                ₹{selectedStudent.financialStatus?.totalFees || 0}
+                                            </p>
+                                        </div>
+                                        <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700">
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Paid</label>
+                                            <p className="text-lg font-bold text-green-600">
+                                                ₹{selectedStudent.financialStatus?.paidAmount || 0}
+                                            </p>
+                                        </div>
+                                        <div className="bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-700">
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Due Amount</label>
+                                            <p className="text-lg font-bold text-red-600">
+                                                ₹{selectedStudent.financialStatus?.dueAmount || 0}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
