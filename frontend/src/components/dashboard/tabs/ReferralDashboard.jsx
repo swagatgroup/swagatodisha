@@ -156,6 +156,18 @@ const ReferralDashboard = () => {
                 </div>
             </motion.div>
 
+            {/* Prize Notification */}
+            {referralData.isEligibleForPrize && (
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-lg p-4 text-white shadow-lg text-center border-2 border-yellow-300"
+                >
+                    <h3 className="text-xl font-bold mb-1">🎉 Congratulations! You have reached 100+ Referrals! 🎉</h3>
+                    <p className="text-yellow-50 font-medium">You are now eligible for a special prize (Bullet / iPhone 17 Pro Max). We will contact you soon!</p>
+                </motion.div>
+            )}
+
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 <motion.div
@@ -222,6 +234,7 @@ const ReferralDashboard = () => {
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500">Total Earnings</p>
                             <p className="text-2xl font-bold text-gray-900">₹{referralData.totalEarnings}</p>
+                            <p className="text-xs text-purple-500 font-medium mt-1">Tier-based rewards active</p>
                         </div>
                     </div>
                 </motion.div>

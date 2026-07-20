@@ -32,23 +32,33 @@ const generateReferralCode = async (req, res) => {
 };
 
 // Get referral data for any user (Student, Agent, Staff)
+// Tier-based earnings calculation
+const calculateEarnings = (successfulCount) => {
+    if (successfulCount <= 0) return 0;
+    let rate;
+    if (successfulCount <= 10) rate = 2000;
+    else if (successfulCount <= 25) rate = 3000;
+    else if (successfulCount <= 50) rate = 4000;
+    else if (successfulCount <= 100) rate = 5000;
+    else rate = 5000; // 100+ gets prize (tracked separately)
+    return successfulCount * rate;
+};
+
 const getReferralData = async (req, res) => {
     try {
+        const Admin = require('../models/Admin');
         const userId = req.user._id;
+        const userRole = req.user.role;
 
-        // Ensure user has a referralCode
         let user = await User.findById(userId);
+        let isAdmin = false;
         if (!user) {
-            const Admin = require('../models/Admin');
             user = await Admin.findById(userId);
+            isAdmin = true;
         }
-
-        if (!user) {
-            return res.status(404).json({ success: false, message: 'User not found' });
-        }
+        if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
         if (!user.referralCode) {
-            // It will be auto-generated in the pre-save hook or generate method
             try {
                 user.referralCode = user.generateReferralCode();
                 user.isReferralActive = true;
@@ -58,14 +68,34 @@ const getReferralData = async (req, res) => {
 
         const referralCode = user.referralCode;
 
-        // Get all referrals made by this user dynamically
-        const allReferrals = await StudentApplication.find({
+        // Query 1: apps where referralInfo.referredBy = userId (student used referral code)
+        const byReferralCode = await StudentApplication.find({
             'referralInfo.referredBy': userId
-        }).select('personalDetails.fullName courseDetails.selectedCourse status createdAt').sort({ createdAt: -1 });
+        }).select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole').sort({ createdAt: -1 });
+
+        // Query 2: for agents — apps they submitted FOR others (submittedBy = agentId, user != agentId)
+        let byDirectSubmission = [];
+        if (userRole === 'agent' || userRole === 'staff' || isAdmin) {
+            byDirectSubmission = await StudentApplication.find({
+                submittedBy: userId,
+                user: { $ne: userId } // not their own application
+            }).select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole').sort({ createdAt: -1 });
+        }
+
+        // Merge and deduplicate by _id
+        const seen = new Set();
+        const allReferrals = [];
+        for (const ref of [...byReferralCode, ...byDirectSubmission]) {
+            const id = ref._id.toString();
+            if (!seen.has(id)) {
+                seen.add(id);
+                allReferrals.push(ref);
+            }
+        }
+        allReferrals.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
         let successfulReferrals = 0;
         let pendingReferrals = 0;
-        const totalReferrals = allReferrals.length;
 
         const formattedReferrals = allReferrals.map(ref => {
             let referralStatus = 'PENDING';
@@ -75,26 +105,23 @@ const getReferralData = async (req, res) => {
             } else if (ref.status === 'REJECTED') {
                 referralStatus = 'FAILED';
             } else {
-                referralStatus = 'PENDING';
                 pendingReferrals++;
             }
-
             return {
                 name: ref.personalDetails?.fullName || 'N/A',
                 course: ref.courseDetails?.selectedCourse || 'N/A',
                 status: referralStatus,
-                date: ref.createdAt
+                date: ref.createdAt,
+                source: ref.submitterRole === 'agent' ? 'Direct' : 'Referral Code'
             };
         });
 
-        // Bracket logic for earnings: 
-        // 1-10 referrals = 500 Rs per referral
-        // >10 referrals = 1000 Rs per referral for ALL successful referrals
-        const perReferralAmount = successfulReferrals > 10 ? 1000 : 500;
-        const totalEarnings = successfulReferrals * perReferralAmount;
+        const totalReferrals = allReferrals.length;
+        const totalEarnings = calculateEarnings(successfulReferrals);
+        const isEligibleForPrize = successfulReferrals > 100;
 
-        // Also fetch user to get financial details
-        const currentUser = await User.findById(userId);
+        // Get financial details from whichever model
+        const freshUser = isAdmin ? await Admin.findById(userId) : await User.findById(userId);
 
         res.status(200).json({
             success: true,
@@ -104,9 +131,9 @@ const getReferralData = async (req, res) => {
                 successfulReferrals,
                 pendingReferrals,
                 totalEarnings,
-                // Only return top 10 recent
-                recentReferrals: formattedReferrals.slice(0, 10),
-                financialDetails: currentUser?.financialDetails || null
+                isEligibleForPrize,
+                recentReferrals: formattedReferrals.slice(0, 50),
+                financialDetails: freshUser?.financialDetails || null
             }
         });
     } catch (error) {
@@ -204,32 +231,39 @@ const getReferralStats = async (req, res) => {
 const updateBankDetails = async (req, res) => {
     try {
         const { bankAccountNumber, ifscCode, accountHolderName, bankName } = req.body;
-        const user = await User.findById(req.user._id);
+        
+        let user = await User.findById(req.user._id);
+        if (!user) {
+            const Admin = require('../models/Admin');
+            user = await Admin.findById(req.user._id);
+        }
 
         if (!user) {
             return res.status(404).json({ success: false, message: 'User profile not found' });
         }
 
+        const currentFinancials = user.financialDetails || {};
         let resetToPending = false;
+        
         if (
-            user.financialDetails.bankAccountNumber !== req.body.bankAccountNumber ||
-            user.financialDetails.ifscCode !== req.body.ifscCode ||
-            user.financialDetails.accountHolderName !== req.body.accountHolderName ||
-            user.financialDetails.bankName !== req.body.bankName
+            currentFinancials.bankAccountNumber !== bankAccountNumber ||
+            currentFinancials.ifscCode !== ifscCode ||
+            currentFinancials.accountHolderName !== accountHolderName ||
+            currentFinancials.bankName !== bankName
         ) {
-            if (user.financialDetails.verificationStatus === 'VERIFIED') {
+            if (currentFinancials.verificationStatus === 'VERIFIED') {
                 resetToPending = true;
             }
         }
 
         user.financialDetails = {
-            ...user.financialDetails,
+            ...currentFinancials,
             bankAccountNumber,
             ifscCode,
             accountHolderName,
             bankName,
-            verificationStatus: resetToPending ? 'PENDING' : (user.financialDetails.verificationStatus || 'PENDING'),
-            verificationNotes: resetToPending ? '' : user.financialDetails.verificationNotes
+            verificationStatus: resetToPending ? 'PENDING' : (currentFinancials.verificationStatus || 'PENDING'),
+            verificationNotes: resetToPending ? '' : currentFinancials.verificationNotes
         };
 
         await user.save();

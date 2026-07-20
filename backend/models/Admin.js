@@ -139,6 +139,20 @@ const adminSchema = new mongoose.Schema({
         default: false
     },
 
+    // Financial Details (for referral payouts)
+    financialDetails: {
+        bankAccountNumber: String,
+        ifscCode: String,
+        accountHolderName: String,
+        bankName: String,
+        verificationStatus: {
+            type: String,
+            enum: ['PENDING', 'VERIFIED', 'REJECTED'],
+            default: 'PENDING'
+        },
+        verificationNotes: String
+    },
+
     // Agent Assignment
     assignedAgents: [{
         type: mongoose.Schema.Types.ObjectId,
