@@ -160,7 +160,7 @@ const PaymentManagement = () => {
                 });
 
                 if (uploadRes.data?.success) {
-                    receiptUrl = uploadRes.data.data.url;
+                    receiptUrl = uploadRes.data.data.filePath || uploadRes.data.data.downloadUrl || uploadRes.data.data.url;
                 } else {
                     throw new Error('File upload failed');
                 }

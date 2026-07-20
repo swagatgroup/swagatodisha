@@ -19,7 +19,11 @@ router.get("/students/:studentId/installments", async (req, res) => {
 
     const application = await StudentApplication.findOne({
       user: studentId,
-      $or: [{ assignedAgent: agentId }, { "referralInfo.referredBy": agentId }]
+      $or: [
+        { assignedAgent: agentId },
+        { submittedBy: agentId },
+        { "referralInfo.referredBy": agentId }
+      ]
     });
 
     if (!application) {
@@ -60,7 +64,11 @@ router.post("/students/:studentId/installments/upload", async (req, res) => {
 
     const application = await StudentApplication.findOne({
       user: studentId,
-      $or: [{ submittedBy: agentId }, { "referralInfo.referredBy": agentId }]
+      $or: [
+        { assignedAgent: agentId },
+        { submittedBy: agentId },
+        { "referralInfo.referredBy": agentId }
+      ]
     });
 
     if (!application) {
@@ -108,7 +116,11 @@ router.put("/students/:studentId/installments/:installmentId", async (req, res) 
 
     const application = await StudentApplication.findOne({
       user: studentId,
-      $or: [{ submittedBy: agentId }, { "referralInfo.referredBy": agentId }]
+      $or: [
+        { assignedAgent: agentId },
+        { submittedBy: agentId },
+        { "referralInfo.referredBy": agentId }
+      ]
     });
 
     if (!application) {

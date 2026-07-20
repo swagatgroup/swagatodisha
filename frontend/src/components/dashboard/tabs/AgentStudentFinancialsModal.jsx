@@ -40,7 +40,8 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
     const fetchInstallments = async () => {
         try {
             setLoading(true);
-            const response = await api.get(`/api/agents/students/${student._id || student.user}/installments`);
+            const userIdForAPI = typeof student.user === 'object' ? student.user._id : student.user;
+            const response = await api.get(`/api/agents/students/${userIdForAPI}/installments`);
             if (response.data.success) {
                 setFinancialStatus(response.data.data.financialStatus);
                 setQrCodeImage(response.data.data.qrCodeImage);
