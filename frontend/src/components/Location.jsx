@@ -7,7 +7,7 @@ const Location = () => {
         {
             name: "Swagat Group of Institutions - Sargiguda",
             address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039",
-            phone: "+91 9403891555",
+            phone: "+91 7855959544",
             email: "contact@swagatodisha.com",
             coordinates: {
                 lat: 20.099885,
@@ -17,7 +17,7 @@ const Location = () => {
         {
             name: "Swagat Group of Institutions - Ghantiguda",
             address: "Ghantiguda, PO - Chalna, PS - Sinapali, Nuapada, Odisha, Pin-766108",
-            phone: "+91 9403891555",
+            phone: "+91 7855959544",
             email: "contact@swagatodisha.com",
             coordinates: {
                 lat: 20.099885,

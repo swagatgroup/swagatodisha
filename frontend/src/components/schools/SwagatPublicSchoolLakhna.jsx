@@ -146,7 +146,7 @@ const SwagatPublicSchoolLakhna = () => {
             {
                 icon: "📞",
                 title: "Call Us",
-                value: "+91 9403891555"
+                value: "+91 7855959544"
             },
             {
                 icon: "✉️",
@@ -179,7 +179,7 @@ const SwagatPublicSchoolLakhna = () => {
                 },
                 "contactPoint": {
                     "@type": "ContactPoint",
-                    "telephone": "+91 9403891555",
+                    "telephone": "+91 7855959544",
                     "contactType": "Admissions",
                     "email": "contact@swagatodisha.com"
                 },

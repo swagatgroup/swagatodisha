@@ -60,7 +60,7 @@ const Admissions = () => {
                         Apply Now
                     </button>
                     <p className="text-gray-600 mt-4">
-                        For more information, call us at <span className="font-semibold">+91 9403891555</span>
+                        For more information, call us at <span className="font-semibold">+91 7855959544</span>
                     </p>
                 </div>
             </div>
