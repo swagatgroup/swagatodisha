@@ -145,6 +145,7 @@ const SinglePageStudentRegistration = ({
         documents: [],
         termsAccepted: false,
         referralCode: "",
+        password: "",
     });
 
     // Fetch colleges on mount
@@ -779,6 +780,7 @@ const SinglePageStudentRegistration = ({
                     },
                     financialDetails: {},
                     referralCode: formData.referralCode || undefined,
+                    password: formData.password || undefined,
                 });
 
                 if (!createRes.data?.success || !createRes.data?.data?.applicationId) {
@@ -1289,7 +1291,7 @@ const SinglePageStudentRegistration = ({
                         />
                     </div>
 
-                    <div className="md:col-span-2">
+                    <div className={userRole !== 'student' ? '' : 'md:col-span-2'}>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Email Address *
                         </label>
@@ -1316,6 +1318,31 @@ const SinglePageStudentRegistration = ({
                             </p>
                         )}
                     </div>
+
+                    {userRole !== 'student' && (
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Login Password (For Student)
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.password}
+                                onChange={(e) =>
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        password: e.target.value,
+                                    }))
+                                }
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                placeholder="Default: Swagat@1926"
+                            />
+                            {errors["password"] && (
+                                <p className="text-red-500 text-sm mt-1">
+                                    {errors["password"]}
+                                </p>
+                            )}
+                        </div>
+                    )}
 
                     <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

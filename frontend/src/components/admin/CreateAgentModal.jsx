@@ -7,6 +7,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
+        password: '',
         phoneNumber: '',
         assignedStaff: '',
         address: {
@@ -82,6 +83,12 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
             newErrors.email = 'Email is invalid';
         }
 
+        if (!formData.password.trim()) {
+            newErrors.password = 'Password is required';
+        } else if (formData.password.length < 6) {
+            newErrors.password = 'Password must be at least 6 characters';
+        }
+
         if (!formData.phoneNumber.trim()) {
             newErrors.phoneNumber = 'Phone number is required';
         } else if (!/^[6-9]\d{9}$/.test(formData.phoneNumber)) {
@@ -125,6 +132,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
         setFormData({
             fullName: '',
             email: '',
+            password: '',
             phoneNumber: '',
             assignedStaff: '',
             address: {
@@ -195,6 +203,24 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                 />
                                 {errors.email && (
                                     <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                                )}
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Password *
+                                </label>
+                                <input
+                                    type="text"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleInputChange}
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.password ? 'border-red-500' : 'border-gray-300'
+                                        }`}
+                                    placeholder="Enter login password"
+                                />
+                                {errors.password && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.password}</p>
                                 )}
                             </div>
                         </div>

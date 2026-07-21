@@ -127,6 +127,7 @@ const createApplication = async (req, res) => {
             guardianDetails,
             financialDetails = {},
             referralCode,
+            password,
         } = req.body;
 
         // Handle referral code if provided
@@ -270,7 +271,7 @@ const createApplication = async (req, res) => {
                     const newStudent = new User({
                         fullName: studentName,
                         email: studentEmail || `student_${Date.now()}@swagat.odisha`,
-                        password: 'Swagat@1926',
+                        password: password || 'Swagat@1926',
                         phoneNumber: studentPhone || '0000000000',
                         role: 'student',
                         createdBy: req.user._id
