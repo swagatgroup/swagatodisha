@@ -39,6 +39,7 @@ const EnhancedStaffDashboard = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterCourse, setFilterCourse] = useState('all');
     const [filterSubmitterRole, setFilterSubmitterRole] = useState('all');
+    const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -156,7 +157,8 @@ const EnhancedStaffDashboard = () => {
         const newFilter = filterKey === 'all' ? 'all' : filterKey;
         setStudentTableFilter(newFilter);
         setFilterStatus(newFilter);
-        setCurrentPage(1); // Reset to first page when filter changes
+        setSortBy('latest');
+        setCurrentPage(1);
         setActiveTab('student-management');
     };
 
@@ -251,7 +253,7 @@ const EnhancedStaffDashboard = () => {
             fetchDashboardStudents();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, selectedSession, activeTab]);
+    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, sortBy, selectedSession, activeTab]);
 
     const fetchDashboardStudents = async () => {
         try {
@@ -264,12 +266,38 @@ const EnhancedStaffDashboard = () => {
                 return;
             }
 
+            // Map sortBy to backend format
+            let backendSortBy = 'createdAt';
+            let backendSortOrder = 'desc';
+            
+            switch(sortBy) {
+                case 'latest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'oldest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_asc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_desc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'desc';
+                    break;
+                default:
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+            }
+
             const params = new URLSearchParams({
                 page: currentPage,
                 limit: 20,
                 session: selectedSession,
-                sortBy: 'createdAt',
-                sortOrder: 'desc', // Latest first (newest on top)
+                sortBy: backendSortBy,
+                sortOrder: backendSortOrder,
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
@@ -281,12 +309,7 @@ const EnhancedStaffDashboard = () => {
             if (response.data.success) {
                 let studentsData = response.data.data.students || [];
 
-                // Frontend sorting fallback: Sort by latest time (newest first)
-                studentsData = [...studentsData].sort((a, b) => {
-                    const dateA = new Date(a.createdAt || 0);
-                    const dateB = new Date(b.createdAt || 0);
-                    return dateB - dateA; // Descending (newest first)
-                });
+                // Frontend sorting fallback removed since backend handles it
 
                 setDashboardStudents(studentsData);
                 const pagination = response.data.data.pagination || {};
@@ -529,12 +552,12 @@ const EnhancedStaffDashboard = () => {
                                         type="text"
                                         placeholder="Search by name, Aadhar, phone, email..."
                                         value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     />
                                     <select
                                         value={filterStatus}
-                                        onChange={(e) => setFilterStatus(e.target.value)}
+                                        onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
                                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
                                     >
                                         <option value="all">Total Students</option>
@@ -551,6 +574,16 @@ const EnhancedStaffDashboard = () => {
                                                 <option key={status} value={status}>{statusLabels[status] || status}</option>
                                             );
                                         })}
+                                    </select>
+                                    <select
+                                        value={sortBy}
+                                        onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    >
+                                        <option value="latest">Latest First</option>
+                                        <option value="oldest">Oldest First</option>
+                                        <option value="name_asc">Name A-Z</option>
+                                        <option value="name_desc">Name Z-A</option>
                                     </select>
                                     <select
                                         value={filterCourse}

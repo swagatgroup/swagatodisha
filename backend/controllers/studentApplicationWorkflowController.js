@@ -244,9 +244,51 @@ const createApplication = async (req, res) => {
             console.error("Error checking for existing draft:", err);
         }
 
+        // Determine the User ID to attach to this application
+        let applicationUserId = req.user._id;
+
+        if (req.user.role !== 'student') {
+            // Find or create a student user account for agent/staff submissions
+            const studentEmail = finalContactDetails?.email?.toLowerCase()?.trim();
+            const studentPhone = finalContactDetails?.mobile?.trim();
+            const studentName = finalPersonalDetails?.fullName || 'Student';
+
+            let existingUser = null;
+            
+            if (studentEmail) {
+                existingUser = await User.findOne({ email: studentEmail, role: 'student' });
+            }
+            if (!existingUser && studentPhone) {
+                existingUser = await User.findOne({ phoneNumber: studentPhone, role: 'student' });
+            }
+
+            if (existingUser) {
+                applicationUserId = existingUser._id;
+            } else {
+                try {
+                    console.log('Creating auto-generated student account...');
+                    const newStudent = new User({
+                        fullName: studentName,
+                        email: studentEmail || `student_${Date.now()}@swagat.odisha`,
+                        password: 'Swagat@1926',
+                        phoneNumber: studentPhone || '0000000000',
+                        role: 'student',
+                        createdBy: req.user._id
+                    });
+                    await newStudent.save();
+                    applicationUserId = newStudent._id;
+                    console.log('Auto-generated student account created with ID:', applicationUserId);
+                } catch (userErr) {
+                    console.error('Failed to auto-create student account:', userErr);
+                    // If user creation fails, we still want to save the application under the agent's ID as a fallback,
+                    // or we could throw an error. Let's fallback to req.user._id.
+                }
+            }
+        }
+
         // Create application
         const applicationData = {
-            user: req.user._id,
+            user: applicationUserId,
             personalDetails: finalPersonalDetails,
             contactDetails: finalContactDetails,
             courseDetails,

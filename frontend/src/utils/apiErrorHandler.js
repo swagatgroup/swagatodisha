@@ -124,7 +124,33 @@ export const handleAPIError = (error, showAlert = true) => {
     let userMessage = 'An error occurred. Please try again.';
     let shouldRetry = false;
 
-    if (error instanceof APIError) {
+    if (error?.isAxiosError) {
+        if (error.response) {
+            // The request was made and the server responded with a status code
+            if (error.response.data?.message) {
+                userMessage = error.response.data.message;
+            } else if (error.response.status === 401) {
+                userMessage = 'Authentication failed. Please check your credentials.';
+            } else if (error.response.status === 403) {
+                userMessage = 'Access denied. You do not have permission to perform this action.';
+            } else if (error.response.status === 429) {
+                userMessage = 'Too many requests. Please wait a moment and try again.';
+                shouldRetry = true;
+            } else if (error.response.status >= 500) {
+                userMessage = 'Server error. Please try again in a few minutes.';
+                shouldRetry = true;
+            } else {
+                userMessage = `Error: ${error.response.status}`;
+            }
+        } else if (error.request) {
+            // The request was made but no response was received
+            userMessage = 'Network error. Please check your connection and try again.';
+            shouldRetry = true;
+        } else {
+            // Something happened in setting up the request
+            userMessage = error.message || 'An unexpected error occurred.';
+        }
+    } else if (error instanceof APIError) {
         switch (error.type) {
             case 'rate_limit':
                 userMessage = 'Too many requests. Please wait a moment and try again.';
@@ -151,6 +177,11 @@ export const handleAPIError = (error, showAlert = true) => {
             default:
                 userMessage = error.message || 'An unexpected error occurred.';
         }
+    } else if (error?.response?.data?.message) {
+        // Fallback for objects that have standard response structure but aren't explicitly Axios errors
+        userMessage = error.response.data.message;
+    } else {
+        userMessage = error?.message || 'An unexpected error occurred.';
     }
 
     if (showAlert) {

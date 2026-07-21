@@ -38,7 +38,7 @@ const EnhancedAgentDashboard = () => {
   const handleStatClick = (filterKey) => {
     // Navigate to students tab with the filter applied
     setStudentTableFilter(filterKey);
-    setActiveTab("students");
+    // setActiveTab("students");
   };
 
   // Reset filter when returning to dashboard

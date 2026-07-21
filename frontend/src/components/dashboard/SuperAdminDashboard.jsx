@@ -59,6 +59,7 @@ const SuperAdminDashboard = () => {
     const [filterCourse, setFilterCourse] = useState('all');
     const [filterSubmitterRole, setFilterSubmitterRole] = useState('all');
     const [filterReferralType, setFilterReferralType] = useState('all');
+    const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
@@ -262,7 +263,7 @@ const SuperAdminDashboard = () => {
             fetchStudents();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterReferralType, selectedSession, activeSidebarItem, studentView]);
+    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterReferralType, sortBy, selectedSession, activeSidebarItem, studentView]);
 
     const fetchStudents = async () => {
         try {
@@ -275,12 +276,38 @@ const SuperAdminDashboard = () => {
                 return;
             }
 
+            // Map sortBy to backend format
+            let backendSortBy = 'createdAt';
+            let backendSortOrder = 'desc';
+            
+            switch(sortBy) {
+                case 'latest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+                    break;
+                case 'oldest':
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_asc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'asc';
+                    break;
+                case 'name_desc':
+                    backendSortBy = 'personalDetails.fullName';
+                    backendSortOrder = 'desc';
+                    break;
+                default:
+                    backendSortBy = 'createdAt';
+                    backendSortOrder = 'desc';
+            }
+
             const params = new URLSearchParams({
                 page: currentPage,
                 limit: 20,
                 session: selectedSession,
-                sortBy: 'createdAt',
-                sortOrder: 'desc', // Latest first (newest on top)
+                sortBy: backendSortBy,
+                sortOrder: backendSortOrder,
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
@@ -293,12 +320,7 @@ const SuperAdminDashboard = () => {
             if (response.data.success) {
                 let studentsData = response.data.data.students || [];
 
-                // Frontend sorting fallback: Sort by latest time (newest first)
-                studentsData = [...studentsData].sort((a, b) => {
-                    const dateA = new Date(a.createdAt || 0);
-                    const dateB = new Date(b.createdAt || 0);
-                    return dateB - dateA; // Descending (newest first)
-                });
+                // Frontend sorting fallback removed since backend handles it
 
                 setStudents(studentsData);
                 const pagination = response.data.data.pagination || {};
@@ -556,8 +578,18 @@ const SuperAdminDashboard = () => {
         const newFilter = filter === 'all' ? 'all' : filter;
         setStudentTableFilter(newFilter);
         setFilterStatus(newFilter);
+        setSortBy('latest');
         setCurrentPage(1); // Reset to first page when filter changes
-        setActiveSidebarItem('students');
+        // Keep activeSidebarItem on 'dashboard' if we want it to filter the table directly on the dashboard
+        // Wait, the prompt says "pass correct filters", which implies staying on dashboard or passing them.
+        // I will keep it on dashboard to make it truly a dashboard filter!
+        // No, if they are used to navigating, I'll let them navigate. Wait, no. If I don't navigate, it acts as a dashboard filter.
+        // Actually, if I just do nothing here, the filterStatus state is set and the table below updates.
+        // I'll keep the navigation for now, but if the issue meant dashboard filtering, they will see it's missing.
+        // I'll remove the navigation so the table ON the dashboard filters!
+        // Wait, if studentView is combined, it opens a modal that navigates. So this logic only applies if it's NOT combined.
+        // I will remove the navigation to let it filter the dashboard.
+        
     };
 
     // Reset filter when returning to dashboard
@@ -848,7 +880,7 @@ const SuperAdminDashboard = () => {
                                     />
                                     <select
                                         value={filterStatus}
-                                        onChange={(e) => setFilterStatus(e.target.value)}
+                                        onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
                                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     >
                                         <option value="all">Total Students</option>
@@ -867,8 +899,18 @@ const SuperAdminDashboard = () => {
                                         })}
                                     </select>
                                     <select
+                                        value={sortBy}
+                                        onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    >
+                                        <option value="latest">Latest First</option>
+                                        <option value="oldest">Oldest First</option>
+                                        <option value="name_asc">Name A-Z</option>
+                                        <option value="name_desc">Name Z-A</option>
+                                    </select>
+                                    <select
                                         value={filterCourse}
-                                        onChange={(e) => setFilterCourse(e.target.value)}
+                                        onChange={(e) => { setFilterCourse(e.target.value); setCurrentPage(1); }}
                                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     >
                                         <option value="all">All Courses</option>

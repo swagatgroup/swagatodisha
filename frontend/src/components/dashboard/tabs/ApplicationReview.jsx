@@ -1895,11 +1895,25 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     View PDF
                                                 </button>
                                                 <button
-                                                    onClick={() => {
-                                                        const link = document.createElement('a');
-                                                        link.href = getDocumentUrl(selectedApplication.applicationPdfUrl);
-                                                        link.download = `application-${selectedApplication.personalDetails?.fullName || 'form'}.pdf`;
-                                                        link.click();
+                                                    onClick={async () => {
+                                                        try {
+                                                            const fileUrl = getDocumentUrl(selectedApplication.applicationPdfUrl);
+                                                            const fileResponse = await fetch(fileUrl);
+                                                            if (!fileResponse.ok) throw new Error('Download failed');
+                                                            const blob = await fileResponse.blob();
+                                                            const blobUrl = window.URL.createObjectURL(blob);
+                                                            const link = document.createElement('a');
+                                                            link.href = blobUrl;
+                                                            link.download = `application-${selectedApplication.personalDetails?.fullName || 'form'}.pdf`;
+                                                            document.body.appendChild(link);
+                                                            link.click();
+                                                            document.body.removeChild(link);
+                                                            window.URL.revokeObjectURL(blobUrl);
+                                                        } catch (error) {
+                                                            console.error('Download error:', error);
+                                                            showError('Failed to force download, opening in new tab instead.');
+                                                            window.open(getDocumentUrl(selectedApplication.applicationPdfUrl), '_blank');
+                                                        }
                                                     }}
                                                     className="flex items-center px-3 py-1 text-green-600 hover:text-green-800 dark:text-green-400"
                                                 >

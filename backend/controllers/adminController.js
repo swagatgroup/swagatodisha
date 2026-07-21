@@ -4,6 +4,8 @@ const StudentApplication = require('../models/StudentApplication');
 const Admin = require('../models/Admin');
 const WebsiteSettings = require('../models/WebsiteSettings');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const { sendEmail } = require('../utils/notificationService');
 const { uploadToCloudinary } = require('../utils/cloudinary');
 const { mockStaff, mockAgents } = require('./mockData');
 const { getSessionDateRange, getCurrentSession } = require('../utils/sessionHelper');
@@ -573,13 +575,15 @@ exports.createAgent = async (req, res) => {
         const {
             fullName,
             email,
-            password,
             phoneNumber,
             assignedStaff,
             address,
             dateOfBirth,
             gender
         } = req.body;
+
+        // Auto-generate password if not provided
+        const password = req.body.password || crypto.randomBytes(6).toString('hex'); // 12 characters
 
         // Check if agent already exists
         const existingAgent = await User.findOne({ email });
@@ -623,14 +627,39 @@ exports.createAgent = async (req, res) => {
 
         console.log('Saving agent to database...');
         await agent.save();
-        console.log('Agent saved successfully');
+        console.log('Agent saved successfully with referral code:', agent.referralCode);
+
+        // Send email with credentials
+        try {
+            await sendEmail({
+                to: email,
+                subject: 'Welcome to Swagat Odisha - Your Agent Account',
+                html: `
+                    <h2>Welcome to Swagat Odisha!</h2>
+                    <p>Dear ${fullName},</p>
+                    <p>Your agent account has been successfully created. You can now log in to the portal using the following credentials:</p>
+                    <ul>
+                        <li><strong>Email:</strong> ${email}</li>
+                        <li><strong>Password:</strong> ${password}</li>
+                    </ul>
+                    <p>Please log in and change your password as soon as possible for security reasons.</p>
+                    <br>
+                    <p>Best regards,</p>
+                    <p>Swagat Odisha Team</p>
+                `
+            });
+            console.log('Credentials email sent successfully to', email);
+        } catch (emailError) {
+            console.error('Failed to send credentials email:', emailError);
+            // Don't fail the request if email fails, but you might want to notify admin
+        }
 
         // Populate the assigned staff information
         await agent.populate('assignedStaff', 'firstName lastName email department designation employeeId');
 
         res.status(201).json({
             success: true,
-            message: 'Agent created successfully',
+            message: 'Agent created successfully. Credentials have been emailed.',
             data: {
                 id: agent._id,
                 fullName: agent.fullName,
@@ -955,13 +984,15 @@ exports.createStaff = async (req, res) => {
             firstName,
             lastName,
             email,
-            password,
             phone,
             role = 'staff',
             department,
             designation,
             assignedAgents
         } = req.body;
+
+        // Auto-generate password if not provided
+        const password = req.body.password || crypto.randomBytes(6).toString('hex');
 
         // Check if staff already exists
         const existingStaff = await Admin.findOne({ email });
@@ -998,9 +1029,33 @@ exports.createStaff = async (req, res) => {
             );
         }
 
+        // Send email with credentials
+        try {
+            await sendEmail({
+                to: email,
+                subject: 'Welcome to Swagat Odisha - Your Staff Account',
+                html: `
+                    <h2>Welcome to Swagat Odisha!</h2>
+                    <p>Dear ${firstName} ${lastName},</p>
+                    <p>Your staff account has been successfully created. You can now log in to the portal using the following credentials:</p>
+                    <ul>
+                        <li><strong>Email:</strong> ${email}</li>
+                        <li><strong>Password:</strong> ${password}</li>
+                    </ul>
+                    <p>Please log in and change your password as soon as possible for security reasons.</p>
+                    <br>
+                    <p>Best regards,</p>
+                    <p>Swagat Odisha Team</p>
+                `
+            });
+            console.log('Credentials email sent successfully to', email);
+        } catch (emailError) {
+            console.error('Failed to send credentials email:', emailError);
+        }
+
         res.status(201).json({
             success: true,
-            message: 'Staff created successfully',
+            message: 'Staff created successfully. Credentials have been emailed.',
             data: {
                 id: staff._id,
                 firstName: staff.firstName,

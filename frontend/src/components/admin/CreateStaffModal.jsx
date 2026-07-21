@@ -8,8 +8,6 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
         firstName: '',
         lastName: '',
         email: '',
-        password: '',
-        confirmPassword: '',
         phone: '',
         department: '',
         designation: '',
@@ -79,16 +77,6 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
             newErrors.email = 'Email is invalid';
         }
 
-        if (!formData.password) {
-            newErrors.password = 'Password is required';
-        } else if (formData.password.length < 6) {
-            newErrors.password = 'Password must be at least 6 characters';
-        }
-
-        if (formData.password !== formData.confirmPassword) {
-            newErrors.confirmPassword = 'Passwords do not match';
-        }
-
         if (!formData.phone.trim()) {
             newErrors.phone = 'Phone number is required';
         } else if (!/^[0-9]{10}$/.test(formData.phone)) {
@@ -116,7 +104,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
 
         setLoading(true);
         try {
-            const { confirmPassword, ...submitData } = formData;
+            const submitData = formData;
             const response = await api.post('/api/admin/staff', submitData);
 
             if (response.data.success) {
@@ -137,8 +125,6 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
             firstName: '',
             lastName: '',
             email: '',
-            password: '',
-            confirmPassword: '',
             phone: '',
             department: '',
             designation: '',
@@ -242,35 +228,6 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     <p className="text-red-500 text-sm mt-1">{errors.phone}</p>
                                 )}
                             </div>
-                        </div>
-
-                        {/* Password Fields */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                placeholder="Enter password"
-                                required
-                                autoComplete="new-password"
-                                label="Password *"
-                                error={errors.password}
-                                showLabel={true}
-                            />
-
-                            <PasswordInput
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
-                                onChange={handleInputChange}
-                                placeholder="Confirm password"
-                                required
-                                autoComplete="new-password"
-                                label="Confirm Password *"
-                                error={errors.confirmPassword}
-                                showLabel={true}
-                            />
                         </div>
 
                         {/* Department and Designation */}
