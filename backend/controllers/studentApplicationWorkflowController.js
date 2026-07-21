@@ -196,6 +196,54 @@ const createApplication = async (req, res) => {
             };
         }
 
+        // Check if an existing DRAFT application exists to prevent duplication
+        let existingDraft = null;
+        try {
+            const query = { status: 'DRAFT' };
+            if (req.user.role === 'student') {
+                query.user = req.user._id;
+            } else {
+                query.submittedBy = req.user._id;
+            }
+            
+            // Use Aadhar or Email to identify the specific student's draft for agents
+            if (finalPersonalDetails && finalPersonalDetails.aadharNumber) {
+                query['personalDetails.aadharNumber'] = finalPersonalDetails.aadharNumber;
+            } else if (req.user.role !== 'student') {
+                if (finalContactDetails && finalContactDetails.email) {
+                    query['contactDetails.email'] = finalContactDetails.email;
+                } else {
+                    query = null; // Cannot reliably identify without aadhar or email for agents
+                }
+            }
+            
+            if (query) {
+                existingDraft = await StudentApplication.findOne(query);
+            }
+            
+            if (existingDraft) {
+                console.log(`Found existing DRAFT for user ${req.user._id}. Updating instead of creating new.`);
+                
+                existingDraft.personalDetails = finalPersonalDetails;
+                existingDraft.contactDetails = finalContactDetails;
+                existingDraft.courseDetails = courseDetails;
+                existingDraft.guardianDetails = normalizedGuardianDetails;
+                if (financialDetails) existingDraft.financialDetails = financialDetails;
+                if (referralInfo) existingDraft.referralInfo = referralInfo;
+                
+                await existingDraft.save();
+                await existingDraft.populate("user", "fullName email phoneNumber");
+                
+                return res.status(200).json({
+                    success: true,
+                    message: "Draft application updated successfully",
+                    data: existingDraft,
+                });
+            }
+        } catch (err) {
+            console.error("Error checking for existing draft:", err);
+        }
+
         // Create application
         const applicationData = {
             user: req.user._id,
@@ -540,10 +588,20 @@ const getApplication = async (req, res) => {
     try {
         const { applicationId } = req.params;
 
-        const application = await StudentApplication.findOne({
-            applicationId,
-            user: req.user._id,
-        })
+        const query = { user: req.user._id };
+        
+        if (applicationId) {
+            query.applicationId = applicationId;
+        } else if (req.user.role !== 'student') {
+            // Agents/staff shouldn't auto-load their last created application when starting a new registration
+            return res.status(404).json({
+                success: false,
+                message: "No specific application requested. Start fresh.",
+            });
+        }
+
+        const application = await StudentApplication.findOne(query)
+            .sort({ createdAt: -1 })
             .populate("user", "fullName email phoneNumber")
             .populate("courseDetails.campus", "name type location");
 

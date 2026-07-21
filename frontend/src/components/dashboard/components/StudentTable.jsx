@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../utils/api';
+import Swal from 'sweetalert2';
 import { showSuccess, showError, showLoading, closeLoading, handleApiError } from '../../../utils/sweetAlert';
 
 const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFilter = 'all' }) => {

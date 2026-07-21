@@ -18,7 +18,7 @@ router.get("/students/:studentId/installments", async (req, res) => {
     const { studentId } = req.params;
 
     const application = await StudentApplication.findOne({
-      user: studentId,
+      _id: studentId,
       $or: [
         { assignedAgent: agentId },
         { submittedBy: agentId },
@@ -63,7 +63,7 @@ router.post("/students/:studentId/installments/upload", async (req, res) => {
     }
 
     const application = await StudentApplication.findOne({
-      user: studentId,
+      _id: studentId,
       $or: [
         { assignedAgent: agentId },
         { submittedBy: agentId },
@@ -115,7 +115,7 @@ router.put("/students/:studentId/installments/:installmentId", async (req, res) 
     const { amount, paymentMethod, remarks, receiptUrl } = req.body;
 
     const application = await StudentApplication.findOne({
-      user: studentId,
+      _id: studentId,
       $or: [
         { assignedAgent: agentId },
         { submittedBy: agentId },

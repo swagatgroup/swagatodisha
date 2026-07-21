@@ -40,8 +40,8 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
     const fetchInstallments = async () => {
         try {
             setLoading(true);
-            const userIdForAPI = typeof student.user === 'object' ? student.user._id : student.user;
-            const response = await api.get(`/api/agents/students/${userIdForAPI}/installments`);
+            const applicationId = student._id;
+            const response = await api.get(`/api/agents/students/${applicationId}/installments`);
             if (response.data.success) {
                 setFinancialStatus(response.data.data.financialStatus);
                 setQrCodeImage(response.data.data.qrCodeImage);
@@ -92,8 +92,8 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
 
             const receiptUrl = uploadRes.data.data.filePath || uploadRes.data.data.downloadUrl;
 
-            const targetUserId = typeof student.user === 'object' ? student.user._id : student.user;
-            await api.post(`/api/agents/students/${targetUserId}/installments/upload`, {
+            const applicationId = student._id;
+            await api.post(`/api/agents/students/${applicationId}/installments/upload`, {
                 amount: uploadData.amount,
                 paymentMethod: uploadData.paymentMethod,
                 remarks: uploadData.remarks,
@@ -136,9 +136,9 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                 receiptUrl = uploadRes.data.data.filePath || uploadRes.data.data.downloadUrl;
             }
 
-            const targetUserId = typeof student.user === 'object' ? student.user._id : student.user;
+            const applicationId = student._id;
             // 2. Submit installment update
-            await api.put(`/api/agents/students/${targetUserId}/installments/${selectedInstallment._id}`, {
+            await api.put(`/api/agents/students/${applicationId}/installments/${selectedInstallment._id}`, {
                 amount: updateData.amount,
                 paymentMethod: updateData.paymentMethod,
                 remarks: updateData.remarks,

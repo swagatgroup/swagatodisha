@@ -416,7 +416,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         try {
             filterOptions.courses = await StudentApplication.distinct('courseDetails.selectedCourse');
-            filterOptions.categories = await StudentApplication.distinct('personalDetails.status');
+            filterOptions.categories = await StudentApplication.distinct('personalDetails.category');
             filterOptions.genders = await StudentApplication.distinct('personalDetails.gender');
             filterOptions.districts = await StudentApplication.distinct('contactDetails.permanentAddress.district');
             filterOptions.cities = await StudentApplication.distinct('contactDetails.permanentAddress.city');
@@ -509,18 +509,35 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                                     $cond: {
                                         if: {
                                             $or: [
-                                                { $ne: [{ $ifNull: ['$adminInfo.firstName', ''] }, ''] },
-                                                { $ne: [{ $ifNull: ['$adminInfo.lastName', ''] }, ''] }
+                                                { $ne: [{ $ifNull: ['$userInfo.firstName', ''] }, ''] },
+                                                { $ne: [{ $ifNull: ['$userInfo.lastName', ''] }, ''] }
                                             ]
                                         },
                                         then: {
                                             $concat: [
-                                                { $ifNull: ['$adminInfo.firstName', ''] },
+                                                { $ifNull: ['$userInfo.firstName', ''] },
                                                 ' ',
-                                                { $ifNull: ['$adminInfo.lastName', ''] }
+                                                { $ifNull: ['$userInfo.lastName', ''] }
                                             ]
                                         },
-                                        else: 'Unknown'
+                                        else: {
+                                            $cond: {
+                                                if: {
+                                                    $or: [
+                                                        { $ne: [{ $ifNull: ['$adminInfo.firstName', ''] }, ''] },
+                                                        { $ne: [{ $ifNull: ['$adminInfo.lastName', ''] }, ''] }
+                                                    ]
+                                                },
+                                                then: {
+                                                    $concat: [
+                                                        { $ifNull: ['$adminInfo.firstName', ''] },
+                                                        ' ',
+                                                        { $ifNull: ['$adminInfo.lastName', ''] }
+                                                    ]
+                                                },
+                                                else: 'Unknown'
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -534,17 +551,28 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
             const submitters = await StudentApplication.aggregate(submitterPipeline);
 
-            // Post-process to handle any remaining missing names by checking Admin model
             const submittersWithNames = await Promise.all(submitters.map(async (s) => {
                 let name = s.name?.trim() || 'Unknown';
 
-                // If name is still Unknown, try fetching from Admin model
+                // If name is still Unknown, try fetching from User then Admin model
                 if (name === 'Unknown' && s._id) {
                     try {
-                        const Admin = require('../models/Admin');
-                        const admin = await Admin.findById(s._id).select('firstName lastName').lean();
-                        if (admin && (admin.firstName || admin.lastName)) {
-                            name = `${admin.firstName || ''} ${admin.lastName || ''}`.trim();
+                        const User = require('../models/User');
+                        const user = await User.findById(s._id).select('fullName firstName lastName').lean();
+                        if (user) {
+                            if (user.fullName) {
+                                name = user.fullName.trim();
+                            } else if (user.firstName || user.lastName) {
+                                name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                            }
+                        }
+                        
+                        if (name === 'Unknown') {
+                            const Admin = require('../models/Admin');
+                            const admin = await Admin.findById(s._id).select('firstName lastName').lean();
+                            if (admin && (admin.firstName || admin.lastName)) {
+                                name = `${admin.firstName || ''} ${admin.lastName || ''}`.trim();
+                            }
                         }
                     } catch (err) {
                         // Ignore errors
