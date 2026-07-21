@@ -162,6 +162,7 @@ const AgentPaymentsTab = () => {
           onClose={() => {
             setShowFinancialsModal(false);
             setFinancialStudent(null);
+            loadStudents(); // Trigger a refetch to ensure the table reflects any backend updates
           }}
           onUpdate={loadStudents}
         />

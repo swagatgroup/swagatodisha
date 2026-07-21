@@ -10,6 +10,7 @@ import api from '../../utils/api';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ReferralDashboard from './tabs/ReferralDashboard';
 import StudentPayments from './tabs/StudentPayments';
+import StudentProgressTracker from './components/StudentProgressTracker';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -268,6 +269,8 @@ const StudentDashboard = () => {
                         </div>
 
                         {/* Quick Actions */}
+                        <StudentProgressTracker currentStage={applicationStage} />
+
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}

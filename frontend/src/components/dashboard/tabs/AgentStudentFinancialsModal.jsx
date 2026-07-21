@@ -151,6 +151,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
             setReceiptFile(null);
             setSelectedInstallment(null);
             fetchInstallments();
+            if (onUpdate) onUpdate();
         } catch (error) {
             console.error('Error updating payment slip:', error);
             showError('Failed to update payment slip');
