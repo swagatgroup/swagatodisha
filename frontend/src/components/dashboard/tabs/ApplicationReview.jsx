@@ -944,10 +944,10 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
             <div className="flex justify-between items-start mb-4">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {application.personalDetails?.fullName || 'N/A'}
+                        {application.personalDetails?.fullName || application.user?.fullName || 'N/A'}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {application.personalDetails?.email || 'N/A'}
+                        {application.contactDetails?.email || application.user?.email || 'N/A'}
                     </p>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                         Application ID: {application.applicationId}
@@ -962,13 +962,13 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                 <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Phone</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
-                        {application.personalDetails?.phoneNumber || 'N/A'}
+                        {application.contactDetails?.primaryPhone || application.user?.phoneNumber || 'N/A'}
                     </p>
                 </div>
                 <div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">Course</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
-                        {application.courseDetails?.courseName || 'N/A'}
+                        {application.courseDetails?.selectedCourse || 'N/A'}
                     </p>
                 </div>
             </div>
@@ -1528,7 +1528,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                 </div>
 
                 {/* Application Details */}
-                <div className="lg:col-span-2">
+                <div className="lg:col-span-2 overflow-y-auto pr-2" style={{ maxHeight: "calc(100vh - 300px)" }}>
                     {selectedApplication ? (
                         <div className="space-y-6">
                             {/* Application Header */}

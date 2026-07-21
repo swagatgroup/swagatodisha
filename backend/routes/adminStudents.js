@@ -522,20 +522,26 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                                         },
                                         else: {
                                             $cond: {
-                                                if: {
-                                                    $or: [
-                                                        { $ne: [{ $ifNull: ['$adminInfo.firstName', ''] }, ''] },
-                                                        { $ne: [{ $ifNull: ['$adminInfo.lastName', ''] }, ''] }
-                                                    ]
-                                                },
-                                                then: {
-                                                    $concat: [
-                                                        { $ifNull: ['$adminInfo.firstName', ''] },
-                                                        ' ',
-                                                        { $ifNull: ['$adminInfo.lastName', ''] }
-                                                    ]
-                                                },
-                                                else: 'Unknown'
+                                                if: { $ne: [{ $ifNull: ['$userInfo.name', ''] }, ''] },
+                                                then: '$userInfo.name',
+                                                else: {
+                                                    $cond: {
+                                                        if: {
+                                                            $or: [
+                                                                { $ne: [{ $ifNull: ['$adminInfo.firstName', ''] }, ''] },
+                                                                { $ne: [{ $ifNull: ['$adminInfo.lastName', ''] }, ''] }
+                                                            ]
+                                                        },
+                                                        then: {
+                                                            $concat: [
+                                                                { $ifNull: ['$adminInfo.firstName', ''] },
+                                                                ' ',
+                                                                { $ifNull: ['$adminInfo.lastName', ''] }
+                                                            ]
+                                                        },
+                                                        else: 'Unknown'
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -558,10 +564,12 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 if (name === 'Unknown' && s._id) {
                     try {
                         const User = require('../models/User');
-                        const user = await User.findById(s._id).select('fullName firstName lastName').lean();
+                        const user = await User.findById(s._id).select('fullName name firstName lastName').lean();
                         if (user) {
                             if (user.fullName) {
                                 name = user.fullName.trim();
+                            } else if (user.name) {
+                                name = user.name.trim();
                             } else if (user.firstName || user.lastName) {
                                 name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
                             }
@@ -664,23 +672,32 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                         validId = new ObjectId(submitterId);
                     }
 
-                    let submitter = await User.findById(validId).select('fullName email phoneNumber').lean();
+                    let submitter = await User.findById(validId).select('fullName name firstName lastName email phoneNumber').lean();
 
-                    if (submitter && submitter.fullName) {
-                        submitterName = submitter.fullName.trim();
-                        submitterDetails = {
-                            _id: submitter._id ? submitter._id.toString() : null,
-                            fullName: submitterName,
-                            email: submitter.email || '',
-                            phoneNumber: submitter.phoneNumber || ''
-                        };
-                        console.log('   ✅ Fetched fullName from User model:', submitterName);
+                    if (submitter) {
+                        if (submitter.fullName) {
+                            submitterName = submitter.fullName.trim();
+                        } else if (submitter.name) {
+                            submitterName = submitter.name.trim();
+                        } else if (submitter.firstName || submitter.lastName) {
+                            submitterName = `${submitter.firstName || ''} ${submitter.lastName || ''}`.trim();
+                        }
+                        
+                        if (submitterName && submitterName !== 'Unknown') {
+                            submitterDetails = {
+                                _id: submitter._id ? submitter._id.toString() : null,
+                                fullName: submitterName,
+                                email: submitter.email || '',
+                                phoneNumber: submitter.phoneNumber || ''
+                            };
+                            console.log('   ✅ Fetched name from User model:', submitterName);
+                        }
                     } else {
                         // If not found in User model, try Admin model (staff might be in Admin model)
                         const Admin = require('../models/Admin');
                         const adminSubmitter = await Admin.findById(validId).select('firstName lastName email phone').lean();
 
-                        if (adminSubmitter && (adminSubmitter.firstName || adminSubmitter.lastName)) {
+                        if (adminSubmitter && (!submitterName || submitterName === 'Unknown')) {
                             submitterName = `${adminSubmitter.firstName || ''} ${adminSubmitter.lastName || ''}`.trim();
                             submitterDetails = {
                                 _id: adminSubmitter._id ? adminSubmitter._id.toString() : null,
