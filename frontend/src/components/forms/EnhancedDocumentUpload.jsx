@@ -125,6 +125,16 @@ const EnhancedDocumentUpload = ({
         if (!req) return { valid: true };
 
         // Check file size
+        const fileExtension = file.name.split('.').pop()?.toLowerCase();
+        
+        // Special validation for PDFs: must be < 1MB
+        if (fileExtension === 'pdf' && file.size > 1024 * 1024) {
+            return {
+                valid: false,
+                message: 'PDF files must be strictly under 1MB in size. Please compress your PDF before uploading.'
+            };
+        }
+
         if (file.size > req.maxSize) {
             return {
                 valid: false,

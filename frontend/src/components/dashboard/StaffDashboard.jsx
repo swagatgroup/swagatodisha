@@ -373,13 +373,70 @@ const EnhancedStaffDashboard = () => {
                 notes: 'Application approved by admin'
             });
             closeLoading();
-            showSuccess(`${student.fullName}'s application has been approved!`);
+            showSuccess(`${student.personalDetails?.fullName || 'Student'}'s application has been approved!`);
             fetchDashboardStudents();
+            refreshStats();
         } catch (error) {
+            console.error('Error accepting application:', error);
             closeLoading();
             handleApiError(error);
         }
     };
+
+    const handleQuickAction = async (student) => {
+        const currentStage = student.workflowStatus?.currentStage || student.status;
+        let nextStage = '';
+        let prevStage = '';
+        
+        if (currentStage === 'SUBMITTED') {
+            nextStage = 'UNDER_REVIEW';
+            prevStage = 'DRAFT';
+        } else if (currentStage === 'UNDER_REVIEW') {
+            nextStage = 'APPROVED';
+            prevStage = 'SUBMITTED';
+        } else {
+            return;
+        }
+
+        const result = await Swal.fire({
+            title: `Update Status for ${student.personalDetails?.fullName || 'Student'}`,
+            text: `Current status: ${currentStage}. Do you want to move forward to ${nextStage} or backward to ${prevStage}?`,
+            icon: 'question',
+            showDenyButton: true,
+            showCancelButton: true,
+            confirmButtonText: `Yes, move forward to ${nextStage}`,
+            denyButtonText: `No, move backward to ${prevStage}`,
+            cancelButtonText: 'Cancel',
+            customClass: {
+                confirmButton: 'bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700',
+                denyButton: 'bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700',
+                cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600'
+            },
+            buttonsStyling: false
+        });
+
+        if (result.isConfirmed) {
+            await submitQuickStatusUpdate(student._id, nextStage);
+        } else if (result.isDenied) {
+            await submitQuickStatusUpdate(student._id, prevStage);
+        }
+    };
+
+    const submitQuickStatusUpdate = async (studentId, newStatus) => {
+        try {
+            showLoading(`Updating status to ${newStatus}...`);
+            await api.put(`/api/admin/students/${studentId}/status`, { status: newStatus });
+            closeLoading();
+            showSuccess(`Status updated to ${newStatus}`);
+            fetchDashboardStudents();
+            refreshStats();
+        } catch (error) {
+            console.error('Error updating status:', error);
+            closeLoading();
+            handleApiError(error);
+        }
+    };
+
 
 
     const renderDashboardContent = () => {
@@ -782,7 +839,18 @@ const EnhancedStaffDashboard = () => {
                                                                         </svg>
                                                                     </button>
 
-                                                                    {/* Staff can only edit when status is UNDER_REVIEW */}
+                                                                    {/* Quick Action Status Button */}
+                                                                    {(student.workflowStatus?.currentStage === 'SUBMITTED' || student.status === 'SUBMITTED' || student.workflowStatus?.currentStage === 'UNDER_REVIEW' || student.status === 'UNDER_REVIEW') && (
+                                                                        <button
+                                                                            onClick={() => handleQuickAction(student)}
+                                                                            className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                                                                            title="Quick Action Status Update"
+                                                                        >
+                                                                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    )}                                                                    {/* Staff can only edit when status is UNDER_REVIEW */}
                                                                     {student.status === 'UNDER_REVIEW' && (
                                                                         <button
                                                                             onClick={() => {

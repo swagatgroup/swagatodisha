@@ -147,7 +147,14 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         const docType = docTypes.find(doc => doc.id === documentType || doc.key === documentType);
         if (!docType) return;
 
-        // Validate file
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        
+        // Special validation for PDFs: must be < 1MB
+        if (fileExtension === 'pdf' && file.size > 1024 * 1024) {
+            alert('PDF files must be strictly under 1MB in size. Please compress your PDF before uploading.');
+            return;
+        }
+
         const fileSizeMB = file.size / (1024 * 1024);
         const maxSizeMB = docType.maxSize ? parseFloat(docType.maxSize) : parseFloat(docType.maxSize || '10');
 
@@ -156,7 +163,6 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             return;
         }
 
-        const fileExtension = file.name.split('.').pop().toLowerCase();
         if (!docType.allowedFormats.includes(fileExtension)) {
             alert(`File format must be one of: ${docType.allowedFormats.join(', ')}`);
             return;

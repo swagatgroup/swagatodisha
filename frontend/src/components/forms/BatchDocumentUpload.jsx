@@ -116,6 +116,12 @@ const BatchDocumentUpload = ({
             const fileSizeMB = file.size / (1024 * 1024);
             const fileExtension = file.name.split('.').pop()?.toLowerCase();
 
+            // Special validation for PDFs: must be < 1MB
+            if (fileExtension === 'pdf' && file.size > 1024 * 1024) {
+                showError(`PDF file ${file.name} must be strictly under 1MB in size. Please compress it.`);
+                return false;
+            }
+
             // Basic validation
             if (fileSizeMB > 10) {
                 showError(`File ${file.name} is too large. Maximum size is 10MB.`);
