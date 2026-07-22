@@ -647,16 +647,7 @@ router.post('/admin-reset-password', [
                 student.user = user._id;
                 await student.save();
                 
-                return res.json({
-                    success: true,
-                    message: 'Password reset successfully (account auto-provisioned)',
-                    data: {
-                        userId: user._id,
-                        userType: 'user',
-                        resetBy: req.user._id,
-                        resetAt: new Date()
-                    }
-                });
+                // Fall through to update password so that we ensure `existingUser` gets their password changed too!
             }
         }
 
