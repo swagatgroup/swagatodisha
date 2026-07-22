@@ -84,9 +84,9 @@ const StudentPasswordReset = () => {
 
     const handleResetPasswordClick = (student) => {
         Swal.fire({
-            title: `<h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2">Reset Password</h3>`,
+            title: `<h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2 text-center">Reset Password</h3>`,
             html: `
-                <div class="text-left mt-2 mb-6">
+                <div class="text-center mt-2 mb-6">
                     <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-purple-600 dark:text-purple-400">${student.personalDetails?.fullName || 'Student'}</span>'s account.</p>
                 </div>
                 <div class="relative w-full mx-auto group">
@@ -112,11 +112,11 @@ const StudentPasswordReset = () => {
             buttonsStyling: false,
             customClass: {
                 popup: 'rounded-2xl shadow-xl dark:bg-gray-800 dark:border-gray-700',
-                title: 'p-0 text-left',
-                htmlContainer: 'text-left m-0',
-                confirmButton: 'px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm ml-2',
-                cancelButton: 'px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium rounded-xl transition-colors mr-2',
-                actions: 'mt-6 w-full flex justify-end gap-2'
+                title: 'p-0 text-center',
+                htmlContainer: 'text-center m-0',
+                confirmButton: 'px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm mx-1',
+                cancelButton: 'px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium rounded-xl transition-colors mx-1',
+                actions: 'mt-6 w-full flex justify-center gap-2'
             },
             confirmButtonText: 'Reset Password',
             didOpen: () => {

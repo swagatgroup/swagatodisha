@@ -3260,7 +3260,17 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             formData={selectedStudentForPDF.formData}
                             application={selectedStudentForPDF.application}
                             skipDocumentValidation={true}
-                            onPDFGenerated={() => {
+                            onPDFGenerated={(url) => {
+                                // Trigger the download automatically
+                                if (url) {
+                                    const link = document.createElement('a');
+                                    link.href = url;
+                                    const studentName = selectedStudentForPDF.formData?.personalDetails?.fullName || 'student';
+                                    link.download = `student-application-${studentName}.pdf`;
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }
                                 setShowApplicationPDF(false);
                             }}
                             onCancel={() => setShowApplicationPDF(false)}
