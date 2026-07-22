@@ -160,7 +160,7 @@ const StudentPasswordReset = () => {
                     const targetUserId = student.user?._id || student.user || student.userId || student._id;
                     const studentEmail = student.contactDetails?.email || student.personalDetails?.email || student.email;
 
-                    const response = await api.post('/api/admin/reset-password', {
+                    const response = await api.post('/api/auth/admin-reset-password', {
                         userId: targetUserId,
                         studentId: student._id,
                         email: studentEmail,
