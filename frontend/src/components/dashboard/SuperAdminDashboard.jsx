@@ -312,7 +312,9 @@ const SuperAdminDashboard = () => {
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
-                ...(filterReferralType !== 'all' && { referralType: filterReferralType })
+                ...(filterReferralType !== 'all' && { referralType: filterReferralType }),
+                ...(studentView === 'our' && { listType: 'main' }),
+                ...(studentView === 'direct' && { listType: 'direct' })
             });
 
             const response = await api.get(`/api/admin/students?${params}`);
@@ -568,28 +570,17 @@ const SuperAdminDashboard = () => {
     };
 
     const handleStatClick = (filter) => {
-        if (studentView === 'combined' && filter !== 'all') {
+        if (studentView === 'combined') {
             setSelectedStatKey(filter);
             setStatModalOpen(true);
             return;
         }
 
-        // Navigate to students sidebar item with the filter applied
         const newFilter = filter === 'all' ? 'all' : filter;
         setStudentTableFilter(newFilter);
         setFilterStatus(newFilter);
         setSortBy('latest');
-        setCurrentPage(1); // Reset to first page when filter changes
-        // Keep activeSidebarItem on 'dashboard' if we want it to filter the table directly on the dashboard
-        // Wait, the prompt says "pass correct filters", which implies staying on dashboard or passing them.
-        // I will keep it on dashboard to make it truly a dashboard filter!
-        // No, if they are used to navigating, I'll let them navigate. Wait, no. If I don't navigate, it acts as a dashboard filter.
-        // Actually, if I just do nothing here, the filterStatus state is set and the table below updates.
-        // I'll keep the navigation for now, but if the issue meant dashboard filtering, they will see it's missing.
-        // I'll remove the navigation so the table ON the dashboard filters!
-        // Wait, if studentView is combined, it opens a modal that navigates. So this logic only applies if it's NOT combined.
-        // I will remove the navigation to let it filter the dashboard.
-        
+        setCurrentPage(1);
     };
 
     // Reset filter when returning to dashboard
@@ -705,7 +696,7 @@ const SuperAdminDashboard = () => {
                                 <div className="mt-2">
                                     {/* View Toggle Tabs */}
                                     <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
-                                        {[['combined','Dashboard'],['direct','Direct Students'],['our','Our Students']].map(([key, label]) => (
+                                        {[['combined','Dashboard'],['our','Our Students'],['direct','Direct Students']].map(([key, label]) => (
                                             <button
                                                 key={key}
                                                 onClick={() => setStudentView(key)}
@@ -729,15 +720,24 @@ const SuperAdminDashboard = () => {
 
                                     {/* Summary Cards */}
                                     <div className="grid grid-cols-3 gap-3 mb-4">
-                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm">
+                                        <div 
+                                            onClick={() => handleStatClick('all')}
+                                            className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                        >
                                             <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
                                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
                                         </div>
-                                        <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800 text-center shadow-sm">
+                                        <div 
+                                            onClick={() => handleStatClick('APPROVED')}
+                                            className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                        >
                                             <p className="text-xs text-teal-600 dark:text-teal-400">Approved</p>
                                             <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{active.approved || 0}</p>
                                         </div>
-                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm">
+                                        <div 
+                                            onClick={() => handleStatClick('SUBMITTED')}
+                                            className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                        >
                                             <p className="text-xs text-blue-600 dark:text-blue-400">Submitted</p>
                                             <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{active.submitted || 0}</p>
                                         </div>
@@ -2090,39 +2090,39 @@ const SuperAdminDashboard = () => {
                                 <div className="sm:flex sm:items-start">
                                     <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4" id="modal-title">
-                                            Select Category for {selectedStatKey.replace('_', ' ')}
+                                            Select Category for {selectedStatKey === 'all' ? 'Total Students' : selectedStatKey.replace('_', ' ')}
                                         </h3>
                                         <div className="grid grid-cols-2 gap-4">
                                             <button 
                                                 onClick={() => {
-                                                    setStudentView('direct');
-                                                    setFilterStatus(selectedStatKey);
-                                                    setCurrentPage(1);
-                                                    setActiveSidebarItem('direct-students');
-                                                    setStatModalOpen(false);
-                                                }}
-                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors"
-                                            >
-                                                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                                                    {stats.directStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0}
-                                                </span>
-                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Direct Students</span>
-                                            </button>
-                                            
-                                            <button 
-                                                onClick={() => {
                                                     setStudentView('our');
                                                     setFilterStatus(selectedStatKey);
+                                                    setStudentTableFilter(selectedStatKey);
                                                     setCurrentPage(1);
-                                                    setActiveSidebarItem('students');
                                                     setStatModalOpen(false);
                                                 }}
                                                 className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
                                             >
                                                 <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                                    {stats.ourStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0}
+                                                    {selectedStatKey === 'all' ? (stats.ourStudents?.total || 0) : (stats.ourStudents?.[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}
                                                 </span>
                                                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Our Students</span>
+                                            </button>
+
+                                            <button 
+                                                onClick={() => {
+                                                    setStudentView('direct');
+                                                    setFilterStatus(selectedStatKey);
+                                                    setStudentTableFilter(selectedStatKey);
+                                                    setCurrentPage(1);
+                                                    setStatModalOpen(false);
+                                                }}
+                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                                                    {selectedStatKey === 'all' ? (stats.directStudents?.total || 0) : (stats.directStudents?.[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}
+                                                </span>
+                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Direct Students</span>
                                             </button>
                                         </div>
                                     </div>

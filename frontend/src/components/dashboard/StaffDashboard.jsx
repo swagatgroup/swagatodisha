@@ -147,19 +147,17 @@ const EnhancedStaffDashboard = () => {
     ];
 
     const handleStatClick = (filterKey) => {
-        if (studentView === 'combined' && filterKey !== 'all') {
+        if (studentView === 'combined') {
             setSelectedStatKey(filterKey);
             setStatModalOpen(true);
             return;
         }
 
-        // Navigate to student-management tab with the filter applied
         const newFilter = filterKey === 'all' ? 'all' : filterKey;
         setStudentTableFilter(newFilter);
         setFilterStatus(newFilter);
         setSortBy('latest');
         setCurrentPage(1);
-        setActiveTab('student-management');
     };
 
     // Reset filter when returning to dashboard
@@ -253,7 +251,7 @@ const EnhancedStaffDashboard = () => {
             fetchDashboardStudents();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, sortBy, selectedSession, activeTab]);
+    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, sortBy, selectedSession, activeTab, studentView]);
 
     const fetchDashboardStudents = async () => {
         try {
@@ -301,7 +299,9 @@ const EnhancedStaffDashboard = () => {
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
+                ...(studentView === 'our' && { listType: 'main' }),
+                ...(studentView === 'direct' && { listType: 'direct' })
             });
 
             const response = await api.get(`/api/admin/students?${params}`);
@@ -511,15 +511,24 @@ const EnhancedStaffDashboard = () => {
 
                                     {/* Summary Cards */}
                                     <div className="grid grid-cols-3 gap-3 mb-4">
-                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm">
+                                        <div 
+                                            onClick={() => handleStatClick('all')}
+                                            className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                        >
                                             <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
                                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
                                         </div>
-                                        <div className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800 text-center shadow-sm">
+                                        <div 
+                                            onClick={() => handleStatClick('APPROVED')}
+                                            className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                        >
                                             <p className="text-xs text-teal-600 dark:text-teal-400">Approved</p>
                                             <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{active.approved || 0}</p>
                                         </div>
-                                        <div className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm">
+                                        <div 
+                                            onClick={() => handleStatClick('SUBMITTED')}
+                                            className="bg-white dark:bg-gray-800 rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                        >
                                             <p className="text-xs text-blue-600 dark:text-blue-400">Submitted</p>
                                             <p className="text-2xl font-bold text-blue-700 dark:text-blue-300">{active.submitted || 0}</p>
                                         </div>
@@ -987,39 +996,39 @@ const EnhancedStaffDashboard = () => {
                                 <div className="sm:flex sm:items-start">
                                     <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4" id="modal-title">
-                                            Select Category for {selectedStatKey.replace('_', ' ')}
+                                            Select Category for {selectedStatKey === 'all' ? 'Total Students' : selectedStatKey.replace('_', ' ')}
                                         </h3>
                                         <div className="grid grid-cols-2 gap-4">
                                             <button 
                                                 onClick={() => {
-                                                    setStudentView('direct');
-                                                    setFilterStatus(selectedStatKey);
-                                                    setCurrentPage(1);
-                                                    setActiveTab('direct-students');
-                                                    setStatModalOpen(false);
-                                                }}
-                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors"
-                                            >
-                                                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                                                    {processingStats.directStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0}
-                                                </span>
-                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Direct Students</span>
-                                            </button>
-                                            
-                                            <button 
-                                                onClick={() => {
                                                     setStudentView('our');
                                                     setFilterStatus(selectedStatKey);
+                                                    setStudentTableFilter(selectedStatKey);
                                                     setCurrentPage(1);
-                                                    setActiveTab('student-management');
                                                     setStatModalOpen(false);
                                                 }}
                                                 className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors"
                                             >
                                                 <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                                    {processingStats.ourStudents[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0}
+                                                    {selectedStatKey === 'all' ? (processingStats.ourStudents?.total || 0) : (processingStats.ourStudents?.[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}
                                                 </span>
                                                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Our Students</span>
+                                            </button>
+
+                                            <button 
+                                                onClick={() => {
+                                                    setStudentView('direct');
+                                                    setFilterStatus(selectedStatKey);
+                                                    setStudentTableFilter(selectedStatKey);
+                                                    setCurrentPage(1);
+                                                    setStatModalOpen(false);
+                                                }}
+                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-purple-50 dark:hover:bg-gray-700 transition-colors"
+                                            >
+                                                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                                                    {selectedStatKey === 'all' ? (processingStats.directStudents?.total || 0) : (processingStats.directStudents?.[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}
+                                                </span>
+                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Direct Students</span>
                                             </button>
                                         </div>
                                     </div>
