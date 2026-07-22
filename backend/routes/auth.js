@@ -598,22 +598,72 @@ router.post('/admin-reset-password', [
             });
         }
 
-        const { userId, newPassword } = req.body;
+        const { userId, newPassword, studentId, email, userType: requestedUserType } = req.body;
+
+        const mongoose = require('mongoose');
 
         // Find user in both models
-        let user = await User.findById(userId);
+        let user = null;
         let userType = 'user';
 
-        if (!user) {
-            const Admin = require('../models/Admin');
-            user = await Admin.findById(userId);
-            userType = 'admin';
+        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+            user = await User.findById(userId);
+            if (!user) {
+                const Admin = require('../models/Admin');
+                user = await Admin.findById(userId);
+                if (user) userType = 'admin';
+            }
+        }
+
+        // Fallback for students whose user account wasn't properly created
+        if (!user && requestedUserType === 'student' && studentId && mongoose.Types.ObjectId.isValid(studentId)) {
+            const StudentApplication = require('../models/StudentApplication');
+            const student = await StudentApplication.findById(studentId);
+            
+            if (student) {
+                const fullName = student.personalDetails?.fullName || 
+                               (student.personalDetails?.firstName ? student.personalDetails.firstName + ' ' + (student.personalDetails.lastName || '') : 'Student');
+                const phone = student.contactDetails?.phone || student.contactDetails?.mobile || '0000000000';
+                const userEmail = (email || student.contactDetails?.email || student.personalDetails?.email).toLowerCase();
+                
+                // Ensure no conflict before creating
+                const existingUser = await User.findOne({ email: userEmail });
+                
+                if (existingUser) {
+                    user = existingUser;
+                } else {
+                    user = new User({
+                        fullName: fullName.trim(),
+                        email: userEmail,
+                        password: newPassword, // hashed by pre-save
+                        phoneNumber: phone,
+                        role: 'student',
+                        isActive: true
+                    });
+                    await user.save();
+                }
+                
+                // Link back to application
+                student.user = user._id;
+                await student.save();
+                
+                return res.json({
+                    success: true,
+                    message: 'Password reset successfully (account auto-provisioned)',
+                    data: {
+                        userId: user._id,
+                        userType: 'user',
+                        resetBy: req.user._id,
+                        resetAt: new Date()
+                    }
+                });
+            }
         }
 
         if (!user) {
             return res.status(404).json({
                 success: false,
-                message: 'User not found'
+                message: 'User not found and could not be provisioned automatically'
             });
         }
 
