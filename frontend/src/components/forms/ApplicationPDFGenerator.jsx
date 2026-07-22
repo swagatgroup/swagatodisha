@@ -44,10 +44,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
         pdf.setTextColor(100, 100, 100);
         pdf.text(`App ID: ${pdfContent.applicationId}`, 12, footerY - 1);
         
-        // Center - Company info
-        pdf.setTextColor(120, 120, 120);
+        // Center - Company info (Link)
+        pdf.setTextColor(0, 102, 204);
         pdf.setFontSize(6);
-        pdf.text('SWAGAT ODISHA', pageWidth / 2, footerY - 1, { align: 'center' });
+        pdf.text('www.swagatodisha.com', pageWidth / 2, footerY - 1, { align: 'center' });
         
         // Right side - Page number
         pdf.setTextColor(100, 100, 100);
@@ -158,8 +158,15 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 // Add watermark
                 if (logoBase64) {
                     p.setGState(new p.GState({opacity: 0.1}));
-                    const wmHeight = 120;
-                    const wmWidth = wmHeight * logoRatio;
+                    let wmHeight = 60; // Scale down for clean, professional look
+                    let wmWidth = wmHeight * logoRatio;
+                    
+                    // Ensure it doesn't get distorted or overflow
+                    if (wmWidth > pageWidth - 60) {
+                        wmWidth = pageWidth - 60;
+                        wmHeight = wmWidth / logoRatio;
+                    }
+                    
                     p.addImage(logoBase64, 'PNG', (pageWidth - wmWidth)/2, (pageHeight - wmHeight)/2, wmWidth, wmHeight);
                     p.setGState(new p.GState({opacity: 1.0}));
                 }
@@ -171,27 +178,17 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // ============================================
             yPosition = 18;
             
-            // Logo top left
+            // Logo centered
             if (logoBase64) {
                 const logoHeight = 25;
                 const logoWidth = logoHeight * logoRatio;
-                pdf.addImage(logoBase64, 'PNG', 15, yPosition, logoWidth, logoHeight);
+                pdf.addImage(logoBase64, 'PNG', (pageWidth - logoWidth) / 2, yPosition, logoWidth, logoHeight);
             }
-            
-            // Center Texts
-            pdf.setTextColor(25, 42, 86);
-            pdf.setFont('times', 'bold');
-            pdf.setFontSize(24);
-            pdf.text('SWAGAT ODISHA', pageWidth / 2, yPosition + 8, { align: 'center' });
-            
-            pdf.setFont('times', 'normal');
-            pdf.setFontSize(12);
-            pdf.text('Educational Excellence Platform', pageWidth / 2, yPosition + 15, { align: 'center' });
-            pdf.text('www.swagatodisha.com', pageWidth / 2, yPosition + 21, { align: 'center' });
             
             yPosition += 32;
             
             // Admission Form Title
+            pdf.setTextColor(25, 42, 86);
             pdf.setFont('times', 'bold');
             pdf.setFontSize(16);
             pdf.text('ADMISSION FORM', pageWidth / 2, yPosition, { align: 'center' });
@@ -435,11 +432,12 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             pdf.setFont('times', 'bold');
             pdf.setFontSize(10);
             
-            // Left Signature
-            pdf.text("Signature of Parent / Guardian", leftColX + 20, bottomY, { align: 'center' });
+            // Left Signature (shifted right slightly for aesthetics)
+            const parentSigX = leftColX + 15;
+            pdf.text("Signature of Parent / Guardian", parentSigX + 20, bottomY, { align: 'center' });
             pdf.setLineWidth(0.3);
             pdf.setDrawColor(100, 100, 100);
-            pdf.line(leftColX, bottomY - 5, leftColX + 40, bottomY - 5);
+            pdf.line(parentSigX, bottomY - 5, parentSigX + 40, bottomY - 5);
             
             // Center Date
             pdf.text("Date: ___ / ___ / 20__", pageWidth / 2, bottomY, { align: 'center' });
