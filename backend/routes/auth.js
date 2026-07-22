@@ -1163,4 +1163,75 @@ router.put('/profile', async (req, res) => {
     }
 });
 
+// TEMPORARY FIX ROUTE for unknown agents
+router.get('/fix-unknown-agents', async (req, res) => {
+    try {
+        const User = require('../models/User');
+        const StudentApplication = require('../models/StudentApplication');
+        
+        // Find all applications submitted by an agent
+        const applications = await StudentApplication.find({ registeredBy: 'agent', referralAgent: { $exists: true } });
+        
+        let fixedCount = 0;
+        let unknown1Deleted = 0;
+        let narendraId = null;
+        
+        for (let app of applications) {
+            // Check if the agent user exists
+            const agent = await User.findById(app.referralAgent);
+            if (!agent) {
+                // If the agent doesn't exist, this is one of our "Unknown"s.
+                // We need to count how many submissions this specific agent ID has.
+                const count = await StudentApplication.countDocuments({ referralAgent: app.referralAgent });
+                
+                if (count === 25) {
+                    // This is Narendra Nag!
+                    narendraId = app.referralAgent;
+                } else if (count === 1) {
+                    // This is the unknown (1 submission) agent. Delete this submission.
+                    await StudentApplication.findByIdAndDelete(app._id);
+                    unknown1Deleted++;
+                }
+            }
+        }
+        
+        if (narendraId) {
+            // Check if we already recreated Narendra Nag
+            const existing = await User.findOne({ email: 'nagnarendra92@gmail.com' });
+            if (!existing) {
+                // Create Narendra Nag with his original ID
+                const newAgent = new User({
+                    _id: narendraId,
+                    fullName: 'Narendra Nag',
+                    email: 'nagnarendra92@gmail.com',
+                    password: 'Password@123', // temporary password
+                    phoneNumber: '9999999999', // placeholder
+                    role: 'agent',
+                    isActive: true
+                });
+                await newAgent.save();
+                fixedCount = 25;
+            } else if (existing._id.toString() !== narendraId.toString()) {
+                // If it exists but with a DIFFERENT ID, we need to update the applications to use the new ID
+                await StudentApplication.updateMany(
+                    { referralAgent: narendraId },
+                    { $set: { referralAgent: existing._id } }
+                );
+                fixedCount = 25;
+            }
+        }
+        
+        res.json({
+            success: true,
+            message: 'Unknown agents fixed successfully',
+            fixedNarendraSubmissions: fixedCount,
+            unknown1SubmissionsDeleted: unknown1Deleted
+        });
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
