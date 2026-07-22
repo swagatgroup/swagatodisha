@@ -466,8 +466,8 @@ const ApplicationVerification = () => {
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                         >
                             <option value="all">All Submitters</option>
+                            <option value="student">Student Submissions (Direct)</option>
                             <option value="agent">Agent Submissions</option>
-                            <option value="student">Student Submissions</option>
                             <option value="staff">Staff Submissions</option>
                             <option value="super_admin">Super Admin Submissions</option>
                         </select>
@@ -568,24 +568,24 @@ const ApplicationVerification = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
-                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <UserIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
-                        </div>
-                        <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Agent Submissions</p>
-                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.agentApplications}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center">
                         <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
                             <DocumentTextIcon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Direct Student Submissions</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.studentApplications}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center">
+                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <UserIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                        </div>
+                        <div className="ml-4">
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Agent Submissions</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.agentApplications}</p>
                         </div>
                     </div>
                 </div>

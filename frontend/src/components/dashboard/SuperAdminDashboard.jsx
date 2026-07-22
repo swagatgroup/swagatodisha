@@ -705,7 +705,7 @@ const SuperAdminDashboard = () => {
                                 <div className="mt-2">
                                     {/* View Toggle Tabs */}
                                     <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
-                                        {[['combined','Dashboard'],['our','Our Students'],['direct','Direct Students']].map(([key, label]) => (
+                                        {[['combined','Dashboard'],['direct','Direct Students'],['our','Our Students']].map(([key, label]) => (
                                             <button
                                                 key={key}
                                                 onClick={() => setStudentView(key)}
@@ -797,6 +797,13 @@ const SuperAdminDashboard = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Registration & Referral Tracking</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                     <div 
+                                        className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'self' ? 'ring-2 ring-orange-500' : ''}`}
+                                        onClick={() => { setFilterReferralType(filterReferralType === 'self' ? 'all' : 'self'); setCurrentPage(1); }}
+                                    >
+                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">Direct/Self<br/>Registered</p>
+                                        <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">{stats.referralStats.selfRegistered || 0}</p>
+                                    </div>
+                                    <div 
                                         className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'student' ? 'ring-2 ring-green-500' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'student' ? 'all' : 'student'); setCurrentPage(1); }}
                                     >
@@ -823,13 +830,6 @@ const SuperAdminDashboard = () => {
                                     >
                                         <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Super Admin</p>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.referralStats.superAdminReferred || 0}</p>
-                                    </div>
-                                    <div 
-                                        className={`bg-white dark:bg-gray-800 p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'self' ? 'ring-2 ring-orange-500' : ''}`}
-                                        onClick={() => { setFilterReferralType(filterReferralType === 'self' ? 'all' : 'self'); setCurrentPage(1); }}
-                                    >
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">Direct/Self<br/>Registered</p>
-                                        <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">{stats.referralStats.selfRegistered || 0}</p>
                                     </div>
                                 </div>
                             </motion.div>

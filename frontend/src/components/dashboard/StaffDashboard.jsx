@@ -488,7 +488,7 @@ const EnhancedStaffDashboard = () => {
                                 <div>
                                     {/* View Toggle Tabs */}
                                     <div className="flex gap-2 mb-4 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl w-fit">
-                                        {[['combined','Dashboard'],['our','Our Students'],['direct','Direct Students']].map(([key, label]) => (
+                                        {[['combined','Dashboard'],['direct','Direct Students'],['our','Our Students']].map(([key, label]) => (
                                             <button
                                                 key={key}
                                                 onClick={() => setStudentView(key)}
