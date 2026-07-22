@@ -1107,66 +1107,6 @@ exports.deleteStaff = async (req, res) => {
             success: true,
             message: 'Staff deleted successfully'
         });
-    } catch (error) {
-        console.error('Error deleting staff:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error while deleting staff',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-        });
-    }
-};
-
-// Password Management
-exports.resetPassword = async (req, res) => {
-    try {
-        const { userId, userType, newPassword } = req.body;
-
-        if (!userId || !userType || !newPassword) {
-            return res.status(400).json({
-                success: false,
-                message: 'User ID, user type, and new password are required'
-            });
-        }
-
-        if (newPassword.length < 6) {
-            return res.status(400).json({
-                success: false,
-                message: 'Password must be at least 6 characters long'
-            });
-        }
-
-        let user;
-        const hashedPassword = await bcrypt.hash(newPassword, 12);
-
-        if (userType === 'student' || userType === 'agent') {
-            user = await User.findByIdAndUpdate(
-                userId,
-                {
-                    password: hashedPassword,
-                    passwordChangedAt: new Date()
-                },
-                { new: true }
-            ).select('-password');
-        } else if (userType === 'staff' || userType === 'super_admin') {
-            user = await Admin.findByIdAndUpdate(
-                userId,
-                {
-                    password: hashedPassword,
-                    passwordChangedAt: new Date()
-                },
-                { new: true }
-            ).select('-password');
-        } else {
-            return res.status(400).json({
-                success: false,
-                message: 'Invalid user type'
-            });
-        }
-
-        if (!user) {
-            return res.status(404).json({
-                success: false,
                 message: 'User not found'
             });
         }

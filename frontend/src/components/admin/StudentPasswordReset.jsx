@@ -84,14 +84,17 @@ const StudentPasswordReset = () => {
 
     const handleResetPasswordClick = (student) => {
         Swal.fire({
-            title: `Reset Password for ${student.personalDetails?.fullName || 'Student'}`,
+            title: `<h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2">Reset Password</h3>`,
             html: `
-                <div class="text-left mt-2 mb-4">
-                    <p class="text-sm text-gray-600 mb-2">Please enter the new password for this student account.</p>
+                <div class="text-left mt-2 mb-6">
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-purple-600 dark:text-purple-400">${student.personalDetails?.fullName || 'Student'}</span>'s account.</p>
                 </div>
-                <div class="relative w-full mx-auto" style="max-width: 250px;">
-                    <input type="text" id="new-password-input" class="swal2-input !mt-0 !w-full !box-border !pr-10 !text-center" placeholder="New Password (min 6 chars)">
-                    <button type="button" id="toggle-password" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 focus:outline-none">
+                <div class="relative w-full mx-auto group">
+                    <input type="text" id="new-password-input" 
+                        class="w-full px-4 py-3 pr-12 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400" 
+                        placeholder="New Password (min. 6 chars)">
+                    <button type="button" id="toggle-password" 
+                        class="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-purple-500 transition-colors duration-200 focus:outline-none">
                         <svg id="eye-icon-open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -103,10 +106,18 @@ const StudentPasswordReset = () => {
                     </button>
                 </div>
             `,
-            icon: 'warning',
+            icon: 'info',
+            iconColor: '#8b5cf6', // purple-500
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
+            buttonsStyling: false,
+            customClass: {
+                popup: 'rounded-2xl shadow-xl dark:bg-gray-800 dark:border-gray-700',
+                title: 'p-0 text-left',
+                htmlContainer: 'text-left m-0',
+                confirmButton: 'px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm ml-2',
+                cancelButton: 'px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium rounded-xl transition-colors mr-2',
+                actions: 'mt-6 w-full flex justify-end gap-2'
+            },
             confirmButtonText: 'Reset Password',
             didOpen: () => {
                 const input = document.getElementById('new-password-input');
@@ -146,17 +157,13 @@ const StudentPasswordReset = () => {
             if (result.isConfirmed) {
                 try {
                     showLoading('Resetting password...');
-                    
-                    const targetUserId = student.user?._id || student.user || student.userId;
-                    
-                    if (!targetUserId) {
-                        closeLoading();
-                        showError('Could not identify user for this student record.');
-                        return;
-                    }
+                    const targetUserId = student.user?._id || student.user || student.userId || student._id;
+                    const studentEmail = student.contactDetails?.email || student.personalDetails?.email || student.email;
 
                     const response = await api.post('/api/admin/reset-password', {
                         userId: targetUserId,
+                        studentId: student._id,
+                        email: studentEmail,
                         userType: 'student',
                         newPassword: result.value
                     });

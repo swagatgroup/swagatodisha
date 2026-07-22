@@ -174,6 +174,17 @@ router.post('/register', async (req, res) => {
     }
 });
 
+// @desc    Login user (GET fallback)
+// @route   GET /api/auth/login
+// @access  Public
+router.get('/login', (req, res) => {
+    res.status(405).json({
+        success: false,
+        message: 'HTTP GET method is not supported for /api/auth/login. Please use HTTP POST with JSON body containing email and password.',
+        error: 'METHOD_NOT_ALLOWED'
+    });
+});
+
 // @desc    Login user
 // @route   POST /api/auth/login
 // @access  Public
