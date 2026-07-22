@@ -5,6 +5,7 @@ import { useSession } from '../../contexts/SessionContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
 import StudentManagement from '../admin/StudentManagement';
+import StudentPasswordReset from '../admin/StudentPasswordReset';
 import WebsiteManagement from '../admin/WebsiteManagement';
 import ErrorBoundary from '../common/ErrorBoundary';
 // RealTimeStudentTracking removed - Socket.IO component
@@ -99,10 +100,19 @@ const SuperAdminDashboard = () => {
         },
         {
             id: 'students',
-            name: 'Our Students',
+            name: 'Student Management',
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+            )
+        },
+        {
+            id: 'student-password-reset',
+            name: 'Student Password Reset',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
             )
         },
@@ -1320,6 +1330,14 @@ const SuperAdminDashboard = () => {
                     <div className="dark:text-gray-100">
                         <ErrorBoundary>
                             <StudentManagement initialFilter={studentTableFilter} listType="main" />
+                        </ErrorBoundary>
+                    </div>
+                );
+            case 'student-password-reset':
+                return (
+                    <div className="dark:text-gray-100">
+                        <ErrorBoundary>
+                            <StudentPasswordReset />
                         </ErrorBoundary>
                     </div>
                 );
