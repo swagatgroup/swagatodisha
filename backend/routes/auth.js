@@ -1166,87 +1166,36 @@ router.put('/profile', async (req, res) => {
 // TEMPORARY FIX ROUTE for unknown agents
 // Diagnostic & Fix Route
 // Diagnostic & Fix Route
-router.get('/fix-unknown-agents', async (req, res) => {
+// Debug password route
+router.get('/debug-password', async (req, res) => {
     try {
         const User = require('../models/User');
-        const StudentApplication = require('../models/StudentApplication');
+        const bcrypt = require('bcryptjs');
         
-        // Find all applications submitted by an agent (using submitterRole)
-        const apps = await StudentApplication.find({ submitterRole: 'agent' });
-        const unknownAgents = {};
+        const email = req.query.email || 'ritanjalisabar@gmail.com';
+        const password = req.query.password || 'Swagat@123';
         
-        for (const app of apps) {
-            if (app.submittedBy) {
-                const agentExists = await User.findById(app.submittedBy);
-                if (!agentExists) {
-                    unknownAgents[app.submittedBy] = (unknownAgents[app.submittedBy] || 0) + 1;
-                }
-            }
-        }
-
-        let narendraOldId = null;
-        let singleOrphanId = null;
-
-        for (const [id, count] of Object.entries(unknownAgents)) {
-            if (count === 25) {
-                narendraOldId = id;
-            } else if (count === 1) {
-                singleOrphanId = id;
-            }
-        }
-
-        // Recreate Narendra Nag if he doesn't exist
-        const narendraEmail = 'nagnarendra92@gmail.com';
-        let narendra = await User.findOne({ email: narendraEmail });
+        const user = await User.findOne({ email }).select('+password');
         
-        if (!narendra) {
-            narendra = new User({
-                // Reusing the old ID if we found it, otherwise let MongoDB generate a new one
-                ...(narendraOldId ? { _id: narendraOldId } : {}),
-                fullName: 'Narendra Nag',
-                email: narendraEmail,
-                password: 'Password@123',
-                phoneNumber: '9999999999',
-                role: 'agent',
-                isActive: true
-            });
-            await narendra.save();
+        if (!user) {
+            return res.json({ error: 'User not found' });
         }
-
-        let fixedSubmissions = 0;
-        let deletedSubmissions = 0;
-
-        // If we found the orphaned 25 submissions, link them to Narendra Nag
-        if (narendraOldId && narendraOldId.toString() !== narendra._id.toString()) {
-            const updateResult = await StudentApplication.updateMany(
-                { submittedBy: narendraOldId },
-                { $set: { submittedBy: narendra._id, referralAgent: narendra._id } }
-            );
-            fixedSubmissions = updateResult.modifiedCount;
-        } else if (narendraOldId && narendraOldId.toString() === narendra._id.toString()) {
-             fixedSubmissions = 25; // They are naturally linked now because the ID matches
-        }
-
-        // If we found the single orphan, delete it
-        if (singleOrphanId) {
-            const deleteResult = await StudentApplication.deleteMany({ submittedBy: singleOrphanId });
-            deletedSubmissions = deleteResult.deletedCount;
-        }
-
+        
+        const isMatch = await bcrypt.compare(password, user.password);
+        
         res.json({
-            success: true,
-            message: 'Database repaired successfully.',
-            unknownAgentsDetected: unknownAgents,
-            narendraNagId: narendra._id,
-            fixedNarendraSubmissions: fixedSubmissions,
-            unknown1SubmissionsDeleted: deletedSubmissions
+            email: user.email,
+            passwordHash: user.password,
+            passwordChangedAt: user.passwordChangedAt,
+            isMatch: isMatch,
+            rawCompare: await bcrypt.compare(password, user.password)
         });
-        
-    } catch (error) {
-        res.status(500).json({ success: false, error: error.message });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
     }
 });
 
 module.exports = router;
+
 
 
