@@ -1170,12 +1170,13 @@ router.put('/profile', async (req, res) => {
 // Debug password route
 // Debug password route
 // Debug password route
+// Debug password route
+// Debug password route
+// Debug password route
 router.get('/debug-password', async (req, res) => {
     try {
-        const Admin = require('../models/Admin');
-        let admins = await Admin.find({});
         res.json({
-            admins: admins.map(a => a.email)
+            mongo_uri: process.env.MONGO_URI.substring(0, 50) + '...'
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -1183,6 +1184,9 @@ router.get('/debug-password', async (req, res) => {
 });
 
 module.exports = router;
+
+
+
 
 
 
