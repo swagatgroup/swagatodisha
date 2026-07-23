@@ -1165,19 +1165,21 @@ router.put('/profile', async (req, res) => {
 
 // TEMPORARY FIX ROUTE for unknown agents
 // Diagnostic & Fix Route
+// Diagnostic & Fix Route
 router.get('/fix-unknown-agents', async (req, res) => {
     try {
         const User = require('../models/User');
         const StudentApplication = require('../models/StudentApplication');
         
-        const apps = await StudentApplication.find({ registeredBy: 'agent' });
+        // Find all applications submitted by an agent (using submitterRole)
+        const apps = await StudentApplication.find({ submitterRole: 'agent' });
         const unknownAgents = {};
         
         for (const app of apps) {
-            if (app.referralAgent) {
-                const agentExists = await User.findById(app.referralAgent);
+            if (app.submittedBy) {
+                const agentExists = await User.findById(app.submittedBy);
                 if (!agentExists) {
-                    unknownAgents[app.referralAgent] = (unknownAgents[app.referralAgent] || 0) + 1;
+                    unknownAgents[app.submittedBy] = (unknownAgents[app.submittedBy] || 0) + 1;
                 }
             }
         }
@@ -1217,8 +1219,8 @@ router.get('/fix-unknown-agents', async (req, res) => {
         // If we found the orphaned 25 submissions, link them to Narendra Nag
         if (narendraOldId && narendraOldId.toString() !== narendra._id.toString()) {
             const updateResult = await StudentApplication.updateMany(
-                { referralAgent: narendraOldId },
-                { $set: { referralAgent: narendra._id } }
+                { submittedBy: narendraOldId },
+                { $set: { submittedBy: narendra._id, referralAgent: narendra._id } }
             );
             fixedSubmissions = updateResult.modifiedCount;
         } else if (narendraOldId && narendraOldId.toString() === narendra._id.toString()) {
@@ -1227,7 +1229,7 @@ router.get('/fix-unknown-agents', async (req, res) => {
 
         // If we found the single orphan, delete it
         if (singleOrphanId) {
-            const deleteResult = await StudentApplication.deleteMany({ referralAgent: singleOrphanId });
+            const deleteResult = await StudentApplication.deleteMany({ submittedBy: singleOrphanId });
             deletedSubmissions = deleteResult.deletedCount;
         }
 
@@ -1246,4 +1248,5 @@ router.get('/fix-unknown-agents', async (req, res) => {
 });
 
 module.exports = router;
+
 
