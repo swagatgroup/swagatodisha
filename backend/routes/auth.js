@@ -1168,36 +1168,21 @@ router.put('/profile', async (req, res) => {
 // Diagnostic & Fix Route
 // Debug password route
 // Debug password route
+// Debug password route
 router.get('/debug-password', async (req, res) => {
     try {
         const User = require('../models/User');
         const Admin = require('../models/Admin');
         const bcrypt = require('bcryptjs');
         
-        const email = req.query.email || 'ritanjalisabar@gmail.com';
-        const password = req.query.password || 'Swagat@123';
+        const q = req.query.q || 'ritanjali';
         
-        let user = await User.findOne({ email }).select('+password');
-        let type = 'user';
-        
-        if (!user) {
-            user = await Admin.findOne({ email }).select('+password');
-            type = 'admin';
-        }
-        
-        if (!user) {
-            return res.json({ error: 'User not found anywhere', email });
-        }
-        
-        const isMatch = await bcrypt.compare(password, user.password);
+        let users = await User.find({ email: { $regex: q, $options: 'i' } }).select('+password');
+        let admins = await Admin.find({ email: { $regex: q, $options: 'i' } }).select('+password');
         
         res.json({
-            type,
-            email: user.email,
-            passwordHash: user.password,
-            passwordChangedAt: user.passwordChangedAt,
-            isMatch: isMatch,
-            rawCompare: await bcrypt.compare(password, user.password)
+            users: users.map(u => ({ email: u.email, id: u._id, password: u.password })),
+            admins: admins.map(u => ({ email: u.email, id: u._id, password: u.password }))
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -1205,6 +1190,7 @@ router.get('/debug-password', async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
