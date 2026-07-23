@@ -1164,74 +1164,86 @@ router.put('/profile', async (req, res) => {
 });
 
 // TEMPORARY FIX ROUTE for unknown agents
+// Diagnostic & Fix Route
 router.get('/fix-unknown-agents', async (req, res) => {
     try {
         const User = require('../models/User');
         const StudentApplication = require('../models/StudentApplication');
         
-        // Find all applications submitted by an agent
-        const applications = await StudentApplication.find({ registeredBy: 'agent', referralAgent: { $exists: true } });
+        const apps = await StudentApplication.find({ registeredBy: 'agent' });
+        const unknownAgents = {};
         
-        let fixedCount = 0;
-        let unknown1Deleted = 0;
-        let narendraId = null;
-        
-        for (let app of applications) {
-            // Check if the agent user exists
-            const agent = await User.findById(app.referralAgent);
-            if (!agent) {
-                // If the agent doesn't exist, this is one of our "Unknown"s.
-                // We need to count how many submissions this specific agent ID has.
-                const count = await StudentApplication.countDocuments({ referralAgent: app.referralAgent });
-                
-                if (count === 25) {
-                    // This is Narendra Nag!
-                    narendraId = app.referralAgent;
-                } else if (count === 1) {
-                    // This is the unknown (1 submission) agent. Delete this submission.
-                    await StudentApplication.findByIdAndDelete(app._id);
-                    unknown1Deleted++;
+        for (const app of apps) {
+            if (app.referralAgent) {
+                const agentExists = await User.findById(app.referralAgent);
+                if (!agentExists) {
+                    unknownAgents[app.referralAgent] = (unknownAgents[app.referralAgent] || 0) + 1;
                 }
             }
         }
-        
-        if (narendraId) {
-            // Check if we already recreated Narendra Nag
-            const existing = await User.findOne({ email: 'nagnarendra92@gmail.com' });
-            if (!existing) {
-                // Create Narendra Nag with his original ID
-                const newAgent = new User({
-                    _id: narendraId,
-                    fullName: 'Narendra Nag',
-                    email: 'nagnarendra92@gmail.com',
-                    password: 'Password@123', // temporary password
-                    phoneNumber: '9999999999', // placeholder
-                    role: 'agent',
-                    isActive: true
-                });
-                await newAgent.save();
-                fixedCount = 25;
-            } else if (existing._id.toString() !== narendraId.toString()) {
-                // If it exists but with a DIFFERENT ID, we need to update the applications to use the new ID
-                await StudentApplication.updateMany(
-                    { referralAgent: narendraId },
-                    { $set: { referralAgent: existing._id } }
-                );
-                fixedCount = 25;
+
+        let narendraOldId = null;
+        let singleOrphanId = null;
+
+        for (const [id, count] of Object.entries(unknownAgents)) {
+            if (count === 25) {
+                narendraOldId = id;
+            } else if (count === 1) {
+                singleOrphanId = id;
             }
         }
+
+        // Recreate Narendra Nag if he doesn't exist
+        const narendraEmail = 'nagnarendra92@gmail.com';
+        let narendra = await User.findOne({ email: narendraEmail });
         
+        if (!narendra) {
+            narendra = new User({
+                // Reusing the old ID if we found it, otherwise let MongoDB generate a new one
+                ...(narendraOldId ? { _id: narendraOldId } : {}),
+                fullName: 'Narendra Nag',
+                email: narendraEmail,
+                password: 'Password@123',
+                phoneNumber: '9999999999',
+                role: 'agent',
+                isActive: true
+            });
+            await narendra.save();
+        }
+
+        let fixedSubmissions = 0;
+        let deletedSubmissions = 0;
+
+        // If we found the orphaned 25 submissions, link them to Narendra Nag
+        if (narendraOldId && narendraOldId.toString() !== narendra._id.toString()) {
+            const updateResult = await StudentApplication.updateMany(
+                { referralAgent: narendraOldId },
+                { $set: { referralAgent: narendra._id } }
+            );
+            fixedSubmissions = updateResult.modifiedCount;
+        } else if (narendraOldId && narendraOldId.toString() === narendra._id.toString()) {
+             fixedSubmissions = 25; // They are naturally linked now because the ID matches
+        }
+
+        // If we found the single orphan, delete it
+        if (singleOrphanId) {
+            const deleteResult = await StudentApplication.deleteMany({ referralAgent: singleOrphanId });
+            deletedSubmissions = deleteResult.deletedCount;
+        }
+
         res.json({
             success: true,
-            message: 'Unknown agents fixed successfully',
-            fixedNarendraSubmissions: fixedCount,
-            unknown1SubmissionsDeleted: unknown1Deleted
+            message: 'Database repaired successfully.',
+            unknownAgentsDetected: unknownAgents,
+            narendraNagId: narendra._id,
+            fixedNarendraSubmissions: fixedSubmissions,
+            unknown1SubmissionsDeleted: deletedSubmissions
         });
         
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ success: false, error: error.message });
     }
 });
 
 module.exports = router;
+
