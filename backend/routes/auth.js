@@ -1174,10 +1174,13 @@ router.put('/profile', async (req, res) => {
 // Debug password route
 // Debug password route
 // Debug password route
+// Debug password route
 router.get('/debug-password', async (req, res) => {
     try {
         res.json({
-            mongodb_uri: process.env.MONGODB_URI ? process.env.MONGODB_URI.substring(0, 50) + '...' : 'undefined'
+            mongo1: process.env.MONGO_URI || 'none',
+            mongo2: process.env.MONGODB_URI || 'none',
+            node_env: process.env.NODE_ENV || 'none'
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -1185,6 +1188,7 @@ router.get('/debug-password', async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
