@@ -1167,23 +1167,32 @@ router.put('/profile', async (req, res) => {
 // Diagnostic & Fix Route
 // Diagnostic & Fix Route
 // Debug password route
+// Debug password route
 router.get('/debug-password', async (req, res) => {
     try {
         const User = require('../models/User');
+        const Admin = require('../models/Admin');
         const bcrypt = require('bcryptjs');
         
         const email = req.query.email || 'ritanjalisabar@gmail.com';
         const password = req.query.password || 'Swagat@123';
         
-        const user = await User.findOne({ email }).select('+password');
+        let user = await User.findOne({ email }).select('+password');
+        let type = 'user';
         
         if (!user) {
-            return res.json({ error: 'User not found' });
+            user = await Admin.findOne({ email }).select('+password');
+            type = 'admin';
+        }
+        
+        if (!user) {
+            return res.json({ error: 'User not found anywhere', email });
         }
         
         const isMatch = await bcrypt.compare(password, user.password);
         
         res.json({
+            type,
             email: user.email,
             passwordHash: user.password,
             passwordChangedAt: user.passwordChangedAt,
@@ -1196,6 +1205,7 @@ router.get('/debug-password', async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
