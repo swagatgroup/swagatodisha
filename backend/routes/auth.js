@@ -1169,20 +1169,13 @@ router.put('/profile', async (req, res) => {
 // Debug password route
 // Debug password route
 // Debug password route
+// Debug password route
 router.get('/debug-password', async (req, res) => {
     try {
-        const User = require('../models/User');
         const Admin = require('../models/Admin');
-        const bcrypt = require('bcryptjs');
-        
-        const q = req.query.q || 'ritanjali';
-        
-        let users = await User.find({ email: { $regex: q, $options: 'i' } }).select('+password');
-        let admins = await Admin.find({ email: { $regex: q, $options: 'i' } }).select('+password');
-        
+        let admins = await Admin.find({});
         res.json({
-            users: users.map(u => ({ email: u.email, id: u._id, password: u.password })),
-            admins: admins.map(u => ({ email: u.email, id: u._id, password: u.password }))
+            admins: admins.map(a => a.email)
         });
     } catch (e) {
         res.status(500).json({ error: e.message });
@@ -1190,6 +1183,7 @@ router.get('/debug-password', async (req, res) => {
 });
 
 module.exports = router;
+
 
 
 
