@@ -9,6 +9,7 @@ import {
 import EnhancedStudentApplicationForm from "../../forms/EnhancedStudentApplicationForm";
 import SubmitApplicationForStudent from "../../forms/SubmitApplicationForStudent";
 import MySubmittedApplications from "./MySubmittedApplications";
+import ApplicationPDFGenerator from "../../forms/ApplicationPDFGenerator";
 
 const StudentApplications = () => {
   const [applications, setApplications] = useState([]);
@@ -25,6 +26,8 @@ const StudentApplications = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showPdfModal, setShowPdfModal] = useState(false);
   const [pdfBlobUrl, setPdfBlobUrl] = useState("");
+  const [generatingPdf, setGeneratingPdf] = useState(false);
+  const [selectedApplicationForPdf, setSelectedApplicationForPdf] = useState(null);
   const [userRole, setUserRole] = useState("student");
 
   // State for Installments/Receipt Upload
@@ -90,19 +93,20 @@ const StudentApplications = () => {
     }
   };
 
-  const openApplicationPdf = async (applicationId) => {
-    try {
-      const response = await api.get(
-        `/api/students/applications/${applicationId}/pdf`,
-        { responseType: "blob" }
-      );
-      const blob = new Blob([response.data], { type: "application/pdf" });
-      const url = URL.createObjectURL(blob);
-      setPdfBlobUrl(url);
+  const openApplicationPdf = (applicationId) => {
+    // Determine the array to search based on userRole
+    let sourceApplications = applications;
+    
+    // If agent, applications are in data array, if student, they are in the main applications state
+    // Let's just find it in the current applications state. It has all we need.
+    const application = applications.find(a => a._id === applicationId);
+    
+    if (application) {
+      setSelectedApplicationForPdf(application);
+      setGeneratingPdf(true);
       setShowPdfModal(true);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      showError("Failed to load application PDF");
+    } else {
+      showErrorToast("Could not find application details to generate PDF.");
     }
   };
 
@@ -865,9 +869,11 @@ const StudentApplications = () => {
                 </button>
                 <button
                   onClick={() => {
-                    URL.revokeObjectURL(pdfBlobUrl);
+                    if (pdfBlobUrl) URL.revokeObjectURL(pdfBlobUrl);
                     setShowPdfModal(false);
                     setPdfBlobUrl("");
+                    setGeneratingPdf(false);
+                    setSelectedApplicationForPdf(null);
                   }}
                   className="px-3 py-1.5 border border-gray-300 rounded-md text-sm hover:bg-gray-50"
                 >
@@ -876,15 +882,36 @@ const StudentApplications = () => {
               </div>
             </div>
             <div className="flex-1 overflow-auto">
-              {pdfBlobUrl ? (
+              {generatingPdf && selectedApplicationForPdf && (
+                <div className="flex flex-col items-center justify-center h-[70vh]">
+                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
+                   <p className="text-gray-600">Generating your Application PDF...</p>
+                   {/* Hidden generator */}
+                   <div className="hidden">
+                     <ApplicationPDFGenerator 
+                       formData={selectedApplicationForPdf} 
+                       application={selectedApplicationForPdf} 
+                       skipDocumentValidation={true}
+                       autoGenerate={true}
+                       hideUI={true}
+                       onPDFGenerated={(url) => {
+                         setPdfBlobUrl(url);
+                         setGeneratingPdf(false);
+                       }}
+                       onCancel={() => {
+                         setShowPdfModal(false);
+                         setGeneratingPdf(false);
+                       }}
+                     />
+                   </div>
+                </div>
+              )}
+              {pdfBlobUrl && !generatingPdf && (
                 <iframe
+                  src={`${pdfBlobUrl}#toolbar=0`}
+                  className="w-full h-[70vh] rounded border border-gray-200"
                   title="Application PDF"
-                  src={pdfBlobUrl}
-                  className="w-full h-full"
                 />
-              ) : (
-                <div className="p-6 text-center text-gray-500">
-                  No PDF to display
                 </div>
               )}
             </div>

@@ -4,7 +4,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import api from '../../utils/api';
 
-const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel, skipDocumentValidation = false }) => {
+const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel, skipDocumentValidation = false, autoGenerate = false, hideUI = false }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [error, setError] = useState(null);
@@ -24,6 +24,13 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
         };
         fetchColleges();
     }, []);
+
+    // Auto generate PDF if requested
+    useEffect(() => {
+        if (autoGenerate && !isGenerating && !pdfUrl) {
+            generatePDF();
+        }
+    }, [autoGenerate, isGenerating, pdfUrl]);
 
     // Helper function to add footer and page numbers (Compact for 2 pages)
     const addFooter = (pdf, pageNum, totalPages, pdfContent, pageWidth, pageHeight) => {
@@ -802,6 +809,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             }
         }
     };
+
+    if (hideUI) {
+        return null;
+    }
 
     return (
         <div className="space-y-6">
