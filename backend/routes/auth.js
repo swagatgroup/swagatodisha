@@ -604,63 +604,58 @@ router.post('/admin-reset-password', [
 
         const mongoose = require('mongoose');
 
-        // Find user in both models
         let user = null;
         let userType = 'user';
-
-        if (userId && mongoose.Types.ObjectId.isValid(userId)) {
-            user = await User.findById(userId);
-            if (!user) {
-                const Admin = require('../models/Admin');
-                user = await Admin.findById(userId);
-                if (user) userType = 'admin';
-            }
-        }
-
         let userJustCreated = false;
-        if (!user && requestedUserType === 'student' && studentId && mongoose.Types.ObjectId.isValid(studentId)) {
-            const StudentApplication = require('../models/StudentApplication');
+        
+        const StudentApplication = require('../models/StudentApplication');
+        
+        if (requestedUserType === 'student' && studentId && mongoose.Types.ObjectId.isValid(studentId)) {
             const student = await StudentApplication.findById(studentId);
+            if (!student) {
+                return res.status(404).json({ success: false, message: 'Student application not found' });
+            }
             
-            if (student) {
+            const rawEmail = email || student.contactDetails?.email || student.personalDetails?.email;
+            if (!rawEmail) {
+                return res.status(400).json({ success: false, message: 'Cannot reset password: student has no email address' });
+            }
+            const userEmail = rawEmail.toLowerCase().trim();
+            
+            // Look for the student in User collection by exact email
+            user = await User.findOne({ email: userEmail });
+            
+            if (!user) {
+                // Auto-provision a User account for the student
                 const fullName = student.personalDetails?.fullName || 
                                (student.personalDetails?.firstName ? student.personalDetails.firstName + ' ' + (student.personalDetails.lastName || '') : 'Student');
-                // Use primaryPhone (the actual field name in the schema)
                 const phone = student.contactDetails?.primaryPhone || student.contactDetails?.phone || student.contactDetails?.mobile || '0000000000';
-                const rawEmail = email || student.contactDetails?.email || student.personalDetails?.email;
                 
-                if (!rawEmail) {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'Cannot reset password: student has no email address on file'
-                    });
-                }
-                
-                const userEmail = rawEmail.toLowerCase().trim();
-                
-                // Check if a User account already exists for this email
-                const existingUser = await User.findOne({ email: userEmail });
-                
-                if (existingUser) {
-                    user = existingUser;
-                } else {
-                    // Auto-provision a User account so the student can log in
-                    user = new User({
-                        fullName: fullName.trim(),
-                        email: userEmail,
-                        password: newPassword, // hashed by User pre-save hook
-                        phoneNumber: phone,
-                        role: 'student',
-                        isActive: true
-                    });
-                    await user.save();
-                    userJustCreated = true; // password already hashed + saved — skip double-hash below
-                }
-                
-                // Link the application back to the User account
-                if (student.user?.toString() !== user._id.toString()) {
-                    student.user = user._id;
-                    await student.save();
+                user = new User({
+                    fullName: fullName.trim(),
+                    email: userEmail,
+                    password: newPassword, // hashed by User pre-save hook
+                    phoneNumber: phone,
+                    role: 'student',
+                    isActive: true
+                });
+                await user.save();
+                userJustCreated = true;
+            }
+            
+            // Only update student.user if it was pointing to an agent or null
+            if (student.user?.toString() !== user._id.toString()) {
+                student.user = user._id;
+                await student.save();
+            }
+        } else {
+            // Non-student password reset (Admin/Staff/Agent)
+            if (userId && mongoose.Types.ObjectId.isValid(userId)) {
+                user = await User.findById(userId);
+                if (!user) {
+                    const Admin = require('../models/Admin');
+                    user = await Admin.findById(userId);
+                    if (user) userType = 'admin';
                 }
             }
         }
@@ -673,7 +668,6 @@ router.post('/admin-reset-password', [
         }
 
         // Update password only if the user was NOT just created
-        // (newly created users already have the correct password hashed via pre-save)
         if (!userJustCreated) {
             user.password = newPassword;
             user.passwordChangedAt = new Date();
