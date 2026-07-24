@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import defaultQrCode from '../../../assets/documents/swagatodisha-payment-qr-code.webp';
 
 const QRPaymentSystem = ({ qrCodeImage, amount }) => {
     const formatAmount = (amount) => {
@@ -28,12 +29,11 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
                                 className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white shadow-sm"
                             />
                         ) : (
-                            <div className="w-64 h-64 border-2 border-dashed border-gray-300 flex items-center justify-center bg-gray-50 rounded-lg">
-                                <div className="text-center">
-                                    <div className="text-4xl mb-2">📷</div>
-                                    <p className="text-gray-600">QR Code not uploaded by Admin yet</p>
-                                </div>
-                            </div>
+                            <img 
+                                src={defaultQrCode} 
+                                alt="Default Payment QR Code" 
+                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white shadow-sm opacity-80"
+                            />
                         )}
                         
                         {amount > 0 ? (

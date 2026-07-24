@@ -4,6 +4,7 @@ import SliderManagement from './SliderManagement';
 import SimpleNotificationManagement from './SimpleNotificationManagement';
 import SimpleQuickAccessManagement from './SimpleQuickAccessManagement';
 import InstituteCourseManagement from './InstituteCourseManagement';
+import WebsiteContentManagement from './WebsiteContentManagement';
 
 const WebsiteManagement = () => {
     const [activeTab, setActiveTab] = useState('sliders');
@@ -12,7 +13,8 @@ const WebsiteManagement = () => {
         { id: 'sliders', name: 'Slider Images', icon: 'fa-solid fa-images' },
         { id: 'quick-access', name: 'Quick Access Documents', icon: 'fa-solid fa-file-lines' },
         { id: 'notifications', name: 'Notifications', icon: 'fa-solid fa-bell' },
-        { id: 'institutes-courses', name: 'Institutes & Courses', icon: 'fa-solid fa-building-columns' }
+        { id: 'institutes-courses', name: 'Institutes & Courses', icon: 'fa-solid fa-building-columns' },
+        { id: 'website-content', name: 'Website Content', icon: 'fa-solid fa-globe' }
     ];
 
     return (
@@ -49,6 +51,7 @@ const WebsiteManagement = () => {
                     {activeTab === 'quick-access' && <SimpleQuickAccessManagement />}
                     {activeTab === 'notifications' && <SimpleNotificationManagement />}
                     {activeTab === 'institutes-courses' && <InstituteCourseManagement />}
+                    {activeTab === 'website-content' && <WebsiteContentManagement />}
                 </div>
             </div>
         </div>

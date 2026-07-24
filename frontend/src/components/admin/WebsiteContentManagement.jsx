@@ -90,6 +90,7 @@ import {
     closeLoading,
     handleApiError
 } from '../../utils/sweetAlert';
+import defaultQrCode from '../../assets/documents/swagatodisha-payment-qr-code.webp';
 
 const WebsiteContentManagement = () => {
     const [settings, setSettings] = useState(null);
@@ -882,11 +883,21 @@ const WebsiteContentManagement = () => {
                                             <img
                                                 src={settings.paymentSettings.qrCodeImage}
                                                 alt="Payment QR Code"
-                                                className="mx-auto h-48 object-contain rounded shadow-sm border border-gray-200 bg-white"
+                                                className="h-64 object-contain rounded-lg border border-gray-200 dark:border-gray-700"
                                             />
                                         ) : (
-                                            <div className="text-gray-500 dark:text-gray-400">
-                                                No QR Code uploaded. The fallback QR code will be used.
+                                            <div className="relative h-64 w-64 mx-auto rounded-lg flex flex-col items-center justify-center">
+                                                <img 
+                                                    src={defaultQrCode} 
+                                                    alt="Default Payment QR Code" 
+                                                    className="h-64 w-64 object-contain opacity-60 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600"
+                                                />
+                                                <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 flex flex-col items-center justify-center p-4 rounded-lg text-center backdrop-blur-[2px]">
+                                                    <p className="text-gray-700 dark:text-gray-300 font-medium">
+                                                        Using Fallback QR
+                                                    </p>
+                                                    <p className="text-xs text-gray-500 mt-1">Upload a custom QR above to replace this</p>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
