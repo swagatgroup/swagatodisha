@@ -1208,7 +1208,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {listType === 'direct' ? 'Direct Students' : 'Student Management'}
+                        {listType === 'direct' ? 'Direct Students' : 'Our Students'}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {listType === 'direct' 
