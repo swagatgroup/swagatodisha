@@ -59,9 +59,12 @@ const StudentPasswordReset = () => {
                 session: selectedSession,
                 sortBy: 'createdAt',
                 sortOrder: 'desc',
+                listType: 'all',  // Show ALL students (direct + agent + staff submitted)
                 ...(debouncedSearchTerm && { search: debouncedSearchTerm }),
-                ...(filterType !== 'all' && { referralType: filterType }),
-                listType: 'main'
+                // Map UI filterType to the correct backend parameter
+                ...(filterType === 'direct' && { submitterRole: 'student' }),
+                ...(filterType === 'agent' && { referralType: 'agent' }),
+                ...(filterType === 'staff' && { referralType: 'staff' }),
             });
 
             const response = await api.get(`/api/admin/students?${params}`);
@@ -90,7 +93,9 @@ const StudentPasswordReset = () => {
                     <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-purple-600 dark:text-purple-400">${student.personalDetails?.fullName || student.fullName || 'Student'}</span>'s account.</p>
                 </div>
                 <div class="relative w-full mx-auto group">
-                    <input type="password" id="new-password-input" 
+                 <input type="password" id="new-password-input"
+                        name="new-student-password"
+                        autocomplete="new-password"
                         class="w-full px-4 py-3 pr-12 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400" 
                         placeholder="New Password (min. 6 chars)">
                     <button type="button" id="toggle-password" 

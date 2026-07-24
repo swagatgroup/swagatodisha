@@ -579,15 +579,15 @@ router.post('/refresh', async (req, res) => {
 // @access  Private (Super Admin only)
 router.post('/admin-reset-password', [
     protect,
-    body('userId').notEmpty().withMessage('User ID is required'),
+    body('studentId').notEmpty().withMessage('Student ID is required'),
     body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
 ], async (req, res) => {
     try {
-        // Check if user is super admin
-        if (req.user.role !== 'super_admin') {
+        // Allow both staff and super_admin to reset passwords
+        if (!['super_admin', 'staff'].includes(req.user.role)) {
             return res.status(403).json({
                 success: false,
-                message: 'Access denied. Super Admin only.'
+                message: 'Access denied. Staff or Super Admin only.'
             });
         }
 
@@ -1186,33 +1186,5 @@ router.put('/profile', async (req, res) => {
 // Debug password route
 // Debug password route
 // Debug password route
-// Debug password route
-// Debug password route
-// Debug password route
-// Debug password route
-// Debug password route
-// Debug password route
-router.get('/debug-password', async (req, res) => {
-    try {
-        res.json({
-            mongo1: process.env.MONGO_URI || 'none',
-            mongo2: process.env.MONGODB_URI || 'none',
-            node_env: process.env.NODE_ENV || 'none'
-        });
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
-});
 
 module.exports = router;
-
-
-
-
-
-
-
-
-
-
-

@@ -334,7 +334,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             }
         }
 
-        // Filter by listType (Main vs Direct)
+        // Filter by listType (Main vs Direct vs All)
         if (listType === 'direct') {
             // Direct Students: submitted by student AND (referralType is null or student)
             andConditions.push({
@@ -354,6 +354,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 ]
             });
         }
+        // listType === 'all' → no filter applied, return every student
 
         // Combine all filters: if we have AND conditions, combine them with simple filters
         let finalFilter = filter;
