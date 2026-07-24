@@ -912,7 +912,6 @@ const StudentApplications = () => {
                   className="w-full h-[70vh] rounded border border-gray-200"
                   title="Application PDF"
                 />
-                </div>
               )}
             </div>
           </motion.div>
