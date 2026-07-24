@@ -87,19 +87,19 @@ const StudentPasswordReset = () => {
             title: `<h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2 text-center">Reset Password</h3>`,
             html: `
                 <div class="text-center mt-2 mb-6">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-purple-600 dark:text-purple-400">${student.personalDetails?.fullName || 'Student'}</span>'s account.</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-purple-600 dark:text-purple-400">${student.personalDetails?.fullName || student.fullName || 'Student'}</span>'s account.</p>
                 </div>
                 <div class="relative w-full mx-auto group">
-                    <input type="text" id="new-password-input" 
+                    <input type="password" id="new-password-input" 
                         class="w-full px-4 py-3 pr-12 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400" 
                         placeholder="New Password (min. 6 chars)">
                     <button type="button" id="toggle-password" 
                         class="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-purple-500 transition-colors duration-200 focus:outline-none">
-                        <svg id="eye-icon-open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg id="eye-icon-open" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        <svg id="eye-icon-closed" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg id="eye-icon-closed" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.05 10.05 0 011.52-3.414M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3l18 18" />
                         </svg>
@@ -107,7 +107,7 @@ const StudentPasswordReset = () => {
                 </div>
             `,
             icon: 'info',
-            iconColor: '#8b5cf6', // purple-500
+            iconColor: '#8b5cf6',
             showCancelButton: true,
             buttonsStyling: false,
             customClass: {
@@ -124,14 +124,6 @@ const StudentPasswordReset = () => {
                 const toggleBtn = document.getElementById('toggle-password');
                 const eyeOpen = document.getElementById('eye-icon-open');
                 const eyeClosed = document.getElementById('eye-icon-closed');
-
-                setTimeout(() => {
-                    if(input) {
-                        input.type = "password";
-                        eyeOpen.classList.add('hidden');
-                        eyeClosed.classList.remove('hidden');
-                    }
-                }, 1500);
 
                 toggleBtn.addEventListener('click', () => {
                     if (input.type === 'password') {
@@ -157,21 +149,28 @@ const StudentPasswordReset = () => {
             if (result.isConfirmed) {
                 try {
                     showLoading('Resetting password...');
-                    const targetUserId = student.user?._id || student.user || student.userId || student._id;
-                    const studentEmail = student.contactDetails?.email || student.personalDetails?.email || student.email;
+
+                    // Use the user field (linked User account ID) if available,
+                    // otherwise fall back so the backend can auto-create an account.
+                    const linkedUserId = student.user?._id || (typeof student.user === 'string' ? student.user : null);
+                    const studentAppId = student._id;
+                    const studentEmail =
+                        student.contactDetails?.email ||
+                        student.personalDetails?.email ||
+                        student.email;
 
                     const response = await api.post('/api/auth/admin-reset-password', {
-                        userId: targetUserId,
-                        studentId: student._id,
+                        userId: linkedUserId,   // may be null — backend handles it
+                        studentId: studentAppId, // always the StudentApplication _id
                         email: studentEmail,
                         userType: 'student',
                         newPassword: result.value
                     });
 
                     closeLoading();
-                    
+
                     if (response.data.success) {
-                        showSuccess('Password reset successfully!');
+                        showSuccess(`Password reset successfully for ${student.personalDetails?.fullName || student.fullName || 'Student'}!`);
                     } else {
                         showError(response.data.message || 'Failed to reset password');
                     }
@@ -184,21 +183,64 @@ const StudentPasswordReset = () => {
         });
     };
 
-    const getRegistrationType = (student) => {
-        if (student.registeredBy) {
-            return student.registeredBy === 'direct' ? 'Direct' : 'Referral';
-        }
-        return 'Direct';
-    };
+    /**
+     * Returns a JSX badge + sub-label for the "Registered By" column.
+     * Logic:
+     *   submitterRole === 'student'  → Direct (Self Registered)
+     *   submitterRole === 'agent'    → Agent badge + name (Via Dashboard / Referred)
+     *   submitterRole === 'staff'    → Staff badge + name
+     *   submitterRole === 'super_admin' → Admin badge + name
+     */
+    const getRegisteredByLabel = (student) => {
+        const role = student.submitterRole;
+        const submitterName =
+            student.referredBy && student.referredBy !== 'Direct'
+                ? student.referredBy
+                : student.submittedBy?.fullName || null;
 
-    const getSubmitterName = (student) => {
-        if (student.agentDetails?.name) {
-            return student.agentDetails.name;
+        // Direct self-registration
+        if (!role || role === 'student') {
+            return (
+                <span className="inline-flex flex-col gap-0.5">
+                    <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 w-fit">
+                        Direct
+                    </span>
+                    <span className="text-xs text-gray-400 dark:text-gray-500">(Self Registered)</span>
+                </span>
+            );
         }
-        if (student.staffDetails?.name) {
-            return student.staffDetails.name;
-        }
-        return 'Self';
+
+        const roleMeta = {
+            agent: {
+                label: 'Agent',
+                color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+            },
+            staff: {
+                label: 'Staff',
+                color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+            },
+            super_admin: {
+                label: 'Admin',
+                color: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400'
+            }
+        };
+
+        const meta = roleMeta[role] || { label: role, color: 'bg-gray-100 text-gray-800' };
+
+        // Decide method: if referralType is set and not null it was referred, else Dashboard
+        const isReferred = student.referralInfo?.referralType != null;
+        const method = isReferred ? 'Referred' : 'Dashboard';
+
+        return (
+            <span className="inline-flex flex-col gap-0.5">
+                <span className={`px-2 py-0.5 text-xs font-semibold rounded-full w-fit ${meta.color}`}>
+                    {meta.label}
+                </span>
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                    {submitterName ? `${submitterName} (${method})` : `Via ${method}`}
+                </span>
+            </span>
+        );
     };
 
     return (
@@ -251,10 +293,10 @@ const StudentPasswordReset = () => {
                                     Student Details
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    Registration Type
+                                    Phone
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                                    Submitted By
+                                    Registered By
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Actions
@@ -278,16 +320,17 @@ const StudentPasswordReset = () => {
                             ) : (
                                 students.map((student) => (
                                     <tr key={student._id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                                        {/* Student Details */}
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="h-10 w-10 flex-shrink-0 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
                                                     <span className="text-indigo-600 dark:text-indigo-400 font-bold text-lg">
-                                                        {student.personalDetails?.fullName?.charAt(0)?.toUpperCase() || '?'}
+                                                        {(student.personalDetails?.fullName || student.fullName || '?').charAt(0).toUpperCase()}
                                                     </span>
                                                 </div>
                                                 <div className="ml-4">
                                                     <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                                        {student.personalDetails?.fullName || 'N/A'}
+                                                        {student.personalDetails?.fullName || student.fullName || 'N/A'}
                                                     </div>
                                                     <div className="text-sm text-gray-500 dark:text-gray-400">
                                                         {student.contactDetails?.email || student.email || 'N/A'}
@@ -295,18 +338,18 @@ const StudentPasswordReset = () => {
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                getRegistrationType(student) === 'Direct' 
-                                                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' 
-                                                    : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
-                                            }`}>
-                                                {getRegistrationType(student)}
-                                            </span>
-                                        </td>
+
+                                        {/* Phone */}
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
-                                            {getSubmitterName(student)}
+                                            {student.contactDetails?.primaryPhone || student.phone || 'N/A'}
                                         </td>
+
+                                        {/* Registered By */}
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            {getRegisteredByLabel(student)}
+                                        </td>
+
+                                        {/* Actions */}
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button
                                                 onClick={() => handleResetPasswordClick(student)}
@@ -364,12 +407,9 @@ const StudentPasswordReset = () => {
                                             <path fillRule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clipRule="evenodd" />
                                         </svg>
                                     </button>
-                                    
-                                    {/* Page numbers would go here, simplified for now */}
                                     <span className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:outline-offset-0">
                                         Page {currentPage} of {totalPages}
                                     </span>
-
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                         disabled={currentPage === totalPages}

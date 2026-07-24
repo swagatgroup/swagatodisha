@@ -503,9 +503,11 @@ router.put('/reset-password/:resetToken', [
         });
 
     } catch (error) {
+        console.error('admin-reset-password error:', error.message);
         res.status(500).json({
             success: false,
-            message: 'Server error while resetting password'
+            message: 'Server error while resetting password',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
@@ -615,7 +617,7 @@ router.post('/admin-reset-password', [
             }
         }
 
-        // Fallback for students whose user account wasn't properly created
+        let userJustCreated = false;
         if (!user && requestedUserType === 'student' && studentId && mongoose.Types.ObjectId.isValid(studentId)) {
             const StudentApplication = require('../models/StudentApplication');
             const student = await StudentApplication.findById(studentId);
@@ -623,31 +625,43 @@ router.post('/admin-reset-password', [
             if (student) {
                 const fullName = student.personalDetails?.fullName || 
                                (student.personalDetails?.firstName ? student.personalDetails.firstName + ' ' + (student.personalDetails.lastName || '') : 'Student');
-                const phone = student.contactDetails?.phone || student.contactDetails?.mobile || '0000000000';
-                const userEmail = (email || student.contactDetails?.email || student.personalDetails?.email).toLowerCase();
+                // Use primaryPhone (the actual field name in the schema)
+                const phone = student.contactDetails?.primaryPhone || student.contactDetails?.phone || student.contactDetails?.mobile || '0000000000';
+                const rawEmail = email || student.contactDetails?.email || student.personalDetails?.email;
                 
-                // Ensure no conflict before creating
+                if (!rawEmail) {
+                    return res.status(400).json({
+                        success: false,
+                        message: 'Cannot reset password: student has no email address on file'
+                    });
+                }
+                
+                const userEmail = rawEmail.toLowerCase().trim();
+                
+                // Check if a User account already exists for this email
                 const existingUser = await User.findOne({ email: userEmail });
                 
                 if (existingUser) {
                     user = existingUser;
                 } else {
+                    // Auto-provision a User account so the student can log in
                     user = new User({
                         fullName: fullName.trim(),
                         email: userEmail,
-                        password: newPassword, // hashed by pre-save
+                        password: newPassword, // hashed by User pre-save hook
                         phoneNumber: phone,
                         role: 'student',
                         isActive: true
                     });
                     await user.save();
+                    userJustCreated = true; // password already hashed + saved — skip double-hash below
                 }
                 
-                // Link back to application
-                student.user = user._id;
-                await student.save();
-                
-                // Fall through to update password so that we ensure `existingUser` gets their password changed too!
+                // Link the application back to the User account
+                if (student.user?.toString() !== user._id.toString()) {
+                    student.user = user._id;
+                    await student.save();
+                }
             }
         }
 
@@ -658,10 +672,13 @@ router.post('/admin-reset-password', [
             });
         }
 
-        // Update password
-        user.password = newPassword;
-        user.passwordChangedAt = new Date();
-        await user.save();
+        // Update password only if the user was NOT just created
+        // (newly created users already have the correct password hashed via pre-save)
+        if (!userJustCreated) {
+            user.password = newPassword;
+            user.passwordChangedAt = new Date();
+            await user.save();
+        }
 
         res.json({
             success: true,
