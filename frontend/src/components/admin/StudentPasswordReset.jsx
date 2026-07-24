@@ -96,6 +96,7 @@ const StudentPasswordReset = () => {
                  <input type="password" id="new-password-input"
                         name="new-student-password"
                         autocomplete="new-password"
+                        readonly onfocus="this.removeAttribute('readonly');"
                         class="w-full px-4 py-3 pr-12 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400" 
                         placeholder="New Password (min. 6 chars)">
                     <button type="button" id="toggle-password" 
