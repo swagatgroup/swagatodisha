@@ -82,18 +82,30 @@ router.post("/students/:studentId/installments/upload", async (req, res) => {
       application.financialStatus.installments = [];
     }
 
-    const nextInstallmentNumber = application.financialStatus.installments.length + 1;
+    const placeholder = application.financialStatus.installments.find(
+      inst => inst.status === 'PENDING' && !inst.receiptUrl
+    );
 
-    application.financialStatus.installments.push({
-      installmentNumber: nextInstallmentNumber,
-      amount: Number(amount),
-      date: new Date(),
-      receiptUrl,
-      status: "PENDING",
-      paymentMethod: paymentMethod || "Bank Transfer",
-      remarks: remarks || "Uploaded by agent"
-    });
+    if (placeholder) {
+      placeholder.amount = Number(amount);
+      placeholder.receiptUrl = receiptUrl;
+      placeholder.paymentMethod = paymentMethod || "Bank Transfer";
+      placeholder.remarks = remarks || "Uploaded by agent";
+      placeholder.date = new Date();
+    } else {
+      const nextInstallmentNumber = application.financialStatus.installments.length + 1;
+      application.financialStatus.installments.push({
+        installmentNumber: nextInstallmentNumber,
+        amount: Number(amount),
+        date: new Date(),
+        receiptUrl,
+        status: "PENDING",
+        paymentMethod: paymentMethod || "Bank Transfer",
+        remarks: remarks || "Uploaded by agent"
+      });
+    }
 
+    application.markModified('financialStatus');
     await application.save();
 
     res.status(200).json({
@@ -149,6 +161,7 @@ router.put("/students/:studentId/installments/:installmentId", async (req, res) 
     installment.status = "PENDING";
     installment.date = new Date();
 
+    application.markModified('financialStatus');
     await application.save();
 
     res.status(200).json({

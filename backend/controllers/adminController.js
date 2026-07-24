@@ -1322,8 +1322,9 @@ exports.updateCourseFee = async (req, res) => {
             });
         }
 
-        const feeAmount = Number(courseFee);
+const feeAmount = Number(courseFee);
         const paidAmount = application.financialStatus?.paidAmount || 0;
+        const existingInstallments = application.financialStatus?.installments || [];
         
         application.financialStatus = {
             ...application.financialStatus,
@@ -1332,6 +1333,20 @@ exports.updateCourseFee = async (req, res) => {
             paidAmount: paidAmount
         };
 
+// Auto-generate default Installment 1 if no installments exist
+        if (existingInstallments.length === 0 && (feeAmount - paidAmount) > 0) {
+            application.financialStatus.installments = [{
+                installmentNumber: 1,
+                amount: feeAmount - paidAmount,
+                date: new Date(),
+                receiptUrl: null,
+                status: 'PENDING',
+                paymentMethod: 'Bank Transfer',
+                remarks: 'Auto-generated: Please upload your payment slip'
+            }];
+        }
+
+        application.markModified('financialStatus');
         await application.save();
 
         res.json({
