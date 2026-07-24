@@ -31,19 +31,19 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, 'Password is required'],
-        minlength: [8, 'Password must be at least 8 characters'],
+        minlength: [6, 'Password must be at least 6 characters'],
         validate: {
             validator: function (v) {
-                // For agents, use less strict validation
-                if (this.role === 'agent') {
-                    return v.length >= 8;
+                // For students and agents, use less strict validation
+                if (this.role === 'agent' || this.role === 'student') {
+                    return v.length >= 6;
                 }
-                // For other roles, use strict validation
+                // For other roles (staff, super_admin), use strict validation
                 return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(v);
             },
             message: function () {
-                if (this.role === 'agent') {
-                    return 'Password must be at least 8 characters long';
+                if (this.role === 'agent' || this.role === 'student') {
+                    return 'Password must be at least 6 characters long';
                 }
                 return 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character';
             }
