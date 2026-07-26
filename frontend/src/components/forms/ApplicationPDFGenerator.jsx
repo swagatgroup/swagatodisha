@@ -139,12 +139,18 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             const photoUrl = formData?.documents?.passport_photo?.downloadUrl || formData?.documents?.passport_photo?.url;
             if (photoUrl) {
                 try {
-                    const response = await fetch(photoUrl);
-                    const blob = await response.blob();
                     photoBase64 = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
+                        const img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.naturalWidth;
+                            canvas.height = img.naturalHeight;
+                            canvas.getContext('2d').drawImage(img, 0, 0);
+                            resolve(canvas.toDataURL('image/jpeg', 0.85));
+                        };
+                        img.onerror = () => resolve(null);
+                        img.src = photoUrl;
                     });
                 } catch(e) { console.log('Photo load failed', e); }
             }
@@ -266,7 +272,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             // --------------------------------------------
             // Fields left of the photo (if overlapping)
             // --------------------------------------------
-            const instituteName = pdfContent.courseDetails.institutionName || 'N/A';
+            const instituteName = pdfContent.courseDetails.institutionName
+                || (colleges.find(c => c._id === pdfContent.courseDetails.selectedCollege || c._id?.toString() === pdfContent.courseDetails.selectedCollege?.toString())?.name)
+                || pdfContent.courseDetails.selectedCollege?.name
+                || '';
 
             if (currentY < photoY + photoBoxHeight + 5) {
                 // Fields to the left of the photo
@@ -304,7 +313,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             
             drawBoxedField('Aadhar Card No.', pdfContent.personalDetails.aadharNumber, leftColX, currentY, thirdW);
             drawBoxedField('Gender', pdfContent.personalDetails.gender, leftColX + thirdW + 5, currentY, thirdW);
-            drawBoxedField('Birth Date', pdfContent.personalDetails.dateOfBirth, leftColX + (thirdW * 2) + 10, currentY, thirdW);
+            const dobRaw = pdfContent.personalDetails.dateOfBirth;
+            const dobFormatted = dobRaw ? (() => { try { const d = new Date(dobRaw); return isNaN(d) ? dobRaw : `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`; } catch { return dobRaw; } })() : '';
+            drawBoxedField('Birth Date', dobFormatted, leftColX + (thirdW * 2) + 10, currentY, thirdW);
             currentY += 16;
             
             drawBoxedField('Category', pdfContent.personalDetails.category || pdfContent.personalDetails.status, leftColX, currentY, thirdW);

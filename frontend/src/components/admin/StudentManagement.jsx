@@ -1841,15 +1841,24 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                                 {/* Download Profile Photo */}
                                                                 {(student.documents?.passport_photo?.downloadUrl || student.documents?.passport_photo?.url) && (
                                                                     <button
-                                                                        onClick={() => {
+                                                                        onClick={async () => {
                                                                             const url = student.documents.passport_photo.downloadUrl || student.documents.passport_photo.url;
-                                                                            const a = document.createElement('a');
-                                                                            a.href = url;
-                                                                            a.download = `photo_${student.personalDetails?.fullName || student.applicationId || 'student'}.jpg`;
-                                                                            a.target = '_blank';
-                                                                            document.body.appendChild(a);
-                                                                            a.click();
-                                                                            document.body.removeChild(a);
+                                                                            const fileName = `photo_${(student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_')}.jpg`;
+                                                                            try {
+                                                                                const res = await fetch(url);
+                                                                                const blob = await res.blob();
+                                                                                const blobUrl = URL.createObjectURL(blob);
+                                                                                const a = document.createElement('a');
+                                                                                a.href = blobUrl;
+                                                                                a.download = fileName;
+                                                                                document.body.appendChild(a);
+                                                                                a.click();
+                                                                                document.body.removeChild(a);
+                                                                                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                                                                            } catch {
+                                                                                // Fallback: open in new tab
+                                                                                window.open(url, '_blank');
+                                                                            }
                                                                         }}
                                                                         className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 ml-2"
                                                                         title="Download Profile Photo"
