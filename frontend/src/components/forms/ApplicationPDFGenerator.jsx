@@ -3,12 +3,14 @@ import { DocumentIcon, EyeIcon, ArrowDownTrayIcon, PrinterIcon } from '@heroicon
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import api from '../../utils/api';
+import { useSession } from '../../contexts/SessionContext';
 
 const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel, skipDocumentValidation = false, autoGenerate = false, hideUI = false }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [error, setError] = useState(null);
     const [colleges, setColleges] = useState([]);
+    const { selectedSession } = useSession();
 
     // Fetch colleges for display
     useEffect(() => {
@@ -278,7 +280,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 currentY += 16;
                 
                 drawBoxedField('Stream', pdfContent.courseDetails.stream, leftColX, currentY, halfWidth);
-                drawBoxedField('Session', "2024-2025", leftColX + halfWidth + 5, currentY, halfWidth);
+                drawBoxedField('Session', selectedSession || pdfContent.session || '2024-2025', leftColX + halfWidth + 5, currentY, halfWidth);
                 currentY += 16;
                 
                 // Make sure we clear the photo
@@ -499,6 +501,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
         // Ensure all data is properly structured with fallbacks
         return {
             applicationId: application?.applicationId || formData?.applicationId || 'DRAFT',
+            session: application?.session || formData?.session || selectedSession || '2024-2025',
             generatedDate: new Date().toLocaleDateString('en-US', { 
                 year: 'numeric', 
                 month: '2-digit', 

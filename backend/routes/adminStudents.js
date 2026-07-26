@@ -88,6 +88,30 @@ router.get('/test', async (req, res) => {
     }
 });
 
+// @desc    Get recent payment installments across all students
+// @route   GET /api/admin/students/recent-payments
+// @access  Private - Staff/Super Admin only
+router.get('/recent-payments', protect, authorize('staff', 'super_admin'), async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit) || 20;
+        // Unwind installments and pick the most recent ones
+        const results = await StudentApplication.aggregate([
+            { $match: { 'financialStatus.installments.0': { $exists: true } } },
+            { $unwind: '$financialStatus.installments' },
+            { $project: {
+                applicationId: 1,
+                studentName: '$personalDetails.fullName',
+                installment: '$financialStatus.installments'
+            }},
+            { $sort: { 'installment.date': -1 } },
+            { $limit: limit }
+        ]);
+        res.json({ success: true, data: results });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+});
+
 // @desc    Get all student applications for admin management
 // @route   GET /api/admin/students
 // @access  Private - Staff/Super Admin only

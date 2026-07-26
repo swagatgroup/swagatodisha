@@ -6,11 +6,16 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 // NotificationCenter removed - Socket.IO component
 // RealTimeStatus removed - Socket.IO component
 import DarkModeToggle from '../shared/DarkModeToggle';
+import api from '../../utils/api';
 
 const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick, showSessionSelector = true }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+    const [paymentsOpen, setPaymentsOpen] = useState(false);
+    const [recentPayments, setRecentPayments] = useState([]);
+    const [paymentsLoading, setPaymentsLoading] = useState(false);
+    const paymentsRef = useRef(null);
     const { user, logout } = useAuth();
     const { selectedSession, setSelectedSession, availableSessions } = useSession();
     const navigate = useNavigate();
@@ -36,16 +41,14 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
             if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
                 setUserMenuOpen(false);
             }
+            if (paymentsRef.current && !paymentsRef.current.contains(event.target)) {
+                setPaymentsOpen(false);
+            }
         };
 
-        if (userMenuOpen) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
-
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, [userMenuOpen]);
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const getRoleDisplayName = (role) => {
         switch (role) {
@@ -135,10 +138,72 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             {/* Dark Mode Toggle */}
                             <DarkModeToggle />
 
-                            {/* Real-time Status */}
-                            {/* RealTimeStatus removed - Socket.IO component */}
+                            {/* Recent Payments Bell - staff/super_admin only */}
+                            {(user?.role === 'staff' || user?.role === 'super_admin') && (
+                                <div className="relative" ref={paymentsRef}>
+                                    <button
+                                        onClick={async () => {
+                                            setPaymentsOpen(prev => !prev);
+                                            if (!paymentsOpen && recentPayments.length === 0) {
+                                                setPaymentsLoading(true);
+                                                try {
+                                                    const res = await api.get('/api/admin/students/recent-payments?limit=20');
+                                                    if (res.data?.success) setRecentPayments(res.data.data || []);
+                                                } catch (e) { /* ignore */ }
+                                                setPaymentsLoading(false);
+                                            }
+                                        }}
+                                        className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        title="Recent Payments"
+                                    >
+                                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                                        </svg>
+                                        {recentPayments.some(p => p.installment?.status === 'PENDING') && (
+                                            <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+                                        )}
+                                    </button>
 
-                            {/* Notifications removed - Socket.IO component */}
+                                    {paymentsOpen && (
+                                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                                            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                                                <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Recent Payments</h3>
+                                                <button
+                                                    onClick={() => { setPaymentsLoading(true); api.get('/api/admin/students/recent-payments?limit=20').then(r => { if (r.data?.success) setRecentPayments(r.data.data || []); }).finally(() => setPaymentsLoading(false)); }}
+                                                    className="text-xs text-purple-600 dark:text-purple-400 hover:underline"
+                                                >Refresh</button>
+                                            </div>
+                                            <div className="max-h-80 overflow-y-auto">
+                                                {paymentsLoading ? (
+                                                    <div className="py-6 text-center text-sm text-gray-500">Loading...</div>
+                                                ) : recentPayments.length === 0 ? (
+                                                    <div className="py-6 text-center text-sm text-gray-500">No payment records found.</div>
+                                                ) : (
+                                                    recentPayments.map((item, idx) => {
+                                                        const inst = item.installment || {};
+                                                        const statusColor = inst.status === 'VERIFIED' ? 'text-green-600 dark:text-green-400' : inst.status === 'REJECTED' ? 'text-red-600 dark:text-red-400' : 'text-yellow-600 dark:text-yellow-400';
+                                                        return (
+                                                            <div key={idx} className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50 last:border-0">
+                                                                <div className="flex justify-between items-start">
+                                                                    <div className="flex-1 min-w-0">
+                                                                        <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">{item.studentName || 'Unknown'}</p>
+                                                                        <p className="text-xs text-gray-500 dark:text-gray-400">{item.applicationId} · Installment #{inst.installmentNumber}</p>
+                                                                    </div>
+                                                                    <div className="ml-2 text-right flex-shrink-0">
+                                                                        <p className="text-xs font-bold text-gray-900 dark:text-gray-100">₹{(inst.amount || 0).toLocaleString('en-IN')}</p>
+                                                                        <p className={`text-xs font-medium ${statusColor}`}>{inst.status}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">{inst.date ? new Date(inst.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</p>
+                                                            </div>
+                                                        );
+                                                    })
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             {/* User Menu */}
                             <div className="relative" ref={userMenuRef}>
