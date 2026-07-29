@@ -147,7 +147,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             if (!paymentsOpen && recentPayments.length === 0) {
                                                 setPaymentsLoading(true);
                                                 try {
-                                                    const res = await api.get('/api/admin/students/recent-payments?limit=20');
+                                                    const res = await api.get('/api/admin/students/recent-payments?limit=3');
                                                     if (res.data?.success) setRecentPayments(res.data.data || []);
                                                 } catch (e) { /* ignore */ }
                                                 setPaymentsLoading(false);
@@ -169,7 +169,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                                                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Recent Payments</h3>
                                                 <button
-                                                    onClick={() => { setPaymentsLoading(true); api.get('/api/admin/students/recent-payments?limit=20').then(r => { if (r.data?.success) setRecentPayments(r.data.data || []); }).finally(() => setPaymentsLoading(false)); }}
+                                                    onClick={() => { setPaymentsLoading(true); api.get('/api/admin/students/recent-payments?limit=3').then(r => { if (r.data?.success) setRecentPayments(r.data.data || []); }).finally(() => setPaymentsLoading(false)); }}
                                                     className="text-xs text-purple-600 dark:text-purple-400 hover:underline"
                                                 >Refresh</button>
                                             </div>
@@ -199,6 +199,17 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                         );
                                                     })
                                                 )}
+                                            </div>
+                                            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                                                <button
+                                                    onClick={() => {
+                                                        setPaymentsOpen(false);
+                                                        if (onItemClick) onItemClick('payment-management');
+                                                    }}
+                                                    className="w-full text-center text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+                                                >
+                                                    View All Payments
+                                                </button>
                                             </div>
                                         </div>
                                     )}
