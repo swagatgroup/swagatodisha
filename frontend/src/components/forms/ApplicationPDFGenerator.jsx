@@ -434,12 +434,13 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             terms.forEach((term, idx) => {
                 // Title
                 pdf.setFont('times', 'bold');
+                const titleWidth = pdf.getTextWidth(term.title);
                 pdf.text(term.title, leftColX, page2Y);
                 
                 // Body
                 pdf.setFont('times', 'normal');
-                const splitBody = pdf.splitTextToSize(term.body, fullWidth - pdf.getTextWidth(term.title) - 2);
-                pdf.text(splitBody, leftColX + pdf.getTextWidth(term.title) + 2, page2Y);
+                const splitBody = pdf.splitTextToSize(term.body, fullWidth - titleWidth - 2);
+                pdf.text(splitBody, leftColX + titleWidth + 2, page2Y);
                 
                 // Calculate height dynamically based on lines
                 const lines = splitBody.length;
