@@ -426,7 +426,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 { title: '6. Data Privacy:', body: 'I consent to the collection, processing, and storage of my personal data for academic, administrative, and compliance purposes by Swagat Odisha and affiliated institutions.' },
                 { title: '7. Refund Policy:', body: 'I have read and understand the institution\'s refund policy and agree to the terms and conditions regarding fee refunds in case of cancellation or withdrawal.' },
                 { title: '8. Medical Fitness:', body: 'I declare that I am medically fit to pursue the selected course and will provide necessary medical certificates if required by the college authorities.' },
-                { title: '9. Dispute Resolution:', body: 'Any disputes arising out of the admission process or during the course of study will be subject to the exclusive jurisdiction of the courts in Odisha.' }
+                { title: '9. Dispute Resolution:', body: 'Any disputes arising out of the admission process or during the course of study will be subject to the exclusive jurisdiction of the courts in Odisha.' },
+                { title: '10. Regular Course Attendance:', body: 'For regular courses, a minimum of 75% attendance is strictly mandatory. Failure to meet this requirement will result in being barred from attending the examinations.' },
+                { title: '11. Correspondent Course Requirements:', body: 'For correspondent courses, it is mandatory to appear in all scheduled exams, practicals, internships, and other applicable assessments in a timely manner. Failure to comply will result in being barred from attending the examinations.' }
             ];
             
             terms.forEach((term, idx) => {
@@ -786,6 +788,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 <p><strong>6. Data Privacy:</strong> I consent to the collection, processing, and storage of my personal data for academic and administrative purposes.</p>
                 <p><strong>7. Refund Policy:</strong> I understand the institution's refund policy and agree to the terms and conditions regarding fee refunds.</p>
                 <p><strong>8. Medical Fitness:</strong> I declare that I am medically fit to pursue the selected course and will provide medical certificates if required.</p>
+                <p><strong>9. Dispute Resolution:</strong> Any disputes arising out of the admission process will be subject to the exclusive jurisdiction of the courts in Odisha.</p>
+                <p><strong>10. Regular Course Attendance:</strong> For regular courses, 75% attendance is mandatory to attend the examinations.</p>
+                <p><strong>11. Correspondent Course Requirements:</strong> For correspondent courses, timely appearance in all exams, practicals, and internships is mandatory to attend the examinations.</p>
             </div>
         </div>
 
