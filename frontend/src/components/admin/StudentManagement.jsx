@@ -1246,6 +1246,67 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
         });
     };
 
+    const handleBulkDownloadPhotos = async () => {
+        if (selectedStudents.length === 0) return;
+        
+        const studentsToDownload = students.filter(s => selectedStudents.includes(s._id));
+        
+        Swal.fire({
+            title: 'Preparing Photos...',
+            html: 'Downloading and converting photos to JPG...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const JSZip = (await import('jszip')).default;
+            const zip = new JSZip();
+            let hasPhotos = false;
+
+            for (const student of studentsToDownload) {
+                let photoUrl = null;
+                if (Array.isArray(student.documents)) {
+                    const doc = student.documents.find(d => d.documentType === 'passport_photo' || d.type === 'passport_photo');
+                    photoUrl = doc?.downloadUrl || doc?.url || doc?.filePath;
+                } else {
+                    photoUrl = student.documents?.passport_photo?.downloadUrl || student.documents?.passport_photo?.url || student.documents?.passport_photo?.filePath;
+                }
+
+                if (photoUrl) {
+                    const compressed = await compressImageToUnder50KB(photoUrl);
+                    if (compressed && compressed.base64) {
+                        const base64 = compressed.base64;
+                        const studentName = (student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_');
+                        zip.file(`photo_${studentName}.jpg`, base64, {base64: true});
+                        hasPhotos = true;
+                    }
+                }
+            }
+            
+            if (!hasPhotos) {
+                Swal.fire('No Photos', 'None of the selected students have a passport photo.', 'info');
+                return;
+            }
+
+            const content = await zip.generateAsync({type: 'blob'});
+            const blobUrl = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `student_photos_${new Date().getTime()}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+            
+            Swal.fire('Success!', 'Photos downloaded successfully.', 'success');
+        } catch (error) {
+            console.error('Error creating zip:', error);
+            Swal.fire('Error', 'Failed to generate photos zip file.', 'error');
+        }
+    };
+
     if (loading) {
         return (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
@@ -1516,97 +1577,6 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 </div>
             </div>
 
-    const handleBulkDownloadPhotos = async () => {
-        if (selectedStudents.length === 0) return;
-        
-        const studentsToDownload = students.filter(s => selectedStudents.includes(s._id));
-        
-        Swal.fire({
-            title: 'Preparing Photos...',
-            html: 'Downloading and converting photos to JPG...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-        try {
-            const JSZip = (await import('jszip')).default;
-            const zip = new JSZip();
-            let hasPhotos = false;
-
-            for (const student of studentsToDownload) {
-                let photoUrl = null;
-                if (Array.isArray(student.documents)) {
-                    const doc = student.documents.find(d => d.documentType === 'passport_photo' || d.type === 'passport_photo');
-                    photoUrl = doc?.downloadUrl || doc?.url || doc?.filePath;
-                } else {
-                    photoUrl = student.documents?.passport_photo?.downloadUrl || student.documents?.passport_photo?.url || student.documents?.passport_photo?.filePath;
-                }
-
-                if (photoUrl) {
-                    const compressed = await compressImageToUnder50KB(photoUrl);
-                    if (compressed && compressed.base64) {
-                        const base64 = compressed.base64;
-                        const studentName = (student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_');
-                        zip.file(`photo_${studentName}.jpg`, base64, {base64: true});
-                        hasPhotos = true;
-                    }
-                }
-            }
-            
-            if (!hasPhotos) {
-                Swal.fire('No Photos', 'None of the selected students have a passport photo.', 'info');
-                return;
-            }
-
-            const content = await zip.generateAsync({type: 'blob'});
-            const blobUrl = URL.createObjectURL(content);
-            const a = document.createElement('a');
-            a.href = blobUrl;
-            a.download = `student_photos_${new Date().getTime()}.zip`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-            
-            Swal.fire('Success!', 'Photos downloaded successfully.', 'success');
-        } catch (error) {
-            console.error('Error creating zip:', error);
-            Swal.fire('Error', 'Failed to generate photos zip file.', 'error');
-        }
-    };
-
-    // Export selected students to Excel
-    const handleExportToExcel = () => {
-        // ... (this function remains the same, I'll just wrap the button additions below)
-        const dataToExport = selectedStudents.length > 0 
-            ? students.filter(s => selectedStudents.includes(s._id))
-            : students;
-        
-        // Ensure proper object mapping for Excel
-        const exportData = dataToExport.map(student => ({
-            'Application ID': student.applicationId || 'N/A',
-            'Full Name': student.personalDetails?.fullName || 'N/A',
-            'Email': student.contactDetails?.email || 'N/A',
-            'Phone': student.contactDetails?.primaryPhone || 'N/A',
-            'Course': student.courseDetails?.selectedCourse || 'N/A',
-            'Stream': student.courseDetails?.stream || 'N/A',
-            'College': student.courseDetails?.institutionName || 'N/A',
-            'Status': student.status || 'N/A',
-            'Date Applied': new Date(student.createdAt).toLocaleDateString()
-        }));
-
-        const ws = XLSX.utils.json_to_sheet(exportData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Students");
-        XLSX.writeFile(wb, `swagat_students_${new Date().toISOString().split('T')[0]}.xlsx`);
-    };
-
-    return (
-        <div className="space-y-6">
-            {/* ... other code above action buttons ... */}
-            
             {/* Action Buttons */}
             <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
                 <div className="flex gap-2">
