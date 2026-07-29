@@ -94,19 +94,40 @@ router.get('/test', async (req, res) => {
 router.get('/recent-payments', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 20;
-        // Unwind installments and pick the most recent ones
+        const page = parseInt(req.query.page) || 1;
+        const skip = (page - 1) * limit;
+
+        // Count total installments
+        const countResult = await StudentApplication.aggregate([
+            { $match: { 'financialStatus.installments.0': { $exists: true } } },
+            { $unwind: '$financialStatus.installments' },
+            { $count: 'total' }
+        ]);
+        const total = countResult[0] ? countResult[0].total : 0;
+
+        // Unwind installments and pick the most recent ones with pagination
         const results = await StudentApplication.aggregate([
             { $match: { 'financialStatus.installments.0': { $exists: true } } },
             { $unwind: '$financialStatus.installments' },
+            { $sort: { 'financialStatus.installments.date': -1 } },
+            { $skip: skip },
+            { $limit: limit },
             { $project: {
                 applicationId: 1,
                 studentName: '$personalDetails.fullName',
                 installment: '$financialStatus.installments'
-            }},
-            { $sort: { 'installment.date': -1 } },
-            { $limit: limit }
+            }}
         ]);
-        res.json({ success: true, data: results });
+
+        res.json({ 
+            success: true, 
+            data: results,
+            pagination: {
+                total,
+                page,
+                pages: Math.ceil(total / limit)
+            }
+        });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }

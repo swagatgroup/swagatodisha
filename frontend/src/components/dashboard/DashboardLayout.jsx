@@ -7,6 +7,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 // RealTimeStatus removed - Socket.IO component
 import DarkModeToggle from '../shared/DarkModeToggle';
 import api from '../../utils/api';
+import AllRecentPaymentsModal from './AllRecentPaymentsModal';
 
 const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick, showSessionSelector = true }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -15,6 +16,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     const [paymentsOpen, setPaymentsOpen] = useState(false);
     const [recentPayments, setRecentPayments] = useState([]);
     const [paymentsLoading, setPaymentsLoading] = useState(false);
+    const [showAllPaymentsModal, setShowAllPaymentsModal] = useState(false);
     const paymentsRef = useRef(null);
     const { user, logout } = useAuth();
     const { selectedSession, setSelectedSession, availableSessions } = useSession();
@@ -204,7 +206,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 <button
                                                     onClick={() => {
                                                         setPaymentsOpen(false);
-                                                        if (onItemClick) onItemClick('payment-management');
+                                                        setShowAllPaymentsModal(true);
                                                     }}
                                                     className="w-full text-center text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
                                                 >
@@ -390,6 +392,11 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                     </main>
                 </div>
             </div>
+            {/* All Recent Payments Modal */}
+            <AllRecentPaymentsModal 
+                isOpen={showAllPaymentsModal} 
+                onClose={() => setShowAllPaymentsModal(false)} 
+            />
         </div>
     );
 };

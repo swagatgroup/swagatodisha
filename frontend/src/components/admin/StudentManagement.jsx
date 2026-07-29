@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+import Swal from 'sweetalert2';
 import { useSession } from '../../contexts/SessionContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../utils/api';
