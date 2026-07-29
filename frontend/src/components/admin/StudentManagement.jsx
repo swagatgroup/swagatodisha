@@ -13,6 +13,59 @@ import {
 } from '../../utils/sweetAlert';
 import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 
+// Helper function to convert and compress image to under 50KB JPG
+const compressImageToUnder50KB = (photoUrl) => {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            let quality = 0.8;
+            let maxDim = 400; // Passport photos don't need to be massive
+            let width = img.naturalWidth;
+            let height = img.naturalHeight;
+            
+            if (width > maxDim || height > maxDim) {
+                const ratio = Math.min(maxDim / width, maxDim / height);
+                width = Math.floor(width * ratio);
+                height = Math.floor(height * ratio);
+            }
+
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            const attemptCompression = () => {
+                canvas.width = width;
+                canvas.height = height;
+                ctx.fillStyle = "#FFFFFF";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Get data URL to measure base64 string size
+                const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                // Base64 size estimation in KB
+                const base64Str = dataUrl.split(',')[1];
+                const sizeKb = (base64Str.length * 0.75) / 1024;
+                
+                if (sizeKb <= 45 || quality <= 0.3 || width <= 150) { // Target slightly below 50kb for safety
+                    canvas.toBlob((blob) => {
+                        resolve({ blob, base64: base64Str });
+                    }, 'image/jpeg', quality);
+                } else {
+                    quality -= 0.1;
+                    width = Math.floor(width * 0.9);
+                    height = Math.floor(height * 0.9);
+                    attemptCompression();
+                }
+            };
+            
+            attemptCompression();
+        };
+        img.onerror = () => resolve(null); // Resolve null to gracefully skip if image fails to load
+        img.src = photoUrl;
+    });
+};
+
+
 const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
     const { selectedSession } = useSession();
     const { user } = useAuth();
@@ -1492,24 +1545,9 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 }
 
                 if (photoUrl) {
-                    const base64 = await new Promise((resolve) => {
-                        const img = new Image();
-                        img.crossOrigin = 'anonymous';
-                        img.onload = () => {
-                            const canvas = document.createElement('canvas');
-                            canvas.width = img.naturalWidth;
-                            canvas.height = img.naturalHeight;
-                            const ctx = canvas.getContext('2d');
-                            ctx.fillStyle = "#FFFFFF"; // white background
-                            ctx.fillRect(0, 0, canvas.width, canvas.height);
-                            ctx.drawImage(img, 0, 0);
-                            resolve(canvas.toDataURL('image/jpeg', 0.9).split(',')[1]);
-                        };
-                        img.onerror = () => resolve(null);
-                        img.src = photoUrl;
-                    });
-                    
-                    if (base64) {
+                    const compressed = await compressImageToUnder50KB(photoUrl);
+                    if (compressed && compressed.base64) {
+                        const base64 = compressed.base64;
                         const studentName = (student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_');
                         zip.file(`photo_${studentName}.jpg`, base64, {base64: true});
                         hasPhotos = true;
@@ -3463,40 +3501,26 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={async () => {
                                         try {
-                                            const img = new Image();
-                                            img.crossOrigin = 'anonymous';
-                                            img.onload = () => {
-                                                const canvas = document.createElement('canvas');
-                                                canvas.width = img.naturalWidth;
-                                                canvas.height = img.naturalHeight;
-                                                const ctx = canvas.getContext('2d');
-                                                ctx.fillStyle = "#FFFFFF";
-                                                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                                                ctx.drawImage(img, 0, 0);
-                                                
-                                                // Convert to JPG
-                                                canvas.toBlob((blob) => {
-                                                    const blobUrl = URL.createObjectURL(blob);
-                                                    const a = document.createElement('a');
-                                                    a.href = blobUrl;
-                                                    // Ensure the filename strictly ends with .jpg
-                                                    let finalName = photoPreview.fileName;
-                                                    if (finalName.toLowerCase().endsWith('.jpeg')) {
-                                                        finalName = finalName.substring(0, finalName.length - 5) + '.jpg';
-                                                    } else if (!finalName.toLowerCase().endsWith('.jpg')) {
-                                                        finalName += '.jpg';
-                                                    }
-                                                    a.download = finalName;
-                                                    document.body.appendChild(a);
-                                                    a.click();
-                                                    document.body.removeChild(a);
-                                                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-                                                }, 'image/jpeg', 0.9);
-                                            };
-                                            img.onerror = () => {
+                                            const compressed = await compressImageToUnder50KB(photoPreview.url);
+                                            if (compressed && compressed.blob) {
+                                                const blobUrl = URL.createObjectURL(compressed.blob);
+                                                const a = document.createElement('a');
+                                                a.href = blobUrl;
+                                                // Ensure the filename strictly ends with .jpg
+                                                let finalName = photoPreview.fileName;
+                                                if (finalName.toLowerCase().endsWith('.jpeg')) {
+                                                    finalName = finalName.substring(0, finalName.length - 5) + '.jpg';
+                                                } else if (!finalName.toLowerCase().endsWith('.jpg')) {
+                                                    finalName += '.jpg';
+                                                }
+                                                a.download = finalName;
+                                                document.body.appendChild(a);
+                                                a.click();
+                                                document.body.removeChild(a);
+                                                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                                            } else {
                                                 window.open(photoPreview.url, '_blank');
-                                            };
-                                            img.src = photoPreview.url;
+                                            }
                                         } catch (e) {
                                             console.error('Failed to download photo', e);
                                             window.open(photoPreview.url, '_blank');
