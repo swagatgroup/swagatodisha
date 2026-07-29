@@ -5,20 +5,24 @@ import html2canvas from 'html2canvas';
 import api from '../../utils/api';
 import { useSession } from '../../contexts/SessionContext';
 
-const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel, skipDocumentValidation = false, autoGenerate = false, hideUI = false }) => {
+const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCancel, skipDocumentValidation = false, autoGenerate = false, hideUI = false, colleges: propColleges }) => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [pdfUrl, setPdfUrl] = useState(null);
     const [error, setError] = useState(null);
-    const [colleges, setColleges] = useState([]);
+    const [fetchedColleges, setFetchedColleges] = useState([]);
     const { selectedSession } = useSession();
+
+    // Use propColleges if provided, otherwise fallback to fetchedColleges
+    const colleges = propColleges || fetchedColleges;
 
     // Fetch colleges for display
     useEffect(() => {
+        if (propColleges && propColleges.length > 0) return; // Don't fetch if provided via props
         const fetchColleges = async () => {
             try {
                 const response = await api.get('/api/colleges/public');
                 if (response.data.success) {
-                    setColleges(response.data.data || []);
+                    setFetchedColleges(response.data.data || []);
                 }
             } catch (error) {
                 console.error('Error fetching colleges:', error);

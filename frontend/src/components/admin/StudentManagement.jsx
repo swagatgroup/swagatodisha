@@ -1463,23 +1463,143 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 </div>
             </div>
 
+    const handleBulkDownloadPhotos = async () => {
+        if (selectedStudents.length === 0) return;
+        
+        const studentsToDownload = students.filter(s => selectedStudents.includes(s._id));
+        
+        Swal.fire({
+            title: 'Preparing Photos...',
+            html: 'Downloading and converting photos to JPG...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+
+        try {
+            const JSZip = (await import('jszip')).default;
+            const zip = new JSZip();
+            let hasPhotos = false;
+
+            for (const student of studentsToDownload) {
+                let photoUrl = null;
+                if (Array.isArray(student.documents)) {
+                    const doc = student.documents.find(d => d.documentType === 'passport_photo' || d.type === 'passport_photo');
+                    photoUrl = doc?.downloadUrl || doc?.url || doc?.filePath;
+                } else {
+                    photoUrl = student.documents?.passport_photo?.downloadUrl || student.documents?.passport_photo?.url || student.documents?.passport_photo?.filePath;
+                }
+
+                if (photoUrl) {
+                    const base64 = await new Promise((resolve) => {
+                        const img = new Image();
+                        img.crossOrigin = 'anonymous';
+                        img.onload = () => {
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.naturalWidth;
+                            canvas.height = img.naturalHeight;
+                            const ctx = canvas.getContext('2d');
+                            ctx.fillStyle = "#FFFFFF"; // white background
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(img, 0, 0);
+                            resolve(canvas.toDataURL('image/jpeg', 0.9).split(',')[1]);
+                        };
+                        img.onerror = () => resolve(null);
+                        img.src = photoUrl;
+                    });
+                    
+                    if (base64) {
+                        const studentName = (student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_');
+                        zip.file(`photo_${studentName}.jpg`, base64, {base64: true});
+                        hasPhotos = true;
+                    }
+                }
+            }
+            
+            if (!hasPhotos) {
+                Swal.fire('No Photos', 'None of the selected students have a passport photo.', 'info');
+                return;
+            }
+
+            const content = await zip.generateAsync({type: 'blob'});
+            const blobUrl = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `student_photos_${new Date().getTime()}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+            
+            Swal.fire('Success!', 'Photos downloaded successfully.', 'success');
+        } catch (error) {
+            console.error('Error creating zip:', error);
+            Swal.fire('Error', 'Failed to generate photos zip file.', 'error');
+        }
+    };
+
+    // Export selected students to Excel
+    const handleExportToExcel = () => {
+        // ... (this function remains the same, I'll just wrap the button additions below)
+        const dataToExport = selectedStudents.length > 0 
+            ? students.filter(s => selectedStudents.includes(s._id))
+            : students;
+        
+        // Ensure proper object mapping for Excel
+        const exportData = dataToExport.map(student => ({
+            'Application ID': student.applicationId || 'N/A',
+            'Full Name': student.personalDetails?.fullName || 'N/A',
+            'Email': student.contactDetails?.email || 'N/A',
+            'Phone': student.contactDetails?.primaryPhone || 'N/A',
+            'Course': student.courseDetails?.selectedCourse || 'N/A',
+            'Stream': student.courseDetails?.stream || 'N/A',
+            'College': student.courseDetails?.institutionName || 'N/A',
+            'Status': student.status || 'N/A',
+            'Date Applied': new Date(student.createdAt).toLocaleDateString()
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(exportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Students");
+        XLSX.writeFile(wb, `swagat_students_${new Date().toISOString().split('T')[0]}.xlsx`);
+    };
+
+    return (
+        <div className="space-y-6">
+            {/* ... other code above action buttons ... */}
+            
             {/* Action Buttons */}
             <div className="mb-4 flex items-center justify-between gap-4 flex-wrap">
-                {/* Export to Excel Button */}
-                {students.length > 0 && (
-                    <button
-                        onClick={handleExportToExcel}
-                        className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2"
-                        title={selectedStudents.length > 0 ? `Export ${selectedStudents.length} selected student(s)` : 'Export all filtered students'}
-                    >
-                        <i className="fa-solid fa-file-excel"></i>
-                        <span>
-                            {selectedStudents.length > 0 
-                                ? `Export Selected (${selectedStudents.length})` 
-                                : 'Export to Excel'}
-                        </span>
-                    </button>
-                )}
+                <div className="flex gap-2">
+                    {/* Export to Excel Button */}
+                    {students.length > 0 && (
+                        <button
+                            onClick={handleExportToExcel}
+                            className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2"
+                            title={selectedStudents.length > 0 ? `Export ${selectedStudents.length} selected student(s)` : 'Export all filtered students'}
+                        >
+                            <i className="fa-solid fa-file-excel"></i>
+                            <span>
+                                {selectedStudents.length > 0 
+                                    ? `Export Selected (${selectedStudents.length})` 
+                                    : 'Export to Excel'}
+                            </span>
+                        </button>
+                    )}
+
+                    {/* Download Photos Button */}
+                    {selectedStudents.length > 0 && (
+                        <button
+                            onClick={handleBulkDownloadPhotos}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center space-x-2"
+                            title={`Download photos for ${selectedStudents.length} selected student(s)`}
+                        >
+                            <i className="fa-solid fa-file-image"></i>
+                            <span>Download Photos ({selectedStudents.length})</span>
+                        </button>
+                    )}
+                </div>
 
                 {/* Bulk Delete Button (Super Admin Only) */}
                 {isSuperAdmin && selectedStudents.length > 0 && (
@@ -1506,16 +1626,14 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-gray-700">
                         <tr>
-                            {isSuperAdmin && (
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                    <input
-                                        type="checkbox"
-                                        checked={selectedStudents.length === students.length && students.length > 0}
-                                        onChange={(e) => handleSelectAll(e.target.checked)}
-                                        className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                                    />
-                                </th>
-                            )}
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                <input
+                                    type="checkbox"
+                                    checked={selectedStudents.length === students.length && students.length > 0}
+                                    onChange={(e) => handleSelectAll(e.target.checked)}
+                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                />
+                            </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 S.No
                             </th>
@@ -1548,7 +1666,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                     <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                         {students.length === 0 ? (
                             <tr>
-                                <td colSpan={isSuperAdmin ? "10" : "9"} className="px-6 py-12 text-center">
+                                <td colSpan="10" className="px-6 py-12 text-center">
                                     <div className="flex flex-col items-center justify-center">
                                         <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -1577,16 +1695,20 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                         animate={{ opacity: 1 }}
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700"
                                     >
-                                        {isSuperAdmin && (
-                                            <td className="px-6 py-4 whitespace-nowrap">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedStudents.includes(student._id)}
-                                                    onChange={(e) => handleSelectStudent(student._id, e.target.checked)}
-                                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-                                                />
-                                            </td>
-                                        )}
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedStudents.includes(student._id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedStudents([...selectedStudents, student._id]);
+                                                    } else {
+                                                        setSelectedStudents(selectedStudents.filter(id => id !== student._id));
+                                                    }
+                                                }}
+                                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                            />
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                                             {serialNumber}
                                         </td>
@@ -3289,6 +3411,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             formData={selectedStudentForPDF.formData}
                             application={selectedStudentForPDF.application}
                             skipDocumentValidation={true}
+                            colleges={colleges}
                             onPDFGenerated={(url) => {
                                 // Trigger the download automatically
                                 if (url) {
