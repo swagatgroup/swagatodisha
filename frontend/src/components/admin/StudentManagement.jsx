@@ -1278,8 +1278,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                     const compressed = await compressImageToUnder50KB(photoUrl);
                     if (compressed && compressed.base64) {
                         const base64 = compressed.base64;
-                        const studentName = (student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_');
-                        zip.file(`photo_${studentName}.jpg`, base64, {base64: true});
+                        const aadharNumber = student.personalDetails?.aadharNumber || student.applicationId || 'unknown_aadhar';
+                        zip.file(`${aadharNumber}.jpg`, base64, {base64: true});
                         hasPhotos = true;
                     }
                 }
@@ -1596,35 +1596,36 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                         </button>
                     )}
 
-                    {/* Download Photos Button */}
-                    {selectedStudents.length > 0 && (
-                        <button
-                            onClick={handleBulkDownloadPhotos}
-                            className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors flex items-center space-x-2"
-                            title={`Download photos for ${selectedStudents.length} selected student(s)`}
-                        >
-                            <i className="fa-solid fa-file-image"></i>
-                            <span>Download Photos ({selectedStudents.length})</span>
-                        </button>
-                    )}
                 </div>
 
-                {/* Bulk Delete Button (Super Admin Only) */}
-                {isSuperAdmin && selectedStudents.length > 0 && (
-                    <div className="flex items-center justify-between bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex-1 min-w-[300px]">
+                {/* Bulk Actions Bar */}
+                {selectedStudents.length > 0 && (
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 flex-1 min-w-[300px] gap-4">
                         <div className="flex items-center space-x-2">
-                            <i className="fa-solid fa-exclamation-triangle text-red-600 dark:text-red-400"></i>
-                            <span className="text-sm font-medium text-red-900 dark:text-red-100">
+                            <i className="fa-solid fa-check-square text-purple-600 dark:text-purple-400"></i>
+                            <span className="text-sm font-medium text-purple-900 dark:text-purple-100">
                                 {selectedStudents.length} student{selectedStudents.length > 1 ? 's' : ''} selected
                             </span>
                         </div>
-                        <button
-                            onClick={handleBulkDelete}
-                            className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2"
-                        >
-                            <i className="fa-solid fa-trash"></i>
-                            <span>Delete Selected</span>
-                        </button>
+                        <div className="flex items-center space-x-3">
+                            <button
+                                onClick={handleBulkDownloadPhotos}
+                                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2 shadow-sm"
+                            >
+                                <i className="fa-solid fa-download"></i>
+                                <span>Download Photos</span>
+                            </button>
+                            
+                            {isSuperAdmin && (
+                                <button
+                                    onClick={handleBulkDelete}
+                                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center space-x-2 shadow-sm"
+                                >
+                                    <i className="fa-solid fa-trash"></i>
+                                    <span>Delete</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
                 )}
             </div>
