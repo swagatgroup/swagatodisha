@@ -32,6 +32,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
     const [showApplicationPDF, setShowApplicationPDF] = useState(false);
     const [selectedStudentForPDF, setSelectedStudentForPDF] = useState(null);
     const [editData, setEditData] = useState({});
+    const [photoPreview, setPhotoPreview] = useState(null);
     
     // Course Fee states
     const [editingCourseFee, setEditingCourseFee] = useState(false);
@@ -1839,36 +1840,33 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     </svg>
                                                 </button>
                                                                 {/* Download Profile Photo */}
-                                                                {(student.documents?.passport_photo?.downloadUrl || student.documents?.passport_photo?.url) && (
-                                                                    <button
-                                                                        onClick={async () => {
-                                                                            const url = student.documents.passport_photo.downloadUrl || student.documents.passport_photo.url;
-                                                                            const fileName = `photo_${(student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_')}.jpg`;
-                                                                            try {
-                                                                                const res = await fetch(url);
-                                                                                const blob = await res.blob();
-                                                                                const blobUrl = URL.createObjectURL(blob);
-                                                                                const a = document.createElement('a');
-                                                                                a.href = blobUrl;
-                                                                                a.download = fileName;
-                                                                                document.body.appendChild(a);
-                                                                                a.click();
-                                                                                document.body.removeChild(a);
-                                                                                setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-                                                                            } catch {
-                                                                                // Fallback: open in new tab
-                                                                                window.open(url, '_blank');
-                                                                            }
-                                                                        }}
-                                                                        className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 ml-2"
-                                                                        title="Download Profile Photo"
-                                                                    >
-                                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                        </svg>
-                                                                    </button>
-                                                                )}
+                                                                {(() => {
+                                                                    let photoUrl = null;
+                                                                    if (Array.isArray(student.documents)) {
+                                                                        const doc = student.documents.find(d => d.documentType === 'passport_photo' || d.type === 'passport_photo');
+                                                                        photoUrl = doc?.downloadUrl || doc?.url || doc?.filePath;
+                                                                    } else {
+                                                                        photoUrl = student.documents?.passport_photo?.downloadUrl || student.documents?.passport_photo?.url || student.documents?.passport_photo?.filePath;
+                                                                    }
+                                                                    
+                                                                    if (!photoUrl) return null;
+                                                                    
+                                                                    return (
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                const fileName = `photo_${(student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_')}.jpg`;
+                                                                                setPhotoPreview({ url: photoUrl, fileName });
+                                                                            }}
+                                                                            className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 ml-2"
+                                                                            title="View Profile Photo"
+                                                                        >
+                                                                            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                                            </svg>
+                                                                        </button>
+                                                                    );
+                                                                })()}
                                             </div>
                                         </td>
                                     </motion.tr>
@@ -3306,6 +3304,68 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             }}
                             onCancel={() => setShowApplicationPDF(false)}
                         />
+                    </div>
+                </div>
+            )}
+
+            {/* Photo Preview Modal */}
+            {photoPreview && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                        <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+                            <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={() => setPhotoPreview(null)}></div>
+                        </div>
+                        <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                <div className="sm:flex sm:items-start">
+                                    <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                            Passport Photo
+                                        </h3>
+                                        <div className="mt-2 flex justify-center bg-gray-100 p-4 rounded-lg">
+                                            <img 
+                                                src={photoPreview.url} 
+                                                alt="Student Passport" 
+                                                className="max-h-96 max-w-full object-contain rounded border shadow-sm"
+                                                crossOrigin="anonymous" 
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                <button
+                                    type="button"
+                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={async () => {
+                                        try {
+                                            const res = await fetch(photoPreview.url);
+                                            const blob = await res.blob();
+                                            const blobUrl = URL.createObjectURL(blob);
+                                            const a = document.createElement('a');
+                                            a.href = blobUrl;
+                                            a.download = photoPreview.fileName;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            document.body.removeChild(a);
+                                            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                                        } catch {
+                                            window.open(photoPreview.url, '_blank');
+                                        }
+                                    }}
+                                >
+                                    Download Photo
+                                </button>
+                                <button
+                                    type="button"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    onClick={() => setPhotoPreview(null)}
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}

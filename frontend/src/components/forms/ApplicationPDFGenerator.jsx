@@ -136,7 +136,14 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             } catch(e) { console.log('Logo load failed', e); }
 
             let photoBase64 = null;
-            const photoUrl = formData?.documents?.passport_photo?.downloadUrl || formData?.documents?.passport_photo?.url;
+            let photoUrl = null;
+            if (Array.isArray(formData?.documents)) {
+                const doc = formData.documents.find(d => d.documentType === 'passport_photo' || d.type === 'passport_photo');
+                photoUrl = doc?.filePath || doc?.downloadUrl || doc?.url;
+            } else {
+                photoUrl = formData?.documents?.passport_photo?.downloadUrl || formData?.documents?.passport_photo?.url || formData?.documents?.passport_photo?.filePath;
+            }
+
             if (photoUrl) {
                 try {
                     photoBase64 = await new Promise((resolve) => {
