@@ -3463,17 +3463,42 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={async () => {
                                         try {
-                                            const res = await fetch(photoPreview.url);
-                                            const blob = await res.blob();
-                                            const blobUrl = URL.createObjectURL(blob);
-                                            const a = document.createElement('a');
-                                            a.href = blobUrl;
-                                            a.download = photoPreview.fileName;
-                                            document.body.appendChild(a);
-                                            a.click();
-                                            document.body.removeChild(a);
-                                            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
-                                        } catch {
+                                            const img = new Image();
+                                            img.crossOrigin = 'anonymous';
+                                            img.onload = () => {
+                                                const canvas = document.createElement('canvas');
+                                                canvas.width = img.naturalWidth;
+                                                canvas.height = img.naturalHeight;
+                                                const ctx = canvas.getContext('2d');
+                                                ctx.fillStyle = "#FFFFFF";
+                                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                                                ctx.drawImage(img, 0, 0);
+                                                
+                                                // Convert to JPG
+                                                canvas.toBlob((blob) => {
+                                                    const blobUrl = URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = blobUrl;
+                                                    // Ensure the filename strictly ends with .jpg
+                                                    let finalName = photoPreview.fileName;
+                                                    if (finalName.toLowerCase().endsWith('.jpeg')) {
+                                                        finalName = finalName.substring(0, finalName.length - 5) + '.jpg';
+                                                    } else if (!finalName.toLowerCase().endsWith('.jpg')) {
+                                                        finalName += '.jpg';
+                                                    }
+                                                    a.download = finalName;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+                                                    document.body.removeChild(a);
+                                                    setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+                                                }, 'image/jpeg', 0.9);
+                                            };
+                                            img.onerror = () => {
+                                                window.open(photoPreview.url, '_blank');
+                                            };
+                                            img.src = photoPreview.url;
+                                        } catch (e) {
+                                            console.error('Failed to download photo', e);
                                             window.open(photoPreview.url, '_blank');
                                         }
                                     }}
