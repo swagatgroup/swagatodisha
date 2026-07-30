@@ -15,13 +15,43 @@ import {
 import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 
 // Helper function to convert and compress image to under 50KB JPG
-const compressImageToUnder50KB = (photoUrl) => {
+const compressImageToUnder50KB = async (photoUrl) => {
+    let blob;
+    let sizeKb;
+    try {
+        const res = await fetch(photoUrl, { mode: 'cors' });
+        blob = await res.blob();
+        sizeKb = blob.size / 1024;
+    } catch (e) {
+        console.warn("Fetch failed, falling back to Canvas load", e);
+    }
+
+    if (blob && sizeKb < 50) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64Str = reader.result.split(',')[1];
+                resolve({ blob, base64: base64Str });
+            };
+            reader.onerror = () => resolve(null); // Resolve null on error to skip gracefully
+            reader.readAsDataURL(blob);
+        });
+    }
+
     return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = 'anonymous';
+        
+        let objectUrl = null;
+        if (blob) {
+            objectUrl = URL.createObjectURL(blob);
+        }
+
         img.onload = () => {
-            let quality = 0.8;
-            let maxDim = 400; // Passport photos don't need to be massive
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            
+            let quality = 0.95; 
+            let maxDim = 800; 
             let width = img.naturalWidth;
             let height = img.naturalHeight;
             
@@ -34,35 +64,74 @@ const compressImageToUnder50KB = (photoUrl) => {
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
             
+            let minQuality = 0.1;
+            let maxQuality = 1.0;
+            let bestResult = null;
+            let attempts = 0;
+            
             const attemptCompression = () => {
+                attempts++;
                 canvas.width = width;
                 canvas.height = height;
                 ctx.fillStyle = "#FFFFFF";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Get data URL to measure base64 string size
                 const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                // Base64 size estimation in KB
                 const base64Str = dataUrl.split(',')[1];
-                const sizeKb = (base64Str.length * 0.75) / 1024;
+                const currentSizeKb = (base64Str.length * 0.75) / 1024;
                 
-                if (sizeKb <= 45 || quality <= 0.3 || width <= 150) { // Target slightly below 50kb for safety
-                    canvas.toBlob((blob) => {
-                        resolve({ blob, base64: base64Str });
-                    }, 'image/jpeg', quality);
-                } else {
-                    quality -= 0.1;
-                    width = Math.floor(width * 0.9);
-                    height = Math.floor(height * 0.9);
-                    attemptCompression();
+                if (currentSizeKb >= 40 && currentSizeKb <= 45) {
+                    canvas.toBlob((b) => resolve({ blob: b, base64: base64Str }), 'image/jpeg', quality);
+                    return;
                 }
+
+                if (currentSizeKb <= 45) {
+                    if (!bestResult || currentSizeKb > bestResult.size) {
+                        bestResult = { size: currentSizeKb, base64: base64Str, quality, width, height };
+                    }
+                }
+
+                if (attempts > 12 || (width <= 150 && currentSizeKb <= 45)) {
+                    if (bestResult) {
+                        canvas.width = bestResult.width;
+                        canvas.height = bestResult.height;
+                        ctx.fillStyle = "#FFFFFF";
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        canvas.toBlob((b) => resolve({ blob: b, base64: bestResult.base64 }), 'image/jpeg', bestResult.quality);
+                    } else {
+                        canvas.toBlob((b) => resolve({ blob: b, base64: base64Str }), 'image/jpeg', quality);
+                    }
+                    return;
+                }
+
+                if (currentSizeKb > 45) {
+                    maxQuality = quality;
+                    quality = (minQuality + maxQuality) / 2;
+                    
+                    if (quality < 0.5) {
+                        width = Math.floor(width * 0.85);
+                        height = Math.floor(height * 0.85);
+                        minQuality = 0.1;
+                        maxQuality = 1.0;
+                        quality = 0.8;
+                    }
+                } else {
+                    minQuality = quality;
+                    quality = (minQuality + maxQuality) / 2;
+                }
+                
+                setTimeout(attemptCompression, 0);
             };
             
             attemptCompression();
         };
-        img.onerror = () => resolve(null); // Resolve null to gracefully skip if image fails to load
-        img.src = photoUrl;
+        img.onerror = () => {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+            resolve(null); // gracefully skip 
+        };
+        img.src = objectUrl || photoUrl;
     });
 };
 
