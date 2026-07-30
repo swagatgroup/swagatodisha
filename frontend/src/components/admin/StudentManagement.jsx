@@ -1316,6 +1316,135 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
         });
     };
 
+    const handleDownloadAllPhotos = async () => {
+        try {
+            Swal.fire({
+                title: 'Preparing Download',
+                html: 'Fetching all students matching current filters...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const baseParams = {
+                limit: '50',
+                search: searchQuery,
+                status: filterStatus,
+                ...(filterCourse !== 'all' && { course: filterCourse }),
+                ...(filterCategory !== 'all' && { category: filterCategory }),
+                ...(filterCollege !== 'all' && { college: filterCollege }),
+                ...(filterGender !== 'all' && { gender: filterGender }),
+                ...(filterDistrict !== 'all' && { district: filterDistrict }),
+                ...(filterCity !== 'all' && { city: filterCity }),
+                ...(filterState !== 'all' && { state: filterState }),
+                ...(filterStream !== 'all' && { stream: filterStream }),
+                ...(filterCampus !== 'all' && { campus: filterCampus }),
+                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+            };
+
+            let allStudents = [];
+            let currentPage = 1;
+            let hasMore = true;
+
+            while (hasMore) {
+                const params = new URLSearchParams({
+                    ...baseParams,
+                    page: currentPage.toString()
+                });
+
+                const response = await api.get(`/api/admin/students?${params}`);
+                
+                if (response.data.success && response.data.data.students) {
+                    const pageStudents = response.data.data.students || [];
+                    if (pageStudents.length > 0) {
+                        allStudents = [...allStudents, ...pageStudents];
+                        currentPage++;
+                        
+                        Swal.update({
+                            html: `Fetched ${allStudents.length} students...`
+                        });
+                        
+                        const totalPages = response.data.data.pagination?.totalPages || 1;
+                        hasMore = currentPage <= totalPages;
+                    } else {
+                        hasMore = false;
+                    }
+                } else {
+                    hasMore = false;
+                }
+            }
+
+            if (allStudents.length === 0) {
+                Swal.fire('No Students', 'No students found for current filters.', 'info');
+                return;
+            }
+
+            Swal.update({
+                title: 'Downloading Photos',
+                html: `Processing photos for ${allStudents.length} students. This may take a while...<br><br><b>0</b> / ${allStudents.length} processed`
+            });
+
+            const JSZip = (await import('jszip')).default;
+            const zip = new JSZip();
+            let hasPhotos = false;
+            let processed = 0;
+
+            for (const student of allStudents) {
+                let photoUrl = null;
+                if (Array.isArray(student.documents)) {
+                    const doc = student.documents.find(d => d.documentType === 'passport_photo' || d.type === 'passport_photo');
+                    photoUrl = doc?.downloadUrl || doc?.url || doc?.filePath;
+                } else {
+                    photoUrl = student.documents?.passport_photo?.downloadUrl || student.documents?.passport_photo?.url || student.documents?.passport_photo?.filePath;
+                }
+
+                if (photoUrl) {
+                    const compressed = await compressImageToUnder50KB(photoUrl);
+                    if (compressed && compressed.base64) {
+                        const base64 = compressed.base64;
+                        const aadharNumber = student.personalDetails?.aadharNumber || student.applicationId || 'unknown_aadhar';
+                        zip.file(`${aadharNumber}.jpg`, base64, {base64: true});
+                        hasPhotos = true;
+                    }
+                }
+                
+                processed++;
+                if (processed % 5 === 0 || processed === allStudents.length) {
+                    Swal.update({
+                        html: `Processing photos for ${allStudents.length} students. This may take a while...<br><br><b>${processed}</b> / ${allStudents.length} processed`
+                    });
+                }
+            }
+            
+            if (!hasPhotos) {
+                Swal.fire('No Photos', 'None of the filtered students have a passport photo.', 'info');
+                return;
+            }
+
+            Swal.update({
+                title: 'Generating ZIP',
+                html: 'Packaging photos into a ZIP file...'
+            });
+
+            const content = await zip.generateAsync({type: 'blob'});
+            const blobUrl = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = `all_student_photos_${new Date().getTime()}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(blobUrl);
+
+            Swal.fire('Success', 'All photos have been downloaded successfully!', 'success');
+
+        } catch (error) {
+            console.error('Error downloading all photos:', error);
+            Swal.fire('Error', 'Failed to download all photos', 'error');
+        }
+    };
+
     const handleBulkDownloadPhotos = async () => {
         if (selectedStudents.length === 0) return;
         
@@ -1665,7 +1794,18 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             </span>
                         </button>
                     )}
-
+                    
+                    {/* New Download All Photos Button */}
+                    {students.length > 0 && selectedStudents.length === 0 && (
+                        <button
+                            onClick={handleDownloadAllPhotos}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
+                            title="Download photos for all filtered students"
+                        >
+                            <i className="fa-solid fa-download"></i>
+                            <span>Download All Photos</span>
+                        </button>
+                    )}
                 </div>
 
                 {/* Bulk Actions Bar */}
