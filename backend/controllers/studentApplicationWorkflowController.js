@@ -208,10 +208,10 @@ const createApplication = async (req, res) => {
             }
             
             // Use Aadhar or Email to identify the specific student's draft for agents
-            if (finalPersonalDetails && finalPersonalDetails.aadharNumber) {
-                query['personalDetails.aadharNumber'] = finalPersonalDetails.aadharNumber;
-            } else if (req.user.role !== 'student') {
-                if (finalContactDetails && finalContactDetails.email) {
+            if (req.user.role !== 'student') {
+                if (finalPersonalDetails && finalPersonalDetails.aadharNumber) {
+                    query['personalDetails.aadharNumber'] = finalPersonalDetails.aadharNumber;
+                } else if (finalContactDetails && finalContactDetails.email) {
                     query['contactDetails.email'] = finalContactDetails.email;
                 } else {
                     query = null; // Cannot reliably identify without aadhar or email for agents

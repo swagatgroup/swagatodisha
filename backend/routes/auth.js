@@ -27,7 +27,7 @@ const generateRefreshToken = (id) => {
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { fullName, email, password, phoneNumber, role = 'student' } = req.body;
+        const { fullName, email, password, phoneNumber, role = 'student', referralCode } = req.body;
 
         // Validate required fields
         const missingFields = [];
@@ -91,6 +91,24 @@ router.post('/register', async (req, res) => {
             const random = Math.random().toString().substr(2, 6).toUpperCase();
             const applicationId = `APP${year}${random}`;
 
+            // Handle referral code if provided
+            let referralInfo = undefined;
+            if (referralCode) {
+                const referrer = await User.findOne({
+                    $or: [
+                        { referralCode: referralCode },
+                        { email: referralCode.toLowerCase().trim() }
+                    ]
+                });
+                if (referrer) {
+                    referralInfo = {
+                        referredBy: referrer._id,
+                        referralCode: referrer.referralCode || referralCode,
+                        referralType: referrer.role,
+                    };
+                }
+            }
+
             const newApplication = new StudentApplication({
                 user: savedUser._id,
                 applicationId: applicationId,
@@ -104,7 +122,8 @@ router.post('/register', async (req, res) => {
                     email: savedUser.email
                 },
                 submittedBy: savedUser._id,
-                submitterRole: 'student'
+                submitterRole: 'student',
+                ...(referralInfo && { referralInfo })
             });
             await newApplication.save();
         }

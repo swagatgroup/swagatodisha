@@ -559,7 +559,7 @@ const SinglePageStudentRegistration = ({
         
         const mockData = {
             personalDetails: {
-                fullName: fullName,
+                fullName: (formData.personalDetails && formData.personalDetails.fullName) ? formData.personalDetails.fullName : fullName,
                 dateOfBirth: dateOfBirth,
                 
                 gender: getRandomElement(genders),
@@ -569,8 +569,8 @@ const SinglePageStudentRegistration = ({
                 mothersName: motherName,
             },
             contactDetails: {
-                email: email,
-                primaryPhone: primaryPhone,
+                email: (formData.contactDetails && formData.contactDetails.email) ? formData.contactDetails.email : email,
+                primaryPhone: (formData.contactDetails && formData.contactDetails.primaryPhone) ? formData.contactDetails.primaryPhone : primaryPhone,
                 whatsappNumber: whatsappNumber,
                 communicationMode: ["Email", "WhatsApp"],
                 permanentAddress: {
