@@ -68,12 +68,18 @@ const getReferralData = async (req, res) => {
 
         const referralCode = user.referralCode;
 
-        // Query 1: apps where referralInfo.referredBy = userId (student used referral code)
-        const byReferralCode = await StudentApplication.find({
-            'referralInfo.referredBy': userId
-        }).select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole').sort({ createdAt: -1 });
+        // Query 1: apps where this user is the referrer (referralInfo.referredBy = userId)
+        // For students: exclude their own application (isOwnApplication: true) to avoid
+        // showing the agent's referral on the student's dashboard.
+        const referralQuery = { 'referralInfo.referredBy': userId };
+        if (userRole === 'student') {
+            referralQuery.isOwnApplication = { $ne: true }; // only apps they referred, not their own
+        }
+        const byReferralCode = await StudentApplication.find(referralQuery)
+            .select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole')
+            .sort({ createdAt: -1 });
 
-        // Query 2: for agents — apps they submitted FOR others (submittedBy = agentId, user != agentId)
+        // Query 2: for agents/staff — apps they submitted FOR others (submittedBy = agentId, user != agentId)
         let byDirectSubmission = [];
         if (userRole === 'agent' || userRole === 'staff' || isAdmin) {
             byDirectSubmission = await StudentApplication.find({
@@ -81,6 +87,15 @@ const getReferralData = async (req, res) => {
                 user: { $ne: userId } // not their own application
             }).select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole').sort({ createdAt: -1 });
         }
+        // For students: also include apps they submitted via referral tab (submittedBy = student, isOwnApplication = false)
+        if (userRole === 'student') {
+            const studentReferralSubmissions = await StudentApplication.find({
+                submittedBy: userId,
+                isOwnApplication: false
+            }).select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole').sort({ createdAt: -1 });
+            byDirectSubmission = studentReferralSubmissions;
+        }
+
 
         // Merge and deduplicate by _id
         const seen = new Set();

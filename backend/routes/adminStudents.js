@@ -381,8 +381,10 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Filter by listType (Main vs Direct vs All)
         if (listType === 'direct') {
-            // Direct Students: submitted by student AND (referralType is null or student)
+            // Direct Students: student submitted their own form (isOwnApplication = true)
+            // AND no agent/staff referral involved
             andConditions.push({
+                isOwnApplication: true,
                 submitterRole: 'student',
                 $or: [
                     { 'referralInfo.referralType': { $exists: false } },
@@ -391,15 +393,18 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 ]
             });
         } else if (listType === 'main') {
-            // Main Students: submitted by non-student OR referralType is non-student
+            // Our Students: submitted by agent/staff/admin OR referred by agent/staff/admin
+            // OR student submitted someone else's form (isOwnApplication = false)
             andConditions.push({
                 $or: [
                     { submitterRole: { $in: ['agent', 'staff', 'super_admin'] } },
-                    { 'referralInfo.referralType': { $in: ['agent', 'staff', 'super_admin'] } }
+                    { 'referralInfo.referralType': { $in: ['agent', 'staff', 'super_admin'] } },
+                    { isOwnApplication: false }
                 ]
             });
         }
         // listType === 'all' → no filter applied, return every student
+
 
         // Combine all filters: if we have AND conditions, combine them with simple filters
         let finalFilter = filter;

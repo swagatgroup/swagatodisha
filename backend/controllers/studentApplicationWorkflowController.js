@@ -147,40 +147,6 @@ const createApplication = async (req, res) => {
         let finalContactDetails = { ...contactDetails };
         let isOwnApplication = false;
 
-        // Dashboard logic: determine if this is the student's own application or a referral
-        if (req.user.role === 'student') {
-            const existingAppsCount = await StudentApplication.countDocuments({ user: req.user._id });
-            
-            if (existingAppsCount === 0) {
-                isOwnApplication = true;
-                
-                // Pre-fill name and mobile from the user account if not provided
-                const userDoc = await User.findById(req.user._id);
-                if (userDoc) {
-                    if (!finalPersonalDetails.fullName) {
-                        finalPersonalDetails.fullName = userDoc.fullName || `${userDoc.firstName || ''} ${userDoc.lastName || ''}`.trim();
-                    }
-                    if (!finalContactDetails.mobile) {
-                        finalContactDetails.mobile = userDoc.phoneNumber || '';
-                    }
-                }
-            } else {
-                isOwnApplication = false;
-                
-                // Auto-apply their referral code if not explicitly passed
-                if (!referralInfo.referralCode) {
-                    const userDoc = await User.findById(req.user._id);
-                    if (userDoc && userDoc.referralCode) {
-                        referralInfo = {
-                            referredBy: userDoc._id,
-                            referralCode: userDoc.referralCode,
-                            referralType: userDoc.role,
-                        };
-                    }
-                }
-            }
-        }
-
         // Convert date string to Date object for personalDetails.dateOfBirth
         if (finalPersonalDetails && finalPersonalDetails.dateOfBirth) {
             finalPersonalDetails.dateOfBirth = new Date(finalPersonalDetails.dateOfBirth);
@@ -197,52 +163,97 @@ const createApplication = async (req, res) => {
             };
         }
 
-        // Check if an existing DRAFT application exists to prevent duplication
-        let existingDraft = null;
-        try {
-            const query = { status: 'DRAFT' };
-            if (req.user.role === 'student') {
-                query.user = req.user._id;
-            } else {
-                query.submittedBy = req.user._id;
-            }
-            
-            // Use Aadhar or Email to identify the specific student's draft for agents
-            if (req.user.role !== 'student') {
-                if (finalPersonalDetails && finalPersonalDetails.aadharNumber) {
-                    query['personalDetails.aadharNumber'] = finalPersonalDetails.aadharNumber;
-                } else if (finalContactDetails && finalContactDetails.email) {
-                    query['contactDetails.email'] = finalContactDetails.email;
-                } else {
-                    query = null; // Cannot reliably identify without aadhar or email for agents
+        // --- STUDENT PATH ---
+        // For students, first check if a DRAFT already exists (created at registration).
+        // If yes → this IS their own application. Update it and return.
+        // If no DRAFT exists → this is a first-time submission from student as referral for someone else.
+        if (req.user.role === 'student') {
+            const existingStudentDraft = await StudentApplication.findOne({
+                user: req.user._id,
+                status: 'DRAFT'
+            });
+
+            if (existingStudentDraft) {
+                // This is the student's own application (the DRAFT created at registration).
+                isOwnApplication = true;
+                console.log(`Student ${req.user._id}: found own DRAFT ${existingStudentDraft._id}. Updating.`);
+
+                existingStudentDraft.personalDetails = finalPersonalDetails;
+                existingStudentDraft.contactDetails = finalContactDetails;
+                existingStudentDraft.courseDetails = courseDetails;
+                existingStudentDraft.guardianDetails = normalizedGuardianDetails;
+                existingStudentDraft.isOwnApplication = true;
+                if (financialDetails) existingStudentDraft.financialDetails = financialDetails;
+                // Preserve original referralInfo from registration; don't overwrite unless explicitly passed
+                if (referralCode && referralInfo && referralInfo.referralCode) {
+                    existingStudentDraft.referralInfo = referralInfo;
                 }
-            }
-            
-            if (query) {
-                existingDraft = await StudentApplication.findOne(query);
-            }
-            
-            if (existingDraft) {
-                console.log(`Found existing DRAFT for user ${req.user._id}. Updating instead of creating new.`);
-                
-                existingDraft.personalDetails = finalPersonalDetails;
-                existingDraft.contactDetails = finalContactDetails;
-                existingDraft.courseDetails = courseDetails;
-                existingDraft.guardianDetails = normalizedGuardianDetails;
-                if (financialDetails) existingDraft.financialDetails = financialDetails;
-                if (referralInfo) existingDraft.referralInfo = referralInfo;
-                
-                await existingDraft.save();
-                await existingDraft.populate("user", "fullName email phoneNumber");
-                
+
+                await existingStudentDraft.save();
+                await existingStudentDraft.populate('user', 'fullName email phoneNumber');
+
                 return res.status(200).json({
                     success: true,
-                    message: "Draft application updated successfully",
-                    data: existingDraft,
+                    message: 'Draft application updated successfully',
+                    data: existingStudentDraft,
                 });
+            } else {
+                // No DRAFT found — student is submitting a referral form for someone else
+                isOwnApplication = false;
+
+                // Auto-apply the student's own referral code if not explicitly passed
+                if (!referralInfo.referralCode) {
+                    const userDoc = await User.findById(req.user._id);
+                    if (userDoc && userDoc.referralCode) {
+                        referralInfo = {
+                            referredBy: userDoc._id,
+                            referralCode: userDoc.referralCode,
+                            referralType: userDoc.role,
+                        };
+                    }
+                }
+            }
+        }
+
+        // --- AGENT/STAFF PATH --- Check for existing DRAFT by submittedBy + identifier
+        let existingDraft = null;
+        try {
+            if (req.user.role !== 'student') {
+                let agentQuery = { status: 'DRAFT', submittedBy: req.user._id };
+                if (finalPersonalDetails && finalPersonalDetails.aadharNumber) {
+                    agentQuery['personalDetails.aadharNumber'] = finalPersonalDetails.aadharNumber;
+                } else if (finalContactDetails && finalContactDetails.email) {
+                    agentQuery['contactDetails.email'] = finalContactDetails.email;
+                } else {
+                    agentQuery = null; // Cannot reliably identify without aadhar or email
+                }
+
+                if (agentQuery) {
+                    existingDraft = await StudentApplication.findOne(agentQuery);
+                }
+
+                if (existingDraft) {
+                    console.log(`Found existing DRAFT for agent/staff ${req.user._id}. Updating instead of creating new.`);
+
+                    existingDraft.personalDetails = finalPersonalDetails;
+                    existingDraft.contactDetails = finalContactDetails;
+                    existingDraft.courseDetails = courseDetails;
+                    existingDraft.guardianDetails = normalizedGuardianDetails;
+                    if (financialDetails) existingDraft.financialDetails = financialDetails;
+                    if (referralInfo && referralInfo.referralCode) existingDraft.referralInfo = referralInfo;
+
+                    await existingDraft.save();
+                    await existingDraft.populate('user', 'fullName email phoneNumber');
+
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Draft application updated successfully',
+                        data: existingDraft,
+                    });
+                }
             }
         } catch (err) {
-            console.error("Error checking for existing draft:", err);
+            console.error('Error checking for existing draft:', err);
         }
 
         // Determine the User ID to attach to this application
