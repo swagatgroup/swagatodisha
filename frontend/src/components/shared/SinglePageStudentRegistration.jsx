@@ -9,10 +9,27 @@ import TermsAndConditions from "../legal/TermsAndConditions";
 import { showSuccessToast, showErrorToast, showLoading, closeLoading } from "../../utils/sweetAlert";
 import { formatDateForInput } from "../../utils/dateUtils";
 
+const BLANK_FORM = {
+    personalDetails: { fullName: '', fathersName: '', mothersName: '', dateOfBirth: '', aadharNumber: '', gender: '', category: '' },
+    contactDetails: {
+        email: '', primaryPhone: '', whatsappNumber: '',
+        currentAddress: { street: '', city: '', state: '', pincode: '', country: 'India' },
+        permanentAddress: { street: '', city: '', district: '', state: '', pincode: '', country: 'India' },
+    },
+    courseDetails: { selectedCollege: '', selectedCourse: '', stream: '', campus: '' },
+    guardianDetails: { guardianName: '', relationship: '', guardianPhone: '', guardianEmail: '' },
+    documents: [],
+    termsAccepted: false,
+    referralCode: '',
+    password: '',
+};
+
 const SinglePageStudentRegistration = ({
     onStudentUpdate,
     userRole = "student",
     showTitle = true,
+    referralMode = false,
+    prefilledReferralCode = "",
 }) => {
     const { user, token } = useAuth();
     const navigate = useNavigate();
@@ -207,6 +224,14 @@ const SinglePageStudentRegistration = ({
         }, 30000);
 
         const loadExistingApplication = async () => {
+            // In referral mode, skip loading own application — start fresh for someone else
+            if (referralMode) {
+                if (prefilledReferralCode) {
+                    setFormData(prev => ({ ...prev, referralCode: prefilledReferralCode }));
+                }
+                return;
+            }
+
             if (user && token) {
                 try {
                     const response = await api.get("/api/student-application/my-application");
@@ -251,7 +276,7 @@ const SinglePageStudentRegistration = ({
         return () => {
             clearInterval(interval);
         };
-    }, [user, token]);
+    }, [user, token, referralMode, prefilledReferralCode]);
 
     // Helper function to normalize guardian relationship to valid enum value
     const normalizeGuardianRelationship = (relationship) => {
@@ -725,13 +750,20 @@ const SinglePageStudentRegistration = ({
                         );
 
                         if (submitRes.data.success) {
-                            showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
-                            if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
-
-                            // Redirect to dashboard after brief delay
-                            setTimeout(() => {
-                                navigate('/dashboard');
-                            }, 1500);
+                            if (referralMode) {
+                                showSuccessToast('Referral application submitted successfully!');
+                                if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+                                // Reset form but keep referral code for next referral
+                                setFormData(prev => ({
+                        ...BLANK_FORM,
+                                    referralCode: prefilledReferralCode
+                                }));
+                                setApplication(null);
+                            } else {
+                                showSuccessToast('Application submitted successfully! Redirecting to dashboard...');
+                                if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+                                setTimeout(() => { navigate('/dashboard'); }, 1500);
+                            }
                         }
                         return;
                     }
@@ -818,11 +850,22 @@ const SinglePageStudentRegistration = ({
 
             if (submitRes.data?.success) {
                 localStorage.removeItem('pendingReferralCode');
-                showSuccessToast("Application submitted successfully! Redirecting to dashboard...");
-                if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
-                setTimeout(() => navigate('/dashboard'), 1500);
+                if (referralMode) {
+                    showSuccessToast('Referral application submitted successfully!');
+                    if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+                    // Reset form but keep referral code pre-filled for next referral
+                    setFormData(prev => ({
+                        ...BLANK_FORM,
+                        referralCode: prefilledReferralCode
+                    }));
+                    setApplication(null);
+                } else {
+                    showSuccessToast('Application submitted successfully! Redirecting to dashboard...');
+                    if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
+                    setTimeout(() => navigate('/dashboard'), 1500);
+                }
             } else {
-                showErrorToast(submitRes.data?.message || "Failed to submit application");
+                showErrorToast(submitRes.data?.message || 'Failed to submit application');
             }
         } catch (error) {
             console.error("Submit error:", error);
@@ -1679,7 +1722,7 @@ const SinglePageStudentRegistration = ({
                 )}
             </motion.div>
 
-            {formData.referralCode && (
+            {(formData.referralCode || referralMode) && (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -1693,10 +1736,12 @@ const SinglePageStudentRegistration = ({
                             </div>
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    Referral Code Applied
+                                    {referralMode ? 'Your Referral Code (Pre-Applied)' : 'Referral Code Applied'}
                                 </h3>
                                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                                    A referral code has been linked to this application.
+                                    {referralMode
+                                        ? 'This application will be counted under your referrals.'
+                                        : 'A referral code has been linked to this application.'}
                                 </p>
                             </div>
                         </div>
@@ -1713,6 +1758,7 @@ const SinglePageStudentRegistration = ({
                     </div>
                 </motion.div>
             )}
+
 
             {/* Guardian Details Section */}
             <motion.div

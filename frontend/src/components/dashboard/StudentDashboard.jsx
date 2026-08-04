@@ -11,6 +11,7 @@ import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ReferralDashboard from './tabs/ReferralDashboard';
 import StudentPayments from './tabs/StudentPayments';
 import StudentProgressTracker from './components/StudentProgressTracker';
+import SinglePageStudentRegistration from '../shared/SinglePageStudentRegistration';
 
 const StudentDashboard = () => {
     const { user } = useAuth();
@@ -33,6 +34,7 @@ const StudentDashboard = () => {
     const [showDetailModal, setShowDetailModal] = useState(false);
 
     const [activeSidebarItem, setActiveSidebarItem] = useState('registration');
+    const [myReferralCode, setMyReferralCode] = useState('');
 
     const sidebarItems = [
         {
@@ -59,6 +61,15 @@ const StudentDashboard = () => {
             icon: (
                 <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                </svg>
+            )
+        },
+        {
+            id: 'refer_friend',
+            name: 'Refer a Friend',
+            icon: (
+                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                 </svg>
             )
         },
@@ -97,6 +108,14 @@ const StudentDashboard = () => {
 
                 // Load analytics data
                 await loadAnalyticsData();
+
+                // Fetch own referral code for 'Refer a Friend' tab
+                try {
+                    const refRes = await api.get('/api/referral/data');
+                    if (refRes.data.success && refRes.data.data.referralCode) {
+                        setMyReferralCode(refRes.data.data.referralCode);
+                    }
+                } catch (_) { /* referral code fetch is non-critical */ }
 
                 setLoading(false);
             } catch (error) {
@@ -418,10 +437,28 @@ const StudentDashboard = () => {
                 return <StudentApplications />;
             case 'referrals':
                 return <ReferralDashboard />;
+            case 'refer_friend':
+                return (
+                    <div>
+                        <div className="mb-6 p-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700/50 rounded-xl">
+                            <h2 className="text-xl font-bold text-indigo-800 dark:text-indigo-300 mb-1">Refer a Friend</h2>
+                            <p className="text-sm text-indigo-600 dark:text-indigo-400">
+                                Fill this form for someone you are referring. Your referral code is pre-applied — this application will be counted in your referrals.
+                            </p>
+                        </div>
+                        <SinglePageStudentRegistration
+                            referralMode={true}
+                            prefilledReferralCode={myReferralCode}
+                            userRole="student"
+                            showTitle={false}
+                        />
+                    </div>
+                );
             case 'payments':
                 return <StudentPayments />;
             default:
                 return null;
+
         }
     };
 
