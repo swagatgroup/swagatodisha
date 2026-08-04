@@ -43,6 +43,8 @@ const SinglePageStudentRegistration = ({
     const [errors, setErrors] = useState({});
     const [colleges, setColleges] = useState([]);
     const [loadingColleges, setLoadingColleges] = useState(false);
+    // Locks the 3 registration-sourced fields (fullName, email, phone) until user clicks Edit
+    const [registrationDataLocked, setRegistrationDataLocked] = useState(false);
 
     // Convert DD/MM/YYYY to ISO format (YYYY-MM-DD)
     const convertDDMMYYYYToISO = (dateString) => {
@@ -260,6 +262,15 @@ const SinglePageStudentRegistration = ({
                             termsAccepted: existingData.termsAccepted || false,
                             referralCode: existingData.referralInfo?.referralCode || localStorage.getItem('pendingReferralCode') || "",
                         });
+                        // Lock registration fields if they were filled at signup
+                        // Only lock for students on their own application (not agents filling forms)
+                        const hasRegData =
+                            existingData.personalDetails?.fullName ||
+                            existingData.contactDetails?.email ||
+                            existingData.contactDetails?.primaryPhone;
+                        if (hasRegData && userRole === 'student') {
+                            setRegistrationDataLocked(true);
+                        }
                     }
                 } catch (error) {
                     console.log("No existing application found");
@@ -1052,18 +1063,35 @@ const SinglePageStudentRegistration = ({
                 animate={{ opacity: 1, y: 0 }}
                 className="space-y-6"
             >
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</span>
-                        Personal Information
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Basic personal details</p>
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 flex items-center justify-between">
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                            <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</span>
+                            Personal Information
+                            {registrationDataLocked && (
+                                <span className="ml-2 inline-flex items-center gap-1 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full">
+                                    <i className="fa-solid fa-lock text-[10px]"></i> From Registration
+                                </span>
+                            )}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mt-1">Basic personal details</p>
+                    </div>
+                    {registrationDataLocked && (
+                        <button
+                            type="button"
+                            onClick={() => setRegistrationDataLocked(false)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                        >
+                            <i className="fa-solid fa-pen-to-square text-xs"></i> Edit
+                        </button>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Full Name *
+                            {registrationDataLocked && <span className="ml-1 text-amber-500"><i className="fa-solid fa-lock text-xs"></i></span>}
                         </label>
                         <input
                             type="text"
@@ -1077,8 +1105,13 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
+                            readOnly={registrationDataLocked}
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className={`w-full px-3 py-2 border rounded-lg ${
+                                registrationDataLocked
+                                    ? 'border-amber-200 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-900/10 text-gray-700 dark:text-gray-300 cursor-not-allowed'
+                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
+                            }`}
                             placeholder="Enter your full name"
                         />
                         {errors["personalDetails.fullName"] && (
@@ -1276,18 +1309,35 @@ const SinglePageStudentRegistration = ({
                 transition={{ delay: 0.1 }}
                 className="space-y-6"
             >
-                <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
-                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</span>
-                        Contact Details
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Address and contact information</p>
+                <div className="border-b border-gray-200 dark:border-gray-700 pb-4 flex items-center justify-between">
+                    <div>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
+                            <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</span>
+                            Contact Details
+                            {registrationDataLocked && (
+                                <span className="ml-2 inline-flex items-center gap-1 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full">
+                                    <i className="fa-solid fa-lock text-[10px]"></i> From Registration
+                                </span>
+                            )}
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400 mt-1">Address and contact information</p>
+                    </div>
+                    {registrationDataLocked && (
+                        <button
+                            type="button"
+                            onClick={() => setRegistrationDataLocked(false)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                        >
+                            <i className="fa-solid fa-pen-to-square text-xs"></i> Edit
+                        </button>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Primary Phone *
+                            {registrationDataLocked && <span className="ml-1 text-amber-500"><i className="fa-solid fa-lock text-xs"></i></span>}
                         </label>
                         <input
                             type="tel"
@@ -1301,7 +1351,12 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            readOnly={registrationDataLocked}
+                            className={`w-full px-3 py-2 border rounded-lg ${
+                                registrationDataLocked
+                                    ? 'border-amber-200 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-900/10 text-gray-700 dark:text-gray-300 cursor-not-allowed'
+                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
+                            }`}
                             placeholder="Enter 10-digit phone number"
                             maxLength="10"
                         />
@@ -1337,6 +1392,7 @@ const SinglePageStudentRegistration = ({
                     <div className={userRole !== 'student' ? '' : 'md:col-span-2'}>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Email Address *
+                            {registrationDataLocked && <span className="ml-1 text-amber-500"><i className="fa-solid fa-lock text-xs"></i></span>}
                         </label>
                         <input
                             type="email"
@@ -1350,9 +1406,13 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            required
+                            readOnly={registrationDataLocked}
+                            className={`w-full px-3 py-2 border rounded-lg ${
+                                registrationDataLocked
+                                    ? 'border-amber-200 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-900/10 text-gray-700 dark:text-gray-300 cursor-not-allowed'
+                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
+                            }`}
                             style={{ textTransform: 'lowercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                             placeholder="Enter email address"
                         />
                         {errors["contactDetails.email"] && (
