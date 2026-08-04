@@ -824,6 +824,7 @@ const SinglePageStudentRegistration = ({
                     financialDetails: {},
                     referralCode: formData.referralCode || undefined,
                     password: formData.password || undefined,
+                    isReferral: referralMode,
                 });
 
                 if (!createRes.data?.success || !createRes.data?.data?.applicationId) {

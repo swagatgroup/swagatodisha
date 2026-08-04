@@ -128,6 +128,7 @@ const createApplication = async (req, res) => {
             financialDetails = {},
             referralCode,
             password,
+            isReferral,
         } = req.body;
 
         // Handle referral code if provided
@@ -168,10 +169,13 @@ const createApplication = async (req, res) => {
         // If yes → this IS their own application. Update it and return.
         // If no DRAFT exists → this is a first-time submission from student as referral for someone else.
         if (req.user.role === 'student') {
-            const existingStudentDraft = await StudentApplication.findOne({
-                user: req.user._id,
-                status: 'DRAFT'
-            });
+            let existingStudentDraft = null;
+            if (!isReferral) {
+                existingStudentDraft = await StudentApplication.findOne({
+                    user: req.user._id,
+                    status: 'DRAFT'
+                });
+            }
 
             if (existingStudentDraft) {
                 // This is the student's own application (the DRAFT created at registration).
