@@ -381,10 +381,9 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Filter by listType (Main vs Direct vs All)
         if (listType === 'direct') {
-            // Direct Students: student submitted their own form (isOwnApplication = true)
+            // Direct Students: student submitted (own form or friend's form)
             // AND no agent/staff referral involved
             andConditions.push({
-                isOwnApplication: true,
                 submitterRole: 'student',
                 $or: [
                     { 'referralInfo.referralType': { $exists: false } },
@@ -394,12 +393,10 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             });
         } else if (listType === 'main') {
             // Our Students: submitted by agent/staff/admin OR referred by agent/staff/admin
-            // OR student submitted someone else's form (isOwnApplication = false)
             andConditions.push({
                 $or: [
                     { submitterRole: { $in: ['agent', 'staff', 'super_admin'] } },
-                    { 'referralInfo.referralType': { $in: ['agent', 'staff', 'super_admin'] } },
-                    { isOwnApplication: false }
+                    { 'referralInfo.referralType': { $in: ['agent', 'staff', 'super_admin'] } }
                 ]
             });
         }
