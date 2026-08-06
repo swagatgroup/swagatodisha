@@ -441,10 +441,10 @@ const ReferralDashboard = () => {
                     <p className="text-sm text-blue-800 font-medium mb-1">Note: Verification Required</p>
                     <p className="text-sm text-blue-700">Team Swagat Odisha will verify these details. While claiming the amount, once you add everything, please contact Team Swagat Odisha for help.</p>
                     <div className="mt-3 flex flex-wrap gap-4">
-                        <a href="tel:+919876543210" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-blue-50 transition-colors">
-                            <i className="fa-solid fa-phone mr-2"></i> +91 98765 43210
+                        <a href="tel:+917855959544" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-blue-50 transition-colors">
+                            <i className="fa-solid fa-phone mr-2"></i> +91 78559 59544
                         </a>
-                        <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
+                        <a href="https://wa.me/917855959544" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
                             <i className="fa-brands fa-whatsapp mr-2"></i> WhatsApp Support
                         </a>
                     </div>

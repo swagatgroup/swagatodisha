@@ -56,7 +56,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                     <div className="bg-blue-50 p-4 rounded-lg mb-6">
                         <h3 className="font-semibold text-blue-900 mb-2">Admin Contact Information</h3>
                         <div className="text-sm text-blue-800 space-y-1">
-                            <p><strong>Phone:</strong> +91-9876543210</p>
+                            <p><strong>Phone:</strong> +91-78559 59544</p>
                             <p><strong>Email:</strong> admin@swagatodisha.com</p>
                         </div>
                     </div>

@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const websiteSettingsSchema = new mongoose.Schema({
     // Contact Information
     contactInfo: {
-        phone: { type: String, default: '+91 98765 43210' },
-        whatsapp: { type: String, default: '+91 98765 43210' },
+        phone: { type: String, default: '+91 78559 59544' },
+        whatsapp: { type: String, default: '+91 78559 59544' },
         email: { type: String, default: 'info@swagatodisha.com' },
         address: { type: String, default: 'Swagat Group of Institutions, Odisha' }
     },
