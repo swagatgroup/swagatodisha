@@ -1331,6 +1331,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 limit: '50',
                 search: searchQuery,
                 status: filterStatus,
+                session: selectedSession, // REQUIRED
+                listType: listType, // REQUIRED
                 ...(filterCourse !== 'all' && { course: filterCourse }),
                 ...(filterCategory !== 'all' && { category: filterCategory }),
                 ...(filterCollege !== 'all' && { college: filterCollege }),
@@ -1796,7 +1798,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                     )}
                     
                     {/* New Download All Photos Button */}
-                    {students.length > 0 && selectedStudents.length === 0 && (
+                    {students.length > 0 && (
                         <button
                             onClick={handleDownloadAllPhotos}
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center space-x-2"
