@@ -251,7 +251,7 @@ const getCollegeCourses = asyncHandler(async (req, res) => {
 // @access  Private (Super Admin, Staff)
 const createCollegeCourse = asyncHandler(async (req, res) => {
     const { collegeId } = req.params;
-    const { courseName, courseCode, streams, isActive } = req.body;
+    const { courseName, courseCode, streams, isActive, price } = req.body;
 
     // Check if college exists
     const college = await College.findById(collegeId);
@@ -285,6 +285,7 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
         college: collegeId,
         courseName: courseName.trim(),
         courseCode: courseCode ? courseCode.trim() : undefined,
+        price: price !== undefined ? parseFloat(price) : 0,
         streams: processedStreams,
         isActive: isActive !== 'false' && isActive !== false,
         createdBy: req.user._id,
@@ -309,7 +310,7 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
 // @access  Private (Super Admin, Staff)
 const updateCollegeCourse = asyncHandler(async (req, res) => {
     const { collegeId, courseId } = req.params;
-    const { courseName, courseCode, streams, isActive } = req.body;
+    const { courseName, courseCode, streams, isActive, price } = req.body;
 
     let course = await CollegeCourse.findOne({
         _id: courseId,
@@ -351,6 +352,7 @@ const updateCollegeCourse = asyncHandler(async (req, res) => {
     const updateData = {
         courseName: courseName !== undefined ? courseName.trim() : course.courseName,
         courseCode: courseCode !== undefined ? (courseCode.trim() || undefined) : course.courseCode,
+        price: price !== undefined ? parseFloat(price) : course.price,
         streams: processedStreams,
         isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : course.isActive,
         updatedBy: req.user._id

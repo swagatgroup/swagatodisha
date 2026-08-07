@@ -545,10 +545,14 @@ const InstituteCourseManagement = () => {
                                         Course Fee (₹) *
                                     </label>
                                     <input
-                                        type="number"
-                                        min="0"
-                                        value={courseFormData.price}
-                                        onChange={(e) => setCourseFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
+                                        value={courseFormData.price === 0 ? '' : courseFormData.price}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(/[^0-9]/g, '');
+                                            setCourseFormData(prev => ({ ...prev, price: val === '' ? 0 : parseInt(val, 10) }));
+                                        }}
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         placeholder="e.g. 25000"
                                         required
