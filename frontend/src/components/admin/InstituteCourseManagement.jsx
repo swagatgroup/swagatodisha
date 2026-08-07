@@ -25,6 +25,7 @@ const InstituteCourseManagement = () => {
 
     const [courseFormData, setCourseFormData] = useState({
         courseName: '',
+        price: 0,
         streams: [],
         isActive: true
     });
@@ -153,7 +154,7 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCourseForm(false);
                 setEditingCourse(null);
-                setCourseFormData({ courseName: '', streams: [], isActive: true });
+                setCourseFormData({ courseName: '', price: 0, streams: [], isActive: true });
                 setNewStream('');
                 fetchCourses(selectedCollege._id);
             }
@@ -182,6 +183,7 @@ const InstituteCourseManagement = () => {
         setEditingCourse(course);
         setCourseFormData({
             courseName: course.courseName || '',
+            price: course.price || 0,
             streams: course.streams ? course.streams.map(s => s.name || s) : [],
             isActive: course.isActive !== false
         });
@@ -538,6 +540,20 @@ const InstituteCourseManagement = () => {
                                         </div>
                                     )}
                                 </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Course Fee (₹) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        value={courseFormData.price}
+                                        onChange={(e) => setCourseFormData(prev => ({ ...prev, price: parseFloat(e.target.value) || 0 }))}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        placeholder="e.g. 25000"
+                                        required
+                                    />
+                                </div>
                                 <div className="flex items-center">
                                     <input
                                         type="checkbox"
@@ -798,6 +814,9 @@ const InstituteCourseManagement = () => {
                                                     ))}
                                                 </div>
                                             )}
+                                            <p className="text-sm font-semibold text-green-700 dark:text-green-400 mt-1">
+                                                ₹{(course.price || 0).toLocaleString('en-IN')}
+                                            </p>
                                         </div>
                                         <div className="flex space-x-2 ml-4">
                                             <button

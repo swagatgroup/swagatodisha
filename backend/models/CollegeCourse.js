@@ -15,6 +15,11 @@ const collegeCourseSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
+    price: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
     streams: [{
         name: {
             type: String,
