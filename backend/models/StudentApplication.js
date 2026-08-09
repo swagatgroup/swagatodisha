@@ -179,6 +179,11 @@ const studentApplicationSchema = new mongoose.Schema({
         campus: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Campus'
+        },
+        admissionType: {
+            type: String,
+            enum: ['free', 'paid'],
+            default: 'paid'
         }
     },
 

@@ -69,6 +69,7 @@ const UniversalStudentRegistration = ({
       customCourse: "",
       stream: "",
       campus: "",
+      admissionType: "", // 'free' | 'paid'
     },
     guardianDetails: {
       guardianName: "",
@@ -175,6 +176,29 @@ const UniversalStudentRegistration = ({
       (college) => college._id === formData.courseDetails.selectedCollege
     );
     return selectedCollegeData?.courses || [];
+  };
+
+  // Determine admission type based on category
+  const getAdmissionType = () => {
+    const category = formData.personalDetails.category;
+    const admissionType = formData.courseDetails.admissionType;
+    if (['SC', 'ST'].includes(category)) return 'free'; // always free
+    if (['General', 'OBC'].includes(category)) return admissionType || 'paid'; // student chooses
+    return 'paid'; // default
+  };
+
+  // Get required document IDs based on category + admissionType
+  const getRequiredDocIds = () => {
+    const category = formData.personalDetails.category;
+    const admissionType = getAdmissionType();
+    const base = ['passport_photo', 'aadhar_card', 'marksheet_10th'];
+    if (admissionType === 'paid') return base;
+    // Free + SC/ST
+    if (['SC', 'ST'].includes(category)) {
+      return [...base, 'caste_certificate', 'income_certificate', 'resident_certificate'];
+    }
+    // Free + General/OBC (Kisan)
+    return [...base, 'caste_certificate', 'income_certificate', 'resident_certificate', 'pm_kisan', 'cm_kisan'];
   };
 
   // Get streams for selected course
@@ -446,91 +470,47 @@ const UniversalStudentRegistration = ({
         break;
 
       case 5: // Document Upload
-        // Check if required documents are uploaded
-        const selectedCollegeData = colleges.find(c => c._id === formData.courseDetails.selectedCollege);
-        const isPaid = selectedCollegeData?.feeType === 'Paid';
-        
-        let requiredDocuments = [
-          "passport_photo",
-          "aadhar_card",
-          "marksheet_10th", // This is the key used by SimpleDocumentUpload
-          "tenth_marksheet_certificate", // Also check backend key for compatibility
-        ];
-        
-        if (!isPaid) {
-            requiredDocuments.push("caste_certificate", "income_certificate");
-        }
-        
-        const missingDocuments = requiredDocuments.filter(
-          (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
-        );
-        // Check if at least one 10th marksheet variant exists
-        const has10thMarksheet = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
-        const actualMissing = missingDocuments.filter(doc => 
-          doc !== "marksheet_10th" && doc !== "tenth_marksheet_certificate"
-        );
-        if (!has10thMarksheet) {
-          actualMissing.push("marksheet_10th");
-        }
-        if (actualMissing.length > 0) {
-          const docLabels = {
-            "passport_photo": "Passport Size Photo",
-            "aadhar_card": "Aadhar Card",
-            "marksheet_10th": "10th Marksheet",
-            "tenth_marksheet_certificate": "10th Marksheet cum Certificate",
-            "caste_certificate": "Caste Certificate",
-            "income_certificate": "Income Certificate",
-          };
-          const missingLabels = missingDocuments.map(doc => docLabels[doc] || doc);
-          newErrors[
-            "documents"
-          ] = `Please upload all required documents: ${missingLabels.join(
-            ", "
-          )}`;
+        const admType5 = getAdmissionType();
+        const reqDocs5 = getRequiredDocIds();
+        const docLabels5 = {
+          "passport_photo": "Passport Size Photo",
+          "aadhar_card": "Aadhar Card",
+          "marksheet_10th": "10th Marksheet",
+          "caste_certificate": "Caste Certificate",
+          "income_certificate": "Income Certificate",
+          "resident_certificate": "Resident Certificate",
+          "pm_kisan": "PM Kisan Enrollment Certificate",
+          "cm_kisan": "CM Kisan Enrollment Certificate",
+        };
+        // Check 10th marksheet via both possible keys
+        const has10th5 = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
+        const missing5 = reqDocs5.filter(doc => {
+          if (doc === 'marksheet_10th') return !has10th5;
+          return !formData.documents[doc]?.downloadUrl;
+        });
+        if (missing5.length > 0) {
+          newErrors["documents"] = `Please upload all required documents: ${missing5.map(d => docLabels5[d] || d).join(", ")}`;
         }
         break;
       case 6: // PDF Generation / Submit
-        // Validate mandatory documents before final submission
-        const selectedCollegeDataSubmit = colleges.find(c => c._id === formData.courseDetails.selectedCollege);
-        const isPaidSubmit = selectedCollegeDataSubmit?.feeType === 'Paid';
-        
-        let mandatoryDocuments = [
-          "passport_photo",
-          "aadhar_card",
-          "marksheet_10th",
-          "tenth_marksheet_certificate",
-        ];
-        
-        if (!isPaidSubmit) {
-            mandatoryDocuments.push("caste_certificate", "income_certificate");
-        }
-        
-        const missingMandatory = mandatoryDocuments.filter(
-          (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
-        );
-        // Check if at least one 10th marksheet variant exists
-        const has10thMarksheetSubmit = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
-        const actualMissingSubmit = missingMandatory.filter(doc => 
-          doc !== "marksheet_10th" && doc !== "tenth_marksheet_certificate"
-        );
-        if (!has10thMarksheetSubmit) {
-          actualMissingSubmit.push("marksheet_10th");
-        }
-        if (actualMissingSubmit.length > 0) {
-          const docLabels = {
-            "passport_photo": "Passport Size Photo",
-            "aadhar_card": "Aadhar Card",
-            "marksheet_10th": "10th Marksheet",
-            "tenth_marksheet_certificate": "10th Marksheet cum Certificate",
-            "caste_certificate": "Caste Certificate",
-            "income_certificate": "Income Certificate",
-          };
-          const missingLabels = actualMissingSubmit.map(doc => docLabels[doc] || doc);
-          newErrors[
-            "documents"
-          ] = `Cannot submit application. Please upload all mandatory documents: ${missingLabels.join(
-            ", "
-          )}`;
+        const reqDocs6 = getRequiredDocIds();
+        const docLabels6 = {
+          "passport_photo": "Passport Size Photo",
+          "aadhar_card": "Aadhar Card",
+          "marksheet_10th": "10th Marksheet",
+          "caste_certificate": "Caste Certificate",
+          "income_certificate": "Income Certificate",
+          "resident_certificate": "Resident Certificate",
+          "pm_kisan": "PM Kisan Enrollment Certificate",
+          "cm_kisan": "CM Kisan Enrollment Certificate",
+        };
+        const has10th6 = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
+        const missing6 = reqDocs6.filter(doc => {
+          if (doc === 'marksheet_10th') return !has10th6;
+          return !formData.documents[doc]?.downloadUrl;
+        });
+        if (missing6.length > 0) {
+          newErrors["documents"] = `Cannot submit. Please upload all mandatory documents: ${missing6.map(d => docLabels6[d] || d).join(", ")}`;
         }
         break;
     }
@@ -653,39 +633,25 @@ const UniversalStudentRegistration = ({
     if (validateStep(currentStep)) {
       // Additional validation: Prevent moving to PDF generation step (step 6) without all mandatory documents
       if (currentStep === 5 && currentStep + 1 === 6) {
-        const mandatoryDocuments = [
-          "passport_photo",
-          "aadhar_card",
-          "marksheet_10th",
-          "tenth_marksheet_certificate",
-          "caste_certificate",
-          "income_certificate",
-        ];
-        const missingMandatory = mandatoryDocuments.filter(
-          (doc) => !formData.documents[doc] || !formData.documents[doc].downloadUrl
-        );
-        // Check if at least one 10th marksheet variant exists
-        const has10thMarksheet = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
-        const actualMissing = missingMandatory.filter(doc => 
-          doc !== "marksheet_10th" && doc !== "tenth_marksheet_certificate"
-        );
-        if (!has10thMarksheet) {
-          actualMissing.push("marksheet_10th");
-        }
-        if (actualMissing.length > 0) {
-          const docLabels = {
-            "passport_photo": "Passport Size Photo",
-            "aadhar_card": "Aadhar Card",
-            "marksheet_10th": "10th Marksheet",
-            "tenth_marksheet_certificate": "10th Marksheet cum Certificate",
-            "caste_certificate": "Caste Certificate",
-            "income_certificate": "Income Certificate",
-          };
-          const missingLabels = actualMissing.map(doc => docLabels[doc] || doc);
-          setErrors({
-            documents: `Cannot proceed to PDF generation. Please upload all mandatory documents: ${missingLabels.join(", ")}`
-          });
-          showErrorToast(`Please upload all mandatory documents before generating PDF: ${missingLabels.join(", ")}`);
+        const reqDocs = getRequiredDocIds();
+        const has10th = formData.documents["marksheet_10th"]?.downloadUrl || formData.documents["tenth_marksheet_certificate"]?.downloadUrl;
+        const docLabels = {
+          "passport_photo": "Passport Size Photo",
+          "aadhar_card": "Aadhar Card",
+          "marksheet_10th": "10th Marksheet",
+          "caste_certificate": "Caste Certificate",
+          "income_certificate": "Income Certificate",
+          "resident_certificate": "Resident Certificate",
+          "pm_kisan": "PM Kisan Enrollment Certificate",
+          "cm_kisan": "CM Kisan Enrollment Certificate",
+        };
+        const missing = reqDocs.filter(doc => {
+          if (doc === 'marksheet_10th') return !has10th;
+          return !formData.documents[doc]?.downloadUrl;
+        });
+        if (missing.length > 0) {
+          setErrors({ documents: `Please upload all mandatory documents before generating PDF: ${missing.map(d => docLabels[d] || d).join(", ")}` });
+          showErrorToast(`Please upload: ${missing.map(d => docLabels[d] || d).join(", ")}`);
           return;
         }
       }
@@ -1603,6 +1569,110 @@ const UniversalStudentRegistration = ({
             </select>
           </div>
         )}
+
+        {/* Admission Type Selector — shown once college is selected */}
+        {formData.courseDetails.selectedCollege && (() => {
+          const cat = formData.personalDetails.category;
+          const isScSt = ['SC', 'ST'].includes(cat);
+          const isKisanEligible = ['General', 'OBC'].includes(cat);
+          const currentAdmType = getAdmissionType();
+
+          return (
+            <div className={`rounded-xl p-4 border-2 ${
+              currentAdmType === 'free'
+                ? 'border-green-400 bg-green-50 dark:bg-green-900/20'
+                : 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+            }`}>
+              <div className="flex items-center justify-between flex-wrap gap-3">
+                <div>
+                  <p className="font-semibold text-gray-800 dark:text-gray-100 text-sm">
+                    Admission Type
+                  </p>
+                  {isScSt && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      SC/ST students are eligible for free education
+                    </p>
+                  )}
+                  {isKisanEligible && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      General/OBC students with PM Kisan &amp; CM Kisan enrollment are eligible for free education
+                    </p>
+                  )}
+                  {!isScSt && !isKisanEligible && (
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      Course fee as per selected course
+                    </p>
+                  )}
+                </div>
+
+                {/* SC/ST: auto-locked to Free */}
+                {isScSt && (
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-full shadow">
+                    <i className="fa-solid fa-circle-check"></i> Free Admission
+                  </span>
+                )}
+
+                {/* General/OBC: toggle */}
+                {isKisanEligible && (
+                  <div className="flex items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
+                      }))}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border-2 ${
+                        currentAdmType === 'paid'
+                          ? 'bg-blue-600 text-white border-blue-600 shadow'
+                          : 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-blue-400'
+                      }`}
+                    >
+                      <i className="fa-solid fa-indian-rupee-sign mr-1"></i> Paid
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        courseDetails: { ...prev.courseDetails, admissionType: 'free' }
+                      }))}
+                      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border-2 ${
+                        currentAdmType === 'free'
+                          ? 'bg-green-600 text-white border-green-600 shadow'
+                          : 'bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 border-green-400'
+                      }`}
+                    >
+                      <i className="fa-solid fa-circle-check mr-1"></i> Free (Kisan)
+                    </button>
+                  </div>
+                )}
+
+                {/* Others: auto-locked to Paid */}
+                {!isScSt && !isKisanEligible && (
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-full shadow">
+                    <i className="fa-solid fa-indian-rupee-sign"></i> Paid Admission
+                  </span>
+                )}
+              </div>
+
+              {/* Document hint based on type */}
+              <div className={`mt-3 text-xs rounded-lg px-3 py-2 ${
+                currentAdmType === 'free'
+                  ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                  : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+              }`}>
+                {currentAdmType === 'paid' && (
+                  <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet. <strong>Add all Qualification Documents as per your Course.</strong></>
+                )}
+                {currentAdmType === 'free' && ['SC', 'ST'].includes(cat) && (
+                  <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet, Caste Certificate, Income Certificate, Resident Certificate.</>
+                )}
+                {currentAdmType === 'free' && ['General', 'OBC'].includes(cat) && (
+                  <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet, Caste Certificate, Income Certificate, Resident Certificate, <strong>PM Kisan Certificate &amp; CM Kisan Certificate (both mandatory).</strong></>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     );
   };
@@ -1724,20 +1794,26 @@ const UniversalStudentRegistration = ({
     </div>
   );
 
-  const renderDocuments = () => (
-    <div className="space-y-6">
-      <SimpleDocumentUpload
-        onDocumentsChange={(documents) => {
-          setFormData((prev) => ({
-            ...prev,
-            documents: documents,
-          }));
-        }}
-        initialDocuments={formData.documents}
-        isRequired={true}
-      />
-    </div>
-  );
+  const renderDocuments = () => {
+    const admissionType = getAdmissionType();
+    const category = formData.personalDetails.category;
+    return (
+      <div className="space-y-6">
+        <SimpleDocumentUpload
+          onDocumentsChange={(documents) => {
+            setFormData((prev) => ({
+              ...prev,
+              documents: documents,
+            }));
+          }}
+          initialDocuments={formData.documents}
+          isRequired={true}
+          admissionType={admissionType}
+          category={category}
+        />
+      </div>
+    );
+  };
 
   const renderReview = () => (
     <div className="space-y-6">

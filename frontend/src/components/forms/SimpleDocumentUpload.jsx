@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { CloudArrowUpIcon, DocumentIcon, XMarkIcon, InformationCircleIcon } from '@heroicons/react/24/outline';
 import api from '../../utils/api';
 
-const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequired = true, disabled = false }) => {
+const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequired = true, disabled = false, admissionType = 'paid', category = 'General' }) => {
     const [documents, setDocuments] = useState(initialDocuments);
     const [uploading, setUploading] = useState({});
     const [dragActive, setDragActive] = useState({});
@@ -28,14 +28,44 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
     };
 
     const getDocumentTypes = () => {
-        if (!documentRequirements) return [];
+        let allDocs = [];
+        if (documentRequirements) {
+            allDocs = [
+                ...documentRequirements.requirements.required.map(doc => ({ ...doc, isRequired: true })),
+                ...documentRequirements.requirements.optional.map(doc => ({ ...doc, isRequired: false }))
+            ];
+        } else {
+            allDocs = [...mockDocumentTypes];
+        }
 
-        const allDocs = [
-            ...documentRequirements.requirements.required.map(doc => ({ ...doc, isRequired: true })),
-            ...documentRequirements.requirements.optional.map(doc => ({ ...doc, isRequired: false }))
-        ];
+        // Apply dynamic rules based on admissionType and category
+        const baseRequired = ['passport_photo', 'aadhar_card', 'marksheet_10th'];
+        let requiredForThisStudent = [...baseRequired];
 
-        return allDocs;
+        if (admissionType === 'free') {
+            if (['SC', 'ST'].includes(category)) {
+                requiredForThisStudent.push('caste_certificate', 'income_certificate', 'resident_certificate');
+            } else if (['General', 'OBC'].includes(category)) {
+                requiredForThisStudent.push('caste_certificate', 'income_certificate', 'resident_certificate', 'pm_kisan', 'cm_kisan');
+            }
+        }
+
+        // Filter docs and set isRequired
+        return allDocs.map(doc => {
+            const isReq = requiredForThisStudent.includes(doc.id) || requiredForThisStudent.includes(doc.key);
+            return { ...doc, isRequired: isReq };
+        }).filter(doc => {
+            // Hide Kisan docs for non-Kisan students
+            if ((doc.id === 'pm_kisan' || doc.id === 'cm_kisan') && 
+                !(admissionType === 'free' && ['General', 'OBC'].includes(category))) {
+                return false;
+            }
+            // Optional: Hide caste/income for paid students to keep UI clean
+            if (admissionType === 'paid' && ['caste_certificate', 'income_certificate', 'resident_certificate'].includes(doc.id)) {
+                return false;
+            }
+            return true;
+        });
     };
 
     const mockDocumentTypes = [
@@ -61,7 +91,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             id: 'caste_certificate',
             name: 'Caste Certificate',
             description: 'Caste certificate for reservation',
-            isRequired: true,
+            isRequired: false, // will be dynamic
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: '10MB',
             instructions: 'Caste certificate not older than 5 years'
@@ -70,7 +100,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             id: 'income_certificate',
             name: 'Income Certificate',
             description: 'Family income certificate',
-            isRequired: true,
+            isRequired: false, // will be dynamic
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: '10MB',
             instructions: 'Income certificate not older than 1 year'
@@ -137,6 +167,24 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: '10MB',
             instructions: 'Upload if you have completed graduation'
+        },
+        {
+            id: 'pm_kisan',
+            name: 'PM Kisan Enrollment',
+            description: 'PM Kisan enrollment certificate (for OBC/General free education)',
+            isRequired: false,
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: '10MB',
+            instructions: 'Mandatory for Free Education'
+        },
+        {
+            id: 'cm_kisan',
+            name: 'CM Kisan Enrollment',
+            description: 'CM Kisan enrollment certificate (for OBC/General free education)',
+            isRequired: false,
+            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
+            maxSize: '10MB',
+            instructions: 'Mandatory for Free Education'
         }
     ];
 
@@ -369,7 +417,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {(getDocumentTypes().length > 0 ? getDocumentTypes() : mockDocumentTypes).map((docType) => {
+                {getDocumentTypes().map((docType) => {
                     const docId = docType.id || docType.key;
                     const document = documents[docId];
                     const status = document?.status || 'pending';
