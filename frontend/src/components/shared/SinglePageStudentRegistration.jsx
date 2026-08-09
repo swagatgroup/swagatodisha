@@ -1781,6 +1781,122 @@ const SinglePageStudentRegistration = ({
                         </select>
                     </div>
                 )}
+
+                {/* Admission Type Selection (Free/Paid) */}
+                {formData.courseDetails.selectedCollege && (() => {
+                  const cat = formData.personalDetails.category;
+                  const isScSt = ['SC', 'ST'].includes(cat);
+                  const isKisanEligible = ['General', 'OBC'].includes(cat);
+                  const currentAdmType = formData.courseDetails.admissionType || 'paid';
+
+                  // Force state if SC/ST
+                  if (isScSt && currentAdmType !== 'free') {
+                    setTimeout(() => setFormData(prev => ({
+                      ...prev,
+                      courseDetails: { ...prev.courseDetails, admissionType: 'free' }
+                    })), 0);
+                  }
+                  // Force state if not eligible for free
+                  if (!isScSt && !isKisanEligible && currentAdmType !== 'paid') {
+                    setTimeout(() => setFormData(prev => ({
+                      ...prev,
+                      courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
+                    })), 0);
+                  }
+
+                  return (
+                    <div className="md:col-span-3 mt-4 border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-gray-800/50">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                          <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                            <i className="fa-solid fa-graduation-cap text-purple-600"></i>
+                            Admission Type
+                          </h4>
+                          {isScSt && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              SC/ST students are eligible for free education
+                            </p>
+                          )}
+                          {isKisanEligible && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              General/OBC students with PM Kisan & CM Kisan enrollment are eligible for free education
+                            </p>
+                          )}
+                          {!isScSt && !isKisanEligible && (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              Course fee as per selected course
+                            </p>
+                          )}
+                        </div>
+
+                        {/* SC/ST: auto-locked to Free */}
+                        {isScSt && (
+                          <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-full shadow">
+                            <i className="fa-solid fa-circle-check"></i> Free Admission
+                          </span>
+                        )}
+
+                        {/* General/OBC: toggle */}
+                        {isKisanEligible && (
+                          <div className="flex items-center gap-3">
+                            <button
+                              type="button"
+                              onClick={() => setFormData(prev => ({
+                                ...prev,
+                                courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
+                              }))}
+                              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border-2 ${
+                                currentAdmType === 'paid'
+                                  ? 'bg-blue-600 text-white border-blue-600 shadow'
+                                  : 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-blue-400'
+                              }`}
+                            >
+                              <i className="fa-solid fa-indian-rupee-sign mr-1"></i> Paid
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setFormData(prev => ({
+                                ...prev,
+                                courseDetails: { ...prev.courseDetails, admissionType: 'free' }
+                              }))}
+                              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border-2 ${
+                                currentAdmType === 'free'
+                                  ? 'bg-green-600 text-white border-green-600 shadow'
+                                  : 'bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 border-green-400'
+                              }`}
+                            >
+                              <i className="fa-solid fa-circle-check mr-1"></i> Free (Kisan)
+                            </button>
+                          </div>
+                        )}
+
+                        {/* Others: auto-locked to Paid */}
+                        {!isScSt && !isKisanEligible && (
+                          <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-full shadow">
+                            <i className="fa-solid fa-indian-rupee-sign"></i> Paid Admission
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Document hint based on type */}
+                      <div className={`mt-3 text-xs rounded-lg px-3 py-2 ${
+                        currentAdmType === 'free'
+                          ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300'
+                      }`}>
+                        {currentAdmType === 'paid' && (
+                          <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet. <strong>Add all Qualification Documents as per your Course.</strong></>
+                        )}
+                        {currentAdmType === 'free' && ['SC', 'ST'].includes(cat) && (
+                          <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet, Caste Certificate, Income Certificate, Resident Certificate.</>
+                        )}
+                        {currentAdmType === 'free' && ['General', 'OBC'].includes(cat) && (
+                          <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet, Caste Certificate, Income Certificate, Resident Certificate, <strong>PM Kisan Certificate & CM Kisan Certificate (both mandatory).</strong></>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
             </motion.div>
 
             {(formData.referralCode || referralMode) && (
@@ -1979,6 +2095,8 @@ const SinglePageStudentRegistration = ({
                         }}
                         initialDocuments={formData.documents}
                         isRequired={true}
+                        admissionType={formData.courseDetails.admissionType || 'paid'}
+                        category={formData.personalDetails.category || 'General'}
                     />
                 </div>
             </motion.div>
