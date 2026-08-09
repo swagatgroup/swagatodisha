@@ -1838,35 +1838,35 @@ const SinglePageStudentRegistration = ({
 
                         {/* General/OBC: toggle */}
                         {isKisanEligible && (
-                          <div className="flex items-center gap-3">
-                            <button
-                              type="button"
-                              onClick={() => setFormData(prev => ({
-                                ...prev,
-                                courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
-                              }))}
-                              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border-2 ${
-                                currentAdmType === 'paid'
-                                  ? 'bg-blue-600 text-white border-blue-600 shadow'
-                                  : 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 border-blue-400'
-                              }`}
-                            >
-                              <i className="fa-solid fa-indian-rupee-sign mr-1"></i> Paid
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setFormData(prev => ({
-                                ...prev,
-                                courseDetails: { ...prev.courseDetails, admissionType: 'free' }
-                              }))}
-                              className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border-2 ${
-                                currentAdmType === 'free'
-                                  ? 'bg-green-600 text-white border-green-600 shadow'
-                                  : 'bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 border-green-400'
-                              }`}
-                            >
-                              <i className="fa-solid fa-circle-check mr-1"></i> Free (Kisan)
-                            </button>
+                          <div className="flex items-center gap-6">
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="admissionType"
+                                value="paid"
+                                checked={currentAdmType === 'paid'}
+                                onChange={() => setFormData(prev => ({
+                                  ...prev,
+                                  courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
+                                }))}
+                                className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                              />
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="admissionType"
+                                value="free"
+                                checked={currentAdmType === 'free'}
+                                onChange={() => setFormData(prev => ({
+                                  ...prev,
+                                  courseDetails: { ...prev.courseDetails, admissionType: 'free' }
+                                }))}
+                                className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                              />
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Free (Kisan)</span>
+                            </label>
                           </div>
                         )}
 
@@ -1891,7 +1891,7 @@ const SinglePageStudentRegistration = ({
                           <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet, Caste Certificate, Income Certificate, Resident Certificate.</>
                         )}
                         {currentAdmType === 'free' && ['General', 'OBC'].includes(cat) && (
-                          <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet, Caste Certificate, Income Certificate, Resident Certificate, <strong>PM Kisan Certificate & CM Kisan Certificate (both mandatory).</strong></>
+                          <><i className="fa-solid fa-circle-info mr-1"></i> Required: Passport Photo, Aadhar Card, 10th Marksheet, Caste Certificate, Income Certificate, Resident Certificate, <strong>EITHER PM Kisan Certificate OR CM Kisan Certificate (any one is mandatory).</strong></>
                         )}
                       </div>
                     </div>

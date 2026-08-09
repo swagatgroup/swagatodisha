@@ -46,13 +46,39 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             if (['SC', 'ST'].includes(category)) {
                 requiredForThisStudent.push('caste_certificate', 'income_certificate', 'resident_certificate');
             } else if (['General', 'OBC'].includes(category)) {
-                requiredForThisStudent.push('caste_certificate', 'income_certificate', 'resident_certificate', 'pm_kisan', 'cm_kisan');
+                requiredForThisStudent.push('caste_certificate', 'income_certificate', 'resident_certificate');
+                // The actual requirement for Kisan is handled dynamically in the map below
             }
         }
 
         // Filter docs and set isRequired
         return allDocs.map(doc => {
-            const isReq = requiredForThisStudent.includes(doc.id) || requiredForThisStudent.includes(doc.key);
+            let isReq = requiredForThisStudent.includes(doc.id) || requiredForThisStudent.includes(doc.key);
+
+            // Special logic for PM/CM Kisan "either or" requirement
+            if ((doc.id === 'pm_kisan' || doc.id === 'cm_kisan') && admissionType === 'free' && ['General', 'OBC'].includes(category)) {
+                const hasPM = !!documents['pm_kisan'];
+                const hasCM = !!documents['cm_kisan'];
+                
+                if (!hasPM && !hasCM) {
+                    // If neither is uploaded, both appear required to prompt the user
+                    isReq = true;
+                } else if (hasPM && !hasCM) {
+                    // If PM is uploaded, PM is required, CM is not
+                    isReq = doc.id === 'pm_kisan';
+                } else if (hasCM && !hasPM) {
+                    // If CM is uploaded, CM is required, PM is not
+                    isReq = doc.id === 'cm_kisan';
+                } else {
+                    // Both uploaded (unlikely but possible), mark both as required
+                    isReq = true;
+                }
+
+                // Add a note to clarify
+                if (!doc.validation) doc.validation = {};
+                doc.validation.note = "Upload EITHER PM Kisan OR CM Kisan certificate.";
+            }
+
             return { ...doc, isRequired: isReq };
         }).filter(doc => {
             // Hide Kisan docs for non-Kisan students
