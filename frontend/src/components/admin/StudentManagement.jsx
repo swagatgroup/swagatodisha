@@ -302,9 +302,12 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
         fetchStudents();
         fetchRejectionReasons();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, debouncedSearchTerm, sortBy, selectedSession, filterStatus, filterCourse, 
-        filterCategory, filterCollege, filterGender, filterDistrict, filterCity, 
-        filterState, filterStream, filterCampus, filterSubmitterRole, listType]);
+    }, [
+        debouncedSearchTerm, filterStatus, filterCourse, filterCategory, 
+        filterCollege, filterGender, filterDistrict, filterCity, filterState, 
+        filterStream, filterCampus, filterAdmissionType, filterSubmitterRole, selectedSession, 
+        sortBy, listType
+    ]);
 
     const fetchRejectionReasons = async () => {
         try {

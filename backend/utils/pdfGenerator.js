@@ -30,6 +30,40 @@ class PDFGenerator {
         }
     }
 
+    async generateApplicationPDF(application, termsAndConditions) {
+        return new Promise((resolve, reject) => {
+            try {
+                const doc = new PDFDocument({ margin: 50, size: 'A4' });
+                const chunks = [];
+
+                doc.on('data', chunk => chunks.push(chunk));
+                doc.on('end', () => resolve(Buffer.concat(chunks)));
+                doc.on('error', err => reject(err));
+
+                this.addApplicationHeader(doc, application);
+                this.addPersonalDetails(doc, application);
+                
+                if (application.courseDetails) {
+                    this.addCourseDetails(doc, application);
+                } else if (application.academicDetails) {
+                    this.addAcademicDetails(doc, application);
+                }
+                
+                this.addGuardianDetails(doc, application);
+                this.addFinancialDetails(doc, application);
+                this.addDocumentsSection(doc, application);
+                
+                if (termsAndConditions || application.termsAccepted) {
+                    this.addTermsAndConditions(doc);
+                }
+
+                doc.end();
+            } catch (error) {
+                reject(error);
+            }
+        });
+    }
+
     async generateCombinedPDF(application, selectedDocuments = []) {
         try {
             const fileName = `application_${application.applicationId}_combined_${Date.now()}.pdf`;
@@ -315,6 +349,27 @@ class PDFGenerator {
         this.addFieldList(doc, academicFields);
     }
 
+    addCourseDetails(doc, application) {
+        const courseDetails = application.courseDetails || {};
+
+        doc.addPage();
+        doc.fontSize(16)
+            .font('Helvetica-Bold')
+            .fillColor('#1f2937')
+            .text('Course Details', 50, 50);
+
+        doc.moveDown(0.5);
+
+        const courseFields = [
+            { label: 'Admission Type', value: courseDetails.admissionType === 'free' ? 'Free Admission' : 'Paid Admission' },
+            { label: 'Selected Course', value: courseDetails.selectedCourse || courseDetails.customCourse || 'N/A' },
+            { label: 'Stream', value: courseDetails.stream || 'N/A' },
+            { label: 'Institution', value: courseDetails.institutionName || 'N/A' }
+        ];
+
+        this.addFieldList(doc, courseFields);
+    }
+
     addGuardianDetails(doc, application) {
         const guardianDetails = application.guardianDetails || {};
 
@@ -337,6 +392,7 @@ class PDFGenerator {
     }
 
     addFinancialDetails(doc, application) {
+        const financialStatus = application.financialStatus || {};
         const financialDetails = application.financialDetails || {};
 
         doc.fontSize(16)
@@ -347,10 +403,10 @@ class PDFGenerator {
         doc.moveDown(0.5);
 
         const financialFields = [
-            { label: 'Annual Income', value: financialDetails.annualIncome || 'N/A' },
-            { label: 'Payment Method', value: financialDetails.paymentMethod || 'N/A' },
-            { label: 'Scholarship Applied', value: financialDetails.scholarshipApplied ? 'Yes' : 'No' },
-            { label: 'Scholarship Details', value: financialDetails.scholarshipDetails || 'N/A' }
+            { label: 'Total Course Fees', value: financialStatus.totalFees ? `Rs. ${financialStatus.totalFees}` : 'Rs. 0' },
+            { label: 'Amount Paid', value: financialStatus.paidAmount ? `Rs. ${financialStatus.paidAmount}` : 'Rs. 0' },
+            { label: 'Due Amount', value: financialStatus.dueAmount ? `Rs. ${financialStatus.dueAmount}` : 'Rs. 0' },
+            { label: 'Annual Income', value: financialDetails.annualIncome || 'N/A' }
         ];
 
         this.addFieldList(doc, financialFields);
@@ -364,24 +420,32 @@ class PDFGenerator {
 
         doc.moveDown(0.5);
 
-        const documents = application.documents || {};
-        const documentList = [
-            { name: 'Aadhar Card', status: documents.aadharCard ? 'Uploaded' : 'Not Uploaded' },
-            { name: 'Passport Photo', status: documents.passportPhoto ? 'Uploaded' : 'Not Uploaded' },
-            { name: '10th Marksheet', status: documents.tenthMarksheet ? 'Uploaded' : 'Not Uploaded' },
-            { name: '12th Marksheet', status: documents.twelfthMarksheet ? 'Uploaded' : 'Not Uploaded' },
-            { name: 'Migration Certificate', status: documents.migrationCertificate ? 'Uploaded' : 'Not Uploaded' },
-            { name: 'Character Certificate', status: documents.characterCertificate ? 'Uploaded' : 'Not Uploaded' }
-        ];
+        const documents = application.documents || [];
+        
+        if (!Array.isArray(documents) || documents.length === 0) {
+            doc.fontSize(12)
+               .font('Helvetica')
+               .fillColor('#6b7280')
+               .text('No documents uploaded.');
+            return;
+        }
 
-        documentList.forEach(docItem => {
+        const formatLabel = (docType) => {
+            return docType.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        };
+
+        documents.forEach(docItem => {
+            if (!docItem || !docItem.filePath) return;
+            
+            const label = formatLabel(docItem.documentType || 'Document');
+            
             doc.fontSize(12)
                 .font('Helvetica')
                 .fillColor('#374151')
-                .text(`• ${docItem.name}: `, 70, doc.y);
+                .text(`• ${label}: `, 70, doc.y, { continued: true });
 
-            doc.fillColor(docItem.status === 'Uploaded' ? '#10b981' : '#ef4444')
-                .text(docItem.status, doc.x, doc.y);
+            doc.fillColor('#2563eb')
+                .text('View Document', { link: docItem.filePath, underline: true });
 
             doc.moveDown(0.3);
         });

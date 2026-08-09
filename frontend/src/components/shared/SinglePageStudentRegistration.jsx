@@ -241,23 +241,37 @@ const SinglePageStudentRegistration = ({
                         setApplication(response.data.data);
                         // Populate form with existing data
                         const existingData = response.data.data;
-                        // Convert ISO date format to DD/MM/YYYY for display
-                        const existingPersonalDetails = existingData.personalDetails ? {
-                            ...existingData.personalDetails,
-                            dateOfBirth: convertISOToDDMMYYYY(existingData.personalDetails.dateOfBirth) || existingData.personalDetails.dateOfBirth,
-                            
-                        } : formData.personalDetails;
+                        
+                        // Merge personal details
+                        const existingPersonalDetails = {
+                            ...BLANK_FORM.personalDetails,
+                            ...(existingData.personalDetails || {}),
+                            dateOfBirth: existingData.personalDetails?.dateOfBirth ? convertISOToDDMMYYYY(existingData.personalDetails.dateOfBirth) : "",
+                        };
+                        
                         setFormData({
                             personalDetails: existingPersonalDetails,
                             contactDetails: {
-                                ...(existingData.contactDetails || formData.contactDetails),
+                                ...BLANK_FORM.contactDetails,
+                                ...(existingData.contactDetails || {}),
+                                currentAddress: {
+                                    ...BLANK_FORM.contactDetails.currentAddress,
+                                    ...(existingData.contactDetails?.currentAddress || {})
+                                },
                                 permanentAddress: {
-                                    ...(existingData.contactDetails?.permanentAddress || formData.contactDetails.permanentAddress),
+                                    ...BLANK_FORM.contactDetails.permanentAddress,
+                                    ...(existingData.contactDetails?.permanentAddress || {}),
                                     district: existingData.contactDetails?.permanentAddress?.district || "",
                                 },
                             },
-                            courseDetails: existingData.courseDetails || formData.courseDetails,
-                            guardianDetails: existingData.guardianDetails || formData.guardianDetails,
+                            courseDetails: {
+                                ...BLANK_FORM.courseDetails,
+                                ...(existingData.courseDetails || {})
+                            },
+                            guardianDetails: {
+                                ...BLANK_FORM.guardianDetails,
+                                ...(existingData.guardianDetails || {})
+                            },
                             documents: existingData.documents || [],
                             termsAccepted: existingData.termsAccepted || false,
                             referralCode: existingData.referralInfo?.referralCode || localStorage.getItem('pendingReferralCode') || "",
@@ -582,6 +596,17 @@ const SinglePageStudentRegistration = ({
         const state = states[cityIndex];
         const street = `${getRandomInt(1, 999)} ${getRandomElement(streets)}`;
         
+        let mockCollege = '';
+        let mockCourse = '';
+        if (colleges && colleges.length > 0) {
+            const randomCollege = getRandomElement(colleges);
+            mockCollege = randomCollege._id;
+            if (randomCollege.courses && randomCollege.courses.length > 0) {
+                const randomCourse = getRandomElement(randomCollege.courses);
+                mockCourse = randomCourse.courseName;
+            }
+        }
+        
         const categories = ["General", "OBC", "SC", "ST", "EWS"];
         const genders = ["Male", "Female", "Other"];
         const relationships = ["Father", "Mother", "Brother", "Sister", "Uncle", "Aunt", "Grandfather", "Grandmother", "Other"];
@@ -615,19 +640,21 @@ const SinglePageStudentRegistration = ({
                     district: city,
                     state: state,
                     pincode: getRandomPincode(),
+                    country: 'India'
                 },
-                presentAddress: {
+                currentAddress: {
                     street: street,
                     city: city,
-                    district: city,
                     state: state,
                     pincode: getRandomPincode(),
+                    country: 'India'
                 },
             },
             courseDetails: {
-                institutionName: `${city} College`,
-                courseName: getRandomElement(courses),
-                stream: getRandomElement(streams),
+                selectedCollege: mockCollege,
+                selectedCourse: mockCourse,
+                stream: '',
+                campus: ''
             },
             guardianDetails: {
                 guardianName: guardianName,

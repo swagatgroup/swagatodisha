@@ -34,6 +34,10 @@ const documentRequirements = {
                 note: 'If marksheet and certificate are separate, upload both as combined PDF'
             }
         },
+    ],
+
+    // Optional documents
+    optional: [
         {
             key: 'caste_certificate',
             label: 'Caste Certificate',
@@ -41,7 +45,7 @@ const documentRequirements = {
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: 10 * 1024 * 1024, // 10MB
             validation: {
-                required: true,
+                required: false,
                 maxAge: 5, // years
                 checkDate: true
             }
@@ -53,15 +57,11 @@ const documentRequirements = {
             allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
             maxSize: 10 * 1024 * 1024, // 10MB
             validation: {
-                required: true,
+                required: false,
                 maxAge: 1, // year
                 checkDate: true
             }
-        }
-    ],
-
-    // Optional documents
-    optional: [
+        },
         {
             key: 'resident_certificate',
             label: 'Resident Certificate',

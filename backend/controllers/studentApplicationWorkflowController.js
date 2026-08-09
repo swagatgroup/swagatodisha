@@ -24,12 +24,53 @@ const calculateTotalFees = async (courseDetails, category) => {
 };
 
 // Document validation helper functions
-const validateDocumentRequirements = (documents) => {
+const validateDocumentRequirements = (documents, application) => {
     const errors = [];
     const warnings = [];
 
-    // Check required documents
-    const requiredDocs = documentRequirements.required;
+    // Base required documents
+    const requiredDocs = [...documentRequirements.required];
+    
+    // Check conditional documents for free admission
+    if (application && application.courseDetails && application.courseDetails.admissionType === 'free') {
+        const cat = application.personalDetails?.category || 'General';
+        const getOptionalDoc = (key) => documentRequirements.optional.find(d => d.key === key);
+        
+        if (['SC', 'ST'].includes(cat)) {
+            const casteDoc = getOptionalDoc('caste_certificate');
+            if (casteDoc) requiredDocs.push(casteDoc);
+            
+            const incomeDoc = getOptionalDoc('income_certificate');
+            if (incomeDoc) requiredDocs.push(incomeDoc);
+            
+            const residentDoc = getOptionalDoc('resident_certificate');
+            if (residentDoc) requiredDocs.push(residentDoc);
+        } else if (['General', 'OBC'].includes(cat)) {
+            const casteDoc = getOptionalDoc('caste_certificate');
+            if (casteDoc) requiredDocs.push(casteDoc);
+            
+            const incomeDoc = getOptionalDoc('income_certificate');
+            if (incomeDoc) requiredDocs.push(incomeDoc);
+            
+            const residentDoc = getOptionalDoc('resident_certificate');
+            if (residentDoc) requiredDocs.push(residentDoc);
+            
+            // For General/OBC, check if EITHER pm_kisan OR cm_kisan is uploaded
+            let hasKisan = false;
+            let uploadedDocsArr = [];
+            if (Array.isArray(documents)) {
+                uploadedDocsArr = documents;
+            } else if (documents && typeof documents === 'object') {
+                uploadedDocsArr = Object.entries(documents).map(([key, doc]) => ({ documentType: key, filePath: doc.filePath || doc.url || doc.downloadUrl }));
+            }
+            const hasPM = uploadedDocsArr.some(d => d && d.documentType === 'pm_kisan' && d.filePath);
+            const hasCM = uploadedDocsArr.some(d => d && d.documentType === 'cm_kisan' && d.filePath);
+            
+            if (!hasPM && !hasCM) {
+                errors.push(`Missing required document: EITHER PM Kisan OR CM Kisan Certificate is mandatory for Free Education (${cat})`);
+            }
+        }
+    }
     
     // Handle both array and object formats
     let uploadedDocs = [];
@@ -634,7 +675,7 @@ const submitApplication = async (req, res) => {
         }
 
         // Validate document requirements
-        const documentValidation = validateDocumentRequirements(documentsArray);
+        const documentValidation = validateDocumentRequirements(documentsArray, application);
         if (documentValidation.errors.length > 0) {
             return res.status(400).json({
                 success: false,
@@ -809,7 +850,7 @@ const generateApplicationPDF = async (req, res) => {
         }
 
         // Validate mandatory documents before PDF generation
-        const documentValidation = validateDocumentRequirements(application.documents);
+        const documentValidation = validateDocumentRequirements(application.documents, application);
         if (documentValidation.errors.length > 0) {
             return res.status(400).json({
                 success: false,
