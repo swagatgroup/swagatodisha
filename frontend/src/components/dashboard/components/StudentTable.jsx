@@ -17,6 +17,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
     const [cityFilter, setCityFilter] = useState('all');
     const [stateFilter, setStateFilter] = useState('all');
     const [streamFilter, setStreamFilter] = useState('all');
+    const [admissionTypeFilter, setAdmissionTypeFilter] = useState('all');
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
@@ -478,8 +479,11 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
         const matchesStream = streamFilter === 'all' ||
             student.courseDetails?.stream === streamFilter;
 
+        const matchesAdmissionType = admissionTypeFilter === 'all' ||
+            (student.courseDetails?.admissionType || 'paid') === admissionTypeFilter;
+
         return matchesSearch && matchesStatus && matchesCourse && matchesCategory && 
-               matchesGender && matchesDistrict && matchesCity && matchesState && matchesStream;
+               matchesGender && matchesDistrict && matchesCity && matchesState && matchesStream && matchesAdmissionType;
     });
 
     const sortedStudents = [...filteredStudents].sort((a, b) => {
@@ -570,7 +574,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                 </div>
 
                 {/* Filters Row 2 - Geographical */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <select
                         value={stateFilter}
                         onChange={(e) => setStateFilter(e.target.value)}
@@ -614,9 +618,19 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                             <option key={stream} value={stream}>{stream}</option>
                         ))}
                     </select>
+
+                    <select
+                        value={admissionTypeFilter}
+                        onChange={(e) => setAdmissionTypeFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    >
+                        <option value="all">All Adm. Types</option>
+                        <option value="paid">Paid</option>
+                        <option value="free">Free</option>
+                    </select>
                 </div>
                     
-                {(searchTerm || statusFilter !== 'all' || courseFilter !== 'all' || categoryFilter !== 'all' || genderFilter !== 'all' || districtFilter !== 'all' || cityFilter !== 'all' || stateFilter !== 'all' || streamFilter !== 'all') && (
+                {(searchTerm || statusFilter !== 'all' || courseFilter !== 'all' || categoryFilter !== 'all' || genderFilter !== 'all' || districtFilter !== 'all' || cityFilter !== 'all' || stateFilter !== 'all' || streamFilter !== 'all' || admissionTypeFilter !== 'all') && (
                     <button
                         onClick={() => {
                             setSearchTerm('');
@@ -628,6 +642,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                             setCityFilter('all');
                             setStateFilter('all');
                             setStreamFilter('all');
+                            setAdmissionTypeFilter('all');
                         }}
                         className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
                     >
@@ -677,6 +692,17 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 <div className="flex items-center space-x-1">
                                     <span>Course</span>
                                     {sortConfig.key === 'courseDetails.selectedCourse' && (
+                                        <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                    )}
+                                </div>
+                            </th>
+                            <th
+                                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                                onClick={() => handleSort('courseDetails.admissionType')}
+                            >
+                                <div className="flex items-center space-x-1">
+                                    <span>Adm. Type</span>
+                                    {sortConfig.key === 'courseDetails.admissionType' && (
                                         <span>{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                     )}
                                 </div>
@@ -745,6 +771,15 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                     <div className="text-sm text-gray-900 dark:text-gray-100">
                                         {student.courseDetails?.selectedCourse || 'N/A'}
                                     </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                        (student.courseDetails?.admissionType === 'free')
+                                            ? 'bg-green-100 text-green-800'
+                                            : 'bg-blue-100 text-blue-800'
+                                    }`}>
+                                        {(student.courseDetails?.admissionType === 'free') ? 'Free' : 'Paid'}
+                                    </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {student.contactDetails?.primaryPhone || 'N/A'}
