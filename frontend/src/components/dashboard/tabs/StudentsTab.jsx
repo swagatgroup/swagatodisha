@@ -11,6 +11,7 @@ const StudentsTab = () => {
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
     const [filterType, setFilterType] = useState('all'); // 'all', 'referral', 'direct'
+    const [admissionTypeFilter, setAdmissionTypeFilter] = useState('all');
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingStudent, setEditingStudent] = useState(null);
     const [formData, setFormData] = useState({
@@ -61,7 +62,13 @@ const StudentsTab = () => {
             matchesFilter = !student.referralCode || student.referralCode === '';
         }
 
-        return matchesSearch && matchesFilter;
+        let matchesAdmissionType = true;
+        if (admissionTypeFilter !== 'all') {
+            const sAdmType = student.admissionType || 'paid'; // Default to paid if undefined
+            matchesAdmissionType = sAdmType === admissionTypeFilter;
+        }
+
+        return matchesSearch && matchesFilter && matchesAdmissionType;
     });
 
     const handleSelectAll = (checked) => {
@@ -237,6 +244,15 @@ const StudentsTab = () => {
                     </div>
                     <div className="flex items-center space-x-4">
                         <select
+                            value={admissionTypeFilter}
+                            onChange={(e) => setAdmissionTypeFilter(e.target.value)}
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        >
+                            <option value="all">All Types</option>
+                            <option value="paid">Paid</option>
+                            <option value="free">Free</option>
+                        </select>
+                        <select
                             value={filterPeriod}
                             onChange={(e) => setFilterPeriod(e.target.value)}
                             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -265,6 +281,7 @@ const StudentsTab = () => {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adm. Type</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referral</th>
@@ -317,6 +334,15 @@ const StudentsTab = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{student.id}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.address}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.class}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                                                ((student.admissionType || 'paid') === 'free')
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-blue-100 text-blue-800'
+                                            }`}>
+                                                {((student.admissionType || 'paid') === 'free') ? 'Free' : 'Paid'}
+                                            </span>
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.dob}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.phone}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">

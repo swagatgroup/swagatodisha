@@ -165,7 +165,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             sortOrder = 'desc',
             paymentStatus,
             listType = 'main',
-            referralType
+            referralType,
+            admissionType
         } = req.query;
 
         // Build filter query
@@ -354,6 +355,22 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             } else {
                 // It's a role - filter by role
                 filter.submitterRole = submitterRole;
+            }
+        }
+
+        // Filter by admissionType (free/paid)
+        if (admissionType) {
+            if (admissionType === 'paid') {
+                // Older records without this field are assumed paid
+                andConditions.push({
+                    $or: [
+                        { 'courseDetails.admissionType': 'paid' },
+                        { 'courseDetails.admissionType': { $exists: false } },
+                        { 'courseDetails.admissionType': null }
+                    ]
+                });
+            } else {
+                filter['courseDetails.admissionType'] = admissionType;
             }
         }
 
