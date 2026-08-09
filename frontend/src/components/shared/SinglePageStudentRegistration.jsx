@@ -1789,13 +1789,6 @@ const SinglePageStudentRegistration = ({
                   const isKisanEligible = ['General', 'OBC'].includes(cat);
                   const currentAdmType = formData.courseDetails.admissionType || 'paid';
 
-                  // Force state if SC/ST
-                  if (isScSt && currentAdmType !== 'free') {
-                    setTimeout(() => setFormData(prev => ({
-                      ...prev,
-                      courseDetails: { ...prev.courseDetails, admissionType: 'free' }
-                    })), 0);
-                  }
                   // Force state if not eligible for free
                   if (!isScSt && !isKisanEligible && currentAdmType !== 'paid') {
                     setTimeout(() => setFormData(prev => ({
@@ -1829,15 +1822,8 @@ const SinglePageStudentRegistration = ({
                           )}
                         </div>
 
-                        {/* SC/ST: auto-locked to Free */}
-                        {isScSt && (
-                          <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-full shadow">
-                            <i className="fa-solid fa-circle-check"></i> Free Admission
-                          </span>
-                        )}
-
-                        {/* General/OBC: toggle */}
-                        {isKisanEligible && (
+                        {/* Everyone can choose Paid or Free */}
+                        {(isScSt || isKisanEligible) && (
                           <div className="flex items-center gap-6">
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input
@@ -1851,7 +1837,7 @@ const SinglePageStudentRegistration = ({
                                 }))}
                                 className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                               />
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid</span>
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid Admission</span>
                             </label>
                             <label className="flex items-center gap-2 cursor-pointer">
                               <input
@@ -1865,7 +1851,9 @@ const SinglePageStudentRegistration = ({
                                 }))}
                                 className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                               />
-                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Free (Kisan)</span>
+                              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {isScSt ? 'Free Admission' : 'Free (Kisan)'}
+                              </span>
                             </label>
                           </div>
                         )}

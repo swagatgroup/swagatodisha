@@ -180,11 +180,7 @@ const UniversalStudentRegistration = ({
 
   // Determine admission type based on category
   const getAdmissionType = () => {
-    const category = formData.personalDetails.category;
-    const admissionType = formData.courseDetails.admissionType;
-    if (['SC', 'ST'].includes(category)) return 'free'; // always free
-    if (['General', 'OBC'].includes(category)) return admissionType || 'paid'; // student chooses
-    return 'paid'; // default
+    return formData.courseDetails.admissionType || 'paid'; // everyone can choose, defaults to paid if not set
   };
 
   // Get required document IDs based on category + admissionType
@@ -1605,15 +1601,8 @@ const UniversalStudentRegistration = ({
                   )}
                 </div>
 
-                {/* SC/ST: auto-locked to Free */}
-                {isScSt && (
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white text-sm font-semibold rounded-full shadow">
-                    <i className="fa-solid fa-circle-check"></i> Free Admission
-                  </span>
-                )}
-
-                {/* General/OBC: toggle */}
-                {isKisanEligible && (
+                {/* Everyone can choose Paid or Free */}
+                {(isScSt || isKisanEligible) && (
                   <div className="flex items-center gap-6">
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
@@ -1627,7 +1616,7 @@ const UniversalStudentRegistration = ({
                         }))}
                         className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                       />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid Admission</span>
                     </label>
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
@@ -1641,7 +1630,9 @@ const UniversalStudentRegistration = ({
                         }))}
                         className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
                       />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Free (Kisan)</span>
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {isScSt ? 'Free Admission' : 'Free (Kisan)'}
+                      </span>
                     </label>
                   </div>
                 )}
