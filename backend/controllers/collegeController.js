@@ -419,7 +419,7 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                 isActive: true
             })
                 .sort({ courseName: 1 })
-                .select('courseName courseCode streams');
+                .select('courseName courseCode price streams');
 
             const campuses = await Campus.find({
                 college: college._id,
@@ -434,6 +434,7 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                 courses: courses.map(c => ({
                     _id: c._id,
                     courseName: c.courseName,
+                    price: c.price,
                     streams: c.streams ? c.streams.filter(s => s.isActive).map(s => s.name) : []
                 })),
                 campuses: campuses.map(c => ({

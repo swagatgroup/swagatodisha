@@ -3,6 +3,25 @@ const User = require('../models/User');
 const PDFGenerator = require('../utils/pdfGenerator');
 const path = require('path');
 const documentRequirements = require('../config/documentRequirements');
+const CollegeCourse = require('../models/CollegeCourse');
+
+const calculateTotalFees = async (courseDetails, category) => {
+    let totalFees = 0;
+    if (courseDetails?.admissionType === 'paid' && courseDetails?.selectedCollege && courseDetails?.selectedCourse) {
+        try {
+            const course = await CollegeCourse.findOne({
+                college: courseDetails.selectedCollege,
+                courseName: courseDetails.selectedCourse
+            });
+            if (course) {
+                totalFees = course.price || 0;
+            }
+        } catch (error) {
+            console.error('Error fetching course price:', error);
+        }
+    }
+    return totalFees;
+};
 
 // Document validation helper functions
 const validateDocumentRequirements = (documents) => {
@@ -188,6 +207,15 @@ const createApplication = async (req, res) => {
                 existingStudentDraft.guardianDetails = normalizedGuardianDetails;
                 existingStudentDraft.isOwnApplication = true;
                 if (financialDetails) existingStudentDraft.financialDetails = financialDetails;
+                
+                const fees = await calculateTotalFees(courseDetails, finalPersonalDetails?.category);
+                if (!existingStudentDraft.financialStatus) {
+                    existingStudentDraft.financialStatus = { totalFees: fees, dueAmount: fees };
+                } else {
+                    existingStudentDraft.financialStatus.totalFees = fees;
+                    existingStudentDraft.financialStatus.dueAmount = fees - (existingStudentDraft.financialStatus.paidAmount || 0);
+                }
+                
                 // Preserve original referralInfo from registration; don't overwrite unless explicitly passed
                 if (referralCode && referralInfo && referralInfo.referralCode) {
                     existingStudentDraft.referralInfo = referralInfo;
@@ -246,6 +274,14 @@ const createApplication = async (req, res) => {
                     if (financialDetails) existingDraft.financialDetails = financialDetails;
                     if (referralInfo && referralInfo.referralCode) existingDraft.referralInfo = referralInfo;
 
+                    const fees = await calculateTotalFees(courseDetails, finalPersonalDetails?.category);
+                    if (!existingDraft.financialStatus) {
+                        existingDraft.financialStatus = { totalFees: fees, dueAmount: fees };
+                    } else {
+                        existingDraft.financialStatus.totalFees = fees;
+                        existingDraft.financialStatus.dueAmount = fees - (existingDraft.financialStatus.paidAmount || 0);
+                    }
+
                     await existingDraft.save();
                     await existingDraft.populate('user', 'fullName email phoneNumber');
 
@@ -302,6 +338,8 @@ const createApplication = async (req, res) => {
             }
         }
 
+        const initialFees = await calculateTotalFees(courseDetails, finalPersonalDetails?.category);
+        
         // Create application
         const applicationData = {
             user: applicationUserId,
@@ -310,6 +348,11 @@ const createApplication = async (req, res) => {
             courseDetails,
             guardianDetails: normalizedGuardianDetails,
             financialDetails,
+            financialStatus: {
+                totalFees: initialFees,
+                dueAmount: initialFees,
+                paidAmount: 0
+            },
             referralInfo,
             isOwnApplication,
             submittedBy: req.user._id,
@@ -499,6 +542,16 @@ const saveDraft = async (req, res) => {
                     }
                 }
             });
+            
+            if (data.courseDetails) {
+                const fees = await calculateTotalFees(appDoc.courseDetails, appDoc.personalDetails?.category);
+                if (!appDoc.financialStatus) {
+                    appDoc.financialStatus = { totalFees: fees, dueAmount: fees };
+                } else {
+                    appDoc.financialStatus.totalFees = fees;
+                    appDoc.financialStatus.dueAmount = fees - (appDoc.financialStatus.paidAmount || 0);
+                }
+            }
         }
 
         if (stage) {

@@ -298,11 +298,45 @@ const updateBankDetails = async (req, res) => {
     }
 };
 
+// @desc    Verify a referral code and return the referrer's name
+// @route   GET /api/referral/verify/:code
+// @access  Public
+const verifyReferralCode = async (req, res) => {
+    try {
+        const { code } = req.params;
+        if (!code) {
+            return res.status(400).json({ success: false, message: 'Referral code is required' });
+        }
+
+        const referrer = await User.findOne({
+            $or: [
+                { referralCode: code },
+                { email: code.toLowerCase().trim() }
+            ]
+        }).select('firstName lastName fullName role');
+
+        if (!referrer) {
+            return res.status(404).json({ success: false, message: 'Invalid referral code' });
+        }
+
+        res.status(200).json({
+            success: true,
+            referrerName: referrer.fullName || `${referrer.firstName || ''} ${referrer.lastName || ''}`.trim(),
+            role: referrer.role
+        });
+
+    } catch (error) {
+        console.error('Error verifying referral code:', error);
+        res.status(500).json({ success: false, message: 'Server error verifying referral code' });
+    }
+};
+
 module.exports = {
     generateReferralCode,
     getReferralData,
     trackReferral,
     updateReferralStatus,
     getReferralStats,
-    updateBankDetails
+    updateBankDetails,
+    verifyReferralCode
 };

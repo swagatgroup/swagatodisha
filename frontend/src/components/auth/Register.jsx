@@ -5,6 +5,7 @@ import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import Swal from 'sweetalert2';
+import api from '../../utils/api';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -12,8 +13,13 @@ const Register = () => {
         email: '',
         password: '',
         confirmPassword: '',
-        phoneNumber: ''
+        phoneNumber: '',
+        referralCode: ''
     });
+    const [verifyingReferral, setVerifyingReferral] = useState(false);
+    const [referralVerified, setReferralVerified] = useState(false);
+    const [referrerName, setReferrerName] = useState('');
+    const [referralError, setReferralError] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -30,8 +36,32 @@ const Register = () => {
         const refCode = params.get('ref');
         if (refCode) {
             localStorage.setItem('pendingReferralCode', refCode);
+            setFormData(prev => ({ ...prev, referralCode: refCode }));
         }
     }, [location]);
+
+    const handleVerifyReferral = async () => {
+        if (!formData.referralCode) {
+            setReferralError('Please enter a referral code first');
+            return;
+        }
+        try {
+            setVerifyingReferral(true);
+            setReferralError('');
+            const response = await api.get(`/api/referral/verify/${formData.referralCode}`);
+            if (response.data.success) {
+                setReferralVerified(true);
+                setReferrerName(response.data.referrerName);
+            }
+        } catch (error) {
+            console.error('Error verifying referral code:', error);
+            setReferralVerified(false);
+            setReferrerName('');
+            setReferralError(error.response?.data?.message || 'Invalid referral code');
+        } finally {
+            setVerifyingReferral(false);
+        }
+    };
 
     // Course list removed
 
@@ -166,7 +196,8 @@ const Register = () => {
                 email: formData.email,
                 password: formData.password,
                 phoneNumber: formData.phoneNumber,
-                role: 'student'
+                role: 'student',
+                referralCode: referralVerified ? formData.referralCode : undefined
             });
 
             if (result.success) {
@@ -353,7 +384,59 @@ const Register = () => {
 
                         {/* Course selection removed */}
 
-                        {/* Referral code removed */}
+                        {/* Referral Code (Optional) */}
+                        <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
+                            <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Referral Code (Optional)
+                            </label>
+                            <div className="flex space-x-2">
+                                <input
+                                    id="referralCode"
+                                    name="referralCode"
+                                    type="text"
+                                    value={formData.referralCode}
+                                    onChange={(e) => {
+                                        handleChange(e);
+                                        setReferralVerified(false);
+                                        setReferrerName('');
+                                        setReferralError('');
+                                    }}
+                                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    placeholder="Enter referral code"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleVerifyReferral}
+                                    disabled={!formData.referralCode || verifyingReferral || referralVerified}
+                                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center whitespace-nowrap"
+                                >
+                                    {verifyingReferral ? (
+                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                                    ) : referralVerified ? (
+                                        <><svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Verified</>
+                                    ) : (
+                                        'Verify'
+                                    )}
+                                </button>
+                            </div>
+                            
+                            {/* Referral Status Messages */}
+                            {referralError && (
+                                <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
+                                    <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    {referralError}
+                                </p>
+                            )}
+                            {referralVerified && referrerName && (
+                                <p className="mt-2 text-sm text-green-600 dark:text-green-400 flex items-center font-medium">
+                                    <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    Valid Code! Referred by: {referrerName}
+                                </p>
+                            )}
+                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                Enter a valid referral code and verify it to apply the referral to your account.
+                            </p>
+                        </div>
 
                         {/* Submit Button */}
                         <motion.button

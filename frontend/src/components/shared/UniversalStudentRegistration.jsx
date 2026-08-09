@@ -1470,7 +1470,7 @@ const UniversalStudentRegistration = ({
               </option>
               {availableCourses.map((course) => (
                 <option key={course._id} value={course.courseName}>
-                  {course.courseName}
+                  {course.courseName} {course.price !== undefined && course.price !== null ? `- ₹${course.price}` : ''}
                 </option>
               ))}
             </select>

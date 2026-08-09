@@ -76,14 +76,23 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
         try {
             // Validate mandatory documents before generating PDF
             if (!skipDocumentValidation) {
-            const mandatoryDocuments = [
+            const admissionType = formData?.courseDetails?.admissionType || 'paid';
+            const category = formData?.personalDetails?.category;
+            
+            let mandatoryDocuments = [
                 "passport_photo",
                 "aadhar_card",
                 "marksheet_10th",
-                "tenth_marksheet_certificate",
-                "caste_certificate",
-                "income_certificate",
+                "tenth_marksheet_certificate"
             ];
+            
+            if (admissionType !== 'paid') {
+                if (['SC', 'ST'].includes(category)) {
+                    mandatoryDocuments.push("caste_certificate", "income_certificate", "resident_certificate");
+                } else {
+                    mandatoryDocuments.push("caste_certificate", "income_certificate", "resident_certificate", "pm_kisan", "cm_kisan");
+                }
+            }
             const missingMandatory = mandatoryDocuments.filter(
                 (doc) => !formData?.documents?.[doc] || !formData.documents[doc].downloadUrl
             );
@@ -381,7 +390,32 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                         docX = leftColX;
                         docY += 16;
                     }
-                    drawBoxedField('Uploaded Document', documentNames[k] || k.replace(/_/g, ' '), docX, docY, docBoxW);
+                    
+                    // Draw box
+                    pdf.setFillColor(255, 255, 255);
+                    pdf.setDrawColor(50, 50, 50);
+                    pdf.setLineWidth(0.3);
+                    pdf.rect(docX, docY, docBoxW, 10, 'FD');
+                    
+                    // Label
+                    pdf.setFont('times', 'bold');
+                    pdf.setFontSize(8);
+                    pdf.setTextColor(25, 42, 86);
+                    pdf.text(documentNames[k] || k.replace(/_/g, ' '), docX + 1, docY - 1);
+                    
+                    // Link
+                    if (docItem && docItem.downloadUrl) {
+                        pdf.setFont('times', 'bold');
+                        pdf.setFontSize(9);
+                        pdf.setTextColor(0, 102, 204); // Blue color for link
+                        pdf.textWithLink('View Document', docX + 2, docY + 6, { url: docItem.downloadUrl });
+                    } else {
+                        pdf.setFont('times', 'normal');
+                        pdf.setFontSize(9);
+                        pdf.setTextColor(150, 150, 150);
+                        pdf.text('Not Uploaded', docX + 2, docY + 6);
+                    }
+                    
                     docX += docBoxW + 5;
                 });
                 currentY = docY + 24;

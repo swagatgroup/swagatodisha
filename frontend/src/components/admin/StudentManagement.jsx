@@ -1646,10 +1646,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                         <option value="paid">Paid</option>
                         <option value="free">Free</option>
                     </select>
-                </div>
 
-                {/* Secondary Filters - Geographical */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Secondary Filters - Geographical */}
                     <select
                         value={filterState}
                         onChange={(e) => setFilterState(e.target.value)}
@@ -1698,10 +1696,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             <option key={stream} value={stream}>{stream}</option>
                         ))}
                     </select>
-                </div>
 
-                {/* Tertiary Filters - College, Campus, and Submitter Role */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {/* Tertiary Filters - College, Campus, and Submitter Role */}
                     <select
                         value={filterCollege}
                         onChange={(e) => setFilterCollege(e.target.value)}

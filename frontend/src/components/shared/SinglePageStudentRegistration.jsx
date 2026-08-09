@@ -547,11 +547,11 @@ const SinglePageStudentRegistration = ({
             return getRandomInt(100000, 999999).toString();
         };
         
-        // Random date between 1995 and 2010
+        // Random date between 1995 and 2010 in DD/MM/YYYY format
         const year = getRandomInt(1995, 2010);
         const month = String(getRandomInt(1, 12)).padStart(2, '0');
         const day = String(getRandomInt(1, 28)).padStart(2, '0');
-        const dateOfBirth = `${year}-${month}-${day}`;
+        const dateOfBirth = `${day}/${month}/${year}`;
         
         // Random registration date (recent)
         const regYear = getRandomInt(2020, 2024);
@@ -612,12 +612,14 @@ const SinglePageStudentRegistration = ({
                 permanentAddress: {
                     street: street,
                     city: city,
+                    district: city,
                     state: state,
                     pincode: getRandomPincode(),
                 },
                 presentAddress: {
                     street: street,
                     city: city,
+                    district: city,
                     state: state,
                     pincode: getRandomPincode(),
                 },

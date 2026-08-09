@@ -7,8 +7,12 @@ const {
     trackReferral,
     updateReferralStatus,
     getReferralStats,
-    updateBankDetails
+    updateBankDetails,
+    verifyReferralCode
 } = require('../controllers/referralController');
+
+// Public routes
+router.get('/verify/:code', verifyReferralCode);
 
 // Student routes (protected)
 router.get('/code', protect, generateReferralCode);

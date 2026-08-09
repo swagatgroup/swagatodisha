@@ -571,10 +571,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                             <option key={gender} value={gender}>{gender}</option>
                         ))}
                     </select>
-                </div>
-
-                {/* Filters Row 2 - Geographical */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    
                     <select
                         value={stateFilter}
                         onChange={(e) => setStateFilter(e.target.value)}
@@ -628,27 +625,29 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                         <option value="paid">Paid</option>
                         <option value="free">Free</option>
                     </select>
-                </div>
                     
-                {(searchTerm || statusFilter !== 'all' || courseFilter !== 'all' || categoryFilter !== 'all' || genderFilter !== 'all' || districtFilter !== 'all' || cityFilter !== 'all' || stateFilter !== 'all' || streamFilter !== 'all' || admissionTypeFilter !== 'all') && (
-                    <button
-                        onClick={() => {
-                            setSearchTerm('');
-                            setStatusFilter('all');
-                            setCourseFilter('all');
-                            setCategoryFilter('all');
-                            setGenderFilter('all');
-                            setDistrictFilter('all');
-                            setCityFilter('all');
-                            setStateFilter('all');
-                            setStreamFilter('all');
-                            setAdmissionTypeFilter('all');
-                        }}
-                        className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
-                    >
-                        Clear All Filters
-                    </button>
-                )}
+                    {(searchTerm || statusFilter !== 'all' || courseFilter !== 'all' || categoryFilter !== 'all' || genderFilter !== 'all' || districtFilter !== 'all' || cityFilter !== 'all' || stateFilter !== 'all' || streamFilter !== 'all' || admissionTypeFilter !== 'all') && (
+                        <div className="flex items-end">
+                            <button
+                                onClick={() => {
+                                    setSearchTerm('');
+                                    setStatusFilter('all');
+                                    setCourseFilter('all');
+                                    setCategoryFilter('all');
+                                    setGenderFilter('all');
+                                    setDistrictFilter('all');
+                                    setCityFilter('all');
+                                    setStateFilter('all');
+                                    setStreamFilter('all');
+                                    setAdmissionTypeFilter('all');
+                                }}
+                                className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
+                            >
+                                Clear All Filters
+                            </button>
+                        </div>
+                    )}
+                </div>
                 
                 {/* Results Count */}
                 {filteredStudents.length !== safeStudents.length && (
