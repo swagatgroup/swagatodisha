@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 const { protect, rateLimit } = require('../middleware/auth');
+const { sendEmail: sendResendEmail } = require('../utils/resend');
 
 const router = express.Router();
 
@@ -81,8 +82,20 @@ router.post('/register', async (req, res) => {
         };
 
         // Create new user
+        const plainPassword = password; // save before model hashes it
         const newUser = new User(userData);
         const savedUser = await newUser.save();
+
+        // Send welcome email (non-blocking – never fail the registration if email fails)
+        setImmediate(() => {
+            sendResendEmail('welcomeEmail', {
+                fullName: savedUser.fullName,
+                email: savedUser.email,
+                phoneNumber: savedUser.phoneNumber,
+                password: plainPassword,
+                role: savedUser.role
+            }).catch(err => console.error('Welcome email error:', err));
+        });
 
         // Create an empty Draft StudentApplication if the user is a student
         if (role === 'student') {

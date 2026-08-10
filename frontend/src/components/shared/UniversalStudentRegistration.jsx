@@ -1566,6 +1566,79 @@ const UniversalStudentRegistration = ({
           </div>
         )}
 
+        {/* ── Course Fee Summary Card ── shown once course is selected */}
+        {formData.courseDetails.selectedCollege && formData.courseDetails.selectedCourse && (() => {
+          const selectedCollegeObj = colleges.find(c => c._id === formData.courseDetails.selectedCollege);
+          const selectedCourseObj = (selectedCollegeObj?.courses || []).find(
+            c => c.courseName === formData.courseDetails.selectedCourse
+          );
+          const coursePrice = selectedCourseObj?.price ?? null;
+          const currentAdmType = getAdmissionType();
+          const isFreeAdm = currentAdmType === 'free';
+
+          return (
+            <div className="rounded-2xl overflow-hidden border border-purple-200 dark:border-purple-700 shadow-md">
+              {/* Header */}
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <i className="fa-solid fa-graduation-cap text-white text-base"></i>
+                  <span className="text-white text-sm font-semibold tracking-wide">Course Fee Summary</span>
+                </div>
+                <span className={`text-xs font-bold px-3 py-0.5 rounded-full ${isFreeAdm ? 'bg-green-400 text-green-900' : 'bg-yellow-300 text-yellow-900'}`}>
+                  {isFreeAdm ? '✓ FREE ADMISSION' : 'PAID ADMISSION'}
+                </span>
+              </div>
+
+              {/* Body */}
+              <div className="bg-white dark:bg-gray-800 px-5 py-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Institution */}
+                  <div>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Institution</p>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{selectedCollegeObj?.name || '—'}</p>
+                  </div>
+                  {/* Course */}
+                  <div>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Course</p>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{formData.courseDetails.selectedCourse}</p>
+                  </div>
+                  {/* Stream */}
+                  {formData.courseDetails.stream && (
+                    <div>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Stream</p>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{formData.courseDetails.stream}</p>
+                    </div>
+                  )}
+                  {/* Fee */}
+                  <div className={formData.courseDetails.stream ? '' : 'sm:col-span-2'}>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Course Fee</p>
+                    {isFreeAdm ? (
+                      <p className="text-2xl font-extrabold text-green-600 dark:text-green-400">FREE</p>
+                    ) : coursePrice !== null && coursePrice > 0 ? (
+                      <p className="text-2xl font-extrabold text-purple-700 dark:text-purple-300">
+                        ₹{coursePrice.toLocaleString('en-IN')}
+                        <span className="text-xs font-normal text-gray-400 ml-2">per year</span>
+                      </p>
+                    ) : coursePrice === 0 ? (
+                      <p className="text-2xl font-extrabold text-green-600 dark:text-green-400">FREE</p>
+                    ) : (
+                      <p className="text-sm text-gray-400 italic">Fee not set — contact institution</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Note */}
+                {!isFreeAdm && coursePrice !== null && coursePrice > 0 && (
+                  <div className="mt-3 text-xs bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-lg px-3 py-2 text-purple-700 dark:text-purple-300">
+                    <i className="fa-solid fa-circle-info mr-1"></i>
+                    The displayed fee is the annual course fee. Payment schedule will be communicated after admission confirmation.
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Admission Type Selector — shown once college is selected */}
         {formData.courseDetails.selectedCollege && (() => {
           const cat = formData.personalDetails.category;

@@ -126,6 +126,138 @@ const emailTemplates = {
                 </p>
             </div>
         `
+    }),
+
+    // Welcome / account created email
+    welcomeEmail: (data) => ({
+        from: `Swagat Odisha <${process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev'}>`,
+        to: data.email,
+        subject: '🎉 Welcome to Swagat Odisha – Account Created Successfully',
+        html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Swagat Odisha</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f6fb;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background:#f4f6fb;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+          <!-- Header Banner -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1a56db 0%,#0e9f6e 100%);padding:40px 40px 32px;text-align:center;">
+              <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:700;letter-spacing:0.5px;">Swagat Odisha</h1>
+              <p style="margin:6px 0 0;color:rgba(255,255,255,0.85);font-size:14px;letter-spacing:1px;text-transform:uppercase;">Educational Management System</p>
+            </td>
+          </tr>
+
+          <!-- Greeting -->
+          <tr>
+            <td style="padding:40px 40px 0;">
+              <h2 style="margin:0 0 8px;color:#111827;font-size:22px;font-weight:600;">🎉 Congratulations, ${data.fullName}!</h2>
+              <p style="margin:0;color:#6b7280;font-size:15px;line-height:1.6;">
+                Your account has been successfully created at <strong>Swagat Odisha</strong>.
+                We're thrilled to have you on board! Here are your account details:
+              </p>
+            </td>
+          </tr>
+
+          <!-- Account Details Card -->
+          <tr>
+            <td style="padding:24px 40px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                     style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;">
+                <tr>
+                  <td style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+                    <p style="margin:0;font-size:12px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Full Name</p>
+                    <p style="margin:4px 0 0;font-size:16px;color:#111827;font-weight:500;">${data.fullName}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+                    <p style="margin:0;font-size:12px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Email Address</p>
+                    <p style="margin:4px 0 0;font-size:16px;color:#1a56db;font-weight:500;">${data.email}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+                    <p style="margin:0;font-size:12px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Phone Number</p>
+                    <p style="margin:4px 0 0;font-size:16px;color:#111827;font-weight:500;">${data.phoneNumber || 'Not provided'}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+                    <p style="margin:0;font-size:12px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Password</p>
+                    <p style="margin:4px 0 0;font-size:16px;color:#111827;font-weight:500;font-family:monospace;letter-spacing:1px;background:#fff3cd;padding:6px 10px;border-radius:6px;display:inline-block;">${data.password}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <p style="margin:0;font-size:12px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.8px;font-weight:600;">Account Type</p>
+                    <p style="margin:4px 0 0;font-size:16px;color:#111827;font-weight:500;text-transform:capitalize;">${data.role || 'Student'}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Security Notice -->
+          <tr>
+            <td style="padding:0 40px 24px;">
+              <table width="100%" cellpadding="0" cellspacing="0" role="presentation"
+                     style="background:#fef3c7;border-left:4px solid #f59e0b;border-radius:0 8px 8px 0;padding:14px 18px;">
+                <tr>
+                  <td>
+                    <p style="margin:0;font-size:13px;color:#92400e;font-weight:600;">⚠️ Security Tip</p>
+                    <p style="margin:4px 0 0;font-size:13px;color:#92400e;">
+                      Please save your credentials safely and avoid sharing them with anyone. We recommend changing your password after your first login.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA Button -->
+          <tr>
+            <td style="padding:0 40px 32px;text-align:center;">
+              <a href="${process.env.FRONTEND_URL || 'https://swagatodisha.com'}/login"
+                 style="display:inline-block;background:linear-gradient(135deg,#1a56db 0%,#0e9f6e 100%);color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:14px 36px;border-radius:8px;letter-spacing:0.3px;">
+                Login to Your Account →
+              </a>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 40px;">
+              <hr style="border:none;border-top:1px solid #e5e7eb;margin:0;" />
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 40px 32px;text-align:center;">
+              <p style="margin:0 0 8px;font-size:14px;color:#374151;font-weight:600;">Swagat Odisha Team</p>
+              <p style="margin:0;font-size:13px;color:#9ca3af;">
+                📧 ${process.env.CONTACT_EMAIL || process.env.RESEND_FROM_EMAIL || 'info@swagatodisha.com'} &nbsp;|&nbsp;
+                🌐 swagatodisha.com
+              </p>
+              <p style="margin:16px 0 0;font-size:11px;color:#d1d5db;">
+                This is an automated email. Please do not reply directly to this message.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`
     })
 };
 

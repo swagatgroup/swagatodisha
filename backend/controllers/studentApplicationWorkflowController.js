@@ -4,6 +4,24 @@ const PDFGenerator = require('../utils/pdfGenerator');
 const path = require('path');
 const documentRequirements = require('../config/documentRequirements');
 const CollegeCourse = require('../models/CollegeCourse');
+const College = require('../models/College');
+
+// Enrich courseDetails with human-readable institutionName from College model
+const enrichCourseDetails = async (courseDetails) => {
+    if (!courseDetails) return courseDetails;
+    const enriched = { ...courseDetails };
+    if (courseDetails.selectedCollege && !enriched.institutionName) {
+        try {
+            const college = await College.findById(courseDetails.selectedCollege).select('name');
+            if (college) {
+                enriched.institutionName = college.name;
+            }
+        } catch (e) {
+            console.error('enrichCourseDetails: could not fetch college name', e.message);
+        }
+    }
+    return enriched;
+};
 
 const calculateTotalFees = async (courseDetails, category) => {
     let totalFees = 0;
@@ -244,7 +262,7 @@ const createApplication = async (req, res) => {
 
                 existingStudentDraft.personalDetails = finalPersonalDetails;
                 existingStudentDraft.contactDetails = finalContactDetails;
-                existingStudentDraft.courseDetails = courseDetails;
+                existingStudentDraft.courseDetails = await enrichCourseDetails(courseDetails);
                 existingStudentDraft.guardianDetails = normalizedGuardianDetails;
                 existingStudentDraft.isOwnApplication = true;
                 if (financialDetails) existingStudentDraft.financialDetails = financialDetails;
@@ -310,7 +328,7 @@ const createApplication = async (req, res) => {
 
                     existingDraft.personalDetails = finalPersonalDetails;
                     existingDraft.contactDetails = finalContactDetails;
-                    existingDraft.courseDetails = courseDetails;
+                    existingDraft.courseDetails = await enrichCourseDetails(courseDetails);
                     existingDraft.guardianDetails = normalizedGuardianDetails;
                     if (financialDetails) existingDraft.financialDetails = financialDetails;
                     if (referralInfo && referralInfo.referralCode) existingDraft.referralInfo = referralInfo;
@@ -386,7 +404,7 @@ const createApplication = async (req, res) => {
             user: applicationUserId,
             personalDetails: finalPersonalDetails,
             contactDetails: finalContactDetails,
-            courseDetails,
+            courseDetails: await enrichCourseDetails(courseDetails),
             guardianDetails: normalizedGuardianDetails,
             financialDetails,
             financialStatus: {
@@ -858,6 +876,19 @@ const generateApplicationPDF = async (req, res) => {
                 errors: documentValidation.errors,
                 warnings: documentValidation.warnings
             });
+        }
+
+        // Resolve institutionName for any legacy applications missing it
+        if (application.courseDetails?.selectedCollege && !application.courseDetails?.institutionName) {
+            const enriched = await enrichCourseDetails(application.courseDetails);
+            if (enriched.institutionName) {
+                application.courseDetails = enriched;
+                // Persist back so next time we don't have to re-query
+                await StudentApplication.updateOne(
+                    { _id: application._id },
+                    { $set: { 'courseDetails.institutionName': enriched.institutionName } }
+                );
+            }
         }
 
         const result = await PDFGenerator.generateCombinedPDF(application);

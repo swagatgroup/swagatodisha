@@ -1,7 +1,26 @@
 const PDFGenerator = require('../utils/pdfGenerator');
 const StudentApplication = require('../models/StudentApplication');
+const College = require('../models/College');
 const fs = require('fs');
 const path = require('path');
+
+// Resolve institutionName from College model if missing (for legacy records)
+const resolveInstitutionName = async (application) => {
+    if (application?.courseDetails?.selectedCollege && !application.courseDetails.institutionName) {
+        try {
+            const college = await College.findById(application.courseDetails.selectedCollege).select('name');
+            if (college) {
+                application = {
+                    ...application.toObject ? application.toObject() : application,
+                    courseDetails: { ...application.courseDetails, institutionName: college.name }
+                };
+            }
+        } catch (e) {
+            console.error('resolveInstitutionName error:', e.message);
+        }
+    }
+    return application;
+};
 
 // Generate PDF for student application
 const generateApplicationPDF = async (req, res) => {
@@ -22,9 +41,12 @@ const generateApplicationPDF = async (req, res) => {
         // Create PDF generator instance
         const pdfGenerator = new PDFGenerator();
 
+        // Resolve institutionName for legacy records that were saved without it
+        const enrichedApplication = await resolveInstitutionName(application);
+
         // Generate PDF
         const pdfBuffer = await pdfGenerator.generateApplicationPDF(
-            application.data || application,
+            enrichedApplication.data || enrichedApplication,
             termsAndConditions
         );
 
