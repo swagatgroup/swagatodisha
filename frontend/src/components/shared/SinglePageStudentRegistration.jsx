@@ -565,7 +565,7 @@ const SinglePageStudentRegistration = ({
         const year = getRandomInt(1995, 2010);
         const month = String(getRandomInt(1, 12)).padStart(2, '0');
         const day = String(getRandomInt(1, 28)).padStart(2, '0');
-        const dateOfBirth = `${day}/${month}/${year}`;
+        const dateOfBirth = '01/01/2000';
         
         // Random registration date (recent)
         const regYear = getRandomInt(2020, 2024);
@@ -637,7 +637,7 @@ const SinglePageStudentRegistration = ({
                 permanentAddress: {
                     street: street,
                     city: city,
-                    district: city,
+                    district: 'Sundergarh',
                     state: state,
                     pincode: getRandomPincode(),
                     country: 'India'

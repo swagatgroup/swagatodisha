@@ -81,13 +81,14 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
 
             return { ...doc, isRequired: isReq };
         }).filter(doc => {
+            const docIdentifier = doc.id || doc.key;
             // Hide Kisan docs for non-Kisan students
-            if ((doc.id === 'pm_kisan' || doc.id === 'cm_kisan') && 
+            if ((docIdentifier === 'pm_kisan' || docIdentifier === 'cm_kisan') && 
                 !(admissionType === 'free' && ['General', 'OBC'].includes(category))) {
                 return false;
             }
             // Optional: Hide caste/income for paid students to keep UI clean
-            if (admissionType === 'paid' && ['caste_certificate', 'income_certificate', 'resident_certificate'].includes(doc.id)) {
+            if (admissionType === 'paid' && ['caste_certificate', 'income_certificate', 'resident_certificate'].includes(docIdentifier)) {
                 return false;
             }
             return true;

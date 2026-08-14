@@ -165,6 +165,25 @@ const getInstallments = async (req, res) => {
             });
         }
 
+        // Live recalculate if totalFees is 0 but a course is selected
+        const fs = application.financialStatus || {};
+        if ((!fs.totalFees || fs.totalFees === 0) && application.courseDetails?.selectedCollege) {
+            try {
+                const College = require('../models/College');
+                const col = await College.findById(application.courseDetails.selectedCollege);
+                const courseObj = (col?.courses || []).find(c => c.courseName === application.courseDetails.selectedCourse);
+                if (courseObj?.price) {
+                    fs.totalFees = courseObj.price;
+                    fs.dueAmount = courseObj.price - (fs.paidAmount || 0);
+                    application.financialStatus = fs;
+                    // Persist back to DB for next time
+                    await StudentApplication.updateOne({ _id: application._id }, { $set: { financialStatus: fs } });
+                }
+            } catch (e) {
+                console.error('Fee recalculation error:', e.message);
+            }
+        }
+
         const settings = await WebsiteSettings.findOne();
         const qrCodeImage = settings?.paymentSettings?.qrCodeImage || '';
 

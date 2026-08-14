@@ -805,7 +805,11 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             <div class="documents-grid">
                 ${Object.entries(content.documents || {}).map(([key, doc]) =>
             `<div class="document-item">
-                        <div class="document-name">${key.replace(/_/g, ' ').toUpperCase()}</div>
+                        <div class="document-name">
+                            ${doc.url || doc.downloadUrl ? `<a href="${doc.url || doc.downloadUrl}" target="_blank" style="color: #4f46e5; text-decoration: underline;">` : ''}
+                            ${key.replace(/_/g, ' ').toUpperCase()}
+                            ${doc.url || doc.downloadUrl ? `</a>` : ''}
+                        </div>
                         <div class="document-size">${doc.name || 'Uploaded'} ${doc.size ? '(' + (doc.size / 1024).toFixed(1) + ' KB)' : ''}</div>
                     </div>`
         ).join('')}

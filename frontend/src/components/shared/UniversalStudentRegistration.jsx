@@ -126,6 +126,24 @@ const UniversalStudentRegistration = ({
     fetchColleges();
   }, []);
 
+  // Pre-fill from user account data (locked fields from signup)
+  useEffect(() => {
+    if (!user) return;
+    setFormData(prev => ({
+      ...prev,
+      personalDetails: {
+        ...prev.personalDetails,
+        // Only fill if currently empty (don't override saved/loaded data)
+        fullName: prev.personalDetails.fullName || (user.fullName || '').toUpperCase(),
+      },
+      contactDetails: {
+        ...prev.contactDetails,
+        email: prev.contactDetails.email || user.email || '',
+        primaryPhone: prev.contactDetails.primaryPhone || user.phoneNumber || '',
+      }
+    }));
+  }, [user]);
+
   // Refresh colleges when user navigates to course selection step
   useEffect(() => {
     if (currentStep === 3) {
@@ -946,14 +964,15 @@ const UniversalStudentRegistration = ({
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Full Name *
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
+            Full Name * 
+            {user && <span className="text-xs text-amber-500 flex items-center gap-0.5"><i className="fa-solid fa-lock text-xs"></i> Locked</span>}
           </label>
           <input
             type="text"
             value={formData.personalDetails.fullName}
             onChange={(e) =>
-              setFormData((prev) => ({
+              !user && setFormData((prev) => ({
                 ...prev,
                 personalDetails: {
                   ...prev.personalDetails,
@@ -961,10 +980,12 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
+            readOnly={!!user}
             style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter your full name"
           />
+          {user && <p className="text-xs text-amber-500 mt-1">Filled from your account. Contact admin to change.</p>}
           {errors["personalDetails.fullName"] && (
             <p className="text-red-500 text-sm mt-1">
               {errors["personalDetails.fullName"]}
@@ -1158,14 +1179,15 @@ const UniversalStudentRegistration = ({
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
             Primary Phone *
+            {user && <span className="text-xs text-amber-500 flex items-center gap-0.5"><i className="fa-solid fa-lock text-xs"></i> Locked</span>}
           </label>
           <input
             type="tel"
             value={formData.contactDetails.primaryPhone}
             onChange={(e) =>
-              setFormData((prev) => ({
+              !user && setFormData((prev) => ({
                 ...prev,
                 contactDetails: {
                   ...prev.contactDetails,
@@ -1173,10 +1195,12 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            readOnly={!!user}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter 10-digit phone number"
             maxLength="10"
           />
+          {user && <p className="text-xs text-amber-500 mt-1">Filled from your account. Contact admin to change.</p>}
           {errors["contactDetails.primaryPhone"] && (
             <p className="text-red-500 text-sm mt-1">
               {errors["contactDetails.primaryPhone"]}
@@ -1207,14 +1231,15 @@ const UniversalStudentRegistration = ({
         </div>
 
         <div className="md:col-span-2">
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
             Email Address *
+            {user && <span className="text-xs text-amber-500 flex items-center gap-0.5"><i className="fa-solid fa-lock text-xs"></i> Locked</span>}
           </label>
           <input
             type="email"
             value={formData.contactDetails.email}
             onChange={(e) =>
-              setFormData((prev) => ({
+              !user && setFormData((prev) => ({
                 ...prev,
                 contactDetails: {
                   ...prev.contactDetails,
@@ -1222,11 +1247,13 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
+            readOnly={!!user}
             style={{ textTransform: 'lowercase' }}
             required
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter email address"
           />
+          {user && <p className="text-xs text-amber-500 mt-1">Filled from your account. Contact admin to change.</p>}
           {errors["contactDetails.email"] && (
             <p className="text-red-500 text-sm mt-1">
               {errors["contactDetails.email"]}
