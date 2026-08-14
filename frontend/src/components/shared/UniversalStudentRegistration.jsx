@@ -281,16 +281,6 @@ const UniversalStudentRegistration = ({
     return date.getDate() === day && date.getMonth() === month - 1 && date.getFullYear() === year;
   };
 
-  // Get campuses for selected college
-  const getCampusesForCollege = () => {
-    if (!formData.courseDetails.selectedCollege) {
-      return [];
-    }
-    const selectedCollegeData = colleges.find(
-      (college) => college._id === formData.courseDetails.selectedCollege
-    );
-    return selectedCollegeData?.campuses || [];
-  };
 
   const loadExistingApplication = async () => {
     // Only try to load from server if user is authenticated
@@ -723,7 +713,15 @@ const UniversalStudentRegistration = ({
                   data: {
                     personalDetails: personalDetailsForSubmit,
                     contactDetails: formData.contactDetails,
-                    courseDetails: formData.courseDetails,
+                    courseDetails: {
+                        selectedCollege: formData.courseDetails?.selectedCollege || '',
+                        selectedCourse: formData.courseDetails?.selectedCourse || '',
+                        stream: formData.courseDetails?.stream || '',
+                        campus: formData.courseDetails?.campus || '',
+                        institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
+                        courseName: formData.courseDetails?.selectedCourse || '',
+                        admissionType: formData.courseDetails?.admissionType || ''
+                    },
                     guardianDetails: formData.guardianDetails,
                     documents: formData.documents,
                   },
@@ -751,7 +749,15 @@ const UniversalStudentRegistration = ({
                 data: {
                   personalDetails: personalDetailsForSubmit,
                   contactDetails: formData.contactDetails,
-                  courseDetails: formData.courseDetails,
+                  courseDetails: {
+                      selectedCollege: formData.courseDetails?.selectedCollege || '',
+                      selectedCourse: formData.courseDetails?.selectedCourse || '',
+                      stream: formData.courseDetails?.stream || '',
+                      campus: formData.courseDetails?.campus || '',
+                      institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
+                      courseName: formData.courseDetails?.selectedCourse || '',
+                      admissionType: formData.courseDetails?.admissionType || ''
+                  },
                   guardianDetails: formData.guardianDetails,
                   documents: formData.documents,
                 },
@@ -850,7 +856,15 @@ const UniversalStudentRegistration = ({
                       data: {
                         personalDetails: personalDetailsForSave,
                         contactDetails: formData.contactDetails,
-                        courseDetails: formData.courseDetails,
+                        courseDetails: {
+                            selectedCollege: formData.courseDetails?.selectedCollege || '',
+                            selectedCourse: formData.courseDetails?.selectedCourse || '',
+                            stream: formData.courseDetails?.stream || '',
+                            campus: formData.courseDetails?.campus || '',
+                            institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
+                            courseName: formData.courseDetails?.selectedCourse || '',
+                            admissionType: formData.courseDetails?.admissionType || ''
+                        },
                         guardianDetails: formData.guardianDetails,
                         documents: formData.documents,
                       },

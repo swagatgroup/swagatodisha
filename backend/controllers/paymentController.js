@@ -167,11 +167,14 @@ const getInstallments = async (req, res) => {
 
         // Live recalculate if totalFees is 0 but a course is selected
         const fs = application.financialStatus || {};
-        if ((!fs.totalFees || fs.totalFees === 0) && application.courseDetails?.selectedCollege) {
+        if ((!fs.totalFees || fs.totalFees === 0) && application.courseDetails?.selectedCollege && application.courseDetails?.selectedCourse) {
             try {
-                const College = require('../models/College');
-                const col = await College.findById(application.courseDetails.selectedCollege);
-                const courseObj = (col?.courses || []).find(c => c.courseName === application.courseDetails.selectedCourse);
+                const CollegeCourse = require('../models/CollegeCourse');
+                const courseObj = await CollegeCourse.findOne({
+                    college: application.courseDetails.selectedCollege,
+                    courseName: application.courseDetails.selectedCourse
+                });
+                
                 if (courseObj?.price) {
                     fs.totalFees = courseObj.price;
                     fs.dueAmount = courseObj.price - (fs.paidAmount || 0);

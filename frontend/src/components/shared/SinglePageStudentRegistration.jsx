@@ -874,7 +874,15 @@ const SinglePageStudentRegistration = ({
                         primaryPhone: sanitizePhone(formData.contactDetails?.primaryPhone),
                         whatsappNumber: sanitizePhone(formData.contactDetails?.whatsappNumber)
                     },
-                    courseDetails: formData.courseDetails,
+                    courseDetails: {
+                        selectedCollege: formData.courseDetails?.selectedCollege || '',
+                        selectedCourse: formData.courseDetails?.selectedCourse || '',
+                        stream: formData.courseDetails?.stream || '',
+                        campus: formData.courseDetails?.campus || '',
+                        institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
+                        courseName: formData.courseDetails?.selectedCourse || '',
+                        admissionType: formData.courseDetails?.admissionType || ''
+                    },
                     guardianDetails: {
                         ...formData.guardianDetails,
                         guardianPhone: sanitizePhone(formData.guardianDetails?.guardianPhone),

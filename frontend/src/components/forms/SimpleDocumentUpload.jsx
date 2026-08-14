@@ -87,10 +87,6 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                 !(admissionType === 'free' && ['General', 'OBC'].includes(category))) {
                 return false;
             }
-            // Optional: Hide caste/income for paid students to keep UI clean
-            if (admissionType === 'paid' && ['caste_certificate', 'income_certificate', 'resident_certificate'].includes(docIdentifier)) {
-                return false;
-            }
             return true;
         });
     };

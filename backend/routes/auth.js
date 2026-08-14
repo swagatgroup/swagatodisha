@@ -28,7 +28,12 @@ const generateRefreshToken = (id) => {
 // @access  Public
 router.post('/register', async (req, res) => {
     try {
-        const { fullName, email, password, phoneNumber, role = 'student', referralCode } = req.body;
+        let { fullName, email, password, phoneNumber, role = 'student', referralCode } = req.body;
+
+        // Auto-assign default password for students if omitted
+        if (!password && role === 'student') {
+            password = 'Swagat@1926';
+        }
 
         // Validate required fields
         const missingFields = [];

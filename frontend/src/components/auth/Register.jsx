@@ -133,35 +133,37 @@ const Register = () => {
 
         // Course validation removed
 
-        // Password validation
-        if (formData.password.length < 8) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Password must be at least 8 characters',
-                confirmButtonColor: '#7c3aed'
-            });
-            return false;
-        }
-        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(formData.password)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character',
-                confirmButtonColor: '#7c3aed'
-            });
-            return false;
-        }
+        // Password validation (Optional - if provided, must be strong)
+        if (formData.password) {
+            if (formData.password.length < 8) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Password must be at least 8 characters',
+                    confirmButtonColor: '#7c3aed'
+                });
+                return false;
+            }
+            if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(formData.password)) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character',
+                    confirmButtonColor: '#7c3aed'
+                });
+                return false;
+            }
 
-        // Confirm password validation
-        if (formData.password !== formData.confirmPassword) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Validation Error',
-                text: 'Passwords do not match',
-                confirmButtonColor: '#7c3aed'
-            });
-            return false;
+            // Confirm password validation
+            if (formData.password !== formData.confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Validation Error',
+                    text: 'Passwords do not match',
+                    confirmButtonColor: '#7c3aed'
+                });
+                return false;
+            }
         }
 
         return true;
@@ -358,17 +360,21 @@ const Register = () => {
 
                         {/* Password Fields */}
                         <div className="space-y-6">
-                            <PasswordInput
-                                id="password"
-                                name="password"
-                                value={formData.password}
-                                onChange={handleChange}
-                                placeholder="Enter password (min 8 characters)"
-                                required
-                                autoComplete="new-password"
-                                label="Password *"
-                                showStrengthIndicator={true}
-                            />
+                            <div className="flex flex-col">
+                                <PasswordInput
+                                    id="password"
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    placeholder="Leave blank for auto-generated password"
+                                    autoComplete="new-password"
+                                    label="Password (Optional)"
+                                    showStrengthIndicator={true}
+                                />
+                                <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                    If left blank, a secure default password will be emailed to you.
+                                </span>
+                            </div>
 
                             <PasswordInput
                                 id="confirmPassword"
@@ -376,9 +382,8 @@ const Register = () => {
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 placeholder="Confirm your password"
-                                required
                                 autoComplete="new-password"
-                                label="Confirm Password *"
+                                label="Confirm Password (Optional)"
                             />
                         </div>
 
