@@ -205,6 +205,16 @@ const SinglePageStudentRegistration = ({
         return selectedCourse?.streams || [];
     };
 
+    // Get fee for selected course
+    const getSelectedCourseFee = () => {
+        if (!formData.courseDetails.selectedCourse) {
+            return null;
+        }
+        const courses = getCoursesForCollege();
+        const selected = courses.find(c => c.courseName === formData.courseDetails.selectedCourse);
+        return selected?.price ?? null;
+    };
+
     // Get campuses for selected college
     const getCampusesForCollege = () => {
         if (!formData.courseDetails.selectedCollege) {
@@ -1816,6 +1826,19 @@ const SinglePageStudentRegistration = ({
                                 </option>
                             ))}
                         </select>
+                    </div>
+                )}
+
+                {/* Course Fee Display */}
+                {formData.courseDetails.selectedCourse && getSelectedCourseFee() !== null && (
+                    <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg flex items-center gap-3">
+                        <i className="fa-solid fa-indian-rupee-sign text-blue-600 dark:text-blue-400 text-lg"></i>
+                        <div>
+                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Course Fee</p>
+                            <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
+                                ₹{getSelectedCourseFee().toLocaleString('en-IN')}
+                            </p>
+                        </div>
                     </div>
                 )}
 
