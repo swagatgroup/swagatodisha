@@ -216,8 +216,10 @@ const SinglePageStudentRegistration = ({
         if (!selected) return null;
 
         if (formData.courseDetails.stream && selected.streams) {
-            const streamData = selected.streams.find(s => s.name === formData.courseDetails.stream);
-            if (streamData && streamData.price !== undefined) {
+            const streamData = selected.streams.find(s => 
+                (typeof s === 'string' ? s : s.name) === formData.courseDetails.stream
+            );
+            if (streamData && typeof streamData === 'object' && streamData.price !== undefined) {
                 return streamData.price;
             }
         }
@@ -236,8 +238,10 @@ const SinglePageStudentRegistration = ({
         if (!selected) return false;
 
         if (formData.courseDetails.stream && selected.streams) {
-            const streamData = selected.streams.find(s => s.name === formData.courseDetails.stream);
-            if (streamData && streamData.isPaidOnly !== undefined) {
+            const streamData = selected.streams.find(s => 
+                (typeof s === 'string' ? s : s.name) === formData.courseDetails.stream
+            );
+            if (streamData && typeof streamData === 'object' && streamData.isPaidOnly !== undefined) {
                 return streamData.isPaidOnly;
             }
         }
@@ -1850,11 +1854,15 @@ const SinglePageStudentRegistration = ({
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                         >
                             <option value="">Select Stream (Optional)</option>
-                            {getStreamsForCourse().map((stream, index) => (
-                                <option key={index} value={stream}>
-                                    {stream}
-                                </option>
-                            ))}
+                            {getStreamsForCourse().map((stream, index) => {
+                                const streamName = typeof stream === 'string' ? stream : stream.name;
+                                const streamPrice = typeof stream === 'object' && stream.price !== undefined ? stream.price : null;
+                                return (
+                                    <option key={index} value={streamName}>
+                                        {streamName} {streamPrice !== null && streamPrice > 0 ? `- ₹${streamPrice}` : ''}
+                                    </option>
+                                );
+                            })}
                         </select>
                     </div>
                 )}

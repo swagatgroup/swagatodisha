@@ -1598,11 +1598,15 @@ const UniversalStudentRegistration = ({
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
             >
               <option value="">Select Stream (Optional)</option>
-              {availableStreams.map((stream, index) => (
-                <option key={index} value={stream}>
-                  {stream}
-                </option>
-              ))}
+              {availableStreams.map((stream, index) => {
+                const streamName = typeof stream === 'string' ? stream : stream.name;
+                const streamPrice = typeof stream === 'object' && stream.price !== undefined ? stream.price : null;
+                return (
+                  <option key={index} value={streamName}>
+                    {streamName} {streamPrice !== null && streamPrice > 0 ? `- ₹${streamPrice}` : ''}
+                  </option>
+                );
+              })}
             </select>
           </div>
         )}
@@ -1613,7 +1617,16 @@ const UniversalStudentRegistration = ({
           const selectedCourseObj = (selectedCollegeObj?.courses || []).find(
             c => c.courseName === formData.courseDetails.selectedCourse
           );
-          const coursePrice = selectedCourseObj?.price ?? null;
+          
+          let coursePrice = selectedCourseObj?.price ?? null;
+          if (formData.courseDetails.stream && selectedCourseObj?.streams?.length > 0) {
+            const selectedStreamObj = selectedCourseObj.streams.find(s => 
+              (typeof s === 'string' ? s : s.name) === formData.courseDetails.stream
+            );
+            if (selectedStreamObj && typeof selectedStreamObj === 'object' && selectedStreamObj.price !== undefined) {
+              coursePrice = selectedStreamObj.price;
+            }
+          }
           const currentAdmType = getAdmissionType();
           const isFreeAdm = currentAdmType === 'free';
 
