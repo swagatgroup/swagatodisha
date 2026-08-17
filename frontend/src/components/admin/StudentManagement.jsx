@@ -70,59 +70,64 @@ const compressImageToUnder50KB = async (photoUrl) => {
             let attempts = 0;
             
             const attemptCompression = () => {
-                attempts++;
-                canvas.width = width;
-                canvas.height = height;
-                ctx.fillStyle = "#FFFFFF";
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                const dataUrl = canvas.toDataURL('image/jpeg', quality);
-                const base64Str = dataUrl.split(',')[1];
-                const currentSizeKb = (base64Str.length * 0.75) / 1024;
-                
-                if (currentSizeKb >= 40 && currentSizeKb <= 45) {
-                    canvas.toBlob((b) => resolve({ blob: b, base64: base64Str }), 'image/jpeg', quality);
-                    return;
-                }
-
-                if (currentSizeKb <= 45) {
-                    if (!bestResult || currentSizeKb > bestResult.size) {
-                        bestResult = { size: currentSizeKb, base64: base64Str, quality, width, height };
-                    }
-                }
-
-                if (attempts > 12 || (width <= 150 && currentSizeKb <= 45)) {
-                    if (bestResult) {
-                        canvas.width = bestResult.width;
-                        canvas.height = bestResult.height;
-                        ctx.fillStyle = "#FFFFFF";
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        canvas.toBlob((b) => resolve({ blob: b, base64: bestResult.base64 }), 'image/jpeg', bestResult.quality);
-                    } else {
-                        canvas.toBlob((b) => resolve({ blob: b, base64: base64Str }), 'image/jpeg', quality);
-                    }
-                    return;
-                }
-
-                if (currentSizeKb > 45) {
-                    maxQuality = quality;
-                    quality = (minQuality + maxQuality) / 2;
+                try {
+                    attempts++;
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.fillStyle = "#FFFFFF";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, width, height);
                     
-                    if (quality < 0.5) {
-                        width = Math.floor(width * 0.85);
-                        height = Math.floor(height * 0.85);
-                        minQuality = 0.1;
-                        maxQuality = 1.0;
-                        quality = 0.8;
+                    const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                    const base64Str = dataUrl.split(',')[1];
+                    const currentSizeKb = (base64Str.length * 0.75) / 1024;
+                    
+                    if (currentSizeKb >= 40 && currentSizeKb <= 45) {
+                        canvas.toBlob((b) => resolve({ blob: b, base64: base64Str }), 'image/jpeg', quality);
+                        return;
                     }
-                } else {
-                    minQuality = quality;
-                    quality = (minQuality + maxQuality) / 2;
+
+                    if (currentSizeKb <= 45) {
+                        if (!bestResult || currentSizeKb > bestResult.size) {
+                            bestResult = { size: currentSizeKb, base64: base64Str, quality, width, height };
+                        }
+                    }
+
+                    if (attempts > 12 || (width <= 150 && currentSizeKb <= 45)) {
+                        if (bestResult) {
+                            canvas.width = bestResult.width;
+                            canvas.height = bestResult.height;
+                            ctx.fillStyle = "#FFFFFF";
+                            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            canvas.toBlob((b) => resolve({ blob: b, base64: bestResult.base64 }), 'image/jpeg', bestResult.quality);
+                        } else {
+                            canvas.toBlob((b) => resolve({ blob: b, base64: base64Str }), 'image/jpeg', quality);
+                        }
+                        return;
+                    }
+
+                    if (currentSizeKb > 45) {
+                        maxQuality = quality;
+                        quality = (minQuality + maxQuality) / 2;
+                        
+                        if (quality < 0.5) {
+                            width = Math.floor(width * 0.85);
+                            height = Math.floor(height * 0.85);
+                            minQuality = 0.1;
+                            maxQuality = 1.0;
+                            quality = 0.8;
+                        }
+                    } else {
+                        minQuality = quality;
+                        quality = (minQuality + maxQuality) / 2;
+                    }
+                    
+                    setTimeout(attemptCompression, 0);
+                } catch (e) {
+                    console.error("Canvas compression failed:", e);
+                    resolve(null);
                 }
-                
-                setTimeout(attemptCompression, 0);
             };
             
             attemptCompression();
@@ -1392,7 +1397,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 html: `Processing photos for ${allStudents.length} students. This may take a while...<br><br><b>0</b> / ${allStudents.length} processed`
             });
 
-            const JSZip = (await import('jszip')).default;
+            const jszipModule = await import('jszip');
+            const JSZip = jszipModule.default || jszipModule;
             const zip = new JSZip();
             let hasPhotos = false;
             let processed = 0;
@@ -1448,7 +1454,11 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
         } catch (error) {
             console.error('Error downloading all photos:', error);
-            Swal.fire('Error', 'Failed to download all photos', 'error');
+            Swal.fire({
+                title: 'Error', 
+                text: error.message || 'Failed to download all photos', 
+                icon: 'error'
+            });
         }
     };
 
@@ -1467,7 +1477,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
         });
 
         try {
-            const JSZip = (await import('jszip')).default;
+            const jszipModule = await import('jszip');
+            const JSZip = jszipModule.default || jszipModule;
             const zip = new JSZip();
             let hasPhotos = false;
 
