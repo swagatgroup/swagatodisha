@@ -160,6 +160,7 @@ router.post('/register', async (req, res) => {
                     id: savedUser._id,
                     email: savedUser.email,
                     fullName: savedUser.fullName,
+                    phoneNumber: savedUser.phoneNumber,
                     role: savedUser.role
                 },
                 sessionExpires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days from now

@@ -201,7 +201,7 @@ const StudentDashboard = () => {
                             className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg p-6 text-white mb-6"
                         >
                             <h2 className="text-2xl font-bold mb-2">
-                                Welcome back, {user?.firstName} {user?.lastName}! 👋
+                                Welcome back, {user?.fullName || `${user?.firstName} ${user?.lastName}`}! 👋
                             </h2>
                             <p className="text-purple-100">
                                 Track your applications, manage documents, and stay updated with your academic journey.

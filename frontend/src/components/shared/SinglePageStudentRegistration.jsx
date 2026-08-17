@@ -260,7 +260,33 @@ const SinglePageStudentRegistration = ({
         return selectedCollegeData?.campuses || [];
     };
 
-    // Load existing application on mount
+    // Pre-fill from user account data (locked fields from signup)
+    useEffect(() => {
+        if (!user) return;
+        const userFullName = (user.fullName || '').toUpperCase();
+        const userEmail = user.email || '';
+        const userPhone = user.phoneNumber || '';
+        
+        setFormData(prev => ({
+            ...prev,
+            personalDetails: {
+                ...prev.personalDetails,
+                // Always use account name — it's the authoritative source
+                fullName: userFullName || prev.personalDetails.fullName,
+            },
+            contactDetails: {
+                ...prev.contactDetails,
+                // Always use account email and phone — they are authoritative
+                email: userEmail || prev.contactDetails.email,
+                primaryPhone: userPhone || prev.contactDetails.primaryPhone,
+            }
+        }));
+
+        if (userRole === 'student' && (userFullName || userEmail || userPhone)) {
+            setRegistrationDataLocked(true);
+        }
+    }, [user, userRole]);
+
     useEffect(() => {
         fetchColleges();
 
