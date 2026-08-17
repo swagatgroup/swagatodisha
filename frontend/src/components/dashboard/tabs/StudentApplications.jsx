@@ -555,14 +555,6 @@ const StudentApplications = () => {
                               Withdraw
                             </button>
                           )}
-                          {application.status === 'DRAFT' && userRole === 'student' && (
-                            <button
-                              onClick={() => setShowNewApplicationModal(true)}
-                              className="px-4 py-2 text-sm text-white bg-green-600 hover:bg-green-700 rounded-lg"
-                            >
-                              Complete Application
-                            </button>
-                          )}
                           <button
                             onClick={() => openApplicationPdf(application._id)}
                             className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-lg"

@@ -279,17 +279,23 @@ const SinglePageStudentRegistration = ({
             }
 
             if (user && token) {
+                // Always seed from user account first (these are the "locked" values)
+                const userFullName = (user.fullName || '').toUpperCase();
+                const userEmail = user.email || '';
+                const userPhone = user.phoneNumber || '';
+
                 try {
                     const response = await api.get("/api/student-application/my-application");
                     if (response.data.success && response.data.data) {
                         setApplication(response.data.data);
-                        // Populate form with existing data
                         const existingData = response.data.data;
                         
-                        // Merge personal details
+                        // Merge personal details, but always use user account name if app name is empty
                         const existingPersonalDetails = {
                             ...BLANK_FORM.personalDetails,
                             ...(existingData.personalDetails || {}),
+                            // Always prioritize user account name
+                            fullName: userFullName || (existingData.personalDetails?.fullName || '').toUpperCase(),
                             dateOfBirth: existingData.personalDetails?.dateOfBirth ? convertISOToDDMMYYYY(existingData.personalDetails.dateOfBirth) : "",
                         };
                         
@@ -298,6 +304,9 @@ const SinglePageStudentRegistration = ({
                             contactDetails: {
                                 ...BLANK_FORM.contactDetails,
                                 ...(existingData.contactDetails || {}),
+                                // Always prioritize user account email and phone
+                                email: userEmail || existingData.contactDetails?.email || '',
+                                primaryPhone: userPhone || existingData.contactDetails?.primaryPhone || '',
                                 currentAddress: {
                                     ...BLANK_FORM.contactDetails.currentAddress,
                                     ...(existingData.contactDetails?.currentAddress || {})
@@ -320,21 +329,31 @@ const SinglePageStudentRegistration = ({
                             termsAccepted: existingData.termsAccepted || false,
                             referralCode: existingData.referralInfo?.referralCode || localStorage.getItem('pendingReferralCode') || "",
                         });
-                        // Lock registration fields if they were filled at signup
-                        // Only lock for students on their own application (not agents filling forms)
-                        const hasRegData =
-                            existingData.personalDetails?.fullName ||
-                            existingData.contactDetails?.email ||
-                            existingData.contactDetails?.primaryPhone;
-                        if (hasRegData && userRole === 'student') {
+                        // Always lock registration fields for students (name/email/phone come from account)
+                        if (userRole === 'student') {
                             setRegistrationDataLocked(true);
                         }
                     }
                 } catch (error) {
-                    console.log("No existing application found");
+                    // No existing application — pre-fill from user account and lock those fields
+                    console.log("No existing application found, pre-filling from user account");
                     const pendingCode = localStorage.getItem('pendingReferralCode');
-                    if (pendingCode) {
-                        setFormData(prev => ({ ...prev, referralCode: pendingCode }));
+                    setFormData(prev => ({
+                        ...prev,
+                        personalDetails: {
+                            ...prev.personalDetails,
+                            fullName: userFullName,
+                        },
+                        contactDetails: {
+                            ...prev.contactDetails,
+                            email: userEmail,
+                            primaryPhone: userPhone,
+                        },
+                        referralCode: pendingCode || prev.referralCode || '',
+                    }));
+                    // Lock these fields for students since they come from account
+                    if (userRole === 'student' && (userFullName || userEmail || userPhone)) {
+                        setRegistrationDataLocked(true);
                     }
                 }
             }

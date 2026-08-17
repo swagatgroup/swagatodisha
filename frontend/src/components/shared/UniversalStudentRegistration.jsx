@@ -127,19 +127,24 @@ const UniversalStudentRegistration = ({
   }, []);
 
   // Pre-fill from user account data (locked fields from signup)
+  // Always use the account values as source of truth for name/email/phone
   useEffect(() => {
     if (!user) return;
+    const userFullName = (user.fullName || '').toUpperCase();
+    const userEmail = user.email || '';
+    const userPhone = user.phoneNumber || '';
     setFormData(prev => ({
       ...prev,
       personalDetails: {
         ...prev.personalDetails,
-        // Only fill if currently empty (don't override saved/loaded data)
-        fullName: prev.personalDetails.fullName || (user.fullName || '').toUpperCase(),
+        // Always use account name — it's the authoritative source
+        fullName: userFullName || prev.personalDetails.fullName,
       },
       contactDetails: {
         ...prev.contactDetails,
-        email: prev.contactDetails.email || user.email || '',
-        primaryPhone: prev.contactDetails.primaryPhone || user.phoneNumber || '',
+        // Always use account email and phone — they are authoritative
+        email: userEmail || prev.contactDetails.email,
+        primaryPhone: userPhone || prev.contactDetails.primaryPhone,
       }
     }));
   }, [user]);
@@ -285,6 +290,10 @@ const UniversalStudentRegistration = ({
   const loadExistingApplication = async () => {
     // Only try to load from server if user is authenticated
     if (user && token) {
+      // User account values are always authoritative for these 3 fields
+      const userFullName = (user.fullName || '').toUpperCase();
+      const userEmail = user.email || '';
+      const userPhone = user.phoneNumber || '';
       try {
         const response = await api.get(
           "/api/student-application/my-application"
@@ -297,8 +306,11 @@ const UniversalStudentRegistration = ({
           const loadedPersonalDetails = loadedData.personalDetails ? {
             ...loadedData.personalDetails,
             dateOfBirth: convertISOToDDMMYYYY(loadedData.personalDetails.dateOfBirth) || loadedData.personalDetails.dateOfBirth,
-            
-          } : {};
+            // Always use user account name as authoritative source
+            fullName: userFullName || (loadedData.personalDetails.fullName || '').toUpperCase(),
+          } : {
+            fullName: userFullName,
+          };
           setFormData((prev) => ({
             ...prev,
             ...loadedData,
@@ -309,6 +321,9 @@ const UniversalStudentRegistration = ({
             contactDetails: {
               ...prev.contactDetails,
               ...loadedData.contactDetails,
+              // Always use user account email and phone
+              email: userEmail || loadedData.contactDetails?.email || '',
+              primaryPhone: userPhone || loadedData.contactDetails?.primaryPhone || '',
               permanentAddress: {
                 ...prev.contactDetails.permanentAddress,
                 ...(loadedData.contactDetails?.permanentAddress || {}),
