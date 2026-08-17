@@ -2839,8 +2839,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.referredBy || 'Direct Student'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitter Role</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.submitterRole || 'Student'}</p>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved By</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.approvedBy || 'Pending'}</p>
                                         </div>
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Referral Code</label>

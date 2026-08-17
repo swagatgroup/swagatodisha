@@ -737,7 +737,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                         validId = new ObjectId(submitterId);
                     }
 
-                    let submitter = await User.findById(validId).select('fullName name firstName lastName email phoneNumber').lean();
+                    let submitter = await User.findById(validId).select('fullName name firstName lastName email phoneNumber referralCode').lean();
 
                     if (submitter) {
                         if (submitter.fullName) {
@@ -753,7 +753,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                                 _id: submitter._id ? submitter._id.toString() : null,
                                 fullName: submitterName,
                                 email: submitter.email || '',
-                                phoneNumber: submitter.phoneNumber || ''
+                                phoneNumber: submitter.phoneNumber || '',
+                                referralCode: submitter.referralCode || ''
                             };
                             console.log('   ✅ Fetched name from User model:', submitterName);
                         }
@@ -795,6 +796,49 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
             console.log('   📝 Final submitterName:', submitterName, 'Role:', appObj.submitterRole);
 
+            // --- Fetch Approver/Reviewer Name ---
+            let reviewerName = 'N/A';
+            let reviewerRole = null;
+            let reviewerId = appObj.reviewStatus?.reviewedBy || appObj.reviewInfo?.reviewedBy;
+
+            if (reviewerId) {
+                try {
+                    let validReviewerId = typeof reviewerId === 'object' && reviewerId._id ? reviewerId._id : reviewerId;
+                    
+                    if (mongoose.Types.ObjectId.isValid(validReviewerId)) {
+                        const User = require('../models/User');
+                        const reviewerUser = await User.findById(validReviewerId).select('firstName lastName role').lean();
+                        
+                        if (reviewerUser) {
+                            reviewerName = `${reviewerUser.firstName || ''} ${reviewerUser.lastName || ''}`.trim();
+                            reviewerRole = reviewerUser.role;
+                        } else {
+                            const Admin = require('../models/Admin');
+                            const reviewerAdmin = await Admin.findById(validReviewerId).select('firstName lastName role').lean();
+                            
+                            if (reviewerAdmin) {
+                                reviewerName = `${reviewerAdmin.firstName || ''} ${reviewerAdmin.lastName || ''}`.trim();
+                                reviewerRole = reviewerAdmin.role;
+                            }
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error fetching reviewer:', err.message);
+                }
+            }
+            
+            // Format approvedBy string
+            let approvedByString = 'N/A';
+            if (reviewerName !== 'N/A') {
+                if (reviewerRole === 'staff') {
+                    approvedByString = `Staff (${reviewerName})`;
+                } else if (reviewerRole === 'super_admin' || reviewerRole === 'admin') {
+                    approvedByString = `Super Admin (${reviewerName})`;
+                } else {
+                    approvedByString = `${reviewerRole || 'User'} (${reviewerName})`;
+                }
+            }
+
             return {
                 _id: appObj._id,
                 applicationId: appObj.applicationId,
@@ -808,7 +852,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 currentStage: appObj.currentStage,
                 guardianName: appObj.guardianDetails?.guardianName || 'N/A',
                 guardianPhone: appObj.guardianDetails?.guardianPhone || 'N/A',
-                referralCode: appObj.referralInfo?.referralCode || 'N/A',
+                referralCode: appObj.referralInfo?.referralCode || submitterDetails?.referralCode || 'N/A',
                 referredBy: submitterName,
                 submitterRole: appObj.submitterRole || 'student',
                 documentsCount: appObj.documents?.length || 0,
@@ -824,9 +868,12 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 financialDetails: appObj.financialDetails,
                 financialStatus: appObj.financialStatus,
                 documents: appObj.documents,
-                reviewInfo: appObj.referralInfo,
+                reviewInfo: appObj.reviewInfo,
+                reviewStatus: appObj.reviewStatus,
                 workflowHistory: appObj.workflowHistory,
-                referralInfo: appObj.referralInfo
+                referralInfo: appObj.referralInfo,
+                approvedBy: approvedByString,
+                reviewerRole: reviewerRole
             };
         }));
 
