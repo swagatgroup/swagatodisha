@@ -407,23 +407,7 @@ const InstituteCourseManagement = () => {
                                         required
                                     />
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Fee Type *
-                                    </label>
-                                    <select
-                                        value={collegeFormData.feeType}
-                                        onChange={(e) => setCollegeFormData(prev => ({ ...prev, feeType: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                        required
-                                    >
-                                        <option value="Paid">Paid</option>
-                                        <option value="Free">Free</option>
-                                    </select>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                        Select whether this institute offers free or paid courses.
-                                    </p>
-                                </div>
+
                                 <div className="flex items-center">
                                     <input
                                         type="checkbox"
@@ -778,11 +762,7 @@ const InstituteCourseManagement = () => {
                                                     </span>
                                                 )}
                                             </div>
-                                            {college.feeType && (
-                                                <span className="text-xs text-gray-500 dark:text-gray-400 block mt-1">
-                                                    Fee: {college.feeType}
-                                                </span>
-                                            )}
+
                                         </div>
                                         <div className="flex space-x-2 ml-4">
                                             <button
