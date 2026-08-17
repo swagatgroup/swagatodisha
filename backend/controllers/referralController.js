@@ -79,12 +79,11 @@ const getReferralData = async (req, res) => {
             .select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole')
             .sort({ createdAt: -1 });
 
-        // Query 2: for agents/staff — apps they submitted FOR others (submittedBy = agentId, user != agentId)
+        // Query 2: for agents/staff — apps they submitted FOR others (or fallbacks where user = agentId)
         let byDirectSubmission = [];
         if (userRole === 'agent' || userRole === 'staff' || isAdmin) {
             byDirectSubmission = await StudentApplication.find({
-                submittedBy: userId,
-                user: { $ne: userId } // not their own application
+                submittedBy: userId
             }).select('_id personalDetails.fullName courseDetails.selectedCourse status createdAt submitterRole').sort({ createdAt: -1 });
         }
         // For students: also include apps they submitted via referral tab (submittedBy = student, isOwnApplication = false)

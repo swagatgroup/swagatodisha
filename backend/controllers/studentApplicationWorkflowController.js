@@ -302,7 +302,22 @@ const createApplication = async (req, res) => {
                             referralType: userDoc.role,
                         };
                     }
-                }
+            }
+        }
+
+        // Auto-apply agent/staff's own referral code if they are submitting from their dashboard
+        if (req.user.role !== 'student' && (!referralInfo || !referralInfo.referralCode)) {
+            let userDoc = await User.findById(req.user._id);
+            if (!userDoc) {
+                const Admin = require('../models/Admin');
+                userDoc = await Admin.findById(req.user._id);
+            }
+            if (userDoc && userDoc.referralCode) {
+                referralInfo = {
+                    referredBy: userDoc._id,
+                    referralCode: userDoc.referralCode,
+                    referralType: userDoc.role,
+                };
             }
         }
 
