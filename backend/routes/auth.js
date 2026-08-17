@@ -1161,14 +1161,18 @@ router.put('/profile', async (req, res) => {
         const userId = decoded.id || decoded.userId;
 
         const allowedUpdates = [
-            'fullName', 'phoneNumber', 'dateOfBirth', 'gender', 'address',
+            'fullName', 'phoneNumber', 'email', 'dateOfBirth', 'gender', 'address',
             'guardianName', 'guardianPhone', 'aadharNumber', 'bloodGroup', 'emergencyContact'
         ];
 
         const updates = {};
         Object.keys(req.body).forEach(key => {
             if (allowedUpdates.includes(key)) {
-                updates[key] = req.body[key];
+                if (key === 'email') {
+                    updates[key] = req.body[key].toLowerCase().trim();
+                } else {
+                    updates[key] = req.body[key];
+                }
             }
         });
 

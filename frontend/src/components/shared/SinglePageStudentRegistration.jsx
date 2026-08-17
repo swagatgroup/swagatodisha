@@ -8,6 +8,7 @@ import ApplicationPDFGenerator from "../forms/ApplicationPDFGenerator";
 import TermsAndConditions from "../legal/TermsAndConditions";
 import { showSuccessToast, showErrorToast, showLoading, closeLoading } from "../../utils/sweetAlert";
 import { formatDateForInput } from "../../utils/dateUtils";
+import Swal from 'sweetalert2';
 
 const BLANK_FORM = {
     personalDetails: { fullName: '', fathersName: '', mothersName: '', dateOfBirth: '', aadharNumber: '', gender: '', category: '' },
@@ -45,6 +46,7 @@ const SinglePageStudentRegistration = ({
     const [loadingColleges, setLoadingColleges] = useState(false);
     // Locks the 3 registration-sourced fields (fullName, email, phone) until user clicks Edit
     const [registrationDataLocked, setRegistrationDataLocked] = useState(false);
+    const [isEditingAccountData, setIsEditingAccountData] = useState(false);
 
     // Convert DD/MM/YYYY to ISO format (YYYY-MM-DD)
     const convertDDMMYYYYToISO = (dateString) => {
@@ -258,6 +260,45 @@ const SinglePageStudentRegistration = ({
             (college) => college._id === formData.courseDetails.selectedCollege
         );
         return selectedCollegeData?.campuses || [];
+    };
+
+    const handleEditAccountData = () => {
+        Swal.fire({
+            title: 'Edit Account Details?',
+            text: 'Warning: Changing your Full Name, Email, or Phone Number here will permanently update your primary account information. Are you sure you want to proceed?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, I understand'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                setRegistrationDataLocked(false);
+                setIsEditingAccountData(true);
+            }
+        });
+    };
+
+    const handleUpdateAccountData = async () => {
+        try {
+            showLoading('Updating your account data...');
+            await api.put('/api/auth/profile', {
+                fullName: formData.personalDetails.fullName,
+                phoneNumber: formData.contactDetails.primaryPhone,
+                email: formData.contactDetails.email
+            });
+            
+            setRegistrationDataLocked(true);
+            setIsEditingAccountData(false);
+            closeLoading();
+            showSuccessToast('Account information updated successfully!');
+            if (typeof onStudentUpdate === 'function') {
+                onStudentUpdate();
+            }
+        } catch (error) {
+            closeLoading();
+            showErrorToast(error.response?.data?.message || 'Failed to update account information');
+        }
     };
 
     // Pre-fill from user account data (locked fields from signup)
@@ -1203,10 +1244,18 @@ const SinglePageStudentRegistration = ({
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mt-1">Basic personal details</p>
                     </div>
-                    {registrationDataLocked && (
+                    {!registrationDataLocked && isEditingAccountData ? (
                         <button
                             type="button"
-                            onClick={() => setRegistrationDataLocked(false)}
+                            onClick={handleUpdateAccountData}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            <i className="fa-solid fa-save text-xs"></i> Update Data
+                        </button>
+                    ) : registrationDataLocked && (
+                        <button
+                            type="button"
+                            onClick={handleEditAccountData}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
                         >
                             <i className="fa-solid fa-pen-to-square text-xs"></i> Edit
@@ -1449,10 +1498,18 @@ const SinglePageStudentRegistration = ({
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mt-1">Address and contact information</p>
                     </div>
-                    {registrationDataLocked && (
+                    {!registrationDataLocked && isEditingAccountData ? (
                         <button
                             type="button"
-                            onClick={() => setRegistrationDataLocked(false)}
+                            onClick={handleUpdateAccountData}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                            <i className="fa-solid fa-save text-xs"></i> Update Data
+                        </button>
+                    ) : registrationDataLocked && (
+                        <button
+                            type="button"
+                            onClick={handleEditAccountData}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
                         >
                             <i className="fa-solid fa-pen-to-square text-xs"></i> Edit
