@@ -1390,11 +1390,19 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.approvedBy || 'Pending'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Created Date</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitted Date</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                {selectedStudent.createdAt ? new Date(selectedStudent.createdAt).toLocaleDateString() : 'N/A'}
+                                                {formatDate(selectedStudent.submittedAt || selectedStudent.createdAt)}
                                             </p>
                                         </div>
+                                        {selectedStudent.approvedAt && (
+                                            <div>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved Date</label>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                    {formatDate(selectedStudent.approvedAt)}
+                                                </p>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

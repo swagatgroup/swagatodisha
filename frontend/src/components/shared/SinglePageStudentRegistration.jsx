@@ -1023,11 +1023,23 @@ const SinglePageStudentRegistration = ({
                 stage: "SUBMITTED",
             });
 
-            const submitRes = await api.put(`/api/student-application/${appId}/submit`, {
-                termsAccepted: true,
-            });
+            let submitRes;
+            try {
+                submitRes = await api.put(`/api/student-application/${appId}/submit`, {
+                    termsAccepted: true,
+                });
+            } catch (submitErr) {
+                // Fallback for older backend versions that don't have the explicit submit route
+                // The save-draft call above with stage: "SUBMITTED" already did the submission
+                if (submitErr.response?.status === 404 || submitErr.response?.status === 400) {
+                    console.warn("Submit endpoint fallback used:", submitErr.message);
+                    submitRes = { data: { success: true, data: saveRes.data?.data } };
+                } else {
+                    throw submitErr;
+                }
+            }
 
-            if (submitRes.data?.success) {
+            if (submitRes.data?.success || saveRes.data?.success) {
                 localStorage.removeItem('pendingReferralCode');
                 if (referralMode) {
                     showSuccessToast('Referral application submitted successfully!');

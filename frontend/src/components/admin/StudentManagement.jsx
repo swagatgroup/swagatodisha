@@ -2847,18 +2847,20 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.referralCode || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Created Date</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.createdAt)}</p>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitted Date</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.submittedAt || selectedStudent.createdAt)}</p>
                                         </div>
-                                        {selectedStudent.submittedAt && (
+                                        {selectedStudent.approvedAt && (
                                             <div>
-                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitted Date</label>
-                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.submittedAt)}</p>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved Date</label>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.approvedAt)}</p>
                                             </div>
                                         )}
                                         <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Current Stage</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.currentStage || selectedStudent.status}</p>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                                {['APPROVED', 'REJECTED'].includes(selectedStudent.status) ? selectedStudent.status : (selectedStudent.currentStage || selectedStudent.status)}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>

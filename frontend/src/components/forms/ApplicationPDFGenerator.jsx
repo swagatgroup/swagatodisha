@@ -312,6 +312,12 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 drawBoxedField('Session', selectedSession || pdfContent.session || '2024-2025', leftColX + halfWidth + 5, currentY, halfWidth);
                 currentY += 16;
                 
+                const admissionTypeValue = (pdfContent.courseDetails.admissionType || 'paid') === 'paid' 
+                    ? 'Paid (Studying by paying the course fee by him/her)' 
+                    : 'Scholarship (Student is studying on scholarship money)';
+                drawBoxedField('Admission Type', admissionTypeValue, leftColX, currentY, leftWidth);
+                currentY += 16;
+                
                 // Make sure we clear the photo
                 if (currentY < photoY + photoBoxHeight + 5) {
                     currentY = photoY + photoBoxHeight + 5;
@@ -790,6 +796,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 <div class="field-row">
                     <span class="field-label">Stream:</span>
                     <span class="field-value">${content.courseDetails.stream || 'N/A'}</span>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">Admission Type:</span>
+                    <span class="field-value">${(content.courseDetails.admissionType || 'paid') === 'paid' ? 'Paid (Studying by paying the course fee by him/her)' : 'Scholarship (Student is studying on scholarship money)'}</span>
                 </div>
                 ${content.referralCode ? `
                 <div class="field-row">
