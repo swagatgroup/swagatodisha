@@ -251,7 +251,7 @@ const getCollegeCourses = asyncHandler(async (req, res) => {
 // @access  Private (Super Admin, Staff)
 const createCollegeCourse = asyncHandler(async (req, res) => {
     const { collegeId } = req.params;
-    const { courseName, courseCode, streams, isActive, price } = req.body;
+    const { courseName, courseCode, streams, isActive, price, isPaidOnly } = req.body;
 
     // Check if college exists
     const college = await College.findById(collegeId);
@@ -276,16 +276,22 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
     }
 
     // Process streams array
-    const processedStreams = Array.isArray(streams) ? streams.map(stream => ({
-        name: stream.name?.trim() || stream.trim(),
-        isActive: stream.isActive !== false
-    })) : [];
+    const processedStreams = Array.isArray(streams) ? streams.map(stream => {
+        const streamObj = typeof stream === 'string' ? { name: stream.trim() } : stream;
+        return {
+            name: streamObj.name?.trim() || '',
+            price: streamObj.price !== undefined ? parseFloat(streamObj.price) : 0,
+            isPaidOnly: streamObj.isPaidOnly === true || streamObj.isPaidOnly === 'true',
+            isActive: streamObj.isActive !== false
+        };
+    }) : [];
 
     const course = await CollegeCourse.create({
         college: collegeId,
         courseName: courseName.trim(),
         courseCode: courseCode ? courseCode.trim() : undefined,
         price: price !== undefined ? parseFloat(price) : 0,
+        isPaidOnly: isPaidOnly === true || isPaidOnly === 'true',
         streams: processedStreams,
         isActive: isActive !== 'false' && isActive !== false,
         createdBy: req.user._id,
@@ -310,7 +316,7 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
 // @access  Private (Super Admin, Staff)
 const updateCollegeCourse = asyncHandler(async (req, res) => {
     const { collegeId, courseId } = req.params;
-    const { courseName, courseCode, streams, isActive, price } = req.body;
+    const { courseName, courseCode, streams, isActive, price, isPaidOnly } = req.body;
 
     let course = await CollegeCourse.findOne({
         _id: courseId,
@@ -343,16 +349,22 @@ const updateCollegeCourse = asyncHandler(async (req, res) => {
     // Process streams array if provided
     let processedStreams = course.streams;
     if (streams !== undefined) {
-        processedStreams = Array.isArray(streams) ? streams.map(stream => ({
-            name: stream.name?.trim() || stream.trim(),
-            isActive: stream.isActive !== false
-        })) : [];
+        processedStreams = Array.isArray(streams) ? streams.map(stream => {
+            const streamObj = typeof stream === 'string' ? { name: stream.trim() } : stream;
+            return {
+                name: streamObj.name?.trim() || '',
+                price: streamObj.price !== undefined ? parseFloat(streamObj.price) : 0,
+                isPaidOnly: streamObj.isPaidOnly === true || streamObj.isPaidOnly === 'true',
+                isActive: streamObj.isActive !== false
+            };
+        }) : [];
     }
 
     const updateData = {
         courseName: courseName !== undefined ? courseName.trim() : course.courseName,
         courseCode: courseCode !== undefined ? (courseCode.trim() || undefined) : course.courseCode,
         price: price !== undefined ? parseFloat(price) : course.price,
+        isPaidOnly: isPaidOnly !== undefined ? (isPaidOnly === 'true' || isPaidOnly === true) : course.isPaidOnly,
         streams: processedStreams,
         isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : course.isActive,
         updatedBy: req.user._id
@@ -419,7 +431,7 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                 isActive: true
             })
                 .sort({ courseName: 1 })
-                .select('courseName courseCode price streams');
+                .select('courseName courseCode price isPaidOnly streams');
 
             const campuses = await Campus.find({
                 college: college._id,
@@ -435,7 +447,12 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                     _id: c._id,
                     courseName: c.courseName,
                     price: c.price,
-                    streams: c.streams ? c.streams.filter(s => s.isActive).map(s => s.name) : []
+                    isPaidOnly: c.isPaidOnly,
+                    streams: c.streams ? c.streams.filter(s => s.isActive).map(s => ({
+                        name: s.name,
+                        price: s.price,
+                        isPaidOnly: s.isPaidOnly
+                    })) : []
                 })),
                 campuses: campuses.map(c => ({
                     _id: c._id,

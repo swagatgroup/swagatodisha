@@ -26,6 +26,7 @@ const InstituteCourseManagement = () => {
     const [courseFormData, setCourseFormData] = useState({
         courseName: '',
         price: 0,
+        isPaidOnly: false,
         streams: [],
         isActive: true
     });
@@ -154,7 +155,7 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCourseForm(false);
                 setEditingCourse(null);
-                setCourseFormData({ courseName: '', price: 0, streams: [], isActive: true });
+                setCourseFormData({ courseName: '', price: 0, isPaidOnly: false, streams: [], isActive: true });
                 setNewStream('');
                 fetchCourses(selectedCollege._id);
             }
@@ -184,7 +185,12 @@ const InstituteCourseManagement = () => {
         setCourseFormData({
             courseName: course.courseName || '',
             price: course.price || 0,
-            streams: course.streams ? course.streams.map(s => s.name || s) : [],
+            isPaidOnly: course.isPaidOnly || false,
+            streams: course.streams ? course.streams.map(s => ({
+                name: s.name || s,
+                price: s.price || 0,
+                isPaidOnly: s.isPaidOnly || false
+            })) : [],
             isActive: course.isActive !== false
         });
         setShowCourseForm(true);
@@ -246,7 +252,7 @@ const InstituteCourseManagement = () => {
         if (newStream.trim()) {
             setCourseFormData(prev => ({
                 ...prev,
-                streams: [...prev.streams, newStream.trim()]
+                streams: [...prev.streams, { name: newStream.trim(), price: 0, isPaidOnly: false }]
             }));
             setNewStream('');
         }
@@ -521,43 +527,101 @@ const InstituteCourseManagement = () => {
                                         </button>
                                     </div>
                                     {courseFormData.streams.length > 0 && (
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-col gap-3 mt-4">
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                Manage Streams (Fee & Scholarship)
+                                            </label>
                                             {courseFormData.streams.map((stream, index) => (
-                                                <span
+                                                <div
                                                     key={index}
-                                                    className="inline-flex items-center px-3 py-1 bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 rounded-full text-sm"
+                                                    className="flex flex-col sm:flex-row gap-3 items-start sm:items-center p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600"
                                                 >
-                                                    {stream}
+                                                    <div className="flex-1 font-medium text-gray-900 dark:text-gray-100">
+                                                        {stream.name}
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-gray-500">₹</span>
+                                                        <input
+                                                            type="text"
+                                                            inputMode="numeric"
+                                                            pattern="[0-9]*"
+                                                            value={stream.price === 0 ? '' : stream.price}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value.replace(/[^0-9]/g, '');
+                                                                const newPrice = val === '' ? 0 : parseInt(val, 10);
+                                                                setCourseFormData(prev => ({
+                                                                    ...prev,
+                                                                    streams: prev.streams.map((s, i) => i === index ? { ...s, price: newPrice } : s)
+                                                                }));
+                                                            }}
+                                                            className="w-24 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-white"
+                                                            placeholder="Fee"
+                                                        />
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        <input
+                                                            type="checkbox"
+                                                            id={`streamPaid-${index}`}
+                                                            checked={stream.isPaidOnly}
+                                                            onChange={(e) => {
+                                                                setCourseFormData(prev => ({
+                                                                    ...prev,
+                                                                    streams: prev.streams.map((s, i) => i === index ? { ...s, isPaidOnly: e.target.checked } : s)
+                                                                }));
+                                                            }}
+                                                            className="w-4 h-4 text-purple-600 rounded"
+                                                        />
+                                                        <label htmlFor={`streamPaid-${index}`} className="text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                                                            Paid Only
+                                                        </label>
+                                                    </div>
                                                     <button
                                                         type="button"
                                                         onClick={() => removeStream(index)}
-                                                        className="ml-2 text-purple-600 dark:text-purple-300 hover:text-purple-800 dark:hover:text-purple-100"
+                                                        className="ml-2 text-red-500 hover:text-red-700 p-1"
+                                                        title="Remove stream"
                                                     >
-                                                        <i className="fa-solid fa-times"></i>
+                                                        <i className="fa-solid fa-trash"></i>
                                                     </button>
-                                                </span>
+                                                </div>
                                             ))}
                                         </div>
                                     )}
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                        Course Fee (₹) *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        inputMode="numeric"
-                                        pattern="[0-9]*"
-                                        value={courseFormData.price === 0 ? '' : courseFormData.price}
-                                        onChange={(e) => {
-                                            const val = e.target.value.replace(/[^0-9]/g, '');
-                                            setCourseFormData(prev => ({ ...prev, price: val === '' ? 0 : parseInt(val, 10) }));
-                                        }}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                                        placeholder="e.g. 25000"
-                                        required
-                                    />
-                                </div>
+                                {courseFormData.streams.length === 0 && (
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                Course Fee (₹) *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                value={courseFormData.price === 0 ? '' : courseFormData.price}
+                                                onChange={(e) => {
+                                                    const val = e.target.value.replace(/[^0-9]/g, '');
+                                                    setCourseFormData(prev => ({ ...prev, price: val === '' ? 0 : parseInt(val, 10) }));
+                                                }}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                placeholder="e.g. 25000"
+                                                required={courseFormData.streams.length === 0}
+                                            />
+                                        </div>
+                                        <div className="flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                id="coursePaidOnly"
+                                                checked={courseFormData.isPaidOnly}
+                                                onChange={(e) => setCourseFormData(prev => ({ ...prev, isPaidOnly: e.target.checked }))}
+                                                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                            />
+                                            <label htmlFor="coursePaidOnly" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                                Paid Only (No Free/Scholarship admission)
+                                            </label>
+                                        </div>
+                                    </div>
+                                )}
                                 <div className="flex items-center">
                                     <input
                                         type="checkbox"

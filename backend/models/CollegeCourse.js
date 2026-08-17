@@ -20,11 +20,24 @@ const collegeCourseSchema = new mongoose.Schema({
         default: 0,
         min: 0
     },
+    isPaidOnly: {
+        type: Boolean,
+        default: false
+    },
     streams: [{
         name: {
             type: String,
             required: true,
             trim: true
+        },
+        price: {
+            type: Number,
+            default: 0,
+            min: 0
+        },
+        isPaidOnly: {
+            type: Boolean,
+            default: false
         },
         isActive: {
             type: Boolean,

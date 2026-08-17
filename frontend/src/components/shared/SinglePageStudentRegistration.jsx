@@ -212,7 +212,37 @@ const SinglePageStudentRegistration = ({
         }
         const courses = getCoursesForCollege();
         const selected = courses.find(c => c.courseName === formData.courseDetails.selectedCourse);
-        return selected?.price ?? null;
+        
+        if (!selected) return null;
+
+        if (formData.courseDetails.stream && selected.streams) {
+            const streamData = selected.streams.find(s => s.name === formData.courseDetails.stream);
+            if (streamData && streamData.price !== undefined) {
+                return streamData.price;
+            }
+        }
+        
+        return selected.price ?? null;
+    };
+
+    // Check if selected course or stream is strictly paid
+    const isCoursePaidOnly = () => {
+        if (!formData.courseDetails.selectedCourse) {
+            return false;
+        }
+        const courses = getCoursesForCollege();
+        const selected = courses.find(c => c.courseName === formData.courseDetails.selectedCourse);
+        
+        if (!selected) return false;
+
+        if (formData.courseDetails.stream && selected.streams) {
+            const streamData = selected.streams.find(s => s.name === formData.courseDetails.stream);
+            if (streamData && streamData.isPaidOnly !== undefined) {
+                return streamData.isPaidOnly;
+            }
+        }
+        
+        return selected.isPaidOnly || false;
     };
 
     // Get campuses for selected college
@@ -1848,13 +1878,19 @@ const SinglePageStudentRegistration = ({
                   const isScSt = ['SC', 'ST'].includes(cat);
                   const isKisanEligible = ['General', 'OBC'].includes(cat);
                   const currentAdmType = formData.courseDetails.admissionType || 'paid';
+                  const paidOnly = isCoursePaidOnly();
 
-                  // Force state if not eligible for free
-                  if (!isScSt && !isKisanEligible && currentAdmType !== 'paid') {
+                  // Force state to 'paid' if not eligible for free or if course/stream is strictly paid
+                  if ((!isScSt && !isKisanEligible && currentAdmType !== 'paid') || (paidOnly && currentAdmType !== 'paid')) {
                     setTimeout(() => setFormData(prev => ({
                       ...prev,
                       courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
                     })), 0);
+                  }
+
+                  // Don't render the UI block at all if it's strictly paid
+                  if (paidOnly) {
+                      return null;
                   }
 
                   return (
