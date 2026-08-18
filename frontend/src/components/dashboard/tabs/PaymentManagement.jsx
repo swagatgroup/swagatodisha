@@ -38,6 +38,13 @@ const PaymentManagement = () => {
     const [searchVal, setSearchVal] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
 
+    // Recent payments state
+    const [recentPayments, setRecentPayments] = useState([]);
+    const [recentPage, setRecentPage] = useState(1);
+    const [recentTotalPages, setRecentTotalPages] = useState(1);
+    const [recentLoading, setRecentLoading] = useState(false);
+    const recentLimit = 20;
+
     // Debouncing effect (500ms inactivity pause)
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -48,7 +55,9 @@ const PaymentManagement = () => {
 
     useEffect(() => {
         if (selectedSession) {
-            if (activeStatus === null && debouncedSearch.trim()) {
+            if (activeStatus === 'recent') {
+                fetchRecentPayments(recentPage);
+            } else if (activeStatus === null && debouncedSearch.trim()) {
                 // If they search while activeStatus is null, auto-select 'all'
                 setActiveStatus('all');
             } else if (activeStatus === null) {
@@ -57,7 +66,42 @@ const PaymentManagement = () => {
                 fetchApplications(false); // full load when tab selected
             }
         }
-    }, [selectedSession, currentPage, activeStatus, debouncedSearch]);
+    }, [selectedSession, currentPage, activeStatus, debouncedSearch, recentPage]);
+
+    const fetchRecentPayments = async (pageNum = 1) => {
+        setRecentLoading(true);
+        try {
+            const res = await api.get(`/api/admin/students/recent-payments?page=${pageNum}&limit=${recentLimit}`);
+            if (res.data?.success) {
+                // recent-payments returns { studentName, applicationId, installment, studentId }
+                // We need to enrich with full student data so Manage modal works.
+                // Build a minimal app-like object from each recent payment entry.
+                const enriched = (res.data.data || []).map(item => ({
+                    _id: item.studentId || item._id,
+                    applicationId: item.applicationId,
+                    personalDetails: { fullName: item.studentName },
+                    financialStatus: item.financialStatus || {
+                        totalFees: item.installment?.amount || 0,
+                        paidAmount: item.installment?.status === 'VERIFIED' ? (item.installment?.amount || 0) : 0,
+                        dueAmount: 0,
+                        paymentStatus: item.installment?.status === 'VERIFIED' ? 'PARTIAL' : 'PENDING',
+                        installments: item.installment ? [item.installment] : [],
+                        receiptUrl: item.installment?.receiptUrl || null,
+                    },
+                    _recentInstallment: item.installment,
+                    _recentDate: item.installment?.date,
+                }));
+                setRecentPayments(enriched);
+                if (res.data.pagination) {
+                    setRecentTotalPages(res.data.pagination.pages || 1);
+                }
+            }
+        } catch (err) {
+            console.error('Error fetching recent payments:', err);
+        } finally {
+            setRecentLoading(false);
+        }
+    };
 
     const handleSearchChange = (e) => {
         setSearchVal(e.target.value);
@@ -464,7 +508,7 @@ const PaymentManagement = () => {
             </div>
 
             {/* Filter Buttons */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-6 gap-3">
                 <button
                     onClick={() => { setActiveStatus('all'); setCurrentPage(1); }}
                     className={`p-3 rounded-lg border font-semibold text-center transition-all ${
@@ -521,6 +565,21 @@ const PaymentManagement = () => {
                     <div className="text-xs uppercase tracking-wider text-opacity-80">Completed</div>
                     <div className="text-xl font-bold mt-1">{paymentStats.COMPLETED}</div>
                 </button>
+                {/* Recent Payments Button */}
+                <button
+                    onClick={() => { setActiveStatus('recent'); setRecentPage(1); }}
+                    className={`p-3 rounded-lg border font-semibold text-center transition-all ${
+                        activeStatus === 'recent' 
+                            ? 'bg-purple-600 border-purple-600 text-white shadow-md' 
+                            : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
+                >
+                    <div className="text-xs uppercase tracking-wider text-opacity-80 flex items-center justify-center gap-1">
+                        <i className="fa-solid fa-clock-rotate-left text-[10px]"></i> Recent
+                    </div>
+                    <div className="text-xl font-bold mt-1">⟳</div>
+                    <div className="text-[10px] opacity-75 font-normal">By Date</div>
+                </button>
             </div>
 
             {/* Search Box */}
@@ -552,6 +611,138 @@ const PaymentManagement = () => {
                 </div>
             </div>
 
+            {/* ── RECENT PAYMENTS TABLE (shown when activeStatus === 'recent') ── */}
+            {activeStatus === 'recent' && (
+                <div className="relative bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                    {/* Header bar */}
+                    <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-purple-50 dark:bg-purple-900/10">
+                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                            <i className="fa-solid fa-clock-rotate-left text-purple-600 dark:text-purple-400"></i>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold text-gray-900 dark:text-gray-100">Recent Payments</h3>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Sorted by most recent installment date — all management actions available</p>
+                        </div>
+                    </div>
+
+                    {recentLoading && (
+                        <div className="absolute inset-0 bg-white/60 dark:bg-gray-800/60 z-10 flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-600"></div>
+                        </div>
+                    )}
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                            <thead className="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Student Name</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">App ID</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Latest Installment</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Fees</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Paid</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                {recentPayments.length === 0 && !recentLoading ? (
+                                    <tr>
+                                        <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                            <div className="flex flex-col items-center gap-2">
+                                                <i className="fa-solid fa-receipt text-3xl text-gray-300"></i>
+                                                <p className="font-medium">No recent payments found</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ) : recentPayments.map((app, idx) => {
+                                    const finStatus = app.financialStatus || {};
+                                    const inst = app._recentInstallment || {};
+                                    const instDate = app._recentDate ? new Date(app._recentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                                    const instStatusColor = inst.status === 'VERIFIED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                                                            inst.status === 'REJECTED' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                                                            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
+                                    return (
+                                        <tr key={`recent-${idx}`} className="hover:bg-purple-50/40 dark:hover:bg-purple-900/10 transition-colors">
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="hidden sm:flex h-8 w-8 rounded-full bg-purple-100 dark:bg-purple-900/30 items-center justify-center flex-shrink-0 text-purple-600 dark:text-purple-400 font-bold text-sm">
+                                                        {(app.personalDetails?.fullName || 'U').charAt(0)}
+                                                    </div>
+                                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{app.personalDetails?.fullName || 'N/A'}</span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">{app.applicationId}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-900 dark:text-gray-100">{instDate}</div>
+                                                {inst.installmentNumber && <div className="text-xs text-gray-400">Installment #{inst.installmentNumber}</div>}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">₹{(inst.amount || 0).toLocaleString('en-IN')}</div>
+                                                <span className={`mt-0.5 inline-flex px-1.5 py-0.5 text-[10px] font-semibold rounded-full uppercase ${instStatusColor}`}>
+                                                    {inst.status || 'PENDING'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">₹{finStatus.totalFees || 0}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">₹{finStatus.paidAmount || 0}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                    finStatus.paymentStatus === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                                                    finStatus.paymentStatus === 'PARTIAL' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                                    finStatus.paymentStatus === 'OVERDUE' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                                                    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
+                                                    {finStatus.paymentStatus || 'PENDING'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
+                                                <button
+                                                    onClick={() => openManageModal(app)}
+                                                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                                                >
+                                                    Manage
+                                                </button>
+                                                {finStatus.receiptUrl && (
+                                                    <a
+                                                        href={finStatus.receiptUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 font-medium"
+                                                    >
+                                                        Receipt
+                                                    </a>
+                                                )}
+                                                <button
+                                                    onClick={() => handlePrintReceipt()}
+                                                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                                    title="Print Receipt"
+                                                >
+                                                    <i className="fa-solid fa-print text-xs"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {/* Recent Payments Pagination */}
+                    {recentTotalPages > 1 && (
+                        <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                            <div className="text-sm text-gray-500">Page {recentPage} of {recentTotalPages}</div>
+                            <div className="flex space-x-1">
+                                <button onClick={() => setRecentPage(p => Math.max(p - 1, 1))} disabled={recentPage === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Prev</button>
+                                {Array.from({ length: recentTotalPages }, (_, i) => i + 1).slice(Math.max(0, recentPage - 3), recentPage + 2).map(pn => (
+                                    <button key={pn} onClick={() => setRecentPage(pn)} className={`px-3 py-1 border rounded text-sm ${recentPage === pn ? 'bg-purple-600 text-white border-purple-600' : ''}`}>{pn}</button>
+                                ))}
+                                <button onClick={() => setRecentPage(p => Math.min(p + 1, recentTotalPages))} disabled={recentPage === recentTotalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Next</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ── STANDARD PAYMENTS TABLE (hidden when activeStatus === 'recent') ── */}
+            {activeStatus !== 'recent' && (
             <div className="relative bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                 {loading && (
                     <div className="absolute inset-0 bg-white/60 dark:bg-gray-800/60 z-10 flex items-center justify-center">
@@ -695,6 +886,7 @@ const PaymentManagement = () => {
                     </div>
                 )}
             </div>
+            )}
 
             {/* Manage Financial Modal */}
             {isModalOpen && selectedApp && (
