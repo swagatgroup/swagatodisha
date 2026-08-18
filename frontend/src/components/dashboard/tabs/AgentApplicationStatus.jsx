@@ -1131,7 +1131,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                     <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 mb-3">Contact Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Primary Phone</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number</label>
                                             <input
                                                 type="text"
                                                 value={editData.contactDetails?.primaryPhone || ''}

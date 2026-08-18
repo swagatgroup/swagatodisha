@@ -331,6 +331,7 @@ router.post('/login', async (req, res) => {
         let userData = {
             id: user._id,
             email: user.email,
+            phoneNumber: user.phoneNumber || '',
             role: user.role || 'user',
             referralCode: user.referralCode || undefined
         };
@@ -340,6 +341,7 @@ router.post('/login', async (req, res) => {
             userData.fullName = user.fullName || `${user.firstName} ${user.lastName}`;
         } else {
             userData.fullName = user.fullName;
+            userData.phoneNumber = user.phoneNumber || '';
         }
 
         // Add student data if applicable
@@ -1096,6 +1098,7 @@ router.get('/me', async (req, res) => {
         let userData = {
             id: user._id,
             email: user.email,
+            phoneNumber: user.phoneNumber || '',
             role: user.role || 'user',
             referralCode: user.referralCode || undefined
         };
@@ -1105,6 +1108,7 @@ router.get('/me', async (req, res) => {
             userData.fullName = user.fullName || `${user.firstName} ${user.lastName}`;
         } else {
             userData.fullName = user.fullName;
+            userData.phoneNumber = user.phoneNumber || '';
         }
 
         // Add student data if user is a student

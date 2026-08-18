@@ -996,32 +996,42 @@ const SinglePageStudentRegistration = ({
             }
 
             // Save latest data before submit
-            await api.put(`/api/student-application/${appId}/save-draft`, {
-                data: {
-                    personalDetails: personalDetailsForSubmit,
-                    contactDetails: {
-                        ...formData.contactDetails,
-                        primaryPhone: sanitizePhone(formData.contactDetails?.primaryPhone),
-                        whatsappNumber: sanitizePhone(formData.contactDetails?.whatsappNumber)
+            let saveRes;
+            try {
+                saveRes = await api.put(`/api/student-application/${appId}/save-draft`, {
+                    data: {
+                        personalDetails: personalDetailsForSubmit,
+                        contactDetails: {
+                            ...formData.contactDetails,
+                            primaryPhone: sanitizePhone(formData.contactDetails?.primaryPhone),
+                            whatsappNumber: sanitizePhone(formData.contactDetails?.whatsappNumber)
+                        },
+                        courseDetails: {
+                            selectedCollege: formData.courseDetails?.selectedCollege || '',
+                            selectedCourse: formData.courseDetails?.selectedCourse || '',
+                            stream: formData.courseDetails?.stream || '',
+                            campus: formData.courseDetails?.campus || '',
+                            institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
+                            courseName: formData.courseDetails?.selectedCourse || '',
+                            admissionType: formData.courseDetails?.admissionType || ''
+                        },
+                        guardianDetails: {
+                            ...formData.guardianDetails,
+                            guardianPhone: sanitizePhone(formData.guardianDetails?.guardianPhone),
+                            relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
+                        },
+                        documents: documentsArray,
                     },
-                    courseDetails: {
-                        selectedCollege: formData.courseDetails?.selectedCollege || '',
-                        selectedCourse: formData.courseDetails?.selectedCourse || '',
-                        stream: formData.courseDetails?.stream || '',
-                        campus: formData.courseDetails?.campus || '',
-                        institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
-                        courseName: formData.courseDetails?.selectedCourse || '',
-                        admissionType: formData.courseDetails?.admissionType || ''
-                    },
-                    guardianDetails: {
-                        ...formData.guardianDetails,
-                        guardianPhone: sanitizePhone(formData.guardianDetails?.guardianPhone),
-                        relationship: normalizeGuardianRelationship(formData.guardianDetails?.relationship)
-                    },
-                    documents: documentsArray,
-                },
-                stage: "SUBMITTED",
-            });
+                    stage: "SUBMITTED",
+                });
+            } catch (draftErr) {
+                if (draftErr.response?.status === 404) {
+                    console.warn("save-draft endpoint not found on backend (older version), proceeding with submit only");
+                    saveRes = { data: { success: true, data: null } };
+                } else {
+                    throw draftErr;
+                }
+            }
 
             let submitRes;
             try {
@@ -1532,7 +1542,7 @@ const SinglePageStudentRegistration = ({
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Primary Phone *
+                            Phone Number *
                             {registrationDataLocked && <span className="ml-1 text-amber-500"><i className="fa-solid fa-lock text-xs"></i></span>}
                         </label>
                         <input

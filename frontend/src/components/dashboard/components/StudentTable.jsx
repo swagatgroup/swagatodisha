@@ -1088,7 +1088,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Primary Phone</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
                                         </div>
                                         <div>
@@ -1563,7 +1563,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                     <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Primary Phone *</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
                                             <input
                                                 type="tel"
                                                 value={editData.contactDetails?.primaryPhone || ''}

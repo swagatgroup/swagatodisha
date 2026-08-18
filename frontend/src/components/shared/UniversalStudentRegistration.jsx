@@ -1230,7 +1230,7 @@ const UniversalStudentRegistration = ({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-1">
-            Primary Phone *
+            Phone Number *
             {user && <span className="text-xs text-amber-500 flex items-center gap-0.5"><i className="fa-solid fa-lock text-xs"></i> Locked</span>}
           </label>
           <input

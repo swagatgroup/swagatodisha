@@ -1162,7 +1162,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 'Category/Status',
                 // Contact Details
                 'Email',
-                'Primary Phone',
+                'Phone Number',
                 'WhatsApp Number',
                 'Address',
                 'City',
@@ -2385,7 +2385,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Primary Phone</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
                                         </div>
                                         <div>
@@ -3062,7 +3062,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Primary Phone *
+                                                Phone Number *
                                             </label>
                                             <input
                                                 type="tel"

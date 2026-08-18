@@ -147,7 +147,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
         }
 
         if (step === 2) {
-            if (!formData.contactDetails.primaryPhone) newErrors.primaryPhone = "Primary phone is required";
+            if (!formData.contactDetails.primaryPhone) newErrors.primaryPhone = "Phone Number is required";
             else if (!/^[6-9]\d{9}$/.test(formData.contactDetails.primaryPhone)) {
                 newErrors.primaryPhone = "Invalid phone number";
             }
@@ -373,7 +373,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Primary Phone *
+                        Phone Number *
                     </label>
                     <input
                         type="tel"
