@@ -1395,11 +1395,11 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 {formatDate(selectedStudent.submittedAt || selectedStudent.createdAt)}
                                             </p>
                                         </div>
-                                        {selectedStudent.approvedAt && (
+                                        {(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt) && selectedStudent.status === 'APPROVED' && (
                                             <div>
                                                 <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved Date</label>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                    {formatDate(selectedStudent.approvedAt)}
+                                                    {formatDate(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt)}
                                                 </p>
                                             </div>
                                         )}
