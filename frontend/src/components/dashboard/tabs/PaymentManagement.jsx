@@ -43,7 +43,7 @@ const PaymentManagement = () => {
     const [recentPage, setRecentPage] = useState(1);
     const [recentTotalPages, setRecentTotalPages] = useState(1);
     const [recentLoading, setRecentLoading] = useState(false);
-    const recentLimit = 20;
+    const recentLimit = 10;
 
     // Debouncing effect (500ms inactivity pause)
     useEffect(() => {
@@ -726,15 +726,17 @@ const PaymentManagement = () => {
                     </div>
 
                     {/* Recent Payments Pagination */}
-                    {recentTotalPages > 1 && (
-                        <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                            <div className="text-sm text-gray-500">Page {recentPage} of {recentTotalPages}</div>
-                            <div className="flex space-x-1">
-                                <button onClick={() => setRecentPage(p => Math.max(p - 1, 1))} disabled={recentPage === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Prev</button>
+                    {recentPayments.length > 0 && (
+                        <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="text-sm text-gray-500">
+                                Showing page <span className="font-medium text-gray-900 dark:text-gray-100">{recentPage}</span> of <span className="font-medium text-gray-900 dark:text-gray-100">{recentTotalPages}</span>
+                            </div>
+                            <div className="flex space-x-2">
+                                <button onClick={() => setRecentPage(p => Math.max(p - 1, 1))} disabled={recentPage === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 transition-colors">Prev</button>
                                 {Array.from({ length: recentTotalPages }, (_, i) => i + 1).slice(Math.max(0, recentPage - 3), recentPage + 2).map(pn => (
-                                    <button key={pn} onClick={() => setRecentPage(pn)} className={`px-3 py-1 border rounded text-sm ${recentPage === pn ? 'bg-purple-600 text-white border-purple-600' : ''}`}>{pn}</button>
+                                    <button key={pn} onClick={() => setRecentPage(pn)} className={`px-3 py-1 border rounded text-sm transition-colors ${recentPage === pn ? 'bg-purple-600 text-white border-purple-600 shadow-sm' : 'hover:bg-gray-50'}`}>{pn}</button>
                                 ))}
-                                <button onClick={() => setRecentPage(p => Math.min(p + 1, recentTotalPages))} disabled={recentPage === recentTotalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Next</button>
+                                <button onClick={() => setRecentPage(p => Math.min(p + 1, recentTotalPages))} disabled={recentPage === recentTotalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 transition-colors">Next</button>
                             </div>
                         </div>
                     )}
