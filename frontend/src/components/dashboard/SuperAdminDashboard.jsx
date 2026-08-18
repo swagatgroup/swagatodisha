@@ -14,6 +14,7 @@ import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ApplicationReview from './tabs/ApplicationReview';
 import PaymentManagement from './tabs/PaymentManagement';
 import ReferralDashboard from './tabs/ReferralDashboard';
+import AccessControl from './tabs/AccessControl';
 import ProgressPieChart from './ProgressPieChart';
 import {
     showSuccess,

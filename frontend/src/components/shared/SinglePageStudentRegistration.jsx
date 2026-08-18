@@ -47,6 +47,24 @@ const SinglePageStudentRegistration = ({
     // Locks the 3 registration-sourced fields (fullName, email, phone) until user clicks Edit
     const [registrationDataLocked, setRegistrationDataLocked] = useState(false);
     const [isEditingAccountData, setIsEditingAccountData] = useState(false);
+    const [allowRegistration, setAllowRegistration] = useState(true);
+    const [checkingSettings, setCheckingSettings] = useState(true);
+
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await api.get('/api/public-settings');
+                if (response.data?.success && response.data?.data) {
+                    setAllowRegistration(response.data.data.allowRegistration !== false);
+                }
+            } catch (error) {
+                console.error('Error fetching public settings:', error);
+            } finally {
+                setCheckingSettings(false);
+            }
+        };
+        fetchSettings();
+    }, []);
 
     // Convert DD/MM/YYYY to ISO format (YYYY-MM-DD)
     const convertDDMMYYYYToISO = (dateString) => {
@@ -932,7 +950,7 @@ const SinglePageStudentRegistration = ({
                             } else {
                                 showSuccessToast('Application submitted successfully! Redirecting to dashboard...');
                                 if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
-                                setTimeout(() => { navigate('/dashboard'); }, 1500);
+                                setTimeout(() => { navigate('/dashboard', { replace: true }); }, 1500);
                             }
                         }
                         return;
@@ -1063,7 +1081,7 @@ const SinglePageStudentRegistration = ({
                 } else {
                     showSuccessToast('Application submitted successfully! Redirecting to dashboard...');
                     if (onStudentUpdate) onStudentUpdate(submitRes.data.data);
-                    setTimeout(() => navigate('/dashboard'), 1500);
+                    setTimeout(() => navigate('/dashboard', { replace: true }), 1500);
                 }
             } else {
                 showErrorToast(submitRes.data?.message || 'Failed to submit application');
@@ -2346,6 +2364,29 @@ const SinglePageStudentRegistration = ({
             </motion.div>
         </div>
     );
+
+    if (checkingSettings) {
+        return (
+            <div className="flex justify-center items-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+        );
+    }
+
+    if (!allowRegistration && userRole !== 'superadmin') {
+        return (
+            <div className="max-w-4xl mx-auto p-6 mt-12 text-center">
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 border border-gray-200 dark:border-gray-700">
+                    <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">
+                        Registrations Closed
+                    </h2>
+                    <p className="text-lg text-gray-600 dark:text-gray-300">
+                        Currently we are not taking new registrations. Admissions are closed for this season.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl mx-auto p-6">

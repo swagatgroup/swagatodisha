@@ -18,8 +18,16 @@ import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 const compressImageToUnder50KB = async (photoUrl) => {
     let blob;
     let sizeKb;
+    
+    // Ensure relative paths point to the backend server
+    let fullPhotoUrl = photoUrl;
+    if (fullPhotoUrl && fullPhotoUrl.startsWith('/')) {
+        const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        fullPhotoUrl = `${baseUrl}${fullPhotoUrl}`;
+    }
+
     try {
-        const res = await fetch(photoUrl, { mode: 'cors' });
+        const res = await fetch(fullPhotoUrl, { mode: 'cors' });
         blob = await res.blob();
         sizeKb = blob.size / 1024;
     } catch (e) {
@@ -132,11 +140,11 @@ const compressImageToUnder50KB = async (photoUrl) => {
             
             attemptCompression();
         };
-        img.onerror = () => {
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-            resolve(null); // gracefully skip 
+        img.onerror = (err) => {
+            console.error("Canvas image load error", err);
+            resolve(null);
         };
-        img.src = objectUrl || photoUrl;
+        img.src = objectUrl || fullPhotoUrl;
     });
 };
 

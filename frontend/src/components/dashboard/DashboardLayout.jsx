@@ -314,7 +314,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 if (onItemClick) {
                                                     onItemClick(item.id);
                                                 } else if (item.href) {
-                                                    navigate(item.href);
+                                                    navigate(item.href, { replace: true });
                                                 }
                                                 setSidebarOpen(false);
                                             }}
@@ -361,7 +361,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 if (onItemClick) {
                                                     onItemClick(item.id);
                                                 } else if (item.href) {
-                                                    navigate(item.href);
+                                                    navigate(item.href, { replace: true });
                                                 }
                                             }}
                                             className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-all ${activeItem === item.id

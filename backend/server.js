@@ -70,6 +70,7 @@ const analyticsRoutes = require('./routes/analytics');
 const agentRoutes = require('./routes/agentRoutes');
 const staffRoutes = require('./routes/staffRoutes');
 const auditLogRoutes = require('./routes/auditLogs');
+const publicSettingsRoutes = require('./routes/publicSettings');
 
 // Import security middleware
 const {
@@ -957,6 +958,7 @@ app.use('/api/admin/quick-access', apiRateLimit, quickAccessRoutes);
 app.use('/api/admin/colleges', apiRateLimit, require('./routes/collegeRoutes'));
 app.use('/api/colleges', apiRateLimit, require('./routes/collegeRoutes'));
 app.use('/api/campuses', apiRateLimit, require('./routes/campusRoutes'));
+app.use('/api/public-settings', apiRateLimit, publicSettingsRoutes);
 
 // Performance monitoring routes
 app.get('/api/health', async (req, res) => {

@@ -98,6 +98,8 @@ const websiteSettingsSchema = new mongoose.Schema({
         maintenanceMode: { type: Boolean, default: false },
         allowRegistration: { type: Boolean, default: true },
         allowAgentRegistration: { type: Boolean, default: true },
+        showReferralRewardTier: { type: Boolean, default: true },
+        referralRewardWhitelist: [{ type: String }],
         requireEmailVerification: { type: Boolean, default: false },
         maxFileSize: { type: Number, default: 5242880 }, // 5MB
         allowedFileTypes: { type: [String], default: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'] }

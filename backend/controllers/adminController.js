@@ -17,8 +17,8 @@ exports.getDashboardStats = async (req, res) => {
         // Get session from query parameter, default to current session
         const sessionParam = req.query.session || getCurrentSession();
 
-        // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
-        // Session is based on registration year: registered in 2025 → session 2025-26
+        // Parse session to extract start year (e.g., "2025-26" â†’ 2025, "26-27" â†’ 2026)
+        // Session is based on registration year: registered in 2025 â†’ session 2025-26
         let startYear;
         try {
             const parts = sessionParam.split('-');
@@ -27,7 +27,7 @@ exports.getDashboardStats = async (req, res) => {
             }
             
             startYear = parseInt(parts[0], 10);
-            // Handle 2-digit year format (e.g., "26-27" → 2026)
+            // Handle 2-digit year format (e.g., "26-27" â†’ 2026)
             if (startYear < 100) {
                 startYear = 2000 + startYear;
             }
@@ -82,9 +82,9 @@ exports.getDashboardStats = async (req, res) => {
         };
 
         // Debug logging
-        console.log('📊 Dashboard stats requested for session:', sessionParam);
-        console.log('📅 Date range:', { yearStart, yearEnd });
-        console.log('🔍 Session query:', JSON.stringify(sessionQuery, null, 2));
+        console.log('ðŸ“Š Dashboard stats requested for session:', sessionParam);
+        console.log('ðŸ“… Date range:', { yearStart, yearEnd });
+        console.log('ðŸ” Session query:', JSON.stringify(sessionQuery, null, 2));
 
         const [
             totalStudents,
@@ -192,7 +192,7 @@ exports.getDashboardStats = async (req, res) => {
             // Referred by Student
             StudentApplication.countDocuments(buildQuery({ 'referralInfo.referralType': 'student' })),
 
-            // ── Direct Students (submitterRole: 'student') ──
+            // â”€â”€ Direct Students (submitterRole: 'student') â”€â”€
             StudentApplication.countDocuments(buildQuery({ submitterRole: 'student' })),
             StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'DRAFT' })),
             StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'SUBMITTED' })),
@@ -201,7 +201,7 @@ exports.getDashboardStats = async (req, res) => {
             StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'REJECTED' })),
             StudentApplication.countDocuments(buildQuery({ submitterRole: 'student', status: 'COMPLETE' })),
 
-            // ── Our Students (registered by admin/staff/agent) ──
+            // â”€â”€ Our Students (registered by admin/staff/agent) â”€â”€
             StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] } })),
             StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'DRAFT' })),
             StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'SUBMITTED' })),
@@ -1117,6 +1117,237 @@ exports.deleteStaff = async (req, res) => {
     }
 };
 
+// Get all staff for agent assignment dropdown
+exports.getStaffForAssignment = async (req, res) => {
+    try {
+        try {
+            const staff = await Admin.find({
+                role: 'staff',
+                isActive: true
+            })
+                .select('firstName lastName email department designation employeeId')
+                .sort({ firstName: 1 });
+
+            res.json({
+                success: true,
+                data: staff
+            });
+        } catch (dbError) {
+            console.log('Database error, using mock data for staff assignment:', dbError.message);
+
+            // Use mock data as fallback
+            const staff = mockStaff
+                .filter(s => s.role === 'staff' && s.isActive)
+                .map(s => ({
+                    _id: s._id,
+                    firstName: s.firstName,
+                    lastName: s.lastName,
+exports.updateWebsiteSettings = async (req, res) => {
+    try {
+        let settings = await WebsiteSettings.findOne();
+
+        if (!settings) {
+            settings = new WebsiteSettings();
+        }
+
+        // Deep merge to avoid clobbering nested subdocuments (e.g. systemSettings)
+        const deepMerge = (target, source) => {
+            for (const key of Object.keys(source)) {
+                if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                    if (!target[key] || typeof target[key] !== 'object') {
+                        target[key] = {};
+                    }
+                    deepMerge(target[key], source[key]);
+                    settings.markModified(key);
+                } else {
+                    target[key] = source[key];
+                }
+            }
+        };
+
+        deepMerge(settings, req.body);
+
+        await settings.save();
+
+        res.json({
+            success: true,
+            message: 'Website settings updated successfully',
+            data: settings
+        });
+    } catch (error) {
+        console.error('Error updating website settings:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while updating website settings',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+exports.createStaff = async (req, res) => {
+    try {
+        console.log('Creating staff with data:', req.body);
+
+        const {
+            firstName,
+            lastName,
+            email,
+            phone,
+            role = 'staff',
+            department,
+            designation,
+            assignedAgents
+        } = req.body;
+
+        // Auto-generate password if not provided
+        const password = req.body.password || crypto.randomBytes(6).toString('hex');
+
+        // Check if staff already exists
+        const existingStaff = await Admin.findOne({ email });
+        if (existingStaff) {
+            return res.status(400).json({
+                success: false,
+                message: 'Staff with this email already exists'
+            });
+        }
+
+        console.log('Creating new Admin instance...');
+        const staff = new Admin({
+            firstName,
+            lastName,
+            email,
+            password,
+            phone,
+            role,
+            department,
+            designation,
+            gender: 'male', // Set default gender to avoid validation issues
+            createdBy: req.user._id
+        });
+
+        console.log('Saving staff to database...');
+        await staff.save();
+        console.log('Staff saved successfully');
+
+        // If agents are assigned to this staff, update them
+        if (assignedAgents && assignedAgents.length > 0) {
+            await User.updateMany(
+                { _id: { $in: assignedAgents }, role: 'agent' },
+                { assignedStaff: staff._id }
+            );
+        }
+
+        res.status(201).json({
+            success: true,
+            message: 'Staff created successfully.',
+            data: {
+                id: staff._id,
+                firstName: staff.firstName,
+                lastName: staff.lastName,
+                email: staff.email,
+                role: staff.role,
+                employeeId: staff.employeeId,
+                department: staff.department,
+                designation: staff.designation
+            }
+        });
+    } catch (error) {
+        console.error('Error creating staff:', error);
+        console.error('Error details:', {
+            message: error.message,
+            name: error.name,
+            stack: error.stack,
+            errors: error.errors
+        });
+        res.status(500).json({
+            success: false,
+            message: 'Server error while creating staff',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error',
+            details: process.env.NODE_ENV === 'development' ? error.errors : undefined
+        });
+    }
+};
+
+exports.updateStaff = async (req, res) => {
+    try {
+        const { staffId } = req.params;
+        const updateData = req.body;
+
+        // Remove password from update data
+        delete updateData.password;
+
+        const staff = await Admin.findByIdAndUpdate(
+            staffId,
+            updateData,
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        if (!staff) {
+            return res.status(404).json({
+                success: false,
+                message: 'Staff not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Staff updated successfully',
+            data: staff
+        });
+    } catch (error) {
+        console.error('Error updating staff:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while updating staff',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
+exports.deleteStaff = async (req, res) => {
+    try {
+        const { staffId } = req.params;
+
+        // Only super admin can delete
+        if (req.user.role !== 'super_admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Only Super Admin can delete staff records'
+            });
+        }
+
+        // Prevent deleting super admin
+        const staff = await Admin.findById(staffId);
+        if (!staff) {
+            return res.status(404).json({
+                success: false,
+                message: 'Staff not found'
+            });
+        }
+
+        if (staff.role === 'super_admin') {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot delete Super Admin account'
+            });
+        }
+
+        await Admin.findByIdAndDelete(staffId);
+
+        res.json({
+            success: true,
+            message: 'Staff deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting staff:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while deleting staff',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+};
+
 // Password Management
 exports.resetPassword = async (req, res) => {
     try {
@@ -1214,33 +1445,6 @@ exports.getWebsiteSettings = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Server error while fetching website settings',
-            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
-        });
-    }
-};
-
-exports.updateWebsiteSettings = async (req, res) => {
-    try {
-        let settings = await WebsiteSettings.findOne();
-
-        if (!settings) {
-            settings = new WebsiteSettings();
-        }
-
-        // Update settings with request body
-        Object.assign(settings, req.body);
-        await settings.save();
-
-        res.json({
-            success: true,
-            message: 'Website settings updated successfully',
-            data: settings
-        });
-    } catch (error) {
-        console.error('Error updating website settings:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Server error while updating website settings',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
     }

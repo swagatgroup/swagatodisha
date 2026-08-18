@@ -302,6 +302,7 @@ const createApplication = async (req, res) => {
                             referralType: userDoc.role,
                         };
                     }
+                }
             }
         }
 

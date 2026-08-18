@@ -510,7 +510,7 @@ const EnhancedAgentDashboard = () => {
     // Check if the clicked item has an href (for external navigation)
     const item = sidebarItems.find(i => i.id === itemId);
     if (item && item.href) {
-      navigate(item.href);
+      navigate(item.href, { replace: true });
     } else {
       // Otherwise, handle as a tab switch
       setActiveTab(itemId);

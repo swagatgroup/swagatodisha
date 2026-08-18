@@ -23,15 +23,32 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    // Removed course/referral related UI/state for minimal registration
+    const [allowRegistration, setAllowRegistration] = useState(true);
+    const [checkingSettings, setCheckingSettings] = useState(true);
+
     const { register } = useAuth();
     const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
     const location = useLocation();
     const dropdownRef = useRef(null);
 
-    // Capture referral code from URL
+    // Fetch public settings and capture referral code from URL
     useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await api.get('/api/public-settings');
+                if (response.data?.success && response.data?.data) {
+                    setAllowRegistration(response.data.data.allowRegistration !== false);
+                }
+            } catch (error) {
+                console.error('Error fetching public settings:', error);
+                // Default to true if fetch fails so we don't accidentally block
+            } finally {
+                setCheckingSettings(false);
+            }
+        };
+        fetchSettings();
+
         const params = new URLSearchParams(location.search);
         const refCode = params.get('ref');
         if (refCode) {
@@ -250,8 +267,37 @@ const Register = () => {
         }
     };
 
+    if (checkingSettings) {
+        return (
+            <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+        );
+    }
+
+    if (!allowRegistration) {
+        return (
+            <div className={`min-h-screen flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200`}>
+                <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
+                    <img className="mx-auto h-20 w-auto" src="/swagat-logo.png" alt="Swagat Group" />
+                    <h2 className={`mt-6 text-3xl font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                        Registrations Closed
+                    </h2>
+                    <p className={`mt-4 text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                        Currently we are not taking new registrations. Admissions are closed for this season.
+                    </p>
+                    <div className="mt-8">
+                        <Link to="/" className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
+                            Return to Homepage
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+        <div className={`min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200`}>
             <div className="max-w-2xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}

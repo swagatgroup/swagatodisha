@@ -26,10 +26,35 @@ const ReferralDashboard = () => {
     const [savingBank, setSavingBank] = useState(false);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [showRewards, setShowRewards] = useState(true);
 
     useEffect(() => {
         loadReferralData();
+        loadSettings();
     }, []);
+
+    const loadSettings = async () => {
+        try {
+            const response = await api.get('/api/public-settings');
+            if (response.data?.success && response.data?.data) {
+                const settings = response.data.data;
+                const emailOrPhone = user.email || user.phoneNumber;
+                
+                // Show rewards if globally enabled OR if user is whitelisted
+                if (settings.showReferralRewardTier) {
+                    setShowRewards(true);
+                } else if (settings.referralRewardWhitelist && settings.referralRewardWhitelist.includes(emailOrPhone)) {
+                    setShowRewards(true);
+                } else {
+                    setShowRewards(false);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading public settings:', error);
+            // Default to true on error
+            setShowRewards(true);
+        }
+    };
 
     const loadReferralData = async () => {
         try {
@@ -267,83 +292,85 @@ const ReferralDashboard = () => {
             </motion.div>
 
             {/* Rewards Tiers */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden"
-            >
-                <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-                    <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                        <i className="fa-solid fa-gift text-purple-600 mr-3"></i> 
-                        Referral Benefits Tier 
-                        {user?.role === 'agent' && (
-                            <span className="text-sm text-red-500 font-semibold ml-3 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">* Terms & conditions apply</span>
-                        )}
-                    </h3>
-                </div>
-                
-                <div className="p-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                        {/* Tier 1 */}
-                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">1</div>
-                            <h4 className="font-semibold text-gray-800 text-sm">1 - 10 Referrals</h4>
-                            <p className="text-2xl font-bold text-green-600 mt-2">₹2,000</p>
-                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
-                        </div>
-                        
-                        {/* Tier 2 */}
-                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">2</div>
-                            <h4 className="font-semibold text-gray-800 text-sm">11 - 25 Referrals</h4>
-                            <p className="text-2xl font-bold text-green-600 mt-2">₹3,000</p>
-                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
-                        </div>
-                        
-                        {/* Tier 3 */}
-                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">3</div>
-                            <h4 className="font-semibold text-gray-800 text-sm">26 - 50 Referrals</h4>
-                            <p className="text-2xl font-bold text-green-600 mt-2">₹4,000</p>
-                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
-                        </div>
-                        
-                        {/* Tier 4 */}
-                        <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                            <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">4</div>
-                            <h4 className="font-semibold text-gray-800 text-sm">51 - 100 Referrals</h4>
-                            <p className="text-2xl font-bold text-green-600 mt-2">₹5,000</p>
-                            <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
-                        </div>
-                        
-                        {/* Ultimate Tier */}
-                        <div className="border-2 border-purple-400 bg-purple-50 rounded-xl p-5 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-500 text-[10px] font-bold px-3 py-1 rounded-bl-xl text-yellow-900 shadow-sm">ULTIMATE</div>
-                            <div className="w-12 h-12 bg-purple-200 text-purple-700 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">
-                                <i className="fa-solid fa-motorcycle"></i>
-                            </div>
-                            <h4 className="font-bold text-purple-900 text-sm">100+ Referrals</h4>
-                            <p className="text-base font-extrabold text-purple-700 mt-2 leading-tight">Royal Enfield 350</p>
-                            <p className="text-xs text-purple-500 font-semibold mt-0.5 tracking-tight">or iPhone 17 Pro Max</p>
-                        </div>
+            {showRewards && (
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden"
+                >
+                    <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
+                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                            <i className="fa-solid fa-gift text-purple-600 mr-3"></i> 
+                            Referral Benefits Tier 
+                            {user?.role === 'agent' && (
+                                <span className="text-sm text-red-500 font-semibold ml-3 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">* Terms & conditions apply</span>
+                            )}
+                        </h3>
                     </div>
-
-                    <div className="mt-6 bg-blue-50/80 border-l-4 border-blue-500 p-5 rounded-r-xl">
-                        <div className="flex">
-                            <div className="flex-shrink-0">
-                                <i className="fa-solid fa-circle-info text-blue-500 mt-0.5 text-lg"></i>
+                    
+                    <div className="p-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                            {/* Tier 1 */}
+                            <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">1</div>
+                                <h4 className="font-semibold text-gray-800 text-sm">1 - 10 Referrals</h4>
+                                <p className="text-2xl font-bold text-green-600 mt-2">₹2,000</p>
+                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                             </div>
-                            <div className="ml-4">
-                                <h3 className="text-sm font-bold text-blue-900 uppercase tracking-wider mb-1">Future Years Benefit</h3>
-                                <div className="text-sm text-blue-800 leading-relaxed">
-                                    <p>If referred students continue their courses in the second year and third year (where applicable), you will get the <span className="font-bold">same referral amount again!</span> However, if anyone discontinues the course, the referrer will not receive the amount for those future years.</p>
+                            
+                            {/* Tier 2 */}
+                            <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">2</div>
+                                <h4 className="font-semibold text-gray-800 text-sm">11 - 25 Referrals</h4>
+                                <p className="text-2xl font-bold text-green-600 mt-2">₹3,000</p>
+                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                            </div>
+                            
+                            {/* Tier 3 */}
+                            <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">3</div>
+                                <h4 className="font-semibold text-gray-800 text-sm">26 - 50 Referrals</h4>
+                                <p className="text-2xl font-bold text-green-600 mt-2">₹4,000</p>
+                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                            </div>
+                            
+                            {/* Tier 4 */}
+                            <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
+                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">4</div>
+                                <h4 className="font-semibold text-gray-800 text-sm">51 - 100 Referrals</h4>
+                                <p className="text-2xl font-bold text-green-600 mt-2">₹5,000</p>
+                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                            </div>
+                            
+                            {/* Ultimate Tier */}
+                            <div className="border-2 border-purple-400 bg-purple-50 rounded-xl p-5 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-500 text-[10px] font-bold px-3 py-1 rounded-bl-xl text-yellow-900 shadow-sm">ULTIMATE</div>
+                                <div className="w-12 h-12 bg-purple-200 text-purple-700 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">
+                                    <i className="fa-solid fa-motorcycle"></i>
+                                </div>
+                                <h4 className="font-bold text-purple-900 text-sm">100+ Referrals</h4>
+                                <p className="text-base font-extrabold text-purple-700 mt-2 leading-tight">Royal Enfield 350</p>
+                                <p className="text-xs text-purple-500 font-semibold mt-0.5 tracking-tight">or iPhone 17 Pro Max</p>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 bg-blue-50/80 border-l-4 border-blue-500 p-5 rounded-r-xl">
+                            <div className="flex">
+                                <div className="flex-shrink-0">
+                                    <i className="fa-solid fa-circle-info text-blue-500 mt-0.5 text-lg"></i>
+                                </div>
+                                <div className="ml-4">
+                                    <h3 className="text-sm font-bold text-blue-900 uppercase tracking-wider mb-1">Future Years Benefit</h3>
+                                    <div className="text-sm text-blue-800 leading-relaxed">
+                                        <p>If referred students continue their courses in the second year and third year (where applicable), you will get the <span className="font-bold">same referral amount again!</span> However, if anyone discontinues the course, the referrer will not receive the amount for those future years.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
+            )}
 
             {/* Bank Details Section */}
             <motion.div

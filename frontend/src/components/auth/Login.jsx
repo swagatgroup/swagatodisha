@@ -121,19 +121,19 @@ const Login = () => {
                 setTimeout(() => {
                     switch (userRole) {
                         case 'student':
-                            navigate('/dashboard/student');
+                            navigate('/dashboard/student', { replace: true });
                             break;
                         case 'agent':
-                            navigate('/dashboard/agent');
+                            navigate('/dashboard/agent', { replace: true });
                             break;
                         case 'staff':
-                            navigate('/dashboard/staff');
+                            navigate('/dashboard/staff', { replace: true });
                             break;
                         case 'super_admin':
-                            navigate('/dashboard/admin');
+                            navigate('/dashboard/admin', { replace: true });
                             break;
                         default:
-                            navigate('/dashboard/student');
+                            navigate('/dashboard/student', { replace: true });
                     }
                 }, 100);
             } else {
