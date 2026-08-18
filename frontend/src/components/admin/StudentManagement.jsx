@@ -1339,7 +1339,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
             const baseParams = {
                 limit: '50',
-                search: searchQuery,
+                search: debouncedSearchTerm,
                 status: filterStatus,
                 session: selectedSession, // REQUIRED
                 listType: listType, // REQUIRED
