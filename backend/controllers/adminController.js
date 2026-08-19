@@ -1142,6 +1142,29 @@ exports.getStaffForAssignment = async (req, res) => {
                     _id: s._id,
                     firstName: s.firstName,
                     lastName: s.lastName,
+                    email: s.email,
+                    department: s.department,
+                    designation: s.designation,
+                    employeeId: s.employeeId
+                }));
+
+            res.json({
+                success: true,
+                data: staff
+            });
+        }
+    } catch (error) {
+        console.error('Error fetching staff for assignment:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while fetching staff'
+        });
+    }
+};
+
+// @desc    Update website settings
+// @route   PUT /api/admin/website-settings
+// @access  Private (Super Admin)
 exports.updateWebsiteSettings = async (req, res) => {
     try {
         let settings = await WebsiteSettings.findOne();
