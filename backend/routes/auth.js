@@ -619,7 +619,6 @@ router.post('/refresh', async (req, res) => {
 // @access  Private (Super Admin only)
 router.post('/admin-reset-password', [
     protect,
-    body('studentId').notEmpty().withMessage('Student ID is required'),
     body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
 ], async (req, res) => {
     try {
