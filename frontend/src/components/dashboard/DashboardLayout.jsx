@@ -3,6 +3,7 @@ import { Bars3Icon, SunIcon, MoonIcon, BellIcon, ChevronDoubleLeftIcon, ChevronL
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSession } from '../../contexts/SessionContext';
+import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 // NotificationCenter removed - Socket.IO component
 // RealTimeStatus removed - Socket.IO component
@@ -22,6 +23,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     const { user, logout } = useAuth();
     const { selectedSession, setSelectedSession, availableSessions } = useSession();
     const navigate = useNavigate();
+    const { isDarkMode, toggleDarkMode } = useDarkMode();
     const location = useLocation();
     const userMenuRef = useRef(null);
 
