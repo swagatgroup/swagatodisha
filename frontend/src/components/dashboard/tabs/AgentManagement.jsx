@@ -193,7 +193,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                                                             setSelectedAgent(agent);
                                                             setShowDetailsModal(true);
                                                         }}
-                                                        className="p-1 text-blue-600 hover:text-blue-800"
+                                                        className="p-1 text-[#387B95] hover:text-blue-800"
                                                         title="View Details"
                                                     >
                                                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

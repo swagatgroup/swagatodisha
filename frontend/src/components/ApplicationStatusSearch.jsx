@@ -109,7 +109,7 @@ const ApplicationStatusSearch = () => {
                 <div className="px-8 py-10 md:p-12">
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl mb-4 shadow-inner">
-                            <i className="fa-solid fa-search-location text-2xl text-indigo-600"></i>
+                            <i className="fa-solid fa-search-location text-2xl text-[#7B3FA0]"></i>
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 mb-2">Track Your Application</h2>
                         <p className="text-gray-500 max-w-xl mx-auto">
@@ -177,7 +177,7 @@ const ApplicationStatusSearch = () => {
                                     </div>
                                     <div className="mt-4 md:mt-0 md:text-right">
                                         <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Course Applied</p>
-                                        <p className="text-lg font-semibold text-indigo-700">{result.course}</p>
+                                        <p className="text-lg font-semibold text-[#5C2D80]">{result.course}</p>
                                     </div>
                                 </div>
                                 

@@ -902,10 +902,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 </p>
             </div>
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
-                        <DocumentIcon className="w-8 h-8 text-purple-600" />
+                        <DocumentIcon className="w-8 h-8 text-[#7B3FA0]" />
                         <div>
                             <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Student Application
@@ -920,7 +920,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                         <button
                             onClick={generatePDF}
                             disabled={isGenerating}
-                            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center space-x-2"
+                            className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 flex items-center space-x-2"
                         >
                             <DocumentIcon className="w-4 h-4" />
                             <span>{isGenerating ? 'Generating...' : 'Generate PDF'}</span>
@@ -954,7 +954,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                         <div className="flex flex-wrap gap-3">
                             <button
                                 onClick={() => window.open(pdfUrl, '_blank')}
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2"
+                                className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] flex items-center space-x-2"
                             >
                                 <EyeIcon className="w-4 h-4" />
                                 <span>Preview</span>

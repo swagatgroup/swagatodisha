@@ -182,7 +182,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -199,7 +199,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                         <select
                             value={selectedStudent}
                             onChange={(e) => setSelectedStudent(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         >
                             <option value="">Choose a student...</option>
                             {(Array.isArray(students) ? students : []).map(student => (
@@ -251,7 +251,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                                     e.target.value = '';
                                                 }
                                             }}
-                                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
                                             disabled={!selectedStudent || uploading}
                                         />
 
@@ -269,7 +269,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Custom Label</label>
-                                            <input id="custom-doc-label" type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="e.g., Migration Certificate" />
+                                            <input id="custom-doc-label" type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]" placeholder="e.g., Migration Certificate" />
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-1">Select File</label>
@@ -278,7 +278,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                         <div>
                                             <button
                                                 type="button"
-                                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm"
+                                                className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] text-sm"
                                                 onClick={() => {
                                                     const labelInput = document.getElementById('custom-doc-label');
                                                     const fileInput = document.getElementById('custom-doc-file');
@@ -364,7 +364,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                                         // Download file
                                                         window.open(`/api/documents/${document._id}/download`, '_blank');
                                                     }}
-                                                    className="p-1 text-blue-600 hover:text-blue-800"
+                                                    className="p-1 text-[#387B95] hover:text-blue-800"
                                                     title="Download"
                                                 >
                                                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

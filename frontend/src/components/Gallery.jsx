@@ -59,23 +59,23 @@ const Gallery = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="min-h-screen bg-[#FAF7F2]">
             <BackToMainWebsite variant="floating" />
 
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">
                 <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#EDE0F7]/30 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
                 </div>
 
                 <div className="relative z-10 container mx-auto px-6 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl">
                         <i className="fa-solid fa-images text-white text-3xl"></i>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
-                        Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Gallery</span>
+                        Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Gallery</span>
                     </h1>
 
                     <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
@@ -94,7 +94,7 @@ const Gallery = () => {
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.id)}
                                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${selectedCategory === category.id
-                                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                                    ? 'bg-[#7B3FA0] text-white shadow-lg'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
@@ -157,7 +157,7 @@ const Gallery = () => {
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <div className="w-20 h-20 bg-[#7B3FA0] rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-images text-white text-2xl"></i>
                             </div>
                             <h3 className="text-3xl font-bold text-gray-800 mb-2">{galleryImages.length}+</h3>
@@ -192,7 +192,7 @@ const Gallery = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
+            <section className="py-20 bg-[#7B3FA0]">
                 <div className="container mx-auto px-6 text-center">
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                         Experience Our <span className="text-yellow-300">Campus</span> Life
@@ -202,10 +202,10 @@ const Gallery = () => {
                         and world-class facilities at Swagat Group of Institutions.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <button className="px-8 py-4 bg-white text-[#7B3FA0] rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl">
                             Schedule a Visit
                         </button>
-                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-purple-600 transition-all duration-300">
+                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-[#7B3FA0] transition-all duration-300">
                             Contact Us
                         </button>
                     </div>

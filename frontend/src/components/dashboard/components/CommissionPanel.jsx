@@ -20,8 +20,8 @@ const CommissionPanel = ({ data }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 {/* Total Commission */}
                 <div className="text-center">
-                    <div className="bg-blue-50 rounded-lg p-4">
-                        <div className="text-2xl font-bold text-blue-600">
+                    <div className="bg-[#D0E8F0] rounded-lg p-4">
+                        <div className="text-2xl font-bold text-[#387B95]">
                             {formatCurrency(totalCommission)}
                         </div>
                         <div className="text-sm text-blue-800 mt-1">Total Commission</div>
@@ -98,7 +98,7 @@ const CommissionPanel = ({ data }) => {
 
                     {recentPayments.length > 3 && (
                         <div className="mt-4 text-center">
-                            <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            <button className="text-[#387B95] hover:text-blue-800 text-sm font-medium">
                                 View All Payments →
                             </button>
                         </div>
@@ -109,7 +109,7 @@ const CommissionPanel = ({ data }) => {
             {/* Quick Actions */}
             <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex space-x-4">
-                    <button className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                    <button className="flex-1 bg-[#387B95] text-white px-4 py-2 rounded-lg hover:bg-[#1D4B5E] transition-colors text-sm font-medium">
                         Request Payment
                     </button>
                     <button className="flex-1 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">

@@ -83,7 +83,7 @@ const PasswordsTab = () => {
     };
 
     const renderUserTable = (users) => (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow">
             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                     {activeSubTab.charAt(0).toUpperCase() + activeSubTab.slice(1)} Password Management
@@ -98,7 +98,7 @@ const PasswordsTab = () => {
                         placeholder={`Search ${activeSubTab} by name or email`}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     />
                     <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -119,14 +119,14 @@ const PasswordsTab = () => {
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {filteredData.map((user) => (
                             <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-10 w-10">
-                                            <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                                <span className="text-sm font-medium text-purple-600">
+                                            <div className="h-10 w-10 rounded-full bg-[#EDE0F7] flex items-center justify-center">
+                                                <span className="text-sm font-medium text-[#7B3FA0]">
                                                     {user.name.split(' ').map(n => n[0]).join('')}
                                                 </span>
                                             </div>
@@ -150,7 +150,7 @@ const PasswordsTab = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <button
                                         onClick={() => handlePasswordReset(user)}
-                                        className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 font-medium"
+                                        className="text-[#7B3FA0] hover:text-purple-900 dark:text-[#A855D0] dark:hover:text-purple-300 font-medium"
                                     >
                                         Reset Password
                                     </button>
@@ -210,10 +210,10 @@ const PasswordsTab = () => {
             {/* Password Reset Modal */}
             {selectedUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
+                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-[#2A1E2E] border-gray-200 dark:border-gray-700">
                         <div className="mt-3">
-                            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-purple-100 rounded-full">
-                                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="flex items-center justify-center w-12 h-12 mx-auto bg-[#EDE0F7] rounded-full">
+                                <svg className="w-6 h-6 text-[#7B3FA0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                                 </svg>
                             </div>
@@ -248,7 +248,7 @@ const PasswordsTab = () => {
                                 <button
                                     onClick={confirmPasswordReset}
                                     disabled={!newPassword}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-[#7B3FA0] border border-transparent rounded-md hover:bg-[#5C2D80] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Reset Password
                                 </button>

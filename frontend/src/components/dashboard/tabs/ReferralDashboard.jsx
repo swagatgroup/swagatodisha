@@ -143,7 +143,7 @@ const ReferralDashboard = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -160,7 +160,7 @@ const ReferralDashboard = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white shadow-lg"
+                className="bg-[#7B3FA0] rounded-lg p-6 text-white shadow-lg"
             >
                 <div className="text-center">
                     <h3 className="text-xl font-semibold mb-2">Your Referral Code</h3>
@@ -202,7 +202,7 @@ const ReferralDashboard = () => {
                     className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
-                        <div className="w-12 h-12 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                        <div className="w-12 h-12 rounded-lg bg-[#D0E8F0] flex items-center justify-center text-[#387B95]">
                             <i className="fa-solid fa-users text-xl"></i>
                         </div>
                         <div className="ml-4">
@@ -253,13 +253,13 @@ const ReferralDashboard = () => {
                     className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
-                        <div className="w-12 h-12 rounded-lg bg-purple-50 flex items-center justify-center text-purple-600">
+                        <div className="w-12 h-12 rounded-lg bg-[#EDE0F7] flex items-center justify-center text-[#7B3FA0]">
                             <i className="fa-solid fa-wallet text-xl"></i>
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500">Total Earnings</p>
                             <p className="text-2xl font-bold text-gray-900">₹{referralData.totalEarnings}</p>
-                            <p className="text-xs text-purple-500 font-medium mt-1">Tier-based rewards active</p>
+                            <p className="text-xs text-[#7B3FA0] font-medium mt-1">Tier-based rewards active</p>
                         </div>
                     </div>
                 </motion.div>
@@ -276,7 +276,7 @@ const ReferralDashboard = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
                         onClick={shareReferralLink}
-                        className="flex items-center justify-center p-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors shadow-sm font-medium"
+                        className="flex items-center justify-center p-4 bg-[#387B95] text-white rounded-xl hover:bg-[#1D4B5E] transition-colors shadow-sm font-medium"
                     >
                         <i className="fa-solid fa-share-nodes mr-3 text-lg"></i>
                         Share via Social Media
@@ -301,7 +301,7 @@ const ReferralDashboard = () => {
                 >
                     <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
                         <h3 className="text-xl font-bold text-gray-900 flex items-center">
-                            <i className="fa-solid fa-gift text-purple-600 mr-3"></i> 
+                            <i className="fa-solid fa-gift text-[#7B3FA0] mr-3"></i> 
                             Referral Benefits Tier 
                             {user?.role === 'agent' && (
                                 <span className="text-sm text-red-500 font-semibold ml-3 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">* Terms & conditions apply</span>
@@ -313,7 +313,7 @@ const ReferralDashboard = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                             {/* Tier 1 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">1</div>
+                                <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">1</div>
                                 <h4 className="font-semibold text-gray-800 text-sm">1 - 10 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹2,000</p>
                                 <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
@@ -321,7 +321,7 @@ const ReferralDashboard = () => {
                             
                             {/* Tier 2 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">2</div>
+                                <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">2</div>
                                 <h4 className="font-semibold text-gray-800 text-sm">11 - 25 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹3,000</p>
                                 <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
@@ -329,7 +329,7 @@ const ReferralDashboard = () => {
                             
                             {/* Tier 3 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">3</div>
+                                <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">3</div>
                                 <h4 className="font-semibold text-gray-800 text-sm">26 - 50 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹4,000</p>
                                 <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
@@ -337,25 +337,25 @@ const ReferralDashboard = () => {
                             
                             {/* Tier 4 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
-                                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">4</div>
+                                <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">4</div>
                                 <h4 className="font-semibold text-gray-800 text-sm">51 - 100 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹5,000</p>
                                 <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                             </div>
                             
                             {/* Ultimate Tier */}
-                            <div className="border-2 border-purple-400 bg-purple-50 rounded-xl p-5 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                            <div className="border-2 border-purple-400 bg-[#EDE0F7] rounded-xl p-5 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-500 text-[10px] font-bold px-3 py-1 rounded-bl-xl text-yellow-900 shadow-sm">ULTIMATE</div>
-                                <div className="w-12 h-12 bg-purple-200 text-purple-700 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 bg-purple-200 text-[#5C2D80] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">
                                     <i className="fa-solid fa-motorcycle"></i>
                                 </div>
                                 <h4 className="font-bold text-purple-900 text-sm">100+ Referrals</h4>
-                                <p className="text-base font-extrabold text-purple-700 mt-2 leading-tight">Royal Enfield 350</p>
-                                <p className="text-xs text-purple-500 font-semibold mt-0.5 tracking-tight">or iPhone 17 Pro Max</p>
+                                <p className="text-base font-extrabold text-[#5C2D80] mt-2 leading-tight">Royal Enfield 350</p>
+                                <p className="text-xs text-[#7B3FA0] font-semibold mt-0.5 tracking-tight">or iPhone 17 Pro Max</p>
                             </div>
                         </div>
 
-                        <div className="mt-6 bg-blue-50/80 border-l-4 border-blue-500 p-5 rounded-r-xl">
+                        <div className="mt-6 bg-[#D0E8F0]/80 border-l-4 border-blue-500 p-5 rounded-r-xl">
                             <div className="flex">
                                 <div className="flex-shrink-0">
                                     <i className="fa-solid fa-circle-info text-blue-500 mt-0.5 text-lg"></i>
@@ -376,12 +376,12 @@ const ReferralDashboard = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 p-6 mb-6"
+                className="bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm border border-gray-100 p-6 mb-6"
             >
                 <div className="border-b border-gray-100 pb-4 mb-6">
                     <div className="flex justify-between items-center">
                         <h3 className="text-lg font-bold text-gray-900 flex items-center">
-                            <i className="fa-solid fa-building-columns text-blue-600 mr-2"></i>
+                            <i className="fa-solid fa-building-columns text-[#387B95] mr-2"></i>
                             Bank Account Details for Payouts
                         </h3>
                         <div>
@@ -414,7 +414,7 @@ const ReferralDashboard = () => {
                                 required
                                 value={bankDetails.accountHolderName}
                                 onChange={(e) => setBankDetails({...bankDetails, accountHolderName: e.target.value})}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#387B95] focus:border-blue-500 transition-colors"
                                 placeholder="As per bank records"
                             />
                         </div>
@@ -425,7 +425,7 @@ const ReferralDashboard = () => {
                                 required
                                 value={bankDetails.bankName}
                                 onChange={(e) => setBankDetails({...bankDetails, bankName: e.target.value})}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#387B95] focus:border-blue-500 transition-colors"
                                 placeholder="e.g. State Bank of India"
                             />
                         </div>
@@ -436,7 +436,7 @@ const ReferralDashboard = () => {
                                 required
                                 value={bankDetails.bankAccountNumber}
                                 onChange={(e) => setBankDetails({...bankDetails, bankAccountNumber: e.target.value})}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#387B95] focus:border-blue-500 transition-colors"
                                 placeholder="Enter account number"
                             />
                         </div>
@@ -447,7 +447,7 @@ const ReferralDashboard = () => {
                                 required
                                 value={bankDetails.ifscCode}
                                 onChange={(e) => setBankDetails({...bankDetails, ifscCode: e.target.value})}
-                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#387B95] focus:border-blue-500 transition-colors"
                                 placeholder="e.g. SBIN0001234"
                             />
                         </div>
@@ -457,18 +457,18 @@ const ReferralDashboard = () => {
                         <button
                             type="submit"
                             disabled={savingBank}
-                            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 transition-all font-medium disabled:opacity-50"
+                            className="px-6 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] focus:ring-4 focus:ring-blue-200 transition-all font-medium disabled:opacity-50"
                         >
                             {savingBank ? 'Saving...' : 'Save Bank Details'}
                         </button>
                     </div>
                 </form>
 
-                <div className="mt-6 bg-blue-50 rounded-lg p-4 border border-blue-100">
+                <div className="mt-6 bg-[#D0E8F0] rounded-lg p-4 border border-blue-100">
                     <p className="text-sm text-blue-800 font-medium mb-1">Note: Verification Required</p>
-                    <p className="text-sm text-blue-700">Team Swagat Odisha will verify these details. While claiming the amount, once you add everything, please contact Team Swagat Odisha for help.</p>
+                    <p className="text-sm text-[#1D4B5E]">Team Swagat Odisha will verify these details. While claiming the amount, once you add everything, please contact Team Swagat Odisha for help.</p>
                     <div className="mt-3 flex flex-wrap gap-4">
-                        <a href="tel:+917855959544" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-blue-50 transition-colors">
+                        <a href="tel:+917855959544" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-[#D0E8F0] transition-colors">
                             <i className="fa-solid fa-phone mr-2"></i> +91 78559 59544
                         </a>
                         <a href="https://wa.me/917855959544" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
@@ -492,10 +492,10 @@ const ReferralDashboard = () => {
                     {referralData.recentReferrals.length > 0 ? (
                         <div className="space-y-3">
                             {referralData.recentReferrals.map((referral, index) => (
-                                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50/30 transition-colors">
+                                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-[#D0E8F0]/30 transition-colors">
                                     <div className="flex items-center mb-3 sm:mb-0">
                                         <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center shadow-inner">
-                                            <span className="text-blue-700 font-bold text-sm">
+                                            <span className="text-[#1D4B5E] font-bold text-sm">
                                                 {referral.name.charAt(0)}
                                             </span>
                                         </div>

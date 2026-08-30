@@ -17,7 +17,7 @@ const PasswordInputDemo = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 py-12 px-4">
+        <div className="min-h-screen bg-[#FAF7F2] py-12 px-4">
             <div className="max-w-2xl mx-auto">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -68,7 +68,7 @@ const PasswordInputDemo = () => {
                         />
 
                         {/* Features Showcase */}
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="bg-[#D0E8F0] border border-blue-200 rounded-lg p-4">
                             <h3 className="font-semibold text-blue-900 mb-2">✨ Features:</h3>
                             <ul className="text-sm text-blue-800 space-y-1">
                                 <li>• Click the eye icon to toggle password visibility</li>

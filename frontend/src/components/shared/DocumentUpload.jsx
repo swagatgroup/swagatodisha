@@ -105,7 +105,7 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
             {/* Upload Area */}
             <div
                 className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
-                    ? 'border-blue-500 bg-blue-50'
+                    ? 'border-blue-500 bg-[#D0E8F0]'
                     : 'border-gray-300 hover:border-gray-400'
                     }`}
                 onDragEnter={handleDrag}
@@ -156,7 +156,7 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
                             >
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                        <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg className="w-5 h-5 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     </div>
@@ -193,9 +193,9 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
 
             {/* Upload Progress */}
             {uploading && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div className="bg-[#D0E8F0] border border-blue-200 rounded-lg p-4">
                     <div className="flex items-center space-x-3">
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#387B95]"></div>
                         <span className="text-sm text-blue-800">Uploading document...</span>
                     </div>
                 </div>

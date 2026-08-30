@@ -83,14 +83,14 @@ const AboutUs = () => {
                 {/* Section Header */}
                 <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                     }`}>
-                    <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl transition-all duration-1000 delay-300 ${isVisible ? 'scale-100 rotate-0' : 'scale-0 rotate-180'
+                    <div className={`inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl transition-all duration-1000 delay-300 ${isVisible ? 'scale-100 rotate-0' : 'scale-0 rotate-180'
                         }`}>
                         <i className="fa-solid fa-university text-white text-3xl"></i>
                     </div>
 
                     <h2 className={`text-5xl md:text-7xl font-bold text-gray-800 mb-6 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                         }`}>
-                        About <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Us</span>
+                        About <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Us</span>
                     </h2>
 
                     <p className={`text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -125,12 +125,12 @@ const AboutUs = () => {
                             <div className="grid grid-cols-2 gap-6">
                                 <div className={`text-center p-6 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1100 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                                     }`}>
-                                    <div className="text-3xl font-bold text-purple-600 mb-2">25+</div>
+                                    <div className="text-3xl font-bold text-[#7B3FA0] mb-2">25+</div>
                                     <div className="text-sm text-gray-600">Years of Excellence</div>
                                 </div>
                                 <div className={`text-center p-6 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1300 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                                     }`}>
-                                    <div className="text-3xl font-bold text-blue-600 mb-2">50K+</div>
+                                    <div className="text-3xl font-bold text-[#387B95] mb-2">50K+</div>
                                     <div className="text-sm text-gray-600">Students Impacted</div>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@ const AboutUs = () => {
                                 {features.map((feature, index) => (
                                     <div
                                         key={index}
-                                        className={`relative p-6 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-500 cursor-pointer group hover:scale-105 hover:shadow-xl ${activeFeature === index ? 'ring-2 ring-purple-500 ring-opacity-50' : ''
+                                        className={`relative p-6 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-500 cursor-pointer group hover:scale-105 hover:shadow-xl ${activeFeature === index ? 'ring-2 ring-[#7B3FA0] ring-opacity-50' : ''
                                             }`}
                                         onMouseEnter={() => setActiveFeature(index)}
                                     >
@@ -157,7 +157,7 @@ const AboutUs = () => {
                                         </div>
 
                                         {/* Content */}
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                                        <h4 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-[#7B3FA0] transition-colors duration-300">
                                             {feature.title}
                                         </h4>
                                         <p className="text-gray-600 text-sm leading-relaxed">
@@ -171,7 +171,7 @@ const AboutUs = () => {
                             </div>
 
                             {/* Floating Achievement Badge */}
-                            <div className={`absolute -top-8 -right-8 w-32 h-32 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-1000 delay-1500 ${isVisible ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-0 rotate-180'
+                            <div className={`absolute -top-8 -right-8 w-32 h-32 bg-[#7B3FA0] rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-1000 delay-1500 ${isVisible ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-0 rotate-180'
                                 }`}>
                                 <div className="text-center">
                                     <div className="text-2xl font-bold">100+</div>
@@ -185,7 +185,7 @@ const AboutUs = () => {
                 {/* Call to Action */}
                 <div className={`text-center mt-20 transition-all duration-1000 delay-1700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                     }`}>
-                    <button className="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl font-semibold text-lg overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
+                    <button className="group relative px-8 py-4 bg-[#7B3FA0] text-white rounded-2xl font-semibold text-lg overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
                         <span className="relative z-10">Discover More</span>
 
                         {/* Animated background */}

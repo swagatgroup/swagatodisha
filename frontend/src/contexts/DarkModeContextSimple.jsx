@@ -11,33 +11,13 @@ export const useDarkMode = () => {
 };
 
 export const DarkModeProvider = ({ children }) => {
-    const [isDarkMode, setIsDarkMode] = useState(false);
-
-    useEffect(() => {
-        // Simple initialization - just set to false initially
-        // The actual dark mode preference will be loaded after component mounts
-        const initializeDarkMode = () => {
-            try {
-                if (typeof window !== 'undefined') {
-                    const saved = localStorage.getItem('darkMode');
-                    if (saved !== null) {
-                        const parsed = JSON.parse(saved);
-                        setIsDarkMode(parsed);
-                    } else {
-                        // Check system preference
-                        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                        setIsDarkMode(prefersDark);
-                    }
-                }
-            } catch (error) {
-                console.warn('Error initializing dark mode:', error);
-            }
-        };
-
-        // Initialize after a short delay to ensure React is fully loaded
-        const timer = setTimeout(initializeDarkMode, 100);
-        return () => clearTimeout(timer);
-    }, []);
+    // Initialize synchronously from DOM (which was set by index.html script)
+    const [isDarkMode, setIsDarkMode] = useState(() => {
+        if (typeof document !== 'undefined') {
+            return document.documentElement.classList.contains('dark');
+        }
+        return false;
+    });
 
     useEffect(() => {
         try {

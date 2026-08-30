@@ -298,7 +298,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.firstName}
                                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.firstName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter first name"
                                 />
@@ -313,7 +313,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.lastName}
                                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.lastName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter last name"
                                 />
@@ -328,7 +328,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="email"
                                     value={formData.email}
                                     onChange={(e) => handleInputChange('email', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.email ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter email address"
                                 />
@@ -343,7 +343,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="tel"
                                     value={formData.phone}
                                     onChange={(e) => handleInputChange('phone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.phone ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter phone number"
                                     maxLength="10"
@@ -359,7 +359,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="date"
                                     value={formData.dateOfBirth}
                                     onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.dateOfBirth ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.dateOfBirth ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                 />
                                 {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
@@ -372,7 +372,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 <select
                                     value={formData.gender}
                                     onChange={(e) => handleInputChange('gender', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.gender ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.gender ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                 >
                                     <option value="">Select Gender</option>
@@ -391,7 +391,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.fatherName}
                                     onChange={(e) => handleInputChange('fatherName', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.fatherName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.fatherName ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter father's name"
                                 />
@@ -406,7 +406,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.motherName}
                                     onChange={(e) => handleInputChange('motherName', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter mother's name"
                                 />
                             </div>
@@ -419,7 +419,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     value={formData.address}
                                     onChange={(e) => handleInputChange('address', e.target.value)}
                                     rows={3}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.address ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.address ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter complete address"
                                 />
@@ -434,7 +434,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.city}
                                     onChange={(e) => handleInputChange('city', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.city ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.city ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter city"
                                 />
@@ -449,7 +449,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.state}
                                     onChange={(e) => handleInputChange('state', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.state ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.state ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter state"
                                 />
@@ -464,7 +464,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.pincode}
                                     onChange={(e) => handleInputChange('pincode', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.pincode ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.pincode ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Enter pincode"
                                 />
@@ -487,7 +487,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 <select
                                     value={formData.course}
                                     onChange={(e) => handleInputChange('course', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.course ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.course ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                 >
                                     <option value="">Select Course</option>
@@ -505,7 +505,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 <select
                                     value={formData.institution}
                                     onChange={(e) => handleInputChange('institution', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.institution ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.institution ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                 >
                                     <option value="">Select Institution</option>
@@ -524,7 +524,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="date"
                                     value={formData.preferredStartDate}
                                     onChange={(e) => handleInputChange('preferredStartDate', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.preferredStartDate ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.preferredStartDate ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                 />
                                 {errors.preferredStartDate && <p className="text-red-500 text-sm mt-1">{errors.preferredStartDate}</p>}
@@ -538,7 +538,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.previousQualification}
                                     onChange={(e) => handleInputChange('previousQualification', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.previousQualification ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.previousQualification ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="e.g., 12th Standard, B.Sc, etc."
                                 />
@@ -553,7 +553,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="text"
                                     value={formData.previousInstitution}
                                     onChange={(e) => handleInputChange('previousInstitution', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.previousInstitution ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.previousInstitution ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="Name of previous institution"
                                 />
@@ -568,7 +568,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     type="number"
                                     value={formData.previousYear}
                                     onChange={(e) => handleInputChange('previousYear', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.previousYear ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.previousYear ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="e.g., 2023"
                                 />
@@ -584,7 +584,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     step="0.01"
                                     value={formData.previousPercentage}
                                     onChange={(e) => handleInputChange('previousPercentage', e.target.value)}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors.previousPercentage ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors.previousPercentage ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100`}
                                     placeholder="e.g., 85.5"
                                 />
@@ -656,7 +656,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                                     <div className="mt-2">
                                                         <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                                             <div
-                                                                className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                                                                className="bg-[#7B3FA0] h-2 rounded-full transition-all duration-300"
                                                                 style={{ width: `${uploadProgress[doc.key]}%` }}
                                                             ></div>
                                                         </div>
@@ -682,7 +682,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                         <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Review & Terms</h3>
 
                         {/* Application Summary */}
-                        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 space-y-4">
+                        <div className="bg-gray-50 dark:bg-[#2A1E2E] rounded-lg p-6 space-y-4">
                             <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100">Application Summary</h4>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
@@ -715,13 +715,13 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     id="termsAccepted"
                                     checked={formData.termsAccepted}
                                     onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
-                                    className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                    className="mt-1 h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
                                 />
                                 <label htmlFor="termsAccepted" className="text-sm text-gray-700 dark:text-gray-300">
                                     I have read and agree to the{' '}
                                     <button
                                         type="button"
-                                        className="text-purple-600 hover:text-purple-800 underline"
+                                        className="text-[#7B3FA0] hover:text-purple-800 underline"
                                         onClick={() => window.open('/terms-and-conditions', '_blank')}
                                     >
                                         Terms and Conditions
@@ -737,13 +737,13 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                     id="privacyAccepted"
                                     checked={formData.privacyAccepted}
                                     onChange={(e) => handleInputChange('privacyAccepted', e.target.checked)}
-                                    className="mt-1 h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                    className="mt-1 h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
                                 />
                                 <label htmlFor="privacyAccepted" className="text-sm text-gray-700 dark:text-gray-300">
                                     I have read and agree to the{' '}
                                     <button
                                         type="button"
-                                        className="text-purple-600 hover:text-purple-800 underline"
+                                        className="text-[#7B3FA0] hover:text-purple-800 underline"
                                         onClick={() => window.open('/privacy-policy', '_blank')}
                                     >
                                         Privacy Policy
@@ -763,7 +763,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 value={formData.notes}
                                 onChange={(e) => handleInputChange('notes', e.target.value)}
                                 rows={4}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 placeholder="Any additional information you'd like to share..."
                             />
                         </div>
@@ -790,7 +790,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <button
                                 onClick={generatePDF}
-                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200"
+                                className="px-6 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors duration-200"
                             >
                                 Download Application PDF
                             </button>
@@ -812,9 +812,9 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
                 {/* Header */}
-                <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
+                <div className="sticky top-0 bg-white dark:bg-[#2A1E2E] border-b border-gray-200 dark:border-gray-700 px-6 py-4">
                     <div className="flex items-center justify-between">
                         <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                             Student Application Form
@@ -835,13 +835,13 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                             {steps.map((step) => (
                                 <div key={step.number} className="flex items-center">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.number
-                                        ? 'bg-purple-600 text-white'
+                                        ? 'bg-[#7B3FA0] text-white'
                                         : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
                                         }`}>
                                         {step.number}
                                     </div>
                                     {step.number < totalSteps && (
-                                        <div className={`w-16 h-1 mx-2 ${currentStep > step.number ? 'bg-purple-600' : 'bg-gray-300 dark:bg-gray-600'
+                                        <div className={`w-16 h-1 mx-2 ${currentStep > step.number ? 'bg-[#7B3FA0]' : 'bg-gray-300 dark:bg-gray-600'
                                             }`} />
                                     )}
                                 </div>
@@ -865,7 +865,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
 
                 {/* Footer */}
                 {currentStep < 5 && (
-                    <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4">
+                    <div className="sticky bottom-0 bg-white dark:bg-[#2A1E2E] border-t border-gray-200 dark:border-gray-700 px-6 py-4">
                         <div className="flex justify-between">
                             <div className="flex space-x-3">
                                 {currentStep > 1 && (
@@ -880,7 +880,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 <button
                                     onClick={saveAsDraft}
                                     disabled={isSubmitting}
-                                    className="px-4 py-2 text-purple-600 border border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors duration-200 disabled:opacity-50"
+                                    className="px-4 py-2 text-[#7B3FA0] border border-[#7B3FA0] rounded-lg hover:bg-[#EDE0F7] dark:hover:bg-purple-900/20 transition-colors duration-200 disabled:opacity-50"
                                 >
                                     {isSubmitting ? 'Saving...' : 'Save as Draft'}
                                 </button>
@@ -890,7 +890,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 {currentStep < 4 ? (
                                     <button
                                         onClick={handleNext}
-                                        className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200"
+                                        className="px-6 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors duration-200"
                                     >
                                         Next
                                     </button>

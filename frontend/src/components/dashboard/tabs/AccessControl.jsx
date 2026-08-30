@@ -76,15 +76,15 @@ const AccessControl = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
 
     return (
         <div className="max-w-4xl mx-auto py-8">
-            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A1E2E]/50">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Access Control</h2>
                     <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Manage global platform availability and feature visibility
@@ -111,7 +111,7 @@ const AccessControl = () => {
                                     checked={settings.allowRegistration}
                                     onChange={(e) => setSettings({ ...settings, allowRegistration: e.target.checked })}
                                 />
-                                <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-[#7B3FA0]"></div>
                             </label>
                         </div>
                     </div>
@@ -135,7 +135,7 @@ const AccessControl = () => {
                                     checked={settings.showReferralRewardTier}
                                     onChange={(e) => setSettings({ ...settings, showReferralRewardTier: e.target.checked })}
                                 />
-                                <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+                                <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-[#7B3FA0]"></div>
                             </label>
                         </div>
 
@@ -152,7 +152,7 @@ const AccessControl = () => {
                                     Even if hidden above, the following users will STILL see the Referral Benefits Tier. Separate multiple entries with commas.
                                 </p>
                                 <textarea
-                                    className="w-full px-4 py-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:text-white"
+                                    className="w-full px-4 py-2 bg-white dark:bg-[#1A1212] border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] dark:text-white"
                                     rows="3"
                                     placeholder="agent@example.com, +919876543210"
                                     value={whitelistInput}
@@ -163,11 +163,11 @@ const AccessControl = () => {
                     </div>
                 </div>
 
-                <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end">
+                <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A1E2E]/50 flex justify-end">
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className={`px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium shadow-sm transition-colors ${saving ? 'opacity-75 cursor-not-allowed' : ''}`}
+                        className={`px-6 py-2 bg-[#7B3FA0] hover:bg-[#5C2D80] text-white rounded-lg font-medium shadow-sm transition-colors ${saving ? 'opacity-75 cursor-not-allowed' : ''}`}
                     >
                         {saving ? (
                             <span className="flex items-center">

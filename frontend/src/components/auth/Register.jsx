@@ -270,7 +270,7 @@ const Register = () => {
     if (checkingSettings) {
         return (
             <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -287,7 +287,7 @@ const Register = () => {
                         Currently we are not taking new registrations. Admissions are closed for this season.
                     </p>
                     <div className="mt-8">
-                        <Link to="/" className="text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300 font-medium">
+                        <Link to="/" className="text-[#7B3FA0] hover:text-indigo-500 dark:text-[#A855D0] dark:hover:text-indigo-300 font-medium">
                             Return to Homepage
                         </Link>
                     </div>
@@ -303,7 +303,7 @@ const Register = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
-                    className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
+                    className="bg-white dark:bg-[#2A1E2E] rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
                 >
                     {/* Header */}
                     <div className="text-center mb-8">
@@ -311,7 +311,7 @@ const Register = () => {
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
                             transition={{ duration: 0.5, delay: 0.2 }}
-                            className="mx-auto h-20 w-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-6"
+                            className="mx-auto h-20 w-20 bg-[#7B3FA0] rounded-full flex items-center justify-center mb-6"
                         >
                             <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -360,7 +360,7 @@ const Register = () => {
                                     autoComplete="name"
                                     value={formData.fullName}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter your full name"
                                 />
                             </div>
@@ -380,7 +380,7 @@ const Register = () => {
                                     autoComplete="username email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter email address"
                                 />
                             </div>
@@ -397,7 +397,7 @@ const Register = () => {
                                     autoComplete="tel"
                                     value={formData.phoneNumber}
                                     onChange={(e) => handleChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter 10-digit mobile number"
                                     maxLength="10"
                                 />
@@ -452,14 +452,14 @@ const Register = () => {
                                         setReferrerName('');
                                         setReferralError('');
                                     }}
-                                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Enter referral code"
                                 />
                                 <button
                                     type="button"
                                     onClick={handleVerifyReferral}
                                     disabled={!formData.referralCode || verifyingReferral || referralVerified}
-                                    className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center whitespace-nowrap"
+                                    className="px-6 py-3 bg-[#7B3FA0] hover:bg-[#5C2D80] text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center whitespace-nowrap"
                                 >
                                     {verifyingReferral ? (
                                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -495,7 +495,7 @@ const Register = () => {
                             disabled={loading}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full bg-[#7B3FA0] text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <div className="flex items-center justify-center">
@@ -513,7 +513,7 @@ const Register = () => {
                                 Already have an account?{' '}
                                 <Link
                                     to="/login"
-                                    className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-200"
+                                    className="text-[#7B3FA0] dark:text-[#A855D0] hover:text-[#5C2D80] dark:hover:text-purple-300 font-medium transition-colors duration-200"
                                 >
                                     Sign in here
                                 </Link>

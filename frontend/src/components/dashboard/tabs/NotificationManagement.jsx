@@ -243,7 +243,7 @@ const NotificationManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -259,14 +259,14 @@ const NotificationManagement = () => {
                         setEditingNotification(null);
                         setShowForm(true);
                     }}
-                    className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                    className="px-6 py-3 bg-[#387B95] text-white font-medium rounded-lg hover:bg-[#1D4B5E]"
                 >
                     Add New Notification
                 </button>
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
@@ -274,7 +274,7 @@ const NotificationManagement = () => {
                             type="text"
                             value={filters.search}
                             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="Search notifications..."
                         />
                     </div>
@@ -283,7 +283,7 @@ const NotificationManagement = () => {
                         <select
                             value={filters.type}
                             onChange={(e) => setFilters(prev => ({ ...prev, type: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Types</option>
                             {notificationTypes.map(type => (
@@ -296,7 +296,7 @@ const NotificationManagement = () => {
                         <select
                             value={filters.category}
                             onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Categories</option>
                             {categories.map(category => (
@@ -309,7 +309,7 @@ const NotificationManagement = () => {
                         <select
                             value={filters.status}
                             onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Statuses</option>
                             {statuses.map(status => (
@@ -329,7 +329,7 @@ const NotificationManagement = () => {
             </div>
 
             {/* Notification List */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Notifications ({filteredNotifications.length})
@@ -389,7 +389,7 @@ const NotificationManagement = () => {
                                     )}
                                     <button
                                         onClick={() => editNotification(notification)}
-                                        className="px-3 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+                                        className="px-3 py-1 text-[#387B95] dark:text-[#60A5FA] hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                                     >
                                         Edit
                                     </button>
@@ -409,7 +409,7 @@ const NotificationManagement = () => {
             {/* Notification Form Modal */}
             {showForm && (
                 <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+                    <div className="bg-white dark:bg-[#1A1212] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -438,7 +438,7 @@ const NotificationManagement = () => {
                                             type="text"
                                             value={formData.title}
                                             onChange={(e) => handleInputChange('title', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -448,7 +448,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.type}
                                             onChange={(e) => handleInputChange('type', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {notificationTypes.map(type => (
@@ -462,7 +462,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.category}
                                             onChange={(e) => handleInputChange('category', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         >
                                             {categories.map(category => (
                                                 <option key={category} value={category}>{category}</option>
@@ -475,7 +475,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.targetAudience}
                                             onChange={(e) => handleInputChange('targetAudience', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {targetAudiences.map(audience => (
@@ -489,7 +489,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.priority}
                                             onChange={(e) => handleInputChange('priority', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         >
                                             {priorities.map(priority => (
                                                 <option key={priority} value={priority}>{priority}</option>
@@ -502,7 +502,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.status}
                                             onChange={(e) => handleInputChange('status', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         >
                                             {statuses.map(status => (
                                                 <option key={status} value={status}>{status}</option>
@@ -517,7 +517,7 @@ const NotificationManagement = () => {
                                         type="text"
                                         value={formData.shortDescription}
                                         onChange={(e) => handleInputChange('shortDescription', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         maxLength={200}
                                     />
                                 </div>
@@ -528,7 +528,7 @@ const NotificationManagement = () => {
                                         value={formData.content}
                                         onChange={(e) => handleInputChange('content', e.target.value)}
                                         rows={6}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -541,7 +541,7 @@ const NotificationManagement = () => {
                                             type="date"
                                             value={formData.publishDate}
                                             onChange={(e) => handleInputChange('publishDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -551,7 +551,7 @@ const NotificationManagement = () => {
                                             type="date"
                                             value={formData.expiryDate}
                                             onChange={(e) => handleInputChange('expiryDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -561,7 +561,7 @@ const NotificationManagement = () => {
                                             type="date"
                                             value={formData.eventDate}
                                             onChange={(e) => handleInputChange('eventDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 </div>
@@ -574,7 +574,7 @@ const NotificationManagement = () => {
                                             type="number"
                                             value={formData.displayOrder}
                                             onChange={(e) => handleInputChange('displayOrder', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -637,7 +637,7 @@ const NotificationManagement = () => {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        className="px-6 py-3 bg-[#387B95] text-white font-medium rounded-lg hover:bg-[#1D4B5E] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : (editingNotification ? 'Update Notification' : 'Create Notification')}
                                     </button>

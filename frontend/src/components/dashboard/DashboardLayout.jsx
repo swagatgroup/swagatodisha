@@ -63,9 +63,9 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] pattern-bg dark:pattern-bg-dark">
             {/* Top Navigation Bar */}
-            <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+            <nav className="bg-white/80 dark:bg-[#2A1E2E]/80 backdrop-blur-md shadow-sm border-b border-[#7B3FA0]/10 dark:border-white/10 sticky top-0 z-20">
                 <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
                     <div className="flex justify-between items-center h-16">
                         {/* Left side - Logo and Menu Button */}
@@ -75,7 +75,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     console.log('Hamburger clicked, current state:', sidebarOpen);
                                     setSidebarOpen(!sidebarOpen);
                                 }}
-                                className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+                                className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#7B3FA0]"
                                 style={{
                                     display: 'block',
                                     visibility: 'visible',
@@ -98,7 +98,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             e.target.nextSibling.style.display = 'block';
                                         }}
                                     />
-                                    <div className="hidden h-10 w-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                                    <div className="hidden h-10 w-10 bg-[#7B3FA0] rounded-lg flex items-center justify-center">
                                         <span className="text-white font-bold text-lg">S</span>
                                     </div>
                                 </div>
@@ -126,7 +126,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         id="session-selector"
                                         value={selectedSession}
                                         onChange={(e) => setSelectedSession(e.target.value)}
-                                        className="px-3 py-1.5 text-sm rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 font-medium focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                                        className="px-3 py-1.5 text-sm rounded-md bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 font-medium focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                                     >
                                         {availableSessions.map(session => (
                                             <option key={session} value={session} className="bg-gray-800 text-white">
@@ -155,7 +155,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 setPaymentsLoading(false);
                                             }
                                         }}
-                                        className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         title="Recent Payments"
                                     >
                                         <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,12 +167,12 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     </button>
 
                                     {paymentsOpen && (
-                                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
+                                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#2A1E2E] rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden">
                                             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                                                 <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Recent Payments</h3>
                                                 <button
                                                     onClick={() => { setPaymentsLoading(true); api.get('/api/admin/students/recent-payments?limit=3').then(r => { if (r.data?.success) setRecentPayments(r.data.data || []); }).finally(() => setPaymentsLoading(false)); }}
-                                                    className="text-xs text-purple-600 dark:text-purple-400 hover:underline"
+                                                    className="text-xs text-[#7B3FA0] dark:text-[#A855D0] hover:underline"
                                                 >Refresh</button>
                                             </div>
                                             <div className="max-h-80 overflow-y-auto">
@@ -202,13 +202,13 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                     })
                                                 )}
                                             </div>
-                                            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                                            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A1E2E]/50">
                                                 <button
                                                     onClick={() => {
                                                         setPaymentsOpen(false);
                                                         setShowAllPaymentsModal(true);
                                                     }}
-                                                    className="w-full text-center text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 transition-colors"
+                                                    className="w-full text-center text-sm font-medium text-[#7B3FA0] dark:text-[#A855D0] hover:text-[#5C2D80] dark:hover:text-purple-300 transition-colors"
                                                 >
                                                     View All Payments
                                                 </button>
@@ -222,7 +222,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             <div className="relative" ref={userMenuRef}>
                                 <button
                                     onClick={toggleUserMenu}
-                                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 >
                                     <div className="h-8 w-8 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center border border-gray-200 dark:border-gray-600">
                                         <svg className="h-5 w-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -240,7 +240,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
 
                                 {/* Dropdown Menu */}
                                 {userMenuOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
+                                    <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#2A1E2E] rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700">
                                         <button
                                             onClick={() => {
                                                 closeUserMenu();
@@ -282,7 +282,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             animate={{ x: 0 }}
                             exit={{ x: -300 }}
                             transition={{ duration: 0.3 }}
-                            className="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-gray-800 shadow-lg lg:hidden"
+                            className="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-[#2A1E2E] shadow-lg lg:hidden"
                             style={{
                                 zIndex: 40,
                                 position: 'fixed',
@@ -319,7 +319,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 setSidebarOpen(false);
                                             }}
                                             className={`group flex items-center w-full px-2 py-2 text-base font-medium rounded-md ${activeItem === item.id
-                                                ? 'bg-purple-100 dark:bg-purple-900 text-purple-900 dark:text-purple-100'
+                                                ? 'bg-[#EDE0F7] dark:bg-[#2A1E2E] text-purple-900 dark:text-purple-100'
                                                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
                                                 }`}
                                         >
@@ -333,14 +333,13 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                     )}
                 </AnimatePresence>
 
-                {/* Desktop Sidebar */}
                 <div className={`hidden lg:flex lg:flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
-                    <div className="flex flex-col w-full">
-                        <div className="flex flex-col h-0 flex-1 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 relative">
+                    <div className="flex flex-col w-full h-[calc(100vh-4rem)] sticky top-16 z-10">
+                        <div className="flex flex-col h-full flex-1 bg-white/80 dark:bg-[#2A1E2E]/80 backdrop-blur-md border-r border-[#7B3FA0]/10 dark:border-white/10 relative">
                             {/* Collapse Toggle Button */}
                             <button
                                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                                className="absolute top-2 left-2 p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500 z-10"
+                                className="absolute top-2 left-2 p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] z-10"
                                 title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                             >
                                 <svg
@@ -365,7 +364,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 }
                                             }}
                                             className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-all ${activeItem === item.id
-                                                ? 'bg-purple-100 dark:bg-purple-900 text-purple-900 dark:text-purple-100'
+                                                ? 'bg-[#EDE0F7] dark:bg-[#2A1E2E] text-purple-900 dark:text-purple-100'
                                                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-gray-100'
                                                 }`}
                                             title={sidebarCollapsed ? item.name : ''}
@@ -381,7 +380,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                 </div>
 
                 {/* Main Content */}
-                <div className={`flex-1 overflow-hidden bg-gray-50 dark:bg-gray-900 transition-all duration-300`}>
+                <div className={`flex-1 overflow-hidden bg-transparent transition-all duration-300`}>
                     <main className="flex-1 relative overflow-y-auto focus:outline-none">
                         <div className="py-6">
                             <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">

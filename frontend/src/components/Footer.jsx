@@ -114,35 +114,28 @@ const Footer = () => {
     }
 
     return (
-        <footer className="relative bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 overflow-hidden">
-            {/* Background Elements */}
-            <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-purple-500/3 to-blue-500/3 rounded-full blur-3xl"></div>
-            </div>
-
+        <footer className="relative bg-[#1D4B5E] overflow-hidden pattern-bg-dark">
             {/* Main Footer Content */}
-            <div className="relative z-10 pt-12 pb-8">
+            <div className="relative z-10 pt-16 pb-8">
                 <div className="container mx-auto px-6">
                     {/* Links Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
                         {/* Quick Links */}
                         <div>
-                            <h4 className="text-base font-bold text-white mb-4 flex items-center">
-                                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2">
-                                    <i className="fa-solid fa-link text-white text-xs"></i>
+                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
+                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
+                                    <i className="fa-solid fa-link text-[#FAF7F2] text-sm"></i>
                                 </div>
                                 Quick Links
                             </h4>
-                            <ul className="space-y-2">
+                            <ul className="space-y-3">
                                 {footerData.quickLinks.map((link, index) => (
                                     <li key={index}>
                                         <a
                                             href={link.url}
-                                            className="text-gray-300 hover:text-purple-300 transition-colors duration-300 flex items-center group text-sm"
+                                            className="text-[#D0E8F0] hover:text-[#F5A623] transition-colors duration-300 flex items-center group font-lato text-sm"
                                         >
-                                            <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2 group-hover:bg-purple-300 transition-colors duration-300"></div>
+                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#F5A623] transition-colors duration-300"></div>
                                             {link.name}
                                         </a>
                                     </li>
@@ -152,20 +145,20 @@ const Footer = () => {
 
                         {/* Programs */}
                         <div>
-                            <h4 className="text-base font-bold text-white mb-4 flex items-center">
-                                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2">
-                                    <i className="fa-solid fa-graduation-cap text-white text-xs"></i>
+                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
+                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
+                                    <i className="fa-solid fa-graduation-cap text-[#FAF7F2] text-sm"></i>
                                 </div>
                                 Our Programs
                             </h4>
-                            <ul className="space-y-2">
+                            <ul className="space-y-3">
                                 {footerData.programs.map((program, index) => (
                                     <li key={index}>
                                         <a
                                             href={program.url}
-                                            className="text-gray-300 hover:text-blue-300 transition-colors duration-300 flex items-center group text-sm"
+                                            className="text-[#D0E8F0] hover:text-[#F5A623] transition-colors duration-300 flex items-center group font-lato text-sm"
                                         >
-                                            <div className="w-1.5 h-1.5 bg-blue-400 rounded-full mr-2 group-hover:bg-blue-300 transition-colors duration-300"></div>
+                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#F5A623] transition-colors duration-300"></div>
                                             {program.name}
                                         </a>
                                     </li>
@@ -175,20 +168,20 @@ const Footer = () => {
 
                         {/* Support */}
                         <div>
-                            <h4 className="text-base font-bold text-white mb-4 flex items-center">
-                                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2">
-                                    <i className="fa-solid fa-headset text-white text-xs"></i>
+                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
+                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
+                                    <i className="fa-solid fa-headset text-[#FAF7F2] text-sm"></i>
                                 </div>
                                 Support
                             </h4>
-                            <ul className="space-y-2">
+                            <ul className="space-y-3">
                                 {footerData.support.map((item, index) => (
                                     <li key={index}>
                                         <a
                                             href={item.url}
-                                            className="text-gray-300 hover:text-purple-300 transition-colors duration-300 flex items-center group text-sm"
+                                            className="text-[#D0E8F0] hover:text-[#F5A623] transition-colors duration-300 flex items-center group font-lato text-sm"
                                         >
-                                            <div className="w-1.5 h-1.5 bg-purple-400 rounded-full mr-2 group-hover:bg-purple-300 transition-colors duration-300"></div>
+                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#F5A623] transition-colors duration-300"></div>
                                             {item.name}
                                         </a>
                                     </li>
@@ -198,13 +191,13 @@ const Footer = () => {
 
                         {/* Subscribe */}
                         <div>
-                            <h4 className="text-base font-bold text-white mb-4 flex items-center">
-                                <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-2">
-                                    <i className="fa-solid fa-envelope text-white text-xs"></i>
+                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
+                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
+                                    <i className="fa-solid fa-envelope text-[#FAF7F2] text-sm"></i>
                                 </div>
                                 Stay Updated
                             </h4>
-                            <p className="text-gray-300 mb-4 text-sm">
+                            <p className="text-[#D0E8F0] mb-5 font-lato text-sm">
                                 Subscribe to our newsletter for the latest updates, events, and educational insights.
                             </p>
                             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
@@ -213,12 +206,12 @@ const Footer = () => {
                                     value={newsletterEmail}
                                     onChange={(e) => setNewsletterEmail(e.target.value)}
                                     placeholder="Enter your email"
-                                    className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 text-sm"
+                                    className="w-full px-4 py-2.5 bg-[#1A3545]/60 border border-white/10 rounded-xl text-[#FAF7F2] placeholder-[#387B95] focus:outline-none focus:ring-2 focus:ring-[#F5A623] focus:border-transparent transition-all duration-300 text-sm font-lato"
                                 />
                                 <button
                                     type="submit"
                                     disabled={isSubscribing}
-                                    className="w-full px-3 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-2.5 bg-[#F5A623] text-[#1A1A1A] rounded-xl font-baloo font-bold hover:bg-[#D4880B] transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isSubscribing ? (
                                         <span className="flex items-center justify-center">
@@ -231,20 +224,18 @@ const Footer = () => {
                                 </button>
                             </form>
                         </div>
-
-
                     </div>
 
                     {/* Bottom Bar */}
-                    <div className="border-t border-white/20 pt-6">
-                        <div className="flex flex-col md:flex-row items-center justify-between">
-                            <div className="text-gray-400 text-xs mb-3 md:mb-0 text-center md:text-left">
+                    <div className="border-t border-white/10 pt-8 mt-4">
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                            <div className="text-[#387B95] text-sm text-center md:text-left font-lato">
                                 © {currentYear} Swagat Group of Institutions. All rights reserved.
                             </div>
-                            <div className="flex items-center space-x-4 text-xs text-gray-400 mb-3 md:mb-0">
-                                <a href="#" className="hover:text-purple-300 transition-colors duration-300">Privacy Policy</a>
-                                <a href="#" className="hover:text-purple-300 transition-colors duration-300">Terms of Service</a>
-                                <a href="#" className="hover:text-purple-300 transition-colors duration-300">Cookie Policy</a>
+                            <div className="flex items-center space-x-6 text-sm text-[#387B95] font-lato">
+                                <a href="#" className="hover:text-[#F5A623] transition-colors duration-300">Privacy Policy</a>
+                                <a href="#" className="hover:text-[#F5A623] transition-colors duration-300">Terms of Service</a>
+                                <a href="#" className="hover:text-[#F5A623] transition-colors duration-300">Cookie Policy</a>
                             </div>
                         </div>
                     </div>

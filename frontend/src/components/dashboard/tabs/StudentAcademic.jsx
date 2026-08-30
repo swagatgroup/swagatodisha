@@ -57,7 +57,7 @@ const StudentAcademic = () => {
 
     const getGradeColor = (grade) => {
         if (grade >= 90) return 'text-green-600';
-        if (grade >= 80) return 'text-blue-600';
+        if (grade >= 80) return 'text-[#387B95]';
         if (grade >= 70) return 'text-yellow-600';
         if (grade >= 60) return 'text-orange-600';
         return 'text-red-600';
@@ -100,7 +100,7 @@ const StudentAcademic = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -124,7 +124,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('overview')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'overview'
-                                ? 'bg-purple-600 text-white'
+                                ? 'bg-[#7B3FA0] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -133,7 +133,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('assignments')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'assignments'
-                                ? 'bg-purple-600 text-white'
+                                ? 'bg-[#7B3FA0] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -142,7 +142,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('grades')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'grades'
-                                ? 'bg-purple-600 text-white'
+                                ? 'bg-[#7B3FA0] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -151,7 +151,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('materials')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'materials'
-                                ? 'bg-purple-600 text-white'
+                                ? 'bg-[#7B3FA0] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -192,7 +192,7 @@ const StudentAcademic = () => {
                                     <h5 className="font-medium text-gray-900 mb-2">Course Progress</h5>
                                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                                         <div
-                                            className="bg-purple-600 h-2 rounded-full"
+                                            className="bg-[#7B3FA0] h-2 rounded-full"
                                             style={{ width: `${academicData.course.progress || 0}%` }}
                                         ></div>
                                     </div>
@@ -209,7 +209,7 @@ const StudentAcademic = () => {
                         <div className="bg-white rounded-lg shadow p-6">
                             <div className="flex items-center">
                                 <div className="p-3 bg-blue-100 rounded-full">
-                                    <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
@@ -254,8 +254,8 @@ const StudentAcademic = () => {
 
                         <div className="bg-white rounded-lg shadow p-6">
                             <div className="flex items-center">
-                                <div className="p-3 bg-purple-100 rounded-full">
-                                    <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <div className="p-3 bg-[#EDE0F7] rounded-full">
+                                    <svg className="h-6 w-6 text-[#7B3FA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     </svg>
                                 </div>
@@ -340,7 +340,7 @@ const StudentAcademic = () => {
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         {assignment.status === 'pending' && (
-                                            <button className="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                                            <button className="px-3 py-1 text-sm bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]">
                                                 Submit
                                             </button>
                                         )}
@@ -422,7 +422,7 @@ const StudentAcademic = () => {
                             >
                                 <div className="flex items-center space-x-3 mb-3">
                                     <div className="p-2 bg-blue-100 rounded-lg">
-                                        <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
                                     </div>
@@ -436,7 +436,7 @@ const StudentAcademic = () => {
                                     <span className="text-xs text-gray-500">
                                         {new Date(material.uploadDate).toLocaleDateString()}
                                     </span>
-                                    <a href={material.url || material.fileUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700">
+                                    <a href={material.url || material.fileUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]">
                                         Download
                                     </a>
                                 </div>

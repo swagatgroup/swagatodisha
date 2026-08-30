@@ -153,7 +153,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create New Agent</h2>
@@ -179,7 +179,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="fullName"
                                     value={formData.fullName}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.fullName ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.fullName ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter full name"
                                 />
@@ -197,7 +197,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.email ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.email ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter email address"
                                 />
@@ -215,7 +215,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.password ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.password ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter login password"
                                 />
@@ -235,7 +235,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="phoneNumber"
                                     value={formData.phoneNumber}
                                     onChange={(e) => handleInputChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter phone number"
                                     maxLength="10"
@@ -253,7 +253,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="gender"
                                     value={formData.gender}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.gender ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.gender ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                 >
                                     <option value="">Select Gender</option>
@@ -276,7 +276,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                 name="dateOfBirth"
                                 value={formData.dateOfBirth}
                                 onChange={handleInputChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             />
                         </div>
 
@@ -289,7 +289,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                 name="assignedStaff"
                                 value={formData.assignedStaff}
                                 onChange={handleInputChange}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             >
                                 <option value="">Select Staff Member</option>
                                 {staffList.map(staff => (
@@ -313,7 +313,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="address.street"
                                     value={formData.address.street}
                                     onChange={handleInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                     placeholder="Enter street address"
                                 />
                             </div>
@@ -328,7 +328,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                         name="address.city"
                                         value={formData.address.city}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                         placeholder="Enter city"
                                     />
                                 </div>
@@ -342,7 +342,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                         name="address.state"
                                         value={formData.address.state}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                         placeholder="Enter state"
                                     />
                                 </div>
@@ -356,7 +356,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                                         name="address.pincode"
                                         value={formData.address.pincode}
                                         onChange={(e) => handleInputChange({ target: { name: 'address.pincode', value: e.target.value.replace(/\D/g, '').slice(0, 6) } })}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                         placeholder="Enter pincode"
                                         maxLength="6"
                                     />
@@ -376,7 +376,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Creating...' : 'Create Agent'}
                             </button>

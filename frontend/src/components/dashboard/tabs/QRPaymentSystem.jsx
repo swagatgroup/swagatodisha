@@ -37,8 +37,8 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
                         )}
                         
                         {amount > 0 ? (
-                            <div className="mt-6 p-4 bg-purple-50 text-purple-900 rounded-lg w-full max-w-sm border border-purple-100">
-                                <p className="text-sm text-purple-700 font-medium">Due Amount</p>
+                            <div className="mt-6 p-4 bg-[#EDE0F7] text-purple-900 rounded-lg w-full max-w-sm border border-purple-100">
+                                <p className="text-sm text-[#5C2D80] font-medium">Due Amount</p>
                                 <p className="text-2xl font-bold">{formatAmount(amount)}</p>
                             </div>
                         ) : (
@@ -48,7 +48,7 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
                         )}
                     </div>
 
-                    <div className="text-left bg-blue-50 text-blue-800 p-4 rounded-lg text-sm border border-blue-100">
+                    <div className="text-left bg-[#D0E8F0] text-blue-800 p-4 rounded-lg text-sm border border-blue-100">
                         <p className="font-semibold mb-2 flex items-center">
                             <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             Instructions

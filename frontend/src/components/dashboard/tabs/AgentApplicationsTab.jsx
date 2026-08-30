@@ -18,9 +18,9 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
             case 'REJECTED':
                 return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
             case 'DRAFT':
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+                return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212] dark:text-gray-300';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+                return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212] dark:text-gray-300';
         }
     };
 
@@ -105,7 +105,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
+                className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
             >
                 {/* Card Header */}
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -150,7 +150,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                                     <span>Progress:</span>
                                     <div className="w-20 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                         <div
-                                            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                            className="bg-[#387B95] h-2 rounded-full transition-all duration-300"
                                             style={{ width: `${(documentStats.approved + documentStats.rejected) / documentStats.total * 100}%` }}
                                         />
                                     </div>
@@ -166,7 +166,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                                     e.stopPropagation();
                                     toggleExpanded(application._id);
                                 }}
-                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                className="px-3 py-1 text-xs bg-[#387B95] text-white rounded hover:bg-[#1D4B5E] transition-colors"
                             >
                                 {expandedApplications.has(application._id) ? 'Hide Details' : 'View Details'}
                             </button>
@@ -294,7 +294,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                                                         ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                                                         : doc.status === 'REJECTED'
                                                             ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                                                            : 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                                                            : 'bg-gray-100 text-gray-800 dark:bg-[#1A1212] dark:text-gray-200'
                                                     }`}>
                                                     {doc.status}
                                                 </span>
@@ -336,7 +336,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
             </div>
 
             {/* Search and Filters */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-md p-4">
                 <div className="flex flex-col lg:flex-row gap-4">
                     {/* Search */}
                     <div className="flex-1">
@@ -346,7 +346,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                                 placeholder="Search applications by name, ID, email, phone, course, or status..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
                             />
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,7 +373,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                             <select
                                 value={filterStatus}
                                 onChange={(e) => setFilterStatus(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
                             >
                                 <option value="all">All Applications</option>
                                 <option value="not_reviewed">Under Review</option>
@@ -387,7 +387,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                             <select
                                 value={sortBy}
                                 onChange={(e) => setSortBy(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
+                                className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-gray-100"
                             >
                                 <option value="submittedAt">Submission Date</option>
                                 <option value="name">Name</option>

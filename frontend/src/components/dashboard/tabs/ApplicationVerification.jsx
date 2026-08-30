@@ -260,7 +260,7 @@ const ApplicationVerification = () => {
             key={application._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+            className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => fetchApplicationDetails(application.applicationId)}
         >
             <div className="flex justify-between items-start mb-4">
@@ -309,7 +309,7 @@ const ApplicationVerification = () => {
                             Resubmission #{application.resubmissionInfo.resubmissionCount}
                         </span>
                     )}
-                    <button className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                    <button className="flex items-center text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]">
                         <EyeIcon className="h-4 w-4 mr-1" />
                         Review
                     </button>
@@ -319,7 +319,7 @@ const ApplicationVerification = () => {
     );
 
     const renderRejectionForm = () => (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Rejection Details
             </h4>
@@ -332,7 +332,7 @@ const ApplicationVerification = () => {
                     <select
                         value={rejectionForm.rejectionReason}
                         onChange={(e) => setRejectionForm(prev => ({ ...prev, rejectionReason: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
                         <option value="">Select rejection reason</option>
                         {rejectionReasons.map(reason => (
@@ -349,7 +349,7 @@ const ApplicationVerification = () => {
                         value={rejectionForm.rejectionMessage}
                         onChange={(e) => setRejectionForm(prev => ({ ...prev, rejectionMessage: e.target.value }))}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         placeholder="Provide detailed rejection message for the agent..."
                         required
                     />
@@ -362,7 +362,7 @@ const ApplicationVerification = () => {
                         </label>
                         <button
                             onClick={addRejectionDetail}
-                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            className="px-3 py-1 text-sm bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
                         >
                             Add Issue
                         </button>
@@ -388,7 +388,7 @@ const ApplicationVerification = () => {
                                     <select
                                         value={detail.section}
                                         onChange={(e) => updateRejectionDetail(index, 'section', e.target.value)}
-                                        className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                        className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-[#387B95] dark:bg-gray-700 dark:text-white"
                                     >
                                         <option value="">Select section</option>
                                         {rejectionSections.map(section => (
@@ -405,7 +405,7 @@ const ApplicationVerification = () => {
                                         type="text"
                                         value={detail.issue}
                                         onChange={(e) => updateRejectionDetail(index, 'issue', e.target.value)}
-                                        className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                        className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-[#387B95] dark:bg-gray-700 dark:text-white"
                                         placeholder="e.g., Missing document"
                                     />
                                 </div>
@@ -418,7 +418,7 @@ const ApplicationVerification = () => {
                                         type="text"
                                         value={detail.message}
                                         onChange={(e) => updateRejectionDetail(index, 'message', e.target.value)}
-                                        className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                        className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-1 focus:ring-[#387B95] dark:bg-gray-700 dark:text-white"
                                         placeholder="Specific message"
                                     />
                                 </div>
@@ -433,7 +433,7 @@ const ApplicationVerification = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -453,7 +453,7 @@ const ApplicationVerification = () => {
             </div>
 
             {/* Filter Controls */}
-            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Filter Applications</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
@@ -463,7 +463,7 @@ const ApplicationVerification = () => {
                         <select
                             value={filters.submitterRole}
                             onChange={(e) => setFilters(prev => ({ ...prev, submitterRole: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         >
                             <option value="all">All Submitters</option>
                             <option value="student">Student Submissions (Direct)</option>
@@ -480,7 +480,7 @@ const ApplicationVerification = () => {
                         <select
                             value={filters.course}
                             onChange={(e) => setFilters(prev => ({ ...prev, course: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         >
                             <option value="all">All Courses</option>
                             {availableFilters.courses.map(course => (
@@ -498,7 +498,7 @@ const ApplicationVerification = () => {
                             value={filters.search}
                             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                             placeholder="Search by name, email, phone, or ID..."
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         />
                     </div>
                     
@@ -515,10 +515,10 @@ const ApplicationVerification = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                            <DocumentTextIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            <DocumentTextIcon className="h-6 w-6 text-[#387B95] dark:text-[#60A5FA]" />
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Applications</p>
@@ -527,7 +527,7 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
                             <ClockIcon className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
@@ -539,7 +539,7 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                             <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -551,7 +551,7 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
                             <XCircleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -566,10 +566,10 @@ const ApplicationVerification = () => {
 
             {/* Submit Type Breakdown */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
-                        <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                            <DocumentTextIcon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                        <div className="p-2 bg-indigo-100 dark:bg-[#2A1E2E]/30 rounded-lg">
+                            <DocumentTextIcon className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" />
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Direct Student Submissions</p>
@@ -578,10 +578,10 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
-                        <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-                            <UserIcon className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                        <div className="p-2 bg-[#EDE0F7] dark:bg-[#2A1E2E]/30 rounded-lg">
+                            <UserIcon className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" />
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Agent Submissions</p>
@@ -599,13 +599,13 @@ const ApplicationVerification = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
-                                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
                                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                 }`}
                         >
                             {tab.name}
                             <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${activeTab === tab.id
-                                ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30'
+                                ? 'bg-blue-100 text-[#387B95] dark:bg-blue-900/30'
                                 : 'bg-gray-100 text-gray-600 dark:bg-gray-700'
                                 }`}>
                                 {tab.count}
@@ -637,7 +637,7 @@ const ApplicationVerification = () => {
                     {selectedApplication ? (
                         <div className="space-y-6">
                             {/* Application Header */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -711,7 +711,7 @@ const ApplicationVerification = () => {
                             ) : null}
 
                             {/* Application Details */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     Application Details
                                 </h4>

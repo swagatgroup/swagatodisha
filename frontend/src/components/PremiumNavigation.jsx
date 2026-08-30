@@ -43,7 +43,7 @@ const PremiumNavigation = () => {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.6 }}
                     >
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-[#7B3FA0] rounded-xl flex items-center justify-center">
                             <span className="text-white font-bold text-xl">S</span>
                         </div>
                         <div>
@@ -58,19 +58,19 @@ const PremiumNavigation = () => {
                             <motion.button
                                 key={item.name}
                                 onClick={() => smoothScrollTo(item.href)}
-                                className="text-gray-700 hover:text-purple-600 font-medium transition-colors duration-300 relative group"
+                                className="text-gray-700 hover:text-[#7B3FA0] font-medium transition-colors duration-300 relative group"
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6, delay: index * 0.1 }}
                             >
                                 {item.name}
-                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-600 transition-all duration-300 group-hover:w-full"></span>
+                                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#7B3FA0] transition-all duration-300 group-hover:w-full"></span>
                             </motion.button>
                         ))}
 
                         {/* CTA Button */}
                         <motion.button
-                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                            className="px-6 py-3 bg-[#7B3FA0] text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.6, delay: 0.5 }}
@@ -116,7 +116,7 @@ const PremiumNavigation = () => {
                                         smoothScrollTo(item.href)
                                         setIsOpen(false)
                                     }}
-                                    className="block text-gray-700 hover:text-purple-600 font-medium py-2 transition-colors duration-300 w-full text-left"
+                                    className="block text-gray-700 hover:text-[#7B3FA0] font-medium py-2 transition-colors duration-300 w-full text-left"
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.3, delay: index * 0.1 }}
@@ -127,7 +127,7 @@ const PremiumNavigation = () => {
 
                             {/* Mobile CTA Button */}
                             <motion.button
-                                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                                className="w-full px-6 py-3 bg-[#7B3FA0] text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.3, delay: 0.5 }}

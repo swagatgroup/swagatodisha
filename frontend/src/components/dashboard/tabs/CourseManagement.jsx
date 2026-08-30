@@ -260,7 +260,7 @@ const CourseManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -276,14 +276,14 @@ const CourseManagement = () => {
                         setEditingCourse(null);
                         setShowForm(true);
                     }}
-                    className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                    className="px-6 py-3 bg-[#387B95] text-white font-medium rounded-lg hover:bg-[#1D4B5E]"
                 >
                     Add New Course
                 </button>
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
@@ -291,7 +291,7 @@ const CourseManagement = () => {
                             type="text"
                             value={filters.search}
                             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="Search courses..."
                         />
                     </div>
@@ -300,7 +300,7 @@ const CourseManagement = () => {
                         <select
                             value={filters.institutionType}
                             onChange={(e) => setFilters(prev => ({ ...prev, institutionType: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Types</option>
                             {institutionTypes.map(type => (
@@ -313,7 +313,7 @@ const CourseManagement = () => {
                         <select
                             value={filters.level}
                             onChange={(e) => setFilters(prev => ({ ...prev, level: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Levels</option>
                             {levels.map(level => (
@@ -333,7 +333,7 @@ const CourseManagement = () => {
             </div>
 
             {/* Course List */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Courses ({filteredCourses.length})
@@ -352,7 +352,7 @@ const CourseManagement = () => {
                                 <div className="flex-1">
                                     <div className="flex items-center space-x-4">
                                         <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                                            <span className="text-blue-600 dark:text-blue-300 font-semibold text-lg">
+                                            <span className="text-[#387B95] dark:text-blue-300 font-semibold text-lg">
                                                 {course.name.charAt(0)}
                                             </span>
                                         </div>
@@ -389,7 +389,7 @@ const CourseManagement = () => {
                                     <div className="flex space-x-2">
                                         <button
                                             onClick={() => editCourse(course)}
-                                            className="px-3 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
+                                            className="px-3 py-1 text-[#387B95] dark:text-[#60A5FA] hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium"
                                         >
                                             Edit
                                         </button>
@@ -410,7 +410,7 @@ const CourseManagement = () => {
             {/* Course Form Modal */}
             {showForm && (
                 <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+                    <div className="bg-white dark:bg-[#1A1212] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -439,7 +439,7 @@ const CourseManagement = () => {
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => handleInputChange('name', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -450,7 +450,7 @@ const CourseManagement = () => {
                                             type="text"
                                             value={formData.code}
                                             onChange={(e) => handleInputChange('code', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -460,7 +460,7 @@ const CourseManagement = () => {
                                         <select
                                             value={formData.institutionType}
                                             onChange={(e) => handleInputChange('institutionType', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             <option value="">Select Type</option>
@@ -475,7 +475,7 @@ const CourseManagement = () => {
                                         <select
                                             value={formData.level}
                                             onChange={(e) => handleInputChange('level', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             <option value="">Select Level</option>
@@ -491,7 +491,7 @@ const CourseManagement = () => {
                                             type="text"
                                             value={formData.duration}
                                             onChange={(e) => handleInputChange('duration', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             placeholder="e.g., 3 Years, 2 Years, 1 Year"
                                             required
                                         />
@@ -503,7 +503,7 @@ const CourseManagement = () => {
                                             type="number"
                                             value={formData.pricing.totalFee}
                                             onChange={(e) => handleInputChange('pricing.totalFee', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -515,7 +515,7 @@ const CourseManagement = () => {
                                         value={formData.description}
                                         onChange={(e) => handleInputChange('description', e.target.value)}
                                         rows={4}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -526,7 +526,7 @@ const CourseManagement = () => {
                                         type="text"
                                         value={formData.shortDescription}
                                         onChange={(e) => handleInputChange('shortDescription', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         maxLength={200}
                                     />
                                 </div>
@@ -537,7 +537,7 @@ const CourseManagement = () => {
                                         value={formData.eligibility}
                                         onChange={(e) => handleInputChange('eligibility', e.target.value)}
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -550,7 +550,7 @@ const CourseManagement = () => {
                                             value={formData.features.join(', ')}
                                             onChange={(e) => handleArrayChange('features', e.target.value)}
                                             rows={3}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             placeholder="Feature 1, Feature 2, Feature 3"
                                         />
                                     </div>
@@ -561,7 +561,7 @@ const CourseManagement = () => {
                                             value={formData.highlights.join(', ')}
                                             onChange={(e) => handleArrayChange('highlights', e.target.value)}
                                             rows={3}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             placeholder="Highlight 1, Highlight 2, Highlight 3"
                                         />
                                     </div>
@@ -575,7 +575,7 @@ const CourseManagement = () => {
                                             type="number"
                                             value={formData.displayOrder}
                                             onChange={(e) => handleInputChange('displayOrder', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -628,7 +628,7 @@ const CourseManagement = () => {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        className="px-6 py-3 bg-[#387B95] text-white font-medium rounded-lg hover:bg-[#1D4B5E] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : (editingCourse ? 'Update Course' : 'Create Course')}
                                     </button>

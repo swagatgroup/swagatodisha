@@ -195,7 +195,7 @@ const SimpleQuickAccessManagement = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -215,7 +215,7 @@ const SimpleQuickAccessManagement = () => {
                         resetForm();
                         setShowForm(true);
                     }}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
                 >
                     <i className="fa-solid fa-plus mr-2"></i>
                     Add Document
@@ -223,7 +223,7 @@ const SimpleQuickAccessManagement = () => {
             </div>
 
             {/* Category Tabs */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-4">
                 <div className="flex space-x-4">
                     {categories.map((category) => (
                         <button
@@ -257,7 +257,7 @@ const SimpleQuickAccessManagement = () => {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6"
+                    className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6"
                 >
                     <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
                         {editingDoc ? 'Edit Document' : 'Add New Document'}
@@ -270,7 +270,7 @@ const SimpleQuickAccessManagement = () => {
                             <select
                                 value={formData.type}
                                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                 required
                             >
                                 {categories.map(cat => (
@@ -288,7 +288,7 @@ const SimpleQuickAccessManagement = () => {
                                 required
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                 placeholder="Enter document title"
                             />
                         </div>
@@ -301,7 +301,7 @@ const SimpleQuickAccessManagement = () => {
                                 rows={3}
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                 placeholder="Enter document description"
                             />
                         </div>
@@ -315,7 +315,7 @@ const SimpleQuickAccessManagement = () => {
                                     type="date"
                                     value={formData.publishDate}
                                     onChange={(e) => setFormData({ ...formData, publishDate: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                 />
                             </div>
 
@@ -327,7 +327,7 @@ const SimpleQuickAccessManagement = () => {
                                     type="number"
                                     value={formData.order}
                                     onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                     min="0"
                                 />
                             </div>
@@ -342,13 +342,13 @@ const SimpleQuickAccessManagement = () => {
                                 required={!editingDoc}
                                 onChange={handleFileSelect}
                                 accept=".pdf,.jpg,.jpeg,.png"
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                             />
                             <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 Supported formats: PDF, JPG, PNG (Max 10MB)
                             </p>
                             {editingDoc && editingDoc.file && (
-                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                                <p className="text-xs text-[#387B95] dark:text-[#60A5FA] mt-1">
                                     Current: <a href={editingDoc.file} target="_blank" rel="noopener noreferrer" className="underline">View current file</a>
                                 </p>
                             )}
@@ -359,7 +359,7 @@ const SimpleQuickAccessManagement = () => {
                                 type="checkbox"
                                 checked={formData.isActive}
                                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                                className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                className="w-4 h-4 text-[#7B3FA0] border-gray-300 rounded focus:ring-[#7B3FA0]"
                             />
                             <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 Active (visible on website)
@@ -380,7 +380,7 @@ const SimpleQuickAccessManagement = () => {
                             <button
                                 type="submit"
                                 disabled={uploading}
-                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                                className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors disabled:opacity-50"
                             >
                                 {uploading ? 'Uploading...' : editingDoc ? 'Update' : 'Upload'}
                             </button>
@@ -391,7 +391,7 @@ const SimpleQuickAccessManagement = () => {
 
             {/* Documents List */}
             {!showForm && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     {filteredDocuments.length === 0 ? (
                         <div className="text-center py-12">
                             <i className={`${categories.find(c => c.id === activeCategory)?.icon} text-4xl text-gray-400 mb-4`}></i>
@@ -401,7 +401,7 @@ const SimpleQuickAccessManagement = () => {
                                     resetForm();
                                     setShowForm(true);
                                 }}
-                                className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                                className="mt-4 px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
                             >
                                 Add First Document
                             </button>
@@ -438,7 +438,7 @@ const SimpleQuickAccessManagement = () => {
                                                         href={doc.file}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="text-blue-600 dark:text-blue-400 hover:underline"
+                                                        className="text-[#387B95] dark:text-[#60A5FA] hover:underline"
                                                     >
                                                         <i className="fa-solid fa-file-pdf mr-1"></i>
                                                         View Document
@@ -459,7 +459,7 @@ const SimpleQuickAccessManagement = () => {
                                         <div className="flex space-x-2 ml-4">
                                             <button
                                                 onClick={() => handleEdit(doc)}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900 rounded transition-colors"
+                                                className="p-2 text-[#387B95] hover:bg-[#D0E8F0] dark:hover:bg-blue-900 rounded transition-colors"
                                                 title="Edit"
                                             >
                                                 <i className="fa-solid fa-edit"></i>

@@ -3,22 +3,22 @@ import { motion } from 'framer-motion';
 
 const GatewayLoader = ({ onEnterMainSite }) => {
   return (
-    <div className="fixed inset-0 z-[10000] bg-[#f8fafc] flex flex-col items-center justify-start p-6 md:p-12 overflow-y-auto min-h-screen">
+    <div className="fixed inset-0 z-[10000] bg-[#FAF7F2] dark:bg-[#1A1212] pattern-bg dark:pattern-bg-dark flex flex-col items-center justify-start p-6 md:p-12 overflow-y-auto min-h-screen">
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className="mb-12 text-center mt-8"
+        className="mb-12 text-center mt-8 relative z-10"
       >
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
-          Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">Swagat Odisha</span>
+        <h1 className="text-4xl md:text-5xl font-baloo font-bold text-[#1A1A1A] dark:text-[#FAF7F2] tracking-tight mb-4">
+          Welcome to <span className="text-[#7B3FA0] dark:text-[#A855D0]">Swagat Odisha</span>
         </h1>
-        <p className="text-gray-500 text-lg max-w-xl mx-auto font-medium">
+        <p className="text-[#666666] dark:text-[#B8A8C8] text-lg max-w-xl mx-auto font-lato">
           Choose your destination to continue
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 max-w-7xl w-full pb-16 justify-items-center">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10 max-w-7xl w-full pb-16 justify-items-center relative z-10">
         
         {/* Card 1: Swagat Odisha Main Site */}
         <motion.div 
@@ -28,15 +28,15 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           className="relative group w-full max-w-[320px] cursor-pointer"
           onClick={onEnterMainSite}
         >
-          <div className="h-72 bg-blue-50 rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-blue-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-blue-600 text-3xl shadow-sm border border-blue-50">
+          <div className="h-72 bg-[#D0E8F0] rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-blue-100/50">
+            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-[#387B95] text-3xl shadow-sm border border-blue-50">
                <i className="fa-solid fa-building-columns"></i>
             </div>
             <h2 className="text-2xl font-bold text-[#1e3a8a] mb-2">Swagat Odisha</h2>
-            <p className="text-blue-600 font-medium text-sm">Group of Institutions</p>
+            <p className="text-[#387B95] font-medium text-sm">Group of Institutions</p>
           </div>
           
-          <div className="absolute -bottom-5 -right-5 w-16 h-16 bg-[#1e293b] rounded-full flex items-center justify-center text-white text-xl shadow-xl border-[5px] border-[#f8fafc] group-hover:bg-blue-600 group-hover:scale-110 transition-all duration-300">
+          <div className="absolute -bottom-5 -right-5 w-16 h-16 bg-[#1e293b] rounded-full flex items-center justify-center text-white text-xl shadow-xl border-[5px] border-[#f8fafc] group-hover:bg-[#387B95] group-hover:scale-110 transition-all duration-300">
             <i className="fa-solid fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform duration-300"></i>
           </div>
         </motion.div>
@@ -90,14 +90,14 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="relative group w-full max-w-[320px] block"
         >
-          <div className="h-72 bg-purple-50 rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-purple-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-purple-600 text-3xl shadow-sm border border-purple-50">
+          <div className="h-72 bg-[#EDE0F7] rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-purple-100/50">
+            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-[#7B3FA0] text-3xl shadow-sm border border-purple-50">
                <i className="fa-solid fa-school"></i>
             </div>
             <h2 className="text-2xl font-bold text-purple-900 mb-2">Public School</h2>
-            <p className="text-purple-600 font-medium text-sm">Sargiguda</p>
+            <p className="text-[#7B3FA0] font-medium text-sm">Sargiguda</p>
           </div>
-          <div className="absolute -bottom-5 -right-5 w-16 h-16 bg-[#4c1d95] rounded-full flex items-center justify-center text-white text-xl shadow-xl border-[5px] border-[#f8fafc] group-hover:bg-purple-600 group-hover:scale-110 transition-all duration-300">
+          <div className="absolute -bottom-5 -right-5 w-16 h-16 bg-[#4c1d95] rounded-full flex items-center justify-center text-white text-xl shadow-xl border-[5px] border-[#f8fafc] group-hover:bg-[#7B3FA0] group-hover:scale-110 transition-all duration-300">
             <i className="fa-solid fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform duration-300"></i>
           </div>
         </motion.a>

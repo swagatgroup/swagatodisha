@@ -35,7 +35,7 @@ export const STATUS_COLORS = {
         hex: '#EF4444'
     },
     CANCELLED: {
-        bg: 'bg-purple-100',
+        bg: 'bg-[#EDE0F7]',
         text: 'text-purple-800',
         hex: '#A855F7'
     },

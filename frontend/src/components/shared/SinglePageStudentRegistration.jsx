@@ -1112,7 +1112,7 @@ const SinglePageStudentRegistration = ({
                 >
                     <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                            <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">7</span>
+                            <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">7</span>
                             Generate PDF
                         </h3>
                         <p className="text-gray-600 dark:text-gray-400 mt-1">Generate your application PDF before submitting</p>
@@ -1120,8 +1120,8 @@ const SinglePageStudentRegistration = ({
 
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center">
                         <div className="mb-4">
-                            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <svg className="w-8 h-8 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <div className="w-16 h-16 bg-[#EDE0F7] dark:bg-[#2A1E2E] rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 text-[#7B3FA0] dark:text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                             </div>
@@ -1152,7 +1152,7 @@ const SinglePageStudentRegistration = ({
                                 type="button"
                                 onClick={handleGeneratePDF}
                                 disabled={loading || !hasMinimumForCreate()}
-                                className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                                className="px-6 py-3 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                             >
                                 {loading ? (
                                     <>
@@ -1203,8 +1203,8 @@ const SinglePageStudentRegistration = ({
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center">
-                                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mr-4">
-                                    <svg className="w-6 h-6 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div className="w-12 h-12 bg-[#EDE0F7] dark:bg-[#2A1E2E] rounded-full flex items-center justify-center mr-4">
+                                    <svg className="w-6 h-6 text-[#7B3FA0] dark:text-[#C084FC]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
                                 </div>
@@ -1219,7 +1219,7 @@ const SinglePageStudentRegistration = ({
                             <button
                                 type="button"
                                 onClick={previewPDF}
-                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
+                                className="flex-1 px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] flex items-center justify-center"
                             >
                                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -1240,7 +1240,7 @@ const SinglePageStudentRegistration = ({
                             <button
                                 type="button"
                                 onClick={handleRegeneratePDF}
-                                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center justify-center"
+                                className="flex-1 px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] flex items-center justify-center"
                             >
                                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -1274,7 +1274,7 @@ const SinglePageStudentRegistration = ({
                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 flex items-center justify-between">
                     <div>
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                            <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</span>
+                            <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</span>
                             Personal Information
                             {registrationDataLocked && (
                                 <span className="ml-2 inline-flex items-center gap-1 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full">
@@ -1296,7 +1296,7 @@ const SinglePageStudentRegistration = ({
                         <button
                             type="button"
                             onClick={handleEditAccountData}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#7B3FA0] dark:text-[#A855D0] border border-purple-300 dark:border-[#7B3FA0] rounded-lg hover:bg-[#EDE0F7] dark:hover:bg-purple-900/20 transition-colors"
                         >
                             <i className="fa-solid fa-pen-to-square text-xs"></i> Edit
                         </button>
@@ -1326,7 +1326,7 @@ const SinglePageStudentRegistration = ({
                             className={`w-full px-3 py-2 border rounded-lg ${
                                 registrationDataLocked
                                     ? 'border-amber-200 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-900/10 text-gray-700 dark:text-gray-300 cursor-not-allowed'
-                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
+                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent'
                             }`}
                             placeholder="Enter your full name"
                         />
@@ -1354,7 +1354,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter father's name"
                         />
                         {errors["personalDetails.fathersName"] && (
@@ -1381,7 +1381,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter mother's name"
                         />
                         {errors["personalDetails.mothersName"] && (
@@ -1418,7 +1418,7 @@ const SinglePageStudentRegistration = ({
                             }}
                             placeholder="DD/MM/YYYY"
                             maxLength={10}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         />
                         {errors["personalDetails.dateOfBirth"] && (
                             <p className="text-red-500 text-sm mt-1">
@@ -1445,7 +1445,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter 12-digit Aadhar number"
                             maxLength="12"
                         />
@@ -1471,7 +1471,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         >
                             <option value="">Select Gender</option>
                             <option value="Male">Male</option>
@@ -1500,7 +1500,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         >
                             <option value="">Select Category</option>
                             <option value="General">General</option>
@@ -1528,7 +1528,7 @@ const SinglePageStudentRegistration = ({
                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4 flex items-center justify-between">
                     <div>
                         <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                            <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</span>
+                            <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</span>
                             Contact Details
                             {registrationDataLocked && (
                                 <span className="ml-2 inline-flex items-center gap-1 text-xs font-medium bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full">
@@ -1550,7 +1550,7 @@ const SinglePageStudentRegistration = ({
                         <button
                             type="button"
                             onClick={handleEditAccountData}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-purple-600 dark:text-purple-400 border border-purple-300 dark:border-purple-600 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-[#7B3FA0] dark:text-[#A855D0] border border-purple-300 dark:border-[#7B3FA0] rounded-lg hover:bg-[#EDE0F7] dark:hover:bg-purple-900/20 transition-colors"
                         >
                             <i className="fa-solid fa-pen-to-square text-xs"></i> Edit
                         </button>
@@ -1579,7 +1579,7 @@ const SinglePageStudentRegistration = ({
                             className={`w-full px-3 py-2 border rounded-lg ${
                                 registrationDataLocked
                                     ? 'border-amber-200 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-900/10 text-gray-700 dark:text-gray-300 cursor-not-allowed'
-                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
+                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent'
                             }`}
                             placeholder="Enter 10-digit phone number"
                             maxLength="10"
@@ -1607,7 +1607,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter WhatsApp number (optional)"
                             maxLength="10"
                         />
@@ -1634,7 +1634,7 @@ const SinglePageStudentRegistration = ({
                             className={`w-full px-3 py-2 border rounded-lg ${
                                 registrationDataLocked
                                     ? 'border-amber-200 dark:border-amber-700/50 bg-amber-50/50 dark:bg-amber-900/10 text-gray-700 dark:text-gray-300 cursor-not-allowed'
-                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent'
+                                    : 'border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent'
                             }`}
                             style={{ textTransform: 'lowercase' }}
                             placeholder="Enter email address"
@@ -1660,7 +1660,7 @@ const SinglePageStudentRegistration = ({
                                         password: e.target.value,
                                     }))
                                 }
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                 placeholder="Default: Swagat@1926"
                             />
                             {errors["password"] && (
@@ -1691,7 +1691,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter street address"
                         />
                         {errors["contactDetails.permanentAddress.street"] && (
@@ -1722,7 +1722,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter city"
                         />
                         {errors["contactDetails.permanentAddress.city"] && (
@@ -1757,7 +1757,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter district"
                             required
                         />
@@ -1788,7 +1788,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter state"
                         />
                         {errors["contactDetails.permanentAddress.state"] && (
@@ -1817,7 +1817,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter 6-digit pincode"
                             maxLength="6"
                         />
@@ -1839,7 +1839,7 @@ const SinglePageStudentRegistration = ({
             >
                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</span>
+                        <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</span>
                         Course Selection
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mt-1">Enter institution and course details</p>
@@ -1864,7 +1864,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                             required
                             disabled={loadingColleges}
                         >
@@ -1898,7 +1898,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                             required
                             disabled={!formData.courseDetails.selectedCollege || getCoursesForCollege().length === 0}
                         >
@@ -1925,7 +1925,7 @@ const SinglePageStudentRegistration = ({
                     {/* Campus Selection - In same row */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            <i className="fa-solid fa-building mr-2 text-purple-600 dark:text-purple-400"></i>
+                            <i className="fa-solid fa-building mr-2 text-[#7B3FA0] dark:text-[#A855D0]"></i>
                             Campus *
                         </label>
                         <select
@@ -1939,11 +1939,11 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
+                            className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-[#7B3FA0] transition-all ${
                                 !formData.courseDetails.selectedCollege 
-                                    ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-400' 
+                                    ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#2A1E2E] text-gray-400' 
                                     : getCampusesForCollege().length > 0
-                                        ? 'border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                                        ? 'border-purple-300 dark:border-[#7B3FA0] bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                                         : 'border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 text-gray-700 dark:text-gray-300'
                             }`}
                             required
@@ -1993,7 +1993,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         >
                             <option value="">Select Stream (Optional)</option>
                             {getStreamsForCourse().map((stream, index) => {
@@ -2011,11 +2011,11 @@ const SinglePageStudentRegistration = ({
 
                 {/* Course Fee Display */}
                 {formData.courseDetails.selectedCourse && getSelectedCourseFee() !== null && (
-                    <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg flex items-center gap-3">
-                        <i className="fa-solid fa-indian-rupee-sign text-blue-600 dark:text-blue-400 text-lg"></i>
+                    <div className="mt-4 p-4 bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg flex items-center gap-3">
+                        <i className="fa-solid fa-indian-rupee-sign text-[#387B95] dark:text-[#60A5FA] text-lg"></i>
                         <div>
                             <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Course Fee</p>
-                            <p className="text-xl font-bold text-blue-700 dark:text-blue-300">
+                            <p className="text-xl font-bold text-[#1D4B5E] dark:text-blue-300">
                                 ₹{getSelectedCourseFee().toLocaleString('en-IN')}
                             </p>
                         </div>
@@ -2044,11 +2044,11 @@ const SinglePageStudentRegistration = ({
                   }
 
                   return (
-                    <div className="md:col-span-3 mt-4 border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-gray-800/50">
+                    <div className="md:col-span-3 mt-4 border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-gray-50 dark:bg-[#2A1E2E]/50">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
                           <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                            <i className="fa-solid fa-graduation-cap text-purple-600"></i>
+                            <i className="fa-solid fa-graduation-cap text-[#7B3FA0]"></i>
                             Admission Type
                           </h4>
                           {isScSt && (
@@ -2081,7 +2081,7 @@ const SinglePageStudentRegistration = ({
                                   ...prev,
                                   courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
                                 }))}
-                                className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                                className="w-4 h-4 text-[#7B3FA0] border-gray-300 focus:ring-[#7B3FA0]"
                               />
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid Admission</span>
                             </label>
@@ -2095,7 +2095,7 @@ const SinglePageStudentRegistration = ({
                                   ...prev,
                                   courseDetails: { ...prev.courseDetails, admissionType: 'free' }
                                 }))}
-                                className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                                className="w-4 h-4 text-[#7B3FA0] border-gray-300 focus:ring-[#7B3FA0]"
                               />
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                 {isScSt ? 'Free Admission' : 'Free (Kisan)'}
@@ -2106,7 +2106,7 @@ const SinglePageStudentRegistration = ({
 
                         {/* Others: auto-locked to Paid */}
                         {!isScSt && !isKisanEligible && (
-                          <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-full shadow">
+                          <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#387B95] text-white text-sm font-semibold rounded-full shadow">
                             <i className="fa-solid fa-indian-rupee-sign"></i> Paid Admission
                           </span>
                         )}
@@ -2140,10 +2140,10 @@ const SinglePageStudentRegistration = ({
                     transition={{ delay: 0.25 }}
                     className="space-y-6"
                 >
-                    <div className="bg-gray-50/50 dark:bg-gray-800/30 p-6 rounded-xl border border-gray-100 dark:border-gray-700/50">
+                    <div className="bg-gray-50/50 dark:bg-[#2A1E2E]/30 p-6 rounded-xl border border-gray-100 dark:border-gray-700/50">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                                <i className="fa-solid fa-gift text-indigo-600 dark:text-indigo-400"></i>
+                            <div className="p-2 bg-indigo-100 dark:bg-[#2A1E2E]/30 rounded-lg">
+                                <i className="fa-solid fa-gift text-[#7B3FA0] dark:text-[#A855D0]"></i>
                             </div>
                             <div>
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -2162,7 +2162,7 @@ const SinglePageStudentRegistration = ({
                                     type="text"
                                     value={formData.referralCode}
                                     disabled
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-mono tracking-widest cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 font-mono tracking-widest cursor-not-allowed"
                                 />
                             </div>
                         </div>
@@ -2180,7 +2180,7 @@ const SinglePageStudentRegistration = ({
             >
                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">4</span>
+                        <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">4</span>
                         Guardian Details
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mt-1">Parent/Guardian information</p>
@@ -2204,7 +2204,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'uppercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter guardian name"
                         />
                         {errors["guardianDetails.guardianName"] && (
@@ -2229,7 +2229,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         >
                             <option value="">Select Relationship</option>
                             <option value="Father">Father</option>
@@ -2265,7 +2265,7 @@ const SinglePageStudentRegistration = ({
                                     },
                                 }))
                             }
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter guardian phone number"
                             maxLength="10"
                         />
@@ -2293,7 +2293,7 @@ const SinglePageStudentRegistration = ({
                                 }))
                             }
                             style={{ textTransform: 'lowercase' }}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             placeholder="Enter guardian email (optional)"
                         />
                     </div>
@@ -2309,7 +2309,7 @@ const SinglePageStudentRegistration = ({
             >
                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">5</span>
+                        <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">5</span>
                         Document Upload
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mt-1">Upload required documents</p>
@@ -2344,7 +2344,7 @@ const SinglePageStudentRegistration = ({
             >
                 <div className="border-b border-gray-200 dark:border-gray-700 pb-4">
                     <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center">
-                        <span className="bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">6</span>
+                        <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">6</span>
                         Terms and Conditions
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mt-1">Review and accept terms</p>
@@ -2368,7 +2368,7 @@ const SinglePageStudentRegistration = ({
     if (checkingSettings) {
         return (
             <div className="flex justify-center items-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -2376,7 +2376,7 @@ const SinglePageStudentRegistration = ({
     if (!allowRegistration && userRole !== 'superadmin') {
         return (
             <div className="max-w-4xl mx-auto p-6 mt-12 text-center">
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-12 border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-lg p-12 border border-gray-200 dark:border-gray-700">
                     <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-4">
                         Registrations Closed
                     </h2>
@@ -2406,7 +2406,7 @@ const SinglePageStudentRegistration = ({
             )}
 
 
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-8">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-lg p-6 space-y-8">
                 {/* Form Content */}
                 {renderForm()}
 
@@ -2416,7 +2416,7 @@ const SinglePageStudentRegistration = ({
                 {/* PDF Generator Modal */}
                 {showPDFGenerator && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                             <ApplicationPDFGenerator
                                 formData={formData}
                                 application={application}

@@ -119,7 +119,7 @@ const MySubmittedApplications = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -242,7 +242,7 @@ const MySubmittedApplications = () => {
                                         </div>
 
                                         {application.reviewInfo?.remarks && (
-                                            <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                                            <div className="mt-3 p-3 bg-[#D0E8F0] rounded-lg">
                                                 <p className="text-sm font-medium text-blue-900">
                                                     Review Notes:
                                                 </p>
@@ -258,9 +258,9 @@ const MySubmittedApplications = () => {
                     </div>
                 ) : (
                     <div className="text-center py-12">
-                        <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+                        <div className="mx-auto h-12 w-12 bg-[#EDE0F7] rounded-full flex items-center justify-center mb-4">
                             <svg
-                                className="h-6 w-6 text-purple-600"
+                                className="h-6 w-6 text-[#7B3FA0]"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"

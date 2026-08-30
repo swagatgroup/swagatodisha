@@ -145,7 +145,7 @@ const BatchDocumentUpload = ({
     if (loading) {
         return (
             <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -179,7 +179,7 @@ const BatchDocumentUpload = ({
                 >
                     <div className="flex flex-col items-center">
                         {uploading ? (
-                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95] mb-4"></div>
                         ) : (
                             <CloudArrowUpIcon className="h-12 w-12 text-gray-400 mb-4" />
                         )}
@@ -200,7 +200,7 @@ const BatchDocumentUpload = ({
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                     <div
-                                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                        className="bg-[#387B95] h-2 rounded-full transition-all duration-300"
                                         style={{ width: `${uploadProgress}%` }}
                                     />
                                 </div>
@@ -241,7 +241,7 @@ const BatchDocumentUpload = ({
             )}
 
             {/* Performance Tips */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="bg-[#D0E8F0] border border-blue-200 rounded-lg p-4">
                 <h4 className="font-medium text-blue-900 mb-2">Performance Tips:</h4>
                 <ul className="text-sm text-blue-800 space-y-1">
                     <li>• Upload multiple files at once for faster processing</li>

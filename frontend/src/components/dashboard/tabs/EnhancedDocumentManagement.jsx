@@ -163,7 +163,7 @@ const EnhancedDocumentManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -184,7 +184,7 @@ const EnhancedDocumentManagement = () => {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         >
                             <option value="">Select document category</option>
                             {documentCategories.map(category => (
@@ -202,7 +202,7 @@ const EnhancedDocumentManagement = () => {
                             type="file"
                             onChange={handleFileSelect}
                             accept=".pdf,.jpg,.jpeg,.png"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         />
                     </div>
                 </div>
@@ -219,7 +219,7 @@ const EnhancedDocumentManagement = () => {
                     <button
                         onClick={handleUpload}
                         disabled={uploading || !selectedFile || !selectedCategory}
-                        className="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-3 bg-[#7B3FA0] text-white font-medium rounded-lg hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {uploading ? 'Uploading...' : 'Upload Document'}
                     </button>
@@ -248,12 +248,12 @@ const EnhancedDocumentManagement = () => {
                                     {category.required && <span className="text-red-500 text-sm">*</span>}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <span className="text-2xl font-bold text-purple-600">{approvedCount}</span>
+                                    <span className="text-2xl font-bold text-[#7B3FA0]">{approvedCount}</span>
                                     <span className="text-gray-500">/ {totalCount}</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                                     <div
-                                        className="bg-purple-600 h-2 rounded-full transition-all duration-500"
+                                        className="bg-[#7B3FA0] h-2 rounded-full transition-all duration-500"
                                         style={{ width: totalCount > 0 ? `${(approvedCount / totalCount) * 100}%` : '0%' }}
                                     ></div>
                                 </div>
@@ -309,10 +309,10 @@ const EnhancedDocumentManagement = () => {
                                             {getStatusText(doc.status)}
                                         </span>
                                         <div className="flex space-x-2">
-                                            <button className="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                                            <button className="text-[#7B3FA0] hover:text-purple-800 text-sm font-medium">
                                                 View
                                             </button>
-                                            <button className="text-purple-600 hover:text-purple-800 text-sm font-medium">
+                                            <button className="text-[#7B3FA0] hover:text-purple-800 text-sm font-medium">
                                                 Download
                                             </button>
                                             {doc.status === 'rejected' && (
@@ -334,13 +334,13 @@ const EnhancedDocumentManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-blue-50 border border-blue-200 rounded-lg p-6"
+                className="bg-[#D0E8F0] border border-blue-200 rounded-lg p-6"
             >
                 <h3 className="text-lg font-semibold text-blue-900 mb-4">Required Documents</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <h4 className="font-medium text-blue-800 mb-2">Educational Certificates *</h4>
-                        <ul className="text-sm text-blue-700 space-y-1">
+                        <ul className="text-sm text-[#1D4B5E] space-y-1">
                             <li>• 10th Certificate</li>
                             <li>• 12th Certificate</li>
                             <li>• Graduation Certificate (if applicable)</li>
@@ -348,14 +348,14 @@ const EnhancedDocumentManagement = () => {
                     </div>
                     <div>
                         <h4 className="font-medium text-blue-800 mb-2">Identity Proofs *</h4>
-                        <ul className="text-sm text-blue-700 space-y-1">
+                        <ul className="text-sm text-[#1D4B5E] space-y-1">
                             <li>• Aadhaar Card</li>
                             <li>• PAN Card</li>
                             <li>• Voter ID or Driving License</li>
                         </ul>
                     </div>
                 </div>
-                <p className="text-sm text-blue-600 mt-4">
+                <p className="text-sm text-[#387B95] mt-4">
                     <strong>Note:</strong> All documents must be clear, legible, and in PDF, JPEG, or PNG format.
                     Maximum file size is 5MB per document.
                 </p>

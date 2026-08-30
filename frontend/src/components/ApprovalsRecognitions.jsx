@@ -153,7 +153,7 @@ const ApprovalsRecognitions = () => {
     }
 
     return (
-        <div className="bg-gradient-to-br from-purple-600 to-blue-600 py-4 md:py-8">
+        <div className="bg-[#7B3FA0] py-4 md:py-8">
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 {/* Card Slider */}
                 <div className="relative max-w-6xl mx-auto">
@@ -167,7 +167,7 @@ const ApprovalsRecognitions = () => {
                                 duration: 0.8,
                                 ease: "easeInOut"
                             }}
-                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-gradient-to-br from-purple-600 to-blue-600"
+                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-[#7B3FA0]"
                         >
                             {/* University Name */}
                             <div className="text-center mb-3 md:mb-6">

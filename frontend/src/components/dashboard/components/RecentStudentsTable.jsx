@@ -359,7 +359,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'APPROVED': return 'text-green-600 dark:text-green-400';
-            case 'SUBMITTED': return 'text-blue-600 dark:text-blue-400';
+            case 'SUBMITTED': return 'text-[#387B95] dark:text-[#60A5FA]';
             case 'UNDER_REVIEW': return 'text-yellow-600 dark:text-yellow-400';
             case 'REJECTED': return 'text-red-600 dark:text-red-400';
             case 'DRAFT': return 'text-gray-600 dark:text-gray-400';
@@ -371,26 +371,26 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     const getStatusBadgeColor = (status) => {
         switch (status) {
             case 'APPROVED': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-            case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+            case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
             case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
         }
     };
 
     const getCategoryColor = (category) => {
         switch (category) {
-            case 'A': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
+            case 'A': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
             case 'B1': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
             case 'B2': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'B3': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-            case 'B4': return 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400';
+            case 'B4': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
             case 'C1': return 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400';
-            case 'C2': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/20 dark:text-indigo-400';
+            case 'C2': return 'bg-indigo-100 text-indigo-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
             case 'C3': return 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
         }
     };
 
@@ -646,7 +646,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -679,7 +679,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                         placeholder="Search by name, Aadhar, phone, email..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                 </div>
                 <div className="flex items-center gap-4">
@@ -689,7 +689,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                     <select
                         value={admissionTypeFilter}
                         onChange={(e) => setAdmissionTypeFilter(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] font-medium"
                     >
                         <option value="">All Types</option>
                         <option value="paid">Paid</option>
@@ -703,7 +703,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500 font-medium"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] font-medium"
                     >
                         <option value="latest">Latest First</option>
                         <option value="oldest">Oldest First</option>
@@ -750,7 +750,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {students.length === 0 ? (
                             <tr>
                                 <td colSpan="9" className="px-6 py-12 text-center">
@@ -773,7 +773,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 onClick={() => {
                                                     setSearchTerm('');
                                                 }}
-                                                className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                                                className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] transition-colors"
                                             >
                                                 Clear Search
                                             </button>
@@ -798,8 +798,8 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                                                        <span className="text-sm font-medium text-purple-600 dark:text-purple-300">
+                                                    <div className="h-10 w-10 rounded-full bg-[#EDE0F7] dark:bg-[#2A1E2E] flex items-center justify-center">
+                                                        <span className="text-sm font-medium text-[#7B3FA0] dark:text-[#C084FC]">
                                                             {student.fullName?.split(' ').map(n => n[0]).join('') || 'S'}
                                                         </span>
                                                     </div>
@@ -881,7 +881,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                             onStudentUpdate(student);
                                                         }
                                                     }}
-                                                    className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                                    className="text-[#387B95] hover:text-blue-900 dark:text-[#60A5FA] dark:hover:text-blue-300"
                                                     title="View Details"
                                                 >
                                                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -960,7 +960,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         key={pageNum}
                                         onClick={() => setCurrentPage(pageNum)}
                                         className={`px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm ${currentPage === pageNum
-                                            ? 'bg-purple-600 text-white border-purple-600'
+                                            ? 'bg-[#7B3FA0] text-white border-[#7B3FA0]'
                                             : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                             }`}
                                     >
@@ -983,7 +983,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             {/* Student Details Modal */}
             {showDetailsModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             {/* Header */}
                             <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
@@ -1007,7 +1007,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
 
                             <div className="space-y-6">
                                 {/* Personal Information */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -1052,7 +1052,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 </div>
 
                                 {/* Contact Information */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -1073,7 +1073,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
 
                                 {/* Address Information */}
                                 {(selectedStudent.contactDetails?.permanentAddress || selectedStudent.contactDetails?.currentAddress) && (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                             <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -1175,7 +1175,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 )}
 
                                 {/* Course Information */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -1239,7 +1239,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 </div>
 
                                 {/* Guardian Information */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -1274,7 +1274,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
 
                                 {/* Documents */}
                                 {selectedStudent.documents && selectedStudent.documents.length > 0 && (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                             <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1283,7 +1283,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {selectedStudent.documents.map((doc, index) => (
-                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-800">
+                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#2A1E2E]">
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType || doc.fileName}</p>
@@ -1303,7 +1303,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                                 href={doc.filePath}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                                className="ml-2 text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]"
                                                             >
                                                                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -1333,7 +1333,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     }}
                                                     disabled={!selectedStudent.documents.every(doc => doc.status === 'APPROVED')}
                                                     className={`flex items-center px-4 py-2 rounded-lg transition-colors ${selectedStudent.documents.every(doc => doc.status === 'APPROVED')
-                                                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                                        ? 'bg-[#387B95] text-white hover:bg-[#1D4B5E]'
                                                         : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                                                         }`}
                                                     title={selectedStudent.documents.every(doc => doc.status === 'APPROVED') ? 'Generate combined PDF' : 'Please approve all documents first'}
@@ -1357,7 +1357,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     }}
                                                     disabled={!selectedStudent.documents.every(doc => doc.status === 'APPROVED')}
                                                     className={`flex items-center px-4 py-2 rounded-lg transition-colors ${selectedStudent.documents.every(doc => doc.status === 'APPROVED')
-                                                        ? 'bg-purple-600 text-white hover:bg-purple-700'
+                                                        ? 'bg-[#7B3FA0] text-white hover:bg-[#5C2D80]'
                                                         : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                                                         }`}
                                                     title={selectedStudent.documents.every(doc => doc.status === 'APPROVED') ? 'Generate ZIP' : 'Please approve all documents first'}
@@ -1373,7 +1373,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 )}
 
                                 {/* Application Tracking */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1435,7 +1435,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
+                            className="bg-white dark:bg-[#2A1E2E] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
@@ -1482,7 +1482,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 <div className="flex space-x-2">
                                                     <button
                                                         onClick={selectAllDocuments}
-                                                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                        className="text-sm text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]"
                                                     >
                                                         Select All
                                                     </button>
@@ -1504,7 +1504,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     <div
                                                         key={docId}
                                                         className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${isSelected
-                                                            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
+                                                            ? 'bg-[#D0E8F0] dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
                                                             : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                                                             }`}
                                                         onClick={() => toggleDocumentSelection(docId)}
@@ -1513,7 +1513,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                             type="checkbox"
                                                             checked={isSelected}
                                                             onChange={() => toggleDocumentSelection(docId)}
-                                                            className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                                                            className="h-5 w-5 text-[#387B95] rounded focus:ring-[#387B95]"
                                                             onClick={(e) => e.stopPropagation()}
                                                         />
                                                         <div className="ml-4 flex-1">
@@ -1528,7 +1528,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                             </span>
                                                         </div>
                                                         {isSelected && (
-                                                            <svg className="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <svg className="h-6 w-6 text-[#387B95]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                                                             </svg>
                                                         )}
@@ -1540,7 +1540,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 })()}
                             </div>
 
-                            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1A1212]/50">
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
@@ -1552,8 +1552,8 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     onClick={handleConfirmGeneration}
                                     disabled={generating || selectedDocumentsForGeneration.length === 0}
                                     className={`px-6 py-2 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed ${generationType === 'pdf'
-                                        ? 'bg-blue-600 hover:bg-blue-700'
-                                        : 'bg-purple-600 hover:bg-purple-700'
+                                        ? 'bg-[#387B95] hover:bg-[#1D4B5E]'
+                                        : 'bg-[#7B3FA0] hover:bg-[#5C2D80]'
                                         }`}
                                 >
                                     {generating ? (
@@ -1587,7 +1587,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                     }}
                 >
                     <div 
-                        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col relative"
+                        className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col relative"
                         style={{ zIndex: 10000 }}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -1616,7 +1616,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                         {/* Scrollable Content Area */}
                         <div className="flex-1 overflow-y-auto p-6" style={{ maxHeight: 'calc(90vh - 180px)' }}>
                             {/* Info about restricted fields */}
-                            <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                            <div className="mb-4 p-3 bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
                                 <p className="text-sm text-blue-800 dark:text-blue-200">
                                     <strong>Note:</strong> You can edit most fields. However, the following fields can only be changed by admin: 
                                     <strong> Aadhaar Number</strong>, <strong>Course Selection</strong>, <strong>Institution</strong>, <strong>Stream</strong>, and <strong>Campus</strong>.
@@ -1705,7 +1705,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 type="text"
                                                 value={editData.personalDetails?.aadharNumber || ''}
                                                 disabled
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed"
                                                 title="Aadhaar number can only be edited by admin"
                                             />
                                         </div>
@@ -1844,7 +1844,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 type="text"
                                                 value={editData.courseDetails?.selectedCourse || editData.courseDetails?.courseName || ''}
                                                 disabled
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed"
                                                 title="Course selection can only be changed by admin"
                                             />
                                         </div>
@@ -1941,7 +1941,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 </button>
                                 <button
                                     onClick={handleEdit}
-                                    className="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700"
+                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80]"
                                 >
                                     Save Changes
                                 </button>
@@ -1975,7 +1975,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                 </div>
 
                                                 {statusData.rejectionDetails.map((detail, index) => (
-                                                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 mb-3 bg-white dark:bg-gray-800">
+                                                    <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 mb-3 bg-white dark:bg-[#2A1E2E]">
                                                         <div className="flex justify-between items-start mb-2">
                                                             <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                                                 Issue #{index + 1}
@@ -2072,7 +2072,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         value={statusData.notes}
                                         onChange={(e) => setStatusData({ ...statusData, notes: e.target.value })}
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Add any notes about this status change..."
                                     />
                                 </div>
@@ -2099,7 +2099,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     onClick={handleStatusUpdate}
                                     className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 ${statusData.status === 'REJECTED'
                                         ? 'bg-red-600 hover:bg-red-700 focus:ring-red-500'
-                                        : 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500'
+                                        : 'bg-[#7B3FA0] hover:bg-[#5C2D80] focus:ring-[#7B3FA0]'
                                         }`}
                                 >
                                     {statusData.status === 'REJECTED' ? 'Reject Application' : 'Update Status'}

@@ -182,7 +182,7 @@ const StudentPayments = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -203,11 +203,11 @@ const StudentPayments = () => {
                         <p className="text-gray-600">Track and manage your fee installments</p>
                     </div>
                     <div className="flex gap-3">
-                        <button onClick={() => setShowPaymentModal(true)} className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center space-x-2">
+                        <button onClick={() => setShowPaymentModal(true)} className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] flex items-center space-x-2">
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                             <span>QR Payment</span>
                         </button>
-                        <button onClick={() => setShowUploadModal(true)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center space-x-2">
+                        <button onClick={() => setShowUploadModal(true)} className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] flex items-center space-x-2">
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                             <span>Upload Slip</span>
                         </button>
@@ -322,7 +322,7 @@ const StudentPayments = () => {
                                                     setReceiptFile(null);
                                                     setShowUpdateModal(true);
                                                 }}
-                                                className="px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors"
+                                                className="px-4 py-2 bg-[#EDE0F7] text-[#5C2D80] hover:bg-indigo-100 rounded-lg text-sm font-medium transition-colors"
                                             >
                                                 Update
                                             </button>
@@ -333,8 +333,8 @@ const StudentPayments = () => {
                         ))
                     ) : (
                         <div className="text-center py-12">
-                            <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                                <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="mx-auto h-12 w-12 bg-[#EDE0F7] rounded-full flex items-center justify-center mb-4">
+                                <svg className="h-6 w-6 text-[#7B3FA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
                             </div>
@@ -364,7 +364,7 @@ const StudentPayments = () => {
                                     min="1"
                                     value={updateData.amount}
                                     onChange={(e) => setUpdateData({ ...updateData, amount: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                     placeholder="Enter amount"
                                 />
                             </div>
@@ -373,7 +373,7 @@ const StudentPayments = () => {
                                 <select
                                     value={updateData.paymentMethod}
                                     onChange={(e) => setUpdateData({ ...updateData, paymentMethod: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                 >
                                     <option value="Bank Transfer">Bank Transfer / NEFT / RTGS</option>
                                     <option value="UPI">UPI</option>
@@ -387,7 +387,7 @@ const StudentPayments = () => {
                                     type="file"
                                     accept="image/*,.pdf"
                                     onChange={handleFileChange}
-                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                                 />
                                 <p className="text-xs text-gray-500 mt-1">Leave blank to keep existing receipt.</p>
                             </div>
@@ -396,7 +396,7 @@ const StudentPayments = () => {
                                 <textarea
                                     value={updateData.remarks}
                                     onChange={(e) => setUpdateData({ ...updateData, remarks: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                     placeholder="Any transaction IDs or notes..."
                                     rows="2"
                                 ></textarea>
@@ -412,7 +412,7 @@ const StudentPayments = () => {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center"
+                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 flex items-center"
                                 >
                                     {uploading ? (
                                         <>
@@ -449,7 +449,7 @@ const StudentPayments = () => {
                                     min="1"
                                     value={uploadData.amount}
                                     onChange={(e) => setUploadData({ ...uploadData, amount: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                     placeholder="Enter amount"
                                 />
                             </div>
@@ -458,7 +458,7 @@ const StudentPayments = () => {
                                 <select
                                     value={uploadData.paymentMethod}
                                     onChange={(e) => setUploadData({ ...uploadData, paymentMethod: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                 >
                                     <option value="Bank Transfer">Bank Transfer / NEFT / RTGS</option>
                                     <option value="UPI">UPI</option>
@@ -473,7 +473,7 @@ const StudentPayments = () => {
                                     required
                                     accept="image/*,.pdf"
                                     onChange={handleFileChange}
-                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                                 />
                             </div>
                             <div>
@@ -481,7 +481,7 @@ const StudentPayments = () => {
                                 <textarea
                                     value={uploadData.remarks}
                                     onChange={(e) => setUploadData({ ...uploadData, remarks: e.target.value })}
-                                    className="w-full px-3 py-2 border rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                    className="w-full px-3 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                     placeholder="Any transaction IDs or notes..."
                                     rows="2"
                                 ></textarea>
@@ -497,7 +497,7 @@ const StudentPayments = () => {
                                 <button
                                     type="submit"
                                     disabled={uploading}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                                    className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] disabled:opacity-50 flex items-center"
                                 >
                                     {uploading ? (
                                         <>

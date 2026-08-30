@@ -59,7 +59,7 @@ const SchoolPageTemplate = ({
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.8 }}
                         >
-                            <div className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-8 shadow-2xl">
+                            <div className="inline-flex items-center justify-center w-24 h-24 bg-[#7B3FA0] rounded-3xl mb-8 shadow-2xl">
                                 <i className="fa-solid fa-school text-white text-4xl"></i>
                             </div>
 
@@ -83,13 +83,13 @@ const SchoolPageTemplate = ({
                             >
                                 <a
                                     href="#programs"
-                                    className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    className="px-8 py-4 bg-[#7B3FA0] text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                                 >
                                     Explore Programs
                                 </a>
                                 <a
                                     href="#contact"
-                                    className="px-8 py-4 bg-white text-purple-600 rounded-xl font-semibold text-lg border-2 border-purple-600 hover:bg-purple-50 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    className="px-8 py-4 bg-white text-[#7B3FA0] rounded-xl font-semibold text-lg border-2 border-[#7B3FA0] hover:bg-[#EDE0F7] transition-all duration-300 shadow-lg hover:shadow-xl"
                                 >
                                     Contact Us
                                 </a>
@@ -108,7 +108,7 @@ const SchoolPageTemplate = ({
                             className="text-center mb-16"
                         >
                             <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                                Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">{schoolName}</span>?
+                                Why Choose <span className="text-transparent bg-clip-text bg-[#7B3FA0]">{schoolName}</span>?
                             </h2>
                         </motion.div>
 
@@ -140,7 +140,7 @@ const SchoolPageTemplate = ({
                             className="text-center mb-16"
                         >
                             <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                                Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Programs</span>
+                                Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Programs</span>
                             </h2>
                             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                                 Comprehensive educational programs designed to nurture young minds and prepare them for the future
@@ -162,7 +162,7 @@ const SchoolPageTemplate = ({
                                     <ul className="space-y-2">
                                         {program.subjects.map((subject, subIndex) => (
                                             <li key={subIndex} className="flex items-center text-gray-600">
-                                                <i className="fa-solid fa-check text-purple-600 mr-2"></i>
+                                                <i className="fa-solid fa-check text-[#7B3FA0] mr-2"></i>
                                                 {subject}
                                             </li>
                                         ))}
@@ -183,7 +183,7 @@ const SchoolPageTemplate = ({
                             className="text-center mb-16"
                         >
                             <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                                World-Class <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Facilities</span>
+                                World-Class <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Facilities</span>
                             </h2>
                         </motion.div>
 
@@ -215,7 +215,7 @@ const SchoolPageTemplate = ({
                             className="text-center mb-16"
                         >
                             <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
-                                Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Achievements</span>
+                                Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Achievements</span>
                             </h2>
                         </motion.div>
 
@@ -238,7 +238,7 @@ const SchoolPageTemplate = ({
                 </section>
 
                 {/* Contact Section */}
-                <section id="contact" className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
+                <section id="contact" className="py-20 bg-[#7B3FA0]">
                     <div className="container mx-auto px-6">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
@@ -277,7 +277,7 @@ const SchoolPageTemplate = ({
                             >
                                 <a
                                     href="/"
-                                    className="inline-block px-8 py-4 bg-white text-purple-600 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    className="inline-block px-8 py-4 bg-white text-[#7B3FA0] rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
                                 >
                                     Visit Main Website
                                 </a>

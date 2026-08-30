@@ -520,7 +520,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                         placeholder="Search by name, phone, Aadhaar, email, or Application ID..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     />
                 </div>
                 
@@ -529,7 +529,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Status</option>
                         <option value="DRAFT">Draft</option>
@@ -542,7 +542,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={courseFilter}
                         onChange={(e) => setCourseFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Courses</option>
                         {availableCourses.map(course => (
@@ -553,7 +553,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Categories</option>
                         {availableCategories.map(category => (
@@ -564,7 +564,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={genderFilter}
                         onChange={(e) => setGenderFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Gender</option>
                         {availableGenders.map(gender => (
@@ -575,7 +575,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={stateFilter}
                         onChange={(e) => setStateFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All States</option>
                         {availableStates.map(state => (
@@ -586,7 +586,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={districtFilter}
                         onChange={(e) => setDistrictFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Districts</option>
                         {availableDistricts.map(district => (
@@ -597,7 +597,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={cityFilter}
                         onChange={(e) => setCityFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Cities</option>
                         {availableCities.map(city => (
@@ -608,7 +608,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={streamFilter}
                         onChange={(e) => setStreamFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Streams</option>
                         {availableStreams.map(stream => (
@@ -619,7 +619,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     <select
                         value={admissionTypeFilter}
                         onChange={(e) => setAdmissionTypeFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Adm. Types</option>
                         <option value="paid">Paid</option>
@@ -660,7 +660,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
             {/* Table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-800">
+                    <thead className="bg-gray-50 dark:bg-[#2A1E2E]">
                         <tr>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -749,7 +749,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                             )}
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {sortedStudents.map((student, index) => (
                             <motion.tr
                                 key={student._id}
@@ -803,7 +803,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     setSelectedStudent(student);
                                                     setShowDetailsModal(true);
                                                 }}
-                                                className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                                                className="text-[#387B95] hover:text-blue-900 dark:text-[#60A5FA] dark:hover:text-blue-300"
                                                 title="View Details"
                                             >
                                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -983,7 +983,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                         <button className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700">
                             Export CSV
                         </button>
-                        <button className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700">
+                        <button className="px-3 py-1 text-sm bg-[#387B95] text-white rounded hover:bg-[#1D4B5E] dark:bg-[#387B95] dark:hover:bg-[#1D4B5E]">
                             Export Excel
                         </button>
                         <button className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700">
@@ -996,7 +996,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
             {/* Student Details Modal */}
             {showDetailsModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             {/* Header */}
                             <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
@@ -1041,7 +1041,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
 
                             <div className="space-y-6">
                                 {/* Personal Information */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -1079,7 +1079,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 </div>
 
                                 {/* Contact Information */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -1100,7 +1100,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
 
                                 {/* Address Information */}
                                 {(selectedStudent.contactDetails?.permanentAddress || selectedStudent.contactDetails?.currentAddress) && (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                             <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -1202,7 +1202,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 )}
 
                                 {/* Course Information */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -1253,7 +1253,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
 
                                 {/* Guardian Information */}
                                 {(selectedStudent.guardianDetails?.guardianName || selectedStudent.guardianDetails?.guardianPhone) && (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                             <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -1279,7 +1279,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
 
                                 {/* Documents */}
                                 {selectedStudent.documents && selectedStudent.documents.length > 0 && (
-                                    <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                             <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1288,7 +1288,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {selectedStudent.documents.map((doc, index) => (
-                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-gray-800">
+                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#2A1E2E]">
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType || doc.fileName}</p>
@@ -1308,7 +1308,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                                 href={doc.filePath}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="ml-2 text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                                className="ml-2 text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]"
                                                             >
                                                                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -1324,7 +1324,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 )}
 
                                 {/* Application Tracking */}
-                                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
                                         <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1381,7 +1381,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     }}
                 >
                     <div 
-                        className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
+                        className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
                         style={{ zIndex: 10000, maxHeight: '90vh', height: '90vh', display: 'flex', flexDirection: 'column' }}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -1417,7 +1417,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                         {/* Scrollable Content */}
                         <div className="overflow-y-auto flex-1 p-6" style={{ maxHeight: 'calc(90vh - 200px)', overflowX: 'hidden', minHeight: '500px' }}>
                             {isAgent && (
-                                <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
+                                <div className="mb-4 p-3 bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-md">
                                     <p className="text-sm text-blue-800 dark:text-blue-200">
                                         <strong>Note:</strong> You can edit most fields. However, the following fields can only be changed by admin: 
                                         <strong> Aadhaar Number</strong>, <strong>Course Selection</strong>, <strong>Institution</strong>, <strong>Stream</strong>, and <strong>Campus</strong>.
@@ -1438,7 +1438,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 ...editData,
                                                 personalDetails: { ...editData.personalDetails, fullName: e.target.value }
                                             })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                         />
                                     </div>
                                     <div>
@@ -1450,7 +1450,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -1462,7 +1462,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -1473,7 +1473,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, gender: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             >
                                                 <option value="">Select Gender</option>
                                                 <option value="Male">Male</option>
@@ -1491,7 +1491,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -1502,7 +1502,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, category: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             >
                                                 <option value="">Select Category</option>
                                                 <option value="General">General</option>
@@ -1526,9 +1526,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 })}
                                                 maxLength="12"
                                                 disabled={isAgent}
-                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 title={isAgent ? "Aadhaar number can only be edited by admin" : ""}
@@ -1542,7 +1542,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     status: e.target.value
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             >
                                                 <option value="">Select Status</option>
                                                 <option value="DRAFT">Draft</option>
@@ -1575,7 +1575,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     });
                                                 }}
                                                 maxLength="10"
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -1591,7 +1591,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     });
                                                 }}
                                                 maxLength="10"
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -1603,7 +1603,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 ...editData,
                                                 contactDetails: { ...editData.contactDetails, email: e.target.value }
                                             })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                     </div>
@@ -1627,7 +1627,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         }
                                                     })}
                                                     rows={2}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                         />
                                     </div>
                                     <div>
@@ -1645,7 +1645,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             }
                                                         }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                             <div>
@@ -1663,7 +1663,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             }
                                                         }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                             <div>
@@ -1681,7 +1681,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             }
                                                         }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                             <div>
@@ -1703,7 +1703,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         });
                                                     }}
                                                     maxLength="6"
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                             <div>
@@ -1721,7 +1721,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             }
                                                         }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                         </div>
@@ -1746,7 +1746,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         }
                                                     })}
                                                     rows={2}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                             <div>
@@ -1764,7 +1764,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             }
                                                         }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                             <div>
@@ -1782,7 +1782,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                             }
                                                         }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                             <div>
@@ -1804,7 +1804,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         });
                                                     }}
                                                     maxLength="6"
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 />
                                             </div>
                                         </div>
@@ -1835,9 +1835,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         institutionName: colleges.find(c => c._id === e.target.value)?.name || ''
                                                     },
                                                 }))}
-                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 required
@@ -1867,9 +1867,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         stream: "",
                                                     },
                                                 }))}
-                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 required
@@ -1903,9 +1903,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         campus: e.target.value,
                                                     },
                                                 }))}
-                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 required
@@ -1943,9 +1943,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         stream: e.target.value,
                                                     },
                                                 }))}
-                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 disabled={isAgent}
@@ -1977,9 +1977,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         customCourse: e.target.value,
                                                     },
                                                 }))}
-                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                                className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 disabled={isAgent}
@@ -2012,7 +2012,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -2028,7 +2028,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     });
                                                 }}
                                                 maxLength="10"
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -2040,7 +2040,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianEmail: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             />
                                         </div>
                                         <div>
@@ -2051,7 +2051,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, relationship: e.target.value }
                                             })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             >
                                                 <option value="">Select Relationship</option>
                                                 <option value="Father">Father</option>
@@ -2071,7 +2071,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                             </div>
 
                         {/* Footer with Actions */}
-                        <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 flex-shrink-0">
+                        <div className="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1A1212] flex-shrink-0">
                             <div className="flex justify-end space-x-3">
                                 <button
                                     onClick={() => {
@@ -2085,7 +2085,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 </button>
                                 <button
                                     onClick={handleEdit}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
                                 >
                                     Save Changes
                                 </button>

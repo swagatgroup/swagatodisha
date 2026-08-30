@@ -514,7 +514,7 @@ const QuickLinks = () => {
         <section className="relative py-20 overflow-hidden">
             {/* Subtle background elements */}
             <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 left-0 w-64 h-64 bg-[#EDE0F7]/30 dark:bg-[#2A1E2E]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
             </div>
 
@@ -532,7 +532,7 @@ const QuickLinks = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.1 }}
                     >
-                        Quick <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Access</span>
+                        Quick <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Access</span>
                     </motion.h2>
 
                     <motion.p
@@ -575,7 +575,7 @@ const QuickLinks = () => {
                             }}
                         >
                             {/* Card */}
-                            <div className="relative h-48 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group-hover:shadow-2xl transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-600">
+                            <div className="relative h-48 bg-white dark:bg-[#2A1E2E] rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group-hover:shadow-2xl transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-600">
                                 {/* Icon Container */}
                                 <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
                                     <div className={`w-16 h-16 bg-gradient-to-r ${link.bgColor} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
@@ -606,11 +606,11 @@ const QuickLinks = () => {
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                                         transition={{ duration: 0.3, ease: "easeOut" }}
-                                        className="absolute top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-2xl shadow-2xl border border-purple-200 dark:border-gray-700 overflow-hidden"
+                                        className="absolute top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#2A1E2E]/95 backdrop-blur-md rounded-2xl shadow-2xl border border-purple-200 dark:border-gray-700 overflow-hidden"
                                         style={{ height: '400px' }}
                                     >
                                         {/* Overlay Header */}
-                                        <div className="p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                                        <div className="p-4 bg-[#7B3FA0] text-white">
                                             <h4 className="font-bold text-lg">
                                                 {documentSections[link.category].title}
                                             </h4>
@@ -666,19 +666,19 @@ const QuickLinks = () => {
                                                             onMouseEnter={() => handleDocumentHover(doc.name)}
                                                             disabled={loadingDocuments}
                                                             className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
-                                                                ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
+                                                                ? 'border-[#7B3FA0] bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
                                                                 : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
                                                                 } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                             whileHover={loadingDocuments ? {} : { scale: 1.02 }}
                                                             whileTap={loadingDocuments ? {} : { scale: 0.98 }}
                                                         >
                                                             <div className="flex items-center">
-                                                                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-md flex items-center justify-center mr-2">
+                                                                <div className="w-8 h-8 bg-[#7B3FA0] rounded-md flex items-center justify-center mr-2">
                                                                     <i className={`fa-solid ${doc.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'} text-white text-sm`}></i>
                                                                 </div>
                                                                 <div className="flex-1">
                                                                     <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
-                                                                        ? 'text-purple-700 animate-pulse'
+                                                                        ? 'text-[#5C2D80] animate-pulse'
                                                                         : 'text-gray-800'
                                                                         }`}>
                                                                         {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
@@ -688,8 +688,8 @@ const QuickLinks = () => {
                                                                     </p>
                                                                 </div>
                                                                 <div className={`text-lg ${blinkingLinks.has(doc.name)
-                                                                    ? 'animate-bounce text-purple-600'
-                                                                    : 'text-gray-400 group-hover:text-purple-500'
+                                                                    ? 'animate-bounce text-[#7B3FA0]'
+                                                                    : 'text-gray-400 group-hover:text-[#7B3FA0]'
                                                                     }`}>
                                                                     <i className="fa-solid fa-download"></i>
                                                                 </div>
@@ -712,19 +712,19 @@ const QuickLinks = () => {
                                                             onMouseEnter={() => handleDocumentHover(doc.name)}
                                                             disabled={loadingDocuments}
                                                             className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
-                                                                ? 'border-purple-500 bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
+                                                                ? 'border-[#7B3FA0] bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
                                                                 : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
                                                                 } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                             whileHover={loadingDocuments ? {} : { scale: 1.02 }}
                                                             whileTap={loadingDocuments ? {} : { scale: 0.98 }}
                                                         >
                                                             <div className="flex items-center">
-                                                                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-md flex items-center justify-center mr-2">
+                                                                <div className="w-8 h-8 bg-[#7B3FA0] rounded-md flex items-center justify-center mr-2">
                                                                     <i className={`fa-solid ${doc.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'} text-white text-sm`}></i>
                                                                 </div>
                                                                 <div className="flex-1">
                                                                     <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
-                                                                        ? 'text-purple-700 animate-pulse'
+                                                                        ? 'text-[#5C2D80] animate-pulse'
                                                                         : 'text-gray-800'
                                                                         }`}>
                                                                         {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
@@ -734,8 +734,8 @@ const QuickLinks = () => {
                                                                     </p>
                                                                 </div>
                                                                 <div className={`text-lg ${blinkingLinks.has(doc.name)
-                                                                    ? 'animate-bounce text-purple-600'
-                                                                    : 'text-gray-400 group-hover:text-purple-500'
+                                                                    ? 'animate-bounce text-[#7B3FA0]'
+                                                                    : 'text-gray-400 group-hover:text-[#7B3FA0]'
                                                                     }`}>
                                                                     <i className="fa-solid fa-download"></i>
                                                                 </div>
@@ -762,7 +762,7 @@ const QuickLinks = () => {
                     transition={{ duration: 0.6, delay: 0.3 }}
                 >
                     <motion.button
-                        className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                        className="px-8 py-4 bg-[#7B3FA0] text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
                         whileHover={{ scale: 1.02, y: -2 }}
                         whileTap={{ scale: 0.98 }}
                     >
@@ -789,7 +789,7 @@ const QuickLinks = () => {
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* Modal Header */}
-                            <div className="p-6 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                            <div className="p-6 bg-[#7B3FA0] text-white">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h3 className="text-2xl font-bold">🎯 Career Roadmap After 10th</h3>
@@ -815,7 +815,7 @@ const QuickLinks = () => {
                                             initial={{ scale: 0 }}
                                             animate={{ scale: 1 }}
                                             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                                            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-2xl p-6 shadow-2xl border-4 border-white"
+                                            className="bg-[#7B3FA0] text-white rounded-2xl p-6 shadow-2xl border-4 border-white"
                                         >
                                             <div className="text-center">
                                                 <i className="fa-solid fa-graduation-cap text-4xl mb-3"></i>
@@ -896,7 +896,7 @@ const QuickLinks = () => {
                                                                         whileHover={{ scale: 1.02 }}
                                                                         whileTap={{ scale: 0.98 }}
                                                                         onClick={() => togglePath(`${key}-${pathIndex}`)}
-                                                                        className={`cursor-pointer bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 ${expandedPaths.has(`${key}-${pathIndex}`) ? 'border-blue-400 bg-blue-50' : ''
+                                                                        className={`cursor-pointer bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 ${expandedPaths.has(`${key}-${pathIndex}`) ? 'border-blue-400 bg-[#D0E8F0]' : ''
                                                                             }`}
                                                                     >
                                                                         <div className="flex items-center justify-between">
@@ -969,7 +969,7 @@ const QuickLinks = () => {
                                                                                     >
                                                                                         <motion.button
                                                                                             onClick={() => toggleShowAllCareers(`${key}-${pathIndex}`)}
-                                                                                            className="flex items-center text-sm text-blue-600 hover:text-blue-800 transition-colors duration-300"
+                                                                                            className="flex items-center text-sm text-[#387B95] hover:text-blue-800 transition-colors duration-300"
                                                                                             whileHover={{ scale: 1.05 }}
                                                                                             whileTap={{ scale: 0.95 }}
                                                                                         >
@@ -1006,7 +1006,7 @@ const QuickLinks = () => {
                                         <p className="text-gray-600 text-sm mb-4">Our counselors are here to help you choose the right path</p>
                                         <motion.button
                                             onClick={handleCareerCounselingCall}
-                                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
+                                            className="px-6 py-3 bg-[#7B3FA0] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                         >
@@ -1039,7 +1039,7 @@ const QuickLinks = () => {
                             onClick={(e) => e.stopPropagation()}
                         >
                             {/* PDF Viewer Header */}
-                            <div className="flex items-center justify-between p-6 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                            <div className="flex items-center justify-between p-6 bg-[#7B3FA0] text-white">
                                 <div>
                                     <h3 className="text-xl font-bold">{pdfViewer.name}</h3>
                                     <p className="text-sm opacity-90">Document Viewer</p>

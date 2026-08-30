@@ -15,7 +15,7 @@ const AuthDebug = () => {
     };
 
     return (
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-4 bg-white dark:bg-[#2A1E2E] rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4">Authentication Debug</h3>
 
             <div className="space-y-4">
@@ -33,7 +33,7 @@ const AuthDebug = () => {
 
                 <button
                     onClick={testAPI}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#387B95] text-white rounded hover:bg-[#1D4B5E]"
                 >
                     Test API Call
                 </button>

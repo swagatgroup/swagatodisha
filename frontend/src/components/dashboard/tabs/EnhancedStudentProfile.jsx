@@ -262,7 +262,7 @@ const EnhancedStudentProfile = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -277,11 +277,11 @@ const EnhancedStudentProfile = () => {
             >
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">Profile Completion</h3>
-                    <span className="text-sm font-medium text-purple-600">{completionPercentage}% Complete</span>
+                    <span className="text-sm font-medium text-[#7B3FA0]">{completionPercentage}% Complete</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                        className="bg-purple-600 h-2 rounded-full transition-all duration-500"
+                        className="bg-[#7B3FA0] h-2 rounded-full transition-all duration-500"
                         style={{ width: `${completionPercentage}%` }}
                     ></div>
                 </div>
@@ -307,7 +307,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.personalDetails.fullName}
                             onChange={(e) => handleInputChange('personalDetails.fullName', e.target.value.toUpperCase())}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['personalDetails.fullName'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['personalDetails.fullName'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter your full name"
                         />
@@ -322,7 +322,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.personalDetails.fathersName}
                             onChange={(e) => handleInputChange('personalDetails.fathersName', e.target.value.toUpperCase())}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['personalDetails.fathersName'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['personalDetails.fathersName'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter father's name"
                         />
@@ -337,7 +337,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.personalDetails.mothersName}
                             onChange={(e) => handleInputChange('personalDetails.mothersName', e.target.value.toUpperCase())}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['personalDetails.mothersName'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['personalDetails.mothersName'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter mother's name"
                         />
@@ -352,7 +352,7 @@ const EnhancedStudentProfile = () => {
                             type="date"
                             value={profileData.personalDetails.dateOfBirth}
                             onChange={(e) => handleInputChange('personalDetails.dateOfBirth', e.target.value)}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['personalDetails.dateOfBirth'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['personalDetails.dateOfBirth'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                         />
                         {errors['personalDetails.dateOfBirth'] && (
@@ -365,7 +365,7 @@ const EnhancedStudentProfile = () => {
                         <select
                             value={profileData.personalDetails.gender}
                             onChange={(e) => handleInputChange('personalDetails.gender', e.target.value)}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['personalDetails.gender'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['personalDetails.gender'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                         >
                             <option value="">Select Gender</option>
@@ -385,7 +385,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.personalDetails.aadharNumber}
                             onChange={(e) => handleInputChange('personalDetails.aadharNumber', e.target.value.replace(/\D/g, '').slice(0, 12))}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['personalDetails.aadharNumber'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['personalDetails.aadharNumber'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter 12-digit Aadhaar number"
                             maxLength="12"
@@ -412,7 +412,7 @@ const EnhancedStudentProfile = () => {
                             type="tel"
                             value={profileData.contactDetails.primaryPhone}
                             onChange={(e) => handleInputChange('contactDetails.primaryPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['contactDetails.primaryPhone'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['contactDetails.primaryPhone'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter 10-digit mobile number"
                             maxLength="10"
@@ -430,7 +430,7 @@ const EnhancedStudentProfile = () => {
                             type="email"
                             value={profileData.contactDetails.email}
                             onChange={(e) => handleInputChange('contactDetails.email', e.target.value.toLowerCase())}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['contactDetails.email'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['contactDetails.email'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter email address"
                         />
@@ -450,7 +450,7 @@ const EnhancedStudentProfile = () => {
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.street}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.street', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 placeholder="Enter street address"
                             />
                         </div>
@@ -461,7 +461,7 @@ const EnhancedStudentProfile = () => {
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.city}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.city', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 placeholder="Enter city"
                             />
                         </div>
@@ -471,7 +471,7 @@ const EnhancedStudentProfile = () => {
                             <select
                                 value={profileData.contactDetails.permanentAddress.state}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.state', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 <option value="">Select State</option>
                                 {states.map(state => (
@@ -486,7 +486,7 @@ const EnhancedStudentProfile = () => {
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.pincode}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.pincode', e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 placeholder="Enter 6-digit pincode"
                                 maxLength="6"
                             />
@@ -519,7 +519,7 @@ const EnhancedStudentProfile = () => {
                         <select
                             value={profileData.courseDetails.selectedCourse}
                             onChange={(e) => handleInputChange('courseDetails.selectedCourse', e.target.value)}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['courseDetails.selectedCourse'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['courseDetails.selectedCourse'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                         >
                             <option value="">Select a course</option>
@@ -539,7 +539,7 @@ const EnhancedStudentProfile = () => {
                                 type="text"
                                 value={profileData.courseDetails.customCourse}
                                 onChange={(e) => handleInputChange('courseDetails.customCourse', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 placeholder="Enter custom course name"
                             />
                         </div>
@@ -551,7 +551,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.courseDetails.stream}
                             onChange={(e) => handleInputChange('courseDetails.stream', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             placeholder="Enter stream or subject"
                         />
                     </div>
@@ -561,7 +561,7 @@ const EnhancedStudentProfile = () => {
                         <select
                             value={profileData.courseDetails.campus}
                             onChange={(e) => handleInputChange('courseDetails.campus', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         >
                             <option value="Sargiguda">Sargiguda</option>
                             <option value="Ghantiguda">Ghantiguda</option>
@@ -586,7 +586,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.guardianDetails.guardianName}
                             onChange={(e) => handleInputChange('guardianDetails.guardianName', e.target.value.toUpperCase())}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['guardianDetails.guardianName'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['guardianDetails.guardianName'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter guardian's name"
                         />
@@ -600,7 +600,7 @@ const EnhancedStudentProfile = () => {
                         <select
                             value={profileData.guardianDetails.relationship}
                             onChange={(e) => handleInputChange('guardianDetails.relationship', e.target.value)}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['guardianDetails.relationship'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['guardianDetails.relationship'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                         >
                             <option value="">Select Relationship</option>
@@ -625,7 +625,7 @@ const EnhancedStudentProfile = () => {
                             type="tel"
                             value={profileData.guardianDetails.guardianPhone}
                             onChange={(e) => handleInputChange('guardianDetails.guardianPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 ${errors['guardianDetails.guardianPhone'] ? 'border-red-500' : 'border-gray-300'
+                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] ${errors['guardianDetails.guardianPhone'] ? 'border-red-500' : 'border-gray-300'
                                 }`}
                             placeholder="Enter guardian's phone number"
                             maxLength="10"
@@ -641,7 +641,7 @@ const EnhancedStudentProfile = () => {
                             type="email"
                             value={profileData.guardianDetails.guardianEmail}
                             onChange={(e) => handleInputChange('guardianDetails.guardianEmail', e.target.value.toLowerCase())}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             placeholder="Enter guardian's email (optional)"
                         />
                     </div>
@@ -663,7 +663,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.financialDetails.bankAccountNumber}
                             onChange={(e) => handleInputChange('financialDetails.bankAccountNumber', e.target.value.replace(/\D/g, '').slice(0, 18))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             placeholder="Enter bank account number"
                             maxLength="18"
                         />
@@ -675,7 +675,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.financialDetails.ifscCode}
                             onChange={(e) => handleInputChange('financialDetails.ifscCode', e.target.value.toUpperCase())}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             placeholder="Enter IFSC code (e.g., SBIN0001234)"
                             maxLength="11"
                         />
@@ -687,7 +687,7 @@ const EnhancedStudentProfile = () => {
                             type="text"
                             value={profileData.financialDetails.accountHolderName}
                             onChange={(e) => handleInputChange('financialDetails.accountHolderName', e.target.value.toUpperCase())}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             placeholder="Enter account holder name"
                         />
                     </div>
@@ -715,7 +715,7 @@ const EnhancedStudentProfile = () => {
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-6 py-3 bg-[#7B3FA0] text-white font-medium rounded-lg hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     {saving ? 'Saving...' : 'Save Profile'}
                 </button>

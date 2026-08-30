@@ -111,7 +111,7 @@ const TermsAndConditions = ({ accepted, onAccept }) => {
                     id="terms-acceptance"
                     checked={accepted}
                     onChange={(e) => onAccept && onAccept(e.target.checked)}
-                    className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 dark:focus:ring-purple-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-[#7B3FA0] bg-gray-100 border-gray-300 rounded focus:ring-[#7B3FA0] dark:focus:ring-[#7B3FA0] dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                 />
                 <label htmlFor="terms-acceptance" className="text-sm text-gray-700 dark:text-gray-300">
                     I have read and agree to the terms and conditions above

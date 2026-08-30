@@ -125,7 +125,7 @@ const StudentProfile = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -140,7 +140,7 @@ const StudentProfile = () => {
             >
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-4">
-                        <div className="h-20 w-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+                        <div className="h-20 w-20 bg-[#7B3FA0] rounded-full flex items-center justify-center text-white text-2xl font-bold">
                             {profile?.fullName?.charAt(0) || 'S'}
                         </div>
                         <div>
@@ -161,7 +161,7 @@ const StudentProfile = () => {
                                 <button
                                     onClick={handleSave}
                                     disabled={saving}
-                                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50"
                                 >
                                     {saving ? 'Saving...' : 'Save Changes'}
                                 </button>
@@ -169,7 +169,7 @@ const StudentProfile = () => {
                         ) : (
                             <button
                                 onClick={() => setEditing(true)}
-                                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                                className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]"
                             >
                                 Edit Profile
                             </button>
@@ -209,7 +209,7 @@ const StudentProfile = () => {
                             value={formData.fullName}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         />
                     </div>
                     <div>
@@ -231,7 +231,7 @@ const StudentProfile = () => {
                             value={formData.phoneNumber}
                             onChange={(e) => handleInputChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                             maxLength="10"
                         />
                     </div>
@@ -243,7 +243,7 @@ const StudentProfile = () => {
                             value={formData.dateOfBirth}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         />
                     </div>
                     <div>
@@ -253,7 +253,7 @@ const StudentProfile = () => {
                             value={formData.gender}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         >
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
@@ -268,7 +268,7 @@ const StudentProfile = () => {
                             value={formData.bloodGroup}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         >
                             <option value="">Select Blood Group</option>
                             <option value="A+">A+</option>
@@ -301,7 +301,7 @@ const StudentProfile = () => {
                             value={formData.address.street}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         />
                     </div>
                     <div>
@@ -312,7 +312,7 @@ const StudentProfile = () => {
                             value={formData.address.city}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         />
                     </div>
                     <div>
@@ -323,7 +323,7 @@ const StudentProfile = () => {
                             value={formData.address.state}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         />
                     </div>
                     <div>
@@ -334,7 +334,7 @@ const StudentProfile = () => {
                             value={formData.address.pincode}
                             onChange={(e) => handleInputChange({ target: { name: 'address.pincode', value: e.target.value.replace(/\D/g, '').slice(0, 6) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                             maxLength="6"
                         />
                     </div>
@@ -369,7 +369,7 @@ const StudentProfile = () => {
                             value={formData.aadharNumber}
                             onChange={(e) => handleInputChange({ target: { name: 'aadharNumber', value: e.target.value.replace(/\D/g, '').slice(0, 12) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                             maxLength="12"
                         />
                     </div>
@@ -393,7 +393,7 @@ const StudentProfile = () => {
                             value={formData.guardianName}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                         />
                     </div>
                     <div>
@@ -404,7 +404,7 @@ const StudentProfile = () => {
                             value={formData.guardianPhone}
                             onChange={(e) => handleInputChange({ target: { name: 'guardianPhone', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                             maxLength="10"
                         />
                     </div>
@@ -416,7 +416,7 @@ const StudentProfile = () => {
                             value={formData.emergencyContact}
                             onChange={(e) => handleInputChange({ target: { name: 'emergencyContact', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent disabled:bg-gray-50"
                             maxLength="10"
                         />
                     </div>

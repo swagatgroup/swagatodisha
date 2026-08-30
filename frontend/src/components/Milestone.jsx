@@ -3,7 +3,7 @@ import { MILESTONE } from '../utils/constants'
 
 const Milestone = () => {
     return (
-        <section id="milestone" className="py-20 bg-gradient-to-br from-purple-600 to-blue-600">
+        <section id="milestone" className="py-20 bg-[#7B3FA0]">
             <div className="container mx-auto px-6">
                 <div className="text-center mb-16">
                     <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">

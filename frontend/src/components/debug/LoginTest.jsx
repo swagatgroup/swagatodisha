@@ -21,7 +21,7 @@ const LoginTest = () => {
     };
 
     return (
-        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+        <div className="p-4 bg-white dark:bg-[#2A1E2E] rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4">Login Test</h3>
 
             <form onSubmit={handleLogin} className="space-y-4">
@@ -33,7 +33,7 @@ const LoginTest = () => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#387B95] focus:border-blue-500"
                         required
                     />
                 </div>
@@ -46,7 +46,7 @@ const LoginTest = () => {
                         type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[#387B95] focus:border-blue-500"
                         required
                     />
                 </div>
@@ -54,7 +54,7 @@ const LoginTest = () => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                    className="w-full px-4 py-2 bg-[#387B95] text-white rounded hover:bg-[#1D4B5E] disabled:opacity-50"
                 >
                     {loading ? 'Logging in...' : 'Login'}
                 </button>

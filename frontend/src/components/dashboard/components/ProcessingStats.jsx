@@ -38,8 +38,8 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
                 </svg>
             ),
             color: 'blue',
-            bgColor: 'bg-blue-50',
-            textColor: 'text-blue-600',
+            bgColor: 'bg-[#D0E8F0]',
+            textColor: 'text-[#387B95]',
             iconBg: 'bg-blue-100',
             filterKey: 'all' // Total shows all students
         },
@@ -66,8 +66,8 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
                 </svg>
             ),
             color: 'blue',
-            bgColor: 'bg-blue-50',
-            textColor: 'text-blue-600',
+            bgColor: 'bg-[#D0E8F0]',
+            textColor: 'text-[#387B95]',
             iconBg: 'bg-blue-100',
             filterKey: 'SUBMITTED'
         },
@@ -130,7 +130,7 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
     ];
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Processing Statistics</h3>
                 <span className="text-sm text-gray-500 dark:text-gray-400">Session: {session || 'Current'}</span>
@@ -138,16 +138,16 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
 
             {/* No Data Message for Session */}
             {total === 0 && pending === 0 && approved === 0 && rejected === 0 && (
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
+                <div className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
                     <div className="flex items-center">
-                        <svg className="h-6 w-6 text-blue-600 dark:text-blue-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-6 w-6 text-[#387B95] dark:text-[#60A5FA] mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         <div>
                             <h4 className="text-sm font-medium text-blue-900 dark:text-blue-200">
                                 No admissions found for {session || 'this'} session
                             </h4>
-                            <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                            <p className="text-sm text-[#1D4B5E] dark:text-blue-300 mt-1">
                                 Select a different academic session to view statistics.
                             </p>
                         </div>

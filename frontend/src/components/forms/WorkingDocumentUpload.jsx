@@ -211,7 +211,7 @@ const WorkingDocumentUpload = ({
             case 'missing':
                 return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
             default:
-                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
+                return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212] dark:text-gray-200';
         }
     };
 
@@ -245,7 +245,7 @@ const WorkingDocumentUpload = ({
                     key={categoryId}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"
+                    className="bg-white dark:bg-[#2A1E2E] rounded-lg border border-gray-200 dark:border-gray-700 p-6"
                 >
                     <div className="flex items-center mb-4">
                         <div className={`w-3 h-3 rounded-full bg-${mockCategories[categoryId]?.color || 'blue'}-500 mr-3`}></div>
@@ -280,7 +280,7 @@ const WorkingDocumentUpload = ({
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6"
+                className="bg-white dark:bg-[#2A1E2E] rounded-lg border border-gray-200 dark:border-gray-700 p-6"
             >
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -290,7 +290,7 @@ const WorkingDocumentUpload = ({
                         type="button"
                         onClick={() => setShowCustomForm(true)}
                         disabled={disabled}
-                        className="flex items-center px-3 py-2 text-sm font-medium text-purple-600 bg-purple-100 rounded-lg hover:bg-purple-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center px-3 py-2 text-sm font-medium text-[#7B3FA0] bg-[#EDE0F7] rounded-lg hover:bg-purple-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <PlusIcon className="w-4 h-4 mr-2" />
                         Add Custom Document
@@ -346,7 +346,7 @@ const WorkingDocumentUpload = ({
                                         type="text"
                                         value={customDocumentName}
                                         onChange={(e) => setCustomDocumentName(e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-800 dark:text-white"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-[#2A1E2E] dark:text-white"
                                         placeholder="Enter document name"
                                     />
                                 </div>
@@ -358,7 +358,7 @@ const WorkingDocumentUpload = ({
                                         type="file"
                                         onChange={(e) => setCustomDocumentFile(e.target.files[0])}
                                         accept=".jpg,.jpeg,.png,.pdf"
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                     />
                                 </div>
                                 <div className="flex space-x-2">
@@ -384,7 +384,7 @@ const WorkingDocumentUpload = ({
                                             }
                                         }}
                                         disabled={!customDocumentName || !customDocumentFile}
-                                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Add Document
                                     </button>
@@ -503,7 +503,7 @@ const DocumentUploadCard = ({
                 <label
                     htmlFor={`file-${docType.id}`}
                     className={`relative border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors block ${dragActive
-                        ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20'
+                        ? 'border-[#7B3FA0] bg-[#EDE0F7] dark:bg-[#2A1E2E]/20'
                         : 'border-gray-300 dark:border-gray-600 hover:border-purple-400'
                         } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                     onDragEnter={handleDrag}
@@ -531,7 +531,7 @@ const DocumentUploadCard = ({
                     />
                     {uploading ? (
                         <div className="flex flex-col items-center">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mb-2"></div>
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0] mb-2"></div>
                             <p className="text-sm text-gray-600 dark:text-gray-400">Uploading...</p>
                         </div>
                     ) : (
@@ -552,7 +552,7 @@ const DocumentUploadCard = ({
                                         fileInputRef.current.click();
                                     }
                                 }}
-                                className="mt-2 px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
+                                className="mt-2 px-3 py-1 text-xs bg-[#387B95] text-white rounded hover:bg-[#1D4B5E]"
                             >
                                 Select File
                             </button>
@@ -562,7 +562,7 @@ const DocumentUploadCard = ({
             )}
 
             {docType.instructions && (
-                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                <p className="text-xs text-[#387B95] dark:text-[#60A5FA] mt-2">
                     💡 {docType.instructions}
                 </p>
             )}

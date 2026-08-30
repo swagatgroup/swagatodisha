@@ -281,7 +281,7 @@ const DocumentVerificationInterface = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -305,7 +305,7 @@ const DocumentVerificationInterface = () => {
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 rounded-full">
-                            <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                         </div>
@@ -343,7 +343,7 @@ const DocumentVerificationInterface = () => {
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 rounded-full">
-                            <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
                         </div>
@@ -405,7 +405,7 @@ const DocumentVerificationInterface = () => {
                                     placeholder="Search documents..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -417,7 +417,7 @@ const DocumentVerificationInterface = () => {
                             <select
                                 value={filter}
                                 onChange={(e) => setFilter(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 <option value="PENDING">Pending</option>
                                 <option value="UNDER_REVIEW">Under Review</option>
@@ -428,7 +428,7 @@ const DocumentVerificationInterface = () => {
 
                             <button
                                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                                className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 {showAdvancedFilters ? 'Hide' : 'Show'} Advanced Filters
                             </button>
@@ -438,7 +438,7 @@ const DocumentVerificationInterface = () => {
                             <div className="flex items-center space-x-2">
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'text-gray-400 hover:text-gray-600'}`}
+                                    className={`p-2 rounded-md ${viewMode === 'list' ? 'bg-[#EDE0F7] text-[#7B3FA0]' : 'text-gray-400 hover:text-gray-600'}`}
                                 >
                                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
@@ -446,7 +446,7 @@ const DocumentVerificationInterface = () => {
                                 </button>
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'text-gray-400 hover:text-gray-600'}`}
+                                    className={`p-2 rounded-md ${viewMode === 'grid' ? 'bg-[#EDE0F7] text-[#7B3FA0]' : 'text-gray-400 hover:text-gray-600'}`}
                                 >
                                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
@@ -487,7 +487,7 @@ const DocumentVerificationInterface = () => {
                                             type="date"
                                             value={dateFilter}
                                             onChange={(e) => setDateFilter(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         />
                                     </div>
 
@@ -496,7 +496,7 @@ const DocumentVerificationInterface = () => {
                                         <select
                                             value={documentTypeFilter}
                                             onChange={(e) => setDocumentTypeFilter(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         >
                                             <option value="">All Types</option>
                                             {getUniqueDocumentTypes().map(type => (
@@ -512,7 +512,7 @@ const DocumentVerificationInterface = () => {
                                             placeholder="Filter by uploader..."
                                             value={uploaderFilter}
                                             onChange={(e) => setUploaderFilter(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         />
                                     </div>
 
@@ -522,7 +522,7 @@ const DocumentVerificationInterface = () => {
                                             <select
                                                 value={sortBy}
                                                 onChange={(e) => setSortBy(e.target.value)}
-                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                             >
                                                 <option value="uploadedAt">Upload Date</option>
                                                 <option value="documentType">Document Type</option>
@@ -531,7 +531,7 @@ const DocumentVerificationInterface = () => {
                                             </select>
                                             <button
                                                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                                                className="px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                className="px-3 py-2 border border-gray-300 rounded-md text-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                             >
                                                 {sortOrder === 'asc' ? '↑' : '↓'}
                                             </button>
@@ -542,7 +542,7 @@ const DocumentVerificationInterface = () => {
                                 <div className="flex justify-end mt-4">
                                     <button
                                         onClick={clearFilters}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     >
                                         Clear All Filters
                                     </button>
@@ -560,7 +560,7 @@ const DocumentVerificationInterface = () => {
                             </div>
                             <div className="w-full bg-gray-200 rounded-full h-2">
                                 <div
-                                    className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                                    className="bg-[#7B3FA0] h-2 rounded-full transition-all duration-300"
                                     style={{ width: `${processingProgress}%` }}
                                 ></div>
                             </div>
@@ -579,7 +579,7 @@ const DocumentVerificationInterface = () => {
                                 type="checkbox"
                                 checked={selectedDocuments.length === filteredDocuments.length && filteredDocuments.length > 0}
                                 onChange={handleSelectAll}
-                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
                             />
                             <span className="text-sm text-gray-600">Select All</span>
                         </div>
@@ -612,12 +612,12 @@ const DocumentVerificationInterface = () => {
                                                 type="checkbox"
                                                 checked={selectedDocuments.includes(document._id)}
                                                 onChange={() => handleSelectDocument(document._id)}
-                                                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                                className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
                                             />
 
                                             <div className="flex-shrink-0">
-                                                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                    <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <div className="w-10 h-10 bg-[#EDE0F7] rounded-lg flex items-center justify-center">
+                                                    <svg className="h-6 w-6 text-[#7B3FA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                     </svg>
                                                 </div>
@@ -644,7 +644,7 @@ const DocumentVerificationInterface = () => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => handleViewDocument(document)}
-                                                    className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                                                    className="text-[#387B95] hover:text-blue-900 text-sm font-medium"
                                                 >
                                                     View
                                                 </button>
@@ -699,10 +699,10 @@ const DocumentVerificationInterface = () => {
                                                     type="checkbox"
                                                     checked={selectedDocuments.includes(document._id)}
                                                     onChange={() => handleSelectDocument(document._id)}
-                                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
                                                 />
-                                                <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                    <svg className="h-4 w-4 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <div className="w-8 h-8 bg-[#EDE0F7] rounded-lg flex items-center justify-center">
+                                                    <svg className="h-4 w-4 text-[#7B3FA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                     </svg>
                                                 </div>
@@ -732,7 +732,7 @@ const DocumentVerificationInterface = () => {
                                         <div className="flex space-x-2">
                                             <button
                                                 onClick={() => handleViewDocument(document)}
-                                                className="flex-1 px-3 py-1 text-xs font-medium text-blue-600 bg-blue-50 rounded hover:bg-blue-100"
+                                                className="flex-1 px-3 py-1 text-xs font-medium text-[#387B95] bg-[#D0E8F0] rounded hover:bg-blue-100"
                                             >
                                                 View
                                             </button>
@@ -812,7 +812,7 @@ const DocumentVerificationInterface = () => {
                                                     name="remarkType"
                                                     checked={!isCustomRemark}
                                                     onChange={() => setIsCustomRemark(false)}
-                                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300"
                                                 />
                                                 <label className="ml-2 text-sm text-gray-700">Use predefined remarks</label>
                                             </div>
@@ -822,7 +822,7 @@ const DocumentVerificationInterface = () => {
                                                     name="remarkType"
                                                     checked={isCustomRemark}
                                                     onChange={() => setIsCustomRemark(true)}
-                                                    className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300"
+                                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300"
                                                 />
                                                 <label className="ml-2 text-sm text-gray-700">Write custom remarks</label>
                                             </div>
@@ -837,7 +837,7 @@ const DocumentVerificationInterface = () => {
                                             <select
                                                 value={remarks}
                                                 onChange={(e) => setRemarks(e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                             >
                                                 <option value="">Select remarks...</option>
                                                 {predefinedApprovalRemarks.map((remark, index) => (
@@ -854,7 +854,7 @@ const DocumentVerificationInterface = () => {
                                                 value={customRemarks}
                                                 onChange={(e) => setCustomRemarks(e.target.value)}
                                                 rows={3}
-                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                                 placeholder="Enter your remarks..."
                                             />
                                         </div>
@@ -865,7 +865,7 @@ const DocumentVerificationInterface = () => {
                                 <div className="flex justify-end space-x-3 mt-6">
                                     <button
                                         onClick={() => setShowViewer(false)}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                                     >
                                         Cancel
                                     </button>

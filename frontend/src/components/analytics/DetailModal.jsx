@@ -126,7 +126,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                 <div className="flex items-center space-x-2">
                                     <button
                                         onClick={handleExport}
-                                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                                     >
                                         <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
                                         Export CSV
@@ -149,7 +149,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                             placeholder="Search..."
                                             value={searchTerm}
                                             onChange={(e) => handleSearch(e.target.value)}
-                                            className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         />
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,7 +163,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                         <select
                                             value={sortBy}
                                             onChange={(e) => handleSort(e.target.value)}
-                                            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         >
                                             <option value="name">Name</option>
                                             <option value="email">Email</option>
@@ -220,8 +220,8 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10">
-                                                            <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                                                <span className="text-sm font-medium text-purple-600">
+                                                            <div className="h-10 w-10 rounded-full bg-[#EDE0F7] flex items-center justify-center">
+                                                                <span className="text-sm font-medium text-[#7B3FA0]">
                                                                     {item.name.charAt(0).toUpperCase()}
                                                                 </span>
                                                             </div>
@@ -250,7 +250,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                                     {item.value || '-'}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <button className="text-purple-600 hover:text-purple-900">
+                                                    <button className="text-[#7B3FA0] hover:text-purple-900">
                                                         <EyeIcon className="h-4 w-4" />
                                                     </button>
                                                 </td>

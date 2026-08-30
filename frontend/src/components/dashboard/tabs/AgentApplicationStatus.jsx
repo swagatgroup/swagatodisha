@@ -469,7 +469,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                 return <XCircleIcon className="h-5 w-5 text-red-600" />;
             case 'SUBMITTED':
             case 'UNDER_REVIEW':
-                return <ClockIcon className="h-5 w-5 text-blue-600" />;
+                return <ClockIcon className="h-5 w-5 text-[#387B95]" />;
             default:
                 return <ClockIcon className="h-5 w-5 text-gray-600" />;
         }
@@ -497,7 +497,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             key={application._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+            className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => fetchApplicationDetails(application.applicationId)}
         >
             <div className="flex justify-between items-start mb-4">
@@ -546,7 +546,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                             Resubmission #{application.resubmissionInfo.resubmissionCount}
                         </span>
                     )}
-                    <button className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                    <button className="flex items-center text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]">
                         <EyeIcon className="h-4 w-4 mr-1" />
                         View Details
                     </button>
@@ -559,7 +559,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -586,7 +586,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
-                                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
                                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                 }`}
                         >
@@ -618,7 +618,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     {selectedApplication ? (
                         <div className="space-y-6">
                             {/* Application Header */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex-1">
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -638,7 +638,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                 fetchApplicationDetails(selectedApplication.applicationId);
                                                 showSuccess('Application data refreshed');
                                             }}
-                                            className="flex items-center px-3 py-2 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 border border-blue-300 dark:border-blue-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                                            className="flex items-center px-3 py-2 text-sm text-[#387B95] dark:text-[#60A5FA] hover:text-blue-800 dark:hover:text-blue-300 border border-blue-300 dark:border-[#387B95] rounded-lg hover:bg-[#D0E8F0] dark:hover:bg-blue-900/20 transition-colors"
                                             title="Refresh to see latest document review status"
                                         >
                                             <ArrowPathIcon className="h-4 w-4 mr-1" />
@@ -741,7 +741,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                 return canEdit ? (
                                                     <button
                                                         onClick={() => handleEditApplication(selectedApplication)}
-                                                        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                                        className="flex items-center px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
                                                     >
                                                         <DocumentTextIcon className="h-4 w-4 mr-2" />
                                                         Edit Application
@@ -791,7 +791,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         <div className="flex space-x-2 mt-4">
                                             <button
                                                 onClick={() => handleEditApplication(selectedApplication)}
-                                                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                                className="flex items-center px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
                                             >
                                                 <DocumentTextIcon className="h-4 w-4 mr-2" />
                                                 Edit Application
@@ -818,7 +818,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                 )}
 
                                 {selectedApplication.status === 'SUBMITTED' && (
-                                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                                    <div className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
                                         <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2 flex items-center">
                                             <ClockIcon className="h-5 w-5 mr-2" />
                                             Under Review
@@ -826,7 +826,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         <p className="text-blue-800 dark:text-blue-200 text-sm">
                                             Your application is currently being reviewed by our staff. You will be notified once the review is complete.
                                         </p>
-                                        <p className="text-blue-700 dark:text-blue-300 text-xs mt-2">
+                                        <p className="text-[#1D4B5E] dark:text-blue-300 text-xs mt-2">
                                             Submitted on: {selectedApplication.submittedAt ? 
                                                 new Date(selectedApplication.submittedAt).toLocaleDateString() : 'N/A'}
                                         </p>
@@ -835,7 +835,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                             </div>
 
                             {/* Application Summary */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     Application Summary
                                 </h4>
@@ -902,7 +902,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                                 });
                                                                                 window.open(documentUrl, '_blank', 'noopener,noreferrer');
                                                                             }}
-                                                                            className="text-sm font-medium text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline cursor-pointer"
+                                                                            className="text-sm font-medium text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA] dark:hover:text-blue-300 underline cursor-pointer"
                                                                             title={`Click to view ${doc.documentType}`}
                                                                         >
                                                                             {doc.documentType}
@@ -1026,7 +1026,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             {/* Edit Modal */}
             {showEditModal && selectedApplication && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -1056,7 +1056,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, fullName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1068,7 +1068,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1080,7 +1080,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1091,7 +1091,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, gender: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             >
                                                 <option value="">Select Gender</option>
                                                 <option value="Male">Male</option>
@@ -1108,7 +1108,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1120,7 +1120,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                     </div>
@@ -1139,7 +1139,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     contactDetails: { ...editData.contactDetails, primaryPhone: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1151,7 +1151,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     contactDetails: { ...editData.contactDetails, email: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div className="md:col-span-2">
@@ -1163,7 +1163,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     contactDetails: { ...editData.contactDetails, address: e.target.value }
                                                 })}
                                                 rows="2"
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1175,7 +1175,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     contactDetails: { ...editData.contactDetails, city: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1187,7 +1187,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     contactDetails: { ...editData.contactDetails, state: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1199,7 +1199,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     contactDetails: { ...editData.contactDetails, pincode: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                     </div>
@@ -1218,7 +1218,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     courseDetails: { ...editData.courseDetails, selectedCourse: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1230,7 +1230,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     courseDetails: { ...editData.courseDetails, preferredLanguage: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                     </div>
@@ -1249,7 +1249,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1261,7 +1261,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianPhone: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>
                                         <div>
@@ -1272,7 +1272,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianRelation: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             >
                                                 <option value="">Select Relation</option>
                                                 <option value="Father">Father</option>
@@ -1294,7 +1294,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         <button
                                             onClick={addDocumentField}
                                             type="button"
-                                            className="flex items-center px-3 py-1.5 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                                            className="flex items-center px-3 py-1.5 text-sm bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E] transition-colors"
                                             disabled={!documentRequirements || visibleDocFields.length >= (documentRequirements?.requirements?.required?.length || 0) + (documentRequirements?.requirements?.optional?.length || 0)}
                                         >
                                             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1363,7 +1363,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                                 href={getDocumentUrl(editData.documents[doc.key].url)}
                                                                                 target="_blank"
                                                                                 rel="noopener noreferrer"
-                                                                                className="text-xs text-blue-600 hover:underline mt-1 block"
+                                                                                className="text-xs text-[#387B95] hover:underline mt-1 block"
                                                                             >
                                                                                 View document
                                                                             </a>
@@ -1383,7 +1383,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                                 file:mr-4 file:py-2 file:px-4
                                                                                 file:rounded-md file:border-0
                                                                                 file:text-sm file:font-semibold
-                                                                                file:bg-blue-50 file:text-blue-700
+                                                                                file:bg-[#D0E8F0] file:text-[#1D4B5E]
                                                                                 hover:file:bg-blue-100
                                                                                 dark:file:bg-blue-900/20 dark:file:text-blue-300
                                                                                 disabled:opacity-50"
@@ -1392,7 +1392,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                             <div className="mt-2">
                                                                                 <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                                                                                     <div
-                                                                                        className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                                                                                        className="bg-[#387B95] h-2 rounded-full transition-all duration-300"
                                                                                         style={{ width: `${uploadProgress[doc.key] || 0}%` }}
                                                                                     />
                                                                                 </div>
@@ -1438,7 +1438,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                 </button>
                                 <button
                                     onClick={handleSaveEdit}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
                                 >
                                     Save Changes
                                 </button>

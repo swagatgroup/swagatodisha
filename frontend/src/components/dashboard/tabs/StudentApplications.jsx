@@ -419,7 +419,7 @@ const StudentApplications = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
       </div>
     );
   }
@@ -492,7 +492,7 @@ const StudentApplications = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab.id
-                  ? 'bg-purple-100 text-purple-700 border-2 border-purple-300'
+                  ? 'bg-[#EDE0F7] text-[#5C2D80] border-2 border-purple-300'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
               >
@@ -557,20 +557,20 @@ const StudentApplications = () => {
                           )}
                           <button
                             onClick={() => openApplicationPdf(application._id)}
-                            className="px-4 py-2 text-sm text-white bg-purple-600 hover:bg-purple-700 rounded-lg"
+                            className="px-4 py-2 text-sm text-white bg-[#7B3FA0] hover:bg-[#5C2D80] rounded-lg"
                           >
                             View PDF
                           </button>
                           <button
                             onClick={() => printInvoice(application)}
-                            className="px-4 py-2 text-sm text-purple-700 bg-purple-100 border border-purple-200 hover:bg-purple-200 rounded-lg font-medium shadow-sm flex items-center"
+                            className="px-4 py-2 text-sm text-[#5C2D80] bg-[#EDE0F7] border border-purple-200 hover:bg-purple-200 rounded-lg font-medium shadow-sm flex items-center"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-17V7a4 4 0 00-8 0v4h8z" /></svg>
                             Invoice
                           </button>
                           <button
                             onClick={() => openInstallmentsModal(application)}
-                            className="px-4 py-2 text-sm text-blue-700 bg-blue-100 border border-blue-200 hover:bg-blue-200 rounded-lg font-medium shadow-sm flex items-center"
+                            className="px-4 py-2 text-sm text-[#1D4B5E] bg-blue-100 border border-blue-200 hover:bg-blue-200 rounded-lg font-medium shadow-sm flex items-center"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                             Upload Slip
@@ -623,7 +623,7 @@ const StudentApplications = () => {
                     {/* Application Details */}
                     <div className="space-y-4">
                       {application.reviewNotes && (
-                        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <div className="p-4 bg-[#D0E8F0] rounded-lg border border-blue-200">
                           <p className="text-sm font-medium text-blue-900 mb-2">
                             Review Notes:
                           </p>
@@ -713,7 +713,7 @@ const StudentApplications = () => {
                           </p>
                         )}
                         {application.reviewNotes && (
-                          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                          <div className="mt-3 p-3 bg-[#D0E8F0] rounded-lg">
                             <p className="text-sm font-medium text-blue-900">
                               Review Notes:
                             </p>
@@ -742,13 +742,13 @@ const StudentApplications = () => {
                         </button>
                         <button
                           onClick={() => printInvoice(application)}
-                          className="px-3 py-1 text-sm text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-lg font-medium"
+                          className="px-3 py-1 text-sm text-[#7B3FA0] hover:text-purple-800 hover:bg-[#EDE0F7] rounded-lg font-medium"
                         >
                           Invoice
                         </button>
                         <button
                           onClick={() => openInstallmentsModal(application)}
-                          className="px-3 py-1 text-sm text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-lg font-medium"
+                          className="px-3 py-1 text-sm text-[#387B95] hover:text-blue-800 hover:bg-[#D0E8F0] rounded-lg font-medium"
                         >
                           Upload Slip
                         </button>
@@ -760,9 +760,9 @@ const StudentApplications = () => {
             )
           ) : (
             <div className="text-center py-12">
-              <div className="mx-auto h-12 w-12 bg-purple-100 rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto h-12 w-12 bg-[#EDE0F7] rounded-full flex items-center justify-center mb-4">
                 <svg
-                  className="h-6 w-6 text-purple-600"
+                  className="h-6 w-6 text-[#7B3FA0]"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -786,7 +786,7 @@ const StudentApplications = () => {
               {userRole !== 'student' && (
                 <button
                   onClick={() => setShowNewApplicationModal(true)}
-                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700"
+                  className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#7B3FA0] hover:bg-[#5C2D80]"
                 >
                   <svg
                     className="h-4 w-4 mr-2"
@@ -855,7 +855,7 @@ const StudentApplications = () => {
               <div className="flex items-center gap-2">
                 <button
                   onClick={downloadApplicationPdf}
-                  className="px-3 py-1.5 bg-purple-600 text-white rounded-md text-sm hover:bg-purple-700"
+                  className="px-3 py-1.5 bg-[#7B3FA0] text-white rounded-md text-sm hover:bg-[#5C2D80]"
                 >
                   Download
                 </button>
@@ -876,7 +876,7 @@ const StudentApplications = () => {
             <div className="flex-1 overflow-auto">
               {generatingPdf && selectedApplicationForPdf && (
                 <div className="flex flex-col items-center justify-center h-[70vh]">
-                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mb-4"></div>
+                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0] mb-4"></div>
                    <p className="text-gray-600">Generating your Application PDF...</p>
                    {/* Hidden generator */}
                    <div className="hidden">
@@ -969,7 +969,7 @@ const StudentApplications = () => {
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm">
                                         {inst.receiptUrl ? (
-                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline">
+                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-[#387B95] hover:text-blue-800 hover:underline">
                                                 View Slip
                                             </a>
                                         ) : (
@@ -980,7 +980,7 @@ const StudentApplications = () => {
                                         {inst.status !== 'VERIFIED' && (
                                             <button
                                                 onClick={() => setTargetInstallmentNum(inst.installmentNumber)}
-                                                className="text-indigo-600 hover:text-indigo-900 bg-indigo-50 px-3 py-1 rounded-md"
+                                                className="text-[#7B3FA0] hover:text-indigo-900 bg-[#EDE0F7] px-3 py-1 rounded-md"
                                             >
                                                 Upload New Slip
                                             </button>
@@ -1015,14 +1015,14 @@ const StudentApplications = () => {
                                 file:mr-4 file:py-2 file:px-4
                                 file:rounded-md file:border-0
                                 file:text-sm file:font-semibold
-                                file:bg-indigo-50 file:text-indigo-700
+                                file:bg-[#EDE0F7] file:text-[#5C2D80]
                                 hover:file:bg-indigo-100"
                             />
                             <button
                                 onClick={handleReceiptUpload}
                                 disabled={!receiptFile || uploadingReceipt}
                                 className={`px-4 py-2 rounded-md text-white font-medium whitespace-nowrap ${
-                                    !receiptFile || uploadingReceipt ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+                                    !receiptFile || uploadingReceipt ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#7B3FA0] hover:bg-[#5C2D80]'
                                 }`}
                             >
                                 {uploadingReceipt ? 'Uploading...' : 'Submit Receipt'}

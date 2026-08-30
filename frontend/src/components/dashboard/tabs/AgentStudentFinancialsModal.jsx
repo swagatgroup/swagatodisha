@@ -207,7 +207,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                     <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
                         {loading ? (
                             <div className="flex items-center justify-center h-32">
-                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0]"></div>
                             </div>
                         ) : (
                             <div className="space-y-6">
@@ -239,7 +239,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                         <h3 className="text-lg font-semibold text-gray-900">Installments History</h3>
                                         <button
                                             onClick={() => setShowUploadForm(!showUploadForm)}
-                                            className="px-3 py-1.5 bg-purple-600 text-white rounded-md hover:bg-purple-700 text-sm font-medium flex items-center gap-1"
+                                            className="px-3 py-1.5 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] text-sm font-medium flex items-center gap-1"
                                         >
                                             <DocumentArrowUpIcon className="w-4 h-4" />
                                             {showUploadForm ? 'Cancel Upload' : 'Upload New Slip'}
@@ -248,7 +248,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
 
                                     {/* Upload Form */}
                                     {showUploadForm && (
-                                        <div className="p-4 bg-purple-50 border-b border-purple-100">
+                                        <div className="p-4 bg-[#EDE0F7] border-b border-purple-100">
                                             <form onSubmit={handleUploadSlip} className="space-y-4">
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                     <div>
@@ -259,7 +259,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                             min="1"
                                                             value={uploadData.amount}
                                                             onChange={(e) => setUploadData({ ...uploadData, amount: e.target.value })}
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                                         />
                                                     </div>
                                                     <div>
@@ -267,7 +267,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                         <select
                                                             value={uploadData.paymentMethod}
                                                             onChange={(e) => setUploadData({ ...uploadData, paymentMethod: e.target.value })}
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                                         >
                                                             <option value="Bank Transfer">Bank Transfer / NEFT</option>
                                                             <option value="UPI">UPI</option>
@@ -293,7 +293,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                     <textarea
                                                         value={uploadData.remarks}
                                                         onChange={(e) => setUploadData({ ...uploadData, remarks: e.target.value })}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                                                         rows="2"
                                                         placeholder="Transaction ID or notes..."
                                                     ></textarea>
@@ -303,7 +303,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                     <button
                                                         type="submit"
                                                         disabled={uploading}
-                                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+                                                        className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E] disabled:opacity-50 flex items-center gap-2"
                                                     >
                                                         {uploading ? 'Uploading...' : 'Submit Payment Slip'}
                                                     </button>
@@ -314,7 +314,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
 
                                     {/* Update Form */}
                                     {showUpdateForm && selectedInstallment && (
-                                        <div className="p-4 bg-indigo-50 border-b border-indigo-100">
+                                        <div className="p-4 bg-[#EDE0F7] border-b border-indigo-100">
                                             <div className="flex justify-between items-center mb-4">
                                                 <h4 className="font-semibold text-indigo-900">Update Installment #{selectedInstallment.installmentNumber}</h4>
                                                 <button onClick={() => setShowUpdateForm(false)} className="text-gray-500 hover:text-gray-700 text-sm">Cancel</button>
@@ -329,7 +329,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                             min="1"
                                                             value={updateData.amount}
                                                             onChange={(e) => setUpdateData({ ...updateData, amount: e.target.value })}
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#7B3FA0] focus:border-indigo-500"
                                                         />
                                                     </div>
                                                     <div>
@@ -337,7 +337,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                         <select
                                                             value={updateData.paymentMethod}
                                                             onChange={(e) => setUpdateData({ ...updateData, paymentMethod: e.target.value })}
-                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#7B3FA0] focus:border-indigo-500"
                                                         >
                                                             <option value="Bank Transfer">Bank Transfer / NEFT</option>
                                                             <option value="UPI">UPI</option>
@@ -363,7 +363,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                     <textarea
                                                         value={updateData.remarks}
                                                         onChange={(e) => setUpdateData({ ...updateData, remarks: e.target.value })}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-[#7B3FA0] focus:border-indigo-500"
                                                         rows="2"
                                                         placeholder="Transaction ID or notes..."
                                                     ></textarea>
@@ -373,7 +373,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                     <button
                                                         type="submit"
                                                         disabled={uploading}
-                                                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 disabled:opacity-50 flex items-center gap-2"
+                                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] disabled:opacity-50 flex items-center gap-2"
                                                     >
                                                         {uploading ? 'Updating...' : 'Update Slip'}
                                                     </button>
@@ -426,7 +426,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                                     setShowUpdateForm(true);
                                                                     setShowUploadForm(false);
                                                                 }}
-                                                                className="inline-flex items-center justify-center px-3 py-1.5 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-indigo-700 bg-indigo-50 hover:bg-indigo-100"
+                                                                className="inline-flex items-center justify-center px-3 py-1.5 border border-indigo-300 shadow-sm text-sm font-medium rounded-md text-[#5C2D80] bg-[#EDE0F7] hover:bg-indigo-100"
                                                             >
                                                                 Update
                                                             </button>

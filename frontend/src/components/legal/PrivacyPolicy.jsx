@@ -2,7 +2,7 @@ import React from 'react';
 
 const PrivacyPolicy = () => {
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200">
+        <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-[#2A1E2E] text-gray-800 dark:text-gray-200">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">
                 Privacy Policy
             </h1>
@@ -211,7 +211,7 @@ const PrivacyPolicy = () => {
                     </div>
                 </section>
 
-                <div className="mt-12 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="mt-12 p-6 bg-[#D0E8F0] dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
                     <p className="text-sm text-gray-700 dark:text-gray-300">
                         This Privacy Policy is effective as of the date listed above and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.
                     </p>

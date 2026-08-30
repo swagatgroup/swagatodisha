@@ -1032,7 +1032,7 @@ const UniversalStudentRegistration = ({
             }
             readOnly={!!user}
             style={{ textTransform: 'uppercase' }}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter your full name"
           />
           {user && <p className="text-xs text-amber-500 mt-1">Filled from your account. Contact admin to change.</p>}
@@ -1060,7 +1060,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter father's name"
           />
           {errors["personalDetails.fathersName"] && (
@@ -1087,7 +1087,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter mother's name"
           />
           {errors["personalDetails.mothersName"] && (
@@ -1124,7 +1124,7 @@ const UniversalStudentRegistration = ({
             }}
             placeholder="DD/MM/YYYY"
             maxLength={10}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
           />
           {errors["personalDetails.dateOfBirth"] && (
             <p className="text-red-500 text-sm mt-1">
@@ -1151,7 +1151,7 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter 12-digit Aadhar number"
             maxLength="12"
           />
@@ -1177,7 +1177,7 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
           >
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
@@ -1206,7 +1206,7 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
           >
             <option value="">Select Category</option>
             <option value="General">General</option>
@@ -1246,7 +1246,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             readOnly={!!user}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter 10-digit phone number"
             maxLength="10"
           />
@@ -1274,7 +1274,7 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter WhatsApp number (optional)"
             maxLength="10"
           />
@@ -1300,7 +1300,7 @@ const UniversalStudentRegistration = ({
             readOnly={!!user}
             style={{ textTransform: 'lowercase' }}
             required
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter email address"
           />
           {user && <p className="text-xs text-amber-500 mt-1">Filled from your account. Contact admin to change.</p>}
@@ -1331,7 +1331,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter street address"
           />
           {errors["contactDetails.permanentAddress.street"] && (
@@ -1362,7 +1362,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter city"
             required
           />
@@ -1398,7 +1398,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'uppercase', display: 'block', width: '100%' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter district"
             required
           />
@@ -1429,7 +1429,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter state"
           />
           {errors["contactDetails.permanentAddress.state"] && (
@@ -1458,7 +1458,7 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter 6-digit pincode"
             maxLength="6"
           />
@@ -1500,7 +1500,7 @@ const UniversalStudentRegistration = ({
                   },
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
               required
               disabled={loadingColleges}
             >
@@ -1534,7 +1534,7 @@ const UniversalStudentRegistration = ({
                   },
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
               required
               disabled={!formData.courseDetails.selectedCollege || availableCourses.length === 0}
             >
@@ -1561,7 +1561,7 @@ const UniversalStudentRegistration = ({
           {/* Campus Selection - In same row */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              <i className="fa-solid fa-building mr-2 text-purple-600 dark:text-purple-400"></i>
+              <i className="fa-solid fa-building mr-2 text-[#7B3FA0] dark:text-[#A855D0]"></i>
               Campus *
             </label>
             <select
@@ -1577,11 +1577,11 @@ const UniversalStudentRegistration = ({
                   },
                 }));
               }}
-              className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all ${
+              className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-[#7B3FA0] transition-all ${
                 !formData.courseDetails.selectedCollege 
-                  ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-400' 
+                  ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#2A1E2E] text-gray-400' 
                   : availableCampuses.length > 0
-                    ? 'border-purple-300 dark:border-purple-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                    ? 'border-purple-300 dark:border-[#7B3FA0] bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                     : 'border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 text-gray-700 dark:text-gray-300'
               }`}
               required
@@ -1631,7 +1631,7 @@ const UniversalStudentRegistration = ({
                   },
                 }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
             >
               <option value="">Select Stream (Optional)</option>
               {availableStreams.map((stream, index) => {
@@ -1667,9 +1667,9 @@ const UniversalStudentRegistration = ({
           const isFreeAdm = currentAdmType === 'free';
 
           return (
-            <div className="rounded-2xl overflow-hidden border border-purple-200 dark:border-purple-700 shadow-md">
+            <div className="rounded-2xl overflow-hidden border border-purple-200 dark:border-[#5C2D80] shadow-md">
               {/* Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-5 py-3 flex items-center justify-between">
+              <div className="bg-[#7B3FA0] px-5 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <i className="fa-solid fa-graduation-cap text-white text-base"></i>
                   <span className="text-white text-sm font-semibold tracking-wide">Course Fee Summary</span>
@@ -1680,7 +1680,7 @@ const UniversalStudentRegistration = ({
               </div>
 
               {/* Body */}
-              <div className="bg-white dark:bg-gray-800 px-5 py-4">
+              <div className="bg-white dark:bg-[#2A1E2E] px-5 py-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Institution */}
                   <div>
@@ -1705,7 +1705,7 @@ const UniversalStudentRegistration = ({
                     {isFreeAdm ? (
                       <p className="text-2xl font-extrabold text-green-600 dark:text-green-400">FREE</p>
                     ) : coursePrice !== null && coursePrice > 0 ? (
-                      <p className="text-2xl font-extrabold text-purple-700 dark:text-purple-300">
+                      <p className="text-2xl font-extrabold text-[#5C2D80] dark:text-[#C084FC]">
                         ₹{coursePrice.toLocaleString('en-IN')}
                         <span className="text-xs font-normal text-gray-400 ml-2">per year</span>
                       </p>
@@ -1719,7 +1719,7 @@ const UniversalStudentRegistration = ({
 
                 {/* Note */}
                 {!isFreeAdm && coursePrice !== null && coursePrice > 0 && (
-                  <div className="mt-3 text-xs bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800 rounded-lg px-3 py-2 text-purple-700 dark:text-purple-300">
+                  <div className="mt-3 text-xs bg-[#EDE0F7] dark:bg-[#2A1E2E]/20 border border-purple-100 dark:border-purple-800 rounded-lg px-3 py-2 text-[#5C2D80] dark:text-[#C084FC]">
                     <i className="fa-solid fa-circle-info mr-1"></i>
                     The displayed fee is the annual course fee. Payment schedule will be communicated after admission confirmation.
                   </div>
@@ -1740,7 +1740,7 @@ const UniversalStudentRegistration = ({
             <div className={`rounded-xl p-4 border-2 ${
               currentAdmType === 'free'
                 ? 'border-green-400 bg-green-50 dark:bg-green-900/20'
-                : 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                : 'border-blue-400 bg-[#D0E8F0] dark:bg-blue-900/20'
             }`}>
               <div className="flex items-center justify-between flex-wrap gap-3">
                 <div>
@@ -1777,7 +1777,7 @@ const UniversalStudentRegistration = ({
                           ...prev,
                           courseDetails: { ...prev.courseDetails, admissionType: 'paid' }
                         }))}
-                        className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                        className="w-4 h-4 text-[#7B3FA0] border-gray-300 focus:ring-[#7B3FA0]"
                       />
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid Admission</span>
                     </label>
@@ -1791,7 +1791,7 @@ const UniversalStudentRegistration = ({
                           ...prev,
                           courseDetails: { ...prev.courseDetails, admissionType: 'free' }
                         }))}
-                        className="w-4 h-4 text-purple-600 border-gray-300 focus:ring-purple-500"
+                        className="w-4 h-4 text-[#7B3FA0] border-gray-300 focus:ring-[#7B3FA0]"
                       />
                       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                         {isScSt ? 'Free Admission' : 'Free (Kisan)'}
@@ -1802,7 +1802,7 @@ const UniversalStudentRegistration = ({
 
                 {/* Others: auto-locked to Paid */}
                 {!isScSt && !isKisanEligible && (
-                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-full shadow">
+                  <span className="inline-flex items-center gap-2 px-4 py-2 bg-[#387B95] text-white text-sm font-semibold rounded-full shadow">
                     <i className="fa-solid fa-indian-rupee-sign"></i> Paid Admission
                   </span>
                 )}
@@ -1851,7 +1851,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'uppercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter guardian name"
           />
           {errors["guardianDetails.guardianName"] && (
@@ -1876,7 +1876,7 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
           >
             <option value="">Select Relationship</option>
             <option value="Father">Father</option>
@@ -1912,7 +1912,7 @@ const UniversalStudentRegistration = ({
                 },
               }))
             }
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter guardian phone number"
             maxLength="10"
           />
@@ -1940,7 +1940,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             style={{ textTransform: 'lowercase' }}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
             placeholder="Enter guardian email (optional)"
           />
         </div>
@@ -1980,7 +1980,7 @@ const UniversalStudentRegistration = ({
         </p>
       </div>
 
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 space-y-6">
+      <div className="bg-gray-50 dark:bg-[#2A1E2E] rounded-lg p-6 space-y-6">
         {/* Personal Information Review */}
         <div>
           <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
@@ -2155,7 +2155,7 @@ const UniversalStudentRegistration = ({
             <div key={step.id} className="flex items-center">
               <div
                 className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${currentStep >= step.id
-                  ? "bg-purple-600 border-purple-600 text-white"
+                  ? "bg-[#7B3FA0] border-[#7B3FA0] text-white"
                   : "border-gray-300 text-gray-500"
                   }`}
               >
@@ -2163,7 +2163,7 @@ const UniversalStudentRegistration = ({
               </div>
               <div className="ml-3 hidden sm:block">
                 <p
-                  className={`text-sm font-medium ${currentStep >= step.id ? "text-purple-600" : "text-gray-500"
+                  className={`text-sm font-medium ${currentStep >= step.id ? "text-[#7B3FA0]" : "text-gray-500"
                     }`}
                 >
                   {step.title}
@@ -2172,7 +2172,7 @@ const UniversalStudentRegistration = ({
               </div>
               {index < steps.length - 1 && (
                 <div
-                  className={`hidden sm:block w-16 h-0.5 mx-4 ${currentStep > step.id ? "bg-purple-600" : "bg-gray-300"
+                  className={`hidden sm:block w-16 h-0.5 mx-4 ${currentStep > step.id ? "bg-[#7B3FA0]" : "bg-gray-300"
                     }`}
                 />
               )}
@@ -2188,7 +2188,7 @@ const UniversalStudentRegistration = ({
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.3 }}
-        className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6"
+        className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-lg p-6"
       >
         {renderStepContent()}
       </motion.div>
@@ -2218,7 +2218,7 @@ const UniversalStudentRegistration = ({
             <button
               type="button"
               onClick={nextStep}
-              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+              className="px-6 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]"
             >
               Next
             </button>

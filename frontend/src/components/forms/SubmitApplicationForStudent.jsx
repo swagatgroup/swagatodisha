@@ -265,7 +265,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 <select
                     value={formData.studentId}
                     onChange={(e) => handleInputChange("studentId", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                 >
                     <option value="">Select a student</option>
                     {students.map((student) => (
@@ -286,7 +286,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="text"
                         value={formData.personalDetails.fullName}
                         onChange={(e) => handleInputChange("personalDetails.fullName", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                     {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
                 </div>
@@ -299,7 +299,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="text"
                         value={formData.personalDetails.fathersName}
                         onChange={(e) => handleInputChange("personalDetails.fathersName", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                     {errors.fathersName && <p className="text-red-500 text-sm mt-1">{errors.fathersName}</p>}
                 </div>
@@ -312,7 +312,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="text"
                         value={formData.personalDetails.mothersName}
                         onChange={(e) => handleInputChange("personalDetails.mothersName", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                     {errors.mothersName && <p className="text-red-500 text-sm mt-1">{errors.mothersName}</p>}
                 </div>
@@ -325,7 +325,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="date"
                         value={formData.personalDetails.dateOfBirth}
                         onChange={(e) => handleInputChange("personalDetails.dateOfBirth", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                     {errors.dateOfBirth && <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>}
                 </div>
@@ -337,7 +337,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     <select
                         value={formData.personalDetails.gender}
                         onChange={(e) => handleInputChange("personalDetails.gender", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="">Select gender</option>
                         {genders.map((gender) => (
@@ -357,7 +357,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="text"
                         value={formData.personalDetails.aadharNumber}
                         onChange={(e) => handleInputChange("personalDetails.aadharNumber", e.target.value.replace(/\D/g, '').slice(0, 12))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         maxLength="12"
                     />
                     {errors.aadharNumber && <p className="text-red-500 text-sm mt-1">{errors.aadharNumber}</p>}
@@ -379,7 +379,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="tel"
                         value={formData.contactDetails.primaryPhone}
                         onChange={(e) => handleInputChange("contactDetails.primaryPhone", e.target.value.replace(/\D/g, '').slice(0, 10))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         maxLength="10"
                     />
                     {errors.primaryPhone && <p className="text-red-500 text-sm mt-1">{errors.primaryPhone}</p>}
@@ -393,7 +393,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="email"
                         value={formData.contactDetails.email}
                         onChange={(e) => handleInputChange("contactDetails.email", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                     {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
                 </div>
@@ -410,7 +410,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                             type="text"
                             value={formData.contactDetails.permanentAddress.street}
                             onChange={(e) => handleInputChange("contactDetails.permanentAddress.street", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         />
                         {errors.street && <p className="text-red-500 text-sm mt-1">{errors.street}</p>}
                     </div>
@@ -423,7 +423,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                             type="text"
                             value={formData.contactDetails.permanentAddress.city}
                             onChange={(e) => handleInputChange("contactDetails.permanentAddress.city", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         />
                         {errors.city && <p className="text-red-500 text-sm mt-1">{errors.city}</p>}
                     </div>
@@ -435,7 +435,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         <select
                             value={formData.contactDetails.permanentAddress.state}
                             onChange={(e) => handleInputChange("contactDetails.permanentAddress.state", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         >
                             <option value="">Select state</option>
                             {states.map((state) => (
@@ -455,7 +455,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                             type="text"
                             value={formData.contactDetails.permanentAddress.pincode}
                             onChange={(e) => handleInputChange("contactDetails.permanentAddress.pincode", e.target.value.replace(/\D/g, '').slice(0, 6))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             maxLength="6"
                         />
                         {errors.pincode && <p className="text-red-500 text-sm mt-1">{errors.pincode}</p>}
@@ -476,7 +476,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 <select
                     value={formData.courseDetails.selectedCourse}
                     onChange={(e) => handleInputChange("courseDetails.selectedCourse", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                 >
                     <option value="">Select a course</option>
                     {courses.map((course) => (
@@ -497,7 +497,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         type="text"
                         value={formData.courseDetails.stream}
                         onChange={(e) => handleInputChange("courseDetails.stream", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                 </div>
 
@@ -508,7 +508,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     <select
                         value={formData.courseDetails.campus}
                         onChange={(e) => handleInputChange("courseDetails.campus", e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="Sargiguda">Sargiguda</option>
                         <option value="Ghantiguda">Ghantiguda</option>
@@ -528,7 +528,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                             type="text"
                             value={formData.guardianDetails.guardianName}
                             onChange={(e) => handleInputChange("guardianDetails.guardianName", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         />
                         {errors.guardianName && <p className="text-red-500 text-sm mt-1">{errors.guardianName}</p>}
                     </div>
@@ -540,7 +540,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         <select
                             value={formData.guardianDetails.relationship}
                             onChange={(e) => handleInputChange("guardianDetails.relationship", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         >
                             <option value="">Select relationship</option>
                             {relationships.map((rel) => (
@@ -560,7 +560,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                             type="tel"
                             value={formData.guardianDetails.guardianPhone}
                             onChange={(e) => handleInputChange("guardianDetails.guardianPhone", e.target.value.replace(/\D/g, '').slice(0, 10))}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             maxLength="10"
                         />
                         {errors.guardianPhone && <p className="text-red-500 text-sm mt-1">{errors.guardianPhone}</p>}
@@ -574,7 +574,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                             type="email"
                             value={formData.guardianDetails.guardianEmail}
                             onChange={(e) => handleInputChange("guardianDetails.guardianEmail", e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         />
                     </div>
                 </div>
@@ -588,7 +588,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     type="text"
                     value={formData.referralCode}
                     onChange={(e) => handleInputChange("referralCode", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                 />
             </div>
         </div>
@@ -623,7 +623,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                                 <div key={step} className="flex items-center">
                                     <div
                                         className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step <= currentStep
-                                            ? "bg-purple-600 text-white"
+                                            ? "bg-[#7B3FA0] text-white"
                                             : "bg-gray-200 text-gray-600"
                                             }`}
                                     >
@@ -631,7 +631,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                                     </div>
                                     {step < 3 && (
                                         <div
-                                            className={`w-16 h-1 mx-2 ${step < currentStep ? "bg-purple-600" : "bg-gray-200"
+                                            className={`w-16 h-1 mx-2 ${step < currentStep ? "bg-[#7B3FA0]" : "bg-gray-200"
                                                 }`}
                                         />
                                     )}
@@ -673,7 +673,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                             {currentStep < 3 ? (
                                 <button
                                     onClick={handleNext}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-[#7B3FA0] rounded-md hover:bg-[#5C2D80]"
                                 >
                                     Next
                                 </button>
@@ -681,7 +681,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                                 <button
                                     onClick={handleSubmit}
                                     disabled={loading}
-                                    className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-md hover:bg-purple-700 disabled:opacity-50"
+                                    className="px-4 py-2 text-sm font-medium text-white bg-[#7B3FA0] rounded-md hover:bg-[#5C2D80] disabled:opacity-50"
                                 >
                                     {loading ? "Submitting..." : "Submit Application"}
                                 </button>

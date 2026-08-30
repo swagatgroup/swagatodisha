@@ -878,7 +878,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
             'UNDER_REVIEW': 'bg-yellow-100 text-yellow-800',
             'APPROVED': 'bg-teal-100 text-teal-800',
             'REJECTED': 'bg-red-100 text-red-800',
-            'COMPLETION_REQUESTED': 'bg-purple-100 text-purple-800',
+            'COMPLETION_REQUESTED': 'bg-[#EDE0F7] text-purple-800',
             'COMPLETE': 'bg-green-100 text-green-800'
         };
         return colors[status] || 'bg-gray-100 text-gray-800';
@@ -938,7 +938,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
             key={application._id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-3 hover:shadow-md transition-shadow cursor-pointer mb-2"
+            className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-md p-3 hover:shadow-md transition-shadow cursor-pointer mb-2"
             onClick={() => fetchApplicationDetails(application.applicationId)}
         >
             <div className="flex justify-between items-start mb-2">
@@ -986,7 +986,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             </span>
                         </div>
                     )}
-                    <button className="flex items-center text-blue-600 hover:text-blue-800 dark:text-blue-400 text-xs">
+                    <button className="flex items-center text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA] text-xs">
                         <EyeIcon className="h-3 w-3 mr-1" />
                         Review
                     </button>
@@ -1009,7 +1009,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl max-h-[90vh] overflow-hidden"
+                        className="bg-white dark:bg-[#2A1E2E] rounded-lg max-w-4xl max-h-[90vh] overflow-hidden"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
@@ -1072,7 +1072,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                 key={step.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6 ${status === 'verified' ? 'border-green-300 bg-green-50 dark:bg-green-900/20' : ''
+                className={`bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 ${status === 'verified' ? 'border-green-300 bg-green-50 dark:bg-green-900/20' : ''
                     }`}
             >
                 <div className="flex items-center justify-between mb-4">
@@ -1128,7 +1128,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -1155,13 +1155,13 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
-                                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
                                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
                                 }`}
                         >
                             {tab.name}
                             <span className={`ml-2 py-0.5 px-2 rounded-full text-xs ${activeTab === tab.id
-                                ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30'
+                                ? 'bg-blue-100 text-[#387B95] dark:bg-blue-900/30'
                                 : 'bg-gray-100 text-gray-600 dark:bg-gray-700'
                                 }`}>
                                 {tab.count}
@@ -1180,12 +1180,12 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                         placeholder="Search by name, ID, email, phone..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     />
                     <select
                         value={filterCourse}
                         onChange={(e) => setFilterCourse(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="all">All Courses</option>
                         {[...new Set(applications.map(app =>
@@ -1197,7 +1197,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="all">All Categories</option>
                         {[...new Set(applications.map(app =>
@@ -1209,7 +1209,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterGender}
                         onChange={(e) => setFilterGender(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="all">All Gender</option>
                         {[...new Set(applications.map(app =>
@@ -1225,7 +1225,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterState}
                         onChange={(e) => setFilterState(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="all">All States</option>
                         {[...new Set(applications.map(app =>
@@ -1237,7 +1237,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterDistrict}
                         onChange={(e) => setFilterDistrict(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="all">All Districts</option>
                         {[...new Set(applications.map(app =>
@@ -1249,7 +1249,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterCity}
                         onChange={(e) => setFilterCity(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="all">All Cities</option>
                         {[...new Set(applications.map(app =>
@@ -1261,7 +1261,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterStream}
                         onChange={(e) => setFilterStream(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="all">All Streams</option>
                         {[...new Set(applications.map(app =>
@@ -1277,7 +1277,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="createdAt">Sort by: Date Created</option>
                         <option value="personalDetails.fullName">Sort by: Name</option>
@@ -1294,7 +1294,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={sortOrder}
                         onChange={(e) => setSortOrder(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                     >
                         <option value="desc">Descending</option>
                         <option value="asc">Ascending</option>
@@ -1497,7 +1497,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                             key={pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
                                             className={`px-2 py-1 border rounded text-xs ${currentPage === pageNum
-                                                ? 'bg-blue-600 text-white border-blue-600'
+                                                ? 'bg-[#387B95] text-white border-[#387B95]'
                                                 : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 border-gray-300 dark:border-gray-600'
                                                 }`}
                                         >
@@ -1522,7 +1522,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     {selectedApplication ? (
                         <div className="space-y-6">
                             {/* Application Header */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -1563,7 +1563,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         <button
                                             onClick={() => handleWorkflowAction('START_REVIEW')}
                                             disabled={workflowLoading}
-                                            className="flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 font-medium text-sm shadow"
+                                            className="flex items-center px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 font-medium text-sm shadow"
                                             title="Move application to Under Review"
                                         >
                                             <PlayIcon className="h-4 w-4 mr-1" />
@@ -1602,7 +1602,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         <button
                                             onClick={() => handleWorkflowAction('REQUEST_COMPLETION')}
                                             disabled={workflowLoading}
-                                            className="flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 font-medium text-sm shadow"
+                                            className="flex items-center px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 font-medium text-sm shadow"
                                             title="Request Super Admin to mark as Completed"
                                         >
                                             <FlagIcon className="h-4 w-4 mr-1" />
@@ -1626,7 +1626,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     {/* Generate PDF/ZIP */}
                                     <button
                                         onClick={handleGeneratePDF}
-                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700 text-sm"
+                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-[#387B95] text-white hover:bg-[#1D4B5E] text-sm"
                                         title="Generate combined PDF of approved documents"
                                     >
                                         <DocumentTextIcon className="h-4 w-4 mr-1" />
@@ -1634,7 +1634,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     </button>
                                     <button
                                         onClick={handleGenerateZIP}
-                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-purple-600 text-white hover:bg-purple-700 text-sm"
+                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-[#7B3FA0] text-white hover:bg-[#5C2D80] text-sm"
                                         title="Generate ZIP of approved documents"
                                     >
                                         <ArchiveBoxIcon className="h-4 w-4 mr-1" />
@@ -1644,7 +1644,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             </div>
 
                             {/* Documents Review Section */}
-                            <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     Document Review
                                 </h4>
@@ -1695,7 +1695,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                         <div className="flex items-center space-x-3 flex-1">
                                                             <DocumentIcon className={`h-8 w-8 ${isApproved ? 'text-green-600' :
                                                                 isRejected ? 'text-red-600' :
-                                                                    'text-blue-600'
+                                                                    'text-[#387B95]'
                                                                 }`} />
                                                             <div className="flex-1">
                                                                 <p className="font-medium text-gray-900 dark:text-gray-100">
@@ -1764,7 +1764,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                         mimeType: item.type
                                                                     });
                                                                 }}
-                                                                className="flex items-center px-3 py-1 text-indigo-600 hover:text-indigo-800 dark:text-indigo-400"
+                                                                className="flex items-center px-3 py-1 text-[#7B3FA0] hover:text-indigo-800 dark:text-[#A855D0]"
                                                                 title="Preview document in modal"
                                                             >
                                                                 <EyeIcon className="h-4 w-4 mr-1" />
@@ -1788,7 +1788,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                         console.error('❌ Unable to construct document URL from:', item.url);
                                                                     }
                                                                 }}
-                                                                className="flex items-center px-3 py-1 text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                                className="flex items-center px-3 py-1 text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]"
                                                                 title="Open document in new tab"
                                                             >
                                                                 <EyeIcon className="h-4 w-4 mr-1" />
@@ -1836,7 +1836,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                 value={docRemarks}
                                                                 onChange={(e) => handleDocumentRemarksChange(item.documentType, e.target.value)}
                                                                 rows={2}
-                                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white text-sm ${docStatus === 'reject' && !docRemarks.trim()
+                                                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white text-sm ${docStatus === 'reject' && !docRemarks.trim()
                                                                     ? 'border-red-300 dark:border-red-600'
                                                                     : 'border-gray-300 dark:border-gray-600'
                                                                     }`}
@@ -1861,9 +1861,9 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
 
                                     {/* Generated Application PDF */}
                                     {selectedApplication.applicationPdfUrl && (
-                                        <div className="flex items-center justify-between p-4 border border-purple-200 dark:border-purple-600 rounded-lg bg-purple-50 dark:bg-purple-900/20">
+                                        <div className="flex items-center justify-between p-4 border border-purple-200 dark:border-[#7B3FA0] rounded-lg bg-[#EDE0F7] dark:bg-[#2A1E2E]/20">
                                             <div className="flex items-center space-x-3">
-                                                <DocumentTextIcon className="h-8 w-8 text-purple-600" />
+                                                <DocumentTextIcon className="h-8 w-8 text-[#7B3FA0]" />
                                                 <div>
                                                     <p className="font-medium text-gray-900 dark:text-gray-100">
                                                         Generated Application PDF
@@ -1871,7 +1871,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     <p className="text-sm text-gray-600 dark:text-gray-400">
                                                         Complete application form with all details
                                                     </p>
-                                                    <span className="inline-block px-2 py-1 text-xs rounded-full mt-1 bg-purple-100 text-purple-800">
+                                                    <span className="inline-block px-2 py-1 text-xs rounded-full mt-1 bg-[#EDE0F7] text-purple-800">
                                                         GENERATED PDF
                                                     </span>
                                                 </div>
@@ -1879,7 +1879,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                             <div className="flex items-center space-x-2">
                                                 <button
                                                     onClick={() => window.open(getDocumentUrl(selectedApplication.applicationPdfUrl), '_blank')}
-                                                    className="flex items-center px-3 py-1 text-purple-600 hover:text-purple-800 dark:text-purple-400"
+                                                    className="flex items-center px-3 py-1 text-[#7B3FA0] hover:text-purple-800 dark:text-[#A855D0]"
                                                 >
                                                     <EyeIcon className="h-4 w-4 mr-1" />
                                                     View PDF
@@ -1919,7 +1919,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         <div className="space-y-4">
                                             {/* Review Summary */}
                                             {Object.keys(documentDecisions).length > 0 && (
-                                                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
+                                                <div className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
                                                     <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Review Summary</h5>
                                                     <div className="space-y-2">
                                                         {Object.entries(documentDecisions).map(([docType, { decision, remarks }]) => (
@@ -1933,7 +1933,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                         {decision.toUpperCase()}
                                                                     </span>
                                                                     {remarks && (
-                                                                        <span className="text-blue-600 dark:text-blue-300 text-xs">
+                                                                        <span className="text-[#387B95] dark:text-blue-300 text-xs">
                                                                             "{remarks}"
                                                                         </span>
                                                                     )}
@@ -2050,7 +2050,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full"
+                            className="bg-white dark:bg-[#2A1E2E] rounded-xl shadow-2xl max-w-lg w-full"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -2127,7 +2127,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white dark:bg-gray-800 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
+                            className="bg-white dark:bg-[#2A1E2E] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
@@ -2179,7 +2179,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                 <div className="flex space-x-2">
                                                     <button
                                                         onClick={selectAllDocuments}
-                                                        className="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400"
+                                                        className="text-sm text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]"
                                                     >
                                                         Select All
                                                     </button>
@@ -2201,7 +2201,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     <div
                                                         key={docId}
                                                         className={`flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${isSelected
-                                                            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
+                                                            ? 'bg-[#D0E8F0] dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
                                                             : 'border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                                                             }`}
                                                         onClick={() => toggleDocumentSelection(docId)}
@@ -2210,7 +2210,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                             type="checkbox"
                                                             checked={isSelected}
                                                             onChange={() => toggleDocumentSelection(docId)}
-                                                            className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
+                                                            className="h-5 w-5 text-[#387B95] rounded focus:ring-[#387B95]"
                                                             onClick={(e) => e.stopPropagation()}
                                                         />
                                                         <div className="ml-4 flex-1">
@@ -2224,7 +2224,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                 APPROVED
                                                             </span>
                                                         </div>
-                                                        <CheckCircleIcon className={`h-6 w-6 ${isSelected ? 'text-blue-600' : 'text-gray-400'}`} />
+                                                        <CheckCircleIcon className={`h-6 w-6 ${isSelected ? 'text-[#387B95]' : 'text-gray-400'}`} />
                                                     </div>
                                                 );
                                             })}
@@ -2233,7 +2233,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                 })()}
                             </div>
 
-                            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                            <div className="flex justify-end space-x-3 p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1A1212]/50">
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
@@ -2245,8 +2245,8 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     onClick={handleConfirmGeneration}
                                     disabled={generating || selectedDocumentsForGeneration.length === 0}
                                     className={`px-6 py-2 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed ${generationType === 'pdf'
-                                        ? 'bg-blue-600 hover:bg-blue-700'
-                                        : 'bg-purple-600 hover:bg-purple-700'
+                                        ? 'bg-[#387B95] hover:bg-[#1D4B5E]'
+                                        : 'bg-[#7B3FA0] hover:bg-[#5C2D80]'
                                         }`}
                                 >
                                     {generating ? (

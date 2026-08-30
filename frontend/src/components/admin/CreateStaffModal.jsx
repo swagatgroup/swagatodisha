@@ -146,7 +146,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create New Staff</h2>
@@ -172,7 +172,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="firstName"
                                     value={formData.firstName}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.firstName ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.firstName ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter first name"
                                 />
@@ -190,7 +190,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="lastName"
                                     value={formData.lastName}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.lastName ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.lastName ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter last name"
                                 />
@@ -210,7 +210,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="email"
                                     value={formData.email}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.email ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.email ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter email address"
                                 />
@@ -228,7 +228,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="password"
                                     value={formData.password}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.password ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.password ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter login password"
                                 />
@@ -248,7 +248,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="phone"
                                     value={formData.phone}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.phone ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.phone ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter phone number"
                                 />
@@ -268,7 +268,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="department"
                                     value={formData.department}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.department ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.department ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                 >
                                     <option value="">Select Department</option>
@@ -295,7 +295,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                     name="designation"
                                     value={formData.designation}
                                     onChange={handleInputChange}
-                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${errors.designation ? 'border-red-500' : 'border-gray-300'
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${errors.designation ? 'border-red-500' : 'border-gray-300'
                                         }`}
                                     placeholder="Enter designation"
                                 />
@@ -321,7 +321,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                                     type="checkbox"
                                                     checked={formData.assignedAgents.includes(agent._id)}
                                                     onChange={() => handleAgentSelection(agent._id)}
-                                                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                                    className="rounded border-gray-300 text-[#7B3FA0] focus:ring-[#7B3FA0]"
                                                 />
                                                 <span className="text-sm text-gray-700 dark:text-gray-300">
                                                     {agent.fullName} - {agent.email} ({agent.referralCode})
@@ -350,7 +350,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? 'Creating...' : 'Create Staff'}
                             </button>

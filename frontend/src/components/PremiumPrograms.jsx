@@ -161,7 +161,7 @@ const PremiumPrograms = () => {
                     transition={{ duration: 0.8 }}
                 >
                     <motion.div
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-full text-sm font-semibold mb-6"
+                        className="inline-flex items-center gap-2 bg-[#7B3FA0] text-white px-6 py-3 rounded-full text-sm font-semibold mb-6"
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 300 }}
                     >
@@ -171,7 +171,7 @@ const PremiumPrograms = () => {
                         Academic Excellence
                     </motion.div>
                     <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                        Our <span className="bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                        Our <span className="bg-[#7B3FA0] bg-clip-text text-transparent">
                             Premium Programs
                         </span>
                     </h2>
@@ -223,10 +223,10 @@ const PremiumPrograms = () => {
 
                                 {/* Content */}
                                 <div className="relative z-10 flex-1 flex flex-col">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-purple-600 transition-colors duration-300">
+                                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-[#7B3FA0] transition-colors duration-300">
                                         {program.title}
                                     </h3>
-                                    <p className="text-purple-600 font-semibold mb-3 text-sm">
+                                    <p className="text-[#7B3FA0] font-semibold mb-3 text-sm">
                                         {program.subtitle}
                                     </p>
                                     <p className="text-gray-600 mb-4 leading-relaxed text-sm flex-1">
@@ -307,7 +307,7 @@ const PremiumPrograms = () => {
                     transition={{ duration: 0.8, delay: 0.5 }}
                 >
                     <motion.button
-                        className="px-10 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full text-lg font-semibold shadow-2xl hover:shadow-purple-500/25 transition-all duration-300"
+                        className="px-10 py-4 bg-[#7B3FA0] text-white rounded-full text-lg font-semibold shadow-2xl hover:shadow-purple-500/25 transition-all duration-300"
                         whileHover={{ scale: 1.05, y: -2 }}
                         whileTap={{ scale: 0.95 }}
                     >

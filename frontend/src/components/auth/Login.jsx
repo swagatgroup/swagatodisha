@@ -164,12 +164,12 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] pattern-bg dark:pattern-bg-dark flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-0">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
-                className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700"
+                className="max-w-md w-full space-y-8 bg-white dark:bg-[#2A1E2E] rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700"
             >
                 {/* Header */}
                 <div className="text-center">
@@ -177,7 +177,7 @@ const Login = () => {
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.5, delay: 0.2 }}
-                        className="mx-auto h-20 w-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mb-6"
+                        className="mx-auto h-20 w-20 bg-[#7B3FA0] rounded-full flex items-center justify-center mb-6"
                     >
                         <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -226,7 +226,7 @@ const Login = () => {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 placeholder="Enter your email"
                             />
                         </div>
@@ -250,7 +250,7 @@ const Login = () => {
                         disabled={loading}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-[#7B3FA0] text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <div className="flex items-center justify-center">
@@ -271,7 +271,7 @@ const Login = () => {
                         >
                             <button
                                 onClick={() => setShowForgotPassword(true)}
-                                className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-200"
+                                className="text-sm text-[#7B3FA0] dark:text-[#A855D0] hover:text-[#5C2D80] dark:hover:text-purple-300 font-medium transition-colors duration-200"
                             >
                                 Forgot your password?
                             </button>
@@ -286,7 +286,7 @@ const Login = () => {
                             Don't have an account?{' '}
                             <Link
                                 to="/register"
-                                className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium transition-colors duration-200"
+                                className="text-[#7B3FA0] dark:text-[#A855D0] hover:text-[#5C2D80] dark:hover:text-purple-300 font-medium transition-colors duration-200"
                             >
                                 Sign up here
                             </Link>
@@ -315,7 +315,7 @@ const Login = () => {
 
             {/* Forgot Password Modal */}
             {showForgotPassword && (
-                <div className="fixed inset-0 bg-gray-600 dark:bg-gray-900 bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+                <div className="fixed inset-0 bg-gray-600 dark:bg-[#1A1212] bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
                     <div className="relative p-5 w-full max-w-md">
                         <ForgotPassword onBackToLogin={() => setShowForgotPassword(false)} />
                     </div>

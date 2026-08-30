@@ -35,11 +35,11 @@ const FloatingContact = () => {
                         {/* Call Button */}
                         <a 
                             href={`tel:${cleanPhone}`}
-                            className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
+                            className="flex items-center gap-2 bg-white dark:bg-[#2A1E2E] p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
                             title="Call Us"
                         >
                             <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">Call Us</span>
-                            <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 rounded-full group-hover:scale-110 transition-transform">
+                            <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-[#387B95] dark:bg-blue-900/30 dark:text-[#60A5FA] rounded-full group-hover:scale-110 transition-transform">
                                 <i className="fa-solid fa-phone"></i>
                             </div>
                         </a>
@@ -49,7 +49,7 @@ const FloatingContact = () => {
                             href={whatsappChannelUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
+                            className="flex items-center gap-2 bg-white dark:bg-[#2A1E2E] p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
                             title="WhatsApp Channel"
                         >
                             <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">Join Channel</span>
@@ -63,7 +63,7 @@ const FloatingContact = () => {
                             href={whatsappDmUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
+                            className="flex items-center gap-2 bg-white dark:bg-[#2A1E2E] p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
                             title="Chat on WhatsApp"
                         >
                             <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">WhatsApp Chat</span>

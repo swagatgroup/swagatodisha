@@ -191,11 +191,11 @@ const ReferralManagement = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="bg-[#D0E8F0] p-4 rounded-lg">
                     <div className="flex items-center">
-                        <div className="text-blue-600 text-2xl mr-3">👥</div>
+                        <div className="text-[#387B95] text-2xl mr-3">👥</div>
                         <div>
-                            <p className="text-sm text-blue-600">Total Referrals</p>
+                            <p className="text-sm text-[#387B95]">Total Referrals</p>
                             <p className="text-xl font-semibold text-blue-900">{stats.totalReferrals}</p>
                         </div>
                     </div>
@@ -218,11 +218,11 @@ const ReferralManagement = () => {
                         </div>
                     </div>
                 </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
+                <div className="bg-[#EDE0F7] p-4 rounded-lg">
                     <div className="flex items-center">
-                        <div className="text-purple-600 text-2xl mr-3">📅</div>
+                        <div className="text-[#7B3FA0] text-2xl mr-3">📅</div>
                         <div>
-                            <p className="text-sm text-purple-600">This Month</p>
+                            <p className="text-sm text-[#7B3FA0]">This Month</p>
                             <p className="text-xl font-semibold text-purple-900">{stats.thisMonthReferrals}</p>
                         </div>
                     </div>

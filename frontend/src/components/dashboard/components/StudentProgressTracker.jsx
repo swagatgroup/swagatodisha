@@ -23,7 +23,7 @@ const StudentProgressTracker = ({ currentStage }) => {
         <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8 overflow-hidden"
+            className="w-full bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow-md mb-8 overflow-hidden"
         >
             <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-8">Your Application Journey</h3>
             
@@ -49,8 +49,8 @@ const StudentProgressTracker = ({ currentStage }) => {
                                     ${isCompleted 
                                         ? 'bg-gradient-to-r from-blue-500 to-purple-500 border-transparent text-white scale-110' 
                                         : isCurrent 
-                                            ? 'bg-white dark:bg-gray-800 border-purple-500 text-purple-600 dark:text-purple-400 scale-125 shadow-[0_0_15px_rgba(168,85,247,0.4)]' 
-                                            : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
+                                            ? 'bg-white dark:bg-[#2A1E2E] border-[#7B3FA0] text-[#7B3FA0] dark:text-[#A855D0] scale-125 shadow-[0_0_15px_rgba(168,85,247,0.4)]' 
+                                            : 'bg-white dark:bg-[#2A1E2E] border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
                                     }`}
                             >
                                 {isCompleted ? (
@@ -63,8 +63,8 @@ const StudentProgressTracker = ({ currentStage }) => {
                             {/* Label */}
                             <span 
                                 className={`absolute top-14 text-xs md:text-sm font-semibold uppercase tracking-wider text-center w-32 transition-all duration-300
-                                    ${isCompleted ? 'text-purple-600 dark:text-purple-400' 
-                                    : isCurrent ? 'text-blue-600 dark:text-blue-400 font-bold translate-y-1' 
+                                    ${isCompleted ? 'text-[#7B3FA0] dark:text-[#A855D0]' 
+                                    : isCurrent ? 'text-[#387B95] dark:text-[#60A5FA] font-bold translate-y-1' 
                                     : 'text-gray-400 dark:text-gray-500'}`}
                             >
                                 {stage.label}

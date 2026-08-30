@@ -155,7 +155,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
-                                ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
                                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
                             }`}
                     >
@@ -177,7 +177,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     type="text"
                     value={formData.title}
                     onChange={(e) => handleTitleChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="Enter content title"
                 />
             </div>
@@ -194,7 +194,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         type="text"
                         value={formData.slug}
                         onChange={(e) => handleInputChange('slug', e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-r-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         placeholder="content-slug"
                     />
                 </div>
@@ -208,7 +208,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     <select
                         value={formData.type}
                         onChange={(e) => handleInputChange('type', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
                         <option value="page">Page</option>
                         <option value="section">Section</option>
@@ -231,7 +231,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     <select
                         value={formData.category}
                         onChange={(e) => handleInputChange('category', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
                         <option value="general">General</option>
                         <option value="home">Home</option>
@@ -281,7 +281,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                             value={formData.content}
                             onChange={(e) => handleInputChange('content', e.target.value)}
                             rows={15}
-                            className="w-full px-3 py-2 border-0 focus:ring-0 dark:bg-gray-800 dark:text-white resize-none"
+                            className="w-full px-3 py-2 border-0 focus:ring-0 dark:bg-[#2A1E2E] dark:text-white resize-none"
                             placeholder="Write your content here..."
                         />
                     )}
@@ -296,7 +296,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     value={formData.excerpt}
                     onChange={(e) => handleInputChange('excerpt', e.target.value)}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="Brief description of the content"
                 />
             </div>
@@ -314,7 +314,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     value={formData.metaTitle}
                     onChange={(e) => handleInputChange('metaTitle', e.target.value)}
                     maxLength={60}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="SEO title (max 60 characters)"
                 />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -331,7 +331,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     onChange={(e) => handleInputChange('metaDescription', e.target.value)}
                     maxLength={160}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="SEO description (max 160 characters)"
                 />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -347,7 +347,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     type="text"
                     value={formData.keywords.join(', ')}
                     onChange={(e) => handleKeywordsChange(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="keyword1, keyword2, keyword3"
                 />
                 <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -368,21 +368,21 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         type="url"
                         value={formData.featuredImage.url}
                         onChange={(e) => handleInputChange('featuredImage.url', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         placeholder="Image URL"
                     />
                     <input
                         type="text"
                         value={formData.featuredImage.alt}
                         onChange={(e) => handleInputChange('featuredImage.alt', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         placeholder="Alt text"
                     />
                     <input
                         type="text"
                         value={formData.featuredImage.caption}
                         onChange={(e) => handleInputChange('featuredImage.caption', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         placeholder="Caption"
                     />
                     {formData.featuredImage.url && (
@@ -421,7 +421,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     <select
                         value={formData.template}
                         onChange={(e) => handleInputChange('template', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
                         <option value="default">Default</option>
                         <option value="landing">Landing Page</option>
@@ -438,7 +438,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     <select
                         value={formData.layout}
                         onChange={(e) => handleInputChange('layout', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     >
                         <option value="standard">Standard</option>
                         <option value="full-width">Full Width</option>
@@ -455,7 +455,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         id="isPublished"
                         checked={formData.isPublished}
                         onChange={(e) => handleInputChange('isPublished', e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-[#387B95] focus:ring-[#387B95] border-gray-300 rounded"
                     />
                     <label htmlFor="isPublished" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                         Published
@@ -468,7 +468,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         id="isFeatured"
                         checked={formData.isFeatured}
                         onChange={(e) => handleInputChange('isFeatured', e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-[#387B95] focus:ring-[#387B95] border-gray-300 rounded"
                     />
                     <label htmlFor="isFeatured" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                         Featured
@@ -481,7 +481,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         id="isSticky"
                         checked={formData.isSticky}
                         onChange={(e) => handleInputChange('isSticky', e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-[#387B95] focus:ring-[#387B95] border-gray-300 rounded"
                     />
                     <label htmlFor="isSticky" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                         Sticky
@@ -494,7 +494,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         id="allowComments"
                         checked={formData.allowComments}
                         onChange={(e) => handleInputChange('allowComments', e.target.checked)}
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        className="h-4 w-4 text-[#387B95] focus:ring-[#387B95] border-gray-300 rounded"
                     />
                     <label htmlFor="allowComments" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                         Allow Comments
@@ -521,7 +521,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
 
     return (
         <div className="max-w-6xl mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <div className="flex items-center justify-between">
                         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -538,7 +538,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                             <button
                                 onClick={() => handleSave(true)}
                                 disabled={loading}
-                                className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                className="px-4 py-2 text-sm bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] disabled:opacity-50"
                             >
                                 {loading ? 'Publishing...' : 'Publish'}
                             </button>

@@ -23,7 +23,7 @@ const MobileMenuTest = () => {
                                     console.log('Hamburger clicked, current state:', sidebarOpen);
                                     setSidebarOpen(!sidebarOpen);
                                 }}
-                                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
+                                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#7B3FA0]"
                             >
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -32,7 +32,7 @@ const MobileMenuTest = () => {
 
                             <div className="flex items-center lg:ml-0">
                                 <div className="flex items-center">
-                                    <div className="h-10 w-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                                    <div className="h-10 w-10 bg-[#7B3FA0] rounded-lg flex items-center justify-center">
                                         <span className="text-white font-bold text-lg">S</span>
                                     </div>
                                 </div>

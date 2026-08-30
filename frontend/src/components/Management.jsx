@@ -54,15 +54,15 @@ const Management = () => {
         <section className="py-20 bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 relative overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 left-0 w-96 h-96 bg-[#7B3FA0]/10 rounded-full blur-3xl"></div>
+                <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#D0E8F0]0/10 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-full blur-3xl"></div>
             </div>
 
             <div className="container mx-auto px-6 relative z-10">
                 {/* Section Header */}
                 <div className="text-center mb-20">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-500 to-blue-500 rounded-3xl mb-6 shadow-2xl">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl">
                         <i className="fa-solid fa-users-gear text-white text-3xl"></i>
                     </div>
 
@@ -149,7 +149,7 @@ const Management = () => {
 
                 {/* Call to Action */}
                 <div className="text-center">
-                    <button className="px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105">
+                    <button className="px-8 py-4 bg-[#7B3FA0] text-white rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105">
                         Meet Our Full Team
                     </button>
                 </div>
@@ -160,7 +160,7 @@ const Management = () => {
                 <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
                     <div className="relative max-w-4xl w-full bg-gradient-to-br from-gray-900 to-purple-900 rounded-3xl shadow-2xl overflow-hidden border border-white/20">
                         {/* Modal Header */}
-                        <div className="bg-gradient-to-r from-purple-600 to-blue-600 p-8 text-center">
+                        <div className="bg-[#7B3FA0] p-8 text-center">
                             <h3 className="text-3xl font-bold text-white mb-2">{selectedLeader.name}</h3>
                             <p className="text-purple-100 text-lg">{selectedLeader.position}</p>
                             <p className="text-purple-200 text-base">{selectedLeader.department}</p>
@@ -186,7 +186,7 @@ const Management = () => {
                                     <div className="space-y-3">
                                         {selectedLeader.achievements.map((achievement, index) => (
                                             <div key={index} className="flex items-center p-3 bg-white/5 rounded-xl border border-white/10">
-                                                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mr-3">
+                                                <div className="w-8 h-8 bg-[#7B3FA0] rounded-lg flex items-center justify-center mr-3">
                                                     <i className="fa-solid fa-trophy text-white text-sm"></i>
                                                 </div>
                                                 <span className="text-gray-300">{achievement}</span>
@@ -201,7 +201,7 @@ const Management = () => {
                         <div className="p-8 text-center">
                             <button
                                 onClick={() => setSelectedLeader(null)}
-                                className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                                className="px-8 py-3 bg-[#7B3FA0] text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
                             >
                                 Close
                             </button>

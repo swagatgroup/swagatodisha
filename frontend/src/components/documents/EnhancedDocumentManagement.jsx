@@ -188,7 +188,7 @@ const EnhancedDocumentManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -212,7 +212,7 @@ const EnhancedDocumentManagement = () => {
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 rounded-full">
-                            <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                         </div>
@@ -250,7 +250,7 @@ const EnhancedDocumentManagement = () => {
                 >
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 rounded-full">
-                            <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                             </svg>
                         </div>
@@ -312,7 +312,7 @@ const EnhancedDocumentManagement = () => {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         >
                             <option value="">Select Category</option>
                             {documentCategories.map(category => (
@@ -331,7 +331,7 @@ const EnhancedDocumentManagement = () => {
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                                 <div className="flex text-sm text-gray-600">
-                                    <label htmlFor="file-input" className="relative cursor-pointer bg-white rounded-md font-medium text-purple-600 hover:text-purple-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-purple-500">
+                                    <label htmlFor="file-input" className="relative cursor-pointer bg-white rounded-md font-medium text-[#7B3FA0] hover:text-[#7B3FA0] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#7B3FA0]">
                                         <span>Upload a file</span>
                                         <input
                                             id="file-input"
@@ -358,7 +358,7 @@ const EnhancedDocumentManagement = () => {
                         <button
                             onClick={handleUpload}
                             disabled={!selectedFile || !selectedCategory || uploading}
-                            className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 text-sm font-medium text-white bg-[#7B3FA0] border border-transparent rounded-md hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {uploading ? 'Uploading...' : 'Upload Document'}
                         </button>
@@ -374,7 +374,7 @@ const EnhancedDocumentManagement = () => {
                         <select
                             value={filter}
                             onChange={(e) => setFilter(e.target.value)}
-                            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                         >
                             <option value="all">All Documents</option>
                             <option value="PENDING">Pending</option>
@@ -407,8 +407,8 @@ const EnhancedDocumentManagement = () => {
                                 >
                                     <div className="flex items-center space-x-4">
                                         <div className="flex-shrink-0">
-                                            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                                                <svg className="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <div className="w-10 h-10 bg-[#EDE0F7] rounded-lg flex items-center justify-center">
+                                                <svg className="h-6 w-6 text-[#7B3FA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
                                             </div>
@@ -429,7 +429,7 @@ const EnhancedDocumentManagement = () => {
                                                 </div>
                                             )}
                                             {document.status === 'UNDER_REVIEW' && document.reviewer && (
-                                                <p className="text-xs text-blue-700 mt-1">Reviewer: {document.reviewer}</p>
+                                                <p className="text-xs text-[#1D4B5E] mt-1">Reviewer: {document.reviewer}</p>
                                             )}
                                         </div>
                                     </div>
@@ -452,7 +452,7 @@ const EnhancedDocumentManagement = () => {
                                             {document.status === 'REJECTED' && (
                                                 <button
                                                     onClick={() => handleSubmitDocument(document._id)}
-                                                    className="text-blue-600 hover:text-blue-900 text-sm font-medium"
+                                                    className="text-[#387B95] hover:text-blue-900 text-sm font-medium"
                                                 >
                                                     Resubmit
                                                 </button>
@@ -462,7 +462,7 @@ const EnhancedDocumentManagement = () => {
                                                 href={document.url || document.fileUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="text-purple-600 hover:text-purple-900 text-sm font-medium"
+                                                className="text-[#7B3FA0] hover:text-purple-900 text-sm font-medium"
                                             >
                                                 View
                                             </a>

@@ -47,7 +47,7 @@ const PerformanceDashboard = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -71,7 +71,7 @@ const PerformanceDashboard = () => {
                     </div>
                     <button
                         onClick={fetchPerformanceMetrics}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] transition-colors"
                     >
                         Refresh Metrics
                     </button>
@@ -115,7 +115,7 @@ const PerformanceDashboard = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
-                                    ? 'border-purple-500 text-purple-600'
+                                    ? 'border-[#7B3FA0] text-[#7B3FA0]'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                             >
@@ -147,7 +147,7 @@ const PerformanceDashboard = () => {
                             </div>
                             <div className="bg-gray-50 rounded-lg p-4">
                                 <h4 className="font-semibold text-gray-900 mb-2">API Calls</h4>
-                                <p className="text-2xl font-bold text-blue-600">
+                                <p className="text-2xl font-bold text-[#387B95]">
                                     {metrics.apiCalls || 0}
                                 </p>
                                 <p className="text-sm text-gray-600">Total requests</p>
@@ -228,14 +228,14 @@ const PerformanceDashboard = () => {
                                 </div>
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <h4 className="font-semibold text-gray-900 mb-2">Memory Usage</h4>
-                                    <p className="text-2xl font-bold text-blue-600">
+                                    <p className="text-2xl font-bold text-[#387B95]">
                                         {metrics.memory ? `${metrics.memory.percentage.toFixed(1)}%` : 'N/A'}
                                     </p>
                                     <p className="text-sm text-gray-600">Server memory</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <h4 className="font-semibold text-gray-900 mb-2">CPU Usage</h4>
-                                    <p className="text-2xl font-bold text-purple-600">
+                                    <p className="text-2xl font-bold text-[#7B3FA0]">
                                         {metrics.cpu ? `${metrics.cpu.usage.toFixed(1)}%` : 'N/A'}
                                     </p>
                                     <p className="text-sm text-gray-600">Server CPU</p>
@@ -329,7 +329,7 @@ const PerformanceDashboard = () => {
                                                 <div className="flex items-center space-x-3 mb-2">
                                                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${rec.priority === 'high' ? 'text-red-600 bg-red-100' :
                                                         rec.priority === 'medium' ? 'text-yellow-600 bg-yellow-100' :
-                                                            'text-blue-600 bg-blue-100'
+                                                            'text-[#387B95] bg-blue-100'
                                                         }`}>
                                                         {rec.priority.toUpperCase()}
                                                     </span>

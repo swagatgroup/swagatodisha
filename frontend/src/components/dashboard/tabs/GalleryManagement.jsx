@@ -225,7 +225,7 @@ const GalleryManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -241,14 +241,14 @@ const GalleryManagement = () => {
                         setEditingItem(null);
                         setShowForm(true);
                     }}
-                    className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                    className="px-6 py-3 bg-[#387B95] text-white font-medium rounded-lg hover:bg-[#1D4B5E]"
                 >
                     Add New Image
                 </button>
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
@@ -256,7 +256,7 @@ const GalleryManagement = () => {
                             type="text"
                             value={filters.search}
                             onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
                             placeholder="Search gallery..."
                         />
                     </div>
@@ -265,7 +265,7 @@ const GalleryManagement = () => {
                         <select
                             value={filters.category}
                             onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Categories</option>
                             {categories.map(category => (
@@ -278,7 +278,7 @@ const GalleryManagement = () => {
                         <select
                             value={filters.institution}
                             onChange={(e) => setFilters(prev => ({ ...prev, institution: e.target.value }))}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#1A1212] text-gray-900 dark:text-gray-100"
                         >
                             <option value="">All Institutions</option>
                             {institutions.map(institution => (
@@ -298,7 +298,7 @@ const GalleryManagement = () => {
             </div>
 
             {/* Gallery Grid */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Gallery Items ({filteredGalleryItems.length})
@@ -312,7 +312,7 @@ const GalleryManagement = () => {
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                                className="bg-white dark:bg-[#1A1212] border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
                             >
                                 <div className="aspect-w-16 aspect-h-9">
                                     <img
@@ -345,7 +345,7 @@ const GalleryManagement = () => {
                                     <div className="flex space-x-2 mt-3">
                                         <button
                                             onClick={() => editGalleryItem(item)}
-                                            className="flex-1 px-2 py-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs font-medium"
+                                            className="flex-1 px-2 py-1 text-[#387B95] dark:text-[#60A5FA] hover:text-blue-800 dark:hover:text-blue-300 text-xs font-medium"
                                         >
                                             Edit
                                         </button>
@@ -366,7 +366,7 @@ const GalleryManagement = () => {
             {/* Gallery Item Form Modal */}
             {showForm && (
                 <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-900 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
+                    <div className="bg-white dark:bg-[#1A1212] rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto border border-gray-200 dark:border-gray-700">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -395,7 +395,7 @@ const GalleryManagement = () => {
                                             type="text"
                                             value={formData.title}
                                             onChange={(e) => handleInputChange('title', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -405,7 +405,7 @@ const GalleryManagement = () => {
                                         <select
                                             value={formData.category}
                                             onChange={(e) => handleInputChange('category', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {categories.map(category => (
@@ -420,7 +420,7 @@ const GalleryManagement = () => {
                                             type="url"
                                             value={formData.imageUrl}
                                             onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -431,7 +431,7 @@ const GalleryManagement = () => {
                                             type="url"
                                             value={formData.thumbnailUrl}
                                             onChange={(e) => handleInputChange('thumbnailUrl', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -441,7 +441,7 @@ const GalleryManagement = () => {
                                             type="text"
                                             value={formData.alt}
                                             onChange={(e) => handleInputChange('alt', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -451,7 +451,7 @@ const GalleryManagement = () => {
                                             type="text"
                                             value={formData.subcategory}
                                             onChange={(e) => handleInputChange('subcategory', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 </div>
@@ -462,7 +462,7 @@ const GalleryManagement = () => {
                                         value={formData.description}
                                         onChange={(e) => handleInputChange('description', e.target.value)}
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                     />
                                 </div>
 
@@ -474,7 +474,7 @@ const GalleryManagement = () => {
                                             type="number"
                                             value={formData.fileSize}
                                             onChange={(e) => handleInputChange('fileSize', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -484,7 +484,7 @@ const GalleryManagement = () => {
                                             type="number"
                                             value={formData.dimensions.width}
                                             onChange={(e) => handleInputChange('dimensions.width', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -494,7 +494,7 @@ const GalleryManagement = () => {
                                             type="number"
                                             value={formData.dimensions.height}
                                             onChange={(e) => handleInputChange('dimensions.height', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 </div>
@@ -507,7 +507,7 @@ const GalleryManagement = () => {
                                             type="text"
                                             value={formData.tags.join(', ')}
                                             onChange={(e) => handleArrayChange('tags', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             placeholder="tag1, tag2, tag3"
                                         />
                                     </div>
@@ -518,14 +518,14 @@ const GalleryManagement = () => {
                                             type="text"
                                             value={formData.seoKeywords.join(', ')}
                                             onChange={(e) => handleArrayChange('seoKeywords', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             placeholder="keyword1, keyword2, keyword3"
                                         />
                                     </div>
                                 </div>
 
                                 {/* Album Information */}
-                                <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                                <div className="bg-gray-50 dark:bg-[#2A1E2E] p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                                     <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Album Information</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
@@ -534,7 +534,7 @@ const GalleryManagement = () => {
                                                 type="text"
                                                 value={formData.album.name}
                                                 onChange={(e) => handleInputChange('album.name', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             />
                                         </div>
 
@@ -544,7 +544,7 @@ const GalleryManagement = () => {
                                                 type="text"
                                                 value={formData.album.description}
                                                 onChange={(e) => handleInputChange('album.description', e.target.value)}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                             />
                                         </div>
 
@@ -570,7 +570,7 @@ const GalleryManagement = () => {
                                             type="number"
                                             value={formData.displayOrder}
                                             onChange={(e) => handleInputChange('displayOrder', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -623,7 +623,7 @@ const GalleryManagement = () => {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                                        className="px-6 py-3 bg-[#387B95] text-white font-medium rounded-lg hover:bg-[#1D4B5E] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : (editingItem ? 'Update Item' : 'Create Item')}
                                     </button>

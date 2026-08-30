@@ -363,7 +363,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 type="text"
                                 value={formData.fullName}
                                 onChange={(e) => handleInputChange('fullName', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 placeholder="Enter your full name"
                             />
                         </div>
@@ -376,7 +376,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 type="date"
                                 value={formData.dateOfBirth}
                                 onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             />
                         </div>
 
@@ -387,7 +387,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                             <select
                                 value={formData.gender}
                                 onChange={(e) => handleInputChange('gender', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 <option value="">Select Gender</option>
                                 <option value="Male">Male</option>
@@ -404,7 +404,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 type="text"
                                 value={formData.aadharNumber}
                                 onChange={(e) => handleInputChange('aadharNumber', e.target.value.replace(/\D/g, '').slice(0, 12))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 placeholder="Enter 12-digit Aadhar number"
                                 maxLength="12"
                             />
@@ -417,7 +417,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                             <select
                                 value={formData.bloodGroup}
                                 onChange={(e) => handleInputChange('bloodGroup', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 <option value="">Select Blood Group</option>
                                 <option value="A+">A+</option>
@@ -445,7 +445,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="tel"
                                     value={formData.primaryPhone}
                                     onChange={(e) => handleInputChange('primaryPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Enter 10-digit phone number"
                                     maxLength="10"
                                 />
@@ -458,7 +458,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="tel"
                                     value={formData.alternatePhone}
                                     onChange={(e) => handleInputChange('alternatePhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Enter alternate phone number"
                                     maxLength="10"
                                 />
@@ -473,7 +473,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 type="email"
                                 value={formData.email}
                                 onChange={(e) => handleInputChange('email', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 placeholder="Enter your email address"
                             />
                         </div>
@@ -486,7 +486,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.permanentAddress.street}
                                         onChange={(e) => handleInputChange('permanentAddress.street', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Street Address"
                                     />
                                 </div>
@@ -495,7 +495,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.permanentAddress.city}
                                         onChange={(e) => handleInputChange('permanentAddress.city', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="City"
                                     />
                                 </div>
@@ -504,7 +504,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.permanentAddress.state}
                                         onChange={(e) => handleInputChange('permanentAddress.state', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="State"
                                     />
                                 </div>
@@ -513,7 +513,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.permanentAddress.pincode}
                                         onChange={(e) => handleInputChange('permanentAddress.pincode', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Pincode"
                                     />
                                 </div>
@@ -528,7 +528,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.currentAddress.street}
                                         onChange={(e) => handleInputChange('currentAddress.street', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Street Address"
                                     />
                                 </div>
@@ -537,7 +537,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.currentAddress.city}
                                         onChange={(e) => handleInputChange('currentAddress.city', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="City"
                                     />
                                 </div>
@@ -546,7 +546,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.currentAddress.state}
                                         onChange={(e) => handleInputChange('currentAddress.state', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="State"
                                     />
                                 </div>
@@ -555,7 +555,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.currentAddress.pincode}
                                         onChange={(e) => handleInputChange('currentAddress.pincode', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Pincode"
                                     />
                                 </div>
@@ -577,7 +577,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     <select
                                         value={formData.previousEducation.qualification}
                                         onChange={(e) => handleInputChange('previousEducation.qualification', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     >
                                         <option value="">Select Qualification</option>
                                         <option value="10th">10th Standard</option>
@@ -595,7 +595,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.previousEducation.institution}
                                         onChange={(e) => handleInputChange('previousEducation.institution', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Institution Name"
                                     />
                                 </div>
@@ -607,7 +607,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="number"
                                         value={formData.previousEducation.year}
                                         onChange={(e) => handleInputChange('previousEducation.year', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Year"
                                         min="1990"
                                         max="2025"
@@ -621,7 +621,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="number"
                                         value={formData.previousEducation.percentage}
                                         onChange={(e) => handleInputChange('previousEducation.percentage', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Percentage"
                                         min="0"
                                         max="100"
@@ -635,7 +635,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                         type="text"
                                         value={formData.previousEducation.board}
                                         onChange={(e) => handleInputChange('previousEducation.board', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         placeholder="Board/University"
                                     />
                                 </div>
@@ -649,7 +649,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                             <select
                                 value={formData.desiredCourse}
                                 onChange={(e) => handleInputChange('desiredCourse', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 <option value="">Select Course</option>
                                 <option value="B.Tech Computer Science">B.Tech Computer Science</option>
@@ -675,7 +675,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                             <select
                                 value={formData.campus}
                                 onChange={(e) => handleInputChange('campus', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 <option value="">Select Campus</option>
                                 <option value="Sargiguda">Sargiguda</option>
@@ -697,7 +697,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="text"
                                     value={formData.guardianDetails.fatherName}
                                     onChange={(e) => handleInputChange('guardianDetails.fatherName', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Father's Name"
                                 />
                             </div>
@@ -709,7 +709,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="text"
                                     value={formData.guardianDetails.motherName}
                                     onChange={(e) => handleInputChange('guardianDetails.motherName', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Mother's Name"
                                 />
                             </div>
@@ -724,7 +724,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="tel"
                                     value={formData.guardianDetails.guardianPhone}
                                     onChange={(e) => handleInputChange('guardianDetails.guardianPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Guardian Phone Number"
                                     maxLength="10"
                                 />
@@ -737,7 +737,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="email"
                                     value={formData.guardianDetails.guardianEmail}
                                     onChange={(e) => handleInputChange('guardianDetails.guardianEmail', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Guardian Email"
                                 />
                             </div>
@@ -752,7 +752,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="text"
                                     value={formData.guardianDetails.occupation}
                                     onChange={(e) => handleInputChange('guardianDetails.occupation', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Occupation"
                                 />
                             </div>
@@ -764,7 +764,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     type="number"
                                     value={formData.guardianDetails.annualIncome}
                                     onChange={(e) => handleInputChange('guardianDetails.annualIncome', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     placeholder="Annual Income"
                                 />
                             </div>
@@ -826,7 +826,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2">
                                     <motion.div
-                                        className="bg-purple-600 h-2 rounded-full"
+                                        className="bg-[#7B3FA0] h-2 rounded-full"
                                         initial={{ width: 0 }}
                                         animate={{ width: `${completionPercentage}%` }}
                                         transition={{ duration: 0.5 }}
@@ -839,12 +839,12 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 {steps.map((step, index) => (
                                     <div
                                         key={step.id}
-                                        className={`flex flex-col items-center ${currentStep === step.id ? 'text-purple-600' :
+                                        className={`flex flex-col items-center ${currentStep === step.id ? 'text-[#7B3FA0]' :
                                             completedSteps.includes(step.id) ? 'text-green-600' :
                                                 'text-gray-400'
                                             }`}
                                     >
-                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === step.id ? 'bg-purple-100' :
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep === step.id ? 'bg-[#EDE0F7]' :
                                             completedSteps.includes(step.id) ? 'bg-green-100' :
                                                 'bg-gray-100'
                                             }`}>
@@ -859,7 +859,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                             <div className="min-h-[400px]">
                                 {loading ? (
                                     <div className="flex items-center justify-center h-64">
-                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
                                     </div>
                                 ) : (
                                     renderStepContent()
@@ -872,7 +872,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     {currentStep > 1 && (
                                         <button
                                             onClick={handlePrevious}
-                                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                                         >
                                             Previous
                                         </button>
@@ -883,7 +883,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     <button
                                         onClick={handleSave}
                                         disabled={saving}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : 'Save Draft'}
                                     </button>
@@ -891,7 +891,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     {currentStep < steps.length ? (
                                         <button
                                             onClick={handleNext}
-                                            className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                                            className="px-4 py-2 text-sm font-medium text-white bg-[#7B3FA0] border border-transparent rounded-md hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                                         >
                                             Next
                                         </button>

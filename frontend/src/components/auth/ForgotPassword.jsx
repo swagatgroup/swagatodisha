@@ -53,7 +53,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                         Your password has been reset to the default value. Please contact the admin to change your password.
                     </p>
 
-                    <div className="bg-blue-50 p-4 rounded-lg mb-6">
+                    <div className="bg-[#D0E8F0] p-4 rounded-lg mb-6">
                         <h3 className="font-semibold text-blue-900 mb-2">Admin Contact Information</h3>
                         <div className="text-sm text-blue-800 space-y-1">
                             <p><strong>Phone:</strong> +91-78559 59544</p>
@@ -63,7 +63,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
 
                     <button
                         onClick={onBackToLogin}
-                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7B3FA0] hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                     >
                         Back to Login
                     </button>
@@ -95,7 +95,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] focus:border-[#7B3FA0]"
                         placeholder="Enter your email address"
                         required
                     />
@@ -120,7 +120,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7B3FA0] hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? (
                             <div className="flex items-center">
@@ -138,7 +138,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                     <button
                         type="button"
                         onClick={onBackToLogin}
-                        className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                        className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                     >
                         Back to Login
                     </button>

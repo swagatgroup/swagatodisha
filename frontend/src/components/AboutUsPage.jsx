@@ -78,23 +78,23 @@ const AboutUsPage = () => {
     ]
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="min-h-screen bg-[#FAF7F2]">
             <BackToMainWebsite variant="floating" />
 
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">
                 <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 rounded-full blur-3xl"></div>
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#EDE0F7]/30 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
                 </div>
 
                 <div className="relative z-10 container mx-auto px-6 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl">
                         <i className="fa-solid fa-info-circle text-white text-3xl"></i>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
-                        About <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Us</span>
+                        About <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Us</span>
                     </h1>
 
                     <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
@@ -106,11 +106,11 @@ const AboutUsPage = () => {
             </section>
 
             {/* Mission & Vision Section */}
-            <section className="py-20 bg-white dark:bg-gray-900">
+            <section className="py-20 bg-white dark:bg-[#1A1212]">
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
                         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
-                            <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <div className="w-16 h-16 bg-[#7B3FA0] rounded-2xl flex items-center justify-center mx-auto mb-6">
                                 <i className="fa-solid fa-bullseye text-white text-2xl"></i>
                             </div>
                             <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">Our Mission</h2>
@@ -139,7 +139,7 @@ const AboutUsPage = () => {
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Values</span>
+                            Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Values</span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                             The core principles that guide our institution and shape our educational approach.
@@ -148,7 +148,7 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                         {values.map((value, index) => (
-                            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                            <div key={index} className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                                 <div className={`w-16 h-16 bg-gradient-to-r ${value.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
                                     <i className={`${value.icon} text-white text-2xl`}></i>
                                 </div>
@@ -161,11 +161,11 @@ const AboutUsPage = () => {
             </section>
 
             {/* Milestones Section */}
-            <section className="py-20 bg-white dark:bg-gray-900">
+            <section className="py-20 bg-white dark:bg-[#1A1212]">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Journey</span>
+                            Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Journey</span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                             Key milestones that mark our growth and success in the field of education.
@@ -175,14 +175,14 @@ const AboutUsPage = () => {
                     <div className="max-w-6xl mx-auto">
                         <div className="relative">
                             {/* Timeline Line */}
-                            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-purple-500 to-blue-500"></div>
+                            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-[#7B3FA0] to-[#5C2D80]"></div>
 
                             <div className="space-y-12">
                                 {milestones.map((milestone, index) => (
                                     <div key={index} className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
                                         <div className="w-1/2 px-8">
-                                            <div className={`bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                                                <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl mb-3">
+                                            <div className={`bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                                                <div className="inline-flex items-center justify-center w-12 h-12 bg-[#7B3FA0] rounded-xl mb-3">
                                                     <i className={`${milestone.icon} text-white text-lg`}></i>
                                                 </div>
                                                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">{milestone.title}</h3>
@@ -190,7 +190,7 @@ const AboutUsPage = () => {
                                             </div>
                                         </div>
 
-                                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center z-10 relative">
+                                        <div className="w-8 h-8 bg-[#7B3FA0] rounded-full flex items-center justify-center z-10 relative">
                                             <span className="text-white font-bold text-sm">{milestone.year}</span>
                                         </div>
 
@@ -208,7 +208,7 @@ const AboutUsPage = () => {
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                            Leadership <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Team</span>
+                            Leadership <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Team</span>
                         </h2>
                         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
                             Meet the dedicated leaders who guide our institution towards excellence.
@@ -217,8 +217,8 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {team.map((member, index) => (
-                            <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                                <div className="w-24 h-24 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                            <div key={index} className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                                <div className="w-24 h-24 bg-[#7B3FA0] rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
                                     <img
                                         src={member.image}
                                         alt={member.name}
@@ -226,7 +226,7 @@ const AboutUsPage = () => {
                                     />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">{member.name}</h3>
-                                <p className="text-purple-600 font-semibold text-center mb-3">{member.position}</p>
+                                <p className="text-[#7B3FA0] font-semibold text-center mb-3">{member.position}</p>
                                 <p className="text-gray-600 text-center text-sm leading-relaxed">{member.description}</p>
                             </div>
                         ))}
@@ -235,18 +235,18 @@ const AboutUsPage = () => {
             </section>
 
             {/* Why Choose Us Section */}
-            <section className="py-20 bg-white dark:bg-gray-900">
+            <section className="py-20 bg-white dark:bg-[#1A1212]">
                 <div className="container mx-auto px-6">
                     <div className="max-w-6xl mx-auto">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                             <div>
                                 <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-                                    Why Choose <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Us</span>
+                                    Why Choose <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Us</span>
                                 </h2>
 
                                 <div className="space-y-6">
                                     <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <div className="w-12 h-12 bg-[#7B3FA0] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                                             <i className="fa-solid fa-graduation-cap text-white text-xl"></i>
                                         </div>
                                         <div>
@@ -256,7 +256,7 @@ const AboutUsPage = () => {
                                     </div>
 
                                     <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <div className="w-12 h-12 bg-[#7B3FA0] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                                             <i className="fa-solid fa-users text-white text-xl"></i>
                                         </div>
                                         <div>
@@ -266,7 +266,7 @@ const AboutUsPage = () => {
                                     </div>
 
                                     <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <div className="w-12 h-12 bg-[#7B3FA0] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                                             <i className="fa-solid fa-laptop text-white text-xl"></i>
                                         </div>
                                         <div>
@@ -281,21 +281,21 @@ const AboutUsPage = () => {
                                 <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Our Achievements</h3>
 
                                 <div className="space-y-4">
-                                    <div className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-trophy text-purple-600 text-xl mr-4"></i>
+                                    <div className="flex items-center p-4 bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm">
+                                        <i className="fa-solid fa-trophy text-[#7B3FA0] text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800">Multiple Awards</h5>
                                             <p className="text-gray-600 text-sm">Recognized for excellence in education</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-users text-blue-600 text-xl mr-4"></i>
+                                    <div className="flex items-center p-4 bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm">
+                                        <i className="fa-solid fa-users text-[#387B95] text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800">1000+ Students</h5>
                                             <p className="text-gray-600 text-sm">Successfully educated students</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm">
+                                    <div className="flex items-center p-4 bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm">
                                         <i className="fa-solid fa-star text-green-600 text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800">High Satisfaction</h5>
@@ -310,7 +310,7 @@ const AboutUsPage = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
+            <section className="py-20 bg-[#7B3FA0]">
                 <div className="container mx-auto px-6 text-center">
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                         Join Our <span className="text-yellow-300">Educational</span> Journey
@@ -320,10 +320,10 @@ const AboutUsPage = () => {
                         Start your educational journey with us today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-white text-purple-600 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <button className="px-8 py-4 bg-white text-[#7B3FA0] rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl">
                             Apply Now
                         </button>
-                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-purple-600 transition-all duration-300">
+                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-[#7B3FA0] transition-all duration-300">
                             Learn More
                         </button>
                     </div>

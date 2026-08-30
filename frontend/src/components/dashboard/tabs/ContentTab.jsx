@@ -109,7 +109,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.hero.title}
                         onChange={(e) => handleInputChange('hero', 'title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
                 <div>
@@ -118,7 +118,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.hero.subtitle}
                         onChange={(e) => handleInputChange('hero', 'subtitle', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
             </div>
@@ -128,7 +128,7 @@ const ContentTab = () => {
                     value={formData.hero.description}
                     onChange={(e) => handleInputChange('hero', 'description', e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                 />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -138,7 +138,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.hero.buttonText}
                         onChange={(e) => handleInputChange('hero', 'buttonText', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
                 <div>
@@ -147,7 +147,7 @@ const ContentTab = () => {
                         type="url"
                         value={formData.hero.backgroundImage}
                         onChange={(e) => handleInputChange('hero', 'backgroundImage', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
             </div>
@@ -163,7 +163,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.about.title}
                         onChange={(e) => handleInputChange('about', 'title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
                 <div>
@@ -172,7 +172,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.about.subtitle}
                         onChange={(e) => handleInputChange('about', 'subtitle', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
             </div>
@@ -182,7 +182,7 @@ const ContentTab = () => {
                     value={formData.about.description}
                     onChange={(e) => handleInputChange('about', 'description', e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                 />
             </div>
             <div>
@@ -194,7 +194,7 @@ const ContentTab = () => {
                                 type="text"
                                 value={feature}
                                 onChange={(e) => handleFeatureChange(index, e.target.value)}
-                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             />
                             <button
                                 onClick={() => removeFeature(index)}
@@ -208,7 +208,7 @@ const ContentTab = () => {
                     ))}
                     <button
                         onClick={addFeature}
-                        className="px-4 py-2 text-purple-600 hover:text-purple-800 text-sm font-medium"
+                        className="px-4 py-2 text-[#7B3FA0] hover:text-purple-800 text-sm font-medium"
                     >
                         + Add Feature
                     </button>
@@ -226,7 +226,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.contact.title}
                         onChange={(e) => handleInputChange('contact', 'title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
                 <div>
@@ -235,7 +235,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.contact.subtitle}
                         onChange={(e) => handleInputChange('contact', 'subtitle', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
             </div>
@@ -245,7 +245,7 @@ const ContentTab = () => {
                     value={formData.contact.address}
                     onChange={(e) => handleInputChange('contact', 'address', e.target.value)}
                     rows={2}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                 />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -255,7 +255,7 @@ const ContentTab = () => {
                         type="tel"
                         value={formData.contact.phone}
                         onChange={(e) => handleInputChange('contact', 'phone', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
                 <div>
@@ -264,7 +264,7 @@ const ContentTab = () => {
                         type="email"
                         value={formData.contact.email}
                         onChange={(e) => handleInputChange('contact', 'email', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
                 <div>
@@ -273,7 +273,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.contact.hours}
                         onChange={(e) => handleInputChange('contact', 'hours', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
             </div>
@@ -289,7 +289,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.courses.title}
                         onChange={(e) => handleInputChange('courses', 'title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
                 <div>
@@ -298,7 +298,7 @@ const ContentTab = () => {
                         type="text"
                         value={formData.courses.subtitle}
                         onChange={(e) => handleInputChange('courses', 'subtitle', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                     />
                 </div>
             </div>
@@ -308,10 +308,10 @@ const ContentTab = () => {
                     value={formData.courses.description}
                     onChange={(e) => handleInputChange('courses', 'description', e.target.value)}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                 />
             </div>
-            <div className="bg-blue-50 p-4 rounded-lg">
+            <div className="bg-[#D0E8F0] p-4 rounded-lg">
                 <p className="text-sm text-blue-800">
                     <strong>Note:</strong> Course management is handled separately in the Students section.
                     This section only controls the display text on the website.
@@ -340,7 +340,7 @@ const ContentTab = () => {
                 </div>
                 <button
                     onClick={handleSave}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center"
+                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors duration-200 flex items-center"
                 >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />

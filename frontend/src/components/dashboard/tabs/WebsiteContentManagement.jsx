@@ -123,7 +123,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.siteName || ''}
                         onChange={(e) => handleInputChange('siteName', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -133,7 +133,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.siteDescription || ''}
                         onChange={(e) => handleInputChange('siteDescription', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -143,7 +143,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.siteLogo || ''}
                         onChange={(e) => handleInputChange('siteLogo', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -153,7 +153,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.siteFavicon || ''}
                         onChange={(e) => handleInputChange('siteFavicon', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
             </div>
@@ -167,7 +167,7 @@ const WebsiteContentManagement = () => {
                             type="text"
                             value={content?.contactInfo?.phone || ''}
                             onChange={(e) => handleInputChange('contactInfo.phone', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
@@ -177,7 +177,7 @@ const WebsiteContentManagement = () => {
                             type="email"
                             value={content?.contactInfo?.email || ''}
                             onChange={(e) => handleInputChange('contactInfo.email', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
@@ -187,7 +187,7 @@ const WebsiteContentManagement = () => {
                             value={content?.contactInfo?.address || ''}
                             onChange={(e) => handleInputChange('contactInfo.address', e.target.value)}
                             rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
@@ -197,7 +197,7 @@ const WebsiteContentManagement = () => {
                             type="text"
                             value={content?.contactInfo?.mapUrl || ''}
                             onChange={(e) => handleInputChange('contactInfo.mapUrl', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
                 </div>
@@ -212,7 +212,7 @@ const WebsiteContentManagement = () => {
                             type="url"
                             value={content?.socialLinks?.facebook || ''}
                             onChange={(e) => handleInputChange('socialLinks.facebook', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
@@ -222,7 +222,7 @@ const WebsiteContentManagement = () => {
                             type="url"
                             value={content?.socialLinks?.twitter || ''}
                             onChange={(e) => handleInputChange('socialLinks.twitter', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
@@ -232,7 +232,7 @@ const WebsiteContentManagement = () => {
                             type="url"
                             value={content?.socialLinks?.instagram || ''}
                             onChange={(e) => handleInputChange('socialLinks.instagram', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
@@ -242,7 +242,7 @@ const WebsiteContentManagement = () => {
                             type="url"
                             value={content?.socialLinks?.youtube || ''}
                             onChange={(e) => handleInputChange('socialLinks.youtube', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
@@ -252,7 +252,7 @@ const WebsiteContentManagement = () => {
                             type="url"
                             value={content?.socialLinks?.linkedin || ''}
                             onChange={(e) => handleInputChange('socialLinks.linkedin', e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
                 </div>
@@ -266,7 +266,7 @@ const WebsiteContentManagement = () => {
                 <h3 className="text-lg font-semibold text-gray-900">Hero Carousel Images</h3>
                 <button
                     onClick={() => addArrayItem('heroCarousel', { image: '', title: '', subtitle: '', order: 0, isActive: true })}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
                 >
                     Add Image
                 </button>
@@ -292,7 +292,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={slide.image || ''}
                                     onChange={(e) => handleArrayItemChange('heroCarousel', index, 'image', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -302,7 +302,7 @@ const WebsiteContentManagement = () => {
                                     type="number"
                                     value={slide.order || 0}
                                     onChange={(e) => handleArrayItemChange('heroCarousel', index, 'order', parseInt(e.target.value))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -312,7 +312,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={slide.title || ''}
                                     onChange={(e) => handleArrayItemChange('heroCarousel', index, 'title', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -322,7 +322,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={slide.subtitle || ''}
                                     onChange={(e) => handleArrayItemChange('heroCarousel', index, 'subtitle', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -350,7 +350,7 @@ const WebsiteContentManagement = () => {
                 <h3 className="text-lg font-semibold text-gray-900">Navigation Menu</h3>
                 <button
                     onClick={() => addArrayItem('navigationItems', { name: '', href: '', icon: '', order: 0, isActive: true })}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
                 >
                     Add Item
                 </button>
@@ -376,7 +376,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={item.name || ''}
                                     onChange={(e) => handleArrayItemChange('navigationItems', index, 'name', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -386,7 +386,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={item.href || ''}
                                     onChange={(e) => handleArrayItemChange('navigationItems', index, 'href', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -396,7 +396,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={item.icon || ''}
                                     onChange={(e) => handleArrayItemChange('navigationItems', index, 'icon', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -406,7 +406,7 @@ const WebsiteContentManagement = () => {
                                     type="number"
                                     value={item.order || 0}
                                     onChange={(e) => handleArrayItemChange('navigationItems', index, 'order', parseInt(e.target.value))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -434,7 +434,7 @@ const WebsiteContentManagement = () => {
                 <h3 className="text-lg font-semibold text-gray-900">Quick Links</h3>
                 <button
                     onClick={() => addArrayItem('quickLinks', { name: '', icon: '', href: '', color: '', order: 0, isActive: true })}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
                 >
                     Add Link
                 </button>
@@ -460,7 +460,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={link.name || ''}
                                     onChange={(e) => handleArrayItemChange('quickLinks', index, 'name', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -470,7 +470,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={link.icon || ''}
                                     onChange={(e) => handleArrayItemChange('quickLinks', index, 'icon', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -480,7 +480,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={link.href || ''}
                                     onChange={(e) => handleArrayItemChange('quickLinks', index, 'href', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -490,7 +490,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={link.color || ''}
                                     onChange={(e) => handleArrayItemChange('quickLinks', index, 'color', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -500,7 +500,7 @@ const WebsiteContentManagement = () => {
                                     type="number"
                                     value={link.order || 0}
                                     onChange={(e) => handleArrayItemChange('quickLinks', index, 'order', parseInt(e.target.value))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -528,7 +528,7 @@ const WebsiteContentManagement = () => {
                 <h3 className="text-lg font-semibold text-gray-900">Management Team</h3>
                 <button
                     onClick={() => addArrayItem('managementTeam', { name: '', position: '', image: '', bio: '', order: 0, isActive: true })}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
                 >
                     Add Member
                 </button>
@@ -554,7 +554,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={member.name || ''}
                                     onChange={(e) => handleArrayItemChange('managementTeam', index, 'name', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -564,7 +564,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={member.position || ''}
                                     onChange={(e) => handleArrayItemChange('managementTeam', index, 'position', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -574,7 +574,7 @@ const WebsiteContentManagement = () => {
                                     type="text"
                                     value={member.image || ''}
                                     onChange={(e) => handleArrayItemChange('managementTeam', index, 'image', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -584,7 +584,7 @@ const WebsiteContentManagement = () => {
                                     type="number"
                                     value={member.order || 0}
                                     onChange={(e) => handleArrayItemChange('managementTeam', index, 'order', parseInt(e.target.value))}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -594,7 +594,7 @@ const WebsiteContentManagement = () => {
                                     value={member.bio || ''}
                                     onChange={(e) => handleArrayItemChange('managementTeam', index, 'bio', e.target.value)}
                                     rows={3}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 />
                             </div>
 
@@ -627,7 +627,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.chairmanMessage?.name || ''}
                         onChange={(e) => handleInputChange('chairmanMessage.name', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -637,7 +637,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.chairmanMessage?.position || ''}
                         onChange={(e) => handleInputChange('chairmanMessage.position', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -647,7 +647,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.chairmanMessage?.image || ''}
                         onChange={(e) => handleInputChange('chairmanMessage.image', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -657,7 +657,7 @@ const WebsiteContentManagement = () => {
                         value={content?.chairmanMessage?.message || ''}
                         onChange={(e) => handleInputChange('chairmanMessage.message', e.target.value)}
                         rows={6}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -687,7 +687,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.milestone?.year || ''}
                         onChange={(e) => handleInputChange('milestone.year', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -697,7 +697,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.milestone?.title || ''}
                         onChange={(e) => handleInputChange('milestone.title', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -707,7 +707,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.milestone?.image || ''}
                         onChange={(e) => handleInputChange('milestone.image', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -717,7 +717,7 @@ const WebsiteContentManagement = () => {
                         value={content?.milestone?.description || ''}
                         onChange={(e) => handleInputChange('milestone.description', e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -747,7 +747,7 @@ const WebsiteContentManagement = () => {
                         value={content?.footerContent?.aboutText || ''}
                         onChange={(e) => handleInputChange('footerContent.aboutText', e.target.value)}
                         rows={4}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -757,7 +757,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.footerContent?.copyrightText || ''}
                         onChange={(e) => handleInputChange('footerContent.copyrightText', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -767,7 +767,7 @@ const WebsiteContentManagement = () => {
                         value={content?.footerContent?.disclaimerText || ''}
                         onChange={(e) => handleInputChange('footerContent.disclaimerText', e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
             </div>
@@ -785,7 +785,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.seoSettings?.metaTitle || ''}
                         onChange={(e) => handleInputChange('seoSettings.metaTitle', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -795,7 +795,7 @@ const WebsiteContentManagement = () => {
                         value={content?.seoSettings?.metaDescription || ''}
                         onChange={(e) => handleInputChange('seoSettings.metaDescription', e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -805,7 +805,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={(content?.seoSettings?.metaKeywords || []).join(', ')}
                         onChange={(e) => handleInputChange('seoSettings.metaKeywords', e.target.value.split(',').map(k => k.trim()))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -815,7 +815,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.seoSettings?.ogTitle || ''}
                         onChange={(e) => handleInputChange('seoSettings.ogTitle', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -825,7 +825,7 @@ const WebsiteContentManagement = () => {
                         value={content?.seoSettings?.ogDescription || ''}
                         onChange={(e) => handleInputChange('seoSettings.ogDescription', e.target.value)}
                         rows={3}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
 
@@ -835,7 +835,7 @@ const WebsiteContentManagement = () => {
                         type="text"
                         value={content?.seoSettings?.ogImage || ''}
                         onChange={(e) => handleInputChange('seoSettings.ogImage', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     />
                 </div>
             </div>
@@ -870,7 +870,7 @@ const WebsiteContentManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -897,7 +897,7 @@ const WebsiteContentManagement = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
-                                ? 'border-blue-500 text-blue-600'
+                                ? 'border-blue-500 text-[#387B95]'
                                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                                 }`}
                         >
@@ -909,7 +909,7 @@ const WebsiteContentManagement = () => {
             </div>
 
             {/* Tab Content */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}

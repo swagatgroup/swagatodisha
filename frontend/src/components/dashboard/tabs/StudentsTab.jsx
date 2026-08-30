@@ -180,7 +180,7 @@ const StudentsTab = () => {
                 </div>
                 <button
                     onClick={handleAddStudent}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-200 flex items-center"
+                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors duration-200 flex items-center"
                 >
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -235,7 +235,7 @@ const StudentsTab = () => {
                                 placeholder="Search by name or roll"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             />
                             <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -246,7 +246,7 @@ const StudentsTab = () => {
                         <select
                             value={admissionTypeFilter}
                             onChange={(e) => setAdmissionTypeFilter(e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         >
                             <option value="all">All Types</option>
                             <option value="paid">Paid</option>
@@ -255,7 +255,7 @@ const StudentsTab = () => {
                         <select
                             value={filterPeriod}
                             onChange={(e) => setFilterPeriod(e.target.value)}
-                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         >
                             <option>Last 30 days</option>
                             <option>Last 7 days</option>
@@ -274,7 +274,7 @@ const StudentsTab = () => {
                                         type="checkbox"
                                         checked={selectedStudents.length === filteredStudents.length && filteredStudents.length > 0}
                                         onChange={(e) => handleSelectAll(e.target.checked)}
-                                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                        className="rounded border-gray-300 text-[#7B3FA0] focus:ring-[#7B3FA0]"
                                     />
                                 </th>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students Name</th>
@@ -294,7 +294,7 @@ const StudentsTab = () => {
                                 <tr>
                                     <td colSpan="9" className="px-6 py-4 text-center">
                                         <div className="flex items-center justify-center">
-                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0]"></div>
                                             <span className="ml-2">Loading students...</span>
                                         </div>
                                     </td>
@@ -313,14 +313,14 @@ const StudentsTab = () => {
                                                 type="checkbox"
                                                 checked={selectedStudents.includes(student.id)}
                                                 onChange={(e) => handleSelectStudent(student.id, e.target.checked)}
-                                                className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                                                className="rounded border-gray-300 text-[#7B3FA0] focus:ring-[#7B3FA0]"
                                             />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                                        <span className="text-sm font-medium text-purple-600">
+                                                    <div className="h-10 w-10 rounded-full bg-[#EDE0F7] flex items-center justify-center">
+                                                        <span className="text-sm font-medium text-[#7B3FA0]">
                                                             {student.fullName?.split(' ').map(n => n[0]).join('') || 'S'}
                                                         </span>
                                                     </div>
@@ -363,7 +363,7 @@ const StudentsTab = () => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => handleEditStudent(student)}
-                                                    className="text-indigo-600 hover:text-indigo-900"
+                                                    className="text-[#7B3FA0] hover:text-indigo-900"
                                                     title="Edit"
                                                 >
                                                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,7 +396,7 @@ const StudentsTab = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <button className="px-3 py-1 text-sm bg-purple-600 text-white rounded">1</button>
+                        <button className="px-3 py-1 text-sm bg-[#7B3FA0] text-white rounded">1</button>
                         <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">2</button>
                         <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">3</button>
                         <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">4</button>
@@ -446,7 +446,7 @@ const StudentsTab = () => {
                                         value={formData.fullName}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                     />
                                 </div>
 
@@ -458,7 +458,7 @@ const StudentsTab = () => {
                                         value={formData.email}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                     />
                                 </div>
 
@@ -470,7 +470,7 @@ const StudentsTab = () => {
                                         value={formData.phone}
                                         onChange={(e) => handleInputChange({ target: { name: 'phone', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                         maxLength="10"
                                     />
                                 </div>
@@ -483,7 +483,7 @@ const StudentsTab = () => {
                                         value={formData.course}
                                         onChange={handleInputChange}
                                         required
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                     />
                                 </div>
 
@@ -494,7 +494,7 @@ const StudentsTab = () => {
                                         name="address"
                                         value={formData.address}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                     />
                                 </div>
 
@@ -506,7 +506,7 @@ const StudentsTab = () => {
                                             name="class"
                                             value={formData.class}
                                             onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                         />
                                     </div>
 
@@ -517,7 +517,7 @@ const StudentsTab = () => {
                                             name="dob"
                                             value={formData.dob}
                                             onChange={handleInputChange}
-                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                         />
                                     </div>
                                 </div>
@@ -529,7 +529,7 @@ const StudentsTab = () => {
                                         name="referralCode"
                                         value={formData.referralCode}
                                         onChange={handleInputChange}
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                                     />
                                 </div>
 
@@ -543,7 +543,7 @@ const StudentsTab = () => {
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700"
+                                        className="px-4 py-2 text-sm font-medium text-white bg-[#7B3FA0] border border-transparent rounded-md hover:bg-[#5C2D80]"
                                     >
                                         {editingStudent ? 'Update Student' : 'Add Student'}
                                     </button>

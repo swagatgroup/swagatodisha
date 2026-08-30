@@ -347,7 +347,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
     const getStatusColor = (status) => {
         switch (status) {
             case 'uploaded': return 'text-green-600 bg-green-100 dark:bg-green-900/20';
-            case 'uploading': return 'text-blue-600 bg-blue-100 dark:bg-blue-900/20';
+            case 'uploading': return 'text-[#387B95] bg-blue-100 dark:bg-blue-900/20';
             case 'error': return 'text-red-600 bg-red-100 dark:bg-red-900/20';
             default: return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
         }
@@ -356,7 +356,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
     const getStatusIcon = (status) => {
         switch (status) {
             case 'uploaded': return <DocumentIcon className="w-4 h-4" />;
-            case 'uploading': return <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />;
+            case 'uploading': return <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#387B95]" />;
             case 'error': return <XMarkIcon className="w-4 h-4" />;
             default: return <CloudArrowUpIcon className="w-4 h-4" />;
         }
@@ -365,7 +365,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
     if (loading) {
         return (
             <div className="flex items-center justify-center p-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -394,7 +394,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                         const fileSize = (doc.size / 1024).toFixed(1);
 
                         return (
-                            <div key={docId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div key={docId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#2A1E2E] rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center space-x-3">
                                     <DocumentIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
                                     <div>
@@ -407,7 +407,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                         href={doc.downloadUrl || doc.filePath || '#'}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium underline"
+                                        className="text-[#387B95] dark:text-[#60A5FA] hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium underline"
                                     >
                                         {fileName}
                                     </a>
@@ -477,14 +477,14 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                     {docType.validation?.note && (
                                         <div className="flex items-center space-x-1 mt-1">
                                             <InformationCircleIcon className="h-4 w-4 text-blue-500" />
-                                            <p className="text-xs text-blue-600">{docType.validation.note}</p>
+                                            <p className="text-xs text-[#387B95]">{docType.validation.note}</p>
                                         </div>
                                     )}
                                 </div>
                             </div>
 
                             {document ? (
-                                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#2A1E2E] rounded-lg">
                                     <div className="flex items-center space-x-3">
                                         <div className={`p-2 rounded-full ${getStatusColor(status)}`}>
                                             {getStatusIcon(status)}
@@ -510,7 +510,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                             ) : (
                                 <div
                                     className={`border-2 border-dashed rounded-lg p-4 text-center transition-colors ${dragActive[docId]
-                                        ? 'border-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                                        ? 'border-blue-400 bg-[#D0E8F0] dark:bg-blue-900/20'
                                         : 'border-gray-300 dark:border-gray-600'
                                         }`}
                                     onDragEnter={(e) => handleDragIn(e, docId)}
@@ -535,7 +535,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                             <CloudArrowUpIcon className={`w-8 h-8 mb-2 ${dragActive[docId] ? 'text-blue-500' : 'text-gray-400'
                                                 }`} />
                                             <p className={`text-sm ${dragActive[docId]
-                                                ? 'text-blue-600 dark:text-blue-400'
+                                                ? 'text-[#387B95] dark:text-[#60A5FA]'
                                                 : 'text-gray-600 dark:text-gray-400'
                                                 }`}>
                                                 {dragActive[docId]
@@ -552,7 +552,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                             )}
 
                             {docType.instructions && (
-                                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                                <p className="text-xs text-[#387B95] dark:text-[#60A5FA] mt-2">
                                     💡 {docType.instructions}
                                 </p>
                             )}

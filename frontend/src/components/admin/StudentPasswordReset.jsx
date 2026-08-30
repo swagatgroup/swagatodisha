@@ -90,17 +90,17 @@ const StudentPasswordReset = () => {
             title: `<h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2 text-center">Reset Password</h3>`,
             html: `
                 <div class="text-center mt-2 mb-6">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-purple-600 dark:text-purple-400">${student.personalDetails?.fullName || student.fullName || 'Student'}</span>'s account.</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-[#7B3FA0] dark:text-[#A855D0]">${student.personalDetails?.fullName || student.fullName || 'Student'}</span>'s account.</p>
                 </div>
                 <div class="relative w-full mx-auto group">
                  <input type="password" id="new-password-input"
                         name="new-student-password"
                         autocomplete="new-password"
                         readonly onfocus="this.removeAttribute('readonly');"
-                        class="w-full px-4 py-3 pr-12 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400" 
+                        class="w-full px-4 py-3 pr-12 text-sm border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent transition-all duration-300 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400" 
                         placeholder="New Password (min. 6 chars)">
                     <button type="button" id="toggle-password" 
-                        class="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-purple-500 transition-colors duration-200 focus:outline-none">
+                        class="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-[#7B3FA0] transition-colors duration-200 focus:outline-none">
                         <svg id="eye-icon-open" class="h-5 w-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -117,10 +117,10 @@ const StudentPasswordReset = () => {
             showCancelButton: true,
             buttonsStyling: false,
             customClass: {
-                popup: 'rounded-2xl shadow-xl dark:bg-gray-800 dark:border-gray-700',
+                popup: 'rounded-2xl shadow-xl dark:bg-[#2A1E2E] dark:border-gray-700',
                 title: 'p-0 text-center',
                 htmlContainer: 'text-center m-0',
-                confirmButton: 'px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl transition-colors shadow-sm mx-1',
+                confirmButton: 'px-5 py-2.5 bg-[#7B3FA0] hover:bg-[#5C2D80] text-white text-sm font-medium rounded-xl transition-colors shadow-sm mx-1',
                 cancelButton: 'px-5 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 text-sm font-medium rounded-xl transition-colors mx-1',
                 actions: 'mt-6 w-full flex justify-center gap-2'
             },
@@ -219,11 +219,11 @@ const StudentPasswordReset = () => {
         const roleMeta = {
             agent: {
                 label: 'Agent',
-                color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400'
+                color: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-[#60A5FA]'
             },
             staff: {
                 label: 'Staff',
-                color: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400'
+                color: 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/30 dark:text-[#A855D0]'
             },
             super_admin: {
                 label: 'Admin',
@@ -250,8 +250,8 @@ const StudentPasswordReset = () => {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-800/50">
+        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#2A1E2E]/50">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                     <svg className="w-5 h-5 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -271,7 +271,7 @@ const StudentPasswordReset = () => {
                             </div>
                             <input
                                 type="text"
-                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
+                                className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#7B3FA0] focus:border-indigo-500 sm:text-sm text-gray-900 dark:text-white"
                                 placeholder="Search by name, email..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -282,7 +282,7 @@ const StudentPasswordReset = () => {
                         <select
                             value={filterType}
                             onChange={(e) => setFilterType(e.target.value)}
-                            className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white cursor-pointer"
+                            className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-[#7B3FA0] focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white cursor-pointer"
                         >
                             <option value="all">All Registrations</option>
                             <option value="direct">Direct Students</option>
@@ -293,7 +293,7 @@ const StudentPasswordReset = () => {
 
                 <div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead className="bg-gray-50 dark:bg-gray-800">
+                        <thead className="bg-gray-50 dark:bg-[#2A1E2E]">
                             <tr>
                                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Student Details
@@ -309,7 +309,7 @@ const StudentPasswordReset = () => {
                                 </th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody className="bg-white dark:bg-[#1A1212] divide-y divide-gray-200 dark:divide-gray-700">
                             {loading ? (
                                 <tr>
                                     <td colSpan="4" className="px-6 py-12 text-center">
@@ -329,8 +329,8 @@ const StudentPasswordReset = () => {
                                         {/* Student Details */}
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <div className="h-10 w-10 flex-shrink-0 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
-                                                    <span className="text-indigo-600 dark:text-indigo-400 font-bold text-lg">
+                                                <div className="h-10 w-10 flex-shrink-0 rounded-full bg-indigo-100 dark:bg-[#2A1E2E] flex items-center justify-center">
+                                                    <span className="text-[#7B3FA0] dark:text-[#A855D0] font-bold text-lg">
                                                         {(student.personalDetails?.fullName || student.fullName || '?').charAt(0).toUpperCase()}
                                                     </span>
                                                 </div>
@@ -359,7 +359,7 @@ const StudentPasswordReset = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                             <button
                                                 onClick={() => handleResetPasswordClick(student)}
-                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-md transition-colors"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-indigo-200 dark:border-indigo-800 text-[#5C2D80] dark:text-[#A855D0] hover:bg-[#EDE0F7] dark:hover:bg-indigo-900/30 rounded-md transition-colors"
                                             >
                                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -381,14 +381,14 @@ const StudentPasswordReset = () => {
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
-                                className="relative inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                                className="relative inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2A1E2E] px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
                             >
                                 Previous
                             </button>
                             <button
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
-                                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                                className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#2A1E2E] px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
                             >
                                 Next
                             </button>

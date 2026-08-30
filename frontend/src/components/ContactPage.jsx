@@ -4,7 +4,7 @@ import BackToMainWebsite from './BackToMainWebsite'
 
 const ContactPage = () => {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+        <div className="min-h-screen bg-[#FAF7F2]">
             <BackToMainWebsite variant="floating" />
             <ContactUs />
         </div>

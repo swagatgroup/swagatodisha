@@ -247,7 +247,7 @@ const DocumentVerification = ({ onStudentUpdate }) => {
                                                         setSelectedDocument(document);
                                                         setShowViewer(true);
                                                     }}
-                                                    className="px-3 py-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                    className="px-3 py-1 text-[#387B95] hover:text-blue-800 text-sm font-medium"
                                                 >
                                                     View
                                                 </button>

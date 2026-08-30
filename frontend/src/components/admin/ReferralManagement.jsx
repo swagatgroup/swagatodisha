@@ -190,7 +190,7 @@ const ReferralManagement = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -200,7 +200,7 @@ const ReferralManagement = () => {
             <div className="p-6 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
-                        <UsersIcon className="h-6 w-6 text-blue-600" />
+                        <UsersIcon className="h-6 w-6 text-[#387B95]" />
                         <h2 className="text-xl font-bold text-gray-900">Referral Code Management</h2>
                     </div>
                     <button
@@ -224,14 +224,14 @@ const ReferralManagement = () => {
                             placeholder="Search users or codes..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                     </div>
 
                     <select
                         value={filterRole}
                         onChange={(e) => setFilterRole(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     >
                         <option value="all">All Roles</option>
                         <option value="student">Students</option>
@@ -243,7 +243,7 @@ const ReferralManagement = () => {
                     <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                     >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -295,7 +295,7 @@ const ReferralManagement = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                    ${user.role === 'admin' || user.role === 'super_admin' ? 'bg-purple-100 text-purple-800' :
+                    ${user.role === 'admin' || user.role === 'super_admin' ? 'bg-[#EDE0F7] text-purple-800' :
                                             user.role === 'staff' ? 'bg-blue-100 text-blue-800' :
                                                 user.role === 'agent' ? 'bg-green-100 text-green-800' :
                                                     'bg-gray-100 text-gray-800'}
@@ -310,7 +310,7 @@ const ReferralManagement = () => {
                                                 type="text"
                                                 value={newCode}
                                                 onChange={(e) => setNewCode(e.target.value)}
-                                                className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                                 placeholder="Enter referral code"
                                             />
                                             <button
@@ -335,7 +335,7 @@ const ReferralManagement = () => {
                                                     </span>
                                                     <button
                                                         onClick={() => copyToClipboard(user.referralCode)}
-                                                        className="p-1 text-blue-600 hover:bg-blue-50 rounded"
+                                                        className="p-1 text-[#387B95] hover:bg-[#D0E8F0] rounded"
                                                         title="CopyIcon to clipboard"
                                                     >
                                                         <CopyIcon className="h-4 w-4" />
@@ -360,7 +360,7 @@ const ReferralManagement = () => {
                                             type="checkbox"
                                             checked={user.isReferralActive || false}
                                             onChange={() => toggleReferralStatus(user._id, user.isReferralActive)}
-                                            className="text-blue-600 focus:ring-blue-500"
+                                            className="text-[#387B95] focus:ring-[#387B95]"
                                             disabled={!user.referralCode}
                                         />
                                         <span className="ml-2 text-sm text-gray-700">
@@ -384,7 +384,7 @@ const ReferralManagement = () => {
                                         {!user.referralCode ? (
                                             <button
                                                 onClick={() => generateReferralCode(user._id)}
-                                                className="inline-flex items-center px-3 py-1 border border-transparent text-xs leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                className="inline-flex items-center px-3 py-1 border border-transparent text-xs leading-4 font-medium rounded-md text-white bg-[#387B95] hover:bg-[#1D4B5E] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#387B95]"
                                             >
                                                 <PlusIcon className="h-3 w-3 mr-1" />
                                                 Generate
@@ -392,7 +392,7 @@ const ReferralManagement = () => {
                                         ) : (
                                             <button
                                                 onClick={() => handleEditIconCode(user._id, '')}
-                                                className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#387B95]"
                                             >
                                                 <PlusIcon className="h-3 w-3 mr-1" />
                                                 New Code

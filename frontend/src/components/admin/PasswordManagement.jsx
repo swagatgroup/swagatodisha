@@ -158,7 +158,7 @@ const PasswordManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
             </div>
         );
     }
@@ -174,7 +174,7 @@ const PasswordManagement = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Password Management</h2>
@@ -183,7 +183,7 @@ const PasswordManagement = () => {
                     <div className="flex space-x-3">
                         <button
                             onClick={fetchPasswordAudit}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                            className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] transition-colors"
                         >
                             <RefreshIcon className="h-4 w-4 mr-2 inline" />
                             Refresh
@@ -200,12 +200,12 @@ const PasswordManagement = () => {
             </div>
 
             {/* Password Security Overview */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Password Security Overview</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                         <div className="flex items-center">
-                            <UsersIcon className="h-8 w-8 text-blue-600 mr-3" />
+                            <UsersIcon className="h-8 w-8 text-[#387B95] mr-3" />
                             <div>
                                 <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total UsersIcon</p>
                                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{passwordAudit.totalUsersIcon}</p>
@@ -243,7 +243,7 @@ const PasswordManagement = () => {
             </div>
 
             {/* Password Strength Distribution */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Password Strength Distribution</h3>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -296,7 +296,7 @@ const PasswordManagement = () => {
 
             {/* UsersIcon with Weak Passwords */}
             {passwordAudit.weakPasswordDetails && passwordAudit.weakPasswordDetails.length > 0 && (
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">UsersIcon with Weak Passwords</h3>
                         <div className="flex space-x-3">
@@ -307,13 +307,13 @@ const PasswordManagement = () => {
                                     placeholder="SearchIcon users..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchIconTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                 />
                             </div>
                             <select
                                 value={filterStatus}
                                 onChange={(e) => setFilterIconStatus(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                             >
                                 <option value="all">All Strength</option>
                                 <option value="weak">Weak</option>
@@ -344,7 +344,7 @@ const PasswordManagement = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
                                 {filteredUsersIcon.map((user, index) => (
                                     <motion.tr
                                         key={index}
@@ -355,8 +355,8 @@ const PasswordManagement = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                                                        <span className="text-sm font-medium text-purple-600">
+                                                    <div className="h-10 w-10 rounded-full bg-[#EDE0F7] flex items-center justify-center">
+                                                        <span className="text-sm font-medium text-[#7B3FA0]">
                                                             {user.email.split('@')[0].substring(0, 2).toUpperCase()}
                                                         </span>
                                                     </div>
@@ -409,7 +409,7 @@ const PasswordManagement = () => {
             )}
 
             {/* Password Security Recommendations */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Security Recommendations</h3>
                 <div className="space-y-4">
                     {[
@@ -450,14 +450,14 @@ const PasswordManagement = () => {
                                     <div className="flex items-center space-x-3 mb-2">
                                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${rec.priority === 'high' ? 'text-red-600 bg-red-100' :
                                             rec.priority === 'medium' ? 'text-yellow-600 bg-yellow-100' :
-                                                'text-blue-600 bg-blue-100'
+                                                'text-[#387B95] bg-blue-100'
                                             }`}>
                                             {rec.priority.toUpperCase()}
                                         </span>
                                         <h5 className="font-semibold text-gray-900">{rec.title}</h5>
                                     </div>
                                     <p className="text-gray-600 dark:text-gray-400 mb-2">{rec.description}</p>
-                                    <p className="text-sm text-blue-600 font-medium">{rec.action}</p>
+                                    <p className="text-sm text-[#387B95] font-medium">{rec.action}</p>
                                 </div>
                             </div>
                         </motion.div>

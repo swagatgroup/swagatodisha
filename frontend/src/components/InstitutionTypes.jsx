@@ -1745,18 +1745,18 @@ const InstitutionTypes = () => {
         <section className="relative py-20 overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-purple-100/30 dark:bg-purple-900/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-0 left-0 w-96 h-96 bg-[#EDE0F7]/30 dark:bg-[#2A1E2E]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 dark:from-purple-900/10 dark:to-blue-900/10 rounded-full blur-3xl"></div>
             </div>
 
             {/* Section Header */}
             <div className="relative z-10 text-center mb-16">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-3xl mb-6 shadow-2xl">
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl">
                     <i className="fa-solid fa-building-columns text-white text-3xl"></i>
                 </div>
                 <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                    Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Institution Types</span>
+                    Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Institution Types</span>
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
                     Discover our comprehensive range of educational institutions, each designed to provide specialized learning experiences and prepare students for successful careers.
@@ -1770,7 +1770,7 @@ const InstitutionTypes = () => {
                         <div
                             key={institution.id}
                             onClick={(event) => handleInstitutionCardClick(event, institution)}
-                            className="group cursor-pointer bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
+                            className="group cursor-pointer bg-white dark:bg-[#2A1E2E] rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
                         >
                             {/* Icon Container */}
                             <div className={`w-16 h-16 bg-gradient-to-r ${institution.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
@@ -1779,7 +1779,7 @@ const InstitutionTypes = () => {
 
                             {/* Content */}
                             <div className="text-center">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 group-hover:text-purple-600 transition-colors duration-300">
+                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 group-hover:text-[#7B3FA0] transition-colors duration-300">
                                     {institution.name}
                                 </h3>
                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">
@@ -1804,7 +1804,7 @@ const InstitutionTypes = () => {
                 >
                     {/* Modal Content - This prevents event bubbling */}
                     <div
-                        className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                        className="bg-white dark:bg-[#2A1E2E] rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
                         onClick={(event) => event.stopPropagation()}
                     >
                         {/* Modal Header */}
@@ -1836,7 +1836,7 @@ const InstitutionTypes = () => {
                                 {selectedInstitution.programs.map((program, index) => (
                                     <div
                                         key={index}
-                                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500"
+                                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-[#7B3FA0]"
                                         onClick={(event) => {
                                             if (program.hasWebsite) {
                                                 event.preventDefault()
@@ -1854,7 +1854,7 @@ const InstitutionTypes = () => {
                                                 <p className="text-xs text-gray-500 dark:text-gray-400">{program.details}</p>
                                                 <div className="mt-2 flex flex-wrap gap-2">
                                                     {program.hasSubCategories && (
-                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200">
+                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#EDE0F7] dark:bg-[#2A1E2E] text-purple-800 dark:text-purple-200">
                                                             <i className="fa-solid fa-layer-group mr-1"></i>
                                                             Has Sub-Categories
                                                         </span>
@@ -1868,7 +1868,7 @@ const InstitutionTypes = () => {
                                                 </div>
                                             </div>
                                             <div className="ml-4">
-                                                <i className={`fa-solid ${program.hasWebsite ? 'fa-external-link-alt' : 'fa-chevron-right'} text-purple-500 dark:text-purple-400`}></i>
+                                                <i className={`fa-solid ${program.hasWebsite ? 'fa-external-link-alt' : 'fa-chevron-right'} text-[#7B3FA0] dark:text-[#A855D0]`}></i>
                                             </div>
                                         </div>
                                     </div>
@@ -1887,7 +1887,7 @@ const InstitutionTypes = () => {
                 >
                     {/* Sub Modal Content - This prevents event bubbling */}
                     <div
-                        className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+                        className="bg-white dark:bg-[#2A1E2E] rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
                         onClick={(event) => event.stopPropagation()}
                     >
                         {/* Sub Modal Header */}
@@ -1895,7 +1895,7 @@ const InstitutionTypes = () => {
                             <div className="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedProgram.name}</h3>
-                                    <p className="text-purple-600 dark:text-purple-400 font-medium">{selectedProgram.type}</p>
+                                    <p className="text-[#7B3FA0] dark:text-[#A855D0] font-medium">{selectedProgram.type}</p>
                                 </div>
                                 <button
                                     onClick={(event) => handleCloseButtonClick(event, 'sub')}
@@ -1917,7 +1917,7 @@ const InstitutionTypes = () => {
                                         {selectedProgram.subCategories.map((course, index) => (
                                             <div
                                                 key={index}
-                                                className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500"
+                                                className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-[#7B3FA0]"
                                                 onClick={(event) => handleCourseCardClick(event, course)}
                                             >
                                                 <div className="flex items-start justify-between">
@@ -1927,7 +1927,7 @@ const InstitutionTypes = () => {
                                                         <p className="text-xs text-gray-500 dark:text-gray-400">{course.details}</p>
                                                     </div>
                                                     <div className="ml-4">
-                                                        <i className="fa-solid fa-chevron-right text-purple-500 dark:text-purple-400"></i>
+                                                        <i className="fa-solid fa-chevron-right text-[#7B3FA0] dark:text-[#A855D0]"></i>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1942,20 +1942,20 @@ const InstitutionTypes = () => {
                                         {Object.entries(selectedProgram.feeStructure).map(([key, value]) => (
                                             <div key={key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                                 <div className="flex items-center">
-                                                    <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full mr-3"></div>
+                                                    <div className="w-3 h-3 bg-[#7B3FA0] rounded-full mr-3"></div>
                                                     <span className="text-gray-700 dark:text-gray-300 font-medium capitalize">
                                                         {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                                     </span>
                                                 </div>
-                                                <span className="text-lg font-bold text-purple-600 dark:text-purple-400">{value}</span>
+                                                <span className="text-lg font-bold text-[#7B3FA0] dark:text-[#A855D0]">{value}</span>
                                             </div>
                                         ))}
                                     </div>
 
                                     {/* Additional Information */}
-                                    <div className="mt-8 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                                    <div className="mt-8 p-4 bg-[#D0E8F0] dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
                                         <h5 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Important Notes:</h5>
-                                        <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                                        <ul className="text-sm text-[#1D4B5E] dark:text-blue-300 space-y-1">
                                             <li>• Fees are subject to change as per institution policy</li>
                                             <li>• Additional charges may apply for practical sessions</li>
                                             <li>• Scholarships available for meritorious students</li>
@@ -1976,7 +1976,7 @@ const InstitutionTypes = () => {
                                     Close
                                 </button>
                                 {!selectedProgram.hasSubCategories && (
-                                    <button className="px-6 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200">
+                                    <button className="px-6 py-2 bg-[#7B3FA0] text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200">
                                         Apply Now
                                     </button>
                                 )}

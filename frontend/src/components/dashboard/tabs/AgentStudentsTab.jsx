@@ -574,7 +574,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
       </div>
     );
   }
@@ -591,11 +591,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg">
               <svg
-                className="w-6 h-6 text-blue-600"
+                className="w-6 h-6 text-[#387B95]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -619,7 +619,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-yellow-100 rounded-lg">
               <svg
@@ -645,7 +645,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-lg">
               <svg
@@ -671,11 +671,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
           <div className="flex items-center">
-            <div className="p-2 bg-purple-100 rounded-lg">
+            <div className="p-2 bg-[#EDE0F7] rounded-lg">
               <svg
-                className="w-6 h-6 text-purple-600"
+                className="w-6 h-6 text-[#7B3FA0]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -699,7 +699,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -711,7 +711,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, search: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="Search by name, Aadhaar, or phone..."
             />
           </div>
@@ -724,7 +724,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, status: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Statuses</option>
               <option value="DRAFT">Draft</option>
@@ -746,7 +746,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, course: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Courses</option>
               <option value="B.Tech Computer Science">
@@ -774,7 +774,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               onChange={(e) =>
                 setFilters((prev) => ({ ...prev, admissionType: e.target.value }))
               }
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Types</option>
               <option value="paid">Paid</option>
@@ -787,7 +787,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 console.log('🔄 Applying filters:', filters);
                 loadStudents();
               }}
-              className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+              className="w-full px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
             >
               Apply Filters
             </button>
@@ -807,7 +807,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       </div>
 
       {/* Students List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow">
+      <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Students ({filteredStudents.length})
@@ -840,7 +840,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
               {filteredStudents.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="px-6 py-12 text-center">
@@ -876,7 +876,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 font-semibold text-sm">
+                        <span className="text-[#387B95] font-semibold text-sm">
                           {student.personalDetails?.fullName?.charAt(0) || "S"}
                         </span>
                       </div>
@@ -933,7 +933,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       {/* View Details - Available for all statuses */}
                       <button
                         onClick={() => handleViewDetails(student)}
-                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-md transition-colors"
+                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#1D4B5E] bg-[#D0E8F0] hover:bg-blue-100 rounded-md transition-colors"
                         title="View application details"
                       >
                         <EyeIcon className="h-4 w-4 mr-1" />
@@ -1008,7 +1008,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           setFinancialStudent(student);
                           setShowFinancialsModal(true);
                         }}
-                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-md transition-colors"
+                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#5C2D80] bg-[#EDE0F7] hover:bg-[#EDE0F7] rounded-md transition-colors"
                         title="View Financials"
                       >
                         <CurrencyRupeeIcon className="h-4 w-4 mr-1" />
@@ -1036,7 +1036,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         <button
                           onClick={() => resubmitApplication(student._id)}
                           disabled={resubmitting}
-                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-50 hover:bg-purple-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#5C2D80] bg-[#EDE0F7] hover:bg-[#EDE0F7] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Resubmit application for review"
                         >
                           <ArrowPathIcon className="h-4 w-4 mr-1" />
@@ -1102,7 +1102,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             {/* Scrollable Content */}
             <div className="overflow-y-auto flex-1 p-6" style={{ maxHeight: 'calc(90vh - 200px)', overflowX: 'hidden', minHeight: '500px' }}>
               {/* Info about restricted fields */}
-              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+              <div className="mb-4 p-3 bg-[#D0E8F0] border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-800">
                   <strong>Note:</strong> You can edit most fields. However, the following fields can only be changed by admin: 
                   <strong> Aadhaar Number</strong>, <strong>Course Selection</strong>, <strong>Institution</strong>, <strong>Stream</strong>, and <strong>Campus</strong>.
@@ -1123,7 +1123,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           personalDetails: { ...editData.personalDetails, fullName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1135,7 +1135,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1147,7 +1147,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1158,7 +1158,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           personalDetails: { ...editData.personalDetails, gender: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       >
                         <option value="">Select Gender</option>
                         <option value="Male">Male</option>
@@ -1176,7 +1176,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1187,7 +1187,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           personalDetails: { ...editData.personalDetails, category: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       >
                         <option value="">Select Category</option>
                         <option value="General">General</option>
@@ -1211,7 +1211,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                             aadharNumber: e.target.value
                           }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1222,7 +1222,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           status: e.target.value
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       >
                         <option value="">Select Status</option>
                         <option value="DRAFT">Draft</option>
@@ -1255,7 +1255,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           });
                         }}
                         maxLength="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1271,7 +1271,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           });
                         }}
                         maxLength="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1283,7 +1283,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           contactDetails: { ...editData.contactDetails, email: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                   </div>
@@ -1307,7 +1307,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                             }
                           })}
                           rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1325,7 +1325,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                       </div>
                       <div>
@@ -1343,7 +1343,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                       </div>
                       <div>
@@ -1361,7 +1361,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                       </div>
                       <div>
@@ -1383,7 +1383,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                             });
                           }}
                           maxLength="6"
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                       </div>
                       <div>
@@ -1401,7 +1401,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                               }
                             }
                           })}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         />
                       </div>
                     </div>
@@ -1426,7 +1426,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                             }
                         })}
                           rows={2}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1444,7 +1444,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                               }
                             }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1462,7 +1462,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                               }
                             }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1484,7 +1484,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                             });
                           }}
                           maxLength="6"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                       </div>
                     </div>
@@ -1666,7 +1666,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1682,7 +1682,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           });
                         }}
                         maxLength="10"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1694,7 +1694,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           guardianDetails: { ...editData.guardianDetails, guardianEmail: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
                     </div>
                     <div>
@@ -1705,7 +1705,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           ...editData,
                           guardianDetails: { ...editData.guardianDetails, relationship: e.target.value }
                         })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       >
                         <option value="">Select Relationship</option>
                         <option value="Father">Father</option>
@@ -1723,14 +1723,14 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 </div>
 
                 {/* Document Upload Instructions */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <h4 className="text-md font-semibold text-blue-800 dark:text-blue-200 mb-2 flex items-center">
                     📎 Document Management
                   </h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-300 mb-2">
+                  <p className="text-sm text-[#1D4B5E] dark:text-blue-300 mb-2">
                     To upload or update documents for this student:
                   </p>
-                  <ol className="text-sm text-blue-700 dark:text-blue-300 list-decimal list-inside space-y-1">
+                  <ol className="text-sm text-[#1D4B5E] dark:text-blue-300 list-decimal list-inside space-y-1">
                     <li>Click "Save Changes" below to update the student information</li>
                     <li>Go to the <strong>"Documents"</strong> tab in the main dashboard</li>
                     <li>Find this student and upload/update their documents</li>
@@ -1755,7 +1755,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 </button>
                 <button
                   onClick={handleSaveEdit}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
                 >
                   Save Changes
                 </button>
@@ -1819,7 +1819,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     </h4>
                     <div className="space-y-4">
                       {rejectionDetails.rejectionDetails.map((detail, index) => (
-                        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#2A1E2E]">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Issue: </span>
@@ -1858,7 +1858,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Additional Notes</h4>
                     <div className="space-y-2">
                       {rejectionDetails.adminNotes.map((note, index) => (
-                        <div key={index} className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 dark:bg-gray-800">
+                        <div key={index} className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 dark:bg-[#2A1E2E]">
                           <p className="text-sm text-gray-900 dark:text-gray-100">{note.note || note}</p>
                           {note.addedAt && (
                             <p className="text-xs text-gray-500 mt-1">{new Date(note.addedAt).toLocaleString()}</p>
@@ -1870,7 +1870,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 )}
 
                 {/* Action Instructions */}
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <div className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                   <h4 className="text-md font-semibold text-blue-800 dark:text-blue-200 mb-2">
                     Next Steps
                   </h4>
@@ -1899,7 +1899,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         setShowRejectionModal(false);
                         handleEditStudent(selectedStudent);
                       }}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                      className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
                     >
                       Edit Application
                     </button>
@@ -1925,7 +1925,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       {/* View Details Modal */}
       {showViewModal && viewingStudent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -2064,7 +2064,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       setShowViewModal(false);
                       handleEditStudent(viewingStudent);
                     }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
                   >
                     Edit Application
                   </button>

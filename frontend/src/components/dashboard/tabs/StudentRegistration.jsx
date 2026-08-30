@@ -233,7 +233,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                 <div className="flex space-x-3">
                     <button
                         onClick={() => setShowBulkImport(!showBulkImport)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+                        className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] text-sm font-medium"
                     >
                         Bulk Import
                     </button>
@@ -251,17 +251,17 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                 <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="bg-blue-50 border border-blue-200 rounded-lg p-4"
+                    className="bg-[#D0E8F0] border border-blue-200 rounded-lg p-4"
                 >
                     <h4 className="font-medium text-blue-900 mb-2">Bulk Import Students</h4>
-                    <p className="text-sm text-blue-700 mb-4">
+                    <p className="text-sm text-[#1D4B5E] mb-4">
                         Upload an Excel/CSV file with student data. Download the template for the correct format.
                     </p>
                     <input
                         type="file"
                         accept=".csv,.xlsx,.xls"
                         onChange={(e) => e.target.files[0] && handleBulkImport(e.target.files[0])}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
                     />
                 </motion.div>
             )}
@@ -282,7 +282,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.personalDetails.fullName}
                                 onChange={(e) => handleInputChange('personalDetails.fullName', e.target.value.toUpperCase())}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.fullName'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['personalDetails.fullName'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter full name"
                             />
@@ -297,7 +297,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.personalDetails.fathersName}
                                 onChange={(e) => handleInputChange('personalDetails.fathersName', e.target.value.toUpperCase())}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.fathersName'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['personalDetails.fathersName'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter father's name"
                             />
@@ -312,7 +312,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.personalDetails.mothersName}
                                 onChange={(e) => handleInputChange('personalDetails.mothersName', e.target.value.toUpperCase())}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.mothersName'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['personalDetails.mothersName'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter mother's name"
                             />
@@ -327,7 +327,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="date"
                                 value={formData.personalDetails.dateOfBirth}
                                 onChange={(e) => handleInputChange('personalDetails.dateOfBirth', e.target.value)}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.dateOfBirth'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['personalDetails.dateOfBirth'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                             />
                             {errors['personalDetails.dateOfBirth'] && (
@@ -340,7 +340,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                             <select
                                 value={formData.personalDetails.gender}
                                 onChange={(e) => handleInputChange('personalDetails.gender', e.target.value)}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.gender'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['personalDetails.gender'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                             >
                                 <option value="">Select Gender</option>
@@ -360,7 +360,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.personalDetails.aadharNumber}
                                 onChange={(e) => handleInputChange('personalDetails.aadharNumber', e.target.value.replace(/\D/g, '').slice(0, 12))}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['personalDetails.aadharNumber'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['personalDetails.aadharNumber'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter 12-digit Aadhaar number"
                                 maxLength="12"
@@ -387,7 +387,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="tel"
                                 value={formData.contactDetails.primaryPhone}
                                 onChange={(e) => handleInputChange('contactDetails.primaryPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['contactDetails.primaryPhone'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['contactDetails.primaryPhone'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter 10-digit mobile number"
                                 maxLength="10"
@@ -405,7 +405,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="email"
                                 value={formData.contactDetails.email}
                                 onChange={(e) => handleInputChange('contactDetails.email', e.target.value.toLowerCase())}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['contactDetails.email'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['contactDetails.email'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter email address"
                             />
@@ -421,7 +421,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.street}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.street', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 placeholder="Enter street address"
                             />
                         </div>
@@ -432,7 +432,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.city}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.city', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 placeholder="Enter city"
                             />
                         </div>
@@ -442,7 +442,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                             <select
                                 value={formData.contactDetails.permanentAddress.state}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.state', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                             >
                                 <option value="">Select State</option>
                                 {states.map(state => (
@@ -457,7 +457,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.pincode}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.pincode', e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 placeholder="Enter 6-digit pincode"
                                 maxLength="6"
                             />
@@ -489,7 +489,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                             <select
                                 value={formData.courseDetails.selectedCourse}
                                 onChange={(e) => handleInputChange('courseDetails.selectedCourse', e.target.value)}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['courseDetails.selectedCourse'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['courseDetails.selectedCourse'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                             >
                                 <option value="">Select a course</option>
@@ -509,7 +509,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                     type="text"
                                     value={formData.courseDetails.customCourse}
                                     onChange={(e) => handleInputChange('courseDetails.customCourse', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                     placeholder="Enter custom course name"
                                 />
                             </div>
@@ -521,7 +521,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.courseDetails.stream}
                                 onChange={(e) => handleInputChange('courseDetails.stream', e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 placeholder="Enter stream or subject"
                             />
                         </div>
@@ -544,7 +544,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="text"
                                 value={formData.guardianDetails.guardianName}
                                 onChange={(e) => handleInputChange('guardianDetails.guardianName', e.target.value.toUpperCase())}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['guardianDetails.guardianName'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['guardianDetails.guardianName'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter guardian's name"
                             />
@@ -558,7 +558,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                             <select
                                 value={formData.guardianDetails.relationship}
                                 onChange={(e) => handleInputChange('guardianDetails.relationship', e.target.value)}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['guardianDetails.relationship'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['guardianDetails.relationship'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                             >
                                 <option value="">Select Relationship</option>
@@ -583,7 +583,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="tel"
                                 value={formData.guardianDetails.guardianPhone}
                                 onChange={(e) => handleInputChange('guardianDetails.guardianPhone', e.target.value.replace(/\D/g, '').slice(0, 10))}
-                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors['guardianDetails.guardianPhone'] ? 'border-red-500' : 'border-gray-300'
+                                className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${errors['guardianDetails.guardianPhone'] ? 'border-red-500' : 'border-gray-300'
                                     }`}
                                 placeholder="Enter guardian's phone number"
                                 maxLength="10"
@@ -599,7 +599,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                                 type="email"
                                 value={formData.guardianDetails.guardianEmail}
                                 onChange={(e) => handleInputChange('guardianDetails.guardianEmail', e.target.value.toLowerCase())}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                 placeholder="Enter guardian's email (optional)"
                             />
                         </div>
@@ -623,7 +623,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-3 bg-[#387B95] text-white font-medium rounded-lg hover:bg-[#1D4B5E] focus:outline-none focus:ring-2 focus:ring-[#387B95] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loading ? 'Registering...' : 'Register Student'}
                     </button>

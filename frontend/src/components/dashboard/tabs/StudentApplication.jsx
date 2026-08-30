@@ -214,7 +214,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95]"></div>
             </div>
         );
     }
@@ -231,7 +231,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                         <select
                             value={selectedStudent}
                             onChange={(e) => setSelectedStudent(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                         >
                             <option value="">Choose a student...</option>
                             {(Array.isArray(students) ? students : []).map(student => (
@@ -246,7 +246,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                         <button
                             onClick={() => selectedStudent && generateApplication(selectedStudent)}
                             disabled={!selectedStudent || generating}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                            className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                         >
                             {generating ? (
                                 <>
@@ -294,7 +294,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-4">
                                             <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                                <svg className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
                                             </div>
@@ -323,7 +323,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                             <div className="flex space-x-2">
                                                 <button
                                                     onClick={() => downloadApplication(application._id)}
-                                                    className="px-3 py-1 text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                                    className="px-3 py-1 text-[#387B95] hover:text-blue-800 text-sm font-medium"
                                                 >
                                                     Download PDF
                                                 </button>
@@ -404,7 +404,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
             {/* Rejection Details Modal */}
             {showRejectionModal && rejectionDetails && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -445,7 +445,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                         </h4>
                                         <div className="space-y-4">
                                             {rejectionDetails.rejectionDetails.map((detail, index) => (
-                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#2A1E2E]">
                                                     <div className="flex justify-between items-start mb-2">
                                                         <h5 className="font-medium text-gray-900 dark:text-gray-100">
                                                             Issue #{index + 1}
@@ -498,9 +498,9 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                         </h4>
                                         <div className="space-y-2">
                                             {rejectionDetails.adminNotes.map((note, index) => (
-                                                <div key={index} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                                                <div key={index} className="bg-[#D0E8F0] dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                                                     <p className="text-blue-800 dark:text-blue-200">{note.note}</p>
-                                                    <p className="text-blue-600 dark:text-blue-400 text-xs mt-1">
+                                                    <p className="text-[#387B95] dark:text-[#60A5FA] text-xs mt-1">
                                                         Added on: {new Date(note.addedAt).toLocaleString()}
                                                     </p>
                                                 </div>
