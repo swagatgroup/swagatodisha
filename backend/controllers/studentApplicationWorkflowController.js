@@ -645,7 +645,7 @@ const saveDraft = async (req, res) => {
         res.status(200).json({
             success: true,
             message: "Draft saved successfully",
-            data: application,
+            data: appDoc,
         });
     } catch (error) {
         console.error("Save draft error:", error);
