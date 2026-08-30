@@ -118,8 +118,8 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                 <div className="hidden md:flex items-center space-x-2 mr-4">
                                     <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Session:</span>
                                     <select
-                                        value={currentSession}
-                                        onChange={(e) => setCurrentSession(e.target.value)}
+                                        value={selectedSession}
+                                        onChange={(e) => setSelectedSession(e.target.value)}
                                         className="form-select block w-32 pl-3 pr-10 py-1.5 text-sm border-gray-300 dark:border-gray-600 dark:bg-[#2A1E2E] dark:text-white focus:outline-none focus:ring-[#7B3FA0] focus:border-[#7B3FA0] rounded-md"
                                     >
                                         {availableSessions.map(s => <option key={s} value={s}>{s}</option>)}
@@ -184,9 +184,9 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             )}
 
                             {/* Profile Dropdown */}
-                            <div className="relative" ref={profileDropdownRef}>
+                            <div className="relative" ref={userMenuRef}>
                                 <button
-                                    onClick={() => setProfileOpen(!profileOpen)}
+                                    onClick={() => toggleUserMenu()}
                                     className="flex items-center space-x-2 focus:outline-none"
                                 >
                                     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7B3FA0] to-[#5C2D80] flex items-center justify-center text-white">
@@ -195,7 +195,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                 </button>
 
                                 <AnimatePresence>
-                                    {profileOpen && (
+                                    {userMenuOpen && (
                                         <motion.div
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
