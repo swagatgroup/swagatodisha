@@ -553,16 +553,21 @@ const saveDraft = async (req, res) => {
     try {
         const { applicationId } = req.params;
         const { data, stage } = req.body;
-
-        const application = await StudentApplication.findOne({
+        let appDoc = await StudentApplication.findOne({
             applicationId,
             user: req.user._id,
         });
 
-        // Fallback: allow saving by applicationId only if user-scoped lookup failed (edge cases)
-        let appDoc = application;
-        if (!appDoc) {
-            appDoc = await StudentApplication.findOne({ applicationId });
+        // Fallback for agents saving draft on behalf of students
+        if (!appDoc && req.user.role !== 'student') {
+            appDoc = await StudentApplication.findOne({ 
+                applicationId,
+                $or: [
+                    { submittedBy: req.user._id },
+                    // Admins and staff can technically edit any draft if needed
+                    ...(req.user.role === 'super_admin' || req.user.role === 'staff' ? [{}] : [])
+                ]
+            });
         }
 
         if (!appDoc) {
@@ -657,11 +662,18 @@ const submitApplication = async (req, res) => {
     try {
         const { applicationId } = req.params;
         const { termsAccepted } = req.body;
-
-        const application = await StudentApplication.findOne({
+        let application = await StudentApplication.findOne({
             applicationId,
             user: req.user._id,
         });
+
+        // Fallback for agents submitting on behalf of students
+        if (!application && req.user.role !== 'student') {
+            application = await StudentApplication.findOne({
+                applicationId,
+                submittedBy: req.user._id,
+            });
+        }
 
         if (!application) {
             return res.status(404).json({
