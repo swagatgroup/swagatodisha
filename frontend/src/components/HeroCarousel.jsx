@@ -191,8 +191,8 @@ const HeroCarousel = () => {
                         className="absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out"
                         style={{
                             opacity: index === currentSlide ? 1 : 0,
-                            zIndex: index === currentSlide ? 1 : 0,
-                            pointerEvents: index === currentSlide ? 'auto' : 'none'
+                            pointerEvents: index === currentSlide ? 'auto' : 'none',
+                            visibility: index === currentSlide ? 'visible' : 'hidden'
                         }}
                     >
                         <img

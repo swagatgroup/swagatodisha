@@ -22,7 +22,13 @@ const FloatingContact = () => {
     const whatsappDmUrl = `https://wa.me/${cleanPhone.replace('+', '')}`; 
 
     return (
-        <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+        <div 
+            className="fixed bottom-6 right-6 z-50 flex flex-col items-end"
+            style={{ 
+                transform: 'translateZ(0)',
+                WebkitTransform: 'translateZ(0)'
+            }}
+        >
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -79,6 +85,7 @@ const FloatingContact = () => {
             <button
                 onClick={toggleOpen}
                 className="w-14 h-14 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-transform hover:scale-110 focus:outline-none"
+                style={{ transform: 'translateZ(0)' }}
                 title="Contact Us"
             >
                 <motion.div

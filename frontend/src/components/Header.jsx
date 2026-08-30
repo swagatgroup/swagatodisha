@@ -48,10 +48,12 @@ const Header = () => {
       {/* HEADER */}
       <header
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
         style={{
           background: 'transparent',
-          willChange: 'auto',
+          transform: 'translateZ(0)',
+          WebkitTransform: 'translateZ(0)',
+          willChange: 'background-color',
           isolation: 'isolate',
         }}
       >
