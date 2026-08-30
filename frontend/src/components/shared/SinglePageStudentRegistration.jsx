@@ -321,7 +321,7 @@ const SinglePageStudentRegistration = ({
 
     // Pre-fill from user account data (locked fields from signup)
     useEffect(() => {
-        if (!user || referralMode) return;
+        if (!user || user.role !== 'student') return;
         const userFullName = (user.fullName || '').toUpperCase();
         const userEmail = user.email || '';
         const userPhone = user.phoneNumber || '';
