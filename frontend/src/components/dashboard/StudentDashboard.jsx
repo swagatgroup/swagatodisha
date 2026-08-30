@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import DashboardLayout from './DashboardLayout';
@@ -35,53 +36,12 @@ const StudentDashboard = () => {
 
     const [activeSidebarItem, setActiveSidebarItem] = useState('registration');
     const [myReferralCode, setMyReferralCode] = useState('');
-
     const sidebarItems = [
-        {
-            id: 'registration',
-            name: 'Dashboard',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'applications',
-            name: 'My Application',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'referrals',
-            name: 'Refer & Earn',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-                </svg>
-            )
-        },
-        {
-            id: 'refer_friend',
-            name: 'Refer a Friend',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                </svg>
-            )
-        },
-        {
-            id: 'payments',
-            name: 'Payments',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-            )
-        }
+        { id: 'registration', name: 'Dashboard', icon: <Squares2X2Icon className="mr-3 h-5 w-5" /> },
+        { id: 'applications', name: 'My Application', icon: <DocumentTextIcon className="mr-3 h-5 w-5" /> },
+        { id: 'referrals', name: 'Refer & Earn', icon: <MegaphoneIcon className="mr-3 h-5 w-5" /> },
+        { id: 'refer_friend', name: 'Refer a Friend', icon: <HeartIcon className="mr-3 h-5 w-5" /> },
+        { id: 'payments', name: 'Payments', icon: <CreditCardIcon className="mr-3 h-5 w-5" /> }
     ];
 
     // Fetch user data
@@ -217,7 +177,7 @@ const StudentDashboard = () => {
                                 className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-blue-100 rounded-full">
+                                    <div className="p-3 bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 rounded-full">
                                         <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -236,8 +196,8 @@ const StudentDashboard = () => {
                                 className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-yellow-100 rounded-full">
-                                        <svg className="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="p-3 bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 rounded-full">
+                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
@@ -255,8 +215,8 @@ const StudentDashboard = () => {
                                 className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-teal-100 rounded-full">
-                                        <svg className="h-6 w-6 text-teal-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="p-3 bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 rounded-full">
+                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
@@ -340,7 +300,7 @@ const StudentDashboard = () => {
                                             { stage: 'Approval', status: applicationStage === 'APPROVED' ? 'completed' : 'pending', label: 'Final Approval' }
                                         ].map((step, index) => (
                                             <div key={step.stage} className="flex flex-col items-center">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-teal-100 text-teal-800' :
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 text-[#5C2D80]' :
                                                     step.status === 'current' ? 'bg-[#EDE0F7] text-purple-800' :
                                                         'bg-gray-100 text-gray-400'
                                                     }`}>
@@ -402,8 +362,8 @@ const StudentDashboard = () => {
                                                     <p className="text-sm text-gray-500">{admission.institution?.name}</p>
                                                     <p className="text-xs text-gray-400">Applied on {new Date(admission.applicationDate).toLocaleDateString()}</p>
                                                 </div>
-                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-teal-100 text-teal-800' :
-                                                    admission.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 text-[#5C2D80]' :
+                                                    admission.status === 'pending' ? 'bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 text-[#5C2D80]' :
                                                         admission.status === 'rejected' ? 'bg-red-100 text-red-800' :
                                                             'bg-gray-100 text-gray-800'
                                                     }`}>
@@ -440,8 +400,8 @@ const StudentDashboard = () => {
             case 'refer_friend':
                 return (
                     <div>
-                        <div className="mb-6 p-4 bg-[#EDE0F7] dark:bg-[#2A1E2E]/20 border border-indigo-200 dark:border-indigo-700/50 rounded-xl">
-                            <h2 className="text-xl font-bold text-indigo-800 dark:text-indigo-300 mb-1">Refer a Friend</h2>
+                        <div className="mb-6 p-4 bg-[#EDE0F7] dark:bg-[#2A1E2E]/20 border border-[#7B3FA0]/30 dark:border-white/10 rounded-xl">
+                            <h2 className="text-xl font-bold text-[#5C2D80] dark:text-[#A855D0] mb-1">Refer a Friend</h2>
                             <p className="text-sm text-[#7B3FA0] dark:text-[#A855D0]">
                                 Fill this form for someone you are referring. Your referral code is pre-applied — this application will be counted in your referrals.
                             </p>

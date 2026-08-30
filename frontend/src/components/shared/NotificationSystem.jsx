@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import { Bell, X, Check, Trash2, Filter, Search, RefreshCw } from 'lucide-react';
+import { BellIcon as Bell, XMarkIcon as X, CheckIcon as Check, TrashIcon as Trash2, AdjustmentsHorizontalIcon as Filter, MagnifyingGlassIcon as Search, ArrowPathIcon as RefreshCw } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import Swal from 'sweetalert2';
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSession } from '../../contexts/SessionContext';
@@ -88,107 +89,18 @@ const SuperAdminDashboard = () => {
     const [colleges, setColleges] = useState([]);
     const [loadingColleges, setLoadingColleges] = useState(false);
     const isSuperAdmin = user?.role === 'super_admin';
-
     const sidebarItems = [
-        {
-            id: 'dashboard',
-            name: 'Dashboard',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'students',
-            name: 'Our Students',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'direct-students',
-            name: 'Direct Students',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'agents',
-            name: 'Agents',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'staff',
-            name: 'Staff',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'new-registration',
-            name: 'New Registration',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-            )
-        },
-        {
-            id: 'application-review',
-            name: 'Application Review',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'website-management',
-            name: 'Website Management',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                </svg>
-            )
-        },
-        {
-            id: 'payment-management',
-            name: 'Payments',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'referrals',
-            name: 'Refer & Earn',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'student-password-reset',
-            name: 'Student Password Reset',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                </svg>
-            )
-        }
+        { id: 'dashboard', name: 'Dashboard', icon: <Squares2X2Icon className="mr-3 h-5 w-5" /> },
+        { id: 'students', name: 'Our Students', icon: <UsersIcon className="mr-3 h-5 w-5" /> },
+        { id: 'direct-students', name: 'Direct Students', icon: <UserPlusIcon className="mr-3 h-5 w-5" /> },
+        { id: 'agents', name: 'Agents', icon: <UserGroupIcon className="mr-3 h-5 w-5" /> },
+        { id: 'staff', name: 'Staff', icon: <UserIcon className="mr-3 h-5 w-5" /> },
+        { id: 'new-registration', name: 'New Registration', icon: <DocumentTextIcon className="mr-3 h-5 w-5" /> },
+        { id: 'application-review', name: 'Application Review', icon: <ClipboardDocumentCheckIcon className="mr-3 h-5 w-5" /> },
+        { id: 'website-management', name: 'Website Management', icon: <GlobeAltIcon className="mr-3 h-5 w-5" /> },
+        { id: 'payment-management', name: 'Payments', icon: <CreditCardIcon className="mr-3 h-5 w-5" /> },
+        { id: 'referrals', name: 'Refer & Earn', icon: <MegaphoneIcon className="mr-3 h-5 w-5" /> },
+        { id: 'student-password-reset', name: 'Student Password Reset', icon: <KeyIcon className="mr-3 h-5 w-5" /> }
     ];
 
     // Fetch colleges
@@ -622,67 +534,77 @@ const SuperAdminDashboard = () => {
                             <div
                                 onClick={() => handleStatClick('all')}
                                 className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg hover:border-blue-300 dark:hover:border-[#387B95] transition-all duration-200"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                                        <svg className="h-6 w-6 text-[#387B95] dark:text-[#60A5FA]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Students</p>
-                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalStudents}</p>
+                                {/* Total Students */}
+                                <div
+                                    onClick={() => navigate('/dashboard', { state: { filter: 'students' } })}
+                                    className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                                            <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
+                                                <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Students</p>
+                                            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStudents}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div
-                                onClick={() => setActiveSidebarItem('agents')}
-                                className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg hover:border-green-300 dark:hover:border-green-600 transition-all duration-200"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-                                        <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Agents</p>
-                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalAgents}</p>
+                                {/* Total Agents */}
+                                <div
+                                    onClick={() => navigate('/dashboard/agents')}
+                                    className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                                            <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
+                                                <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
+                                                <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 016.576-3.036c.32.32.61.666.868 1.042l-3.874-2.052z" />
+                                                <path d="M18.918 14.254a8.287 8.287 0 011.308 5.135 9.687 9.687 0 001.764-.44l.115-.04a.563.563 0 00.373-.487l.01-.121a3.75 3.75 0 00-6.576-3.036c-.32.32-.61.666-.868 1.042l3.874-2.052z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Agents</p>
+                                            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalAgents}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div
-                                onClick={() => setActiveSidebarItem('staff')}
-                                className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700 cursor-pointer hover:shadow-lg hover:border-purple-300 dark:hover:border-[#7B3FA0] transition-all duration-200"
-                            >
-                                <div className="flex items-center">
-                                    <div className="p-2 bg-[#EDE0F7] dark:bg-[#2A1E2E]/30 rounded-lg">
-                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Staff</p>
-                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalStaff}</p>
+                                {/* Total Staff */}
+                                <div
+                                    onClick={() => navigate('/dashboard/staff')}
+                                    className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                                >
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                                            <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
+                                                <path fillRule="evenodd" d="M3 6a3 3 0 013-3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm4.5 7.5a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zm3.75-1.5a.75.75 0 00-.75.75v3.75a.75.75 0 001.5 0V12a.75.75 0 00-.75-.75zm3.75-1.5a.75.75 0 00-.75.75v5.25a.75.75 0 001.5 0v-5.25a.75.75 0 00-.75-.75zM9 5.25a.75.75 0 00-.75.75v2.25a.75.75 0 001.5 0V6a.75.75 0 00-.75-.75z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Staff</p>
+                                            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStaff}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                                <div className="flex items-center">
-                                    <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                                        <svg className="h-6 w-6 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                        </svg>
-                                    </div>
-                                    <div className="ml-4">
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Applications</p>
-                                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.pendingApplications}</p>
+                                {/* Pending Applications */}
+                                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
+                                            <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
+                                                <path fillRule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zM12.75 12a.75.75 0 00-1.5 0v2.25a.75.75 0 001.5 0V12zM12 16.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
+                                                <path d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pending Apps</p>
+                                            <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.pendingApplications}</p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                         </div>
 
                         {/* ── Student View Toggle ── */}

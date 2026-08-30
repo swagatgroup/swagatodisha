@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
@@ -47,142 +48,14 @@ const EnhancedAgentDashboard = () => {
       setStudentTableFilter("all");
     }
   }, [activeTab]);
-
   const sidebarItems = [
-    {
-      id: "dashboard",
-      name: "Dashboard",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "students",
-      name: "My Students",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "registration",
-      name: "New Registration",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "application-status",
-      name: "Application Status",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "send-message",
-      name: "Send Message",
-      href: "/send-message",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "payments",
-      name: "Payments",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-          />
-        </svg>
-      ),
-    },
-    {
-      id: "referrals",
-      name: "Refer & Earn",
-      icon: (
-        <svg
-          className="mr-3 h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
-          />
-        </svg>
-      ),
-    }
+    { id: 'dashboard', name: 'Dashboard', icon: <Squares2X2Icon className="mr-3 h-5 w-5" /> },
+    { id: 'referrals', name: 'My Referrals', icon: <UsersIcon className="mr-3 h-5 w-5" /> },
+    { id: 'referral_earnings', name: 'Referral Earnings', icon: <CurrencyRupeeIcon className="mr-3 h-5 w-5" /> },
+    { id: 'drafts', name: 'Draft Manager', icon: <DocumentTextIcon className="mr-3 h-5 w-5" /> },
+    { id: 'new-registration', name: 'New Registration', icon: <UserPlusIcon className="mr-3 h-5 w-5" /> },
+    { id: 'marketing', name: 'Marketing Materials', icon: <GlobeAltIcon className="mr-3 h-5 w-5" /> },
+    { id: 'student-password-reset', name: 'Student Password Reset', icon: <KeyIcon className="mr-3 h-5 w-5" /> }
   ];
   useEffect(() => {
     loadDashboardData(selectedSession);

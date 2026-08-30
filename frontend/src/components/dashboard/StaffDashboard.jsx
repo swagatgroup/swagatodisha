@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSession } from '../../contexts/SessionContext';
@@ -80,80 +81,12 @@ const EnhancedStaffDashboard = () => {
         ourStudents:    { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
     });
     const [agents, setAgents] = useState([]);
-
     const sidebarItems = [
-        {
-            id: 'dashboard',
-            name: 'Dashboard',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
-                </svg>
-            )
-        },
-        {
-            id: 'student-management',
-            name: 'Our Students',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'direct-students',
-            name: 'Direct Students',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'applications',
-            name: 'Applications Review',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-            )
-        },
-        {
-            id: 'new-registration',
-            name: 'New Registration',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-            )
-        },
-        {
-            id: 'payment-management',
-            name: 'Payments',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-            )
-        },
-        {
-            id: 'referrals',
-            name: 'Refer & Earn',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                </svg>
-            )
-        },
-        {
-            id: 'student-password-reset',
-            name: 'Student Password Reset',
-            icon: (
-                <svg className="mr-3 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
-                </svg>
-            )
-        }
+        { id: 'dashboard', name: 'Dashboard', icon: <Squares2X2Icon className="mr-3 h-5 w-5" /> },
+        { id: 'students', name: 'Our Students', icon: <UsersIcon className="mr-3 h-5 w-5" /> },
+        { id: 'document-verification', name: 'Document Verification', icon: <ClipboardDocumentCheckIcon className="mr-3 h-5 w-5" /> },
+        { id: 'application-review', name: 'Application Review', icon: <ClipboardDocumentCheckIcon className="mr-3 h-5 w-5" /> },
+        { id: 'student-password-reset', name: 'Student Password Reset', icon: <KeyIcon className="mr-3 h-5 w-5" /> }
     ];
 
     const handleStatClick = (filterKey) => {
@@ -463,13 +396,13 @@ const EnhancedStaffDashboard = () => {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-gradient-to-r from-green-600 to-blue-600 rounded-lg p-6 text-white mb-6"
+                            className="bg-gradient-to-r from-[#7B3FA0] to-[#5C2D80] rounded-lg p-6 text-white mb-6"
                         >
                             <div>
                                 <h2 className="text-2xl font-bold mb-2">
                                     Welcome back, {user?.fullName}! 👋
                                 </h2>
-                                <p className="text-green-100">
+                                <p className="text-purple-100">
                                     Process student applications, verify documents, and manage academic content.
                                 </p>
                             </div>
@@ -639,7 +572,7 @@ const EnhancedStaffDashboard = () => {
                                     <select
                                         value={filterStatus}
                                         onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     >
                                         <option value="all">Total Students</option>
                                         {(filters.statuses || []).map(status => {
@@ -669,7 +602,7 @@ const EnhancedStaffDashboard = () => {
                                     <select
                                         value={filterCourse}
                                         onChange={(e) => setFilterCourse(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     >
                                         <option value="all">All Courses</option>
                                         {(filters.courses || []).map(course => (
@@ -679,7 +612,7 @@ const EnhancedStaffDashboard = () => {
                                     <select
                                         value={filterSubmitterRole}
                                         onChange={(e) => setFilterSubmitterRole(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                     >
                                         <option value="all">All Submitters</option>
                                         <option value="student">Student</option>
@@ -744,7 +677,7 @@ const EnhancedStaffDashboard = () => {
                                                 <tr>
                                                     <td colSpan="9" className="px-6 py-12 text-center">
                                                         <div className="flex items-center justify-center">
-                                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+                                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0]"></div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -936,7 +869,7 @@ const EnhancedStaffDashboard = () => {
                                                             key={pageNum}
                                                             onClick={() => setCurrentPage(pageNum)}
                                                             className={`px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm ${currentPage === pageNum
-                                                                ? 'bg-green-600 text-white border-green-600'
+                                                                ? 'bg-green-600 text-white border-[#7B3FA0]'
                                                                 : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                                                 }`}
                                                         >
@@ -987,7 +920,7 @@ const EnhancedStaffDashboard = () => {
                 onItemClick={setActiveTab}
             >
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
                 </div>
             </DashboardLayout>
         );
