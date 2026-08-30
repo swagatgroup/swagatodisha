@@ -1,7 +1,10 @@
 import React from 'react';
 import { Chart } from 'react-google-charts';
+import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 
 const ProgressPieChart = ({ chartData = [], onSectionClick }) => {
+  const { isDarkMode } = useDarkMode();
+
   // Extract data and colors
   const data = [['Status', 'Number of Applications']];
   const colors = [];
@@ -15,14 +18,17 @@ const ProgressPieChart = ({ chartData = [], onSectionClick }) => {
     filterKeys.push(item.filterKey);
   });
 
+  const textColor = isDarkMode ? '#F3F4F6' : '#1f2937';
+  const legendColor = isDarkMode ? '#D1D5DB' : '#4b5563';
+
   const options = {
     title: 'Overall Growth Progress',
     is3D: true,
     backgroundColor: 'transparent',
     colors: colors,
     chartArea: { width: '90%', height: '80%' },
-    legend: { position: 'bottom', textStyle: { color: '#4b5563', fontSize: 14 } },
-    titleTextStyle: { color: '#1f2937', fontSize: 18, bold: true },
+    legend: { position: 'bottom', textStyle: { color: legendColor, fontSize: 14 } },
+    titleTextStyle: { color: textColor, fontSize: 18, bold: true },
     tooltip: { showColorCode: true },
   };
 
