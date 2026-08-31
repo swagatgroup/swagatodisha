@@ -374,8 +374,17 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             pdf.text('Previous Qualification / Documents:', leftColX, currentY);
             currentY += 5;
             
-            const docs = Object.entries(pdfContent.documents || {});
-            if (docs.length > 0) {
+            let docsArray = [];
+            if (Array.isArray(pdfContent.documents)) {
+                docsArray = pdfContent.documents;
+            } else if (pdfContent.documents && typeof pdfContent.documents === 'object') {
+                docsArray = Object.entries(pdfContent.documents).map(([k, v]) => ({
+                    documentType: k,
+                    ...v
+                }));
+            }
+
+            if (docsArray.length > 0) {
                 let docX = leftColX;
                 let docY = currentY;
                 const docBoxW = (fullWidth - 15) / 4;
@@ -391,7 +400,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     'income_certificate': 'Income Cert'
                 };
 
-                docs.forEach(([k, docItem], i) => {
+                docsArray.forEach((docItem, i) => {
                     if (i > 0 && i % 4 === 0) {
                         docX = leftColX;
                         docY += 16;
@@ -407,14 +416,21 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     pdf.setFont('times', 'bold');
                     pdf.setFontSize(8);
                     pdf.setTextColor(25, 42, 86);
-                    pdf.text(documentNames[k] || k.replace(/_/g, ' '), docX + 1, docY - 1);
+                    const docType = docItem.documentType || docItem.fileName || 'Document ' + i;
+                    const docNameDisplay = documentNames[docType] || docType.replace(/_/g, ' ');
+                    
+                    // Truncate label if too long
+                    const truncatedLabel = docNameDisplay.length > 20 ? docNameDisplay.substring(0, 18) + '...' : docNameDisplay;
+                    pdf.text(truncatedLabel, docX + 1, docY - 1);
                     
                     // Link
-                    if (docItem && docItem.downloadUrl) {
+                    const docUrl = docItem.filePath || docItem.downloadUrl || docItem.url;
+                    
+                    if (docUrl) {
                         pdf.setFont('times', 'bold');
                         pdf.setFontSize(9);
                         pdf.setTextColor(0, 102, 204); // Blue color for link
-                        pdf.textWithLink('View Document', docX + 2, docY + 6, { url: docItem.downloadUrl });
+                        pdf.textWithLink('View Document', docX + 2, docY + 6, { url: docUrl });
                     } else {
                         pdf.setFont('times', 'normal');
                         pdf.setFontSize(9);
