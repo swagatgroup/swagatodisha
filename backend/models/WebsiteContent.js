@@ -153,7 +153,6 @@ const websiteContentSchema = new mongoose.Schema({
         ogDescription: String,
         ogImage: String
     },
-
     // Payment Settings
     paymentSettings: {
         qrCodeImage: {
@@ -161,6 +160,22 @@ const websiteContentSchema = new mongoose.Schema({
             default: ''
         }
     },
+
+    // Approvals & Recognitions
+    approvalsRecognitions: [{
+        name: String, // University Name
+        order: Number,
+        isActive: {
+            type: Boolean,
+            default: true
+        },
+        approvals: [{
+            name: String,
+            logo: String,
+            pdf: String
+        }]
+    }],
+
 
     // Timestamps
     lastModified: {

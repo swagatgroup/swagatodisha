@@ -1,4 +1,7 @@
-import {useState, useEffect} from 'react';
+const fs = require('fs');
+const path = '/home/chanchal/Desktop/Swagat Odisha/frontend/src/components/ApprovalsRecognitions.jsx';
+
+const content = `import {useState, useEffect} from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios';
 
@@ -13,7 +16,7 @@ const ApprovalsRecognitions = () => {
                 // Using standard API endpoint for public content if available, else standard backend endpoint
                 // Assuming /api/website-content is available (we can use axios directly)
                 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                const res = await axios.get(`${API_URL}/api/website-content`);
+                const res = await axios.get(\`\${API_URL}/api/website-content\`);
                 if (res.data && res.data.data && res.data.data.approvalsRecognitions) {
                     const activeApprovals = res.data.data.approvalsRecognitions
                         .filter(u => u.isActive !== false)
@@ -35,7 +38,7 @@ const ApprovalsRecognitions = () => {
         // Create a temporary link element to trigger download
         const link = document.createElement('a')
         link.href = approval.pdf
-        link.download = `${approval.name}-approval.pdf`
+        link.download = \`\${approval.name}-approval.pdf\`
         link.target = '_blank'
         document.body.appendChild(link)
         link.click()
@@ -108,7 +111,7 @@ const ApprovalsRecognitions = () => {
                                         transition={{ delay: index * 0.1, duration: 0.5 }}
                                         className="group cursor-pointer flex flex-col items-center"
                                         onClick={() => handleApprovalClick(approval)}
-                                        title={`Click to download ${approval.name} approval PDF`}
+                                        title={\`Click to download \${approval.name} approval PDF\`}
                                     >
                                         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-full p-2 md:p-3 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-purple-100 w-12 h-12 md:w-20 md:h-20 flex items-center justify-center overflow-hidden">
                                             <img
@@ -165,10 +168,10 @@ const ApprovalsRecognitions = () => {
                                 <button
                                     key={index}
                                     onClick={() => goToSlide(index)}
-                                    className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                                    className={\`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 \${index === currentSlide
                                         ? 'bg-white scale-125'
                                         : 'bg-white/50 hover:bg-white/75'
-                                        }`}
+                                        }\`}
                                 />
                             ))}
                         </div>
@@ -189,3 +192,6 @@ const ApprovalsRecognitions = () => {
 }
 
 export default ApprovalsRecognitions
+`;
+
+fs.writeFileSync(path, content, 'utf8');

@@ -23,6 +23,7 @@ import Footer from './components/Footer'
 import FloatingContact from './components/FloatingContact'
 import PremiumFloatingElements from './components/PremiumFloatingElements'
 import Login from './components/auth/Login'
+import LoginPortal from './components/auth/LoginPortal'
 import Register from './components/auth/Register'
 import StudentDashboard from './components/dashboard/StudentDashboard'
 import AgentDashboard from './components/dashboard/AgentDashboard'
@@ -119,7 +120,7 @@ const AppContent = () => {
 
             {/* Application Status Search */}
             <section className="bg-gray-50 border-b border-gray-200">
-                <ApplicationStatusSearch />
+                
             </section>
 
             {/* 2. Quick Access */}
@@ -231,7 +232,11 @@ function App() {
                             <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
                             <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
                             <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
-                            <Route path="/login" element={<Login />} />
+                            <Route path="/login-portal" element={<LoginPortal />} />
+                            <Route path="/login/student" element={<Login title="Student Login" />} />
+                            <Route path="/login/agent" element={<Login title="Agent Login" />} />
+                            <Route path="/login/staff" element={<Login title="Staff Login" />} />
+                            <Route path="/login" element={<Navigate to="/login-portal" replace />} />
                             <Route path="/register" element={<Register />} />
 
                             {/* General Dashboard Route - redirects to role-specific dashboard */}

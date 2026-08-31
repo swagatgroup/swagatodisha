@@ -105,7 +105,7 @@ const Header = () => {
               <DarkModeToggle />
 
               <Link
-                to="/login"
+                to="/login-portal"
                 className="px-5 py-2 text-[#7B3FA0] dark:text-[#A855D0] border-2 border-[#7B3FA0] dark:border-[#A855D0] rounded-pill font-bold text-sm hover:bg-[#7B3FA0] dark:hover:bg-[#A855D0] hover:text-white transition-all duration-200"
               >
                 Login
@@ -203,7 +203,7 @@ const Header = () => {
               {/* Auth Footer */}
               <div className="px-6 pb-8 pt-4 border-t border-[#905391]/15 space-y-3">
                 <Link
-                  to="/login"
+                  to="/login-portal"
                   onClick={() => setIsNavOpen(false)}
                   className="block py-3 text-center border-2 border-[#7B3FA0] text-[#7B3FA0] dark:text-[#A855D0] dark:border-[#A855D0] rounded-pill font-bold hover:bg-[#7B3FA0] hover:text-white transition"
                 >

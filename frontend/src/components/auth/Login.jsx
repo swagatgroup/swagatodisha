@@ -7,7 +7,7 @@ import PasswordInput from './PasswordInput';
 import ForgotPassword from './ForgotPassword';
 import Swal from 'sweetalert2';
 
-const Login = () => {
+const Login = ({ title }) => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
