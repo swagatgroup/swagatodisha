@@ -1,9 +1,37 @@
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import BackToMainWebsite from './BackToMainWebsite'
 
 const Gallery = () => {
     const [selectedCategory, setSelectedCategory] = useState('all')
     const [selectedImage, setSelectedImage] = useState(null)
+    const [galleryImages, setGalleryImages] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchGallery = async () => {
+            try {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const res = await fetch(`${API_URL}/api/gallery/public?limit=100`);
+                const json = await res.json();
+                if (json.success) {
+                    // Map backend schema to frontend schema
+                    const mapped = json.data.map(img => ({
+                        id: img._id,
+                        src: img.imageUrl,
+                        alt: img.title || 'Gallery Image',
+                        category: img.category ? img.category.toLowerCase() : 'campus',
+                        title: img.title || ''
+                    }));
+                    setGalleryImages(mapped);
+                }
+            } catch (err) {
+                console.error('Error fetching gallery:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchGallery();
+    }, []);
 
     const categories = [
         { id: 'all', name: 'All Photos', icon: 'fa-solid fa-images' },
@@ -14,37 +42,7 @@ const Gallery = () => {
         { id: 'infrastructure', name: 'Infrastructure', icon: 'fa-solid fa-building' }
     ]
 
-    const galleryImages = [
-        // Campus Life
-        { id: 1, src: '/slider1.jpg', alt: 'Campus View', category: 'campus', title: 'Beautiful Campus View' },
-        { id: 2, src: '/slider2.jpg', alt: 'Library', category: 'campus', title: 'Modern Library' },
-        { id: 3, src: '/slider3.jpg', alt: 'Laboratory', category: 'campus', title: 'Well-equipped Laboratory' },
-        { id: 4, src: '/slider4.jpg', alt: 'Classroom', category: 'campus', title: 'Smart Classroom' },
-        { id: 5, src: '/slider1.jpg', alt: 'Sports Ground', category: 'campus', title: 'Sports Ground' },
-        { id: 6, src: '/slider2.jpg', alt: 'Auditorium', category: 'campus', title: 'State-of-the-art Auditorium' },
-
-        // Events
-        { id: 7, src: '/chairman.jpg', alt: 'Annual Day', category: 'events', title: 'Annual Day Celebration' },
-        { id: 8, src: '/chairman_rk.jpg', alt: 'Cultural Festival', category: 'events', title: 'Cultural Festival' },
-        { id: 9, src: '/cmsg_img_01.jpg', alt: 'Sports Meet', category: 'events', title: 'Annual Sports Meet' },
-        { id: 10, src: '/Milestone_001.jpg', alt: 'Graduation Day', category: 'events', title: 'Graduation Ceremony' },
-
-        // Students
-        { id: 11, src: '/mnt_002.jpg', alt: 'Student Activities', category: 'students', title: 'Student Activities' },
-        { id: 12, src: '/mnt_003.jpg', alt: 'Study Group', category: 'students', title: 'Study Group Session' },
-        { id: 13, src: '/mnt_004.jpg', alt: 'Student Project', category: 'students', title: 'Student Project Presentation' },
-        { id: 14, src: '/mnt_006.jpg', alt: 'Student Achievement', category: 'students', title: 'Student Achievement Award' },
-
-        // Faculty
-        { id: 15, src: '/chairman.jpg', alt: 'Faculty Meeting', category: 'faculty', title: 'Faculty Meeting' },
-        { id: 16, src: '/chairman_rk.jpg', alt: 'Teaching Session', category: 'faculty', title: 'Interactive Teaching Session' },
-
-        // Infrastructure
-        { id: 17, src: '/slider1.jpg', alt: 'Computer Lab', category: 'infrastructure', title: 'Computer Laboratory' },
-        { id: 18, src: '/slider2.jpg', alt: 'Science Lab', category: 'infrastructure', title: 'Science Laboratory' },
-        { id: 19, src: '/slider3.jpg', alt: 'Library Interior', category: 'infrastructure', title: 'Library Interior' },
-        { id: 20, src: '/slider4.jpg', alt: 'Cafeteria', category: 'infrastructure', title: 'Student Cafeteria' }
-    ]
+    
 
     const filteredImages = selectedCategory === 'all'
         ? galleryImages
@@ -58,6 +56,7 @@ const Gallery = () => {
         setSelectedImage(null)
     }
 
+    if (loading) return <div className="min-h-[50vh] flex items-center justify-center text-purple-600"><i className="fa-solid fa-spinner fa-spin text-3xl"></i></div>;
     return (
         <div className="min-h-screen bg-[#FAF7F2]">
             <BackToMainWebsite variant="floating" />

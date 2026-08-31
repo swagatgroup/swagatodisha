@@ -1,7 +1,25 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import axios from 'axios';
 import BackToMainWebsite from './BackToMainWebsite'
 
 const AboutUsPage = () => {
+    const [staffProfiles, setStaffProfiles] = useState([]);
+
+    useEffect(() => {
+        const fetchContent = async () => {
+            try {
+                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const res = await axios.get(`${API_URL}/api/website-content`);
+                if (res.data && res.data.data && res.data.data.staffProfiles) {
+                    setStaffProfiles(res.data.data.staffProfiles.filter(s => s.isActive !== false).sort((a, b) => (a.order || 0) - (b.order || 0)));
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchContent();
+    }, []);
+
     const milestones = [
         {
             year: '2021',
@@ -329,7 +347,32 @@ const AboutUsPage = () => {
                     </div>
                 </div>
             </section>
-        </div>
+
+            {/* Staff Profiles Section */}
+            {staffProfiles.length > 0 && (
+                <div className="py-20 bg-white dark:bg-[#1A1212] relative z-10">
+                    <div className="container mx-auto px-4 md:px-6">
+                        <div className="text-center mb-16">
+                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Team</h2>
+                            <div className="w-24 h-1 bg-[#7B3FA0] mx-auto rounded-full"></div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+                            {staffProfiles.map((staff, idx) => (
+                                <div key={idx} className="bg-gray-50 dark:bg-[#2A1E2E] rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition duration-300">
+                                    <img 
+                                        src={staff.image || '/Swagat_Favicon.png'} 
+                                        alt={staff.name}
+                                        className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white dark:border-[#1A1212] shadow-lg mb-4"
+                                    />
+                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{staff.name}</h3>
+                                    <p className="text-sm text-[#7B3FA0] dark:text-[#A855D0] font-medium">{staff.designation}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+            </div>
     )
 }
 

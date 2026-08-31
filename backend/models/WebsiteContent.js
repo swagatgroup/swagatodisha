@@ -160,7 +160,6 @@ const websiteContentSchema = new mongoose.Schema({
             default: ''
         }
     },
-
     // Approvals & Recognitions
     approvalsRecognitions: [{
         name: String, // University Name
@@ -175,6 +174,19 @@ const websiteContentSchema = new mongoose.Schema({
             pdf: String
         }]
     }],
+
+    // Staff Profiles
+    staffProfiles: [{
+        name: String,
+        designation: String,
+        image: String,
+        order: Number,
+        isActive: {
+            type: Boolean,
+            default: true
+        }
+    }],
+
 
 
     // Timestamps

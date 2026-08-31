@@ -159,8 +159,8 @@ const HeroCarousel = () => {
 
     // Determine height based on slider type
     const heightClass = sliderType === 'horizontal' 
-        ? 'h-screen' // 100vh for horizontal (full screen)
-        : 'h-[70vh]'; // 70vh for vertical
+        ? 'aspect-[4/3] md:aspect-[21/9]' 
+        : 'aspect-[4/3] md:aspect-[16/9]';
 
     return (
         <section
@@ -198,7 +198,7 @@ const HeroCarousel = () => {
                         <img
                             src={slide}
                             alt={`Slide ${index + 1}`}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover object-center"
                             loading={index === 0 ? 'eager' : 'lazy'}
                             draggable="false"
                         />
