@@ -1304,6 +1304,14 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 
         const updateData = req.body;
 
+        // Update status (super admin can set any status, staff cannot change status via this route)
+        if (updateData.status && isSuperAdmin) {
+            const validStatuses = ['DRAFT', 'SUBMITTED', 'PENDING', 'UNDER_REVIEW', 'IN_PROGRESS', 'APPROVED', 'REJECTED', 'COMPLETED'];
+            if (validStatuses.includes(updateData.status)) {
+                application.status = updateData.status;
+            }
+        }
+
         // Update personal details
         if (updateData.personalDetails) {
             const personalDetailsUpdate = { ...updateData.personalDetails };
