@@ -22,7 +22,6 @@ const QuickLinks = () => {
     const [expandedPaths, setExpandedPaths] = useState(new Set())
     const [showAllCareers, setShowAllCareers] = useState(new Set())
     const scrollContainerRef = useRef(null)
-    const careerModalTimeoutRef = useRef(null)
     const [documents, setDocuments] = useState([])
     const [loadingDocuments, setLoadingDocuments] = useState(true)
 
@@ -138,33 +137,7 @@ const QuickLinks = () => {
     }
 
     // Career modal hover handlers with delay
-    const handleCareerHover = () => {
-        // Clear any existing timeout
-        if (careerModalTimeoutRef.current) {
-            clearTimeout(careerModalTimeoutRef.current)
-        }
-
-        // Set a short delay before opening modal (300ms)
-        careerModalTimeoutRef.current = setTimeout(() => {
-            setCareerModal({ isOpen: true })
-        }, 300)
-    }
-
-    const handleCareerLeave = () => {
-        // Clear timeout if user leaves before delay completes
-        if (careerModalTimeoutRef.current) {
-            clearTimeout(careerModalTimeoutRef.current)
-        }
-    }
-
-    // Cleanup timeout on unmount
-    useEffect(() => {
-        return () => {
-            if (careerModalTimeoutRef.current) {
-                clearTimeout(careerModalTimeoutRef.current)
-            }
-        }
-    }, [])
+    
 
     // Handle mouse enter/leave for scroll control
     const handleMouseEnter = () => {
@@ -555,16 +528,12 @@ const QuickLinks = () => {
                             whileHover={{ y: -8 }}
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             onMouseEnter={() => {
-                                if (link.category === 'career') {
-                                    handleCareerHover()
-                                } else if (link.category) {
+                                if (link.category) {
                                     setActiveOverlay(link.category)
                                 }
                             }}
                             onMouseLeave={() => {
-                                if (link.category === 'career') {
-                                    handleCareerLeave()
-                                } else {
+                                {
                                     setActiveOverlay(null)
                                 }
                             }}
