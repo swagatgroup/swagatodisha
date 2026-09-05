@@ -82,9 +82,9 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
 
                             <div className="flex items-center lg:ml-0">
                                 <img
-                                    src="/Swagat_Logo.png"
+                                    src="/Swagat_Favicon.png"
                                     alt="Swagat Logo"
-                                    className="h-10 w-auto dark:brightness-0 dark:invert"
+                                    className="h-10 w-10 object-contain dark:brightness-0 dark:invert"
                                     onError={(e) => {
                                         e.target.onerror = null;
                                         e.target.src = '/vite.svg';
