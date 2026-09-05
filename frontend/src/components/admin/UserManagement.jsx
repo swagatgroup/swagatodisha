@@ -448,12 +448,20 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Referrals
                                     </th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        Assigned Staff
+                                    </th>
                                 </>
                             )}
                             {userType === 'staff' && (
+                                <>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Department
                                 </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                    Assigned Agents
+                                </th>
+                                </>
                             )}
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Actions
@@ -514,12 +522,20 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {user.totalReferrals || 0} (₹{user.totalCommission ? user.totalCommission.toLocaleString() : '0'})
                                         </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {user.assignedStaff ? (user.assignedStaff.firstName + ' ' + user.assignedStaff.lastName) : 'Unassigned'}
+                                        </td>
                                     </>
                                 )}
                                 {userType === 'staff' && (
+                                    <>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                         {user.department || 'N/A'}
                                     </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                        {user.assignedAgents?.length || 0}
+                                    </td>
+                                    </>
                                 )}
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div className="flex space-x-2">

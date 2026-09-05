@@ -1051,13 +1051,13 @@ router.get('/me', async (req, res) => {
         let userType = 'user';
 
         // First try to find user in User model
-        user = await User.findById(userId).select('-password');
+        user = await User.findById(userId).select('-password').populate('assignedStaff', 'firstName lastName email department');
         console.log('🔐 Backend /me - User found in User model:', !!user);
 
         // If not found in User model, try Admin model
         if (!user) {
             const Admin = require('../models/Admin');
-            user = await Admin.findById(userId).select('-password');
+            user = await Admin.findById(userId).select('-password').populate('assignedAgents', 'fullName email phoneNumber referralCode');
             userType = 'admin';
             console.log('🔐 Backend /me - User found in Admin model:', !!user);
         }
@@ -1099,7 +1099,9 @@ router.get('/me', async (req, res) => {
             email: user.email,
             phoneNumber: user.phoneNumber || '',
             role: user.role || 'user',
-            referralCode: user.referralCode || undefined
+            referralCode: user.referralCode || undefined,
+            assignedStaff: user.assignedStaff,
+            assignedAgents: user.assignedAgents
         };
 
         // Add appropriate name field based on user type
