@@ -864,10 +864,6 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     }
                 })()}
             </div>
-                        <div class="document-size">${doc.name || 'Uploaded'} ${doc.size ? '(' + (doc.size / 1024).toFixed(1) + ' KB)' : ''}</div>
-                    </div>`
-        ).join('')}
-            </div>
         </div>
 
         <div class="terms-section">
