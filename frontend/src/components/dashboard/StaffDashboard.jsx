@@ -634,7 +634,7 @@ const EnhancedStaffDashboard = () => {
                                     >
                                         <option value="all">All Courses</option>
                                         {(filters.courses || []).map(course => (
-                                            <option key={course} value={course}>{course}</option>
+                                            <option key={typeof course === 'object' ? (course.courseName || course.name) : course} value={typeof course === 'object' ? (course.courseName || course.name) : course}>{typeof course === 'object' ? (course.courseName || course.name) : course}</option>
                                         ))}
                                     </select>
                                     <select

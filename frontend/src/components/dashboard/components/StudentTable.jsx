@@ -99,7 +99,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
         const selectedCourse = availableCourses.find(
             (course) => course.courseName === editData.courseDetails.selectedCourse
         );
-        return selectedCourse?.streams || [];
+        return (selectedCourse?.streams || []).map(s => typeof s === 'object' ? s.name : s).filter(Boolean);
     };
 
     // Get campuses for selected college
@@ -547,7 +547,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     >
                         <option value="all">All Courses</option>
                         {availableCourses.map(course => (
-                            <option key={course} value={course}>{course}</option>
+                            <option key={typeof course === 'object' ? (course.courseName || course.name) : course} value={typeof course === 'object' ? (course.courseName || course.name) : course}>{typeof course === 'object' ? (course.courseName || course.name) : course}</option>
                         ))}
                     </select>
                     
@@ -613,7 +613,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     >
                         <option value="all">All Streams</option>
                         {availableStreams.map(stream => (
-                            <option key={stream} value={stream}>{stream}</option>
+                            <option key={typeof stream === 'object' ? stream.name : stream} value={typeof stream === 'object' ? stream.name : stream}>{typeof stream === 'object' ? stream.name : stream}</option>
                         ))}
                     </select>
 
@@ -1954,9 +1954,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                             >
                                                 <option value="">Select Stream (Optional)</option>
                                                 {getStreamsForCourse().map((stream) => (
-                                                    <option key={stream} value={stream}>
-                                                        {stream}
-                                                    </option>
+                                                    <option key={typeof stream === 'object' ? stream.name : stream} value={typeof stream === 'object' ? stream.name : stream}>{typeof stream === 'object' ? stream.name : stream}</option>
                                                 ))}
                                             </select>
                                         </div>

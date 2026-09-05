@@ -222,7 +222,7 @@ const SinglePageStudentRegistration = ({
         const selectedCourse = availableCourses.find(
             (course) => course.courseName === formData.courseDetails.selectedCourse
         );
-        return selectedCourse?.streams || [];
+        return (selectedCourse?.streams || []).map(s => typeof s === 'object' ? s.name : s).filter(Boolean);
     };
 
     // Get fee for selected course

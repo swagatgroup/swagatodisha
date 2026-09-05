@@ -269,7 +269,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
         const selectedCourse = availableCourses.find(
             (course) => course.courseName === editData.courseDetails.selectedCourse
         );
-        return selectedCourse?.streams || [];
+        return (selectedCourse?.streams || []).map(s => typeof s === 'object' ? s.name : s).filter(Boolean);
     };
 
     // Get campuses for selected college
@@ -1632,7 +1632,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                         {[...new Set(students.map(student => 
                             student.courseDetails?.selectedCourse || student.courseDetails?.courseName || ''
                         ).filter(Boolean))].sort().map(course => (
-                            <option key={course} value={course}>{course}</option>
+                            <option key={typeof course === 'object' ? (course.courseName || course.name) : course} value={typeof course === 'object' ? (course.courseName || course.name) : course}>{typeof course === 'object' ? (course.courseName || course.name) : course}</option>
                         ))}
                     </select>
                     <select
@@ -1715,7 +1715,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                         {[...new Set(students.map(student => 
                             student.courseDetails?.stream || ''
                         ).filter(Boolean))].sort().map(stream => (
-                            <option key={stream} value={stream}>{stream}</option>
+                            <option key={typeof stream === 'object' ? stream.name : stream} value={typeof stream === 'object' ? stream.name : stream}>{typeof stream === 'object' ? stream.name : stream}</option>
                         ))}
                     </select>
 
@@ -3483,9 +3483,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                             >
                                                 <option value="">Select Stream (Optional)</option>
                                                 {getStreamsForCourse().map((stream) => (
-                                                    <option key={stream} value={stream}>
-                                                        {stream}
-                                                    </option>
+                                                    <option key={typeof stream === 'object' ? stream.name : stream} value={typeof stream === 'object' ? stream.name : stream}>{typeof stream === 'object' ? stream.name : stream}</option>
                                                 ))}
                                             </select>
                                         </div>
