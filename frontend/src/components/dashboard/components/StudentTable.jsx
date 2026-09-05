@@ -537,6 +537,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                         <option value="UNDER_REVIEW">Under Review</option>
                         <option value="APPROVED">Approved</option>
                         <option value="REJECTED">Rejected</option>
+                        <option value="COMPLETE">Complete</option>
                     </select>
                     
                     <select
@@ -1552,7 +1553,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 <option value="IN_PROGRESS">In Progress</option>
                                                 <option value="APPROVED">Approved</option>
                                                 <option value="REJECTED">Rejected</option>
-                                                <option value="COMPLETED">Completed</option>
+                                                <option value="COMPLETE">Completed</option>
                                             </select>
                                         </div>
                                     </div>

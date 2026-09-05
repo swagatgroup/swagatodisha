@@ -733,8 +733,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               <option value="UNDER_REVIEW">Under Review</option>
               <option value="IN_PROGRESS">In Progress</option>
               <option value="APPROVED">Approved</option>
-              <option value="COMPLETED">Completed</option>
               <option value="REJECTED">Rejected</option>
+              <option value="COMPLETE">Completed</option>
             </select>
           </div>
           <div>
@@ -1232,7 +1232,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         <option value="IN_PROGRESS">In Progress</option>
                         <option value="APPROVED">Approved</option>
                         <option value="REJECTED">Rejected</option>
-                        <option value="COMPLETED">Completed</option>
+                        <option value="COMPLETE">Completed</option>
                       </select>
                     </div>
                   </div>

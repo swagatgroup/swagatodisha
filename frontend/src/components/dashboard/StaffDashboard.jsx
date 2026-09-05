@@ -265,7 +265,7 @@ const EnhancedStaffDashboard = () => {
                 setTotalItems(pagination.totalItems || 0);
                 setItemsPerPage(pagination.itemsPerPage || 20);
                 setFilters(response.data.data.filters || {
-                    statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
+                    statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
                     courses: [],
                     categories: [],
                     submitters: []

@@ -249,7 +249,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                     const statusKey = item._id || 'PENDING';
                     if (statusKey === 'PARTIAL') paymentStats.PARTIAL = item.count;
                     else if (statusKey === 'OVERDUE') paymentStats.OVERDUE = item.count;
-                    else if (statusKey === 'COMPLETED') paymentStats.COMPLETED = item.count;
+                    else if (statusKey === 'COMPLETE') paymentStats.COMPLETED = item.count;
                     else {
                         paymentStats.PENDING += item.count;
                     }
@@ -466,7 +466,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
 
         // Get filter options with error handling
         let filterOptions = {
-            statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
+            statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED', 'COMPLETE'],
             courses: [],
             categories: [],
             colleges: [],
@@ -1306,7 +1306,7 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 
         // Update status (super admin can set any status, staff cannot change status via this route)
         if (updateData.status && isSuperAdmin) {
-            const validStatuses = ['DRAFT', 'SUBMITTED', 'PENDING', 'UNDER_REVIEW', 'IN_PROGRESS', 'APPROVED', 'REJECTED', 'COMPLETED'];
+            const validStatuses = ['DRAFT', 'SUBMITTED', 'PENDING', 'UNDER_REVIEW', 'IN_PROGRESS', 'APPROVED', 'REJECTED', 'COMPLETE'];
             if (validStatuses.includes(updateData.status)) {
                 application.status = updateData.status;
             }
