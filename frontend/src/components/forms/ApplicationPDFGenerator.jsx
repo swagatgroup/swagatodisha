@@ -592,7 +592,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             contactDetails: formData?.contactDetails || {},
             courseDetails: formData?.courseDetails || {},
             guardianDetails: formData?.guardianDetails || {},
-            documents: formData?.documents || {},
+            documents: application?.documents || formData?.documents || {},
             referralCode: formData?.referralCode || null
         };
     };
@@ -829,13 +829,41 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
         <div class="section">
             <div class="section-title">Uploaded Documents</div>
             <div class="documents-grid">
-                ${Object.entries(content.documents || {}).map(([key, doc]) =>
-            `<div class="document-item">
-                        <div class="document-name">
-                            ${doc.url || doc.downloadUrl ? `<a href="${doc.url || doc.downloadUrl}" target="_blank" style="color: #4f46e5; text-decoration: underline;">` : ''}
-                            ${key.replace(/_/g, ' ').toUpperCase()}
-                            ${doc.url || doc.downloadUrl ? `</a>` : ''}
-                        </div>
+                ${(() => {
+                    const docs = content.documents || {};
+                    // If it's an array from the backend
+                    if (Array.isArray(docs)) {
+                        return docs.map(doc => {
+                            const url = doc.filePath || doc.url || doc.downloadUrl;
+                            const name = doc.documentType || doc.fileName || 'Document';
+                            const title = (doc.documentType || 'Document').replace(/_/g, ' ').toUpperCase();
+                            return `<div class="document-item">
+                                <div class="document-name">
+                                    ${url ? `<a href="${url}" target="_blank" style="color: #4f46e5; text-decoration: underline;">` : ''}
+                                    ${title}
+                                    ${url ? `</a>` : ''}
+                                </div>
+                                <div class="document-size">${doc.fileName || doc.name || 'Uploaded'}</div>
+                            </div>`;
+                        }).join('');
+                    } 
+                    // If it's an object from form data
+                    else {
+                        return Object.entries(docs).map(([key, doc]) => {
+                            const url = doc.url || doc.downloadUrl || doc.filePath;
+                            const title = key.replace(/_/g, ' ').toUpperCase();
+                            return `<div class="document-item">
+                                <div class="document-name">
+                                    ${url ? `<a href="${url}" target="_blank" style="color: #4f46e5; text-decoration: underline;">` : ''}
+                                    ${title}
+                                    ${url ? `</a>` : ''}
+                                </div>
+                                <div class="document-size">${doc.name || doc.fileName || 'Uploaded'} ${doc.size ? '(' + (doc.size / 1024).toFixed(1) + ' KB)' : ''}</div>
+                            </div>`;
+                        }).join('');
+                    }
+                })()}
+            </div>
                         <div class="document-size">${doc.name || 'Uploaded'} ${doc.size ? '(' + (doc.size / 1024).toFixed(1) + ' KB)' : ''}</div>
                     </div>`
         ).join('')}

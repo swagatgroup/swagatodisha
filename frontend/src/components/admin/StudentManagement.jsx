@@ -2051,6 +2051,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
                                                 <button
                                                     onClick={async () => {
+                                                        try {
                                                         setSelectedStudent(student);
                                                         
                                                         // Helper function to format date for input field
@@ -2138,7 +2139,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                             },
                                                             courseDetails: {
                                                                 selectedCollege: findCollegeId(),
-                                                                institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
+                                                                institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' && student.courseDetails.selectedCollege !== null ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
                                                                 selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
                                                                 customCourse: student.courseDetails?.customCourse || '',
                                                                 stream: student.courseDetails?.stream || '',
@@ -2159,6 +2160,9 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                         
                                                         setEditData(initialEditData);
                                                         setShowEditModal(true);
+                                                    } catch (editErr) {
+                                                        console.error('❌ Error preparing edit data:', editErr);
+                                                    }
                                                     }}
                                                     className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
                                                     title="Edit"
@@ -2525,7 +2529,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                  {(() => {
                                                      const inst = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
                                                      if (inst) {
-                                                         if (typeof inst === 'object') return inst.name || inst.institutionName || 'Swagat Group of Institutions';
+                                                         if (typeof inst === 'object' && inst !== null) return inst.name || inst.institutionName || 'Swagat Group of Institutions';
                                                          if (/^[0-9a-fA-F]{24}$/.test(inst)) {
                                                              const matched = colleges.find(c => c._id === inst);
                                                              if (matched) return matched.name;
@@ -2534,7 +2538,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                      }
                                                      const college = selectedStudent.courseDetails?.selectedCollege;
                                                      if (college) {
-                                                         if (typeof college === 'object') return college.name || college.institutionName || 'Swagat Group of Institutions';
+                                                         if (typeof college === 'object' && college !== null) return college.name || college.institutionName || 'Swagat Group of Institutions';
                                                          if (/^[0-9a-fA-F]{24}$/.test(college)) {
                                                              const matched = colleges.find(c => c._id === college);
                                                              if (matched) return matched.name;

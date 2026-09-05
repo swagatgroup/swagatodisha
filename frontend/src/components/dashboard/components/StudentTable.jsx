@@ -900,13 +900,13 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                                 }
                                                             },
                                                             courseDetails: {
-                                                                    selectedCollege: typeof student.courseDetails?.selectedCollege === 'object' 
+                                                                    selectedCollege: typeof student.courseDetails?.selectedCollege === 'object' && student.courseDetails.selectedCollege !== null 
                                                                         ? student.courseDetails.selectedCollege._id 
                                                                         : student.courseDetails?.selectedCollege || '',
                                                                 selectedCourse: student.courseDetails?.selectedCourse || '',
                                                                 customCourse: student.courseDetails?.customCourse || '',
                                                                 stream: student.courseDetails?.stream || '',
-                                                                    campus: typeof student.courseDetails?.campus === 'object'
+                                                                    campus: typeof student.courseDetails?.campus === 'object' && student.courseDetails.campus !== null
                                                                         ? student.courseDetails.campus._id
                                                                         : student.courseDetails?.campus || '',
                                                                     institutionName: student.courseDetails?.institutionName || '',
@@ -1217,7 +1217,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 {(() => {
                                                     const inst = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
                                                     if (inst) {
-                                                        if (typeof inst === 'object') return inst.name || inst.institutionName || 'Swagat Group of Institutions';
+                                                        if (typeof inst === 'object' && inst !== null) return inst.name || inst.institutionName || 'Swagat Group of Institutions';
                                                         if (/^[0-9a-fA-F]{24}$/.test(inst)) {
                                                             const matched = colleges.find(c => c._id === inst);
                                                             if (matched) return matched.name;
@@ -1226,7 +1226,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                     }
                                                     const college = selectedStudent.courseDetails?.selectedCollege;
                                                     if (college) {
-                                                        if (typeof college === 'object') return college.name || college.institutionName || 'Swagat Group of Institutions';
+                                                        if (typeof college === 'object' && college !== null) return college.name || college.institutionName || 'Swagat Group of Institutions';
                                                         if (/^[0-9a-fA-F]{24}$/.test(college)) {
                                                             const matched = colleges.find(c => c._id === college);
                                                             if (matched) return matched.name;

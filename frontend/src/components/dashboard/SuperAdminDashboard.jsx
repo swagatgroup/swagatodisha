@@ -1013,7 +1013,7 @@ const SuperAdminDashboard = () => {
                                                                             {(() => {
                                                                                 const name = student.fullName || student.personalDetails?.fullName;
                                                                                 if (!name) return 'N/A';
-                                                                                if (typeof name === 'object') return name.fullName || name.name || 'N/A';
+                                                                                if (typeof name === 'object' && name !== null) return name.fullName || name.name || 'N/A';
                                                                                 return name;
                                                                             })()}
                                                                         </div>
@@ -1036,7 +1036,7 @@ const SuperAdminDashboard = () => {
                                                                 {(() => {
                                                                     const course = student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName;
                                                                     if (!course) return 'N/A';
-                                                                    if (typeof course === 'object') return course.courseName || course.name || course.selectedCourse || 'N/A';
+                                                                    if (typeof course === 'object' && course !== null) return course.courseName || course.name || course.selectedCourse || 'N/A';
                                                                     return course;
                                                                 })()}
                                                             </td>
@@ -1054,7 +1054,7 @@ const SuperAdminDashboard = () => {
                                                                         } else if (student.submittedBy) {
                                                                             const name = student.submittedBy.fullName;
                                                                             if (name) {
-                                                                                if (typeof name === 'object') {
+                                                                                if (typeof name === 'object' && name !== null) {
                                                                                     submitterName = (name.fullName || name.name || '').trim();
                                                                                 } else {
                                                                                     submitterName = name.trim();
@@ -1166,7 +1166,7 @@ const SuperAdminDashboard = () => {
                                                                                 },
                                                                                 courseDetails: {
                                                                                     selectedCollege: findCollegeId(),
-                                                                                    institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
+                                                                                    institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' && student.courseDetails.selectedCollege !== null ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
                                                                                     selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
                                                                                     customCourse: student.courseDetails?.customCourse || '',
                                                                                     stream: student.courseDetails?.stream || '',
@@ -1359,7 +1359,7 @@ const SuperAdminDashboard = () => {
                                                 {(() => {
                                                     const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
                                                     if (!name) return 'N/A';
-                                                    if (typeof name === 'object') return name.fullName || name.name || 'N/A';
+                                                    if (typeof name === 'object' && name !== null) return name.fullName || name.name || 'N/A';
                                                     return name;
                                                 })()}
                                             </p>
@@ -1445,7 +1445,7 @@ const SuperAdminDashboard = () => {
                                                 {(() => {
                                                     const institution = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
                                                     if (institution) {
-                                                        if (typeof institution === 'object') return institution.name || institution.institutionName || 'Swagat Group of Institutions';
+                                                        if (typeof institution === 'object' && institution !== null) return institution.name || institution.institutionName || 'Swagat Group of Institutions';
                                                         if (/^[0-9a-fA-F]{24}$/.test(institution)) {
                                                             const matched = colleges.find(c => c._id === institution);
                                                             if (matched) return matched.name;
@@ -1454,7 +1454,7 @@ const SuperAdminDashboard = () => {
                                                     }
                                                     const college = selectedStudent.courseDetails?.selectedCollege;
                                                     if (college) {
-                                                        if (typeof college === 'object') return college.name || college.institutionName || 'Swagat Group of Institutions';
+                                                        if (typeof college === 'object' && college !== null) return college.name || college.institutionName || 'Swagat Group of Institutions';
                                                         if (/^[0-9a-fA-F]{24}$/.test(college)) {
                                                             const matched = colleges.find(c => c._id === college);
                                                             if (matched) return matched.name;
@@ -1471,7 +1471,7 @@ const SuperAdminDashboard = () => {
                                                 {(() => {
                                                     const course = selectedStudent.courseDetails?.selectedCourse || selectedStudent.course;
                                                     if (!course) return 'N/A';
-                                                    if (typeof course === 'object') return course.courseName || course.name || 'N/A';
+                                                    if (typeof course === 'object' && course !== null) return course.courseName || course.name || 'N/A';
                                                     return course;
                                                 })()}
                                             </p>
@@ -1482,7 +1482,7 @@ const SuperAdminDashboard = () => {
                                                 {(() => {
                                                     const stream = selectedStudent.courseDetails?.stream;
                                                     if (!stream) return 'N/A';
-                                                    if (typeof stream === 'object') return stream.name || stream.streamName || 'N/A';
+                                                    if (typeof stream === 'object' && stream !== null) return stream.name || stream.streamName || 'N/A';
                                                     return stream;
                                                 })()}
                                             </p>
@@ -1493,7 +1493,7 @@ const SuperAdminDashboard = () => {
                                                 {(() => {
                                                     const campus = selectedStudent.courseDetails?.campus;
                                                     if (!campus) return 'N/A';
-                                                    if (typeof campus === 'object') return campus.name || campus.campusName || 'N/A';
+                                                    if (typeof campus === 'object' && campus !== null) return campus.name || campus.campusName || 'N/A';
                                                     return campus;
                                                 })()}
                                             </p>
@@ -1512,7 +1512,7 @@ const SuperAdminDashboard = () => {
                                                     {(() => {
                                                         const name = selectedStudent.guardianDetails?.guardianName;
                                                         if (!name) return 'N/A';
-                                                        if (typeof name === 'object') return name.guardianName || name.name || 'N/A';
+                                                        if (typeof name === 'object' && name !== null) return name.guardianName || name.name || 'N/A';
                                                         return name;
                                                     })()}
                                                 </p>
@@ -1523,7 +1523,7 @@ const SuperAdminDashboard = () => {
                                                     {(() => {
                                                         const phone = selectedStudent.guardianDetails?.guardianPhone;
                                                         if (!phone) return 'N/A';
-                                                        if (typeof phone === 'object') return phone.phone || phone.guardianPhone || 'N/A';
+                                                        if (typeof phone === 'object' && phone !== null) return phone.phone || phone.guardianPhone || 'N/A';
                                                         return phone;
                                                     })()}
                                                 </p>

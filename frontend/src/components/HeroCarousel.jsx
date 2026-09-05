@@ -159,7 +159,7 @@ const HeroCarousel = () => {
 
     // Determine height based on slider type
     const heightClass = sliderType === 'horizontal' 
-        ? 'aspect-[4/3] md:aspect-[21/9]' 
+        ? 'aspect-[4/3] md:aspect-[1920/820]' 
         : 'aspect-[4/3] md:aspect-[16/9]';
 
     return (

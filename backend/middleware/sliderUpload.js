@@ -26,7 +26,7 @@ const upload = multer({
 /**
  * Image Optimization and Cloudinary Upload Middleware
  * Resizes images based on sliderType:
- * - Horizontal: 1920x1080 (full screen landscape for >1000px viewport)
+ * - Horizontal: 1920x820 (full screen landscape for >1000px viewport)
  * - Vertical: 600x840 (vertical portrait for <1000px viewport)
  * Auto-compresses images using Cloudinary's optimization
  */
@@ -55,16 +55,16 @@ const optimizeSliderImage = async (req, res, next) => {
             ];
             console.log('📱 Processing vertical slider image (600x840)');
         } else {
-            // Horizontal slider: 1920x1080 (full HD landscape for desktop)
+            // Horizontal slider: 1920x820 (full HD landscape for desktop)
             width = 1920;
-            height = 1080;
+            height = 820;
             transformation = [
-                { width: 1920, height: 1080, crop: 'fill' },
+                { width: 1920, height: 820, crop: 'fill' },
                 { quality: 'auto:good' },
                 { fetch_format: 'auto' },
                 { flags: 'progressive' }
             ];
-            console.log('🖥️ Processing horizontal slider image (1920x1080)');
+            console.log('🖥️ Processing horizontal slider image (1920x820)');
         }
 
         // Resize and optimize image

@@ -507,7 +507,7 @@ const SliderManagement = () => {
                             <div>
                                 <h4 className="font-semibold mb-1">🖥️ Horizontal Sliders (Desktop &gt;1000px)</h4>
                                 <ul className="space-y-1">
-                                    <li>• Recommended: 1920 x 1080 pixels</li>
+                                    <li>• Recommended: 1920 x 820 pixels</li>
                                     <li>• Covers full screen height (100vh)</li>
                                     <li>• Activated above 1000px viewport width</li>
                                 </ul>
