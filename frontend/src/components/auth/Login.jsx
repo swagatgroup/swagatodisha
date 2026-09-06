@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContextSimple';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import ForgotPassword from './ForgotPassword';
 import Swal from 'sweetalert2';
@@ -29,8 +29,7 @@ const Login = ({ title }) => {
             staff: '/dashboard/staff',
             super_admin: '/dashboard/admin',
         }[user.role] || '/dashboard';
-        navigate(dashboardPath, { replace: true });
-        return null;
+        return <Navigate to={dashboardPath} replace />;
     }
 
     const handleChange = (e) => {

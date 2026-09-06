@@ -1,9 +1,22 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import ApplicationStatusSearch from '../ApplicationStatusSearch';
+import { useAuth } from '../../contexts/AuthContext';
 
 const LoginPortal = () => {
+    const { user } = useAuth();
+
+    if (user) {
+        const dashboardPath = {
+            student: '/dashboard/student',
+            user: '/dashboard/student',
+            agent: '/dashboard/agent',
+            staff: '/dashboard/staff',
+            super_admin: '/dashboard/admin',
+        }[user.role] || '/dashboard';
+        return <Navigate to={dashboardPath} replace />;
+    }
 
     const sections = [
         {

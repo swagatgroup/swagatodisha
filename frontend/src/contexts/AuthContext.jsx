@@ -26,6 +26,8 @@ export const AuthProvider = ({ children }) => {
         // so the browser back-button history is preserved
         const handleUnauthorized = () => {
             console.log('🔐 AuthContext - Received auth:unauthorized event, logging out gracefully');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
             setToken(null);
             setUser(null);
             setIsAuthenticated(false);
@@ -48,6 +50,18 @@ export const AuthProvider = ({ children }) => {
                     // Set token and headers immediately
                     setToken(storedToken);
                     api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+                    
+                    // Recover user instantly if available in cache (prevents flashing & saves them from network errors)
+                    try {
+                        const cachedUser = localStorage.getItem('user');
+                        if (cachedUser) {
+                            setUser(JSON.parse(cachedUser));
+                            setIsAuthenticated(true);
+                        }
+                    } catch (e) {
+                        console.warn('Failed to parse cached user', e);
+                    }
+                    
                     console.log('🔐 AuthContext - Token loaded from localStorage');
                     
                     // Verify token with backend
@@ -57,24 +71,40 @@ export const AuthProvider = ({ children }) => {
                         console.log('🔐 AuthContext - /api/auth/me response:', response.data);
                         
                         if (response.data.success) {
-                            setUser(response.data.data.user);
+                            const fetchedUser = response.data.data.user;
+                            setUser(fetchedUser);
+                            localStorage.setItem('user', JSON.stringify(fetchedUser));
                             setIsAuthenticated(true);
-                            console.log('🔐 AuthContext - Authentication successful, user:', response.data.data.user.fullName);
+                            console.log('🔐 AuthContext - Authentication successful, user:', fetchedUser.fullName);
                         } else {
                             // Token is invalid
                             console.log('🔐 AuthContext - Token invalid, removing from localStorage');
                             localStorage.removeItem('token');
+                            localStorage.removeItem('user');
                             setToken(null);
+                            setUser(null);
                             setIsAuthenticated(false);
                             delete api.defaults.headers.common['Authorization'];
                         }
                     } catch (error) {
                         console.error('🔐 AuthContext - Auth check failed:', error);
                         console.error('🔐 AuthContext - Error response:', error.response?.data);
-                        localStorage.removeItem('token');
-                        setToken(null);
-                        setIsAuthenticated(false);
-                        delete api.defaults.headers.common['Authorization'];
+                        
+                        // ONLY clear token if it's explicitly a 401 Unauthorized or 403 Forbidden.
+                        // If it's a network error (no error.response) due to mobile sleeping/waking up,
+                        // do NOT aggressively clear the token and log them out!
+                        if (error.response?.status === 401 || error.response?.status === 403) {
+                            console.log('🔐 AuthContext - Token explicitly rejected, clearing...');
+                            localStorage.removeItem('token');
+                            setToken(null);
+                            setIsAuthenticated(false);
+                            delete api.defaults.headers.common['Authorization'];
+                        } else {
+                            console.log('🔐 AuthContext - Network/Server error during token verification. Retaining token to prevent sudden logout.');
+                            // Still set authenticated to true so they don't get booted to login page!
+                            // We just don't have the updated user object.
+                            setIsAuthenticated(true);
+                        }
                     }
                 } else {
                     console.log('🔐 AuthContext - No token found in localStorage');
@@ -140,10 +170,11 @@ export const AuthProvider = ({ children }) => {
                 console.log('🔐 AuthContext - Login successful, storing token:', token ? 'Token received' : 'No token');
                 console.log('🔐 AuthContext - User data:', user);
 
-                // Store token
+                // Store token and user
                 localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify(user));
                 setToken(token);
-                console.log('🔐 AuthContext - Token stored in localStorage and state');
+                console.log('🔐 AuthContext - Token and user stored in localStorage and state');
 
                 // Set authorization header
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -238,6 +269,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         delete api.defaults.headers.common['Authorization'];
         setToken(null);
         setUser(null);
@@ -247,6 +279,7 @@ export const AuthProvider = ({ children }) => {
 
     const updateUser = (updatedUser) => {
         setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
     };
 
     const clearError = () => {
