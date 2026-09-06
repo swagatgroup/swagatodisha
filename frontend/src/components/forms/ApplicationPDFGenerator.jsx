@@ -426,11 +426,19 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     // Link
                     const docUrl = docItem.filePath || docItem.downloadUrl || docItem.url;
                     
-                    if (docUrl) {
+                    // Filter out fake placeholder URLs from old test submissions
+                    const isValidUrl = docUrl && !docUrl.includes('example.com') && (docUrl.startsWith('http') || docUrl.startsWith('/'));
+                    
+                    if (isValidUrl) {
                         pdf.setFont('times', 'bold');
                         pdf.setFontSize(9);
                         pdf.setTextColor(0, 102, 204); // Blue color for link
                         pdf.textWithLink('View Document', docX + 2, docY + 6, { url: docUrl });
+                    } else if (docUrl && docUrl.includes('example.com')) {
+                        pdf.setFont('times', 'normal');
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(200, 80, 80);
+                        pdf.text('Re-upload Needed', docX + 2, docY + 6);
                     } else {
                         pdf.setFont('times', 'normal');
                         pdf.setFontSize(9);
@@ -834,7 +842,9 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                     // If it's an array from the backend
                     if (Array.isArray(docs)) {
                         return docs.map(doc => {
-                            const url = doc.filePath || doc.url || doc.downloadUrl;
+                            const rawUrl = doc.filePath || doc.url || doc.downloadUrl;
+                            const url = (rawUrl && !rawUrl.includes('example.com') && rawUrl.startsWith('http')) ? rawUrl : null;
+                            const needsReupload = rawUrl && rawUrl.includes('example.com');
                             const name = doc.documentType || doc.fileName || 'Document';
                             const title = (doc.documentType || 'Document').replace(/_/g, ' ').toUpperCase();
                             return `<div class="document-item">
@@ -842,21 +852,26 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                                     ${url ? `<a href="${url}" target="_blank" style="color: #4f46e5; text-decoration: underline;">` : ''}
                                     ${title}
                                     ${url ? `</a>` : ''}
+                                    ${needsReupload ? '<span style="color:#dc2626;font-size:10px;"> (Re-upload Needed)</span>' : ''}
                                 </div>
                                 <div class="document-size">${doc.fileName || doc.name || 'Uploaded'}</div>
                             </div>`;
+
                         }).join('');
                     } 
                     // If it's an object from form data
                     else {
                         return Object.entries(docs).map(([key, doc]) => {
-                            const url = doc.url || doc.downloadUrl || doc.filePath;
+                            const rawUrl = doc.url || doc.downloadUrl || doc.filePath;
+                            const url = (rawUrl && !rawUrl.includes('example.com') && rawUrl.startsWith('http')) ? rawUrl : null;
+                            const needsReupload = rawUrl && rawUrl.includes('example.com');
                             const title = key.replace(/_/g, ' ').toUpperCase();
                             return `<div class="document-item">
                                 <div class="document-name">
                                     ${url ? `<a href="${url}" target="_blank" style="color: #4f46e5; text-decoration: underline;">` : ''}
                                     ${title}
                                     ${url ? `</a>` : ''}
+                                    ${needsReupload ? '<span style="color:#dc2626;font-size:10px;"> (Re-upload Needed)</span>' : ''}
                                 </div>
                                 <div class="document-size">${doc.name || doc.fileName || 'Uploaded'} ${doc.size ? '(' + (doc.size / 1024).toFixed(1) + ' KB)' : ''}</div>
                             </div>`;

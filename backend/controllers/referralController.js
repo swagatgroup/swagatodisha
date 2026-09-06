@@ -307,12 +307,26 @@ const verifyReferralCode = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Referral code is required' });
         }
 
-        const referrer = await User.findOne({
+        const codeNormalized = code.toLowerCase().trim();
+        let referrer = await User.findOne({
             $or: [
+                { referralCode: codeNormalized },
                 { referralCode: code },
-                { email: code.toLowerCase().trim() }
+                { email: codeNormalized }
             ]
-        }).select('firstName lastName fullName role');
+        }).select('firstName lastName fullName role referralCode');
+
+        // If not found in Users, search Admins (staff/super_admin)
+        if (!referrer) {
+            const Admin = require('../models/Admin');
+            referrer = await Admin.findOne({
+                $or: [
+                    { referralCode: codeNormalized },
+                    { referralCode: code },
+                    { email: codeNormalized }
+                ]
+            }).select('firstName lastName fullName role referralCode');
+        }
 
         if (!referrer) {
             return res.status(404).json({ success: false, message: 'Invalid referral code' });
@@ -323,6 +337,7 @@ const verifyReferralCode = async (req, res) => {
             referrerName: referrer.fullName || `${referrer.firstName || ''} ${referrer.lastName || ''}`.trim(),
             role: referrer.role
         });
+
 
     } catch (error) {
         console.error('Error verifying referral code:', error);

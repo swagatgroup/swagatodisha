@@ -590,18 +590,25 @@ const SuperAdminDashboard = () => {
                                 </div>
                             </div>
 
-                            {/* Pending Applications */}
-                            <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300">
+                            {/* Referral Conversions */}
+                            <div
+                                onClick={() => { setActiveSidebarItem('students'); setStudentView('our'); }}
+                                className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                            >
                                 <div className="flex items-center space-x-4">
-                                    <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
-                                            <path fillRule="evenodd" d="M5.625 1.5H9a3.75 3.75 0 013.75 3.75v1.875c0 1.036.84 1.875 1.875 1.875H16.5a3.75 3.75 0 013.75 3.75v7.875c0 1.035-.84 1.875-1.875 1.875H5.625a1.875 1.875 0 01-1.875-1.875V3.375c0-1.036.84-1.875 1.875-1.875zM12.75 12a.75.75 0 00-1.5 0v2.25a.75.75 0 001.5 0V12zM12 16.5a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
-                                            <path d="M14.25 5.25a5.23 5.23 0 00-1.279-3.434 9.768 9.768 0 016.963 6.963A5.23 5.23 0 0016.5 7.5h-1.875a.375.375 0 01-.375-.375V5.25z" />
+                                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
+                                        <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pending Apps</p>
-                                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.pendingApplications}</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Referral Students</p>
+                                        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
+                                            {(stats.referralStats?.agentReferred || 0) + (stats.referralStats?.staffReferred || 0) + (stats.referralStats?.superAdminReferred || 0)}
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-1">
+                                            {stats.referralStats?.agentReferred || 0} agent · {stats.referralStats?.staffReferred || 0} staff
+                                        </p>
                                     </div>
                                 </div>
                             </div>

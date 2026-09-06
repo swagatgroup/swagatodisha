@@ -209,14 +209,31 @@ const createApplication = async (req, res) => {
             isReferral,
         } = req.body;
 
-        // Handle referral code if provided
+        // Handle referral code if provided - search both User AND Admin models
         let referralInfo = {};
         if (referralCode) {
-            const referrer = await User.findOne({ referralCode });
+            const codeToSearch = referralCode.toLowerCase().trim();
+            // First check Users (agents/students)
+            let referrer = await User.findOne({
+                $or: [
+                    { referralCode: codeToSearch },
+                    { referralCode: referralCode }
+                ]
+            });
+            // If not found in Users, check Admins (staff/super_admin)
+            if (!referrer) {
+                const Admin = require('../models/Admin');
+                referrer = await Admin.findOne({
+                    $or: [
+                        { referralCode: codeToSearch },
+                        { referralCode: referralCode }
+                    ]
+                });
+            }
             if (referrer) {
                 referralInfo = {
                     referredBy: referrer._id,
-                    referralCode,
+                    referralCode: referrer.referralCode || referralCode,
                     referralType: referrer.role,
                 };
             }
