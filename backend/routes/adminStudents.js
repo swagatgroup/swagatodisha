@@ -2083,7 +2083,7 @@ router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) =
             });
         }
 
-        const validRoles = ['agent', 'staff', 'super_admin'];
+        const validRoles = ['student', 'agent', 'staff', 'super_admin'];
         if (!validRoles.includes(referrerRole)) {
             return res.status(400).json({
                 success: false,
@@ -2099,7 +2099,7 @@ router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) =
 
         // Find the referrer in User or Admin model
         let referrer = null;
-        if (referrerRole === 'agent') {
+        if (referrerRole === 'agent' || referrerRole === 'student') {
             referrer = await User.findById(referrerId).select('_id fullName name referralCode role').lean();
         } else {
             const Admin = require('../models/Admin');
@@ -2107,26 +2107,38 @@ router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) =
         }
 
         if (!referrer) {
-            return res.status(404).json({ success: false, message: 'Referrer not found' });
+            return res.status(404).json({ success: false, message: 'User/Referrer not found' });
         }
 
         const referrerName = referrer.fullName || referrer.name || 
             [referrer.firstName, referrer.lastName].filter(Boolean).join(' ') || 'Unknown';
 
-        // Update the application: set referralInfo and change ownership so it appears in "Our Students" everywhere
-        application.referralInfo = {
-            referredBy: referrer._id,
-            referralCode: referrer.referralCode || '',
-            referralType: referrerRole
-        };
-        application.submittedBy = referrer._id;
-        application.submitterRole = referrerRole;
+        // Update the application
+        if (referrerRole === 'student') {
+            // Convert back to direct student: remove referralInfo and reset submitter to student
+            application.referralInfo = undefined;
+            application.submittedBy = referrer._id;
+            application.submitterRole = 'student';
+        } else {
+            // Convert to Our Students: set referralInfo and change ownership
+            application.referralInfo = {
+                referredBy: referrer._id,
+                referralCode: referrer.referralCode || '',
+                referralType: referrerRole
+            };
+            application.submittedBy = referrer._id;
+            application.submitterRole = referrerRole;
+        }
 
         await application.save();
 
+        const successMessage = referrerRole === 'student'
+            ? `Student successfully reverted to Direct Students (No Referral)`
+            : `Student successfully migrated to Our Students list under ${referrerName}`;
+
         res.json({
             success: true,
-            message: `Student successfully migrated to Our Students list under ${referrerName}`,
+            message: successMessage,
             data: {
                 applicationId: application._id,
                 referrerName,

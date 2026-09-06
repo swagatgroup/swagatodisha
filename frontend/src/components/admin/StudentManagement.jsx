@@ -2054,24 +2054,22 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     </svg>
                                                 </button>
 
-                                                {/* Migrate to Our Students — only shown in Direct Students list */}
-                                                {listType === 'direct' && (
-                                                    <button
-                                                        onClick={() => {
-                                                            setMigrateStudent(student);
-                                                            setMigrateRole('');
-                                                            setMigrateMembers([]);
-                                                            setMigrateSelectedId('');
-                                                            setShowMigrateModal(true);
-                                                        }}
-                                                        className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
-                                                        title="Migrate to Our Students"
-                                                    >
-                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                                        </svg>
-                                                    </button>
-                                                )}
+                                                {/* Migrate Student — shown in all lists */}
+                                                <button
+                                                    onClick={() => {
+                                                        setMigrateStudent(student);
+                                                        setMigrateRole('');
+                                                        setMigrateMembers([]);
+                                                        setMigrateSelectedId('');
+                                                        setShowMigrateModal(true);
+                                                    }}
+                                                    className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+                                                    title="Migrate Student"
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                                    </svg>
+                                                </button>
 
 
                                                 <button
@@ -3802,7 +3800,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                         <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowMigrateModal(false)} />
                         <div className="relative bg-white dark:bg-[#2A1E2E] rounded-xl shadow-2xl w-full max-w-md p-6 z-10">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Migrate to Our Students</h3>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Migrate Student</h3>
                                 <button onClick={() => setShowMigrateModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3812,21 +3810,21 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
                             <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
                                 Student: <strong className="text-gray-800 dark:text-gray-200">{migrateStudent?.personalDetails?.fullName || 'Unknown'}</strong>
-                                <br />Select who referred / influenced this student to assign them correctly.
+                                <br />Select who referred / influenced this student, or move them to Direct Students.
                             </p>
 
                             {/* Step 1: Choose Role */}
                             <div className="mb-4">
                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Referred by</label>
                                 <div className="flex gap-2 flex-wrap">
-                                    {['agent', 'staff', 'super_admin'].map(role => (
+                                    {['student', 'agent', 'staff', 'super_admin'].map(role => (
                                         <button
                                             key={role}
                                             onClick={async () => {
                                                 setMigrateRole(role);
                                                 setMigrateSelectedId('');
                                                 setMigrateMembers([]);
-                                                if (role !== 'super_admin') {
+                                                if (role !== 'super_admin' && role !== 'student') {
                                                     try {
                                                         const endpoint = role === 'agent' ? '/api/admin/agents' : '/api/admin/staff';
                                                         const res = await api.get(`${endpoint}?limit=100`);
@@ -3857,8 +3855,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                 </div>
                             </div>
 
-                            {/* Step 2: Choose Specific Member (if not super_admin) */}
-                            {migrateRole && migrateRole !== 'super_admin' && (
+                            {/* Step 2: Choose Specific Member (if not super_admin or student) */}
+                            {migrateRole && migrateRole !== 'super_admin' && migrateRole !== 'student' && (
                                 <div className="mb-5">
                                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                                         Select {migrateRole === 'agent' ? 'Agent' : 'Staff Member'}
@@ -3887,6 +3885,13 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                 </div>
                             )}
 
+                            {/* Step 4: student shortcut — remove referral info */}
+                            {migrateRole === 'student' && (
+                                <div className="mb-5 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-sm text-blue-700 dark:text-blue-300">
+                                    This student will be converted to a Direct Student. Their referral connection will be removed.
+                                </div>
+                            )}
+
                             <div className="flex gap-3 justify-end">
                                 <button
                                     onClick={() => setShowMigrateModal(false)}
@@ -3895,18 +3900,26 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     Cancel
                                 </button>
                                 <button
-                                    disabled={migrateLoading || !migrateRole || (migrateRole !== 'super_admin' && !migrateSelectedId)}
+                                    disabled={migrateLoading || !migrateRole || (migrateRole !== 'super_admin' && migrateRole !== 'student' && !migrateSelectedId)}
                                     onClick={async () => {
                                         setMigrateLoading(true);
                                         try {
-                                            // For super_admin: get admins list and pick first super_admin, or use a fixed ID
                                             let referrerId = migrateSelectedId;
-                                            if (migrateRole === 'super_admin') {
+                                            
+                                            // For student role (Direct Student)
+                                            if (migrateRole === 'student') {
+                                                // We use the student's own user ID as the submitter
+                                                referrerId = migrateStudent.user?._id || migrateStudent.user;
+                                            }
+                                            // For super_admin: get admins list and pick first super_admin, or use a fixed ID
+                                            else if (migrateRole === 'super_admin') {
                                                 const res = await api.get('/api/admin/staff?role=super_admin&limit=1');
                                                 const admins = res.data?.data?.staff || res.data?.staff || [];
                                                 referrerId = admins[0]?._id;
                                             }
+
                                             if (!referrerId) throw new Error('Could not determine referrer ID');
+
                                             await api.put(`/api/admin/students/${migrateStudent._id}/migrate`, {
                                                 referrerId,
                                                 referrerRole: migrateRole
@@ -3914,7 +3927,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                             setShowMigrateModal(false);
                                             // Refresh the student list
                                             fetchStudents();
-                                            Swal.fire({ icon: 'success', title: 'Migrated!', text: 'Student moved to Our Students list.', timer: 2000, showConfirmButton: false });
+                                            const successMsg = migrateRole === 'student' ? 'Student moved to Direct Students list.' : 'Student moved to Our Students list.';
+                                            Swal.fire({ icon: 'success', title: 'Migrated!', text: successMsg, timer: 2000, showConfirmButton: false });
                                         } catch (err) {
                                             Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.message || err.message });
                                         } finally {
