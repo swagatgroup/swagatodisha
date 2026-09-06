@@ -654,76 +654,82 @@ const SuperAdminDashboard = () => {
                                         {studentView === 'our' && 'Students registered via dashboard by Super Admin, Staff, or Agent — or via their referral codes.'}
                                     </p>
 
-                                    {/* Summary Cards */}
-                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-                                        <div 
-                                            onClick={() => handleStatClick('all')}
-                                            className="bg-white dark:bg-[#2A1E2E] rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-                                        >
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
-                                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
-                                        </div>
-                                        <div 
-                                            onClick={() => handleStatClick('SUBMITTED')}
-                                            className="bg-white dark:bg-[#2A1E2E] rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-                                        >
-                                            <p className="text-xs text-[#387B95] dark:text-[#60A5FA]">Submitted</p>
-                                            <p className="text-2xl font-bold text-[#1D4B5E] dark:text-blue-300">{active.submitted || 0}</p>
-                                        </div>
-                                        <div 
-                                            onClick={() => handleStatClick('APPROVED')}
-                                            className="bg-teal-50 dark:bg-teal-900/20 rounded-lg p-3 border border-teal-200 dark:border-teal-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-                                        >
-                                            <p className="text-xs text-teal-600 dark:text-teal-400">Approved</p>
-                                            <p className="text-2xl font-bold text-teal-700 dark:text-teal-300">{active.approved || 0}</p>
-                                        </div>
-                                        <div 
-                                            onClick={() => handleStatClick('COMPLETE')}
-                                            className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3 border border-green-200 dark:border-green-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-                                        >
-                                            <p className="text-xs text-green-600 dark:text-green-400">Complete</p>
-                                            <p className="text-2xl font-bold text-green-700 dark:text-green-300">{active.complete || 0}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Pie Chart */}
-                                    <div className="w-full lg:w-1/2 mx-auto">
-                                        <ProgressPieChart
-                                            chartData={[
-                                                { label: 'Draft',       value: active.draft       || 0, color: '#6B7280', filterKey: 'DRAFT' },
-                                                { label: 'Submitted',   value: active.submitted   || 0, color: '#6366F1', filterKey: 'SUBMITTED' },
-                                                { label: 'Rejected',    value: active.rejected    || 0, color: '#EF4444', filterKey: 'REJECTED' },
-                                                { label: 'Under Review',value: active.underReview || 0, color: '#EAB308', filterKey: 'UNDER_REVIEW' },
-                                                { label: 'Approved',    value: active.approved    || 0, color: '#14B8A6', filterKey: 'APPROVED' },
-                                                { label: 'Completed',   value: active.complete    || 0, color: '#22C55E', filterKey: 'COMPLETE' },
-                                            ]}
-                                            onSectionClick={handleStatClick}
-                                        />
-                                    </div>
-
-                                    {/* Status Filter Buttons */}
-                                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-4">
+                                    {/* Unified Status Filters Row */}
+                                    <div className="grid grid-cols-3 sm:grid-cols-7 gap-2 md:gap-3 mb-6">
                                         {[
-                                            { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white', inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200' },
-                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#7B3FA0] text-white',  inactiveClass: 'bg-indigo-100 dark:bg-gray-700 text-[#5C2D80] dark:text-indigo-300 hover:bg-indigo-200' },
-                                            { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',   inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200' },
-                                            { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white',inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200' },
-                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-teal-500 text-white', inactiveClass: 'bg-teal-100 dark:bg-gray-700 text-teal-700 dark:text-teal-300 hover:bg-teal-200' },
-                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-green-600 text-white',inactiveClass: 'bg-green-100 dark:bg-gray-700 text-green-800 dark:text-green-200 hover:bg-green-200' },
+                                            { key: 'all',          label: 'Total',        count: active.total,        activeClass: 'bg-gray-800 text-white', inactiveClass: 'bg-white dark:bg-[#2A1E2E] text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700' },
+                                            { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white', inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' },
+                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#7B3FA0] text-white',  inactiveClass: 'bg-indigo-50 dark:bg-gray-700 text-[#5C2D80] dark:text-indigo-300 border border-indigo-100 dark:border-gray-600' },
+                                            { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white',inactiveClass: 'bg-yellow-50 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 border border-yellow-100 dark:border-gray-600' },
+                                            { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-teal-500 text-white', inactiveClass: 'bg-teal-50 dark:bg-gray-700 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-gray-600' },
+                                            { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',   inactiveClass: 'bg-red-50 dark:bg-gray-700 text-red-700 dark:text-red-300 border border-red-100 dark:border-gray-600' },
+                                            { key: 'COMPLETE',     label: 'Complete',     count: active.complete,     activeClass: 'bg-green-600 text-white',inactiveClass: 'bg-green-50 dark:bg-gray-700 text-green-800 dark:text-green-200 border border-green-100 dark:border-gray-600' },
                                         ].map(({ key, label, count, activeClass, inactiveClass }) => (
                                             <button
                                                 key={key}
                                                 onClick={() => handleStatClick(key)}
-                                                className={`px-2 py-2 rounded-lg font-medium transition-all duration-200 text-sm shadow-sm ${
-                                                    filterStatus === key ? activeClass + ' shadow-lg' : inactiveClass
+                                                className={`px-2 py-3 rounded-xl font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md ${
+                                                    (filterStatus === key || (key === 'all' && filterStatus === 'all')) ? activeClass + ' shadow-lg scale-[1.02]' : inactiveClass + ' hover:bg-opacity-80'
                                                 }`}
                                             >
                                                 <div className="flex flex-col items-center">
-                                                    <span className="text-xs font-medium mb-0.5">{label}</span>
-                                                    <span className="text-base font-semibold">{count || 0}</span>
+                                                    <span className="text-xs font-medium mb-1 opacity-80">{label}</span>
+                                                    <span className="text-xl font-bold">{count || 0}</span>
                                                 </div>
                                             </button>
                                         ))}
+                                    </div>
+                                    
+                                    {/* Charts Section */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                        <div className="bg-white dark:bg-[#2A1E2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
+                                            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 w-full text-center">Application Progress</h3>
+                                            <div className="w-full max-w-sm">
+                                                <ProgressPieChart
+                                                    chartData={[
+                                                        { label: 'Draft',       value: active.draft       || 0, color: '#6B7280', filterKey: 'DRAFT' },
+                                                        { label: 'Submitted',   value: active.submitted   || 0, color: '#6366F1', filterKey: 'SUBMITTED' },
+                                                        { label: 'Rejected',    value: active.rejected    || 0, color: '#EF4444', filterKey: 'REJECTED' },
+                                                        { label: 'Under Review',value: active.underReview || 0, color: '#EAB308', filterKey: 'UNDER_REVIEW' },
+                                                        { label: 'Approved',    value: active.approved    || 0, color: '#14B8A6', filterKey: 'APPROVED' },
+                                                        { label: 'Completed',   value: active.complete    || 0, color: '#22C55E', filterKey: 'COMPLETE' },
+                                                    ]}
+                                                    onSectionClick={handleStatClick}
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        <div className="bg-white dark:bg-[#2A1E2E] rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-center">
+                                            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-6 w-full text-center">Payment Status Overview</h3>
+                                            {stats.paymentStats ? (
+                                                <div className="flex flex-col gap-4 w-full px-4">
+                                                    {[
+                                                        { label: 'Completed', count: stats.paymentStats.completed || 0, color: 'bg-green-500', total: stats.paymentStats.total || 1 },
+                                                        { label: 'Partial', count: stats.paymentStats.partial || 0, color: 'bg-yellow-500', total: stats.paymentStats.total || 1 },
+                                                        { label: 'Pending', count: stats.paymentStats.pending || 0, color: 'bg-blue-500', total: stats.paymentStats.total || 1 },
+                                                        { label: 'Overdue', count: stats.paymentStats.overdue || 0, color: 'bg-red-500', total: stats.paymentStats.total || 1 },
+                                                    ].map((item, i) => (
+                                                        <div key={i} className="flex items-center gap-3 w-full">
+                                                            <span className="w-20 text-xs font-medium text-gray-600 dark:text-gray-400 text-right">{item.label}</span>
+                                                            <div className="flex-1 h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                                <motion.div 
+                                                                    initial={{ width: 0 }}
+                                                                    animate={{ width: `${Math.max(item.count === 0 ? 0 : 2, (item.count / item.total) * 100)}%` }}
+                                                                    transition={{ duration: 1, delay: i * 0.1 }}
+                                                                    className={`h-full ${item.count === 0 ? 'bg-transparent' : item.color} rounded-full`}
+                                                                />
+                                                            </div>
+                                                            <span className="w-8 text-xs font-bold text-gray-700 dark:text-gray-300">{item.count}</span>
+                                                        </div>
+                                                    ))}
+                                                    <div className="text-center mt-2 text-xs text-gray-400 dark:text-gray-500">
+                                                        Total Transactions: {stats.paymentStats.total || 0}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center justify-center h-full text-gray-400 text-sm">No payment data</div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             );
@@ -777,6 +783,79 @@ const SuperAdminDashboard = () => {
                                 </div>
                             </motion.div>
                         )}
+
+                        {/* Team Members Filter Rows */}
+                        <div className="mt-8 mb-6 space-y-6">
+                            {/* Staff Row */}
+                            {stats.staffMembers && stats.staffMembers.length > 0 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.05 }}
+                                >
+                                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wider">Filter by Staff</h3>
+                                    <div className="flex flex-wrap gap-3">
+                                        {stats.staffMembers.map(staff => (
+                                            <button
+                                                key={staff._id}
+                                                onClick={() => {
+                                                    setStudentView('our');
+                                                    setFilterSubmitterRole(filterSubmitterRole === staff._id ? 'all' : staff._id);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm border ${
+                                                    filterSubmitterRole === staff._id 
+                                                    ? 'bg-[#7B3FA0] text-white border-[#7B3FA0] shadow-md scale-105' 
+                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center text-xs font-bold">
+                                                        {staff.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    {staff.name}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+
+                            {/* Agent Row */}
+                            {stats.agentMembers && stats.agentMembers.length > 0 && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.1 }}
+                                >
+                                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wider">Filter by Agent</h3>
+                                    <div className="flex flex-wrap gap-3">
+                                        {stats.agentMembers.map(agent => (
+                                            <button
+                                                key={agent._id}
+                                                onClick={() => {
+                                                    setStudentView('our');
+                                                    setFilterSubmitterRole(filterSubmitterRole === agent._id ? 'all' : agent._id);
+                                                    setCurrentPage(1);
+                                                }}
+                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm border ${
+                                                    filterSubmitterRole === agent._id 
+                                                    ? 'bg-[#387B95] text-white border-[#387B95] shadow-md scale-105' 
+                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                }`}
+                                            >
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xs font-bold">
+                                                        {agent.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    {agent.name}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </motion.div>
+                            )}
+                        </div>
 
                         {/* Students Table - Step One */}
                         <motion.div

@@ -211,6 +211,47 @@ exports.getDashboardStats = async (req, res) => {
             StudentApplication.countDocuments(buildQuery({ submitterRole: { $in: ['super_admin', 'staff', 'agent'] }, status: 'COMPLETE' })),
         ]);
 
+        // Payment stats aggregation
+        let paymentStatsData = { total: 0, pending: 0, partial: 0, overdue: 0, completed: 0 };
+        try {
+            const paymentGroups = await StudentApplication.aggregate([
+                { $match: sessionQuery },
+                { $group: { _id: '$paymentStatus', count: { $sum: 1 } } }
+            ]);
+            paymentGroups.forEach(g => {
+                const s = (g._id || '').toUpperCase();
+                paymentStatsData.total += g.count;
+                if (s === 'PARTIAL') paymentStatsData.partial = g.count;
+                else if (s === 'OVERDUE') paymentStatsData.overdue = g.count;
+                else if (s === 'COMPLETED' || s === 'COMPLETE') paymentStatsData.completed = g.count;
+                else paymentStatsData.pending += g.count;
+            });
+        } catch (e) { /* non-fatal */ }
+
+        // Staff members list
+        let staffMembersData = [];
+        try {
+            const staffDocs = await Admin.find({ role: 'staff', isActive: true })
+                .select('_id firstName lastName fullName email').lean();
+            staffMembersData = staffDocs.map(s => ({
+                _id: s._id,
+                name: s.fullName || [s.firstName, s.lastName].filter(Boolean).join(' ') || s.email,
+                email: s.email
+            }));
+        } catch (e) { /* non-fatal */ }
+
+        // Agent members list
+        let agentMembersData = [];
+        try {
+            const agentDocs = await User.find({ role: 'agent', isActive: true })
+                .select('_id fullName firstName lastName name email').lean();
+            agentMembersData = agentDocs.map(a => ({
+                _id: a._id,
+                name: a.fullName || a.name || [a.firstName, a.lastName].filter(Boolean).join(' ') || a.email,
+                email: a.email
+            }));
+        } catch (e) { /* non-fatal */ }
+
         res.json({
             success: true,
             data: {
@@ -256,7 +297,10 @@ exports.getDashboardStats = async (req, res) => {
                 },
                 session: sessionParam,
                 sessionStartDate: yearStart,
-                sessionEndDate: yearEnd
+                sessionEndDate: yearEnd,
+                paymentStats: paymentStatsData,
+                staffMembers: staffMembersData,
+                agentMembers: agentMembersData
             }
         });
     } catch (error) {
