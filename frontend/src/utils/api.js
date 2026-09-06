@@ -79,14 +79,15 @@ api.interceptors.response.use(
             console.log('🌐 API Error - 401 Unauthorized, clearing token');
             // Only redirect if we're not already on login/register pages to avoid infinite loops
             const currentPath = window.location.pathname;
-            const isAuthPage = currentPath === '/login' || currentPath === '/register';
+            const isAuthPage = currentPath === '/login' || currentPath === '/login-portal' || currentPath === '/register';
 
             // Clear invalid token
             localStorage.removeItem('token');
 
-            // Only redirect if not already on an auth page
+            // Dispatch a custom event so React can handle logout gracefully
+            // (preserves browser history - no hard window.location redirect)
             if (!isAuthPage) {
-                window.location.href = '/login';
+                window.dispatchEvent(new CustomEvent('auth:unauthorized'));
             }
         }
 

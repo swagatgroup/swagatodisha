@@ -805,26 +805,31 @@ const SuperAdminDashboard = () => {
                                     transition={{ delay: 0.05 }}
                                 >
                                     <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wider">Filter by Staff</h3>
-                                    <div className="flex flex-wrap gap-3">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                         {stats.staffMembers.map(staff => (
                                             <button
                                                 key={staff._id}
                                                 onClick={() => {
                                                     setStudentView('our');
+                                                    setActiveSidebarItem('students');
                                                     setFilterSubmitterRole(filterSubmitterRole === staff._id ? 'all' : staff._id);
                                                     setCurrentPage(1);
                                                 }}
-                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm border ${
-                                                    filterSubmitterRole === staff._id 
-                                                    ? 'bg-[#7B3FA0] text-white border-[#7B3FA0] shadow-md scale-105' 
-                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                className={`px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border w-full ${
+                                                    filterSubmitterRole === staff._id
+                                                    ? 'bg-[#7B3FA0] text-white border-[#7B3FA0] shadow-md'
+                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-gray-800 hover:border-purple-300'
                                                 }`}
                                             >
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center text-xs font-bold">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
+                                                        filterSubmitterRole === staff._id
+                                                        ? 'bg-white/20 text-white'
+                                                        : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600'
+                                                    }`}>
                                                         {staff.name.charAt(0).toUpperCase()}
                                                     </div>
-                                                    {staff.name}
+                                                    <span className="text-center text-xs leading-tight font-semibold">{staff.name}</span>
                                                 </div>
                                             </button>
                                         ))}
@@ -840,26 +845,31 @@ const SuperAdminDashboard = () => {
                                     transition={{ delay: 0.1 }}
                                 >
                                     <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wider">Filter by Agent</h3>
-                                    <div className="flex flex-wrap gap-3">
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                         {stats.agentMembers.map(agent => (
                                             <button
                                                 key={agent._id}
                                                 onClick={() => {
                                                     setStudentView('our');
+                                                    setActiveSidebarItem('students');
                                                     setFilterSubmitterRole(filterSubmitterRole === agent._id ? 'all' : agent._id);
                                                     setCurrentPage(1);
                                                 }}
-                                                className={`px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm border ${
-                                                    filterSubmitterRole === agent._id 
-                                                    ? 'bg-[#387B95] text-white border-[#387B95] shadow-md scale-105' 
-                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                className={`px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border w-full ${
+                                                    filterSubmitterRole === agent._id
+                                                    ? 'bg-[#387B95] text-white border-[#387B95] shadow-md'
+                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300'
                                                 }`}
                                             >
-                                                <div className="flex items-center gap-2">
-                                                    <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center text-xs font-bold">
+                                                <div className="flex flex-col items-center gap-2">
+                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
+                                                        filterSubmitterRole === agent._id
+                                                        ? 'bg-white/20 text-white'
+                                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'
+                                                    }`}>
                                                         {agent.name.charAt(0).toUpperCase()}
                                                     </div>
-                                                    {agent.name}
+                                                    <span className="text-center text-xs leading-tight font-semibold">{agent.name}</span>
                                                 </div>
                                             </button>
                                         ))}

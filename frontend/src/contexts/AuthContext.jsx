@@ -21,6 +21,24 @@ export const AuthProvider = ({ children }) => {
 
     // Initialize authentication on mount - combined token loading and auth check
     useEffect(() => {
+        // Listen for auth:unauthorized event dispatched by api.js on 401 errors
+        // This allows graceful logout via React state instead of hard window.location redirect
+        // so the browser back-button history is preserved
+        const handleUnauthorized = () => {
+            console.log('🔐 AuthContext - Received auth:unauthorized event, logging out gracefully');
+            setToken(null);
+            setUser(null);
+            setIsAuthenticated(false);
+            setError(null);
+            delete api.defaults.headers.common['Authorization'];
+        };
+        window.addEventListener('auth:unauthorized', handleUnauthorized);
+        return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
+    }, []);
+
+    // Initialize authentication on mount - load token and verify with backend
+
+    useEffect(() => {
         const initializeAuth = async () => {
             try {
                 const storedToken = localStorage.getItem('token');

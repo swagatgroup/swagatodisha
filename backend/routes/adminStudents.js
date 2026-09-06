@@ -2066,3 +2066,79 @@ router.put('/:id/bank-verification', protect, authorize('super_admin', 'admin', 
 
 module.exports = router;
 
+
+// ========================================================
+// MIGRATE: Move a direct student to "Our Students" list
+// by assigning a referrer (agent / staff / super_admin)
+// PUT /api/admin/students/:id/migrate
+// ========================================================
+router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) => {
+    try {
+        const { referrerId, referrerRole } = req.body;
+
+        if (!referrerId || !referrerRole) {
+            return res.status(400).json({
+                success: false,
+                message: 'referrerId and referrerRole are required'
+            });
+        }
+
+        const validRoles = ['agent', 'staff', 'super_admin'];
+        if (!validRoles.includes(referrerRole)) {
+            return res.status(400).json({
+                success: false,
+                message: `referrerRole must be one of: ${validRoles.join(', ')}`
+            });
+        }
+
+        // Find the application
+        const application = await StudentApplication.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+
+        // Find the referrer in User or Admin model
+        let referrer = null;
+        if (referrerRole === 'agent') {
+            referrer = await User.findById(referrerId).select('_id fullName name referralCode role').lean();
+        } else {
+            const Admin = require('../models/Admin');
+            referrer = await Admin.findById(referrerId).select('_id firstName lastName fullName referralCode role').lean();
+        }
+
+        if (!referrer) {
+            return res.status(404).json({ success: false, message: 'Referrer not found' });
+        }
+
+        const referrerName = referrer.fullName || referrer.name || 
+            [referrer.firstName, referrer.lastName].filter(Boolean).join(' ') || 'Unknown';
+
+        // Update the application: set referralInfo so it appears in "Our Students"
+        application.referralInfo = {
+            referredBy: referrer._id,
+            referralCode: referrer.referralCode || '',
+            referralType: referrerRole
+        };
+
+        await application.save();
+
+        res.json({
+            success: true,
+            message: `Student successfully migrated to Our Students list under ${referrerName}`,
+            data: {
+                applicationId: application._id,
+                referrerName,
+                referrerRole,
+                referralCode: referrer.referralCode || ''
+            }
+        });
+
+    } catch (error) {
+        console.error('Migrate student error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Server error while migrating student',
+            error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
+        });
+    }
+});

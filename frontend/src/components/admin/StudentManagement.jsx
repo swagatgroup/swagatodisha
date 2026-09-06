@@ -165,6 +165,12 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showStatusModal, setShowStatusModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showMigrateModal, setShowMigrateModal] = useState(false);
+    const [migrateStudent, setMigrateStudent] = useState(null);
+    const [migrateRole, setMigrateRole] = useState(''); // 'agent' | 'staff' | 'super_admin'
+    const [migrateMembers, setMigrateMembers] = useState([]);
+    const [migrateSelectedId, setMigrateSelectedId] = useState('');
+    const [migrateLoading, setMigrateLoading] = useState(false);
     const [showApplicationPDF, setShowApplicationPDF] = useState(false);
     const [selectedStudentForPDF, setSelectedStudentForPDF] = useState(null);
     const [editData, setEditData] = useState({});
@@ -2048,6 +2054,25 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     </svg>
                                                 </button>
 
+                                                {/* Migrate to Our Students — only shown in Direct Students list */}
+                                                {listType === 'direct' && (
+                                                    <button
+                                                        onClick={() => {
+                                                            setMigrateStudent(student);
+                                                            setMigrateRole('');
+                                                            setMigrateMembers([]);
+                                                            setMigrateSelectedId('');
+                                                            setShowMigrateModal(true);
+                                                        }}
+                                                        className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+                                                        title="Migrate to Our Students"
+                                                    >
+                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                                                        </svg>
+                                                    </button>
+                                                )}
+
 
                                                 <button
                                                     onClick={async () => {
@@ -3764,6 +3789,141 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     onClick={() => setPhotoPreview(null)}
                                 >
                                     Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        {/* ===== MIGRATE STUDENT MODAL ===== */}
+            {showMigrateModal && migrateStudent && (
+                <div className="fixed inset-0 z-50 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-screen px-4">
+                        <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowMigrateModal(false)} />
+                        <div className="relative bg-white dark:bg-[#2A1E2E] rounded-xl shadow-2xl w-full max-w-md p-6 z-10">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Migrate to Our Students</h3>
+                                <button onClick={() => setShowMigrateModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                                Student: <strong className="text-gray-800 dark:text-gray-200">{migrateStudent?.personalDetails?.fullName || 'Unknown'}</strong>
+                                <br />Select who referred / influenced this student to assign them correctly.
+                            </p>
+
+                            {/* Step 1: Choose Role */}
+                            <div className="mb-4">
+                                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Referred by</label>
+                                <div className="flex gap-2 flex-wrap">
+                                    {['agent', 'staff', 'super_admin'].map(role => (
+                                        <button
+                                            key={role}
+                                            onClick={async () => {
+                                                setMigrateRole(role);
+                                                setMigrateSelectedId('');
+                                                setMigrateMembers([]);
+                                                if (role !== 'super_admin') {
+                                                    try {
+                                                        const res = await api.get(`/api/admin/users?role=${role}&limit=100`);
+                                                        const list = res.data?.data?.users || res.data?.users || [];
+                                                        setMigrateMembers(list.map(u => ({
+                                                            _id: u._id,
+                                                            name: u.fullName || u.name || [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email
+                                                        })));
+                                                    } catch {
+                                                        // fallback
+                                                    }
+                                                }
+                                            }}
+                                            className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                                                migrateRole === role
+                                                    ? role === 'agent' ? 'bg-[#387B95] text-white border-[#387B95]'
+                                                    : role === 'staff' ? 'bg-[#7B3FA0] text-white border-[#7B3FA0]'
+                                                    : 'bg-gray-800 text-white border-gray-800'
+                                                    : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        >
+                                            {role === 'super_admin' ? 'Super Admin' : role.charAt(0).toUpperCase() + role.slice(1)}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Step 2: Choose Specific Member (if not super_admin) */}
+                            {migrateRole && migrateRole !== 'super_admin' && (
+                                <div className="mb-5">
+                                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                                        Select {migrateRole === 'agent' ? 'Agent' : 'Staff Member'}
+                                    </label>
+                                    {migrateMembers.length === 0 ? (
+                                        <p className="text-sm text-gray-400">No {migrateRole}s found.</p>
+                                    ) : (
+                                        <select
+                                            value={migrateSelectedId}
+                                            onChange={e => setMigrateSelectedId(e.target.value)}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        >
+                                            <option value="">-- Select {migrateRole} --</option>
+                                            {migrateMembers.map(m => (
+                                                <option key={m._id} value={m._id}>{m.name}</option>
+                                            ))}
+                                        </select>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Step 3: super_admin shortcut — use current admin's ID */}
+                            {migrateRole === 'super_admin' && (
+                                <div className="mb-5 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-600 dark:text-gray-400">
+                                    This student will be assigned under Super Admin directly.
+                                </div>
+                            )}
+
+                            <div className="flex gap-3 justify-end">
+                                <button
+                                    onClick={() => setShowMigrateModal(false)}
+                                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    disabled={migrateLoading || !migrateRole || (migrateRole !== 'super_admin' && !migrateSelectedId)}
+                                    onClick={async () => {
+                                        setMigrateLoading(true);
+                                        try {
+                                            // For super_admin: get admins list and pick first super_admin, or use a fixed ID
+                                            let referrerId = migrateSelectedId;
+                                            if (migrateRole === 'super_admin') {
+                                                const res = await api.get('/api/admin/users?role=super_admin&limit=1');
+                                                const admins = res.data?.data?.users || res.data?.users || [];
+                                                referrerId = admins[0]?._id;
+                                            }
+                                            if (!referrerId) throw new Error('Could not determine referrer ID');
+                                            await api.put(`/api/admin/students/${migrateStudent._id}/migrate`, {
+                                                referrerId,
+                                                referrerRole: migrateRole
+                                            });
+                                            setShowMigrateModal(false);
+                                            // Refresh the student list
+                                            fetchStudents();
+                                            Swal.fire({ icon: 'success', title: 'Migrated!', text: 'Student moved to Our Students list.', timer: 2000, showConfirmButton: false });
+                                        } catch (err) {
+                                            Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.message || err.message });
+                                        } finally {
+                                            setMigrateLoading(false);
+                                        }
+                                    }}
+                                    className="px-4 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {migrateLoading ? (
+                                        <><span className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> Migrating...</>
+                                    ) : (
+                                        <><svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg> Migrate</>
+                                    )}
                                 </button>
                             </div>
                         </div>
