@@ -29,40 +29,42 @@ const ClickSparkle = () => {
                 {clicks.map((click) => (
                     <motion.div
                         key={click.id}
-                        initial={{ opacity: 1, scale: 0 }}
-                        animate={{ opacity: 0, scale: 1.5 }}
+                        initial={{ opacity: 1, scale: 0.5 }}
+                        animate={{ opacity: 0, scale: 1.2 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5, ease: "easeOut" }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
                         style={{
                             position: 'absolute',
-                            left: click.x - 10,
-                            top: click.y - 10,
-                            width: 20,
-                            height: 20,
+                            left: click.x - 15,
+                            top: click.y - 15,
+                            width: 30,
+                            height: 30,
                         }}
                     >
                         {/* Particles */}
-                        {[...Array(6)].map((_, i) => (
+                        {[...Array(8)].map((_, i) => (
                             <motion.div
                                 key={i}
-                                initial={{ x: 0, y: 0, scale: 1 }}
+                                initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
                                 animate={{
-                                    x: Math.cos((i * 60) * Math.PI / 180) * 20, // Halved from 40 to 20
-                                    y: Math.sin((i * 60) * Math.PI / 180) * 20, // Halved from 40 to 20
-                                    scale: 0
+                                    x: Math.cos((i * 45) * Math.PI / 180) * 35, // Increased radius to 35
+                                    y: Math.sin((i * 45) * Math.PI / 180) * 35, // Increased radius to 35
+                                    scale: 0.2,
+                                    opacity: 0
                                 }}
-                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                transition={{ duration: 0.6, ease: "easeOut" }}
                                 style={{
                                     position: 'absolute',
                                     left: '50%',
                                     top: '50%',
-                                    width: 6,
-                                    height: 6,
-                                    marginLeft: -3,
-                                    marginTop: -3,
+                                    width: 10,  // Thicker droplets
+                                    height: 10, // Thicker droplets
+                                    marginLeft: -5,
+                                    marginTop: -5,
                                     borderRadius: '50%',
-                                    backgroundColor: i % 2 === 0 ? '#7B3FA0' : '#A855D0', // Swagat theme colors
-                                    boxShadow: `0 0 6px ${i % 2 === 0 ? '#7B3FA0' : '#A855D0'}`
+                                    backgroundColor: i % 2 === 0 ? '#7B3FA0' : '#E8A317', // Purple and Gold theme colors
+                                    boxShadow: `0 0 8px ${i % 2 === 0 ? '#7B3FA0' : '#E8A317'}`, // Glow effect
+                                    opacity: 1 // Full opacity
                                 }}
                             />
                         ))}

@@ -208,13 +208,23 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             </div>
 
                                             <button
-                                                onMouseDown={(e) => {
+                                                type="button"
+                                                onClick={(e) => {
+                                                    console.log('🔴 [SIGN OUT] onClick triggered!');
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     logout();
-                                                    setTimeout(() => navigate('/login-portal', { replace: true }), 10);
+                                                    window.location.href = '/login-portal';
                                                 }}
-                                                className="block w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                                onPointerDown={(e) => {
+                                                    console.log('🔴 [SIGN OUT] onPointerDown triggered!');
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    logout();
+                                                    window.location.href = '/login-portal';
+                                                }}
+                                                className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                                                style={{ cursor: 'pointer' }}
                                             >
                                                 Sign out
                                             </button>
