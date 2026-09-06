@@ -208,13 +208,13 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             </div>
 
                                             <button
-                                                onClick={(e) => {
+                                                onMouseDown={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     logout();
                                                     navigate('/login-portal', { replace: true });
                                                 }}
-                                                className="block w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                                className="block w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                                             >
                                                 Sign out
                                             </button>

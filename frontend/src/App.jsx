@@ -4,9 +4,8 @@ import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SessionProvider } from './contexts/SessionContext'
-// Socket.IO removed - using simple state management
 import { DarkModeProvider } from './contexts/DarkModeContextSimple'
-// NotificationToast removed - Socket.IO component
+import ClickSparkle from './components/shared/ClickSparkle'
 import Header from './components/Header'
 import HeroCarousel from './components/HeroCarousel'
 import AboutUs from './components/AboutUs'
@@ -218,6 +217,7 @@ function App() {
         <HelmetProvider>
             <AuthProvider>
                 <DarkModeProvider>
+                    <ClickSparkle />
                     <Router>
                         <Routes>
                             <Route path="/" element={<AppContent />} />
