@@ -30,15 +30,15 @@ const ClickSparkle = () => {
                     <motion.div
                         key={click.id}
                         initial={{ opacity: 1, scale: 0 }}
-                        animate={{ opacity: 0, scale: 2 }}
+                        animate={{ opacity: 0, scale: 1.5 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
                         style={{
                             position: 'absolute',
-                            left: click.x - 20,
-                            top: click.y - 20,
-                            width: 40,
-                            height: 40,
+                            left: click.x - 10,
+                            top: click.y - 10,
+                            width: 20,
+                            height: 20,
                         }}
                     >
                         {/* Particles */}
@@ -47,8 +47,8 @@ const ClickSparkle = () => {
                                 key={i}
                                 initial={{ x: 0, y: 0, scale: 1 }}
                                 animate={{
-                                    x: Math.cos((i * 60) * Math.PI / 180) * 40,
-                                    y: Math.sin((i * 60) * Math.PI / 180) * 40,
+                                    x: Math.cos((i * 60) * Math.PI / 180) * 20, // Halved from 40 to 20
+                                    y: Math.sin((i * 60) * Math.PI / 180) * 20, // Halved from 40 to 20
                                     scale: 0
                                 }}
                                 transition={{ duration: 0.5, ease: "easeOut" }}
@@ -61,8 +61,8 @@ const ClickSparkle = () => {
                                     marginLeft: -3,
                                     marginTop: -3,
                                     borderRadius: '50%',
-                                    backgroundColor: '#8B4513', // Brown color as requested
-                                    boxShadow: '0 0 4px #8B4513'
+                                    backgroundColor: i % 2 === 0 ? '#7B3FA0' : '#A855D0', // Swagat theme colors
+                                    boxShadow: `0 0 6px ${i % 2 === 0 ? '#7B3FA0' : '#A855D0'}`
                                 }}
                             />
                         ))}

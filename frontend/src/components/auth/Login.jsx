@@ -20,8 +20,9 @@ const Login = ({ title }) => {
     const navigate = useNavigate();
 
     // Redirect already-authenticated users to their dashboard
-    // so the back button never shows the login page while logged in
-    if (user) {
+    // so the back button never shows the login page while logged in.
+    // We double check localStorage to avoid React state batching race conditions during logout.
+    if (user && localStorage.getItem('token')) {
         const dashboardPath = {
             student: '/dashboard/student',
             user: '/dashboard/student',

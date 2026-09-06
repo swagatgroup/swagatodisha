@@ -212,7 +212,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     logout();
-                                                    navigate('/login-portal', { replace: true });
+                                                    setTimeout(() => navigate('/login-portal', { replace: true }), 10);
                                                 }}
                                                 className="block w-full text-left px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
                                             >

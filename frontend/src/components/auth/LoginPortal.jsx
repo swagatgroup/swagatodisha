@@ -7,7 +7,8 @@ import { useAuth } from '../../contexts/AuthContext';
 const LoginPortal = () => {
     const { user } = useAuth();
 
-    if (user) {
+    // Double check localStorage to avoid React batching race conditions where logout() hasn't cleared context yet
+    if (user && localStorage.getItem('token')) {
         const dashboardPath = {
             student: '/dashboard/student',
             user: '/dashboard/student',
