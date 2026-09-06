@@ -2113,12 +2113,14 @@ router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) =
         const referrerName = referrer.fullName || referrer.name || 
             [referrer.firstName, referrer.lastName].filter(Boolean).join(' ') || 'Unknown';
 
-        // Update the application: set referralInfo so it appears in "Our Students"
+        // Update the application: set referralInfo and change ownership so it appears in "Our Students" everywhere
         application.referralInfo = {
             referredBy: referrer._id,
             referralCode: referrer.referralCode || '',
             referralType: referrerRole
         };
+        application.submittedBy = referrer._id;
+        application.submitterRole = referrerRole;
 
         await application.save();
 

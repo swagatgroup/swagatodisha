@@ -3828,14 +3828,18 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                 setMigrateMembers([]);
                                                 if (role !== 'super_admin') {
                                                     try {
-                                                        const res = await api.get(`/api/admin/users?role=${role}&limit=100`);
-                                                        const list = res.data?.data?.users || res.data?.users || [];
+                                                        const endpoint = role === 'agent' ? '/api/admin/agents' : '/api/admin/staff';
+                                                        const res = await api.get(`${endpoint}?limit=100`);
+                                                        const list = role === 'agent' 
+                                                            ? (res.data?.data?.agents || res.data?.agents || []) 
+                                                            : (res.data?.data?.staff || res.data?.staff || []);
+                                                        
                                                         setMigrateMembers(list.map(u => ({
                                                             _id: u._id,
                                                             name: u.fullName || u.name || [u.firstName, u.lastName].filter(Boolean).join(' ') || u.email
                                                         })));
-                                                    } catch {
-                                                        // fallback
+                                                    } catch (err) {
+                                                        console.error("Error fetching migrate members:", err);
                                                     }
                                                 }
                                             }}
@@ -3898,8 +3902,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                             // For super_admin: get admins list and pick first super_admin, or use a fixed ID
                                             let referrerId = migrateSelectedId;
                                             if (migrateRole === 'super_admin') {
-                                                const res = await api.get('/api/admin/users?role=super_admin&limit=1');
-                                                const admins = res.data?.data?.users || res.data?.users || [];
+                                                const res = await api.get('/api/admin/staff?role=super_admin&limit=1');
+                                                const admins = res.data?.data?.staff || res.data?.staff || [];
                                                 referrerId = admins[0]?._id;
                                             }
                                             if (!referrerId) throw new Error('Could not determine referrer ID');
