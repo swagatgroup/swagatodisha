@@ -350,8 +350,13 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         if (submitterRole && submitterRole !== 'all') {
             // Check if it's a submitter ID (ObjectId format) or role
             if (submitterRole.match(/^[0-9a-fA-F]{24}$/)) {
-                // It's an ObjectId - filter by specific submitter
-                filter.submittedBy = submitterRole;
+                // It's an ObjectId - filter by specific submitter (either directly submitted OR referred by this user)
+                andConditions.push({
+                    $or: [
+                        { submittedBy: submitterRole },
+                        { 'referralInfo.referredBy': submitterRole }
+                    ]
+                });
             } else {
                 // It's a role - filter by role
                 filter.submitterRole = submitterRole;

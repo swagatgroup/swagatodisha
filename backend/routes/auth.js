@@ -112,12 +112,25 @@ router.post('/register', async (req, res) => {
             // Handle referral code if provided
             let referralInfo = undefined;
             if (referralCode) {
-                const referrer = await User.findOne({
+                const codeToSearch = referralCode.toLowerCase().trim();
+                let referrer = await User.findOne({
                     $or: [
-                        { referralCode: referralCode },
-                        { email: referralCode.toLowerCase().trim() }
+                        { referralCode: codeToSearch },
+                        { email: codeToSearch }
                     ]
                 });
+                
+                // If not found in Users (Agents/Students), check Admins (Staff/SuperAdmin)
+                if (!referrer) {
+                    const Admin = require('../models/Admin');
+                    referrer = await Admin.findOne({
+                        $or: [
+                            { referralCode: codeToSearch },
+                            { email: codeToSearch }
+                        ]
+                    });
+                }
+                
                 if (referrer) {
                     referralInfo = {
                         referredBy: referrer._id,
