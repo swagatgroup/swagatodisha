@@ -268,13 +268,21 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        delete api.defaults.headers.common['Authorization'];
-        setToken(null);
-        setUser(null);
-        setIsAuthenticated(false);
-        setError(null);
+        try {
+            console.log('💥 AuthContext logout called');
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            if (api && api.defaults && api.defaults.headers && api.defaults.headers.common) {
+                delete api.defaults.headers.common['Authorization'];
+            }
+            setToken(null);
+            setUser(null);
+            setIsAuthenticated(false);
+            setError(null);
+            console.log('💥 AuthContext logout finished');
+        } catch (error) {
+            console.error('💥 AuthContext logout failed', error);
+        }
     };
 
     const updateUser = (updatedUser) => {

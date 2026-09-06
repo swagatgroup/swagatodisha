@@ -210,20 +210,16 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             <button
                                                 type="button"
                                                 onClick={(e) => {
-                                                    console.log('🔴 [SIGN OUT] onClick triggered!');
+                                                    console.log('💥 BUTTON CLICKED - STARTING LOGOUT');
                                                     e.preventDefault();
-                                                    e.stopPropagation();
                                                     logout();
-                                                    window.location.href = '/login-portal';
+                                                    setTimeout(() => {
+                                                        console.log('💥 REDIRECTING NOW');
+                                                        window.location.href = '/login-portal';
+                                                    }, 100);
                                                 }}
-                                                onPointerDown={(e) => {
-                                                    console.log('🔴 [SIGN OUT] onPointerDown triggered!');
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    logout();
-                                                    window.location.href = '/login-portal';
-                                                }}
-                                                className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                                                
+                                                className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer relative z-[9999] pointer-events-auto"
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 Sign out
