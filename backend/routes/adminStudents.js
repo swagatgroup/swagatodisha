@@ -634,7 +634,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 if (name === 'Unknown' && s._id) {
                     try {
                         const User = require('../models/User');
-                        const user = await User.findById(s._id).select('fullName name firstName lastName').lean();
+                        const user = await User.findById(s._id).select('fullName name firstName lastName email').lean();
                         if (user) {
                             if (user.fullName) {
                                 name = user.fullName.trim();
@@ -642,14 +642,20 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                                 name = user.name.trim();
                             } else if (user.firstName || user.lastName) {
                                 name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+                            } else if (user.email) {
+                                name = user.email;
                             }
                         }
                         
                         if (name === 'Unknown') {
                             const Admin = require('../models/Admin');
-                            const admin = await Admin.findById(s._id).select('firstName lastName').lean();
-                            if (admin && (admin.firstName || admin.lastName)) {
-                                name = `${admin.firstName || ''} ${admin.lastName || ''}`.trim();
+                            const admin = await Admin.findById(s._id).select('firstName lastName email').lean();
+                            if (admin) {
+                                if (admin.firstName || admin.lastName) {
+                                    name = `${admin.firstName || ''} ${admin.lastName || ''}`.trim();
+                                } else if (admin.email) {
+                                    name = admin.email;
+                                }
                             }
                         }
                     } catch (err) {

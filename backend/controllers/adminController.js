@@ -216,7 +216,7 @@ exports.getDashboardStats = async (req, res) => {
         try {
             const paymentGroups = await StudentApplication.aggregate([
                 { $match: sessionQuery },
-                { $group: { _id: '$paymentStatus', count: { $sum: 1 } } }
+                { $group: { _id: '$financialStatus.paymentStatus', count: { $sum: 1 } } }
             ]);
             paymentGroups.forEach(g => {
                 const s = (g._id || '').toUpperCase();

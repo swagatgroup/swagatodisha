@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from 'recharts';
+
 import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
@@ -699,32 +701,41 @@ const SuperAdminDashboard = () => {
                                             </div>
                                         </div>
                                         
-                                        <div className="bg-white dark:bg-[#2A1E2E] rounded-xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-center">
-                                            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-6 w-full text-center">Payment Status Overview</h3>
+                                        <div className="bg-white dark:bg-[#2A1E2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center min-h-[300px]">
+                                            <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 w-full text-center">Payment Status Overview</h3>
                                             {stats.paymentStats ? (
-                                                <div className="flex flex-col gap-4 w-full px-4">
-                                                    {[
-                                                        { label: 'Completed', count: stats.paymentStats.completed || 0, color: 'bg-green-500', total: stats.paymentStats.total || 1 },
-                                                        { label: 'Partial', count: stats.paymentStats.partial || 0, color: 'bg-yellow-500', total: stats.paymentStats.total || 1 },
-                                                        { label: 'Pending', count: stats.paymentStats.pending || 0, color: 'bg-blue-500', total: stats.paymentStats.total || 1 },
-                                                        { label: 'Overdue', count: stats.paymentStats.overdue || 0, color: 'bg-red-500', total: stats.paymentStats.total || 1 },
-                                                    ].map((item, i) => (
-                                                        <div key={i} className="flex items-center gap-3 w-full">
-                                                            <span className="w-20 text-xs font-medium text-gray-600 dark:text-gray-400 text-right">{item.label}</span>
-                                                            <div className="flex-1 h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                                                                <motion.div 
-                                                                    initial={{ width: 0 }}
-                                                                    animate={{ width: `${Math.max(item.count === 0 ? 0 : 2, (item.count / item.total) * 100)}%` }}
-                                                                    transition={{ duration: 1, delay: i * 0.1 }}
-                                                                    className={`h-full ${item.count === 0 ? 'bg-transparent' : item.color} rounded-full`}
-                                                                />
-                                                            </div>
-                                                            <span className="w-8 text-xs font-bold text-gray-700 dark:text-gray-300">{item.count}</span>
-                                                        </div>
-                                                    ))}
-                                                    <div className="text-center mt-2 text-xs text-gray-400 dark:text-gray-500">
-                                                        Total Transactions: {stats.paymentStats.total || 0}
-                                                    </div>
+                                                <div className="w-full h-64">
+                                                    <ResponsiveContainer width="100%" height="100%">
+                                                        <BarChart
+                                                            data={[
+                                                                { name: 'Completed', count: stats.paymentStats.completed || 0, color: '#22C55E' },
+                                                                { name: 'Partial', count: stats.paymentStats.partial || 0, color: '#EAB308' },
+                                                                { name: 'Pending', count: stats.paymentStats.pending || 0, color: '#3B82F6' },
+                                                                { name: 'Overdue', count: stats.paymentStats.overdue || 0, color: '#EF4444' }
+                                                            ]}
+                                                            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                                                        >
+                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6B7280' }} axisLine={false} tickLine={false} />
+                                                            <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                                                            <Tooltip 
+                                                                cursor={{ fill: 'transparent' }}
+                                                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                                            />
+                                                            <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={50}>
+                                                                {
+                                                                    [
+                                                                        { color: '#22C55E' },
+                                                                        { color: '#EAB308' },
+                                                                        { color: '#3B82F6' },
+                                                                        { color: '#EF4444' }
+                                                                    ].map((entry, index) => (
+                                                                        <Cell key={`cell-${index}`} fill={entry.color} />
+                                                                    ))
+                                                                }
+                                                            </Bar>
+                                                        </BarChart>
+                                                    </ResponsiveContainer>
                                                 </div>
                                             ) : (
                                                 <div className="flex items-center justify-center h-full text-gray-400 text-sm">No payment data</div>
