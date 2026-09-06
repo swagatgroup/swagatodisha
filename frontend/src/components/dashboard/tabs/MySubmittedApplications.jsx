@@ -134,13 +134,13 @@ const MySubmittedApplications = () => {
             >
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             My Submitted Applications
                         </h2>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 dark:text-gray-300">
                             Track applications you have submitted for students
                         </p>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                             Total: {totalApplications} applications
                         </p>
                     </div>
@@ -190,7 +190,7 @@ const MySubmittedApplications = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center space-x-3 mb-2">
-                                            <h3 className="text-lg font-semibold text-gray-900">
+                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                                 {application.personalDetails?.fullName || application.user?.fullName || 'N/A'}
                                             </h3>
                                             <span
@@ -207,30 +207,30 @@ const MySubmittedApplications = () => {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                                             <div>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     <span className="font-medium">Student:</span> {application.user?.fullName || 'N/A'}
                                                 </p>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     <span className="font-medium">Email:</span> {application.user?.email || 'N/A'}
                                                 </p>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     <span className="font-medium">Phone:</span> {application.user?.phoneNumber || 'N/A'}
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     <span className="font-medium">Course:</span> {application.courseDetails?.selectedCourse || 'N/A'}
                                                 </p>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     <span className="font-medium">Campus:</span> {application.courseDetails?.campus || 'N/A'}
                                                 </p>
-                                                <p className="text-sm text-gray-600">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     <span className="font-medium">Application ID:</span> {application.applicationId}
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-300">
                                             <span>
                                                 Submitted: {formatDate(application.submittedAt || application.createdAt)}
                                             </span>
@@ -273,10 +273,10 @@ const MySubmittedApplications = () => {
                                 />
                             </svg>
                         </div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                             No applications submitted yet
                         </h3>
-                        <p className="text-gray-500">
+                        <p className="text-gray-500 dark:text-gray-300">
                             You haven't submitted any applications for students yet.
                         </p>
                     </div>
@@ -292,21 +292,21 @@ const MySubmittedApplications = () => {
                     className="bg-white rounded-lg shadow p-6"
                 >
                     <div className="flex items-center justify-between">
-                        <div className="text-sm text-gray-700">
+                        <div className="text-sm text-gray-700 dark:text-gray-200">
                             Showing page {currentPage} of {totalPages} ({totalApplications} total applications)
                         </div>
                         <div className="flex space-x-2">
                             <button
                                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Previous
                             </button>
                             <button
                                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Next
                             </button>

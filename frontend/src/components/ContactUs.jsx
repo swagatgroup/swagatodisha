@@ -542,13 +542,13 @@ const ContactUs = () => {
                                                 accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
                                                 className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                                             />
-                                            <div className="mt-2 text-xs text-gray-500">
+                                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-300">
                                                 Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file)
                                             </div>
                                             {formData.documents && formData.documents.length > 0 && (
                                                 <div className="mt-2">
-                                                    <p className="text-sm text-gray-600 mb-1">Selected files:</p>
-                                                    <ul className="text-xs text-gray-500 space-y-1">
+                                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Selected files:</p>
+                                                    <ul className="text-xs text-gray-500 dark:text-gray-300 space-y-1">
                                                         {Array.from(formData.documents).map((file, index) => (
                                                             <li key={index} className="flex items-center">
                                                                 <i className="fa-solid fa-file mr-2 text-[#7B3FA0]"></i>

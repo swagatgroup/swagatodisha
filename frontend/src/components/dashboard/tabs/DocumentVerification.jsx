@@ -144,7 +144,7 @@ const DocumentVerification = ({ onStudentUpdate }) => {
             {/* Header with Filters */}
             <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                    <h3 className="text-lg font-semibold text-gray-900">Document Verification</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Document Verification</h3>
 
                     <div className="flex flex-col sm:flex-row gap-4">
                         <input
@@ -175,7 +175,7 @@ const DocumentVerification = ({ onStudentUpdate }) => {
             <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
-                        <h4 className="text-md font-medium text-gray-900">
+                        <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">
                             Pending Documents ({filteredDocuments.length})
                         </h4>
                         {filteredDocuments.length > 0 && (
@@ -206,11 +206,11 @@ const DocumentVerification = ({ onStudentUpdate }) => {
                 <div className="p-6">
                     {filteredDocuments.length === 0 ? (
                         <div className="text-center py-8">
-                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No documents pending verification</h3>
-                            <p className="mt-1 text-sm text-gray-500">All documents have been processed.</p>
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No documents pending verification</h3>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">All documents have been processed.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -226,11 +226,11 @@ const DocumentVerification = ({ onStudentUpdate }) => {
                                         <div className="flex items-center space-x-4">
                                             <div className={`w-3 h-3 rounded-full bg-${getCategoryColor(document.category)}-500`}></div>
                                             <div>
-                                                <h5 className="font-medium text-gray-900">{document.type}</h5>
-                                                <p className="text-sm text-gray-500">
+                                                <h5 className="font-medium text-gray-900 dark:text-gray-100">{document.type}</h5>
+                                                <p className="text-sm text-gray-500 dark:text-gray-300">
                                                     {document.student?.personalDetails?.fullName} • {document.student?.studentId}
                                                 </p>
-                                                <p className="text-xs text-gray-400">
+                                                <p className="text-xs text-gray-400 dark:text-gray-300">
                                                     Uploaded {new Date(document.uploadedAt).toLocaleDateString()}
                                                 </p>
                                             </div>
@@ -286,12 +286,12 @@ const DocumentVerification = ({ onStudentUpdate }) => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] w-full mx-4">
                         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 {selectedDocument.type} - {selectedDocument.student?.personalDetails?.fullName}
                             </h3>
                             <button
                                 onClick={() => setShowViewer(false)}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                             >
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -300,12 +300,12 @@ const DocumentVerification = ({ onStudentUpdate }) => {
                         </div>
 
                         <div className="p-6">
-                            <div className="bg-gray-100 rounded-lg p-8 text-center">
-                                <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-8 text-center">
+                                <svg className="mx-auto h-16 w-16 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
-                                <p className="mt-2 text-gray-600">Document preview would be displayed here</p>
-                                <p className="text-sm text-gray-500">File: {selectedDocument.fileName}</p>
+                                <p className="mt-2 text-gray-600 dark:text-gray-300">Document preview would be displayed here</p>
+                                <p className="text-sm text-gray-500 dark:text-gray-300">File: {selectedDocument.fileName}</p>
                             </div>
 
                             <div className="mt-6 flex justify-end space-x-4">

@@ -123,19 +123,19 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
 
                 <div className="space-y-4">
                     <div className="mx-auto w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                        <svg className="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                     </div>
 
                     <div>
-                        <p className="text-lg font-medium text-gray-900">
+                        <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
                             {uploading ? 'Uploading...' : 'Upload Documents'}
                         </p>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-300">
                             Drag and drop files here, or click to select files
                         </p>
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-xs text-gray-400 dark:text-gray-300 mt-1">
                             Supported formats: PDF, JPG, PNG, DOC, DOCX (Max 10MB)
                         </p>
                     </div>
@@ -145,7 +145,7 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
             {/* Document List */}
             {documents.length > 0 && (
                 <div className="space-y-4">
-                    <h4 className="text-md font-medium text-gray-900">Uploaded Documents</h4>
+                    <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">Uploaded Documents</h4>
                     <div className="space-y-3">
                         {documents.map((doc, index) => (
                             <motion.div
@@ -161,8 +161,8 @@ const DocumentUpload = ({ onUploadSuccess, existingDocuments = [] }) => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">{doc.fileName}</p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.fileName}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-300">
                                             {doc.documentType} • {formatFileSize(doc.fileSize)} • {new Date(doc.uploadedAt).toLocaleDateString()}
                                         </p>
                                     </div>

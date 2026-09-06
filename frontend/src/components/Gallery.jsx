@@ -73,11 +73,11 @@ const Gallery = () => {
                         <i className="fa-solid fa-images text-white text-3xl"></i>
                     </div>
 
-                    <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
+                    <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                         Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Gallery</span>
                     </h1>
 
-                    <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
                         Explore the vibrant life at Swagat Group of Institutions through our comprehensive photo gallery.
                         From campus views to student activities, discover what makes our institution special.
                     </p>
@@ -142,10 +142,10 @@ const Gallery = () => {
                     {filteredImages.length === 0 && (
                         <div className="text-center py-20">
                             <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i className="fa-solid fa-image text-gray-400 text-3xl"></i>
+                                <i className="fa-solid fa-image text-gray-400 dark:text-gray-300 text-3xl"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-600 mb-2">No Images Found</h3>
-                            <p className="text-gray-500">Try selecting a different category or check back later.</p>
+                            <h3 className="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">No Images Found</h3>
+                            <p className="text-gray-500 dark:text-gray-300">Try selecting a different category or check back later.</p>
                         </div>
                     )}
                 </div>
@@ -159,32 +159,32 @@ const Gallery = () => {
                             <div className="w-20 h-20 bg-[#7B3FA0] rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-images text-white text-2xl"></i>
                             </div>
-                            <h3 className="text-3xl font-bold text-gray-800 mb-2">{galleryImages.length}+</h3>
-                            <p className="text-gray-600">Total Photos</p>
+                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">{galleryImages.length}+</h3>
+                            <p className="text-gray-600 dark:text-gray-300">Total Photos</p>
                         </div>
 
                         <div className="text-center">
                             <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-school text-white text-2xl"></i>
                             </div>
-                            <h3 className="text-3xl font-bold text-gray-800 mb-2">6</h3>
-                            <p className="text-gray-600">Categories</p>
+                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">6</h3>
+                            <p className="text-gray-600 dark:text-gray-300">Categories</p>
                         </div>
 
                         <div className="text-center">
                             <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-calendar text-white text-2xl"></i>
                             </div>
-                            <h3 className="text-3xl font-bold text-gray-800 mb-2">365</h3>
-                            <p className="text-gray-600">Days of Memories</p>
+                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">365</h3>
+                            <p className="text-gray-600 dark:text-gray-300">Days of Memories</p>
                         </div>
 
                         <div className="text-center">
                             <div className="w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-heart text-white text-2xl"></i>
                             </div>
-                            <h3 className="text-3xl font-bold text-gray-800 mb-2">100%</h3>
-                            <p className="text-gray-600">Quality Content</p>
+                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">100%</h3>
+                            <p className="text-gray-600 dark:text-gray-300">Quality Content</p>
                         </div>
                     </div>
                 </div>
@@ -201,10 +201,10 @@ const Gallery = () => {
                         and world-class facilities at Swagat Group of Institutions.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-white text-[#7B3FA0] rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <button className="px-8 py-4 bg-white dark:bg-[#2A1E2E] text-[#7B3FA0] rounded-xl font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl">
                             Schedule a Visit
                         </button>
-                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white hover:text-[#7B3FA0] transition-all duration-300">
+                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white dark:bg-[#2A1E2E] hover:text-[#7B3FA0] transition-all duration-300">
                             Contact Us
                         </button>
                     </div>
@@ -220,7 +220,7 @@ const Gallery = () => {
                     <div className="relative max-w-4xl max-h-full">
                         <button
                             onClick={closeLightbox}
-                            className="absolute top-4 right-4 w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 z-10"
+                            className="absolute top-4 right-4 w-12 h-12 bg-white dark:bg-[#2A1E2E]/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white dark:bg-[#2A1E2E]/30 transition-all duration-300 z-10"
                         >
                             <i className="fa-solid fa-times text-xl"></i>
                         </button>

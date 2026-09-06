@@ -290,10 +290,10 @@ const EnhancedStaffDashboard = () => {
             case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
             case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'COMPLETE': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -430,8 +430,8 @@ const EnhancedStaffDashboard = () => {
                                     {user.assignedAgents.map((agent, index) => (
                                         <div key={agent._id || index} className="p-4 border border-gray-200 dark:border-gray-700 rounded-md bg-gray-50 dark:bg-gray-800">
                                             <p className="font-medium text-gray-900 dark:text-white">{agent.fullName || (agent.firstName + ' ' + agent.lastName)}</p>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">{agent.email}</p>
-                                            <p className="text-xs text-gray-400 mt-1">Ref Code: {agent.referralCode || 'N/A'}</p>
+                                            <p className="text-sm text-gray-500 dark:text-gray-300">{agent.email}</p>
+                                            <p className="text-xs text-gray-400 dark:text-gray-300 mt-1">Ref Code: {agent.referralCode || 'N/A'}</p>
                                         </div>
                                     ))}
                                 </div>
@@ -471,7 +471,7 @@ const EnhancedStaffDashboard = () => {
                                                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                                                     studentView === key
                                                         ? 'bg-white dark:bg-[#2A1E2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                                                 }`}
                                             >
                                                 {label}
@@ -479,7 +479,7 @@ const EnhancedStaffDashboard = () => {
                                         ))}
                                     </div>
 
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                    <p className="text-xs text-gray-500 dark:text-gray-300 mb-3">
                                         {studentView === 'combined' && 'All students in this session.'}
                                         {studentView === 'direct'   && 'Students who self-registered or used a student referral code.'}
                                         {studentView === 'our'      && 'Students registered via dashboard or via staff/agent/admin referral codes.'}
@@ -491,7 +491,7 @@ const EnhancedStaffDashboard = () => {
                                             onClick={() => handleStatClick('all')}
                                             className="bg-white dark:bg-[#2A1E2E] rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                                         >
-                                            <p className="text-xs text-gray-500 dark:text-gray-400">Total</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300">Total</p>
                                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
                                         </div>
                                         <div 
@@ -568,16 +568,16 @@ const EnhancedStaffDashboard = () => {
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                             Recent Students
                                         </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                             View and manage all student applications
                                         </p>
                                     </div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    <div className="text-sm text-gray-500 dark:text-gray-300">
                                         {totalItems > 0 ? (
                                             <>
                                                 {totalItems} {totalItems === 1 ? 'Student' : 'Students'}
                                                 {totalPages > 1 && (
-                                                    <span className="ml-2 text-gray-400">
+                                                    <span className="ml-2 text-gray-400 dark:text-gray-300">
                                                         (Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems})
                                                     </span>
                                                 )}
@@ -713,13 +713,13 @@ const EnhancedStaffDashboard = () => {
                                                 <tr>
                                                     <td colSpan="9" className="px-6 py-12 text-center">
                                                         <div className="flex flex-col items-center justify-center">
-                                                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                                                             </svg>
                                                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                                                 No students found
                                                             </h3>
-                                                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                                            <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                                                                 {searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterSubmitterRole !== 'all'
                                                                     ? 'Try adjusting your search criteria or filters.'
                                                                     : selectedSession
@@ -768,7 +768,7 @@ const EnhancedStaffDashboard = () => {
                                                                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                             {student.fullName}
                                                                         </div>
-                                                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                                        <div className="text-sm text-gray-500 dark:text-gray-300">
                                                                             ID: {student.applicationId}
                                                                         </div>
                                                                     </div>
@@ -1018,7 +1018,7 @@ const EnhancedStaffDashboard = () => {
                                 <button 
                                     type="button" 
                                     onClick={() => setStatModalOpen(false)}
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
                                 >
                                     Cancel
                                 </button>

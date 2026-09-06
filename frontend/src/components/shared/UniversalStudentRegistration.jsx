@@ -1032,7 +1032,7 @@ const UniversalStudentRegistration = ({
             }
             readOnly={!!user}
             style={{ textTransform: 'uppercase' }}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-300' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter your full name"
           />
           {user && <p className="text-xs text-amber-500 mt-1">Filled from your account. Contact admin to change.</p>}
@@ -1246,7 +1246,7 @@ const UniversalStudentRegistration = ({
               }))
             }
             readOnly={!!user}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-300' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter 10-digit phone number"
             maxLength="10"
           />
@@ -1300,7 +1300,7 @@ const UniversalStudentRegistration = ({
             readOnly={!!user}
             style={{ textTransform: 'lowercase' }}
             required
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500' : 'border-gray-300 dark:border-gray-600'}`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent ${user ? 'bg-gray-50 dark:bg-gray-700/50 border-gray-200 dark:border-gray-600 cursor-not-allowed text-gray-500 dark:text-gray-300' : 'border-gray-300 dark:border-gray-600'}`}
             placeholder="Enter email address"
           />
           {user && <p className="text-xs text-amber-500 mt-1">Filled from your account. Contact admin to change.</p>}
@@ -1684,35 +1684,35 @@ const UniversalStudentRegistration = ({
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Institution */}
                   <div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Institution</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-0.5">Institution</p>
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">{selectedCollegeObj?.name || '—'}</p>
                   </div>
                   {/* Course */}
                   <div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Course</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-0.5">Course</p>
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">{formData.courseDetails.selectedCourse}</p>
                   </div>
                   {/* Stream */}
                   {formData.courseDetails.stream && (
                     <div>
-                      <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Stream</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-0.5">Stream</p>
                       <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{formData.courseDetails.stream}</p>
                     </div>
                   )}
                   {/* Fee */}
                   <div className={formData.courseDetails.stream ? '' : 'sm:col-span-2'}>
-                    <p className="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-0.5">Course Fee</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-300 uppercase tracking-wider mb-0.5">Course Fee</p>
                     {isFreeAdm ? (
                       <p className="text-2xl font-extrabold text-green-600 dark:text-green-400">FREE</p>
                     ) : coursePrice !== null && coursePrice > 0 ? (
                       <p className="text-2xl font-extrabold text-[#5C2D80] dark:text-[#C084FC]">
                         ₹{coursePrice.toLocaleString('en-IN')}
-                        <span className="text-xs font-normal text-gray-400 ml-2">per year</span>
+                        <span className="text-xs font-normal text-gray-400 dark:text-gray-300 ml-2">per year</span>
                       </p>
                     ) : coursePrice === 0 ? (
                       <p className="text-2xl font-extrabold text-green-600 dark:text-green-400">FREE</p>
                     ) : (
-                      <p className="text-sm text-gray-400 italic">Fee not set — contact institution</p>
+                      <p className="text-sm text-gray-400 dark:text-gray-300 italic">Fee not set — contact institution</p>
                     )}
                   </div>
                 </div>
@@ -1748,17 +1748,17 @@ const UniversalStudentRegistration = ({
                     Admission Type
                   </p>
                   {isScSt && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">
                       SC/ST students are eligible for free education
                     </p>
                   )}
                   {isKisanEligible && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">
                       General/OBC students with PM Kisan &amp; CM Kisan enrollment are eligible for free education
                     </p>
                   )}
                   {!isScSt && !isKisanEligible && (
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">
                       Course fee as per selected course
                     </p>
                   )}
@@ -1975,7 +1975,7 @@ const UniversalStudentRegistration = ({
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
           Review & Submit
         </h3>
-        <p className="text-gray-600 dark:text-gray-400 mt-2">
+        <p className="text-gray-600 dark:text-gray-300 mt-2">
           Please review all your information before submitting the application.
         </p>
       </div>
@@ -2140,7 +2140,7 @@ const UniversalStudentRegistration = ({
               ? "Complete Registration"
               : "New Student Registration"}
           </h2>
-          <p className="text-gray-600 dark:text-gray-400 mt-2">
+          <p className="text-gray-600 dark:text-gray-300 mt-2">
             {userRole === "student"
               ? "Complete your registration to access all features"
               : "Register a new student in the system"}
@@ -2163,12 +2163,12 @@ const UniversalStudentRegistration = ({
               </div>
               <div className="ml-3 hidden sm:block">
                 <p
-                  className={`text-sm font-medium ${currentStep >= step.id ? "text-[#7B3FA0]" : "text-gray-500"
+                  className={`text-sm font-medium ${currentStep >= step.id ? "text-[#7B3FA0]" : "text-gray-500 dark:text-gray-300"
                     }`}
                 >
                   {step.title}
                 </p>
-                <p className="text-xs text-gray-500">{step.description}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-300">{step.description}</p>
               </div>
               {index < steps.length - 1 && (
                 <div

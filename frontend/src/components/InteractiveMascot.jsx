@@ -230,14 +230,14 @@ const InteractiveMascot = ({ isVisible = true }) => {
                     exit={{ opacity: 0, scale: 0.8, x: 20 }}
                     transition={{ duration: 0.3 }}
                 >
-                    <div className="text-gray-800 font-semibold text-lg">Welcome!</div>
+                    <div className="text-gray-800 dark:text-gray-100 font-semibold text-lg">Welcome!</div>
                     <div className="w-0 h-0 border-l-8 border-l-white/90 border-t-8 border-t-transparent absolute -left-2 top-4"></div>
                 </motion.div>
             )}
 
             {/* Interactive Hints */}
             <motion.div
-                className="z-1000 absolute bottom-8 left-8 bg-white/10 backdrop-blur-md rounded-full px-4 py-2 text-white text-sm"
+                className="z-1000 absolute bottom-8 left-8 bg-white dark:bg-[#2A1E2E]/10 backdrop-blur-md rounded-full px-4 py-2 text-white text-sm"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 2, duration: 0.8 }}

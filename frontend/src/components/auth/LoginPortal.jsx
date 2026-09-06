@@ -94,7 +94,7 @@ const LoginPortal = () => {
                                         {section.title}
                                     </h3>
                                     
-                                    <p className="text-gray-600 dark:text-gray-400">
+                                    <p className="text-gray-600 dark:text-gray-300">
                                         {section.description}
                                     </p>
 
@@ -120,7 +120,7 @@ const LoginPortal = () => {
                                 <i className="fa-solid fa-magnifying-glass-location"></i>
                             </div>
                             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Track Your Application</h2>
-                            <p className="text-gray-600 dark:text-gray-400">Enter your application ID or phone number to check your admission status instantly.</p>
+                            <p className="text-gray-600 dark:text-gray-300">Enter your application ID or phone number to check your admission status instantly.</p>
                         </div>
                         
                         <div className="transform scale-100">

@@ -152,7 +152,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create New Staff</h2>
                         <button
                             onClick={handleClose}
-                            className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
+                            className="text-gray-400 hover:text-gray-600 dark:text-gray-300"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -312,7 +312,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                             </label>
                             <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
                                 {agentList.length === 0 ? (
-                                    <p className="text-gray-500 dark:text-gray-400 text-sm">No agents available</p>
+                                    <p className="text-gray-500 dark:text-gray-300 text-sm">No agents available</p>
                                 ) : (
                                     <div className="space-y-2">
                                         {agentList.map(agent => (
@@ -332,7 +332,7 @@ const CreateStaffModal = ({ isOpen, onClose, onSuccess }) => {
                                 )}
                             </div>
                             {formData.assignedAgents.length > 0 && (
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                                     {formData.assignedAgents.length} agent(s) selected
                                 </p>
                             )}

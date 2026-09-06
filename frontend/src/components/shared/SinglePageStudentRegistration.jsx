@@ -1115,7 +1115,7 @@ const SinglePageStudentRegistration = ({
                             <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">7</span>
                             Generate PDF
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">Generate your application PDF before submitting</p>
+                        <p className="text-gray-600 dark:text-gray-300 mt-1">Generate your application PDF before submitting</p>
                     </div>
 
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-center">
@@ -1126,7 +1126,7 @@ const SinglePageStudentRegistration = ({
                                 </svg>
                             </div>
                             <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Ready to Generate PDF?</h4>
-                            <p className="text-gray-600 dark:text-gray-400">Click the button below to generate your application PDF document.</p>
+                            <p className="text-gray-600 dark:text-gray-300">Click the button below to generate your application PDF document.</p>
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -1188,7 +1188,7 @@ const SinglePageStudentRegistration = ({
                             <span className="bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-300 rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">✓</span>
                             PDF Generated Successfully
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">Your application PDF has been generated and is ready for submission</p>
+                        <p className="text-gray-600 dark:text-gray-300 mt-1">Your application PDF has been generated and is ready for submission</p>
                     </div>
 
                     <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
@@ -1210,7 +1210,7 @@ const SinglePageStudentRegistration = ({
                                 </div>
                                 <div>
                                     <h4 className="text-lg font-medium text-gray-900 dark:text-white">Application PDF</h4>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">Ready for download and submission</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">Ready for download and submission</p>
                                 </div>
                             </div>
                         </div>
@@ -1282,7 +1282,7 @@ const SinglePageStudentRegistration = ({
                                 </span>
                             )}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">Basic personal details</p>
+                        <p className="text-gray-600 dark:text-gray-300 mt-1">Basic personal details</p>
                     </div>
                     {!registrationDataLocked && isEditingAccountData ? (
                         <button
@@ -1536,7 +1536,7 @@ const SinglePageStudentRegistration = ({
                                 </span>
                             )}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mt-1">Address and contact information</p>
+                        <p className="text-gray-600 dark:text-gray-300 mt-1">Address and contact information</p>
                     </div>
                     {!registrationDataLocked && isEditingAccountData ? (
                         <button
@@ -1842,7 +1842,7 @@ const SinglePageStudentRegistration = ({
                         <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</span>
                         Course Selection
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Enter institution and course details</p>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">Enter institution and course details</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -2052,17 +2052,17 @@ const SinglePageStudentRegistration = ({
                             Admission Type
                           </h4>
                           {isScSt && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">
                               SC/ST students are eligible for free education
                             </p>
                           )}
                           {isKisanEligible && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">
                               General/OBC students with PM Kisan & CM Kisan enrollment are eligible for free education
                             </p>
                           )}
                           {!isScSt && !isKisanEligible && (
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-0.5">
                               Course fee as per selected course
                             </p>
                           )}
@@ -2149,7 +2149,7 @@ const SinglePageStudentRegistration = ({
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                                     {referralMode ? 'Your Referral Code (Pre-Applied)' : 'Referral Code Applied'}
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                <p className="text-sm text-gray-500 dark:text-gray-300">
                                     {referralMode
                                         ? 'This application will be counted under your referrals.'
                                         : 'A referral code has been linked to this application.'}
@@ -2162,7 +2162,7 @@ const SinglePageStudentRegistration = ({
                                     type="text"
                                     value={formData.referralCode}
                                     disabled
-                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 font-mono tracking-widest cursor-not-allowed"
+                                    className="w-full px-3 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 font-mono tracking-widest cursor-not-allowed"
                                 />
                             </div>
                         </div>
@@ -2183,7 +2183,7 @@ const SinglePageStudentRegistration = ({
                         <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">4</span>
                         Guardian Details
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Parent/Guardian information</p>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">Parent/Guardian information</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2312,7 +2312,7 @@ const SinglePageStudentRegistration = ({
                         <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">5</span>
                         Document Upload
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Upload required documents</p>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">Upload required documents</p>
                 </div>
 
                 <div className="pb-8">
@@ -2347,7 +2347,7 @@ const SinglePageStudentRegistration = ({
                         <span className="bg-[#EDE0F7] dark:bg-[#2A1E2E] text-[#7B3FA0] dark:text-[#C084FC] rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">6</span>
                         Terms and Conditions
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">Review and accept terms</p>
+                    <p className="text-gray-600 dark:text-gray-300 mt-1">Review and accept terms</p>
                 </div>
 
                 <TermsAndConditions
@@ -2397,7 +2397,7 @@ const SinglePageStudentRegistration = ({
                             ? "Complete Registration"
                             : "New Student Registration"}
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400 mt-2">
+                    <p className="text-gray-600 dark:text-gray-300 mt-2">
                         {userRole === "student"
                             ? "Complete your registration to access all features"
                             : "Register a new student in the system"}

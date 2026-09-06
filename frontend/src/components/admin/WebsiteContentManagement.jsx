@@ -214,7 +214,7 @@ const WebsiteContentManagement = () => {
     if (!settings) {
         return (
             <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">Failed to load website settings</p>
+                <p className="text-gray-500 dark:text-gray-300">Failed to load website settings</p>
             </div>
         );
     }
@@ -259,7 +259,7 @@ const WebsiteContentManagement = () => {
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center space-x-2 ${activeTab === tab.id
                                     ? 'border-[#7B3FA0] text-[#7B3FA0]'
-                                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300'
+                                    : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300'
                                     }`}
                             >
                                 {tab.icon}
@@ -368,7 +368,7 @@ const WebsiteContentManagement = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <h4 className="font-medium text-gray-900">Preview</h4>
+                                        <h4 className="font-medium text-gray-900 dark:text-gray-100">Preview</h4>
                                         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
                                             <div
                                                 className="h-64 rounded-lg bg-cover bg-center flex items-center justify-center text-white text-center"
@@ -499,7 +499,7 @@ const WebsiteContentManagement = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <h4 className="font-medium text-gray-900">Preview</h4>
+                                        <h4 className="font-medium text-gray-900 dark:text-gray-100">Preview</h4>
                                         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
                                             <h3 className="text-xl font-bold mb-2">{settings.aboutSection.title}</h3>
                                             <p className="text-gray-600 dark:text-gray-300 mb-4">{settings.aboutSection.description}</p>
@@ -616,7 +616,7 @@ const WebsiteContentManagement = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-4">
-                                        <h4 className="font-medium text-gray-900">Preview</h4>
+                                        <h4 className="font-medium text-gray-900 dark:text-gray-100">Preview</h4>
                                         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-700">
                                             <div className="space-y-3">
                                                 <div className="flex items-center">
@@ -824,7 +824,7 @@ const WebsiteContentManagement = () => {
                                     <div className="space-y-4">
                                         <h4 className="font-medium text-gray-900 dark:text-gray-100">Payment QR Code</h4>
                                         <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#2A1E2E]">
-                                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                            <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                                                 Upload the QR Code image that will be shown to students for collecting payments.
                                             </p>
                                             <div className="flex items-center space-x-4">
@@ -896,7 +896,7 @@ const WebsiteContentManagement = () => {
                                                     <p className="text-gray-700 dark:text-gray-300 font-medium">
                                                         Using Fallback QR
                                                     </p>
-                                                    <p className="text-xs text-gray-500 mt-1">Upload a custom QR above to replace this</p>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Upload a custom QR above to replace this</p>
                                                 </div>
                                             </div>
                                         )}
@@ -909,17 +909,17 @@ const WebsiteContentManagement = () => {
                     {/* Placeholder for other tabs */}
                     {['programs', 'admission', 'seo'].includes(activeTab) && (
                         <div className="text-center py-12">
-                            <div className="text-gray-400 mb-4">
+                            <div className="text-gray-400 dark:text-gray-300 mb-4">
                                 {activeTab === 'programs' && <BookOpenIcon className="h-12 w-12 mx-auto" />}
                                 {activeTab === 'admission' && <FileTextIcon className="h-12 w-12 mx-auto" />}
                                 {activeTab === 'seo' && <BarChartIcon className="h-12 w-12 mx-auto" />}
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 {activeTab === 'programs' && 'Academic Programs Management'}
                                 {activeTab === 'admission' && 'Admission Information Management'}
                                 {activeTab === 'seo' && 'SEO Settings Management'}
                             </h3>
-                            <p className="text-gray-500 dark:text-gray-400">This section will be implemented in the next phase.</p>
+                            <p className="text-gray-500 dark:text-gray-300">This section will be implemented in the next phase.</p>
                         </div>
                     )}
                 </div>

@@ -55,7 +55,7 @@ const PerformanceDashboard = () => {
     if (!metrics) {
         return (
             <div className="text-center py-8">
-                <p className="text-gray-500">Failed to load performance metrics</p>
+                <p className="text-gray-500 dark:text-gray-300">Failed to load performance metrics</p>
             </div>
         );
     }
@@ -66,8 +66,8 @@ const PerformanceDashboard = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Performance Dashboard</h2>
-                        <p className="text-gray-600">Monitor and optimize system performance</p>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Performance Dashboard</h2>
+                        <p className="text-gray-600 dark:text-gray-300">Monitor and optimize system performance</p>
                     </div>
                     <button
                         onClick={fetchPerformanceMetrics}
@@ -81,7 +81,7 @@ const PerformanceDashboard = () => {
             {/* Performance Score */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Overall Performance Score</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Overall Performance Score</h3>
                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPerformanceBg(metrics.pageLoadTime, { good: 2000, warning: 4000 })
                         } ${getPerformanceColor(metrics.pageLoadTime, { good: 2000, warning: 4000 })
                         }`}>
@@ -130,35 +130,35 @@ const PerformanceDashboard = () => {
                     {activeTab === 'overview' && (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div className="bg-gray-50 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-2">Page Load Time</h4>
+                                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Page Load Time</h4>
                                 <p className={`text-2xl font-bold ${getPerformanceColor(metrics.pageLoadTime, { good: 2000, warning: 4000 })
                                     }`}>
                                     {metrics.pageLoadTime ? `${metrics.pageLoadTime.toFixed(0)}ms` : 'N/A'}
                                 </p>
-                                <p className="text-sm text-gray-600">Time to load</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300">Time to load</p>
                             </div>
                             <div className="bg-gray-50 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-2">Render Time</h4>
+                                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Render Time</h4>
                                 <p className={`text-2xl font-bold ${getPerformanceColor(metrics.renderTime, { good: 100, warning: 300 })
                                     }`}>
                                     {metrics.renderTime ? `${metrics.renderTime.toFixed(0)}ms` : 'N/A'}
                                 </p>
-                                <p className="text-sm text-gray-600">Component render</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300">Component render</p>
                             </div>
                             <div className="bg-gray-50 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-2">API Calls</h4>
+                                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">API Calls</h4>
                                 <p className="text-2xl font-bold text-[#387B95]">
                                     {metrics.apiCalls || 0}
                                 </p>
-                                <p className="text-sm text-gray-600">Total requests</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300">Total requests</p>
                             </div>
                             <div className="bg-gray-50 rounded-lg p-4">
-                                <h4 className="font-semibold text-gray-900 mb-2">Cache Hit Rate</h4>
+                                <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Cache Hit Rate</h4>
                                 <p className={`text-2xl font-bold ${getPerformanceColor(100 - (metrics.cacheHitRate || 0), { good: 20, warning: 40 })
                                     }`}>
                                     {metrics.cacheHitRate ? `${metrics.cacheHitRate.toFixed(1)}%` : 'N/A'}
                                 </p>
-                                <p className="text-sm text-gray-600">Cache efficiency</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300">Cache efficiency</p>
                             </div>
                         </div>
                     )}
@@ -168,17 +168,17 @@ const PerformanceDashboard = () => {
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-900 mb-3">Bundle Analysis</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Bundle Analysis</h4>
                                     {metrics.bundleSize ? (
                                         <div className="space-y-2">
                                             <div className="flex justify-between">
-                                                <span className="text-sm text-gray-600">JavaScript</span>
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">JavaScript</span>
                                                 <span className="text-sm font-medium">
                                                     {(metrics.bundleSize.js.totalSize / 1024).toFixed(1)} KB
                                                 </span>
                                             </div>
                                             <div className="flex justify-between">
-                                                <span className="text-sm text-gray-600">CSS</span>
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">CSS</span>
                                                 <span className="text-sm font-medium">
                                                     {(metrics.bundleSize.css.totalSize / 1024).toFixed(1)} KB
                                                 </span>
@@ -191,22 +191,22 @@ const PerformanceDashboard = () => {
                                             </div>
                                         </div>
                                     ) : (
-                                        <p className="text-gray-500 text-sm">Bundle analysis not available</p>
+                                        <p className="text-gray-500 dark:text-gray-300 text-sm">Bundle analysis not available</p>
                                     )}
                                 </div>
                                 <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-900 mb-3">Core Web Vitals</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Core Web Vitals</h4>
                                     <div className="space-y-2">
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">LCP</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">LCP</span>
                                             <span className="text-sm font-medium text-green-600">Good</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">FID</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">FID</span>
                                             <span className="text-sm font-medium text-green-600">Good</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">CLS</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">CLS</span>
                                             <span className="text-sm font-medium text-green-600">Good</span>
                                         </div>
                                     </div>
@@ -220,25 +220,25 @@ const PerformanceDashboard = () => {
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                 <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-900 mb-2">Response Time</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Response Time</h4>
                                     <p className="text-2xl font-bold text-green-600">
                                         {metrics.averageResponseTime ? `${metrics.averageResponseTime.toFixed(0)}ms` : 'N/A'}
                                     </p>
-                                    <p className="text-sm text-gray-600">Average API response</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">Average API response</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-900 mb-2">Memory Usage</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Memory Usage</h4>
                                     <p className="text-2xl font-bold text-[#387B95]">
                                         {metrics.memory ? `${metrics.memory.percentage.toFixed(1)}%` : 'N/A'}
                                     </p>
-                                    <p className="text-sm text-gray-600">Server memory</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">Server memory</p>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-900 mb-2">CPU Usage</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">CPU Usage</h4>
                                     <p className="text-2xl font-bold text-[#7B3FA0]">
                                         {metrics.cpu ? `${metrics.cpu.usage.toFixed(1)}%` : 'N/A'}
                                     </p>
-                                    <p className="text-sm text-gray-600">Server CPU</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">Server CPU</p>
                                 </div>
                             </div>
                         </div>
@@ -249,35 +249,35 @@ const PerformanceDashboard = () => {
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-900 mb-3">Network Performance</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">Network Performance</h4>
                                     <div className="space-y-2">
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">Connection Type</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">Connection Type</span>
                                             <span className="text-sm font-medium">Fast 3G</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">Latency</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">Latency</span>
                                             <span className="text-sm font-medium">50ms</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">Bandwidth</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">Bandwidth</span>
                                             <span className="text-sm font-medium">1.6 Mbps</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="bg-gray-50 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-900 mb-3">CDN Performance</h4>
+                                    <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3">CDN Performance</h4>
                                     <div className="space-y-2">
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">Cache Hit Rate</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">Cache Hit Rate</span>
                                             <span className="text-sm font-medium text-green-600">95%</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">Edge Locations</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">Edge Locations</span>
                                             <span className="text-sm font-medium">Global</span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-600">TTFB</span>
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">TTFB</span>
                                             <span className="text-sm font-medium">120ms</span>
                                         </div>
                                     </div>
@@ -289,7 +289,7 @@ const PerformanceDashboard = () => {
                     {/* Recommendations Tab */}
                     {activeTab === 'recommendations' && (
                         <div className="space-y-4">
-                            <h4 className="text-lg font-semibold text-gray-900">Performance Recommendations</h4>
+                            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Performance Recommendations</h4>
                             <div className="space-y-4">
                                 {[
                                     {
@@ -333,9 +333,9 @@ const PerformanceDashboard = () => {
                                                         }`}>
                                                         {rec.priority.toUpperCase()}
                                                     </span>
-                                                    <h5 className="font-semibold text-gray-900">{rec.title}</h5>
+                                                    <h5 className="font-semibold text-gray-900 dark:text-gray-100">{rec.title}</h5>
                                                 </div>
-                                                <p className="text-gray-600 mb-2">{rec.description}</p>
+                                                <p className="text-gray-600 dark:text-gray-300 mb-2">{rec.description}</p>
                                                 <p className="text-sm text-green-600 font-medium">{rec.impact}</p>
                                             </div>
                                         </div>

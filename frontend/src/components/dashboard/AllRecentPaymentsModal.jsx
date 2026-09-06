@@ -61,7 +61,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
                             <i className="fa-solid fa-xmark text-lg"></i>
                         </button>
@@ -76,10 +76,10 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                         ) : payments.length === 0 ? (
                             <div className="text-center py-20">
                                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 mb-4">
-                                    <i className="fa-solid fa-receipt text-2xl text-gray-400"></i>
+                                    <i className="fa-solid fa-receipt text-2xl text-gray-400 dark:text-gray-300"></i>
                                 </div>
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">No Payments Found</h3>
-                                <p className="text-gray-500 dark:text-gray-400 mt-1">There are no recent payment records to display.</p>
+                                <p className="text-gray-500 dark:text-gray-300 mt-1">There are no recent payment records to display.</p>
                             </div>
                         ) : (
                             <div className="grid gap-4">
@@ -105,7 +105,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                                                 </div>
                                                 <div>
                                                     <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">{item.studentName || 'Unknown Student'}</h3>
-                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-gray-500 dark:text-gray-300 mt-1">
                                                         <span className="flex items-center gap-1">
                                                             <i className="fa-solid fa-hashtag text-xs"></i> {item.applicationId}
                                                         </span>
@@ -143,7 +143,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                     {/* Pagination Footer */}
                     {totalPages > 1 && (
                         <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-[#2A1E2E]/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                            <div className="text-sm text-gray-500 dark:text-gray-300">
                                 Showing page <span className="font-medium text-gray-900 dark:text-gray-100">{page}</span> of <span className="font-medium text-gray-900 dark:text-gray-100">{totalPages}</span>
                             </div>
                             <div className="flex items-center space-x-2">

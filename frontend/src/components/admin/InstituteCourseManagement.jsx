@@ -352,7 +352,7 @@ const InstituteCourseManagement = () => {
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                         Institutes, Courses & Campuses
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                         Manage institutes, courses, streams, and campuses for the registration form
                     </p>
                 </div>
@@ -467,7 +467,7 @@ const InstituteCourseManagement = () => {
                         >
                             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 {editingCourse ? 'Edit Course' : 'Add New Course'}
-                                <span className="text-sm font-normal text-gray-500 dark:text-gray-400 block mt-1">
+                                <span className="text-sm font-normal text-gray-500 dark:text-gray-300 block mt-1">
                                     for {selectedCollege.name}
                                 </span>
                             </h3>
@@ -524,7 +524,7 @@ const InstituteCourseManagement = () => {
                                                         {stream.name}
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <span className="text-gray-500">₹</span>
+                                                        <span className="text-gray-500 dark:text-gray-300">₹</span>
                                                         <input
                                                             type="text"
                                                             inputMode="numeric"
@@ -555,7 +555,7 @@ const InstituteCourseManagement = () => {
                                                             }}
                                                             className="w-4 h-4 text-[#7B3FA0] rounded"
                                                         />
-                                                        <label htmlFor={`streamPaid-${index}`} className="text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                                                        <label htmlFor={`streamPaid-${index}`} className="text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
                                                             Paid Only
                                                         </label>
                                                     </div>
@@ -665,7 +665,7 @@ const InstituteCourseManagement = () => {
                         >
                             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 {editingCampus ? 'Edit Campus' : 'Add New Campus'}
-                                <span className="text-sm font-normal text-gray-500 dark:text-gray-400 block mt-1">
+                                <span className="text-sm font-normal text-gray-500 dark:text-gray-300 block mt-1">
                                     for {selectedCollege.name}
                                 </span>
                             </h3>
@@ -730,7 +730,7 @@ const InstituteCourseManagement = () => {
                     </div>
                     <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
                         {colleges.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
                                 <i className="fa-solid fa-building text-4xl mb-4"></i>
                                 <p>No institutes found</p>
                                 <p className="text-sm mt-2">Click "Add Institute" to create one</p>
@@ -816,12 +816,12 @@ const InstituteCourseManagement = () => {
                     </div>
                     <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
                         {!selectedCollege ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
                                 <i className="fa-solid fa-book text-4xl mb-4"></i>
                                 <p>Select an institute to view courses</p>
                             </div>
                         ) : courses.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
                                 <i className="fa-solid fa-book text-4xl mb-4"></i>
                                 <p>No courses found for {selectedCollege.name}</p>
                                 <p className="text-sm mt-2">Click "Add Course" to create one</p>
@@ -846,7 +846,7 @@ const InstituteCourseManagement = () => {
                                                 )}
                                             </div>
                                             {course.courseCode && (
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                                     Code: {course.courseCode}
                                                 </p>
                                             )}
@@ -911,12 +911,12 @@ const InstituteCourseManagement = () => {
                     </div>
                     <div className="divide-y divide-gray-200 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
                         {!selectedCollege ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
                                 <i className="fa-solid fa-building text-4xl mb-4"></i>
                                 <p>Select an institute to view campuses</p>
                             </div>
                         ) : campuses.length === 0 ? (
-                            <div className="p-8 text-center text-gray-500 dark:text-gray-400">
+                            <div className="p-8 text-center text-gray-500 dark:text-gray-300">
                                 <i className="fa-solid fa-building text-4xl mb-4"></i>
                                 <p>No campuses found for {selectedCollege.name}</p>
                                 <p className="text-sm mt-2">Click "Add Campus" to create one</p>
@@ -941,12 +941,12 @@ const InstituteCourseManagement = () => {
                                                 )}
                                             </div>
                                             {campus.code && (
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                                     Code: {campus.code}
                                                 </p>
                                             )}
                                             {campus.description && (
-                                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                                     {campus.description}
                                                 </p>
                                             )}

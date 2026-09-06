@@ -275,7 +275,7 @@ const SliderManagement = () => {
             <div className={`bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 ${!isActive ? 'hidden' : ''}`}>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     {sectionType === 'horizontal' ? '🖥️ Horizontal Slider' : '📱 Vertical Slider'}
-                    <span className="text-sm font-normal text-gray-500 dark:text-gray-400 ml-2">
+                    <span className="text-sm font-normal text-gray-500 dark:text-gray-300 ml-2">
                         ({sectionType === 'horizontal' ? 'For screens above 1000px width' : 'For screens below 1000px width'})
                     </span>
                 </h2>
@@ -352,7 +352,7 @@ const SliderManagement = () => {
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileSelect}
-                                className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7] dark:file:bg-purple-900 dark:file:text-purple-300"
+                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7] dark:file:bg-purple-900 dark:file:text-purple-300"
                             />
                             {previewImage && (
                                 <div className="relative">
@@ -411,7 +411,7 @@ const SliderManagement = () => {
                 </h2>
 
                 {slidersList.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                    <p className="text-gray-500 dark:text-gray-300 text-center py-8">
                         No {sectionType} sliders found. Create your first {sectionType} slider above.
                     </p>
                 ) : (
@@ -446,12 +446,12 @@ const SliderManagement = () => {
                                         {slider.title}
                                     </h3>
                                     {slider.description && (
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 line-clamp-2">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 line-clamp-2">
                                             {slider.description}
                                         </p>
                                     )}
                                     <div className="flex items-center justify-between mt-3">
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                        <span className="text-xs text-gray-500 dark:text-gray-300">
                                             Order: {slider.order}
                                         </span>
                                         <div className="flex space-x-2">
@@ -543,7 +543,7 @@ const SliderManagement = () => {
                             }}
                             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeSection === 'horizontal'
                                     ? 'border-[#7B3FA0] text-[#7B3FA0] dark:text-[#A855D0]'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-300 dark:hover:text-gray-300'
                                 }`}
                         >
                             <i className="fa-solid fa-desktop mr-2"></i>
@@ -558,7 +558,7 @@ const SliderManagement = () => {
                             }}
                             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeSection === 'vertical'
                                     ? 'border-[#7B3FA0] text-[#7B3FA0] dark:text-[#A855D0]'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-300 dark:hover:text-gray-300'
                                 }`}
                         >
                             <i className="fa-solid fa-mobile-screen-button mr-2"></i>

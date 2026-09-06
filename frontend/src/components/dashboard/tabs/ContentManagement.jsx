@@ -144,7 +144,7 @@ const ContentManagement = () => {
         <div className="space-y-6">
             {/* Header with Upload Button */}
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Academic Content Management</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Academic Content Management</h3>
                 <button
                     onClick={() => setShowUploadModal(true)}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center space-x-2"
@@ -158,12 +158,12 @@ const ContentManagement = () => {
 
             {/* Content by Course */}
             {Object.keys(groupedContent).length === 0 ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
-                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-8 text-center">
+                    <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    <h3 className="mt-2 text-sm font-medium text-gray-900">No content uploaded</h3>
-                    <p className="mt-1 text-sm text-gray-500">Get started by uploading your first piece of content.</p>
+                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No content uploaded</h3>
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">Get started by uploading your first piece of content.</p>
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -175,8 +175,8 @@ const ContentManagement = () => {
                             className="bg-white rounded-lg shadow"
                         >
                             <div className="px-6 py-4 border-b border-gray-200">
-                                <h4 className="text-lg font-semibold text-gray-900">{course}</h4>
-                                <p className="text-sm text-gray-500">{courseContent.length} items</p>
+                                <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{course}</h4>
+                                <p className="text-sm text-gray-500 dark:text-gray-300">{courseContent.length} items</p>
                             </div>
 
                             <div className="p-6">
@@ -192,8 +192,8 @@ const ContentManagement = () => {
                                                 <div className="flex items-center space-x-2">
                                                     <span className="text-2xl">{getContentTypeIcon(item.type)}</span>
                                                     <div>
-                                                        <h5 className="font-medium text-gray-900">{item.title}</h5>
-                                                        <p className="text-sm text-gray-500">{getContentTypeName(item.type)}</p>
+                                                        <h5 className="font-medium text-gray-900 dark:text-gray-100">{item.title}</h5>
+                                                        <p className="text-sm text-gray-500 dark:text-gray-300">{getContentTypeName(item.type)}</p>
                                                     </div>
                                                 </div>
 
@@ -221,17 +221,17 @@ const ContentManagement = () => {
                                             </div>
 
                                             {item.description && (
-                                                <p className="text-sm text-gray-600 mb-3">{item.description}</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{item.description}</p>
                                             )}
 
-                                            <div className="flex items-center justify-between text-xs text-gray-500">
+                                            <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-300">
                                                 <span>{formatFileSize(item.fileSize)}</span>
                                                 <span>{new Date(item.uploadedAt).toLocaleDateString()}</span>
                                             </div>
 
                                             {item.subject && (
                                                 <div className="mt-2">
-                                                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
+                                                    <span className="inline-block px-2 py-1 bg-gray-100 text-gray-700 dark:text-gray-200 text-xs rounded">
                                                         {item.subject}
                                                     </span>
                                                 </div>
@@ -250,12 +250,12 @@ const ContentManagement = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg max-w-2xl w-full mx-4">
                         <div className="px-6 py-4 border-b border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-900">Upload Content</h3>
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Upload Content</h3>
                         </div>
 
                         <form onSubmit={handleFileUpload} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Title *</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Title *</label>
                                 <input
                                     type="text"
                                     value={uploadData.title}
@@ -267,7 +267,7 @@ const ContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
                                 <textarea
                                     value={uploadData.description}
                                     onChange={(e) => setUploadData(prev => ({ ...prev, description: e.target.value }))}
@@ -279,7 +279,7 @@ const ContentManagement = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Course *</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Course *</label>
                                     <select
                                         value={uploadData.course}
                                         onChange={(e) => setUploadData(prev => ({ ...prev, course: e.target.value }))}
@@ -294,7 +294,7 @@ const ContentManagement = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Subject</label>
                                     <input
                                         type="text"
                                         value={uploadData.subject}
@@ -306,7 +306,7 @@ const ContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Content Type *</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Content Type *</label>
                                 <select
                                     value={uploadData.type}
                                     onChange={(e) => setUploadData(prev => ({ ...prev, type: e.target.value }))}
@@ -322,7 +322,7 @@ const ContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">File *</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">File *</label>
                                 <input
                                     type="file"
                                     onChange={(e) => setUploadData(prev => ({ ...prev, file: e.target.files[0] }))}
@@ -330,7 +330,7 @@ const ContentManagement = () => {
                                     accept=".pdf,.doc,.docx,.ppt,.pptx,.mp4,.avi,.mov,.jpg,.jpeg,.png"
                                     required
                                 />
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                     Supported formats: PDF, DOC, DOCX, PPT, PPTX, MP4, AVI, MOV, JPG, JPEG, PNG
                                 </p>
                             </div>

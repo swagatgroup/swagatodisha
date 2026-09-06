@@ -610,12 +610,12 @@ const QuickLinks = () => {
                                                 }}
                                             >
                                                 {loadingDocuments ? (
-                                                    <div className="text-center py-8 text-gray-500">
+                                                    <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                                         <i className="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
                                                         <p className="text-sm">Loading documents...</p>
                                                     </div>
                                                 ) : documentSections[link.category].documents.length === 0 ? (
-                                                    <div className="text-center py-8 text-gray-500">
+                                                    <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                                         <i className="fa-solid fa-file text-2xl mb-2"></i>
                                                         <p className="text-sm">No documents available</p>
                                                     </div>
@@ -652,7 +652,7 @@ const QuickLinks = () => {
                                                                         }`}>
                                                                         {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
                                                                     </h5>
-                                                                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
+                                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5 line-clamp-1">
                                                                         {doc.description}
                                                                     </p>
                                                                 </div>
@@ -698,7 +698,7 @@ const QuickLinks = () => {
                                                                         }`}>
                                                                         {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
                                                                     </h5>
-                                                                    <p className="text-xs text-gray-600 mt-0.5 line-clamp-1">
+                                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5 line-clamp-1">
                                                                         {doc.description}
                                                                     </p>
                                                                 </div>
@@ -874,8 +874,8 @@ const QuickLinks = () => {
                                                                                     <i className={`${path.icon} text-white text-sm`}></i>
                                                                                 </div>
                                                                                 <div>
-                                                                                    <h5 className="font-semibold text-gray-800">{path.name}</h5>
-                                                                                    <p className="text-xs text-gray-600">{path.description}</p>
+                                                                                    <h5 className="font-semibold text-gray-800 dark:text-gray-100">{path.name}</h5>
+                                                                                    <p className="text-xs text-gray-600 dark:text-gray-300">{path.description}</p>
                                                                                 </div>
                                                                             </div>
                                                                             <motion.div
@@ -883,7 +883,7 @@ const QuickLinks = () => {
                                                                                 transition={{ duration: 0.3 }}
                                                                                 className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center"
                                                                             >
-                                                                                <i className="fa-solid fa-chevron-right text-gray-600 text-xs"></i>
+                                                                                <i className="fa-solid fa-chevron-right text-gray-600 dark:text-gray-300 text-xs"></i>
                                                                             </motion.div>
                                                                         </div>
                                                                     </motion.div>
@@ -917,8 +917,8 @@ const QuickLinks = () => {
                                                                                         >
                                                                                             <div className="flex items-center justify-between">
                                                                                                 <div className="flex-1">
-                                                                                                    <h6 className="font-medium text-sm text-gray-800">{career.name}</h6>
-                                                                                                    <p className="text-xs text-gray-600 mt-1">{career.scope}</p>
+                                                                                                    <h6 className="font-medium text-sm text-gray-800 dark:text-gray-100">{career.name}</h6>
+                                                                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{career.scope}</p>
                                                                                                 </div>
                                                                                                 <div className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded-full">
                                                                                                     {career.duration}
@@ -971,8 +971,8 @@ const QuickLinks = () => {
                                     className="mt-8 text-center"
                                 >
                                     <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
-                                        <h4 className="text-lg font-bold text-gray-800 mb-2">Need Career Guidance?</h4>
-                                        <p className="text-gray-600 text-sm mb-4">Our counselors are here to help you choose the right path</p>
+                                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Need Career Guidance?</h4>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">Our counselors are here to help you choose the right path</p>
                                         <motion.button
                                             onClick={handleCareerCounselingCall}
                                             className="px-6 py-3 bg-[#7B3FA0] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"

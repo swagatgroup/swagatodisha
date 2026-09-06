@@ -56,7 +56,7 @@ const PasswordStrengthIndicator = ({ password }) => {
         <div className="mt-2">
             {/* Strength Bar */}
             <div className="flex items-center space-x-2 mb-2">
-                <span className="text-xs text-gray-600">Password Strength:</span>
+                <span className="text-xs text-gray-600 dark:text-gray-300">Password Strength:</span>
                 <span className={`text-xs font-medium ${strength === 'Strong' ? 'text-green-600' :
                         strength === 'Good' ? 'text-yellow-600' :
                             strength === 'Fair' ? 'text-orange-600' :

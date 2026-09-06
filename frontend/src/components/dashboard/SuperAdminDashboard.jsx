@@ -4,6 +4,7 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Cartes
 import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 import { useSession } from '../../contexts/SessionContext';
 import DashboardLayout from './DashboardLayout';
 import UserManagement from '../admin/UserManagement';
@@ -33,6 +34,7 @@ import api from '../../utils/api';
 
 const SuperAdminDashboard = () => {
     const { user } = useAuth();
+    const { isDarkMode } = useDarkMode();
     const { selectedSession } = useSession();
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
     const [loading, setLoading] = useState(true);
@@ -280,10 +282,10 @@ const SuperAdminDashboard = () => {
             case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
             case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'COMPLETE': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -528,7 +530,7 @@ const SuperAdminDashboard = () => {
                     <div className="space-y-6 bg-transparent">
                         <div>
                             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Super Admin Dashboard</h1>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Welcome back, {user?.fullName || 'Admin'}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Welcome back, {user?.fullName || 'Admin'}</p>
                         </div>
 
                         
@@ -546,7 +548,7 @@ const SuperAdminDashboard = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Students</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Students</p>
                                         <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStudents}</p>
                                     </div>
                                 </div>
@@ -566,7 +568,7 @@ const SuperAdminDashboard = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Agents</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Agents</p>
                                         <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalAgents}</p>
                                     </div>
                                 </div>
@@ -584,7 +586,7 @@ const SuperAdminDashboard = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Total Staff</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Staff</p>
                                         <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStaff}</p>
                                     </div>
                                 </div>
@@ -602,11 +604,11 @@ const SuperAdminDashboard = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Referral Students</p>
+                                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Referral Students</p>
                                         <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
                                             {(stats.referralStats?.agentReferred || 0) + (stats.referralStats?.staffReferred || 0) + (stats.referralStats?.superAdminReferred || 0)}
                                         </p>
-                                        <p className="text-xs text-gray-400 mt-1">
+                                        <p className="text-xs text-gray-400 dark:text-gray-300 mt-1">
                                             {stats.referralStats?.agentReferred || 0} agent · {stats.referralStats?.staffReferred || 0} staff
                                         </p>
                                     </div>
@@ -648,7 +650,7 @@ const SuperAdminDashboard = () => {
                                                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                                                     studentView === key
                                                         ? 'bg-white dark:bg-[#2A1E2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
-                                                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                                                        : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                                                 }`}
                                             >
                                                 {label}
@@ -657,7 +659,7 @@ const SuperAdminDashboard = () => {
                                     </div>
 
                                     {/* Description */}
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                    <p className="text-xs text-gray-500 dark:text-gray-300 mb-3">
                                         {studentView === 'combined' && 'Showing all students in this session.'}
                                         {studentView === 'direct' && 'Students who self-registered or used a student referral code.'}
                                         {studentView === 'our' && 'Students registered via dashboard by Super Admin, Staff, or Agent — or via their referral codes.'}
@@ -722,12 +724,18 @@ const SuperAdminDashboard = () => {
                                                             ]}
                                                             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                                                         >
-                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
-                                                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: '#6B7280' }} axisLine={false} tickLine={false} />
-                                                            <YAxis tick={{ fontSize: 12, fill: '#6B7280' }} axisLine={false} tickLine={false} allowDecimals={false} />
+                                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#E5E7EB"} />
+                                                            <XAxis dataKey="name" tick={{ fontSize: 12, fill: isDarkMode ? "#E5E7EB" : "#6B7280" }} axisLine={false} tickLine={false} />
+                                                            <YAxis tick={{ fontSize: 12, fill: isDarkMode ? "#E5E7EB" : "#6B7280" }} axisLine={false} tickLine={false} allowDecimals={false} />
                                                             <Tooltip 
                                                                 cursor={{ fill: 'transparent' }}
-                                                                contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+                                                                contentStyle={{ 
+                                                                    borderRadius: '8px', 
+                                                                    border: isDarkMode ? '1px solid #374151' : 'none', 
+                                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                                                    backgroundColor: isDarkMode ? '#1F2937' : '#FFFFFF',
+                                                                    color: isDarkMode ? '#F3F4F6' : '#111827'
+                                                                }}
                                                             />
                                                             <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={50}>
                                                                 {
@@ -745,7 +753,7 @@ const SuperAdminDashboard = () => {
                                                     </ResponsiveContainer>
                                                 </div>
                                             ) : (
-                                                <div className="flex items-center justify-center h-full text-gray-400 text-sm">No payment data</div>
+                                                <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-300 text-sm">No payment data</div>
                                             )}
                                         </div>
                                     </div>
@@ -767,35 +775,35 @@ const SuperAdminDashboard = () => {
                                         className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'self' ? 'ring-2 ring-orange-500' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'self' ? 'all' : 'self'); setCurrentPage(1); }}
                                     >
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">Direct/Self<br/>Registered</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-300 font-medium text-center leading-tight">Direct/Self<br/>Registered</p>
                                         <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">{stats.referralStats.selfRegistered || 0}</p>
                                     </div>
                                     <div 
                                         className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'student' ? 'ring-2 ring-green-500' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'student' ? 'all' : 'student'); setCurrentPage(1); }}
                                     >
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Student</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Student</p>
                                         <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.referralStats.studentReferred || 0}</p>
                                     </div>
                                     <div 
                                         className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'agent' ? 'ring-2 ring-blue-500' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'agent' ? 'all' : 'agent'); setCurrentPage(1); }}
                                     >
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Agent</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Agent</p>
                                         <p className="text-2xl font-bold text-[#387B95] dark:text-[#60A5FA] mt-1">{stats.referralStats.agentReferred || 0}</p>
                                     </div>
                                     <div 
                                         className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'staff' ? 'ring-2 ring-[#7B3FA0]' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'staff' ? 'all' : 'staff'); setCurrentPage(1); }}
                                     >
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Staff</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Staff</p>
                                         <p className="text-2xl font-bold text-[#7B3FA0] dark:text-[#A855D0] mt-1">{stats.referralStats.staffReferred || 0}</p>
                                     </div>
                                     <div 
                                         className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'super_admin' ? 'ring-2 ring-gray-900 dark:ring-gray-100' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'super_admin' ? 'all' : 'super_admin'); setCurrentPage(1); }}
                                     >
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Super Admin</p>
+                                        <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Super Admin</p>
                                         <p className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-1">{stats.referralStats.superAdminReferred || 0}</p>
                                     </div>
                                 </div>
@@ -811,7 +819,7 @@ const SuperAdminDashboard = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.05 }}
                                 >
-                                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wider">Filter by Staff</h3>
+                                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 uppercase tracking-wider">Filter by Staff</h3>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                         {stats.staffMembers.map(staff => (
                                             <button
@@ -851,7 +859,7 @@ const SuperAdminDashboard = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.1 }}
                                 >
-                                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3 uppercase tracking-wider">Filter by Agent</h3>
+                                    <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 uppercase tracking-wider">Filter by Agent</h3>
                                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                         {stats.agentMembers.map(agent => (
                                             <button
@@ -899,16 +907,16 @@ const SuperAdminDashboard = () => {
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                             Recent Students
                                         </h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                             View and manage all student applications
                                         </p>
                                     </div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                    <div className="text-sm text-gray-500 dark:text-gray-300">
                                         {totalItems > 0 ? (
                                             <>
                                                 {totalItems} {totalItems === 1 ? 'Student' : 'Students'}
                                                 {totalPages > 1 && (
-                                                    <span className="ml-2 text-gray-400">
+                                                    <span className="ml-2 text-gray-400 dark:text-gray-300">
                                                         (Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems})
                                                     </span>
                                                 )}
@@ -1054,13 +1062,13 @@ const SuperAdminDashboard = () => {
                                                 <tr>
                                                     <td colSpan={isSuperAdmin ? "10" : "9"} className="px-6 py-12 text-center">
                                                         <div className="flex flex-col items-center justify-center">
-                                                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                                                             </svg>
                                                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                                                 No students found
                                                             </h3>
-                                                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                                            <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                                                                 {searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterSubmitterRole !== 'all'
                                                                     ? 'Try adjusting your search criteria or filters.'
                                                                     : selectedSession
@@ -1124,7 +1132,7 @@ const SuperAdminDashboard = () => {
                                                                                 return name;
                                                                             })()}
                                                                         </div>
-                                                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                                        <div className="text-sm text-gray-500 dark:text-gray-300">
                                                                             ID: {student.applicationId}
                                                                         </div>
                                                                     </div>
@@ -1449,7 +1457,7 @@ const SuperAdminDashboard = () => {
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Student Details</h3>
-                                <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -1461,7 +1469,7 @@ const SuperAdminDashboard = () => {
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Personal Information</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Full Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Full Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
@@ -1472,29 +1480,29 @@ const SuperAdminDashboard = () => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Father's Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Father's Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.fathersName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Mother's Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Mother's Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.mothersName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Gender</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Gender</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.gender || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Date of Birth</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {selectedStudent.personalDetails?.dateOfBirth ? new Date(selectedStudent.personalDetails.dateOfBirth).toLocaleDateString() : 'N/A'}
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Aadhar Number</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Aadhar Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.aadharNumber || selectedStudent.personalDetails?.aadharNumber || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Category</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.category || selectedStudent.personalDetails?.status || selectedStudent.category || 'N/A'}</p>
                                         </div>
                                     </div>
@@ -1505,11 +1513,11 @@ const SuperAdminDashboard = () => {
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Contact Information</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Phone Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Email</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
                                         </div>
                                     </div>
@@ -1518,23 +1526,23 @@ const SuperAdminDashboard = () => {
                                             <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Permanent Address</h5>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div className="md:col-span-2">
-                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Street Address</label>
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.street || 'N/A'}</p>
                                                 </div>
                                                 <div>
-                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-300">City</label>
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.city || 'N/A'}</p>
                                                 </div>
                                                 <div>
-                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-300">District</label>
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.district || 'N/A'}</p>
                                                 </div>
                                                 <div>
-                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-300">State</label>
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.state || 'N/A'}</p>
                                                 </div>
                                                 <div>
-                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                    <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Pincode</label>
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails.permanentAddress.pincode || 'N/A'}</p>
                                                 </div>
                                             </div>
@@ -1547,7 +1555,7 @@ const SuperAdminDashboard = () => {
                                     <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Course Details</h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Institution Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const institution = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
@@ -1573,7 +1581,7 @@ const SuperAdminDashboard = () => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Course Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const course = selectedStudent.courseDetails?.selectedCourse || selectedStudent.course;
@@ -1584,7 +1592,7 @@ const SuperAdminDashboard = () => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Stream</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Stream</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const stream = selectedStudent.courseDetails?.stream;
@@ -1595,7 +1603,7 @@ const SuperAdminDashboard = () => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Campus</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const campus = selectedStudent.courseDetails?.campus;
@@ -1614,7 +1622,7 @@ const SuperAdminDashboard = () => {
                                         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4">Guardian Information</h4>
                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                             <div>
-                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Name</label>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Name</label>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                     {(() => {
                                                         const name = selectedStudent.guardianDetails?.guardianName;
@@ -1625,7 +1633,7 @@ const SuperAdminDashboard = () => {
                                                 </p>
                                             </div>
                                             <div>
-                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Phone</label>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Phone</label>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                     {(() => {
                                                         const phone = selectedStudent.guardianDetails?.guardianPhone;
@@ -1636,7 +1644,7 @@ const SuperAdminDashboard = () => {
                                                 </p>
                                             </div>
                                             <div>
-                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Relationship</label>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Relationship</label>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.relationship || 'N/A'}</p>
                                             </div>
                                         </div>
@@ -1662,7 +1670,7 @@ const SuperAdminDashboard = () => {
                                     setShowEditModal(false);
                                     setEditData({});
                                     setSelectedStudent(null);
-                                }} className="text-gray-400 hover:text-gray-600">
+                                }} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -2190,7 +2198,7 @@ const SuperAdminDashboard = () => {
                                 <button 
                                     type="button" 
                                     onClick={() => setStatModalOpen(false)}
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
                                 >
                                     Cancel
                                 </button>

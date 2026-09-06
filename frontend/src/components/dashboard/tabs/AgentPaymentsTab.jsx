@@ -66,8 +66,8 @@ const AgentPaymentsTab = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow-sm">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Student Payments</h2>
-          <p className="text-sm text-gray-500 mt-1">Manage fee installments and upload payment slips for your students.</p>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Student Payments</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Manage fee installments and upload payment slips for your students.</p>
         </div>
         <div className="relative">
           <input
@@ -77,7 +77,7 @@ const AgentPaymentsTab = () => {
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 pr-4 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0] w-64"
           />
-          <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+          <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" />
         </div>
       </div>
 
@@ -86,12 +86,12 @@ const AgentPaymentsTab = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Details</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Fees</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paid / Due</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Student Details</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Course</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Fees</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Paid / Due</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -107,13 +107,13 @@ const AgentPaymentsTab = () => {
                   return (
                     <tr key={student._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="font-medium text-gray-900">{student.personalDetails?.fullName || "N/A"}</div>
-                        <div className="text-sm text-gray-500">{student.contactDetails?.primaryPhone || "No Phone"}</div>
+                        <div className="font-medium text-gray-900 dark:text-gray-100">{student.personalDetails?.fullName || "N/A"}</div>
+                        <div className="text-sm text-gray-500 dark:text-gray-300">{student.contactDetails?.primaryPhone || "No Phone"}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                         {student.courseDetails?.selectedCourse || "N/A"}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                         {formatCurrency(fin.totalFees)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
@@ -146,7 +146,7 @@ const AgentPaymentsTab = () => {
                 })
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan="6" className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                     No students found.
                   </td>
                 </tr>

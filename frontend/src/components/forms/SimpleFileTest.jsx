@@ -60,10 +60,10 @@ const SimpleFileTest = () => {
                 />
 
                 <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         This button should open a file dialog when clicked.
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-2">
                         Debug: {debugInfo}
                     </p>
                     {selectedFile && (

@@ -199,8 +199,8 @@ const StudentPayments = () => {
             >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Payment Management</h2>
-                        <p className="text-gray-600">Track and manage your fee installments</p>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Payment Management</h2>
+                        <p className="text-gray-600 dark:text-gray-300">Track and manage your fee installments</p>
                     </div>
                     <div className="flex gap-3">
                         <button onClick={() => setShowPaymentModal(true)} className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] flex items-center space-x-2">
@@ -225,13 +225,13 @@ const StudentPayments = () => {
                 <div className="bg-white rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="p-3 bg-gray-100 rounded-full">
-                            <svg className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                             </svg>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Total Fees</p>
-                            <p className="text-2xl font-semibold text-gray-900">{formatCurrency(totalFees)}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Fees</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(totalFees)}</p>
                         </div>
                     </div>
                 </div>
@@ -244,8 +244,8 @@ const StudentPayments = () => {
                             </svg>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Total Paid (Verified)</p>
-                            <p className="text-2xl font-semibold text-gray-900">{formatCurrency(paidAmount)}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total Paid (Verified)</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(paidAmount)}</p>
                         </div>
                     </div>
                 </div>
@@ -258,8 +258,8 @@ const StudentPayments = () => {
                             </svg>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-600">Due Amount</p>
-                            <p className="text-2xl font-semibold text-gray-900">{formatCurrency(dueAmount)}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Due Amount</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{formatCurrency(dueAmount)}</p>
                         </div>
                     </div>
                 </div>
@@ -273,7 +273,7 @@ const StudentPayments = () => {
                 className="bg-white rounded-lg shadow"
             >
                 <div className="px-6 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">Installments History</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Installments History</h3>
                 </div>
                 <div className="divide-y divide-gray-200">
                     {installments && installments.length > 0 ? (
@@ -288,25 +288,25 @@ const StudentPayments = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center space-x-3 mb-2">
-                                            <h4 className="text-lg font-semibold text-gray-900">
+                                            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                                 Installment #{inst.installmentNumber}
                                             </h4>
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(inst.status)}`}>
                                                 {inst.status}
                                             </span>
                                         </div>
-                                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-300">
                                             <span>Amount: {formatCurrency(inst.amount)}</span>
                                             <span>Method: {inst.paymentMethod || 'N/A'}</span>
                                             <span>Date: {new Date(inst.date).toLocaleDateString()}</span>
                                         </div>
                                         {inst.remarks && (
-                                            <p className="text-sm text-gray-600 mt-2 italic">Remarks: {inst.remarks}</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">Remarks: {inst.remarks}</p>
                                         )}
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         {inst.receiptUrl && (
-                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors">
+                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gray-100 text-gray-700 dark:text-gray-200 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors">
                                                 View Slip
                                             </a>
                                         )}
@@ -338,8 +338,8 @@ const StudentPayments = () => {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
                                 </svg>
                             </div>
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No installments found</h3>
-                            <p className="text-gray-500 mb-6">You haven't made any payments or uploaded any slips yet.</p>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No installments found</h3>
+                            <p className="text-gray-500 dark:text-gray-300 mb-6">You haven't made any payments or uploaded any slips yet.</p>
                         </div>
                     )}
                 </div>
@@ -350,14 +350,14 @@ const StudentPayments = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-md">
                         <div className="p-4 border-b flex items-center justify-between">
-                            <h3 className="text-xl font-semibold text-gray-900">Update Payment Slip</h3>
-                            <button onClick={() => setShowUpdateModal(false)} className="text-gray-400 hover:text-gray-600">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Update Payment Slip</h3>
+                            <button onClick={() => setShowUpdateModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
                         <form onSubmit={handleUpdateSlip} className="p-4 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Amount Paid (₹)*</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Amount Paid (₹)*</label>
                                 <input
                                     type="number"
                                     required
@@ -369,7 +369,7 @@ const StudentPayments = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method*</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Payment Method*</label>
                                 <select
                                     value={updateData.paymentMethod}
                                     onChange={(e) => setUpdateData({ ...updateData, paymentMethod: e.target.value })}
@@ -382,17 +382,17 @@ const StudentPayments = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Upload New Receipt/Slip (Optional)</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Upload New Receipt/Slip (Optional)</label>
                                 <input
                                     type="file"
                                     accept="image/*,.pdf"
                                     onChange={handleFileChange}
-                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
+                                    className="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Leave blank to keep existing receipt.</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Leave blank to keep existing receipt.</p>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks/Notes</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Remarks/Notes</label>
                                 <textarea
                                     value={updateData.remarks}
                                     onChange={(e) => setUpdateData({ ...updateData, remarks: e.target.value })}
@@ -405,7 +405,7 @@ const StudentPayments = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowUpdateModal(false)}
-                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                                    className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 rounded-lg"
                                 >
                                     Cancel
                                 </button>
@@ -435,14 +435,14 @@ const StudentPayments = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-md">
                         <div className="p-4 border-b flex items-center justify-between">
-                            <h3 className="text-xl font-semibold text-gray-900">Upload Payment Slip</h3>
-                            <button onClick={() => setShowUploadModal(false)} className="text-gray-400 hover:text-gray-600">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Upload Payment Slip</h3>
+                            <button onClick={() => setShowUploadModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
                         <form onSubmit={handleUploadSlip} className="p-4 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Amount Paid (₹)*</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Amount Paid (₹)*</label>
                                 <input
                                     type="number"
                                     required
@@ -454,7 +454,7 @@ const StudentPayments = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method*</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Payment Method*</label>
                                 <select
                                     value={uploadData.paymentMethod}
                                     onChange={(e) => setUploadData({ ...uploadData, paymentMethod: e.target.value })}
@@ -467,17 +467,17 @@ const StudentPayments = () => {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Upload Receipt/Slip (Image or PDF)*</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Upload Receipt/Slip (Image or PDF)*</label>
                                 <input
                                     type="file"
                                     required
                                     accept="image/*,.pdf"
                                     onChange={handleFileChange}
-                                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
+                                    className="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Remarks/Notes</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Remarks/Notes</label>
                                 <textarea
                                     value={uploadData.remarks}
                                     onChange={(e) => setUploadData({ ...uploadData, remarks: e.target.value })}
@@ -490,7 +490,7 @@ const StudentPayments = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowUploadModal(false)}
-                                    className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                                    className="px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 rounded-lg"
                                 >
                                     Cancel
                                 </button>
@@ -520,8 +520,8 @@ const StudentPayments = () => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
                         <div className="p-4 border-b flex items-center justify-between">
-                            <h3 className="text-xl font-semibold text-gray-900">Make QR Payment</h3>
-                            <button onClick={() => setShowPaymentModal(false)} className="text-gray-400 hover:text-gray-600">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Make QR Payment</h3>
+                            <button onClick={() => setShowPaymentModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>

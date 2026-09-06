@@ -362,9 +362,9 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             case 'SUBMITTED': return 'text-[#387B95] dark:text-[#60A5FA]';
             case 'UNDER_REVIEW': return 'text-yellow-600 dark:text-yellow-400';
             case 'REJECTED': return 'text-red-600 dark:text-red-400';
-            case 'DRAFT': return 'text-gray-600 dark:text-gray-400';
-            case 'CANCELLED': return 'text-gray-600 dark:text-gray-400';
-            default: return 'text-gray-600 dark:text-gray-400';
+            case 'DRAFT': return 'text-gray-600 dark:text-gray-300';
+            case 'CANCELLED': return 'text-gray-600 dark:text-gray-300';
+            default: return 'text-gray-600 dark:text-gray-300';
         }
     };
 
@@ -374,9 +374,9 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
             case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -390,7 +390,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             case 'C1': return 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400';
             case 'C2': return 'bg-indigo-100 text-indigo-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
             case 'C3': return 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -655,12 +655,12 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
         <div className="space-y-4">
             {/* Header with count */}
             <div className="flex justify-between items-center">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-gray-500 dark:text-gray-300">
                     {totalItems > 0 ? (
                         <>
                             {totalItems} {totalItems === 1 ? 'Student' : 'Students'}
                             {totalPages > 1 && (
-                                <span className="ml-2 text-gray-400">
+                                <span className="ml-2 text-gray-400 dark:text-gray-300">
                                     (Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems})
                                 </span>
                             )}
@@ -755,13 +755,13 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                             <tr>
                                 <td colSpan="9" className="px-6 py-12 text-center">
                                     <div className="flex flex-col items-center justify-center">
-                                        <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                                         </svg>
                                         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                             No students found
                                         </h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                        <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                                             {searchTerm
                                                 ? 'Try adjusting your search criteria.'
                                                 : selectedSession
@@ -813,7 +813,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                             return name;
                                                         })()}
                                                     </div>
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
                                                         ID: {student.applicationId}
                                                     </div>
                                                 </div>
@@ -991,13 +991,13 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                         Full Application Details
                                     </h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                         Application ID: {selectedStudent.applicationId} | Status: <span className={`font-semibold ${getStatusColor(selectedStudent.status)}`}>{selectedStudent.status}</span>
                                     </p>
                                 </div>
                                 <button
                                     onClick={() => setShowDetailsModal(false)}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1016,7 +1016,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Full Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Full Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const name = selectedStudent.fullName || selectedStudent.personalDetails?.fullName;
@@ -1027,25 +1027,25 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Father's Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Father's Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.fathersName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Mother's Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Mother's Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.mothersName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Gender</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Gender</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.gender || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Date of Birth</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {selectedStudent.personalDetails?.dateOfBirth ? new Date(selectedStudent.personalDetails.dateOfBirth).toLocaleDateString() : 'N/A'}
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Aadhar Number</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Aadhar Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.aadharNumber || 'N/A'}</p>
                                         </div>
                                     </div>
@@ -1061,11 +1061,11 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Phone Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Email</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
                                         </div>
                                     </div>
@@ -1088,37 +1088,37 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Permanent Address</h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div className="md:col-span-2">
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Street Address</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.permanentAddress.street || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">City</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.permanentAddress.city || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">State</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.permanentAddress.state || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Pincode</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.permanentAddress.pincode || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">District</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.district || selectedStudent.contactDetails?.permanentAddress?.district || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Country</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.permanentAddress.country || 'India'}
                                                             </p>
@@ -1132,37 +1132,37 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Current Address</h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div className="md:col-span-2">
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Street Address</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.street || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">City</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.city || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">State</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.state || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Pincode</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.pincode || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">District</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.currentAddress?.district || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Country</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.country || 'India'}
                                                             </p>
@@ -1184,7 +1184,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Institution Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const institution = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
@@ -1203,7 +1203,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Course Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const course = selectedStudent.courseDetails?.selectedCourse || selectedStudent.course;
@@ -1214,7 +1214,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Stream</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Stream</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const stream = selectedStudent.courseDetails?.stream;
@@ -1225,7 +1225,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Campus</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const campus = selectedStudent.courseDetails?.campus;
@@ -1248,7 +1248,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const name = selectedStudent.guardianName || selectedStudent.guardianDetails?.guardianName;
@@ -1259,7 +1259,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Phone</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Phone</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {(() => {
                                                     const phone = selectedStudent.guardianPhone || selectedStudent.guardianDetails?.guardianPhone;
@@ -1287,13 +1287,13 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType || doc.fileName}</p>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                                                 Status: <span className={`font-semibold ${doc.status === 'APPROVED' ? 'text-green-600' : doc.status === 'REJECTED' ? 'text-red-600' : 'text-yellow-600'}`}>
                                                                     {doc.status || 'PENDING'}
                                                                 </span>
                                                             </p>
                                                             {doc.uploadedAt && (
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                <p className="text-xs text-gray-500 dark:text-gray-300">
                                                                     Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}
                                                                 </p>
                                                             )}
@@ -1382,22 +1382,22 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitted By</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Submitted By</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.referredBy || 'Direct Student'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved By</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Approved By</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.approvedBy || 'Pending'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitted Date</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Submitted Date</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {formatDate(selectedStudent.submittedAt || selectedStudent.createdAt)}
                                             </p>
                                         </div>
                                         {(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt) && selectedStudent.status === 'APPROVED' && (
                                             <div>
-                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved Date</label>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Approved Date</label>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                     {formatDate(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt)}
                                                 </p>
@@ -1443,14 +1443,14 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                         Select Documents for {generationType === 'pdf' ? 'PDF' : 'ZIP'}
                                     </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                         Choose which documents to include in the {generationType === 'pdf' ? 'combined PDF' : 'ZIP file'}
                                     </p>
                                 </div>
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1464,7 +1464,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
 
                                     if (approvedDocs.length === 0) {
                                         return (
-                                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                            <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                                 <svg className="h-12 w-12 mx-auto mb-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                                 </svg>
@@ -1476,7 +1476,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                     return (
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-center mb-4">
-                                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">
                                                     {approvedDocs.length} approved document{approvedDocs.length !== 1 ? 's' : ''} available
                                                 </span>
                                                 <div className="flex space-x-2">
@@ -1488,7 +1488,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     </button>
                                                     <button
                                                         onClick={clearDocumentSelection}
-                                                        className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400"
+                                                        className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300"
                                                     >
                                                         Clear All
                                                     </button>
@@ -1520,7 +1520,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                             <p className="font-medium text-gray-900 dark:text-gray-100">
                                                                 {label}
                                                             </p>
-                                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                            <p className="text-sm text-gray-600 dark:text-gray-300">
                                                                 {doc.fileName || doc.documentType}
                                                             </p>
                                                             <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
@@ -1604,7 +1604,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         setEditData({});
                                         setSelectedStudent(null);
                                     }}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1699,13 +1699,13 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 Aadhaar Number
-                                                <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
+                                                <span className="text-xs text-gray-500 dark:text-gray-300 ml-2">(Admin only)</span>
                                             </label>
                                             <input
                                                 type="text"
                                                 value={editData.personalDetails?.aadharNumber || ''}
                                                 disabled
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed"
                                                 title="Aadhaar number can only be edited by admin"
                                             />
                                         </div>
@@ -1838,13 +1838,13 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                 Selected Course
-                                                <span className="text-xs text-gray-500 ml-2">(Admin only)</span>
+                                                <span className="text-xs text-gray-500 dark:text-gray-300 ml-2">(Admin only)</span>
                                             </label>
                                             <input
                                                 type="text"
                                                 value={editData.courseDetails?.selectedCourse || editData.courseDetails?.courseName || ''}
                                                 disabled
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed"
                                                 title="Course selection can only be changed by admin"
                                             />
                                         </div>

@@ -23,7 +23,7 @@ const MobileMenuTest = () => {
                                     console.log('Hamburger clicked, current state:', sidebarOpen);
                                     setSidebarOpen(!sidebarOpen);
                                 }}
-                                className="lg:hidden p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#7B3FA0]"
+                                className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#7B3FA0]"
                             >
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -36,7 +36,7 @@ const MobileMenuTest = () => {
                                         <span className="text-white font-bold text-lg">S</span>
                                     </div>
                                 </div>
-                                <span className="ml-4 text-lg font-semibold text-gray-900">Test Menu</span>
+                                <span className="ml-4 text-lg font-semibold text-gray-900 dark:text-gray-100">Test Menu</span>
                             </div>
                         </div>
                     </div>
@@ -71,10 +71,10 @@ const MobileMenuTest = () => {
                             onAnimationStart={() => console.log('Sidebar animation started')}
                         >
                             <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200">
-                                <span className="text-lg font-semibold text-gray-900">Menu</span>
+                                <span className="text-lg font-semibold text-gray-900 dark:text-gray-100">Menu</span>
                                 <button
                                     onClick={() => setSidebarOpen(false)}
-                                    className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100"
+                                    className="p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 hover:bg-gray-100"
                                 >
                                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -90,7 +90,7 @@ const MobileMenuTest = () => {
                                                 console.log('Menu item clicked:', item.name);
                                                 setSidebarOpen(false);
                                             }}
-                                            className="group flex items-center w-full px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                            className="group flex items-center w-full px-2 py-2 text-base font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 hover:text-gray-900"
                                         >
                                             <span className="mr-3">{item.icon}</span>
                                             {item.name}
@@ -107,15 +107,15 @@ const MobileMenuTest = () => {
                     <main className="flex-1 relative overflow-y-auto focus:outline-none">
                         <div className="py-6">
                             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                                <h1 className="text-2xl font-semibold text-gray-900 mb-6">Mobile Menu Test</h1>
+                                <h1 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-6">Mobile Menu Test</h1>
                                 <div className="bg-white p-6 rounded-lg shadow">
-                                    <p className="text-gray-600">
+                                    <p className="text-gray-600 dark:text-gray-300">
                                         This is a test component to debug the mobile hamburger menu.
                                     </p>
-                                    <p className="text-gray-600 mt-2">
+                                    <p className="text-gray-600 dark:text-gray-300 mt-2">
                                         Current sidebar state: <span className="font-bold">{sidebarOpen ? 'Open' : 'Closed'}</span>
                                     </p>
-                                    <p className="text-gray-600 mt-2">
+                                    <p className="text-gray-600 dark:text-gray-300 mt-2">
                                         Click the hamburger menu (☰) in the top-left corner to test.
                                     </p>
                                 </div>

@@ -128,7 +128,7 @@ const VirtualList = ({
                     className="absolute top-4 right-4 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
                     title="Scroll to top"
                 >
-                    <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                     </svg>
                 </motion.button>
@@ -143,7 +143,7 @@ const VirtualList = ({
                     className="absolute bottom-4 right-4 bg-white shadow-lg rounded-full p-2 hover:bg-gray-50 transition-colors"
                     title="Scroll to bottom"
                 >
-                    <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                     </svg>
                 </motion.button>

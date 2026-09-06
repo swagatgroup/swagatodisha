@@ -48,8 +48,8 @@ const ForgotPassword = ({ onBackToLogin }) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                         </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">Password Reset Initiated</h2>
-                    <p className="text-gray-600 mb-6">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Password Reset Initiated</h2>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">
                         Your password has been reset to the default value. Please contact the admin to change your password.
                     </p>
 
@@ -79,15 +79,15 @@ const ForgotPassword = ({ onBackToLogin }) => {
             className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
         >
             <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Forgot Password?</h2>
-                <p className="text-gray-600">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Forgot Password?</h2>
+                <p className="text-gray-600 dark:text-gray-300">
                     Enter your email address and we'll reset your password to the default value.
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Email Address
                     </label>
                     <input
@@ -138,7 +138,7 @@ const ForgotPassword = ({ onBackToLogin }) => {
                     <button
                         type="button"
                         onClick={onBackToLogin}
-                        className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
+                        className="w-full flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                     >
                         Back to Login
                     </button>

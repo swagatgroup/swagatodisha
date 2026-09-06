@@ -371,7 +371,7 @@ const NotificationManagement = () => {
                                     <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
                                         {notification.shortDescription || notification.content.substring(0, 150)}...
                                     </p>
-                                    <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                    <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-300">
                                         <span>Published: {new Date(notification.publishDate).toLocaleDateString()}</span>
                                         <span>Views: {notification.views || 0}</span>
                                         <span>Clicks: {notification.clicks || 0}</span>
@@ -421,7 +421,7 @@ const NotificationManagement = () => {
                                         setEditingNotification(null);
                                         resetForm();
                                     }}
-                                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

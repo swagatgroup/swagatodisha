@@ -63,15 +63,15 @@ const SchoolPageTemplate = ({
                                 <i className="fa-solid fa-school text-white text-4xl"></i>
                             </div>
 
-                            <h1 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
+                            <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                 {schoolName}
                             </h1>
 
-                            <p className="text-2xl text-gray-600 mb-4">
+                            <p className="text-2xl text-gray-600 dark:text-gray-300 mb-4">
                                 📍 {location}
                             </p>
 
-                            <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed mb-12">
+                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed mb-12">
                                 {description}
                             </p>
 
@@ -89,7 +89,7 @@ const SchoolPageTemplate = ({
                                 </a>
                                 <a
                                     href="#contact"
-                                    className="px-8 py-4 bg-white text-[#7B3FA0] rounded-xl font-semibold text-lg border-2 border-[#7B3FA0] hover:bg-[#EDE0F7] transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    className="px-8 py-4 bg-white dark:bg-[#2A1E2E] text-[#7B3FA0] rounded-xl font-semibold text-lg border-2 border-[#7B3FA0] hover:bg-[#EDE0F7] transition-all duration-300 shadow-lg hover:shadow-xl"
                                 >
                                     Contact Us
                                 </a>
@@ -107,7 +107,7 @@ const SchoolPageTemplate = ({
                             transition={{ duration: 0.8 }}
                             className="text-center mb-16"
                         >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                 Why Choose <span className="text-transparent bg-clip-text bg-[#7B3FA0]">{schoolName}</span>?
                             </h2>
                         </motion.div>
@@ -122,8 +122,8 @@ const SchoolPageTemplate = ({
                                     className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
                                 >
                                     <div className="text-4xl mb-4">{feature.icon}</div>
-                                    <h3 className="text-xl font-bold text-gray-800 mb-4">{feature.title}</h3>
-                                    <p className="text-gray-600">{feature.description}</p>
+                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{feature.title}</h3>
+                                    <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
                                 </motion.div>
                             ))}
                         </div>
@@ -139,10 +139,10 @@ const SchoolPageTemplate = ({
                             transition={{ duration: 0.8 }}
                             className="text-center mb-16"
                         >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                 Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Programs</span>
                             </h2>
-                            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                                 Comprehensive educational programs designed to nurture young minds and prepare them for the future
                             </p>
                         </motion.div>
@@ -157,11 +157,11 @@ const SchoolPageTemplate = ({
                                     className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
                                 >
                                     <div className="text-3xl mb-4">{program.icon}</div>
-                                    <h3 className="text-2xl font-bold text-gray-800 mb-4">{program.name}</h3>
-                                    <p className="text-gray-600 mb-4">{program.description}</p>
+                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">{program.name}</h3>
+                                    <p className="text-gray-600 dark:text-gray-300 mb-4">{program.description}</p>
                                     <ul className="space-y-2">
                                         {program.subjects.map((subject, subIndex) => (
-                                            <li key={subIndex} className="flex items-center text-gray-600">
+                                            <li key={subIndex} className="flex items-center text-gray-600 dark:text-gray-300">
                                                 <i className="fa-solid fa-check text-[#7B3FA0] mr-2"></i>
                                                 {subject}
                                             </li>
@@ -182,7 +182,7 @@ const SchoolPageTemplate = ({
                             transition={{ duration: 0.8 }}
                             className="text-center mb-16"
                         >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                 World-Class <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Facilities</span>
                             </h2>
                         </motion.div>
@@ -194,11 +194,11 @@ const SchoolPageTemplate = ({
                                     initial={{ opacity: 0, scale: 0.9 }}
                                     whileInView={{ opacity: 1, scale: 1 }}
                                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center"
+                                    className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center"
                                 >
                                     <div className="text-4xl mb-4">{facility.icon}</div>
-                                    <h3 className="text-lg font-bold text-gray-800 mb-2">{facility.name}</h3>
-                                    <p className="text-gray-600 text-sm">{facility.description}</p>
+                                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">{facility.name}</h3>
+                                    <p className="text-gray-600 dark:text-gray-300 text-sm">{facility.description}</p>
                                 </motion.div>
                             ))}
                         </div>
@@ -214,7 +214,7 @@ const SchoolPageTemplate = ({
                             transition={{ duration: 0.8 }}
                             className="text-center mb-16"
                         >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                 Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Achievements</span>
                             </h2>
                         </motion.div>
@@ -229,8 +229,8 @@ const SchoolPageTemplate = ({
                                     className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
                                 >
                                     <div className="text-4xl mb-4">{achievement.icon}</div>
-                                    <h3 className="text-xl font-bold text-gray-800 mb-4">{achievement.title}</h3>
-                                    <p className="text-gray-600">{achievement.description}</p>
+                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{achievement.title}</h3>
+                                    <p className="text-gray-600 dark:text-gray-300">{achievement.description}</p>
                                 </motion.div>
                             ))}
                         </div>
@@ -277,7 +277,7 @@ const SchoolPageTemplate = ({
                             >
                                 <a
                                     href="/"
-                                    className="inline-block px-8 py-4 bg-white text-[#7B3FA0] rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    className="inline-block px-8 py-4 bg-white dark:bg-[#2A1E2E] text-[#7B3FA0] rounded-xl font-semibold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
                                 >
                                     Visit Main Website
                                 </a>

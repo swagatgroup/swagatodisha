@@ -176,7 +176,7 @@ const Header = () => {
                   <DarkModeToggle />
                   <button
                     onClick={toggleNav}
-                    className="w-8 h-8 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition text-white"
+                    className="w-8 h-8 bg-white dark:bg-[#2A1E2E]/20 hover:bg-white dark:bg-[#2A1E2E]/30 rounded-full flex items-center justify-center transition text-white"
                     aria-label="Close menu"
                   >
                     <svg className="w-4 h-4" viewBox="0 0 24 24">

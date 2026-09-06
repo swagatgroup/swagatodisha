@@ -153,10 +153,10 @@ const BatchDocumentUpload = ({
     return (
         <div className="space-y-6">
             <div className="text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                     Batch Document Upload
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                     Upload multiple documents at once for faster processing
                 </p>
             </div>
@@ -181,20 +181,20 @@ const BatchDocumentUpload = ({
                         {uploading ? (
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#387B95] mb-4"></div>
                         ) : (
-                            <CloudArrowUpIcon className="h-12 w-12 text-gray-400 mb-4" />
+                            <CloudArrowUpIcon className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" />
                         )}
 
-                        <p className="text-lg font-medium text-gray-900 mb-2">
+                        <p className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                             {uploading ? 'Uploading...' : 'Click to select multiple files'}
                         </p>
 
-                        <p className="text-sm text-gray-500 mb-4">
+                        <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                             Select multiple documents (JPG, PNG, PDF) up to 10MB each
                         </p>
 
                         {uploading && (
                             <div className="w-full max-w-xs">
-                                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-1">
                                     <span>Progress</span>
                                     <span>{uploadProgress}%</span>
                                 </div>
@@ -213,12 +213,12 @@ const BatchDocumentUpload = ({
             {/* Upload Queue */}
             {uploadQueue.length > 0 && (
                 <div className="space-y-2">
-                    <h4 className="font-medium text-gray-900">Uploading Files:</h4>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">Uploading Files:</h4>
                     {uploadQueue.map((file, index) => (
-                        <div key={index} className="flex items-center space-x-2 text-sm text-gray-600">
+                        <div key={index} className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-300">
                             <DocumentIcon className="h-4 w-4" />
                             <span>{file.name}</span>
-                            <span className="text-gray-400">({(file.size / 1024).toFixed(1)} KB)</span>
+                            <span className="text-gray-400 dark:text-gray-300">({(file.size / 1024).toFixed(1)} KB)</span>
                         </div>
                     ))}
                 </div>
@@ -227,13 +227,13 @@ const BatchDocumentUpload = ({
             {/* Uploaded Documents Summary */}
             {Object.keys(documents).length > 0 && (
                 <div className="space-y-2">
-                    <h4 className="font-medium text-gray-900">Uploaded Documents:</h4>
+                    <h4 className="font-medium text-gray-900 dark:text-gray-100">Uploaded Documents:</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                         {Object.entries(documents).map(([docType, doc]) => (
                             <div key={docType} className="flex items-center space-x-2 p-2 bg-green-50 rounded border">
                                 <CheckCircleIcon className="h-4 w-4 text-green-500" />
-                                <span className="text-sm text-gray-700">{doc.name}</span>
-                                <span className="text-xs text-gray-500">({(doc.size / 1024).toFixed(1)} KB)</span>
+                                <span className="text-sm text-gray-700 dark:text-gray-200">{doc.name}</span>
+                                <span className="text-xs text-gray-500 dark:text-gray-300">({(doc.size / 1024).toFixed(1)} KB)</span>
                             </div>
                         ))}
                     </div>

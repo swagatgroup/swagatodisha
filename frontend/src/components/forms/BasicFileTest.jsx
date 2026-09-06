@@ -25,15 +25,15 @@ const BasicFileTest = () => {
                         type="file"
                         onChange={handleFileChange}
                         accept=".jpg,.jpeg,.png,.pdf"
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
+                        className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
                     />
                 </div>
 
                 <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         This is a basic file input without any JavaScript tricks.
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-2">
                         Debug: {debugInfo}
                     </p>
                     {selectedFile && (

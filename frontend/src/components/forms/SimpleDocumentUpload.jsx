@@ -380,7 +380,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             <div className="space-y-4 mb-8">
                 <div className="text-center mb-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Uploaded Documents</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                         Documents successfully uploaded ({Object.keys(documents).length})
                     </p>
                 </div>
@@ -399,7 +399,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                     <DocumentIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
                                     <div>
                                         <p className="text-sm font-medium text-gray-900 dark:text-white">{docName}</p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">{fileSize} KB</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-300">{fileSize} KB</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-3">
@@ -434,7 +434,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
 
             <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Document Upload</h3>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                <p className="text-gray-600 dark:text-gray-300 mt-2">
                     Upload all required documents for your application. Please ensure documents are clear and valid.
                 </p>
             </div>
@@ -463,15 +463,15 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                                 ✓ Uploaded
                                             </span>
                                         ) : (
-                                            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400 rounded-full">
+                                            <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 rounded-full">
                                                 Not Uploaded
                                             </span>
                                         )}
                                     </div>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                         {docType.description}
                                     </p>
-                                    <p className="text-xs text-gray-500 mt-1">
+                                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                         {docType.allowedFormats.join(', ').toUpperCase()} up to {docType.maxSize || '10MB'}
                                     </p>
                                     {docType.validation?.note && (
@@ -493,7 +493,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                             <p className="text-sm font-medium text-gray-900 dark:text-white">
                                                 {document.name}
                                             </p>
-                                            <p className="text-xs text-gray-500">
+                                            <p className="text-xs text-gray-500 dark:text-gray-300">
                                                 {(document.size / 1024).toFixed(1)} KB
                                             </p>
                                         </div>
@@ -532,18 +532,18 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                                         className="cursor-pointer block"
                                     >
                                         <div className="flex flex-col items-center">
-                                            <CloudArrowUpIcon className={`w-8 h-8 mb-2 ${dragActive[docId] ? 'text-blue-500' : 'text-gray-400'
+                                            <CloudArrowUpIcon className={`w-8 h-8 mb-2 ${dragActive[docId] ? 'text-blue-500' : 'text-gray-400 dark:text-gray-300'
                                                 }`} />
                                             <p className={`text-sm ${dragActive[docId]
                                                 ? 'text-[#387B95] dark:text-[#60A5FA]'
-                                                : 'text-gray-600 dark:text-gray-400'
+                                                : 'text-gray-600 dark:text-gray-300'
                                                 }`}>
                                                 {dragActive[docId]
                                                     ? 'Drop file here'
                                                     : 'Click to upload or drag and drop'
                                                 }
                                             </p>
-                                            <p className="text-xs text-gray-500 mt-1">
+                                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                                 {docType.allowedFormats.join(', ').toUpperCase()} up to {docType.maxSize}
                                             </p>
                                         </div>

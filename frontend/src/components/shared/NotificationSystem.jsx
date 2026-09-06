@@ -182,7 +182,7 @@ const NotificationSystem = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <Bell className="h-6 w-6 text-[#387B95]" />
-                        <h2 className="text-xl font-bold text-gray-900">Notifications</h2>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Notifications</h2>
                         {unreadCount > 0 && (
                             <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1">
                                 {unreadCount}
@@ -192,7 +192,7 @@ const NotificationSystem = () => {
                     <div className="flex space-x-2">
                         <button
                             onClick={fetchNotifications}
-                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-md"
+                            className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 rounded-md"
                             title="Refresh"
                         >
                             <RefreshCw className="h-4 w-4" />
@@ -213,7 +213,7 @@ const NotificationSystem = () => {
             <div className="p-4 border-b border-gray-200 bg-gray-50">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300 h-4 w-4" />
                         <input
                             type="text"
                             placeholder="Search notifications..."
@@ -247,7 +247,7 @@ const NotificationSystem = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#387B95]"></div>
                     </div>
                 ) : displayNotifications.length === 0 ? (
-                    <div className="text-center py-8 text-gray-500">
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                         No notifications found.
                     </div>
                 ) : (
@@ -268,17 +268,17 @@ const NotificationSystem = () => {
                                             </span>
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex items-center space-x-2">
-                                                    <h4 className={`text-sm font-medium ${notification.isRead ? 'text-gray-600' : 'text-gray-900'}`}>
+                                                    <h4 className={`text-sm font-medium ${notification.isRead ? 'text-gray-600 dark:text-gray-300' : 'text-gray-900 dark:text-gray-100'}`}>
                                                         {notification.title}
                                                     </h4>
                                                     {!notification.isRead && (
                                                         <div className="w-2 h-2 bg-[#D0E8F0]0 rounded-full"></div>
                                                     )}
                                                 </div>
-                                                <p className={`text-sm mt-1 ${notification.isRead ? 'text-gray-500' : 'text-gray-700'}`}>
+                                                <p className={`text-sm mt-1 ${notification.isRead ? 'text-gray-500 dark:text-gray-300' : 'text-gray-700 dark:text-gray-200'}`}>
                                                     {notification.message}
                                                 </p>
-                                                <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                                                <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500 dark:text-gray-300">
                                                     <span>{notification.timeAgo}</span>
                                                     {notification.sender && (
                                                         <span>From: {notification.sender.fullName}</span>

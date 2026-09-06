@@ -8,7 +8,7 @@ const PrivacyPolicy = () => {
             </h1>
 
             <div className="prose prose-lg max-w-none dark:prose-invert">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-8">
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-8">
                     Last updated: {new Date().toLocaleDateString()}
                 </p>
 

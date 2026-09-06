@@ -174,7 +174,7 @@ const SimpleNotificationManagement = () => {
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Notifications</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                         Manage website notifications and announcements
                     </p>
                 </div>
@@ -225,7 +225,7 @@ const SimpleNotificationManagement = () => {
                                 accept=".pdf,.jpg,.jpeg,.png,.webp"
                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                             />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                 Supported formats: PDF, JPG, PNG, WebP (Max 10MB)
                             </p>
                             {selectedFile && (
@@ -269,8 +269,8 @@ const SimpleNotificationManagement = () => {
                 <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     {notifications.length === 0 ? (
                         <div className="text-center py-12">
-                            <i className="fa-solid fa-bell text-4xl text-gray-400 mb-4"></i>
-                            <p className="text-gray-500 dark:text-gray-400">No notifications found</p>
+                            <i className="fa-solid fa-bell text-4xl text-gray-400 dark:text-gray-300 mb-4"></i>
+                            <p className="text-gray-500 dark:text-gray-300">No notifications found</p>
                         </div>
                     ) : (
                         <div className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -301,10 +301,10 @@ const SimpleNotificationManagement = () => {
                                                     {notification.isActive ? 'Active' : 'Inactive'}
                                                 </span>
                                             </div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                                 {notification.content}
                                             </p>
-                                            <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                            <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-300">
                                                 <span>
                                                     <i className="fa-solid fa-tag mr-1"></i>
                                                     {notification.type}

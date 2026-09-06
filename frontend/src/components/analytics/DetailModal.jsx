@@ -110,30 +110,30 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full"
+                        className="inline-block align-bottom bg-white dark:bg-[#2A1E2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full"
                     >
                         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             {/* Header */}
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h3 className="text-2xl font-bold text-gray-900">
+                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                         {title} - Detailed View
                                     </h3>
-                                    <p className="text-gray-600">
+                                    <p className="text-gray-600 dark:text-gray-300">
                                         {filteredData.length} items found
                                     </p>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <button
                                         onClick={handleExport}
-                                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
+                                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                                     >
                                         <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
                                         Export CSV
                                     </button>
                                     <button
                                         onClick={onClose}
-                                        className="text-gray-400 hover:text-gray-600"
+                                        className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                                     >
                                         <XMarkIcon className="h-6 w-6" />
                                     </button>
@@ -152,14 +152,14 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                             className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
                                         />
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg className="h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                             </svg>
                                         </div>
                                     </div>
 
                                     <div className="flex items-center space-x-2">
-                                        <label className="text-sm font-medium text-gray-700">Sort by:</label>
+                                        <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Sort by:</label>
                                         <select
                                             value={sortBy}
                                             onChange={(e) => handleSort(e.target.value)}
@@ -173,7 +173,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                         </select>
                                         <button
                                             onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                                            className="p-1 text-gray-400 hover:text-gray-600"
+                                            className="p-1 text-gray-400 dark:text-gray-300 hover:text-gray-600"
                                         >
                                             <svg className={`h-4 w-4 transform transition-transform ${sortOrder === 'desc' ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
@@ -188,22 +188,22 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Name
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Email
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Status
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Date
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Value
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                 Actions
                                             </th>
                                         </tr>
@@ -227,13 +227,13 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                                             </div>
                                                         </div>
                                                         <div className="ml-4">
-                                                            <div className="text-sm font-medium text-gray-900">
+                                                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {item.name}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                     {item.email || '-'}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -243,10 +243,10 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                     {item.date ? new Date(item.date).toLocaleDateString() : '-'}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                                     {item.value || '-'}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -263,24 +263,24 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                             {/* Pagination */}
                             {totalPages > 1 && (
                                 <div className="flex items-center justify-between mt-6">
-                                    <div className="text-sm text-gray-700">
+                                    <div className="text-sm text-gray-700 dark:text-gray-200">
                                         Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, sortedData.length)} of {sortedData.length} results
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         <button
                                             onClick={() => setCurrentPage(currentPage - 1)}
                                             disabled={currentPage === 1}
-                                            className="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-3 py-1 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             Previous
                                         </button>
-                                        <span className="text-sm text-gray-700">
+                                        <span className="text-sm text-gray-700 dark:text-gray-200">
                                             Page {currentPage} of {totalPages}
                                         </span>
                                         <button
                                             onClick={() => setCurrentPage(currentPage + 1)}
                                             disabled={currentPage === totalPages}
-                                            className="px-3 py-1 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="px-3 py-1 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                                         >
                                             Next
                                         </button>

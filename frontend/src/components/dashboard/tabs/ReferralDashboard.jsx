@@ -152,8 +152,8 @@ const ReferralDashboard = () => {
         <div className="space-y-6 pb-10">
             {/* Header */}
             <div className="text-center">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">Refer & Earn</h2>
-                <p className="text-gray-600">Invite students to join Swagat and unlock exciting tiered rewards for each successful referral!</p>
+                <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Refer & Earn</h2>
+                <p className="text-gray-600 dark:text-gray-300">Invite students to join Swagat and unlock exciting tiered rewards for each successful referral!</p>
             </div>
 
             {/* Referral Code Card */}
@@ -165,7 +165,7 @@ const ReferralDashboard = () => {
                 <div className="text-center">
                     <h3 className="text-xl font-semibold mb-2">Your Referral Code</h3>
                     <div className="flex items-center justify-center space-x-4 mb-4">
-                        <div className="bg-white/20 rounded-lg px-4 py-2 text-2xl font-mono font-bold tracking-wider">
+                        <div className="bg-white dark:bg-[#2A1E2E]/20 rounded-lg px-4 py-2 text-2xl font-mono font-bold tracking-wider">
                             {referralData.referralCode || 'N/A'}
                         </div>
                         <button
@@ -206,8 +206,8 @@ const ReferralDashboard = () => {
                             <i className="fa-solid fa-users text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500">Total Referrals</p>
-                            <p className="text-2xl font-bold text-gray-900">{referralData.totalReferrals}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Referrals</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{referralData.totalReferrals}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -223,8 +223,8 @@ const ReferralDashboard = () => {
                             <i className="fa-solid fa-check-circle text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500">Successful</p>
-                            <p className="text-2xl font-bold text-gray-900">{referralData.successfulReferrals}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Successful</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{referralData.successfulReferrals}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -240,8 +240,8 @@ const ReferralDashboard = () => {
                             <i className="fa-solid fa-hourglass-half text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500">Pending</p>
-                            <p className="text-2xl font-bold text-gray-900">{referralData.pendingReferrals}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Pending</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{referralData.pendingReferrals}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -257,8 +257,8 @@ const ReferralDashboard = () => {
                             <i className="fa-solid fa-wallet text-xl"></i>
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500">Total Earnings</p>
-                            <p className="text-2xl font-bold text-gray-900">₹{referralData.totalEarnings}</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Earnings</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">₹{referralData.totalEarnings}</p>
                             <p className="text-xs text-[#7B3FA0] font-medium mt-1">Tier-based rewards active</p>
                         </div>
                     </div>
@@ -272,7 +272,7 @@ const ReferralDashboard = () => {
                 transition={{ delay: 0.5 }}
                 className="bg-white rounded-lg shadow-sm border border-gray-100 p-6"
             >
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Share Your Referral Code</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Share Your Referral Code</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <button
                         onClick={shareReferralLink}
@@ -300,7 +300,7 @@ const ReferralDashboard = () => {
                     className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden"
                 >
                     <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
-                        <h3 className="text-xl font-bold text-gray-900 flex items-center">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
                             <i className="fa-solid fa-gift text-[#7B3FA0] mr-3"></i> 
                             Referral Benefits Tier 
                             {user?.role === 'agent' && (
@@ -314,33 +314,33 @@ const ReferralDashboard = () => {
                             {/* Tier 1 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
                                 <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">1</div>
-                                <h4 className="font-semibold text-gray-800 text-sm">1 - 10 Referrals</h4>
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">1 - 10 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹2,000</p>
-                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-300 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                             </div>
                             
                             {/* Tier 2 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
                                 <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">2</div>
-                                <h4 className="font-semibold text-gray-800 text-sm">11 - 25 Referrals</h4>
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">11 - 25 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹3,000</p>
-                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-300 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                             </div>
                             
                             {/* Tier 3 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
                                 <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">3</div>
-                                <h4 className="font-semibold text-gray-800 text-sm">26 - 50 Referrals</h4>
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">26 - 50 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹4,000</p>
-                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-300 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                             </div>
                             
                             {/* Tier 4 */}
                             <div className="border border-gray-200 rounded-xl p-5 text-center hover:border-blue-400 hover:shadow-lg transition-all duration-300 group">
                                 <div className="w-12 h-12 bg-[#D0E8F0] text-[#387B95] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">4</div>
-                                <h4 className="font-semibold text-gray-800 text-sm">51 - 100 Referrals</h4>
+                                <h4 className="font-semibold text-gray-800 dark:text-gray-100 text-sm">51 - 100 Referrals</h4>
                                 <p className="text-2xl font-bold text-green-600 mt-2">₹5,000</p>
-                                <p className="text-xs text-gray-500 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-300 uppercase font-semibold mt-1 tracking-wider">Per Student</p>
                             </div>
                             
                             {/* Ultimate Tier */}
@@ -380,7 +380,7 @@ const ReferralDashboard = () => {
             >
                 <div className="border-b border-gray-100 pb-4 mb-6">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
                             <i className="fa-solid fa-building-columns text-[#387B95] mr-2"></i>
                             Bank Account Details for Payouts
                         </h3>
@@ -396,7 +396,7 @@ const ReferralDashboard = () => {
                             )}
                         </div>
                     </div>
-                    <p className="text-sm text-gray-500 mt-1">Add your bank details to receive referral earnings.</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Add your bank details to receive referral earnings.</p>
                     
                     {bankDetails.verificationStatus === 'REJECTED' && bankDetails.verificationNotes && (
                         <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
@@ -408,7 +408,7 @@ const ReferralDashboard = () => {
                 <form onSubmit={handleBankDetailsSubmit} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Account Holder's Name</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Account Holder's Name</label>
                             <input
                                 type="text"
                                 required
@@ -419,7 +419,7 @@ const ReferralDashboard = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Bank Name</label>
                             <input
                                 type="text"
                                 required
@@ -430,7 +430,7 @@ const ReferralDashboard = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Account Number</label>
                             <input
                                 type="text"
                                 required
@@ -441,7 +441,7 @@ const ReferralDashboard = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">IFSC Code</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">IFSC Code</label>
                             <input
                                 type="text"
                                 required
@@ -468,10 +468,10 @@ const ReferralDashboard = () => {
                     <p className="text-sm text-blue-800 font-medium mb-1">Note: Verification Required</p>
                     <p className="text-sm text-[#1D4B5E]">Team Swagat Odisha will verify these details. While claiming the amount, once you add everything, please contact Team Swagat Odisha for help.</p>
                     <div className="mt-3 flex flex-wrap gap-4">
-                        <a href="tel:+917855959544" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-[#D0E8F0] transition-colors">
+                        <a href="tel:+917855959544" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white dark:bg-[#2A1E2E] px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-[#D0E8F0] transition-colors">
                             <i className="fa-solid fa-phone mr-2"></i> +91 78559 59544
                         </a>
-                        <a href="https://wa.me/917855959544" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
+                        <a href="https://wa.me/917855959544" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white dark:bg-[#2A1E2E] px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
                             <i className="fa-brands fa-whatsapp mr-2"></i> WhatsApp Support
                         </a>
                     </div>
@@ -486,7 +486,7 @@ const ReferralDashboard = () => {
                 className="bg-white rounded-lg shadow-sm border border-gray-100"
             >
                 <div className="px-6 py-5 border-b border-gray-100">
-                    <h3 className="text-lg font-bold text-gray-900">Recent Referrals</h3>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Recent Referrals</h3>
                 </div>
                 <div className="p-6">
                     {referralData.recentReferrals.length > 0 ? (
@@ -500,8 +500,8 @@ const ReferralDashboard = () => {
                                             </span>
                                         </div>
                                         <div className="ml-4">
-                                            <p className="text-sm font-bold text-gray-900">{referral.name}</p>
-                                            <p className="text-xs text-gray-500 font-medium">{referral.course}</p>
+                                            <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{referral.name}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300 font-medium">{referral.course}</p>
                                         </div>
                                     </div>
                                     <div className="text-left sm:text-right ml-14 sm:ml-0">
@@ -511,7 +511,7 @@ const ReferralDashboard = () => {
                                             }`}>
                                             {referral.status}
                                         </span>
-                                        <p className="text-xs text-gray-500 font-medium mt-1.5">{formatDate(referral.date)}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-300 font-medium mt-1.5">{formatDate(referral.date)}</p>
                                     </div>
                                 </div>
                             ))}
@@ -519,9 +519,9 @@ const ReferralDashboard = () => {
                     ) : (
                         <div className="text-center py-10">
                             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-users-slash text-2xl text-gray-400"></i>
+                                <i className="fa-solid fa-users-slash text-2xl text-gray-400 dark:text-gray-300"></i>
                             </div>
-                            <p className="text-gray-500 font-medium">No referrals yet. Start sharing your code to earn rewards!</p>
+                            <p className="text-gray-500 dark:text-gray-300 font-medium">No referrals yet. Start sharing your code to earn rewards!</p>
                         </div>
                     )}
                 </div>

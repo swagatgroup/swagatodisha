@@ -82,7 +82,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
             {/* Header with Search and Filters */}
             <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                    <h3 className="text-lg font-semibold text-gray-900">Agent Management</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Agent Management</h3>
 
                     <div className="flex flex-col sm:flex-row gap-4">
                         <input
@@ -110,7 +110,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
             {/* Agent List */}
             <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
-                    <h4 className="text-md font-medium text-gray-900">
+                    <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">
                         Agents ({filteredAgents.length})
                     </h4>
                 </div>
@@ -118,11 +118,11 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                 <div className="p-6">
                     {filteredAgents.length === 0 ? (
                         <div className="text-center py-8">
-                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No agents found</h3>
-                            <p className="mt-1 text-sm text-gray-500">
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No agents found</h3>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
                                 {searchTerm || statusFilter !== 'all'
                                     ? 'Try adjusting your search or filter criteria.'
                                     : 'No agents have been registered yet.'
@@ -142,15 +142,15 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-4">
                                             <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                                                <span className="text-lg font-semibold text-gray-600">
+                                                <span className="text-lg font-semibold text-gray-600 dark:text-gray-300">
                                                     {agent.fullName?.charAt(0) || 'A'}
                                                 </span>
                                             </div>
 
                                             <div>
-                                                <h5 className="font-medium text-gray-900">{agent.fullName}</h5>
-                                                <p className="text-sm text-gray-500">{agent.email}</p>
-                                                <p className="text-xs text-gray-400">
+                                                <h5 className="font-medium text-gray-900 dark:text-gray-100">{agent.fullName}</h5>
+                                                <p className="text-sm text-gray-500 dark:text-gray-300">{agent.email}</p>
+                                                <p className="text-xs text-gray-400 dark:text-gray-300">
                                                     {agent.phoneNumber} • Joined {new Date(agent.createdAt).toLocaleDateString()}
                                                 </p>
                                             </div>
@@ -162,15 +162,15 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                                                 <div className={`text-lg font-bold ${getPerformanceColor(agent.performanceScore || 0)}`}>
                                                     {agent.performanceScore || 0}%
                                                 </div>
-                                                <div className="text-xs text-gray-500">Performance</div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-300">Performance</div>
                                             </div>
 
                                             {/* Student Count */}
                                             <div className="text-center">
-                                                <div className="text-lg font-bold text-gray-900">
+                                                <div className="text-lg font-bold text-gray-900 dark:text-gray-100">
                                                     {agent.assignedStudents?.length || 0}
                                                 </div>
-                                                <div className="text-xs text-gray-500">Students</div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-300">Students</div>
                                             </div>
 
                                             {/* Commission */}
@@ -178,7 +178,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                                                 <div className="text-lg font-bold text-green-600">
                                                     ₹{agent.totalCommission || 0}
                                                 </div>
-                                                <div className="text-xs text-gray-500">Commission</div>
+                                                <div className="text-xs text-gray-500 dark:text-gray-300">Commission</div>
                                             </div>
 
                                             {/* Status */}
@@ -228,12 +228,12 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                            <h3 className="text-lg font-semibold text-gray-900">
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 Agent Details - {selectedAgent.fullName}
                             </h3>
                             <button
                                 onClick={() => setShowDetailsModal(false)}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                             >
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -245,22 +245,22 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Basic Information */}
                                 <div>
-                                    <h4 className="text-md font-semibold text-gray-900 mb-4">Basic Information</h4>
+                                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Basic Information</h4>
                                     <div className="space-y-3">
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Full Name</label>
-                                            <p className="text-sm text-gray-900">{selectedAgent.fullName}</p>
+                                            <label className="text-sm font-medium text-gray-500 dark:text-gray-300">Full Name</label>
+                                            <p className="text-sm text-gray-900 dark:text-gray-100">{selectedAgent.fullName}</p>
                                         </div>
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Email</label>
-                                            <p className="text-sm text-gray-900">{selectedAgent.email}</p>
+                                            <label className="text-sm font-medium text-gray-500 dark:text-gray-300">Email</label>
+                                            <p className="text-sm text-gray-900 dark:text-gray-100">{selectedAgent.email}</p>
                                         </div>
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Phone</label>
-                                            <p className="text-sm text-gray-900">{selectedAgent.phoneNumber}</p>
+                                            <label className="text-sm font-medium text-gray-500 dark:text-gray-300">Phone</label>
+                                            <p className="text-sm text-gray-900 dark:text-gray-100">{selectedAgent.phoneNumber}</p>
                                         </div>
                                         <div>
-                                            <label className="text-sm font-medium text-gray-500">Status</label>
+                                            <label className="text-sm font-medium text-gray-500 dark:text-gray-300">Status</label>
                                             <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(selectedAgent.status)}`}>
                                                 {selectedAgent.status?.charAt(0).toUpperCase() + selectedAgent.status?.slice(1)}
                                             </span>
@@ -270,28 +270,28 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
 
                                 {/* Performance Metrics */}
                                 <div>
-                                    <h4 className="text-md font-semibold text-gray-900 mb-4">Performance Metrics</h4>
+                                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Performance Metrics</h4>
                                     <div className="space-y-3">
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Performance Score</span>
+                                            <span className="text-sm text-gray-500 dark:text-gray-300">Performance Score</span>
                                             <span className={`text-sm font-medium ${getPerformanceColor(selectedAgent.performanceScore || 0)}`}>
                                                 {selectedAgent.performanceScore || 0}%
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Total Students</span>
-                                            <span className="text-sm font-medium text-gray-900">
+                                            <span className="text-sm text-gray-500 dark:text-gray-300">Total Students</span>
+                                            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {selectedAgent.assignedStudents?.length || 0}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Total Commission</span>
+                                            <span className="text-sm text-gray-500 dark:text-gray-300">Total Commission</span>
                                             <span className="text-sm font-medium text-green-600">
                                                 ₹{selectedAgent.totalCommission || 0}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-sm text-gray-500">Pending Commission</span>
+                                            <span className="text-sm text-gray-500 dark:text-gray-300">Pending Commission</span>
                                             <span className="text-sm font-medium text-orange-600">
                                                 ₹{selectedAgent.pendingCommission || 0}
                                             </span>
@@ -302,16 +302,16 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
 
                             {/* Assigned Students */}
                             <div className="mt-6">
-                                <h4 className="text-md font-semibold text-gray-900 mb-4">Assigned Students</h4>
+                                <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Assigned Students</h4>
                                 {selectedAgent.assignedStudents?.length > 0 ? (
                                     <div className="space-y-2">
                                         {selectedAgent.assignedStudents.slice(0, 5).map((student) => (
                                             <div key={student._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                                                 <div>
-                                                    <p className="text-sm font-medium text-gray-900">
+                                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         {student.personalDetails?.fullName}
                                                     </p>
-                                                    <p className="text-xs text-gray-500">
+                                                    <p className="text-xs text-gray-500 dark:text-gray-300">
                                                         {student.courseDetails?.selectedCourse}
                                                     </p>
                                                 </div>
@@ -321,13 +321,13 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                                             </div>
                                         ))}
                                         {selectedAgent.assignedStudents.length > 5 && (
-                                            <p className="text-xs text-gray-500 text-center">
+                                            <p className="text-xs text-gray-500 dark:text-gray-300 text-center">
                                                 And {selectedAgent.assignedStudents.length - 5} more...
                                             </p>
                                         )}
                                     </div>
                                 ) : (
-                                    <p className="text-sm text-gray-500">No students assigned</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-300">No students assigned</p>
                                 )}
                             </div>
 

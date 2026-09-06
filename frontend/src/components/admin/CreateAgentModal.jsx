@@ -159,7 +159,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Create New Agent</h2>
                         <button
                             onClick={handleClose}
-                            className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
+                            className="text-gray-400 hover:text-gray-600 dark:text-gray-300"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -302,7 +302,7 @@ const CreateAgentModal = ({ isOpen, onClose, onSuccess }) => {
 
                         {/* Address Fields */}
                         <div className="space-y-4">
-                            <h3 className="text-lg font-medium text-gray-900">Address Information</h3>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Address Information</h3>
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

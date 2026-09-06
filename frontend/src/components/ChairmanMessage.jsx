@@ -25,11 +25,11 @@ const ChairmanMessage = () => {
                         <i className={`${chairmanData.icon} text-white text-2xl`}></i>
                     </div>
 
-                    <h2 className="text-3xl md:text-5xl font-bold text-gray-800 mb-4">
+                    <h2 className="text-3xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4">
                         Chairman's <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Message</span>
                     </h2>
 
-                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                         A vision for excellence, innovation, and student success
                     </p>
                 </div>
@@ -50,7 +50,7 @@ const ChairmanMessage = () => {
 
                             {/* Chairman Details */}
                             <div className="mb-6">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
                                     {chairmanData.name}
                                 </h3>
                                 <p className="text-base text-[#7B3FA0] font-medium mb-3">
@@ -68,7 +68,7 @@ const ChairmanMessage = () => {
                                         <i className="fa-solid fa-quote-left text-white text-lg"></i>
                                     </div>
                                     <div>
-                                        <p className="text-base text-gray-700 leading-relaxed italic">
+                                        <p className="text-base text-gray-700 dark:text-gray-200 leading-relaxed italic">
                                             {chairmanData.message}
                                         </p>
                                     </div>
@@ -76,13 +76,13 @@ const ChairmanMessage = () => {
                             </div>
                             {/* Achievement Stats */}
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="text-center p-3 bg-white rounded-lg shadow-md border border-gray-100">
+                                <div className="text-center p-3 bg-white dark:bg-[#2A1E2E] rounded-lg shadow-md border border-gray-100">
                                     <div className="text-xl font-bold text-[#7B3FA0] mb-1">25+</div>
-                                    <div className="text-xs text-gray-600">Years</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-300">Years</div>
                                 </div>
-                                <div className="text-center p-3 bg-white rounded-lg shadow-md border border-gray-100">
+                                <div className="text-center p-3 bg-white dark:bg-[#2A1E2E] rounded-lg shadow-md border border-gray-100">
                                     <div className="text-xl font-bold text-[#387B95] mb-1">50K+</div>
-                                    <div className="text-xs text-gray-600">Students</div>
+                                    <div className="text-xs text-gray-600 dark:text-gray-300">Students</div>
                                 </div>
                             </div>
                         </div>

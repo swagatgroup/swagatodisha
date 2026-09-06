@@ -104,7 +104,7 @@ const ContentTab = () => {
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Hero Title</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Hero Title</label>
                     <input
                         type="text"
                         value={formData.hero.title}
@@ -113,7 +113,7 @@ const ContentTab = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Hero Subtitle</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Hero Subtitle</label>
                     <input
                         type="text"
                         value={formData.hero.subtitle}
@@ -123,7 +123,7 @@ const ContentTab = () => {
                 </div>
             </div>
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Hero Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Hero Description</label>
                 <textarea
                     value={formData.hero.description}
                     onChange={(e) => handleInputChange('hero', 'description', e.target.value)}
@@ -133,7 +133,7 @@ const ContentTab = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Button Text</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Button Text</label>
                     <input
                         type="text"
                         value={formData.hero.buttonText}
@@ -142,7 +142,7 @@ const ContentTab = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Background Image URL</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Background Image URL</label>
                     <input
                         type="url"
                         value={formData.hero.backgroundImage}
@@ -158,7 +158,7 @@ const ContentTab = () => {
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">About Title</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">About Title</label>
                     <input
                         type="text"
                         value={formData.about.title}
@@ -167,7 +167,7 @@ const ContentTab = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">About Subtitle</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">About Subtitle</label>
                     <input
                         type="text"
                         value={formData.about.subtitle}
@@ -177,7 +177,7 @@ const ContentTab = () => {
                 </div>
             </div>
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">About Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">About Description</label>
                 <textarea
                     value={formData.about.description}
                     onChange={(e) => handleInputChange('about', 'description', e.target.value)}
@@ -186,7 +186,7 @@ const ContentTab = () => {
                 />
             </div>
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Features</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Features</label>
                 <div className="space-y-2">
                     {formData.about.features.map((feature, index) => (
                         <div key={index} className="flex items-center space-x-2">
@@ -221,7 +221,7 @@ const ContentTab = () => {
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact Title</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Contact Title</label>
                     <input
                         type="text"
                         value={formData.contact.title}
@@ -230,7 +230,7 @@ const ContentTab = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Contact Subtitle</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Contact Subtitle</label>
                     <input
                         type="text"
                         value={formData.contact.subtitle}
@@ -240,7 +240,7 @@ const ContentTab = () => {
                 </div>
             </div>
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Address</label>
                 <textarea
                     value={formData.contact.address}
                     onChange={(e) => handleInputChange('contact', 'address', e.target.value)}
@@ -250,7 +250,7 @@ const ContentTab = () => {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Phone</label>
                     <input
                         type="tel"
                         value={formData.contact.phone}
@@ -259,7 +259,7 @@ const ContentTab = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email</label>
                     <input
                         type="email"
                         value={formData.contact.email}
@@ -268,7 +268,7 @@ const ContentTab = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Hours</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Hours</label>
                     <input
                         type="text"
                         value={formData.contact.hours}
@@ -284,7 +284,7 @@ const ContentTab = () => {
         <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Courses Title</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Courses Title</label>
                     <input
                         type="text"
                         value={formData.courses.title}
@@ -293,7 +293,7 @@ const ContentTab = () => {
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Courses Subtitle</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Courses Subtitle</label>
                     <input
                         type="text"
                         value={formData.courses.subtitle}
@@ -303,7 +303,7 @@ const ContentTab = () => {
                 </div>
             </div>
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Courses Description</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Courses Description</label>
                 <textarea
                     value={formData.courses.description}
                     onChange={(e) => handleInputChange('courses', 'description', e.target.value)}
@@ -335,8 +335,8 @@ const ContentTab = () => {
             {/* Header Section */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Website Content Management</h1>
-                    <p className="text-sm text-gray-500 mt-1">Home / Content</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Website Content Management</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Home / Content</p>
                 </div>
                 <button
                     onClick={handleSave}

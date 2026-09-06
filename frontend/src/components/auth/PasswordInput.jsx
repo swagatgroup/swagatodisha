@@ -49,7 +49,7 @@ const PasswordInput = ({
                 <button
                     type="button"
                     onClick={togglePasswordVisibility}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-300"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200 focus:outline-none focus:text-gray-600 dark:focus:text-gray-300"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                     <motion.div

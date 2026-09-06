@@ -5,10 +5,10 @@ const Admissions = () => {
         <section id="admissions" className="py-20">
             <div className="container mx-auto px-6">
                 <div className="text-center mb-16">
-                    <h2 className="text-4xl md:text-6xl font-bold text-gray-800 mb-6">
+                    <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                         Join <span className="text-[#387B95]">Swagat</span>
                     </h2>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                         Begin your educational journey with us. Discover the admission process and requirements for our various programs.
                     </p>
                 </div>
@@ -20,8 +20,8 @@ const Admissions = () => {
                             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-file-alt text-2xl text-[#387B95]"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Application Process</h3>
-                            <p className="text-gray-600">
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Application Process</h3>
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Complete the online application form with required documents and submit for review.
                             </p>
                         </div>
@@ -33,8 +33,8 @@ const Admissions = () => {
                             <div className="w-16 h-16 bg-[#EDE0F7] rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-check-circle text-2xl text-[#7B3FA0]"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Requirements</h3>
-                            <p className="text-gray-600">
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Requirements</h3>
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Academic transcripts, certificates, and other supporting documents as per program requirements.
                             </p>
                         </div>
@@ -46,8 +46,8 @@ const Admissions = () => {
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-phone text-2xl text-green-600"></i>
                             </div>
-                            <h3 className="text-2xl font-bold text-gray-800 mb-4">Get in Touch</h3>
-                            <p className="text-gray-600">
+                            <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Get in Touch</h3>
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Contact our admissions team for personalized guidance and support throughout the process.
                             </p>
                         </div>
@@ -59,7 +59,7 @@ const Admissions = () => {
                     <button className="bg-[#7B3FA0] text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                         Apply Now
                     </button>
-                    <p className="text-gray-600 mt-4">
+                    <p className="text-gray-600 dark:text-gray-300 mt-4">
                         For more information, call us at <span className="font-semibold">+91 7855959544</span>
                     </p>
                 </div>

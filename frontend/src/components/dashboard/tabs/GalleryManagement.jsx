@@ -337,8 +337,8 @@ const GalleryManagement = () => {
                                         </div>
                                     </div>
                                     <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">{item.category}</p>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">{item.description}</p>
-                                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                                    <p className="text-xs text-gray-500 dark:text-gray-300 mb-3 line-clamp-2">{item.description}</p>
+                                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-300">
                                         <span>{formatFileSize(item.fileSize)}</span>
                                         <span>Views: {item.views || 0}</span>
                                     </div>
@@ -378,7 +378,7 @@ const GalleryManagement = () => {
                                         setEditingItem(null);
                                         resetForm();
                                     }}
-                                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

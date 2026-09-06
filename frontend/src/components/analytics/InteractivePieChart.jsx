@@ -27,10 +27,10 @@ const InteractivePieChart = ({ data, title, onSegmentClick, colors = ['#8B5CF6',
             return (
                 <div className="bg-white dark:bg-[#2A1E2E] p-3 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
                     <p className="font-medium text-gray-900 dark:text-gray-100">{data.name}</p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         Value: <span className="font-medium dark:text-white">{data.value}</span>
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         Percentage: <span className="font-medium dark:text-white">{((data.value / data.total) * 100).toFixed(1)}%</span>
                     </p>
                 </div>
@@ -66,7 +66,7 @@ const InteractivePieChart = ({ data, title, onSegmentClick, colors = ['#8B5CF6',
         <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-gray-500 dark:text-gray-300">
                     Total: {data.reduce((sum, item) => sum + item.value, 0)}
                 </div>
             </div>
@@ -124,7 +124,7 @@ const InteractivePieChart = ({ data, title, onSegmentClick, colors = ['#8B5CF6',
                             />
                             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{item.name}</span>
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500 dark:text-gray-300">
                             {item.value} ({((item.value / data.reduce((sum, d) => sum + d.value, 0)) * 100).toFixed(1)}%)
                         </div>
                     </motion.div>

@@ -144,9 +144,9 @@ const StudentProfile = () => {
                             {profile?.fullName?.charAt(0) || 'S'}
                         </div>
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900">{profile?.fullName}</h2>
-                            <p className="text-gray-600">{profile?.email}</p>
-                            <p className="text-sm text-gray-500">Student ID: {profile?.studentId || 'N/A'}</p>
+                            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{profile?.fullName}</h2>
+                            <p className="text-gray-600 dark:text-gray-300">{profile?.email}</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-300">Student ID: {profile?.studentId || 'N/A'}</p>
                         </div>
                     </div>
                     <div className="flex space-x-3">
@@ -154,7 +154,7 @@ const StudentProfile = () => {
                             <>
                                 <button
                                     onClick={handleCancel}
-                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50"
                                 >
                                     Cancel
                                 </button>
@@ -199,10 +199,10 @@ const StudentProfile = () => {
                 transition={{ delay: 0.1 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Full Name</label>
                         <input
                             type="text"
                             name="fullName"
@@ -213,18 +213,18 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email</label>
                         <input
                             type="email"
                             name="email"
                             value={formData.email}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 dark:text-gray-300"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Email cannot be changed</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Email cannot be changed</p>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Phone Number</label>
                         <input
                             type="tel"
                             name="phoneNumber"
@@ -236,7 +236,7 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date of Birth</label>
                         <input
                             type="date"
                             name="dateOfBirth"
@@ -247,7 +247,7 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Gender</label>
                         <select
                             name="gender"
                             value={formData.gender}
@@ -262,7 +262,7 @@ const StudentProfile = () => {
                         </select>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Blood Group</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Blood Group</label>
                         <select
                             name="bloodGroup"
                             value={formData.bloodGroup}
@@ -291,10 +291,10 @@ const StudentProfile = () => {
                 transition={{ delay: 0.2 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Address Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Address Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Street Address</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Street Address</label>
                         <input
                             type="text"
                             name="address.street"
@@ -305,7 +305,7 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">City</label>
                         <input
                             type="text"
                             name="address.city"
@@ -316,7 +316,7 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">State</label>
                         <input
                             type="text"
                             name="address.state"
@@ -327,7 +327,7 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Pincode</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Pincode</label>
                         <input
                             type="text"
                             name="address.pincode"
@@ -348,21 +348,21 @@ const StudentProfile = () => {
                 transition={{ delay: 0.3 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Academic Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Academic Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Course</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Course</label>
                         <input
                             type="text"
                             name="course"
                             value={formData.course}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 dark:text-gray-300"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Course is assigned by administration</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Course is assigned by administration</p>
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Aadhar Number</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Aadhar Number</label>
                         <input
                             type="text"
                             name="aadharNumber"
@@ -383,10 +383,10 @@ const StudentProfile = () => {
                 transition={{ delay: 0.4 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Guardian Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Guardian Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Name</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Name</label>
                         <input
                             type="text"
                             name="guardianName"
@@ -397,7 +397,7 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Phone</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Phone</label>
                         <input
                             type="tel"
                             name="guardianPhone"
@@ -409,7 +409,7 @@ const StudentProfile = () => {
                         />
                     </div>
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Emergency Contact</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Emergency Contact</label>
                         <input
                             type="tel"
                             name="emergencyContact"

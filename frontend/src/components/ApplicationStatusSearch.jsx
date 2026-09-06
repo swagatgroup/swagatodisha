@@ -91,7 +91,7 @@ const ApplicationStatusSearch = () => {
                                     </div>
                                     
                                     {/* Step Label */}
-                                    <p className={`mt-3 text-xs md:text-sm font-semibold text-center ${isCompleted ? 'text-gray-800' : 'text-gray-400'}`}>
+                                    <p className={`mt-3 text-xs md:text-sm font-semibold text-center ${isCompleted ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 dark:text-gray-300'}`}>
                                         {step.label}
                                     </p>
                                 </div>
@@ -111,8 +111,8 @@ const ApplicationStatusSearch = () => {
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl mb-4 shadow-inner">
                             <i className="fa-solid fa-search-location text-2xl text-[#7B3FA0]"></i>
                         </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">Track Your Application</h2>
-                        <p className="text-gray-500 max-w-xl mx-auto">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Track Your Application</h2>
+                        <p className="text-gray-500 dark:text-gray-300 max-w-xl mx-auto">
                             Enter your Application ID, Mobile Number, or Aadhar Number to securely check the real-time status of your admission process.
                         </p>
                     </div>
@@ -120,11 +120,11 @@ const ApplicationStatusSearch = () => {
                     <form onSubmit={handleSearch} className="max-w-2xl mx-auto relative">
                         <div className="relative flex items-center shadow-sm rounded-2xl bg-white focus-within:shadow-md transition-all">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i className="fa-solid fa-id-card text-gray-400"></i>
+                                <i className="fa-solid fa-id-card text-gray-400 dark:text-gray-300"></i>
                             </div>
                             <input
                                 type="text"
-                                className="block w-full pl-11 pr-32 py-4 bg-transparent border-2 border-gray-100 rounded-2xl text-gray-900 focus:ring-0 focus:border-indigo-400 transition-all duration-300 outline-none text-lg"
+                                className="block w-full pl-11 pr-32 py-4 bg-transparent border-2 border-gray-100 rounded-2xl text-gray-900 dark:text-gray-100 focus:ring-0 focus:border-indigo-400 transition-all duration-300 outline-none text-lg"
                                 placeholder="Application ID, Mobile, or Aadhar..."
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
@@ -172,18 +172,18 @@ const ApplicationStatusSearch = () => {
                             >
                                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50 rounded-2xl p-6 mb-2 border border-gray-100">
                                     <div>
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Application ID</p>
-                                        <p className="text-2xl font-bold text-gray-900">{result.applicationId}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Application ID</p>
+                                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{result.applicationId}</p>
                                     </div>
                                     <div className="mt-4 md:mt-0 md:text-right">
-                                        <p className="text-xs text-gray-500 uppercase tracking-wider font-semibold mb-1">Course Applied</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Course Applied</p>
                                         <p className="text-lg font-semibold text-[#5C2D80]">{result.course}</p>
                                     </div>
                                 </div>
                                 
                                 {renderStepper(result.status)}
                                 
-                                <div className="mt-12 text-center text-xs text-gray-400 flex items-center justify-center">
+                                <div className="mt-12 text-center text-xs text-gray-400 dark:text-gray-300 flex items-center justify-center">
                                     <i className="fa-solid fa-shield-halved mr-2"></i>
                                     Status metadata securely updated on {new Date(result.updatedAt).toLocaleDateString()}
                                 </div>

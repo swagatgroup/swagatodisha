@@ -288,16 +288,16 @@ const QuickAccessManagement = () => {
                                 type="file"
                                 accept="application/pdf"
                                 onChange={handleFileSelect}
-                                className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7] dark:file:bg-purple-900 dark:file:text-purple-300"
+                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7] dark:file:bg-purple-900 dark:file:text-purple-300"
                                 required={!editingDoc}
                             />
                             {selectedFile && (
-                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                     Selected: {selectedFile.name}
                                 </p>
                             )}
                             {editingDoc && !selectedFile && (
-                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                                <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                     Current: {editingDoc.fileName || 'No file'}
                                 </p>
                             )}
@@ -361,7 +361,7 @@ const QuickAccessManagement = () => {
                 </div>
 
                 {filteredDocuments.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                    <p className="text-gray-500 dark:text-gray-300 text-center py-8">
                         No {typeLabels[activeTab].toLowerCase()} found. Create your first document above.
                     </p>
                 ) : (
@@ -387,11 +387,11 @@ const QuickAccessManagement = () => {
                                             )}
                                         </div>
                                         {doc.description && (
-                                            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                                 {doc.description}
                                             </p>
                                         )}
-                                        <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                        <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-300">
                                             <span>Order: {doc.order}</span>
                                             <span>•</span>
                                             <span>

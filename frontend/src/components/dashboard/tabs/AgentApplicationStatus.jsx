@@ -471,7 +471,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             case 'UNDER_REVIEW':
                 return <ClockIcon className="h-5 w-5 text-[#387B95]" />;
             default:
-                return <ClockIcon className="h-5 w-5 text-gray-600" />;
+                return <ClockIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />;
         }
     };
 
@@ -505,10 +505,10 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         {application.personalDetails?.fullName || 'N/A'}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         {application.contactDetails?.email || 'N/A'}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         Application ID: {application.applicationId}
                     </p>
                 </div>
@@ -522,13 +522,13 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
 
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Student</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Student</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
                         {application.personalDetails?.fullName || 'N/A'}
                     </p>
                 </div>
                 <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Course</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Course</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
                         {application.courseDetails?.selectedCourse || 'N/A'}
                     </p>
@@ -536,7 +536,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             </div>
 
             <div className="flex justify-between items-center">
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                     <ClockIcon className="h-4 w-4 mr-1" />
                     {new Date(application.submittedAt || application.createdAt).toLocaleDateString()}
                 </div>
@@ -572,7 +572,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Application Status
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-gray-600 dark:text-gray-300">
                         Track the verification status of your submitted applications
                     </p>
                 </div>
@@ -587,7 +587,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                                 ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
-                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200'
                                 }`}
                         >
                             {tab.name}
@@ -604,7 +604,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     </h3>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                         {applications.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                 No applications found
                             </div>
                         ) : (
@@ -624,10 +624,10 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                             {selectedApplication.personalDetails?.fullName}
                                         </h3>
-                                        <p className="text-gray-600 dark:text-gray-400">
+                                        <p className="text-gray-600 dark:text-gray-300">
                                             {selectedApplication.contactDetails?.email}
                                         </p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-sm text-gray-500 dark:text-gray-300">
                                             Application ID: {selectedApplication.applicationId}
                                         </p>
                                     </div>
@@ -844,19 +844,19 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                     <div>
                                         <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Student Information</h5>
                                         <div className="space-y-1 text-sm">
-                                            <p><span className="text-gray-600 dark:text-gray-400">Name:</span> {selectedApplication.personalDetails?.fullName}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Phone:</span> {selectedApplication.contactDetails?.primaryPhone}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Email:</span> {selectedApplication.contactDetails?.email}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Aadhar:</span> {selectedApplication.personalDetails?.aadharNumber}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Name:</span> {selectedApplication.personalDetails?.fullName}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Phone:</span> {selectedApplication.contactDetails?.primaryPhone}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Email:</span> {selectedApplication.contactDetails?.email}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Aadhar:</span> {selectedApplication.personalDetails?.aadharNumber}</p>
                                         </div>
                                     </div>
 
                                     <div>
                                         <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Course Information</h5>
                                         <div className="space-y-1 text-sm">
-                                            <p><span className="text-gray-600 dark:text-gray-400">Course:</span> {selectedApplication.courseDetails?.selectedCourse}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Stream:</span> {selectedApplication.courseDetails?.stream || 'N/A'}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Campus:</span> {selectedApplication.courseDetails?.campus || 'N/A'}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Course:</span> {selectedApplication.courseDetails?.selectedCourse}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Stream:</span> {selectedApplication.courseDetails?.stream || 'N/A'}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Campus:</span> {selectedApplication.courseDetails?.campus || 'N/A'}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -911,13 +911,13 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                         <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType}</span>
                                                                     )}
                                                                     {hasUrl && (
-                                                                        <EyeIcon className="h-4 w-4 text-gray-400" />
+                                                                        <EyeIcon className="h-4 w-4 text-gray-400 dark:text-gray-300" />
                                                                     )}
                                                                 </div>
                                                                 
                                                                 {/* Upload timestamp */}
                                                                 {doc.uploadedAt && (
-                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                                                         📅 Uploaded: {new Date(doc.uploadedAt).toLocaleString()}
                                                                     </p>
                                                                 )}
@@ -952,7 +952,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                     
                                                                     {/* Review timestamp */}
                                                                     {doc.reviewedAt && (
-                                                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                        <span className="text-xs text-gray-500 dark:text-gray-300">
                                                                             {new Date(doc.reviewedAt).toLocaleDateString()}
                                                                         </span>
                                                                     )}
@@ -991,7 +991,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         {/* Summary counts */}
                                         <div className="mt-4 flex items-center justify-between text-xs">
                                             <div className="flex items-center space-x-3">
-                                                <span className="text-gray-600 dark:text-gray-400">
+                                                <span className="text-gray-600 dark:text-gray-300">
                                                     Total: {selectedApplication.documents.length}
                                                 </span>
                                                 <span className="text-green-600 dark:text-green-400">
@@ -1011,11 +1011,11 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                         </div>
                     ) : (
                         <div className="text-center py-12">
-                            <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
+                            <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-400 dark:text-gray-400 mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 Select an Application
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Choose an application from the list to view its details and status
                             </p>
                         </div>
@@ -1034,7 +1034,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                 </h3>
                                 <button
                                     onClick={() => setShowEditModal(false)}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1335,7 +1335,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                             <button
                                                                                 onClick={() => removeDocumentField(doc.key)}
                                                                                 type="button"
-                                                                                className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                                                                                className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                                                                 title="Remove this field"
                                                                             >
                                                                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1347,7 +1347,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                 </div>
                                                                 
                                                                 {doc.description && (
-                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-300 mb-2">
                                                                         {doc.description}
                                                                     </p>
                                                                 )}
@@ -1379,7 +1379,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                                 if (file) handleDocumentUpload(doc.key, file);
                                                                             }}
                                                                             disabled={uploadingDocs[doc.key]}
-                                                                            className="block w-full text-sm text-gray-500 dark:text-gray-400
+                                                                            className="block w-full text-sm text-gray-500 dark:text-gray-300
                                                                                 file:mr-4 file:py-2 file:px-4
                                                                                 file:rounded-md file:border-0
                                                                                 file:text-sm file:font-semibold
@@ -1396,7 +1396,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                                         style={{ width: `${uploadProgress[doc.key] || 0}%` }}
                                                                                     />
                                                                                 </div>
-                                                                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                                                                     Uploading... {uploadProgress[doc.key] || 0}%
                                                                                 </p>
                                                                             </div>
@@ -1405,7 +1405,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                 )}
 
                                                                 {doc.maxSize && (
-                                                                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                                                                    <p className="text-xs text-gray-400 dark:text-gray-300 mt-1">
                                                                         Max size: {doc.maxSize}
                                                                     </p>
                                                                 )}
@@ -1414,14 +1414,14 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                             })}
                                             
                                             {visibleDocFields.length === 0 && (
-                                                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                                <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                                     <CloudArrowUpIcon className="h-12 w-12 mx-auto mb-2 opacity-50" />
                                                     <p>Click "Add More" to add document fields</p>
                                                 </div>
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                                        <div className="text-center py-4 text-gray-500 dark:text-gray-300">
                                             Loading document requirements...
                                         </div>
                                     )}

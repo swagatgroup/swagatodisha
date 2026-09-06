@@ -34,7 +34,7 @@ class ErrorBoundary extends React.Component {
                         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 text-center mb-2">
                             Something went wrong
                         </h2>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 text-center mb-4">
                             We're sorry, but something unexpected happened. Please try refreshing the page.
                         </p>
                         <div className="flex space-x-3">
@@ -53,7 +53,7 @@ class ErrorBoundary extends React.Component {
                         </div>
                         {this.state.error && (
                             <details className="mt-4">
-                                <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-400">
+                                <summary className="cursor-pointer text-sm text-gray-500 dark:text-gray-300">
                                     Error Details (Development)
                                 </summary>
                                 <pre className="mt-2 text-xs text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 p-2 rounded overflow-auto">

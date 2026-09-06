@@ -1785,7 +1785,7 @@ const InstitutionTypes = () => {
                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">
                                     {institution.subtitle}
                                 </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
+                                <p className="text-sm text-gray-500 dark:text-gray-300 leading-relaxed mb-4">
                                     {institution.description}
                                 </p>
                             </div>
@@ -1851,7 +1851,7 @@ const InstitutionTypes = () => {
                                             <div className="flex-1">
                                                 <h5 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{program.name}</h5>
                                                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{program.type}</p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">{program.details}</p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-300">{program.details}</p>
                                                 <div className="mt-2 flex flex-wrap gap-2">
                                                     {program.hasSubCategories && (
                                                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#EDE0F7] dark:bg-[#2A1E2E] text-purple-800 dark:text-purple-200">
@@ -1924,7 +1924,7 @@ const InstitutionTypes = () => {
                                                     <div className="flex-1">
                                                         <h5 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{course.name}</h5>
                                                         <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{course.duration}</p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">{course.details}</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-300">{course.details}</p>
                                                     </div>
                                                     <div className="ml-4">
                                                         <i className="fa-solid fa-chevron-right text-[#7B3FA0] dark:text-[#A855D0]"></i>
@@ -1971,7 +1971,7 @@ const InstitutionTypes = () => {
                             <div className="flex justify-end space-x-3">
                                 <button
                                     onClick={(event) => handleCloseButtonClick(event, 'sub')}
-                                    className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-200"
+                                    className="px-6 py-2 bg-gray-100 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-200"
                                 >
                                     Close
                                 </button>
@@ -2001,17 +2001,17 @@ const InstitutionTypes = () => {
                         <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-teal-50">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
-                                    <h3 className="text-2xl font-bold text-gray-800">{selectedCourse.name}</h3>
+                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedCourse.name}</h3>
                                     <p className="text-green-600 font-medium">{selectedCourse.duration}</p>
                                 </div>
                                 <button
                                     onClick={(event) => handleCloseButtonClick(event, 'course')}
                                     className="w-10 h-10 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm"
                                 >
-                                    <i className="fa-solid fa-times text-gray-600"></i>
+                                    <i className="fa-solid fa-times text-gray-600 dark:text-gray-300"></i>
                                 </button>
                             </div>
-                            <p className="text-gray-600 leading-relaxed">{selectedCourse.details}</p>
+                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedCourse.details}</p>
                         </div>
 
                         {/* Course Modal Body - Individual Course Fee Structure */}

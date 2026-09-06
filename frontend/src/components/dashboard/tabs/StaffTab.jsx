@@ -91,8 +91,8 @@ return (
         {/* Header Section */}
         <div className="flex items-center justify-between">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Staff List</h1>
-                <p className="text-sm text-gray-500 mt-1">Home / Staff</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Staff List</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Home / Staff</p>
             </div>
             <button
                 onClick={() => setShowCreateModal(true)}
@@ -115,8 +115,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Total Staff</p>
-                        <p className="text-2xl font-semibold text-gray-900">{pagination.totalItems}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Staff</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{pagination.totalItems}</p>
                     </div>
                 </div>
             </div>
@@ -128,8 +128,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Active Staff</p>
-                        <p className="text-2xl font-semibold text-gray-900">{staff.filter(s => s.isActive).length}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Active Staff</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{staff.filter(s => s.isActive).length}</p>
                     </div>
                 </div>
             </div>
@@ -141,8 +141,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Departments</p>
-                        <p className="text-2xl font-semibold text-gray-900">{[...new Set(staff.map(s => s.department))].length}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Departments</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{[...new Set(staff.map(s => s.department))].length}</p>
                     </div>
                 </div>
             </div>
@@ -154,8 +154,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Online Now</p>
-                        <p className="text-2xl font-semibold text-gray-900">{staff.filter(s => s.isActive && s.lastLogin && new Date(s.lastLogin).toDateString() === new Date().toDateString()).length}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Online Now</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{staff.filter(s => s.isActive && s.lastLogin && new Date(s.lastLogin).toDateString() === new Date().toDateString()).length}</p>
                     </div>
                 </div>
             </div>
@@ -178,7 +178,7 @@ return (
                             onChange={handleSearch}
                             className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-[#1A1212] dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         />
-                        <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
@@ -202,15 +202,15 @@ return (
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-[#1A1212]">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Staff Name</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Department</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Agents</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Join Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Login</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Staff Name</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Role</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Department</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Assigned Agents</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Join Date</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Last Login</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
@@ -219,13 +219,13 @@ return (
                                 <td colSpan="9" className="px-6 py-8 text-center">
                                     <div className="flex items-center justify-center">
                                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0]"></div>
-                                        <span className="ml-2 text-gray-600">Loading staff...</span>
+                                        <span className="ml-2 text-gray-600 dark:text-gray-300">Loading staff...</span>
                                     </div>
                                 </td>
                             </tr>
                         ) : staff.length === 0 ? (
                             <tr>
-                                <td colSpan="9" className="px-6 py-8 text-center text-gray-500">
+                                <td colSpan="9" className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">
                                     No staff found
                                 </td>
                             </tr>
@@ -250,7 +250,7 @@ return (
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-gray-900 dark:text-gray-100">{member.email}</div>
-                                        <div className="text-sm text-gray-500 dark:text-gray-400">{member.phone}</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-300">{member.phone}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -261,22 +261,22 @@ return (
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {member.assignedAgents && member.assignedAgents.length > 0 ? (
                                             <div className="text-sm">
-                                                <div className="font-medium text-gray-900">
+                                                <div className="font-medium text-gray-900 dark:text-gray-100">
                                                     {member.assignedAgents.length} agent(s)
                                                 </div>
-                                                <div className="text-gray-500">
+                                                <div className="text-gray-500 dark:text-gray-300">
                                                     {member.assignedAgents.slice(0, 2).map(agent => agent.fullName).join(', ')}
                                                     {member.assignedAgents.length > 2 && '...'}
                                                 </div>
                                             </div>
                                         ) : (
-                                            <span className="text-sm text-gray-400">No agents assigned</span>
+                                            <span className="text-sm text-gray-400 dark:text-gray-300">No agents assigned</span>
                                         )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                         {new Date(member.joiningDate).toLocaleDateString()}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {member.lastLogin ? new Date(member.lastLogin).toLocaleDateString() : 'Never'}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
@@ -314,7 +314,7 @@ return (
                     <button
                         onClick={() => handlePageChange(pagination.current - 1)}
                         disabled={!pagination.hasPrev}
-                        className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -339,10 +339,10 @@ return (
 
                     {pagination.total > 5 && (
                         <>
-                            <span className="px-2 text-gray-500">...</span>
+                            <span className="px-2 text-gray-500 dark:text-gray-300">...</span>
                             <button
                                 onClick={() => handlePageChange(pagination.total)}
-                                className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700"
+                                className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700"
                             >
                                 {pagination.total}
                             </button>
@@ -352,7 +352,7 @@ return (
                     <button
                         onClick={() => handlePageChange(pagination.current + 1)}
                         disabled={!pagination.hasNext}
-                        className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -360,8 +360,8 @@ return (
                     </button>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">10 / page</span>
-                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span className="text-sm text-gray-500 dark:text-gray-300">10 / page</span>
+                    <svg className="h-4 w-4 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>

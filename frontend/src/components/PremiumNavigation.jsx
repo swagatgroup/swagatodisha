@@ -47,8 +47,8 @@ const PremiumNavigation = () => {
                             <span className="text-white font-bold text-xl">S</span>
                         </div>
                         <div>
-                            <h1 className="text-xl font-bold text-gray-900">Swagat</h1>
-                            <p className="text-xs text-gray-600">Group of Institutions</p>
+                            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Swagat</h1>
+                            <p className="text-xs text-gray-600 dark:text-gray-300">Group of Institutions</p>
                         </div>
                     </motion.div>
 
@@ -58,7 +58,7 @@ const PremiumNavigation = () => {
                             <motion.button
                                 key={item.name}
                                 onClick={() => smoothScrollTo(item.href)}
-                                className="text-gray-700 hover:text-[#7B3FA0] font-medium transition-colors duration-300 relative group"
+                                className="text-gray-700 dark:text-gray-200 hover:text-[#7B3FA0] font-medium transition-colors duration-300 relative group"
                                 initial={{ opacity: 0, y: -20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.6, delay: index * 0.1 }}
@@ -82,7 +82,7 @@ const PremiumNavigation = () => {
 
                     {/* Mobile Menu Button */}
                     <motion.button
-                        className="lg:hidden p-2 rounded-lg text-gray-700 hover:bg-gray-100 transition-colors duration-300"
+                        className="lg:hidden p-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 transition-colors duration-300"
                         onClick={() => setIsOpen(!isOpen)}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
@@ -116,7 +116,7 @@ const PremiumNavigation = () => {
                                         smoothScrollTo(item.href)
                                         setIsOpen(false)
                                     }}
-                                    className="block text-gray-700 hover:text-[#7B3FA0] font-medium py-2 transition-colors duration-300 w-full text-left"
+                                    className="block text-gray-700 dark:text-gray-200 hover:text-[#7B3FA0] font-medium py-2 transition-colors duration-300 w-full text-left"
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ duration: 0.3, delay: index * 0.1 }}

@@ -952,7 +952,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
         <div className="space-y-6">
             <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Application PDF</h3>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                <p className="text-gray-600 dark:text-gray-300 mt-2">
                     Generate, preview, and download your application as a PDF document.
                 </p>
             </div>
@@ -965,7 +965,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                             <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Student Application
                             </h4>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
                                 {formData.personalDetails.fullName || 'Draft Application'}
                             </p>
                         </div>
@@ -1057,8 +1057,8 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
 
                 {!pdfUrl && !isGenerating && (
                     <div className="text-center py-8">
-                        <DocumentIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <DocumentIcon className="w-16 h-16 text-gray-400 dark:text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-600 dark:text-gray-300">
                             Click "Generate PDF" to create your application document.
                         </p>
                     </div>

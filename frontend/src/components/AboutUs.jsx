@@ -88,12 +88,12 @@ const AboutUs = () => {
                         <i className="fa-solid fa-university text-white text-3xl"></i>
                     </div>
 
-                    <h2 className={`text-5xl md:text-7xl font-bold text-gray-800 mb-6 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                    <h2 className={`text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-200 mb-6 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                         }`}>
                         About <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Us</span>
                     </h2>
 
-                    <p className={`text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                    <p className={`text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                         }`}>
                         Discover the story behind our commitment to educational excellence and innovation
                     </p>
@@ -106,15 +106,15 @@ const AboutUs = () => {
                         <div className={`space-y-8 transition-all duration-1000 delay-900 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
                             }`}>
                             <div>
-                                <h3 className="text-3xl font-bold text-gray-800 mb-6">
+                                <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                     {APP_CONFIG.name}
                                 </h3>
-                                <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                                <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                                     Swagat Group of Institutions is a premier educational organization committed to providing
                                     quality education and fostering innovation in the field of learning. Our journey began with
                                     a vision to revolutionize education and create opportunities for students to excel in their chosen fields.
                                 </p>
-                                <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                                <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                                     We believe in the power of education to transform lives and communities. Our comprehensive
                                     range of institutions covers every aspect of learning, from primary education to higher studies,
                                     ensuring that students receive the best possible foundation for their future.
@@ -123,15 +123,15 @@ const AboutUs = () => {
 
                             {/* Interactive Stats */}
                             <div className="grid grid-cols-2 gap-6">
-                                <div className={`text-center p-6 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1100 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                                <div className={`text-center p-6 bg-white dark:bg-[#2A1E2E] rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1100 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                                     }`}>
                                     <div className="text-3xl font-bold text-[#7B3FA0] mb-2">25+</div>
-                                    <div className="text-sm text-gray-600">Years of Excellence</div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-300">Years of Excellence</div>
                                 </div>
-                                <div className={`text-center p-6 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1300 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                                <div className={`text-center p-6 bg-white dark:bg-[#2A1E2E] rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1300 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
                                     }`}>
                                     <div className="text-3xl font-bold text-[#387B95] mb-2">50K+</div>
-                                    <div className="text-sm text-gray-600">Students Impacted</div>
+                                    <div className="text-sm text-gray-600 dark:text-gray-300">Students Impacted</div>
                                 </div>
                             </div>
                         </div>
@@ -157,10 +157,10 @@ const AboutUs = () => {
                                         </div>
 
                                         {/* Content */}
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-2 group-hover:text-[#7B3FA0] transition-colors duration-300">
+                                        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 group-hover:text-[#7B3FA0] transition-colors duration-300">
                                             {feature.title}
                                         </h4>
-                                        <p className="text-gray-600 text-sm leading-relaxed">
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
                                             {feature.description}
                                         </p>
 

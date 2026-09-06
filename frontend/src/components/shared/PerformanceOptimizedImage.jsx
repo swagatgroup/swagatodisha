@@ -88,7 +88,7 @@ const PerformanceOptimizedImage = ({
             {placeholder || (
                 <div className="w-full h-full flex items-center justify-center">
                     <svg
-                        className="w-8 h-8 text-gray-400"
+                        className="w-8 h-8 text-gray-400 dark:text-gray-300"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -112,7 +112,7 @@ const PerformanceOptimizedImage = ({
             style={{ width, height }}
             {...props}
         >
-            <div className="text-center text-gray-500">
+            <div className="text-center text-gray-500 dark:text-gray-300">
                 <svg
                     className="w-8 h-8 mx-auto mb-2"
                     fill="none"

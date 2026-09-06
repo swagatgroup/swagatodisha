@@ -100,7 +100,7 @@ const PasswordsTab = () => {
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     />
-                    <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
@@ -138,7 +138,7 @@ const PasswordsTab = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{user.email}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{user.phone}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.lastPasswordChange}</td>
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{user.lastPasswordChange}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.status === 'Active'
                                         ? 'bg-green-100 text-green-800'
@@ -168,8 +168,8 @@ const PasswordsTab = () => {
             {/* Header Section */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Password Management</h1>
-                    <p className="text-sm text-gray-500 mt-1">Home / Passwords</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Password Management</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Home / Passwords</p>
                 </div>
             </div>
 
@@ -220,7 +220,7 @@ const PasswordsTab = () => {
                             <div className="mt-2 px-7 py-3">
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 text-center">Reset Password</h3>
                                 <div className="mt-2 px-7 py-3">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+                                    <p className="text-sm text-gray-500 dark:text-gray-300 text-center">
                                         Reset password for <strong>{selectedUser.name}</strong>
                                     </p>
                                 </div>

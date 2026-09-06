@@ -166,11 +166,11 @@ const ReferralManagement = () => {
     return (
         <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">My Referrals</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">My Referrals</h3>
                 <div className="flex space-x-2">
                     <button
                         onClick={copyReferralCode}
-                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                        className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50"
                     >
                         <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -233,16 +233,16 @@ const ReferralManagement = () => {
             <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg mb-6">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h4 className="text-lg font-medium text-gray-900">Your Referral Code</h4>
-                        <p className="text-sm text-gray-600">Share this code with students to track referrals</p>
+                        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">Your Referral Code</h4>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">Share this code with students to track referrals</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <code className="px-3 py-2 bg-white border border-gray-300 rounded-md font-mono text-lg">
+                        <code className="px-3 py-2 bg-white dark:bg-[#2A1E2E] border border-gray-300 rounded-md font-mono text-lg">
                             {user?.referralCode || 'AGENT001'}
                         </code>
                         <button
                             onClick={copyReferralCode}
-                            className="p-2 text-gray-500 hover:text-gray-700"
+                            className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700"
                         >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
@@ -256,12 +256,12 @@ const ReferralManagement = () => {
             {referrals.length === 0 ? (
                 <div className="text-center py-12">
                     <div className="mx-auto h-12 w-12 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                        <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-6 w-6 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No referrals yet</h3>
-                    <p className="text-gray-500 mb-4">Start referring students to earn commissions.</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No referrals yet</h3>
+                    <p className="text-gray-500 dark:text-gray-300 mb-4">Start referring students to earn commissions.</p>
                     <button
                         onClick={() => setShowAddReferralModal(true)}
                         className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
@@ -281,7 +281,7 @@ const ReferralManagement = () => {
                             <div className="flex items-center justify-between">
                                 <div className="flex-1">
                                     <div className="flex items-center mb-2">
-                                        <h4 className="text-lg font-medium text-gray-900">
+                                        <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                                             {referral.studentName}
                                         </h4>
                                         <span className={`ml-3 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(referral.status)}`}>
@@ -289,7 +289,7 @@ const ReferralManagement = () => {
                                         </span>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-300">
                                         <p><strong>Email:</strong> {referral.studentEmail}</p>
                                         <p><strong>Phone:</strong> {referral.studentPhone}</p>
                                         <p><strong>Course:</strong> {referral.course}</p>
@@ -301,7 +301,7 @@ const ReferralManagement = () => {
                                     </div>
 
                                     {referral.notes && (
-                                        <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700">
+                                        <div className="mt-2 p-2 bg-gray-50 rounded text-sm text-gray-700 dark:text-gray-200">
                                             <strong>Notes:</strong> {referral.notes}
                                         </div>
                                     )}
@@ -325,11 +325,11 @@ const ReferralManagement = () => {
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
                     <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                         <div className="mt-3">
-                            <h3 className="text-lg font-medium text-gray-900 mb-4">Add New Referral</h3>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Add New Referral</h3>
 
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                                         Student Name *
                                     </label>
                                     <input
@@ -342,7 +342,7 @@ const ReferralManagement = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                                         Student Email *
                                     </label>
                                     <input
@@ -355,7 +355,7 @@ const ReferralManagement = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                                         Student Phone *
                                     </label>
                                     <input
@@ -368,7 +368,7 @@ const ReferralManagement = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                                         Course
                                     </label>
                                     <input
@@ -381,7 +381,7 @@ const ReferralManagement = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                                         Notes
                                     </label>
                                     <textarea
@@ -397,7 +397,7 @@ const ReferralManagement = () => {
                             <div className="flex justify-end space-x-3 mt-6">
                                 <button
                                     onClick={() => setShowAddReferralModal(false)}
-                                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                                    className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50"
                                 >
                                     Cancel
                                 </button>

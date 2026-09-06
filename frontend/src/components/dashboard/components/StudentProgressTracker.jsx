@@ -50,7 +50,7 @@ const StudentProgressTracker = ({ currentStage }) => {
                                         ? 'bg-gradient-to-r from-blue-500 to-purple-500 border-transparent text-white scale-110' 
                                         : isCurrent 
                                             ? 'bg-white dark:bg-[#2A1E2E] border-[#7B3FA0] text-[#7B3FA0] dark:text-[#A855D0] scale-125 shadow-[0_0_15px_rgba(168,85,247,0.4)]' 
-                                            : 'bg-white dark:bg-[#2A1E2E] border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-500'
+                                            : 'bg-white dark:bg-[#2A1E2E] border-gray-300 dark:border-gray-600 text-gray-400 dark:text-gray-300'
                                     }`}
                             >
                                 {isCompleted ? (
@@ -65,7 +65,7 @@ const StudentProgressTracker = ({ currentStage }) => {
                                 className={`absolute top-14 text-xs md:text-sm font-semibold uppercase tracking-wider text-center w-32 transition-all duration-300
                                     ${isCompleted ? 'text-[#7B3FA0] dark:text-[#A855D0]' 
                                     : isCurrent ? 'text-[#387B95] dark:text-[#60A5FA] font-bold translate-y-1' 
-                                    : 'text-gray-400 dark:text-gray-500'}`}
+                                    : 'text-gray-400 dark:text-gray-300'}`}
                             >
                                 {stage.label}
                             </span>
@@ -78,7 +78,7 @@ const StudentProgressTracker = ({ currentStage }) => {
                     );
                 })}
             </div>
-            <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-300">
                 {currentIndex === 0 && "Complete your profile to start applying to courses."}
                 {currentIndex === 1 && "Your application is submitted. Waiting for review."}
                 {currentIndex === 2 && "Your application is currently being reviewed by our staff."}

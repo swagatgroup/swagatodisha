@@ -268,10 +268,10 @@ const ApplicationVerification = () => {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         {application.personalDetails?.fullName || 'N/A'}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         {application.contactDetails?.email || 'N/A'}
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
                         Application ID: {application.applicationId}
                     </p>
                 </div>
@@ -282,16 +282,16 @@ const ApplicationVerification = () => {
 
             <div className="grid grid-cols-2 gap-4 mb-4">
                 <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Submitted by</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Submitted by</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
                         {application.submittedBy?.fullName || 'N/A'}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <p className="text-xs text-gray-500 dark:text-gray-300">
                         {application.submitterRole || 'N/A'}
                     </p>
                 </div>
                 <div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Course</p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Course</p>
                     <p className="font-medium text-gray-900 dark:text-gray-100">
                         {application.courseDetails?.selectedCourse || 'N/A'}
                     </p>
@@ -299,7 +299,7 @@ const ApplicationVerification = () => {
             </div>
 
             <div className="flex justify-between items-center">
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
                     <ClockIcon className="h-4 w-4 mr-1" />
                     {new Date(application.submittedAt || application.createdAt).toLocaleDateString()}
                 </div>
@@ -382,7 +382,7 @@ const ApplicationVerification = () => {
                             
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
                                         Section
                                     </label>
                                     <select
@@ -398,7 +398,7 @@ const ApplicationVerification = () => {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
                                         Issue Type
                                     </label>
                                     <input
@@ -411,7 +411,7 @@ const ApplicationVerification = () => {
                                 </div>
                                 
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
                                         Message
                                     </label>
                                     <input
@@ -446,7 +446,7 @@ const ApplicationVerification = () => {
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Application Verification
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-gray-600 dark:text-gray-300">
                         Review and verify agent-submitted student applications
                     </p>
                 </div>
@@ -521,7 +521,7 @@ const ApplicationVerification = () => {
                             <DocumentTextIcon className="h-6 w-6 text-[#387B95] dark:text-[#60A5FA]" />
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Applications</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Applications</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.totalApplications}</p>
                         </div>
                     </div>
@@ -533,7 +533,7 @@ const ApplicationVerification = () => {
                             <ClockIcon className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Pending Verification</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Pending Verification</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.pendingVerification}</p>
                         </div>
                     </div>
@@ -545,7 +545,7 @@ const ApplicationVerification = () => {
                             <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Approved</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Approved</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.approved}</p>
                         </div>
                     </div>
@@ -557,7 +557,7 @@ const ApplicationVerification = () => {
                             <XCircleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Rejected</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Rejected</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.rejected}</p>
                         </div>
                     </div>
@@ -572,7 +572,7 @@ const ApplicationVerification = () => {
                             <DocumentTextIcon className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" />
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Direct Student Submissions</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Direct Student Submissions</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.studentApplications}</p>
                         </div>
                     </div>
@@ -584,7 +584,7 @@ const ApplicationVerification = () => {
                             <UserIcon className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" />
                         </div>
                         <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Agent Submissions</p>
+                            <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Agent Submissions</p>
                             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.agentApplications}</p>
                         </div>
                     </div>
@@ -600,7 +600,7 @@ const ApplicationVerification = () => {
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                                 ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
-                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200'
                                 }`}
                         >
                             {tab.name}
@@ -623,7 +623,7 @@ const ApplicationVerification = () => {
                     </h3>
                     <div className="space-y-4 max-h-96 overflow-y-auto">
                         {applications.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                 No applications found
                             </div>
                         ) : (
@@ -643,13 +643,13 @@ const ApplicationVerification = () => {
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                             {selectedApplication.personalDetails?.fullName}
                                         </h3>
-                                        <p className="text-gray-600 dark:text-gray-400">
+                                        <p className="text-gray-600 dark:text-gray-300">
                                             {selectedApplication.contactDetails?.email}
                                         </p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-sm text-gray-500 dark:text-gray-300">
                                             Application ID: {selectedApplication.applicationId}
                                         </p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-sm text-gray-500 dark:text-gray-300">
                                             Submitted by: {selectedApplication.submittedBy?.fullName} ({selectedApplication.submitterRole})
                                         </p>
                                     </div>
@@ -720,21 +720,21 @@ const ApplicationVerification = () => {
                                     <div>
                                         <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Personal Information</h5>
                                         <div className="space-y-1 text-sm">
-                                            <p><span className="text-gray-600 dark:text-gray-400">Name:</span> {selectedApplication.personalDetails?.fullName}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Father:</span> {selectedApplication.personalDetails?.fathersName}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Mother:</span> {selectedApplication.personalDetails?.mothersName}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">DOB:</span> {selectedApplication.personalDetails?.dateOfBirth ? new Date(selectedApplication.personalDetails.dateOfBirth).toLocaleDateString() : 'N/A'}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Gender:</span> {selectedApplication.personalDetails?.gender}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Aadhar:</span> {selectedApplication.personalDetails?.aadharNumber}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Name:</span> {selectedApplication.personalDetails?.fullName}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Father:</span> {selectedApplication.personalDetails?.fathersName}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Mother:</span> {selectedApplication.personalDetails?.mothersName}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">DOB:</span> {selectedApplication.personalDetails?.dateOfBirth ? new Date(selectedApplication.personalDetails.dateOfBirth).toLocaleDateString() : 'N/A'}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Gender:</span> {selectedApplication.personalDetails?.gender}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Aadhar:</span> {selectedApplication.personalDetails?.aadharNumber}</p>
                                         </div>
                                     </div>
 
                                     <div>
                                         <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Contact Information</h5>
                                         <div className="space-y-1 text-sm">
-                                            <p><span className="text-gray-600 dark:text-gray-400">Phone:</span> {selectedApplication.contactDetails?.primaryPhone}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Email:</span> {selectedApplication.contactDetails?.email}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Address:</span> {selectedApplication.contactDetails?.permanentAddress ? 
+                                            <p><span className="text-gray-600 dark:text-gray-300">Phone:</span> {selectedApplication.contactDetails?.primaryPhone}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Email:</span> {selectedApplication.contactDetails?.email}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Address:</span> {selectedApplication.contactDetails?.permanentAddress ? 
                                                 `${selectedApplication.contactDetails.permanentAddress.street}, ${selectedApplication.contactDetails.permanentAddress.city}, ${selectedApplication.contactDetails.permanentAddress.state} - ${selectedApplication.contactDetails.permanentAddress.pincode}` : 'N/A'}</p>
                                         </div>
                                     </div>
@@ -742,19 +742,19 @@ const ApplicationVerification = () => {
                                     <div>
                                         <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Course Information</h5>
                                         <div className="space-y-1 text-sm">
-                                            <p><span className="text-gray-600 dark:text-gray-400">Course:</span> {selectedApplication.courseDetails?.selectedCourse}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Stream:</span> {selectedApplication.courseDetails?.stream || 'N/A'}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Campus:</span> {selectedApplication.courseDetails?.campus || 'N/A'}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Course:</span> {selectedApplication.courseDetails?.selectedCourse}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Stream:</span> {selectedApplication.courseDetails?.stream || 'N/A'}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Campus:</span> {selectedApplication.courseDetails?.campus || 'N/A'}</p>
                                         </div>
                                     </div>
 
                                     <div>
                                         <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Guardian Information</h5>
                                         <div className="space-y-1 text-sm">
-                                            <p><span className="text-gray-600 dark:text-gray-400">Name:</span> {selectedApplication.guardianDetails?.guardianName}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Relationship:</span> {selectedApplication.guardianDetails?.relationship}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Phone:</span> {selectedApplication.guardianDetails?.guardianPhone}</p>
-                                            <p><span className="text-gray-600 dark:text-gray-400">Email:</span> {selectedApplication.guardianDetails?.guardianEmail || 'N/A'}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Name:</span> {selectedApplication.guardianDetails?.guardianName}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Relationship:</span> {selectedApplication.guardianDetails?.relationship}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Phone:</span> {selectedApplication.guardianDetails?.guardianPhone}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">Email:</span> {selectedApplication.guardianDetails?.guardianEmail || 'N/A'}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -762,11 +762,11 @@ const ApplicationVerification = () => {
                         </div>
                     ) : (
                         <div className="text-center py-12">
-                            <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
+                            <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-400 dark:text-gray-400 mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 Select an Application
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Choose an application from the list to review its details
                             </p>
                         </div>

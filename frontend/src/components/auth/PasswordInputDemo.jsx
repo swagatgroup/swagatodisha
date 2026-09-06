@@ -25,10 +25,10 @@ const PasswordInputDemo = () => {
                     className="bg-white rounded-2xl shadow-xl p-8"
                 >
                     <div className="text-center mb-8">
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                             Password Input Component Demo
                         </h2>
-                        <p className="text-gray-600">
+                        <p className="text-gray-600 dark:text-gray-300">
                             Showcasing the password visibility toggle functionality
                         </p>
                     </div>

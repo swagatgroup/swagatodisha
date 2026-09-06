@@ -191,11 +191,11 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
         <div className="space-y-6">
             {/* Header with Student Selection */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Document Upload</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Document Upload</h3>
 
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="flex-1">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Student</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Select Student</label>
                         <select
                             value={selectedStudent}
                             onChange={(e) => setSelectedStudent(e.target.value)}
@@ -224,11 +224,11 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                     >
                         <div className="px-6 py-4 border-b border-gray-200">
                             <div className="flex items-center justify-between">
-                                <h4 className="text-md font-semibold text-gray-900">
+                                <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">
                                     {category.name}
                                     {category.required && <span className="text-red-500 ml-1">*</span>}
                                 </h4>
-                                <span className="text-sm text-gray-500">
+                                <span className="text-sm text-gray-500 dark:text-gray-300">
                                     Max {category.maxFiles} files
                                 </span>
                             </div>
@@ -238,7 +238,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {documentTypes[category.id].map((type) => (
                                     <div key={type} className="border border-gray-200 rounded-lg p-4">
-                                        <h5 className="font-medium text-gray-900 mb-3">{type}</h5>
+                                        <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-3">{type}</h5>
 
                                         <input
                                             type="file"
@@ -251,29 +251,29 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                                     e.target.value = '';
                                                 }
                                             }}
-                                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
+                                            className="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
                                             disabled={!selectedStudent || uploading}
                                         />
 
                                         {category.hint && (
-                                            <p className="text-xs text-gray-500 mt-2">{category.hint}</p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-2">{category.hint}</p>
                                         )}
-                                        <p className="text-xs text-gray-500 mt-2">Supported: PDF, JPG, PNG, DOC, DOCX (Max 5MB each)</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-300 mt-2">Supported: PDF, JPG, PNG, DOC, DOCX (Max 5MB each)</p>
                                     </div>
                                 ))}
                             </div>
 
                             {category.id === 'custom' && (
                                 <div className="mt-4 p-4 border rounded-lg bg-gray-50">
-                                    <h6 className="font-medium text-gray-900 mb-2">Add Custom Document</h6>
+                                    <h6 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Add Custom Document</h6>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Custom Label</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Custom Label</label>
                                             <input id="custom-doc-label" type="text" className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]" placeholder="e.g., Migration Certificate" />
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-1">Select File</label>
-                                            <input id="custom-doc-file" type="file" className="w-full text-sm text-gray-500" />
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Select File</label>
+                                            <input id="custom-doc-file" type="file" className="w-full text-sm text-gray-500 dark:text-gray-300" />
                                         </div>
                                         <div>
                                             <button
@@ -312,17 +312,17 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
             {/* Uploaded Documents */}
             <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
-                    <h4 className="text-md font-semibold text-gray-900">Uploaded Documents</h4>
+                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">Uploaded Documents</h4>
                 </div>
 
                 <div className="p-6">
                     {(!Array.isArray(documents) || documents.length === 0) ? (
                         <div className="text-center py-8">
-                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No documents uploaded</h3>
-                            <p className="mt-1 text-sm text-gray-500">Upload documents for the selected student.</p>
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No documents uploaded</h3>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">Upload documents for the selected student.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -337,17 +337,17 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-4">
                                             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                                                <svg className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <svg className="h-6 w-6 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
                                             </div>
 
                                             <div>
-                                                <h5 className="font-medium text-gray-900">{document.type}</h5>
-                                                <p className="text-sm text-gray-500">
+                                                <h5 className="font-medium text-gray-900 dark:text-gray-100">{document.type}</h5>
+                                                <p className="text-sm text-gray-500 dark:text-gray-300">
                                                     {document.student?.personalDetails?.fullName} • {document.student?.studentId}
                                                 </p>
-                                                <p className="text-xs text-gray-400">
+                                                <p className="text-xs text-gray-400 dark:text-gray-300">
                                                     {formatFileSize(document.fileSize)} • {new Date(document.uploadedAt).toLocaleDateString()}
                                                 </p>
                                             </div>
@@ -387,7 +387,7 @@ const DocumentsUpload = ({ onStudentUpdate }) => {
 
                                     {document.remarks && (
                                         <div className="mt-3 p-3 bg-gray-50 rounded">
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-gray-600 dark:text-gray-300">
                                                 <strong>Remarks:</strong> {document.remarks}
                                             </p>
                                         </div>

@@ -175,8 +175,8 @@ const StudentsTab = () => {
             {/* Header Section */}
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Students List</h1>
-                    <p className="text-sm text-gray-500 mt-1">Home / Students</p>
+                    <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Students List</h1>
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Home / Students</p>
                 </div>
                 <button
                     onClick={handleAddStudent}
@@ -223,7 +223,7 @@ const StudentsTab = () => {
             {/* Students Information Table */}
             <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">Students Information</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Students Information</h3>
                 </div>
 
                 {/* Search and Filter Bar */}
@@ -237,7 +237,7 @@ const StudentsTab = () => {
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                             />
-                            <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
@@ -277,16 +277,16 @@ const StudentsTab = () => {
                                         className="rounded border-gray-300 text-[#7B3FA0] focus:ring-[#7B3FA0]"
                                     />
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students Name</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roll</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Address</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Class</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adm. Type</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date of Birth</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referral</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">PDF</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Students Name</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Roll</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Address</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Class</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adm. Type</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date of Birth</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Phone</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Referral</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">PDF</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -301,7 +301,7 @@ const StudentsTab = () => {
                                 </tr>
                             ) : filteredStudents.length === 0 ? (
                                 <tr>
-                                    <td colSpan="9" className="px-6 py-4 text-center text-gray-500">
+                                    <td colSpan="9" className="px-6 py-4 text-center text-gray-500 dark:text-gray-300">
                                         No students found
                                     </td>
                                 </tr>
@@ -326,14 +326,14 @@ const StudentsTab = () => {
                                                     </div>
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">{student.fullName}</div>
-                                                    <div className="text-sm text-gray-500">{student.email}</div>
+                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{student.fullName}</div>
+                                                    <div className="text-sm text-gray-500 dark:text-gray-300">{student.email}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{student.id}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.address}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.class}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">#{student.id}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{student.address}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{student.class}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                                 ((student.admissionType || 'paid') === 'free')
@@ -343,21 +343,21 @@ const StudentsTab = () => {
                                                 {((student.admissionType || 'paid') === 'free') ? 'Free' : 'Paid'}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.dob}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.phone}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{student.dob}</td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{student.phone}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {student.referralCode ? (
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                     {student.referralCode}
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:text-gray-100">
                                                     Direct
                                                 </span>
                                             )}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <span className="text-gray-400 text-xs">N/A</span>
+                                            <span className="text-gray-400 dark:text-gray-300 text-xs">N/A</span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                             <div className="flex space-x-2">
@@ -391,27 +391,27 @@ const StudentsTab = () => {
                 {/* Pagination */}
                 <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">
+                        <button className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700">
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
                         <button className="px-3 py-1 text-sm bg-[#7B3FA0] text-white rounded">1</button>
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">2</button>
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">3</button>
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">4</button>
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">5</button>
-                        <span className="px-2 text-gray-500">...</span>
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">100</button>
-                        <button className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700">
+                        <button className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700">2</button>
+                        <button className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700">3</button>
+                        <button className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700">4</button>
+                        <button className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700">5</button>
+                        <span className="px-2 text-gray-500 dark:text-gray-300">...</span>
+                        <button className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700">100</button>
+                        <button className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700">
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                         </button>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <span className="text-sm text-gray-500">10 / page</span>
-                        <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <span className="text-sm text-gray-500 dark:text-gray-300">10 / page</span>
+                        <svg className="h-4 w-4 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
@@ -424,12 +424,12 @@ const StudentsTab = () => {
                     <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
                         <div className="mt-3">
                             <div className="flex items-center justify-between mb-4">
-                                <h3 className="text-lg font-medium text-gray-900">
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                                     {editingStudent ? 'Edit Student' : 'Add New Student'}
                                 </h3>
                                 <button
                                     onClick={() => setShowAddModal(false)}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -439,7 +439,7 @@ const StudentsTab = () => {
 
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Full Name</label>
                                     <input
                                         type="text"
                                         name="fullName"
@@ -451,7 +451,7 @@ const StudentsTab = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Email</label>
                                     <input
                                         type="email"
                                         name="email"
@@ -463,7 +463,7 @@ const StudentsTab = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Phone</label>
                                     <input
                                         type="tel"
                                         name="phone"
@@ -476,7 +476,7 @@ const StudentsTab = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Course</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Course</label>
                                     <input
                                         type="text"
                                         name="course"
@@ -488,7 +488,7 @@ const StudentsTab = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Address</label>
                                     <input
                                         type="text"
                                         name="address"
@@ -500,7 +500,7 @@ const StudentsTab = () => {
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Class</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Class</label>
                                         <input
                                             type="text"
                                             name="class"
@@ -511,7 +511,7 @@ const StudentsTab = () => {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Date of Birth</label>
                                         <input
                                             type="date"
                                             name="dob"
@@ -523,7 +523,7 @@ const StudentsTab = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Referral Code (Optional)</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Referral Code (Optional)</label>
                                     <input
                                         type="text"
                                         name="referralCode"
@@ -537,7 +537,7 @@ const StudentsTab = () => {
                                     <button
                                         type="button"
                                         onClick={() => setShowAddModal(false)}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                                     >
                                         Cancel
                                     </button>

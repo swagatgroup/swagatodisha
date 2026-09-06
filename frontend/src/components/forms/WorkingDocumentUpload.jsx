@@ -253,7 +253,7 @@ const WorkingDocumentUpload = ({
                             {mockCategories[categoryId]?.name || categoryId}
                         </h3>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                         {mockCategories[categoryId]?.description}
                     </p>
 
@@ -303,12 +303,12 @@ const WorkingDocumentUpload = ({
                         {customDocuments.map((doc) => (
                             <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                                 <div className="flex items-center">
-                                    <DocumentIcon className="w-5 h-5 text-gray-400 mr-3" />
+                                    <DocumentIcon className="w-5 h-5 text-gray-400 dark:text-gray-300 mr-3" />
                                     <div>
                                         <p className="text-sm font-medium text-gray-900 dark:text-white">
                                             {doc.customName}
                                         </p>
-                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        <p className="text-xs text-gray-500 dark:text-gray-300">
                                             {doc.fileName}
                                         </p>
                                     </div>
@@ -464,10 +464,10 @@ const DocumentUploadCard = ({
                             </span>
                         )}
                     </div>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                    <p className="text-xs text-gray-600 dark:text-gray-300 mb-2">
                         {docType.description}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-300">
                         Max size: {docType.maxSize} | Formats: {docType.allowedFormats.join(', ')}
                     </p>
                 </div>
@@ -480,12 +480,12 @@ const DocumentUploadCard = ({
             {document ? (
                 <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
                     <div className="flex items-center">
-                        <DocumentIcon className="w-5 h-5 text-gray-400 mr-3" />
+                        <DocumentIcon className="w-5 h-5 text-gray-400 dark:text-gray-300 mr-3" />
                         <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">
                                 {document.fileName}
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 dark:text-gray-300">
                                 {(document.fileSize / 1024 / 1024).toFixed(2)} MB
                             </p>
                         </div>
@@ -532,15 +532,15 @@ const DocumentUploadCard = ({
                     {uploading ? (
                         <div className="flex flex-col items-center">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0] mb-2"></div>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">Uploading...</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">Uploading...</p>
                         </div>
                     ) : (
                         <div className="flex flex-col items-center">
-                            <CloudArrowUpIcon className="w-8 h-8 text-gray-400 mb-2" />
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <CloudArrowUpIcon className="w-8 h-8 text-gray-400 dark:text-gray-300 mb-2" />
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
                                 Click to upload or drag and drop
                             </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                 {docType.allowedFormats.join(', ').toUpperCase()} up to {docType.maxSize}
                             </p>
                             <button

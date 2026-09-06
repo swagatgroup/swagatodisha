@@ -115,8 +115,8 @@ const StudentAcademic = () => {
             >
                 <div className="flex items-center justify-between">
                     <div>
-                        <h2 className="text-2xl font-bold text-gray-900">Academic Dashboard</h2>
-                        <p className="text-gray-600">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Academic Dashboard</h2>
+                        <p className="text-gray-600 dark:text-gray-300">
                             {academicData.course ? academicData.course.name : 'Course information not available'}
                         </p>
                     </div>
@@ -170,37 +170,37 @@ const StudentAcademic = () => {
                 >
                     {/* Course Information */}
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Course Information</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Course Information</h3>
                         {academicData.course ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <h4 className="font-medium text-gray-900">{academicData.course.name}</h4>
-                                    <p className="text-gray-600">{academicData.course.description}</p>
+                                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{academicData.course.name}</h4>
+                                    <p className="text-gray-600 dark:text-gray-300">{academicData.course.description}</p>
                                     <div className="mt-4 space-y-2">
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">
                                             <span className="font-medium">Duration:</span> {academicData.course.duration}
                                         </p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">
                                             <span className="font-medium">Credits:</span> {academicData.course.credits}
                                         </p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">
                                             <span className="font-medium">Instructor:</span> {academicData.course.instructor}
                                         </p>
                                     </div>
                                 </div>
                                 <div>
-                                    <h5 className="font-medium text-gray-900 mb-2">Course Progress</h5>
+                                    <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Course Progress</h5>
                                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                                         <div
                                             className="bg-[#7B3FA0] h-2 rounded-full"
                                             style={{ width: `${academicData.course.progress || 0}%` }}
                                         ></div>
                                     </div>
-                                    <p className="text-sm text-gray-600">{academicData.course.progress || 0}% Complete</p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-300">{academicData.course.progress || 0}% Complete</p>
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-gray-500">No course information available</p>
+                            <p className="text-gray-500 dark:text-gray-300">No course information available</p>
                         )}
                     </div>
 
@@ -214,8 +214,8 @@ const StudentAcademic = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-4">
-                                    <p className="text-sm font-medium text-gray-600">Assignments</p>
-                                    <p className="text-2xl font-semibold text-gray-900">{academicData.assignments.length}</p>
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Assignments</p>
+                                    <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{academicData.assignments.length}</p>
                                 </div>
                             </div>
                         </div>
@@ -228,8 +228,8 @@ const StudentAcademic = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-4">
-                                    <p className="text-sm font-medium text-gray-600">Completed</p>
-                                    <p className="text-2xl font-semibold text-gray-900">
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
+                                    <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                         {academicData.assignments.filter(a => a.status === 'graded').length}
                                     </p>
                                 </div>
@@ -244,8 +244,8 @@ const StudentAcademic = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-4">
-                                    <p className="text-sm font-medium text-gray-600">Pending</p>
-                                    <p className="text-2xl font-semibold text-gray-900">
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
+                                    <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                         {academicData.assignments.filter(a => a.status === 'pending').length}
                                     </p>
                                 </div>
@@ -260,8 +260,8 @@ const StudentAcademic = () => {
                                     </svg>
                                 </div>
                                 <div className="ml-4">
-                                    <p className="text-sm font-medium text-gray-600">Average Grade</p>
-                                    <p className="text-2xl font-semibold text-gray-900">
+                                    <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Average Grade</p>
+                                    <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                                         {academicData.grades.length > 0
                                             ? (academicData.grades.reduce((sum, g) => sum + g.grade, 0) / academicData.grades.length).toFixed(1)
                                             : 'N/A'
@@ -274,7 +274,7 @@ const StudentAcademic = () => {
 
                     {/* Upcoming Deadlines */}
                     <div className="bg-white rounded-lg shadow p-6">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Deadlines</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Upcoming Deadlines</h3>
                         <div className="space-y-3">
                             {filteredAssignments
                                 .filter(a => new Date(a.dueDate) > new Date())
@@ -283,11 +283,11 @@ const StudentAcademic = () => {
                                 .map(assignment => (
                                     <div key={assignment._id} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
                                         <div>
-                                            <h4 className="font-medium text-gray-900">{assignment.title}</h4>
-                                            <p className="text-sm text-gray-600">{assignment.subject}</p>
+                                            <h4 className="font-medium text-gray-900 dark:text-gray-100">{assignment.title}</h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300">{assignment.subject}</p>
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-sm font-medium text-gray-900">
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {new Date(assignment.dueDate).toLocaleDateString()}
                                             </p>
                                             <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(assignment.status)}`}>
@@ -309,7 +309,7 @@ const StudentAcademic = () => {
                     className="bg-white rounded-lg shadow"
                 >
                     <div className="px-6 py-4 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900">Assignments</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Assignments</h3>
                     </div>
                     <div className="divide-y divide-gray-200">
                         {filteredAssignments.map((assignment, index) => (
@@ -323,19 +323,19 @@ const StudentAcademic = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
                                         <div className="flex items-center space-x-3 mb-2">
-                                            <h4 className="text-lg font-semibold text-gray-900">{assignment.title}</h4>
+                                            <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{assignment.title}</h4>
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(assignment.status)}`}>
                                                 {assignment.status.toUpperCase()}
                                             </span>
                                         </div>
-                                        <p className="text-gray-600 mb-2">{assignment.description}</p>
-                                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                        <p className="text-gray-600 dark:text-gray-300 mb-2">{assignment.description}</p>
+                                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-300">
                                             <span>Subject: {assignment.subject}</span>
                                             <span>Due: {new Date(assignment.dueDate).toLocaleDateString()}</span>
                                             <span>Points: {assignment.points}</span>
                                         </div>
                                         {assignment.instructions && (
-                                            <p className="text-sm text-gray-600 mt-2 italic">"{assignment.instructions}"</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">"{assignment.instructions}"</p>
                                         )}
                                     </div>
                                     <div className="flex items-center space-x-2">
@@ -344,7 +344,7 @@ const StudentAcademic = () => {
                                                 Submit
                                             </button>
                                         )}
-                                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
+                                        <button className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 hover:bg-gray-100 rounded-lg">
                                             View Details
                                         </button>
                                     </div>
@@ -363,7 +363,7 @@ const StudentAcademic = () => {
                     className="bg-white rounded-lg shadow"
                 >
                     <div className="px-6 py-4 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900">Grades</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Grades</h3>
                     </div>
                     <div className="divide-y divide-gray-200">
                         {academicData.grades.filter(matchesStudentCourse).map((grade, index) => (
@@ -376,14 +376,14 @@ const StudentAcademic = () => {
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
-                                        <h4 className="text-lg font-semibold text-gray-900">{grade.assignment}</h4>
-                                        <p className="text-gray-600 mb-2">{grade.subject}</p>
-                                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                                        <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{grade.assignment}</h4>
+                                        <p className="text-gray-600 dark:text-gray-300 mb-2">{grade.subject}</p>
+                                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-300">
                                             <span>Submitted: {new Date(grade.submittedDate).toLocaleDateString()}</span>
                                             <span>Graded: {new Date(grade.gradedDate).toLocaleDateString()}</span>
                                         </div>
                                         {grade.feedback && (
-                                            <p className="text-sm text-gray-600 mt-2 italic">"{grade.feedback}"</p>
+                                            <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">"{grade.feedback}"</p>
                                         )}
                                     </div>
                                     <div className="text-right">
@@ -409,7 +409,7 @@ const StudentAcademic = () => {
                     className="bg-white rounded-lg shadow"
                 >
                     <div className="px-6 py-4 border-b border-gray-200">
-                        <h3 className="text-lg font-semibold text-gray-900">Course Materials</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Course Materials</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                         {filteredMaterials.map((material, index) => (
@@ -427,13 +427,13 @@ const StudentAcademic = () => {
                                         </svg>
                                     </div>
                                     <div>
-                                        <h4 className="font-semibold text-gray-900">{material.title}</h4>
-                                        <p className="text-sm text-gray-600">{material.type}</p>
+                                        <h4 className="font-semibold text-gray-900 dark:text-gray-100">{material.title}</h4>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">{material.type}</p>
                                     </div>
                                 </div>
-                                <p className="text-sm text-gray-600 mb-3">{material.description}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{material.description}</p>
                                 <div className="flex items-center justify-between">
-                                    <span className="text-xs text-gray-500">
+                                    <span className="text-xs text-gray-500 dark:text-gray-300">
                                         {new Date(material.uploadDate).toLocaleDateString()}
                                     </span>
                                     <a href={material.url || material.fileUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]">
@@ -443,7 +443,7 @@ const StudentAcademic = () => {
                             </motion.div>
                         ))}
                         {filteredMaterials.length === 0 && (
-                            <div className="col-span-full text-center text-gray-500 py-8">No materials available for your course yet.</div>
+                            <div className="col-span-full text-center text-gray-500 dark:text-gray-300 py-8">No materials available for your course yet.</div>
                         )}
                     </div>
                 </motion.div>

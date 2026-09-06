@@ -29,7 +29,7 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           onClick={onEnterMainSite}
         >
           <div className="h-72 bg-[#D0E8F0] rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-blue-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-[#387B95] text-3xl shadow-sm border border-blue-50">
+            <div className="w-20 h-20 bg-white dark:bg-[#2A1E2E] rounded-full mb-6 flex items-center justify-center text-[#387B95] text-3xl shadow-sm border border-blue-50">
                <i className="fa-solid fa-building-columns"></i>
             </div>
             <h2 className="text-2xl font-bold text-[#1e3a8a] mb-2">Swagat Odisha</h2>
@@ -50,7 +50,7 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           className="relative group w-full max-w-[320px] block"
         >
           <div className="h-72 bg-pink-50 rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-pink-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-pink-600 text-3xl shadow-sm border border-pink-50">
+            <div className="w-20 h-20 bg-white dark:bg-[#2A1E2E] rounded-full mb-6 flex items-center justify-center text-pink-600 text-3xl shadow-sm border border-pink-50">
                <i className="fa-solid fa-laptop-code"></i>
             </div>
             <h2 className="text-2xl font-bold text-[#831843] mb-2">RCTI</h2>
@@ -71,7 +71,7 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           className="relative group w-full max-w-[320px] block"
         >
           <div className="h-72 bg-green-50 rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-green-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-green-600 text-3xl shadow-sm border border-green-50">
+            <div className="w-20 h-20 bg-white dark:bg-[#2A1E2E] rounded-full mb-6 flex items-center justify-center text-green-600 text-3xl shadow-sm border border-green-50">
                <i className="fa-solid fa-school"></i>
             </div>
             <h2 className="text-2xl font-bold text-green-900 mb-2">Public School</h2>
@@ -91,7 +91,7 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           className="relative group w-full max-w-[320px] block"
         >
           <div className="h-72 bg-[#EDE0F7] rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-purple-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-[#7B3FA0] text-3xl shadow-sm border border-purple-50">
+            <div className="w-20 h-20 bg-white dark:bg-[#2A1E2E] rounded-full mb-6 flex items-center justify-center text-[#7B3FA0] text-3xl shadow-sm border border-purple-50">
                <i className="fa-solid fa-school"></i>
             </div>
             <h2 className="text-2xl font-bold text-purple-900 mb-2">Public School</h2>
@@ -111,7 +111,7 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           className="relative group w-full max-w-[320px] block"
         >
           <div className="h-72 bg-orange-50 rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-orange-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-orange-600 text-3xl shadow-sm border border-orange-50">
+            <div className="w-20 h-20 bg-white dark:bg-[#2A1E2E] rounded-full mb-6 flex items-center justify-center text-orange-600 text-3xl shadow-sm border border-orange-50">
                <i className="fa-solid fa-school"></i>
             </div>
             <h2 className="text-2xl font-bold text-orange-900 mb-2">Public School</h2>
@@ -131,7 +131,7 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           className="relative group w-full max-w-[320px] block"
         >
           <div className="h-72 bg-teal-50 rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-teal-100/50">
-            <div className="w-20 h-20 bg-white rounded-full mb-6 flex items-center justify-center text-teal-600 text-3xl shadow-sm border border-teal-50">
+            <div className="w-20 h-20 bg-white dark:bg-[#2A1E2E] rounded-full mb-6 flex items-center justify-center text-teal-600 text-3xl shadow-sm border border-teal-50">
                <i className="fa-solid fa-book-open"></i>
             </div>
             <h2 className="text-2xl font-bold text-teal-900 mb-2">Coaching Centre</h2>

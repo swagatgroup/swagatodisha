@@ -1310,10 +1310,10 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
             case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
             case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'COMPLETE': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -1327,7 +1327,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
             case 'C1': return 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400';
             case 'C2': return 'bg-indigo-100 text-indigo-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
             case 'C3': return 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400';
+            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -1556,18 +1556,18 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         {listType === 'direct' ? 'Direct Students' : 'Our Students'}
                     </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                         {listType === 'direct' 
                             ? 'View and manage self-registered students and student-to-student referrals' 
                             : 'View and manage all verified student applications from agents, staff, and super admins'}
                     </p>
                 </div>
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-sm text-gray-500 dark:text-gray-300">
                     {totalItems > 0 ? (
                         <>
                             {totalItems} {totalItems === 1 ? 'Student' : 'Students'}
                             {totalPages > 1 && (
-                                <span className="ml-2 text-gray-400">
+                                <span className="ml-2 text-gray-400 dark:text-gray-300">
                                     (Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems})
                                 </span>
                             )}
@@ -1928,13 +1928,13 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             <tr>
                                 <td colSpan="11" className="px-6 py-12 text-center">
                                     <div className="flex flex-col items-center justify-center">
-                                        <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                                         </svg>
                                         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                             No students found
                                         </h3>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                        <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                                             {searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || filterCampus !== 'all' || filterSubmitterRole !== 'all'
                                                 ? 'Try adjusting your search criteria or filters.'
                                                 : selectedSession
@@ -1985,7 +1985,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         {student.fullName}
                                                     </div>
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
                                                         ID: {student.applicationId}
                                                     </div>
                                                 </div>
@@ -2351,13 +2351,13 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                         Full Application Details
                                     </h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                         Application ID: {selectedStudent.applicationId} | Status: <span className={`font-semibold ${getStatusColor(selectedStudent.status)}`}>{selectedStudent.status}</span>
                                     </p>
                                 </div>
                                 <button
                                     onClick={() => setShowDetailsModal(false)}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -2376,23 +2376,23 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Full Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Full Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.fullName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Father's Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Father's Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.fathersName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Mother's Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Mother's Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.mothersName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Gender</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Gender</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.gender || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Date of Birth</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Date of Birth</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {selectedStudent.personalDetails?.dateOfBirth 
                                                     ? formatDate(selectedStudent.personalDetails.dateOfBirth) 
@@ -2400,11 +2400,11 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                             </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Aadhar Number</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Aadhar Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.aadharNumber || selectedStudent.aadharNumber || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Category</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Category</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.category || selectedStudent.personalDetails?.status || selectedStudent.category || 'N/A'}</p>
                                         </div>
                                     </div>
@@ -2420,15 +2420,15 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Phone Number</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Phone Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Email</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Email</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">WhatsApp Number</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">WhatsApp Number</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.whatsappNumber || 'N/A'}</p>
                                         </div>
                                     </div>
@@ -2451,37 +2451,37 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Permanent Address</h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div className="md:col-span-2">
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Street Address</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.permanentAddress?.street || selectedStudent.contactDetails?.address || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">City</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.permanentAddress?.city || selectedStudent.contactDetails?.city || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">State</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.permanentAddress?.state || selectedStudent.contactDetails?.state || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Pincode</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.permanentAddress?.pincode || selectedStudent.contactDetails?.pincode || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">District</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.district || selectedStudent.contactDetails?.permanentAddress?.district || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Country</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.permanentAddress?.country || 'India'}
                                                             </p>
@@ -2495,37 +2495,37 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Current Address</h5>
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                         <div className="md:col-span-2">
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Street Address</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Street Address</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.street || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">City</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">City</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.city || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">State</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">State</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.state || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Pincode</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Pincode</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.pincode || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">District</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">District</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails?.currentAddress?.district || 'N/A'}
                                                             </p>
                                                         </div>
                                                         <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Country</label>
+                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Country</label>
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                                 {selectedStudent.contactDetails.currentAddress.country || 'India'}
                                                             </p>
@@ -2547,7 +2547,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Institution Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Institution Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                  {(() => {
                                                      const inst = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
@@ -2573,15 +2573,15 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                              </p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Course Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Course Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.selectedCourse || selectedStudent.course || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Stream</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Stream</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.stream || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Campus</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Campus</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {selectedStudent.courseDetails?.campus?.name || 
                                                  (typeof selectedStudent.courseDetails?.campus === 'string' ? selectedStudent.courseDetails.campus : '') || 
@@ -2601,19 +2601,19 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Name</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Name</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianName || selectedStudent.guardianName || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Phone</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Phone</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianPhone || selectedStudent.guardianPhone || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Relation</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Relation</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.relationship || selectedStudent.guardianDetails?.guardianRelation || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Guardian Email</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Email</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianEmail || 'N/A'}</p>
                                         </div>
                                     </div>
@@ -2645,7 +2645,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
                                     {editingCourseFee && (
                                         <form onSubmit={handleUpdateCourseFee} className="mb-4 p-4 border border-purple-200 bg-white rounded-lg">
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">Total Course Fee (₹)</label>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Total Course Fee (₹)</label>
                                             <div className="flex gap-2">
                                                 <input
                                                     type="number"
@@ -2668,19 +2668,19 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="bg-white dark:bg-[#2A1E2E] p-3 rounded border border-gray-200 dark:border-gray-700">
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Course Fee</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Course Fee</label>
                                             <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
                                                 ₹{selectedStudent.financialStatus?.totalFees || 0}
                                             </p>
                                         </div>
                                         <div className="bg-white dark:bg-[#2A1E2E] p-3 rounded border border-gray-200 dark:border-gray-700">
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Paid</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Paid</label>
                                             <p className="text-lg font-bold text-green-600">
                                                 ₹{selectedStudent.financialStatus?.paidAmount || 0}
                                             </p>
                                         </div>
                                         <div className="bg-white dark:bg-[#2A1E2E] p-3 rounded border border-gray-200 dark:border-gray-700">
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Due Amount</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Due Amount</label>
                                             <p className="text-lg font-bold text-red-600">
                                                 ₹{selectedStudent.financialStatus?.dueAmount || 0}
                                             </p>
@@ -2703,13 +2703,13 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType || doc.fileName}</p>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                                                 Status: <span className={`font-semibold ${doc.status === 'APPROVED' ? 'text-green-600' : doc.status === 'REJECTED' ? 'text-red-600' : 'text-yellow-600'}`}>
                                                                     {doc.status || 'PENDING'}
                                                                 </span>
                                                             </p>
                                                             {doc.uploadedAt && (
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                <p className="text-xs text-gray-500 dark:text-gray-300">
                                                                     Uploaded: {formatDate(doc.uploadedAt)}
                                                                 </p>
                                                             )}
@@ -2755,19 +2755,19 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                           
                                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                               <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Account Holder Name</label>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Account Holder Name</label>
                                                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.accountHolderName}</p>
                                               </div>
                                               <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Bank Name</label>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Bank Name</label>
                                                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.bankName}</p>
                                               </div>
                                               <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Account Number</label>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Account Number</label>
                                                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.bankAccountNumber}</p>
                                               </div>
                                               <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-400">IFSC Code</label>
+                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">IFSC Code</label>
                                                   <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.ifscCode}</p>
                                               </div>
                                           </div>
@@ -2870,29 +2870,29 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitted By</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Submitted By</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.referredBy || 'Direct Student'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved By</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Approved By</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.approvedBy || 'Pending'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Referral Code</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Referral Code</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.referralCode || 'N/A'}</p>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Submitted Date</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Submitted Date</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.submittedAt || selectedStudent.createdAt)}</p>
                                         </div>
                                         {(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt) && selectedStudent.status === 'APPROVED' && (
                                             <div>
-                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Approved Date</label>
+                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Approved Date</label>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt)}</p>
                                             </div>
                                         )}
                                         <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-400">Current Stage</label>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Current Stage</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {['APPROVED', 'REJECTED'].includes(selectedStudent.status) ? selectedStudent.status : (selectedStudent.currentStage || selectedStudent.status)}
                                             </p>
@@ -2962,7 +2962,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 Edit Student - {selectedStudent.fullName || selectedStudent.personalDetails?.fullName || 'N/A'}
                             </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                 Edit all student information fields below
                             </p>
                         </div>
@@ -3051,7 +3051,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                                Aadhar Number {!isSuperAdmin && <span className="text-xs text-gray-500">(Read-only)</span>}
+                                                Aadhar Number {!isSuperAdmin && <span className="text-xs text-gray-500 dark:text-gray-300">(Read-only)</span>}
                                             </label>
                                             <input
                                                 type="text"
@@ -3374,7 +3374,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                 {/* Education Details Section - RESTRICTED for Staff */}
                                 <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
                                     <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                                        Education Details {!isSuperAdmin && <span className="text-xs font-normal text-gray-500">(Read-only for Staff)</span>}
+                                        Education Details {!isSuperAdmin && <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(Read-only for Staff)</span>}
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
@@ -3563,14 +3563,14 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                     Select Documents for {generationType === 'pdf' ? 'PDF' : 'ZIP'}
                                 </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                     Choose which documents to include in the {generationType === 'pdf' ? 'combined PDF' : 'ZIP file'}
                                 </p>
                             </div>
                             <button
                                 onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                 disabled={generating}
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
                             >
                                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3584,7 +3584,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
                                 if (approvedDocs.length === 0) {
                                     return (
-                                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                             <svg className="h-12 w-12 mx-auto mb-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
                                             </svg>
@@ -3596,7 +3596,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                 return (
                                     <div className="space-y-3">
                                         <div className="flex justify-between items-center mb-4">
-                                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                            <span className="text-sm text-gray-600 dark:text-gray-300">
                                                 {approvedDocs.length} approved document{approvedDocs.length !== 1 ? 's' : ''} available
                                             </span>
                                             <div className="flex space-x-2">
@@ -3608,7 +3608,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                 </button>
                                                 <button
                                                     onClick={clearDocumentSelection}
-                                                    className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400"
+                                                    className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300"
                                                 >
                                                     Clear All
                                                 </button>
@@ -3640,7 +3640,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                                         <p className="font-medium text-gray-900 dark:text-gray-100">
                                                             {label}
                                                         </p>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                        <p className="text-sm text-gray-600 dark:text-gray-300">
                                                             {doc.fileName || doc.documentType}
                                                         </p>
                                                         <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
@@ -3729,11 +3729,11 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                             <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={() => setPhotoPreview(null)}></div>
                         </div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div className="inline-block align-bottom bg-white dark:bg-[#2A1E2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <div className="sm:flex sm:items-start">
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
+                                        <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
                                             Passport Photo
                                         </h3>
                                         <div className="mt-2 flex justify-center bg-gray-100 p-4 rounded-lg">
@@ -3783,7 +3783,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                 </button>
                                 <button
                                     type="button"
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={() => setPhotoPreview(null)}
                                 >
                                     Close
@@ -3801,14 +3801,14 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                         <div className="relative bg-white dark:bg-[#2A1E2E] rounded-xl shadow-2xl w-full max-w-md p-6 z-10">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Migrate Student</h3>
-                                <button onClick={() => setShowMigrateModal(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                                <button onClick={() => setShowMigrateModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200">
                                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
 
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-5">
+                            <p className="text-sm text-gray-500 dark:text-gray-300 mb-5">
                                 Student: <strong className="text-gray-800 dark:text-gray-200">{migrateStudent?.personalDetails?.fullName || 'Unknown'}</strong>
                                 <br />Select who referred / influenced this student, or move them to Direct Students.
                             </p>
@@ -3862,7 +3862,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                                         Select {migrateRole === 'agent' ? 'Agent' : 'Staff Member'}
                                     </label>
                                     {migrateMembers.length === 0 ? (
-                                        <p className="text-sm text-gray-400">No {migrateRole}s found.</p>
+                                        <p className="text-sm text-gray-400 dark:text-gray-300">No {migrateRole}s found.</p>
                                     ) : (
                                         <select
                                             value={migrateSelectedId}
@@ -3880,7 +3880,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
 
                             {/* Step 3: super_admin shortcut — use current admin's ID */}
                             {migrateRole === 'super_admin' && (
-                                <div className="mb-5 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-600 dark:text-gray-400">
+                                <div className="mb-5 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-600 dark:text-gray-300">
                                     This student will be assigned under Super Admin directly.
                                 </div>
                             )}

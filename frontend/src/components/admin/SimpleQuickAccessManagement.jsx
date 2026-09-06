@@ -206,7 +206,7 @@ const SimpleQuickAccessManagement = () => {
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Quick Access Documents</h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                         Manage Time Tables, Career Roadmaps, and Results documents
                     </p>
                 </div>
@@ -235,7 +235,7 @@ const SimpleQuickAccessManagement = () => {
                             className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                                 activeCategory === category.id
                                     ? `bg-${category.color}-100 text-${category.color}-700 dark:bg-${category.color}-900 dark:text-${category.color}-300`
-                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                         >
                             <i className={`${category.icon} ${activeCategory === category.id ? 'text-lg' : ''}`}></i>
@@ -243,7 +243,7 @@ const SimpleQuickAccessManagement = () => {
                             <span className={`px-2 py-0.5 text-xs rounded ${
                                 activeCategory === category.id
                                     ? `bg-${category.color}-200 text-${category.color}-800 dark:bg-${category.color}-800 dark:text-${category.color}-200`
-                                    : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                                    : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
                             }`}>
                                 {documents.filter(d => d.type === category.id).length}
                             </span>
@@ -344,7 +344,7 @@ const SimpleQuickAccessManagement = () => {
                                 accept=".pdf,.jpg,.jpeg,.png"
                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
                             />
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                 Supported formats: PDF, JPG, PNG (Max 10MB)
                             </p>
                             {editingDoc && editingDoc.file && (
@@ -394,8 +394,8 @@ const SimpleQuickAccessManagement = () => {
                 <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     {filteredDocuments.length === 0 ? (
                         <div className="text-center py-12">
-                            <i className={`${categories.find(c => c.id === activeCategory)?.icon} text-4xl text-gray-400 mb-4`}></i>
-                            <p className="text-gray-500 dark:text-gray-400">No {categories.find(c => c.id === activeCategory)?.name.toLowerCase()} found</p>
+                            <i className={`${categories.find(c => c.id === activeCategory)?.icon} text-4xl text-gray-400 dark:text-gray-300 mb-4`}></i>
+                            <p className="text-gray-500 dark:text-gray-300">No {categories.find(c => c.id === activeCategory)?.name.toLowerCase()} found</p>
                             <button
                                 onClick={() => {
                                     resetForm();
@@ -428,11 +428,11 @@ const SimpleQuickAccessManagement = () => {
                                                 </span>
                                             </div>
                                             {doc.description && (
-                                                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                                     {doc.description}
                                                 </p>
                                             )}
-                                            <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                            <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-300">
                                                 {doc.file && (
                                                     <a
                                                         href={doc.file}

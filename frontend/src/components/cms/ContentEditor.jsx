@@ -156,7 +156,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                                 ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
+                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-300 dark:hover:text-gray-300'
                             }`}
                     >
                         <tab.icon className="h-5 w-5 mr-2" />
@@ -187,7 +187,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     Slug *
                 </label>
                 <div className="flex">
-                    <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400 text-sm">
+                    <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-300 text-sm">
                         /
                     </span>
                     <input
@@ -266,7 +266,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                         </div>
                         <button
                             onClick={() => setPreviewMode(!previewMode)}
-                            className="flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200"
+                            className="flex items-center text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-200"
                         >
                             <EyeIcon className="h-4 w-4 mr-1" />
                             {previewMode ? 'Edit' : 'Preview'}
@@ -317,7 +317,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="SEO title (max 60 characters)"
                 />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                     {formData.metaTitle.length}/60 characters
                 </p>
             </div>
@@ -334,7 +334,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="SEO description (max 160 characters)"
                 />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                     {formData.metaDescription.length}/160 characters
                 </p>
             </div>
@@ -350,7 +350,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#387B95] focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="keyword1, keyword2, keyword3"
                 />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                     Separate keywords with commas
                 </p>
             </div>
@@ -402,8 +402,8 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                     Additional Images
                 </label>
                 <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center">
-                    <PhotoIcon className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">
+                    <PhotoIcon className="h-12 w-12 text-gray-400 dark:text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500 dark:text-gray-300">
                         Drag and drop images here or click to upload
                     </p>
                 </div>
@@ -531,7 +531,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                             <button
                                 onClick={() => handleSave(false)}
                                 disabled={loading}
-                                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 disabled:opacity-50"
                             >
                                 {loading ? 'Saving...' : 'Save Draft'}
                             </button>
@@ -544,7 +544,7 @@ const ContentEditor = ({ content, onSave, onCancel }) => {
                             </button>
                             <button
                                 onClick={onCancel}
-                                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                                className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700"
                             >
                                 Cancel
                             </button>

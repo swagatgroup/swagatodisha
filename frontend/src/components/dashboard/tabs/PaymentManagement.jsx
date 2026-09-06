@@ -594,7 +594,7 @@ const PaymentManagement = () => {
                             className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-l-lg bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-[#387B95] focus:border-blue-500 text-sm"
                         />
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </div>
@@ -606,7 +606,7 @@ const PaymentManagement = () => {
                         Search
                     </button>
                 </form>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-gray-500 dark:text-gray-300">
                     {selectedIds.length} selected
                 </div>
             </div>
@@ -621,7 +621,7 @@ const PaymentManagement = () => {
                         </div>
                         <div>
                             <h3 className="font-semibold text-gray-900 dark:text-gray-100">Recent Payments</h3>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Sorted by most recent installment date — all management actions available</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-300">Sorted by most recent installment date — all management actions available</p>
                         </div>
                     </div>
 
@@ -647,7 +647,7 @@ const PaymentManagement = () => {
                             <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
                                 {recentPayments.length === 0 && !recentLoading ? (
                                     <tr>
-                                        <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                        <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                                             <div className="flex flex-col items-center gap-2">
                                                 <i className="fa-solid fa-receipt text-3xl text-gray-300"></i>
                                                 <p className="font-medium">No recent payments found</p>
@@ -671,10 +671,10 @@ const PaymentManagement = () => {
                                                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{app.personalDetails?.fullName || 'N/A'}</span>
                                                 </div>
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 font-mono">{app.applicationId}</td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 font-mono">{app.applicationId}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm text-gray-900 dark:text-gray-100">{instDate}</div>
-                                                {inst.installmentNumber && <div className="text-xs text-gray-400">Installment #{inst.installmentNumber}</div>}
+                                                {inst.installmentNumber && <div className="text-xs text-gray-400 dark:text-gray-300">Installment #{inst.installmentNumber}</div>}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">₹{(inst.amount || 0).toLocaleString('en-IN')}</div>
@@ -712,7 +712,7 @@ const PaymentManagement = () => {
                                                 )}
                                                 <button
                                                     onClick={() => handlePrintReceipt()}
-                                                    className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                                    className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
                                                     title="Print Receipt"
                                                 >
                                                     <i className="fa-solid fa-print text-xs"></i>
@@ -728,15 +728,15 @@ const PaymentManagement = () => {
                     {/* Recent Payments Pagination */}
                     {recentPayments.length > 0 && (
                         <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between gap-4">
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-gray-500 dark:text-gray-300">
                                 Showing page <span className="font-medium text-gray-900 dark:text-gray-100">{recentPage}</span> of <span className="font-medium text-gray-900 dark:text-gray-100">{recentTotalPages}</span>
                             </div>
                             <div className="flex space-x-2">
-                                <button onClick={() => setRecentPage(p => Math.max(p - 1, 1))} disabled={recentPage === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 transition-colors">Prev</button>
+                                <button onClick={() => setRecentPage(p => Math.max(p - 1, 1))} disabled={recentPage === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 dark:bg-gray-800 transition-colors">Prev</button>
                                 {Array.from({ length: recentTotalPages }, (_, i) => i + 1).slice(Math.max(0, recentPage - 3), recentPage + 2).map(pn => (
-                                    <button key={pn} onClick={() => setRecentPage(pn)} className={`px-3 py-1 border rounded text-sm transition-colors ${recentPage === pn ? 'bg-[#7B3FA0] text-white border-[#7B3FA0] shadow-sm' : 'hover:bg-gray-50'}`}>{pn}</button>
+                                    <button key={pn} onClick={() => setRecentPage(pn)} className={`px-3 py-1 border rounded text-sm transition-colors ${recentPage === pn ? 'bg-[#7B3FA0] text-white border-[#7B3FA0] shadow-sm' : 'hover:bg-gray-50 dark:bg-gray-800'}`}>{pn}</button>
                                 ))}
-                                <button onClick={() => setRecentPage(p => Math.min(p + 1, recentTotalPages))} disabled={recentPage === recentTotalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 transition-colors">Next</button>
+                                <button onClick={() => setRecentPage(p => Math.min(p + 1, recentTotalPages))} disabled={recentPage === recentTotalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 dark:bg-gray-800 transition-colors">Next</button>
                             </div>
                         </div>
                     )}
@@ -775,19 +775,19 @@ const PaymentManagement = () => {
                         <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
                             {activeStatus === null ? (
                                 <tr>
-                                    <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                                         <div className="flex flex-col items-center justify-center space-y-2">
-                                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                                             </svg>
                                             <p className="font-semibold text-base text-gray-700 dark:text-gray-300">No Status Selected</p>
-                                            <p className="text-sm text-gray-400">Click one of the status buttons above to view and manage students.</p>
+                                            <p className="text-sm text-gray-400 dark:text-gray-300">Click one of the status buttons above to view and manage students.</p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : applications.length === 0 ? (
                                 <tr>
-                                    <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                                         No students found matching this criteria
                                     </td>
                                 </tr>
@@ -807,7 +807,7 @@ const PaymentManagement = () => {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                                 {app.personalDetails?.fullName || 'N/A'}
                                             </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                                 {app.applicationId}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
@@ -857,7 +857,7 @@ const PaymentManagement = () => {
                 {/* Pagination UI */}
                 {totalPages > 1 && (
                     <div className="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 dark:text-gray-300">
                             Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
                         </div>
                         <div className="flex space-x-1">
@@ -899,7 +899,7 @@ const PaymentManagement = () => {
                                 Manage Payments for {selectedApp.personalDetails?.fullName}
                             </h3>
                             <button
-                                className="text-gray-400 hover:text-gray-500"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-500"
                                 onClick={() => setIsModalOpen(false)}
                             >
                                 <span className="text-2xl">×</span>
@@ -930,7 +930,7 @@ const PaymentManagement = () => {
                                 </div>
                                 
                                 {formData.installments.length === 0 ? (
-                                    <p className="text-sm text-gray-500 italic text-center py-2 bg-gray-50 dark:bg-gray-700/50 rounded">No installments added yet.</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-300 italic text-center py-2 bg-gray-50 dark:bg-gray-700/50 rounded">No installments added yet.</p>
                                 ) : (
                                     <div className="space-y-3 max-h-[300px] overflow-y-auto pr-1">
                                         {formData.installments.map((inst, index) => (
@@ -956,7 +956,7 @@ const PaymentManagement = () => {
                                                 
                                                 <div className="grid grid-cols-2 gap-2 mb-2">
                                                     <div>
-                                                        <label className="block text-xs text-gray-500 mb-1">Amount (₹)</label>
+                                                        <label className="block text-xs text-gray-500 dark:text-gray-300 mb-1">Amount (₹)</label>
                                                         <input 
                                                             type="number" 
                                                             value={inst.amount}
@@ -965,7 +965,7 @@ const PaymentManagement = () => {
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs text-gray-500 mb-1">Date</label>
+                                                        <label className="block text-xs text-gray-500 dark:text-gray-300 mb-1">Date</label>
                                                         <input 
                                                             type="date" 
                                                             value={inst.date ? inst.date.substring(0,10) : ''}
@@ -976,7 +976,7 @@ const PaymentManagement = () => {
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-2">
                                                     <div>
-                                                        <label className="block text-xs text-gray-500 mb-1">Method</label>
+                                                        <label className="block text-xs text-gray-500 dark:text-gray-300 mb-1">Method</label>
                                                         <select 
                                                             value={inst.paymentMethod || 'Bank Transfer'}
                                                             onChange={(e) => handleInstallmentChange(index, 'paymentMethod', e.target.value)}
@@ -990,7 +990,7 @@ const PaymentManagement = () => {
                                                         </select>
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs text-gray-500 mb-1">Status</label>
+                                                        <label className="block text-xs text-gray-500 dark:text-gray-300 mb-1">Status</label>
                                                         <select 
                                                             value={inst.status}
                                                             onChange={(e) => handleInstallmentChange(index, 'status', e.target.value)}
@@ -1005,7 +1005,7 @@ const PaymentManagement = () => {
                                                     </div>
                                                 </div>
                                                 <div className="mt-2">
-                                                    <label className="block text-xs text-gray-500 mb-1">Remarks</label>
+                                                    <label className="block text-xs text-gray-500 dark:text-gray-300 mb-1">Remarks</label>
                                                     <textarea 
                                                         value={inst.remarks || ''}
                                                         onChange={(e) => handleInstallmentChange(index, 'remarks', e.target.value)}
@@ -1037,7 +1037,7 @@ const PaymentManagement = () => {
                                         onChange={handlePaidAmountChange}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-[#387B95] dark:bg-gray-700 dark:border-gray-600 dark:text-white sm:text-sm p-2 border font-semibold text-green-700"
                                     />
-                                    <p className="text-xs text-gray-500 mt-1">*Auto-calc from verified installments</p>
+                                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">*Auto-calc from verified installments</p>
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Amount (₹)</label>
@@ -1068,11 +1068,11 @@ const PaymentManagement = () => {
                                 <input
                                     type="file"
                                     onChange={(e) => setReceiptFile(e.target.files[0])}
-                                    className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
+                                    className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100 dark:file:bg-gray-700 dark:file:text-gray-200"
                                     accept="image/*,.pdf"
                                 />
                                 {selectedApp.financialStatus?.receiptUrl && !receiptFile && (
-                                    <p className="mt-1 text-sm text-gray-500">A receipt is already uploaded.</p>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">A receipt is already uploaded.</p>
                                 )}
                             </div>
                         </div>

@@ -614,7 +614,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                                     </svg>
                                                 </div>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     {formData.documents[doc.key].file?.name || 'File uploaded'}
                                                 </p>
                                                 <button
@@ -644,10 +644,10 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                                     htmlFor={`upload-${doc.key}`}
                                                     className="cursor-pointer block"
                                                 >
-                                                    <svg className="w-8 h-8 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <svg className="w-8 h-8 mx-auto text-gray-400 dark:text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                                                     </svg>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    <p className="text-sm text-gray-600 dark:text-gray-300">
                                                         Click to upload {doc.label.toLowerCase()}
                                                     </p>
                                                 </label>
@@ -660,7 +660,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                                                 style={{ width: `${uploadProgress[doc.key]}%` }}
                                                             ></div>
                                                         </div>
-                                                        <p className="text-xs text-gray-500 mt-1">{uploadProgress[doc.key]}% uploaded</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{uploadProgress[doc.key]}% uploaded</p>
                                                     </div>
                                                 )}
                                             </div>
@@ -687,21 +687,21 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                                 <div>
-                                    <span className="font-medium text-gray-600 dark:text-gray-400">Name:</span>
+                                    <span className="font-medium text-gray-600 dark:text-gray-300">Name:</span>
                                     <span className="ml-2 text-gray-800 dark:text-gray-200">
                                         {formData.firstName} {formData.lastName}
                                     </span>
                                 </div>
                                 <div>
-                                    <span className="font-medium text-gray-600 dark:text-gray-400">Email:</span>
+                                    <span className="font-medium text-gray-600 dark:text-gray-300">Email:</span>
                                     <span className="ml-2 text-gray-800 dark:text-gray-200">{formData.email}</span>
                                 </div>
                                 <div>
-                                    <span className="font-medium text-gray-600 dark:text-gray-400">Course:</span>
+                                    <span className="font-medium text-gray-600 dark:text-gray-300">Course:</span>
                                     <span className="ml-2 text-gray-800 dark:text-gray-200">{formData.course}</span>
                                 </div>
                                 <div>
-                                    <span className="font-medium text-gray-600 dark:text-gray-400">Institution:</span>
+                                    <span className="font-medium text-gray-600 dark:text-gray-300">Institution:</span>
                                     <span className="ml-2 text-gray-800 dark:text-gray-200">{formData.institution}</span>
                                 </div>
                             </div>
@@ -783,7 +783,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                             Application Submitted Successfully!
                         </h3>
 
-                        <p className="text-gray-600 dark:text-gray-400">
+                        <p className="text-gray-600 dark:text-gray-300">
                             Your application has been submitted and is under review. You will receive a confirmation email shortly.
                         </p>
 
@@ -821,7 +821,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                         </h2>
                         <button
                             onClick={onClose}
-                            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -836,7 +836,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 <div key={step.number} className="flex items-center">
                                     <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.number
                                         ? 'bg-[#7B3FA0] text-white'
-                                        : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400'
+                                        : 'bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
                                         }`}>
                                         {step.number}
                                     </div>
@@ -851,7 +851,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                             <p className="text-sm font-medium text-gray-800 dark:text-gray-100">
                                 {steps[currentStep - 1]?.title}
                             </p>
-                            <p className="text-xs text-gray-600 dark:text-gray-400">
+                            <p className="text-xs text-gray-600 dark:text-gray-300">
                                 {steps[currentStep - 1]?.description}
                             </p>
                         </div>
@@ -871,7 +871,7 @@ const EnhancedStudentApplicationForm = ({ onClose, onSuccess }) => {
                                 {currentStep > 1 && (
                                     <button
                                         onClick={handlePrevious}
-                                        className="px-4 py-2 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                                        className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                                     >
                                         Previous
                                     </button>

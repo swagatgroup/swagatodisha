@@ -442,10 +442,10 @@ const StudentApplications = () => {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
               {userRole === 'student' ? 'My Application' : 'Applications Management'}
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               {userRole === 'student'
                 ? 'Track and manage your course application'
                 : 'Manage and submit applications for students'
@@ -525,7 +525,7 @@ const StudentApplications = () => {
                     <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
-                          <h3 className="text-xl font-bold text-gray-900">
+                          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                             {application.personalDetails?.fullName || application.user?.fullName || 'Student'}
                           </h3>
                           <span
@@ -580,28 +580,28 @@ const StudentApplications = () => {
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
-                          <p className="text-sm text-gray-600 mb-1">Course</p>
-                          <p className="text-base font-semibold text-gray-900">
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Course</p>
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
                             {application.courseDetails?.selectedCourse || 'N/A'}
                           </p>
                         </div>
                         {application.courseDetails?.campus && (
                           <div>
-                            <p className="text-sm text-gray-600 mb-1">Campus</p>
-                            <p className="text-base font-semibold text-gray-900">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Campus</p>
+                            <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
                               {typeof application.courseDetails.campus === 'object' ? application.courseDetails.campus.name : application.courseDetails.campus}
                             </p>
                           </div>
                         )}
                         <div>
-                          <p className="text-sm text-gray-600 mb-1">Application ID</p>
-                          <p className="text-base font-semibold text-gray-900">
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Application ID</p>
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
                             {application.applicationId || 'N/A'}
                           </p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600 mb-1">Submitted On</p>
-                          <p className="text-base font-semibold text-gray-900">
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Submitted On</p>
+                          <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
                             {new Date(
                               application.createdAt || application.applicationDate
                             ).toLocaleDateString()}
@@ -610,11 +610,11 @@ const StudentApplications = () => {
                       </div>
 
                       <div className="mt-4 pt-4 border-t border-gray-200">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                           {application.submittedBy && application.submittedBy._id !== application.user?._id ? (
-                            <>Form submitted by <span className="font-semibold text-gray-900">{application.submittedBy?.fullName || 'Agent/Staff'}</span></>
+                            <>Form submitted by <span className="font-semibold text-gray-900 dark:text-gray-100">{application.submittedBy?.fullName || 'Agent/Staff'}</span></>
                           ) : (
-                            <>Form submitted by <span className="font-semibold text-gray-900">Student</span></>
+                            <>Form submitted by <span className="font-semibold text-gray-900 dark:text-gray-100">Student</span></>
                           )}
                         </p>
                       </div>
@@ -635,10 +635,10 @@ const StudentApplications = () => {
 
                       {application.notes && (
                         <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                          <p className="text-sm font-medium text-gray-900 mb-2">
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
                             Notes:
                           </p>
-                          <p className="text-sm text-gray-700 italic">
+                          <p className="text-sm text-gray-700 dark:text-gray-200 italic">
                             "{application.notes}"
                           </p>
                         </div>
@@ -661,7 +661,7 @@ const StudentApplications = () => {
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
-                          <h3 className="text-lg font-semibold text-gray-900">
+                          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             {application.courseDetails?.selectedCourse || application.personalDetails?.fullName || 'Application'}
                           </h3>
                           <span
@@ -680,20 +680,20 @@ const StudentApplications = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-gray-600 mb-2">
+                        <p className="text-gray-600 dark:text-gray-300 mb-2">
                           {application.personalDetails?.fullName || application.user?.fullName || 'Student'}
                           {application.submittedBy && application.submittedBy !== application.user?._id && (
-                            <span className="text-sm text-gray-500 ml-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-300 ml-2">
                               (Form submitted by {application.submittedBy?.fullName || 'Agent/Staff'})
                             </span>
                           )}
                           {!application.submittedBy && (
-                            <span className="text-sm text-gray-500 ml-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-300 ml-2">
                               (Form submitted by Student)
                             </span>
                           )}
                         </p>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-300">
                           <span>
                             Applied:{" "}
                             {new Date(
@@ -708,7 +708,7 @@ const StudentApplications = () => {
                           )}
                         </div>
                         {application.notes && (
-                          <p className="text-sm text-gray-600 mt-2 italic">
+                          <p className="text-sm text-gray-600 dark:text-gray-300 mt-2 italic">
                             "{application.notes}"
                           </p>
                         )}
@@ -736,7 +736,7 @@ const StudentApplications = () => {
                         )}
                         <button
                           onClick={() => openApplicationPdf(application._id)}
-                          className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
+                          className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
                         >
                           View PDF
                         </button>
@@ -775,10 +775,10 @@ const StudentApplications = () => {
                   />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                 {userRole === 'student' ? 'No application yet' : 'No applications yet'}
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className="text-gray-500 dark:text-gray-300 mb-6">
                 {userRole === 'student'
                   ? 'Get started by creating your application.'
                   : 'Get started by creating your first application.'}
@@ -849,7 +849,7 @@ const StudentApplications = () => {
             className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Application PDF
               </h3>
               <div className="flex items-center gap-2">
@@ -867,7 +867,7 @@ const StudentApplications = () => {
                     setGeneratingPdf(false);
                     setSelectedApplicationForPdf(null);
                   }}
-                  className="px-3 py-1.5 border border-gray-300 rounded-md text-sm hover:bg-gray-50"
+                  className="px-3 py-1.5 border border-gray-300 rounded-md text-sm hover:bg-gray-50 dark:bg-gray-800"
                 >
                   Close
                 </button>
@@ -877,7 +877,7 @@ const StudentApplications = () => {
               {generatingPdf && selectedApplicationForPdf && (
                 <div className="flex flex-col items-center justify-center h-[70vh]">
                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0] mb-4"></div>
-                   <p className="text-gray-600">Generating your Application PDF...</p>
+                   <p className="text-gray-600 dark:text-gray-300">Generating your Application PDF...</p>
                    {/* Hidden generator */}
                    <div className="hidden">
                      <ApplicationPDFGenerator 
@@ -919,12 +919,12 @@ const StudentApplications = () => {
             className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Payment Installments
               </h3>
               <button
                 onClick={() => setShowInstallmentsModal(false)}
-                className="text-gray-400 hover:text-gray-500"
+                className="text-gray-400 dark:text-gray-300 hover:text-gray-500"
               >
                 <span className="sr-only">Close</span>
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -938,24 +938,24 @@ const StudentApplications = () => {
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Inst #</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Receipt</th>
-                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Action</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Inst #</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Amount</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Status</th>
+                                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Receipt</th>
+                                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Action</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {(selectedAppForInstallments.financialStatus?.installments || []).map((inst) => (
                                 <tr key={inst._id || inst.installmentNumber}>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                                         #{inst.installmentNumber}
                                     </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                         {new Date(inst.date).toLocaleDateString('en-IN')}
                                     </td>
-                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
+                                    <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-semibold">
                                         ₹{inst.amount}
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap">
@@ -973,7 +973,7 @@ const StudentApplications = () => {
                                                 View Slip
                                             </a>
                                         ) : (
-                                            <span className="text-gray-400">No Slip</span>
+                                            <span className="text-gray-400 dark:text-gray-300">No Slip</span>
                                         )}
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -990,7 +990,7 @@ const StudentApplications = () => {
                             ))}
                             {(!selectedAppForInstallments.financialStatus?.installments || selectedAppForInstallments.financialStatus.installments.length === 0) && (
                                 <tr>
-                                    <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
+                                    <td colSpan="6" className="px-4 py-8 text-center text-gray-500 dark:text-gray-300">
                                         No installments found for this application.
                                     </td>
                                 </tr>
@@ -1005,18 +1005,13 @@ const StudentApplications = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="mt-6 bg-white p-5 rounded-lg border border-indigo-200 shadow-sm"
                     >
-                        <h4 className="text-md font-medium text-gray-900 mb-4">Upload Receipt for Installment #{targetInstallmentNum}</h4>
+                        <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Upload Receipt for Installment #{targetInstallmentNum}</h4>
                         <div className="flex items-center space-x-4">
                             <input
                                 type="file"
                                 accept=".pdf,image/*"
                                 onChange={(e) => setReceiptFile(e.target.files[0])}
-                                className="block w-full text-sm text-gray-500
-                                file:mr-4 file:py-2 file:px-4
-                                file:rounded-md file:border-0
-                                file:text-sm file:font-semibold
-                                file:bg-[#EDE0F7] file:text-[#5C2D80]
-                                hover:file:bg-indigo-100"
+                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-indigo-100"
                             />
                             <button
                                 onClick={handleReceiptUpload}
@@ -1029,11 +1024,11 @@ const StudentApplications = () => {
                             </button>
                         </div>
                         {receiptFile && (
-                            <p className="mt-2 text-sm text-gray-600">Selected file: {receiptFile.name}</p>
+                            <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">Selected file: {receiptFile.name}</p>
                         )}
                         <button 
                             onClick={() => { setTargetInstallmentNum(null); setReceiptFile(null); }}
-                            className="mt-4 text-sm text-gray-500 hover:text-gray-700 underline"
+                            className="mt-4 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 underline"
                         >
                             Cancel
                         </button>
@@ -1044,7 +1039,7 @@ const StudentApplications = () => {
             <div className="p-4 border-t bg-gray-50 flex justify-end">
               <button
                 onClick={() => setShowInstallmentsModal(false)}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50"
               >
                 Close
               </button>

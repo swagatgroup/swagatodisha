@@ -132,7 +132,7 @@ const PasswordManagement = () => {
             case 'strong': return 'text-green-600 bg-green-100';
             case 'medium': return 'text-yellow-600 bg-yellow-100';
             case 'weak': return 'text-red-600 bg-red-100';
-            default: return 'text-gray-600 dark:text-gray-400 bg-gray-100';
+            default: return 'text-gray-600 dark:text-gray-300 bg-gray-100';
         }
     };
 
@@ -166,7 +166,7 @@ const PasswordManagement = () => {
     if (!passwordAudit) {
         return (
             <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">Failed to load password audit</p>
+                <p className="text-gray-500 dark:text-gray-300">Failed to load password audit</p>
             </div>
         );
     }
@@ -178,7 +178,7 @@ const PasswordManagement = () => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Password Management</h2>
-                        <p className="text-gray-600 dark:text-gray-400">Monitor and manage user password security</p>
+                        <p className="text-gray-600 dark:text-gray-300">Monitor and manage user password security</p>
                     </div>
                     <div className="flex space-x-3">
                         <button
@@ -207,7 +207,7 @@ const PasswordManagement = () => {
                         <div className="flex items-center">
                             <UsersIcon className="h-8 w-8 text-[#387B95] mr-3" />
                             <div>
-                                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total UsersIcon</p>
+                                <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total UsersIcon</p>
                                 <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{passwordAudit.totalUsersIcon}</p>
                             </div>
                         </div>
@@ -258,7 +258,7 @@ const PasswordManagement = () => {
                                     style={{ width: `${(passwordAudit.weakPasswords / passwordAudit.totalUsersIcon) * 100}%` }}
                                 ></div>
                             </div>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">{passwordAudit.weakPasswords}</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-300">{passwordAudit.weakPasswords}</span>
                         </div>
                     </div>
                     <div className="flex items-center justify-between">
@@ -273,7 +273,7 @@ const PasswordManagement = () => {
                                     style={{ width: `${((passwordAudit.mediumPasswords || 0) / passwordAudit.totalUsersIcon) * 100}%` }}
                                 ></div>
                             </div>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">{passwordAudit.mediumPasswords || 0}</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-300">{passwordAudit.mediumPasswords || 0}</span>
                         </div>
                     </div>
                     <div className="flex items-center justify-between">
@@ -288,7 +288,7 @@ const PasswordManagement = () => {
                                     style={{ width: `${((passwordAudit.strongPasswords || 0) / passwordAudit.totalUsersIcon) * 100}%` }}
                                 ></div>
                             </div>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">{passwordAudit.strongPasswords || 0}</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-300">{passwordAudit.strongPasswords || 0}</span>
                         </div>
                     </div>
                 </div>
@@ -301,7 +301,7 @@ const PasswordManagement = () => {
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">UsersIcon with Weak Passwords</h3>
                         <div className="flex space-x-3">
                             <div className="relative">
-                                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300 h-4 w-4" />
                                 <input
                                     type="text"
                                     placeholder="SearchIcon users..."
@@ -327,19 +327,19 @@ const PasswordManagement = () => {
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         User
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Role
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Password Strength
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Issues
                                     </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Last Changed
                                     </th>
                                 </tr>
@@ -362,8 +362,8 @@ const PasswordManagement = () => {
                                                     </div>
                                                 </div>
                                                 <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">{user.email}</div>
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400">{user.role}</div>
+                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.email}</div>
+                                                    <div className="text-sm text-gray-500 dark:text-gray-300">{user.role}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -382,7 +382,7 @@ const PasswordManagement = () => {
                                                 <span className="ml-1">{user.strength || 'weak'}</span>
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             <div className="space-y-1">
                                                 {user.issues?.map((issue, idx) => (
                                                     <div key={idx} className="text-xs text-red-600">
@@ -391,7 +391,7 @@ const PasswordManagement = () => {
                                                 ))}
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                             {user.lastChanged ? new Date(user.lastChanged).toLocaleDateString() : 'Never'}
                                         </td>
                                     </motion.tr>
@@ -401,7 +401,7 @@ const PasswordManagement = () => {
                     </div>
 
                     {filteredUsersIcon.length === 0 && (
-                        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                        <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                             No users found matching your criteria.
                         </div>
                     )}
@@ -454,9 +454,9 @@ const PasswordManagement = () => {
                                             }`}>
                                             {rec.priority.toUpperCase()}
                                         </span>
-                                        <h5 className="font-semibold text-gray-900">{rec.title}</h5>
+                                        <h5 className="font-semibold text-gray-900 dark:text-gray-100">{rec.title}</h5>
                                     </div>
-                                    <p className="text-gray-600 dark:text-gray-400 mb-2">{rec.description}</p>
+                                    <p className="text-gray-600 dark:text-gray-300 mb-2">{rec.description}</p>
                                     <p className="text-sm text-[#387B95] font-medium">{rec.action}</p>
                                 </div>
                             </div>

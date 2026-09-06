@@ -70,7 +70,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                         <div className="flex items-center">
                             <button
                                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                                className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
                                 <Bars3Icon className="h-6 w-6" />
                             </button>
@@ -89,10 +89,10 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     <span className="text-xl font-bold font-baloo tracking-tight text-[#7B3FA0] dark:text-[#A855D0] leading-none">
                                         Swagat
                                     </span>
-                                    <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 leading-tight">
+                                    <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-300 leading-tight">
                                         Group of Institutions
                                     </span>
-                                    <span className="text-[8px] text-gray-400 dark:text-gray-500 tracking-wider">
+                                    <span className="text-[8px] text-gray-400 dark:text-gray-300 tracking-wider">
                                         Education • Innovation • Revolution
                                     </span>
                                 </div>
@@ -111,7 +111,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             {/* Session Switcher for Super Admin */}
                             {user?.role === 'super_admin' && (
                                 <div className="hidden md:flex items-center space-x-2 mr-4">
-                                    <span className="text-sm text-gray-500 dark:text-gray-400 font-medium">Session:</span>
+                                    <span className="text-sm text-gray-500 dark:text-gray-300 font-medium">Session:</span>
                                     <select
                                         value={selectedSession}
                                         onChange={(e) => setSelectedSession(e.target.value)}
@@ -125,13 +125,13 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             {/* Theme Toggle Button */}
                             <button
                                 onClick={toggleDarkMode}
-                                className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none transition-colors"
+                                className="p-2 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none transition-colors"
                                 aria-label="Toggle dark mode"
                             >
                                 {isDarkMode ? (
                                     <SunIcon className="w-5 h-5 text-yellow-500" />
                                 ) : (
-                                    <MoonIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                                    <MoonIcon className="w-5 h-5 text-gray-500 dark:text-gray-300" />
                                 )}
                             </button>
 
@@ -140,7 +140,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                 <div className="relative" ref={paymentsRef}>
                                     <button
                                         onClick={() => setPaymentsOpen(!paymentsOpen)}
-                                        className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none transition-colors relative"
+                                        className="p-2 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none transition-colors relative"
                                         aria-label="Recent Payments"
                                     >
                                         <BellIcon className="w-5 h-5" />
@@ -161,7 +161,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             </div>
                                             <div className="max-h-80 overflow-y-auto">
                                                 {recentPayments.length === 0 ? (
-                                                    <div className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">No recent payments found.</div>
+                                                    <div className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-300">No recent payments found.</div>
                                                 ) : (
                                                     recentPayments.map((item, idx) => (
                                                         <div key={idx} className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
@@ -202,7 +202,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                                     {user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || 'User'}
                                                 </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400 capitalize mt-0.5 font-medium">
+                                                <p className="text-xs text-gray-500 dark:text-gray-300 capitalize mt-0.5 font-medium">
                                                     {user?.role ? user.role.replace('_', ' ') : 'User'}
                                                 </p>
                                             </div>
@@ -275,10 +275,10 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 else navigate(item.href);
                                                 setSidebarOpen(false);
                                             }}
-                                            className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md ${
+                                            className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                                                 activeItem === item.id 
-                                                    ? 'bg-[#EDE0F7] dark:bg-[#5C2D80] text-purple-900 dark:text-purple-100' 
-                                                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                    ? 'bg-[#EDE0F7] dark:bg-[#5C2D80] text-purple-900 dark:text-white' 
+                                                    : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/10'
                                             }`}
                                         >
                                             <span className="flex-shrink-0">{item.icon}</span>
@@ -297,7 +297,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                         <div className="flex flex-col h-full flex-1 bg-white/80 dark:bg-[#2A1E2E]/80 backdrop-blur-md border-r border-[#7B3FA0]/10 dark:border-white/10 relative">
                             <button
                                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                                className="absolute top-2 left-2 p-2 rounded-md text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 z-10"
+                                className="absolute top-2 left-2 p-2 rounded-md text-gray-400 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 z-10"
                             >
                                 <ChevronDoubleLeftIcon className={`h-5 w-5 transition-transform ${sidebarCollapsed ? "rotate-180" : ""}`} />
                             </button>
@@ -307,7 +307,11 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         <button
                                             key={item.name}
                                             onClick={() => onItemClick ? onItemClick(item.id) : navigate(item.href)}
-                                            className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md ${activeItem === item.id ? 'bg-[#EDE0F7] text-purple-900' : 'text-gray-600 hover:bg-gray-50'}`}
+                                            className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-colors ${
+                                                activeItem === item.id 
+                                                ? 'bg-[#EDE0F7] dark:bg-[#5C2D80] text-purple-900 dark:text-white' 
+                                                : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/10'
+                                            }`}
                                         >
                                             <span className="flex-shrink-0">{item.icon}</span>
                                             {!sidebarCollapsed && <span className="ml-3">{item.name}</span>}

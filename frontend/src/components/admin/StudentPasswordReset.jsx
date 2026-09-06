@@ -90,7 +90,7 @@ const StudentPasswordReset = () => {
             title: `<h3 class="text-xl font-bold text-gray-900 dark:text-white mt-2 text-center">Reset Password</h3>`,
             html: `
                 <div class="text-center mt-2 mb-6">
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Please enter the new password for <span class="font-semibold text-[#7B3FA0] dark:text-[#A855D0]">${student.personalDetails?.fullName || student.fullName || 'Student'}</span>'s account.</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-300">Please enter the new password for <span class="font-semibold text-[#7B3FA0] dark:text-[#A855D0]">${student.personalDetails?.fullName || student.fullName || 'Student'}</span>'s account.</p>
                 </div>
                 <div class="relative w-full mx-auto group">
                  <input type="password" id="new-password-input"
@@ -211,7 +211,7 @@ const StudentPasswordReset = () => {
                     <span className="px-2 py-0.5 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 w-fit">
                         Direct
                     </span>
-                    <span className="text-xs text-gray-400 dark:text-gray-500">(Self Registered)</span>
+                    <span className="text-xs text-gray-400 dark:text-gray-300">(Self Registered)</span>
                 </span>
             );
         }
@@ -242,7 +242,7 @@ const StudentPasswordReset = () => {
                 <span className={`px-2 py-0.5 text-xs font-semibold rounded-full w-fit ${meta.color}`}>
                     {meta.label}
                 </span>
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-xs text-gray-400 dark:text-gray-300">
                     {submitterName ? `${submitterName} (${method})` : `Via ${method}`}
                 </span>
             </span>
@@ -265,7 +265,7 @@ const StudentPasswordReset = () => {
                     <div className="w-full sm:w-1/3">
                         <div className="relative">
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
@@ -295,16 +295,16 @@ const StudentPasswordReset = () => {
                     <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead className="bg-gray-50 dark:bg-[#2A1E2E]">
                             <tr>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Student Details
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Phone
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Registered By
                                 </th>
-                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                     Actions
                                 </th>
                             </tr>
@@ -314,12 +314,12 @@ const StudentPasswordReset = () => {
                                 <tr>
                                     <td colSpan="4" className="px-6 py-12 text-center">
                                         <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-200 border-t-indigo-600"></div>
-                                        <p className="mt-2 text-gray-500 dark:text-gray-400">Loading students...</p>
+                                        <p className="mt-2 text-gray-500 dark:text-gray-300">Loading students...</p>
                                     </td>
                                 </tr>
                             ) : students.length === 0 ? (
                                 <tr>
-                                    <td colSpan="4" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                    <td colSpan="4" className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
                                         No students found matching your criteria.
                                     </td>
                                 </tr>
@@ -338,7 +338,7 @@ const StudentPasswordReset = () => {
                                                     <div className="text-sm font-medium text-gray-900 dark:text-white">
                                                         {student.personalDetails?.fullName || student.fullName || 'N/A'}
                                                     </div>
-                                                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                    <div className="text-sm text-gray-500 dark:text-gray-300">
                                                         {student.contactDetails?.email || student.email || 'N/A'}
                                                     </div>
                                                 </div>
@@ -406,7 +406,7 @@ const StudentPasswordReset = () => {
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                         disabled={currentPage === 1}
-                                        className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                                        className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
                                     >
                                         <span className="sr-only">Previous</span>
                                         <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -419,7 +419,7 @@ const StudentPasswordReset = () => {
                                     <button
                                         onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                         disabled={currentPage === totalPages}
-                                        className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                                        className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 dark:text-gray-300 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
                                     >
                                         <span className="sr-only">Next</span>
                                         <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">

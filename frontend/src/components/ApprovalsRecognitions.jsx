@@ -140,7 +140,7 @@ const ApprovalsRecognitions = () => {
                         <>
                             <button
                                 onClick={prevSlide}
-                                className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
+                                className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#2A1E2E]/20 hover:bg-white dark:bg-[#2A1E2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
                             >
                                 <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -149,7 +149,7 @@ const ApprovalsRecognitions = () => {
 
                             <button
                                 onClick={nextSlide}
-                                className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
+                                className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#2A1E2E]/20 hover:bg-white dark:bg-[#2A1E2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
                             >
                                 <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -18,8 +18,8 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
                 className="bg-white rounded-lg shadow p-6"
             >
                 <div className="text-center">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Scan & Pay</h3>
-                    <p className="text-gray-600 mb-6">Scan the QR code below using any UPI app to make your payment.</p>
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Scan & Pay</h3>
+                    <p className="text-gray-600 dark:text-gray-300 mb-6">Scan the QR code below using any UPI app to make your payment.</p>
 
                     <div className="bg-gray-50 rounded-lg p-8 mb-6 flex flex-col items-center">
                         {qrCodeImage ? (

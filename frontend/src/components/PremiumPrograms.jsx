@@ -170,12 +170,12 @@ const PremiumPrograms = () => {
                         </svg>
                         Academic Excellence
                     </motion.div>
-                    <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
+                    <h2 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-gray-100 mb-6">
                         Our <span className="bg-[#7B3FA0] bg-clip-text text-transparent">
                             Premium Programs
                         </span>
                     </h2>
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                         Discover our comprehensive range of educational programs designed to shape future leaders,
                         innovators, and professionals in every field.
                     </p>
@@ -223,13 +223,13 @@ const PremiumPrograms = () => {
 
                                 {/* Content */}
                                 <div className="relative z-10 flex-1 flex flex-col">
-                                    <h3 className="text-lg font-bold text-gray-900 mb-1 group-hover:text-[#7B3FA0] transition-colors duration-300">
+                                    <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1 group-hover:text-[#7B3FA0] transition-colors duration-300">
                                         {program.title}
                                     </h3>
                                     <p className="text-[#7B3FA0] font-semibold mb-3 text-sm">
                                         {program.subtitle}
                                     </p>
-                                    <p className="text-gray-600 mb-4 leading-relaxed text-sm flex-1">
+                                    <p className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed text-sm flex-1">
                                         {program.description}
                                     </p>
 
@@ -238,7 +238,7 @@ const PremiumPrograms = () => {
                                         {program.features.slice(0, 2).map((feature, featureIndex) => (
                                             <motion.div
                                                 key={featureIndex}
-                                                className="flex items-center gap-2 text-xs text-gray-600"
+                                                className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-300"
                                                 initial={{ opacity: 0, x: -10 }}
                                                 whileInView={{ opacity: 1, x: 0 }}
                                                 transition={{ delay: featureIndex * 0.1 }}
@@ -252,12 +252,12 @@ const PremiumPrograms = () => {
                                     {/* Stats */}
                                     <div className="flex justify-between items-center pt-4 border-t border-gray-100 mt-auto">
                                         <div className="text-center">
-                                            <div className="text-xs text-gray-500">Duration</div>
-                                            <div className="font-semibold text-gray-900 text-sm">{program.duration}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-300">Duration</div>
+                                            <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{program.duration}</div>
                                         </div>
                                         <div className="text-center">
-                                            <div className="text-xs text-gray-500">Students</div>
-                                            <div className="font-semibold text-gray-900 text-sm">{program.students}</div>
+                                            <div className="text-xs text-gray-500 dark:text-gray-300">Students</div>
+                                            <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">{program.students}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -316,7 +316,7 @@ const PremiumPrograms = () => {
                         </svg>
                         Explore All Programs
                     </motion.button>
-                    <p className="text-gray-600 mt-4">
+                    <p className="text-gray-600 dark:text-gray-300 mt-4">
                         Ready to start your educational journey? Contact our admissions team today!
                     </p>
                 </motion.div>

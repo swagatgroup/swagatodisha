@@ -284,8 +284,8 @@ const AgentDraftManager = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Draft & Submit Manager</h2>
-                <p className="text-gray-600">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Draft & Submit Manager</h2>
+                <p className="text-gray-600 dark:text-gray-300">
                     Manage your student application drafts and track submitted applications.
                 </p>
             </div>
@@ -327,7 +327,7 @@ const AgentDraftManager = () => {
                                 className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                             />
                             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg className="h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
                             </div>
@@ -360,11 +360,11 @@ const AgentDraftManager = () => {
                         <div className="space-y-4">
                             {filteredDrafts.length === 0 ? (
                                 <div className="text-center py-8">
-                                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    <h3 className="mt-2 text-sm font-medium text-gray-900">No drafts found</h3>
-                                    <p className="mt-1 text-sm text-gray-500">
+                                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No drafts found</h3>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
                                         {searchTerm ? 'No drafts match your search criteria.' : 'Get started by creating your first draft.'}
                                     </p>
                                 </div>
@@ -385,17 +385,17 @@ const AgentDraftManager = () => {
                                             />
 
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900">
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                     {draft.studentName}
                                                 </p>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-gray-500 dark:text-gray-300">
                                                     {draft.course} • {draft.campus}
                                                 </p>
                                                 <div className="flex items-center space-x-4 mt-1">
-                                                    <span className="text-xs text-gray-400">
+                                                    <span className="text-xs text-gray-400 dark:text-gray-300">
                                                         Created: {new Date(draft.createdAt).toLocaleDateString()}
                                                     </span>
-                                                    <span className="text-xs text-gray-400">
+                                                    <span className="text-xs text-gray-400 dark:text-gray-300">
                                                         Modified: {new Date(draft.lastModified).toLocaleDateString()}
                                                     </span>
                                                 </div>
@@ -403,7 +403,7 @@ const AgentDraftManager = () => {
 
                                             <div className="flex items-center space-x-2">
                                                 <div className="text-right">
-                                                    <div className="text-sm font-medium text-gray-900">
+                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         {draft.completionPercentage}% Complete
                                                     </div>
                                                     <div className="w-24 bg-gray-200 rounded-full h-2">
@@ -425,7 +425,7 @@ const AgentDraftManager = () => {
                                             </button>
                                             <button
                                                 onClick={() => handleDuplicateDraft(draft._id)}
-                                                className="text-gray-600 hover:text-gray-900 text-sm font-medium"
+                                                className="text-gray-600 dark:text-gray-300 hover:text-gray-900 text-sm font-medium"
                                             >
                                                 Duplicate
                                             </button>
@@ -451,11 +451,11 @@ const AgentDraftManager = () => {
                         <div className="space-y-4">
                             {filteredSubmitted.length === 0 ? (
                                 <div className="text-center py-8">
-                                    <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                     </svg>
-                                    <h3 className="mt-2 text-sm font-medium text-gray-900">No submitted applications</h3>
-                                    <p className="mt-1 text-sm text-gray-500">
+                                    <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No submitted applications</h3>
+                                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
                                         {searchTerm ? 'No applications match your search criteria.' : 'Submitted applications will appear here.'}
                                     </p>
                                 </div>
@@ -469,13 +469,13 @@ const AgentDraftManager = () => {
                                     >
                                         <div className="flex items-center space-x-4">
                                             <div className="flex-1 min-w-0">
-                                                <p className="text-sm font-medium text-gray-900">
+                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                     {item.studentName}
                                                 </p>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-gray-500 dark:text-gray-300">
                                                     {item.course} • {item.campus}
                                                 </p>
-                                                <p className="text-xs text-gray-400">
+                                                <p className="text-xs text-gray-400 dark:text-gray-300">
                                                     Submitted: {new Date(item.submittedAt).toLocaleDateString()}
                                                 </p>
                                             </div>

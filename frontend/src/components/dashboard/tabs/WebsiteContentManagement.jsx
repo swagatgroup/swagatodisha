@@ -177,11 +177,11 @@ const WebsiteContentManagement = () => {
 
     const renderGeneralSettings = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">General Settings</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">General Settings</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Site Name</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Site Name</label>
                     <input
                         type="text"
                         value={content?.siteName || ''}
@@ -191,7 +191,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Site Description</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Site Description</label>
                     <input
                         type="text"
                         value={content?.siteDescription || ''}
@@ -201,7 +201,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Site Logo URL</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Site Logo URL</label>
                     <input
                         type="text"
                         value={content?.siteLogo || ''}
@@ -211,7 +211,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Site Favicon URL</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Site Favicon URL</label>
                     <input
                         type="text"
                         value={content?.siteFavicon || ''}
@@ -222,10 +222,10 @@ const WebsiteContentManagement = () => {
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="text-md font-medium text-gray-900 mb-3">Contact Information</h4>
+                <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Contact Information</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Phone</label>
                         <input
                             type="text"
                             value={content?.contactInfo?.phone || ''}
@@ -235,7 +235,7 @@ const WebsiteContentManagement = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email</label>
                         <input
                             type="email"
                             value={content?.contactInfo?.email || ''}
@@ -245,7 +245,7 @@ const WebsiteContentManagement = () => {
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Address</label>
                         <textarea
                             value={content?.contactInfo?.address || ''}
                             onChange={(e) => handleInputChange('contactInfo.address', e.target.value)}
@@ -255,7 +255,7 @@ const WebsiteContentManagement = () => {
                     </div>
 
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Map URL</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Map URL</label>
                         <input
                             type="text"
                             value={content?.contactInfo?.mapUrl || ''}
@@ -267,10 +267,10 @@ const WebsiteContentManagement = () => {
             </div>
 
             <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="text-md font-medium text-gray-900 mb-3">Social Media Links</h4>
+                <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Social Media Links</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Facebook</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Facebook</label>
                         <input
                             type="url"
                             value={content?.socialLinks?.facebook || ''}
@@ -280,7 +280,7 @@ const WebsiteContentManagement = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Twitter</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Twitter</label>
                         <input
                             type="url"
                             value={content?.socialLinks?.twitter || ''}
@@ -290,7 +290,7 @@ const WebsiteContentManagement = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Instagram</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Instagram</label>
                         <input
                             type="url"
                             value={content?.socialLinks?.instagram || ''}
@@ -300,7 +300,7 @@ const WebsiteContentManagement = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">YouTube</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">YouTube</label>
                         <input
                             type="url"
                             value={content?.socialLinks?.youtube || ''}
@@ -310,7 +310,7 @@ const WebsiteContentManagement = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">LinkedIn</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">LinkedIn</label>
                         <input
                             type="url"
                             value={content?.socialLinks?.linkedin || ''}
@@ -326,7 +326,7 @@ const WebsiteContentManagement = () => {
     const renderHeroCarousel = () => (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Hero Carousel Images</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Hero Carousel Images</h3>
                 <button
                     onClick={() => addArrayItem('heroCarousel', { image: '', title: '', subtitle: '', order: 0, isActive: true })}
                     className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
@@ -339,7 +339,7 @@ const WebsiteContentManagement = () => {
                 {(content?.heroCarousel || []).map((slide, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium text-gray-900">Slide {index + 1}</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Slide {index + 1}</h4>
                             <button
                                 onClick={() => removeArrayItem('heroCarousel', index)}
                                 className="text-red-600 hover:text-red-800"
@@ -350,7 +350,7 @@ const WebsiteContentManagement = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image URL</label>
                                 <input
                                     type="text"
                                     value={slide.image || ''}
@@ -360,7 +360,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Order</label>
                                 <input
                                     type="number"
                                     value={slide.order || 0}
@@ -370,7 +370,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Title</label>
                                 <input
                                     type="text"
                                     value={slide.title || ''}
@@ -380,7 +380,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Subtitle</label>
                                 <input
                                     type="text"
                                     value={slide.subtitle || ''}
@@ -397,7 +397,7 @@ const WebsiteContentManagement = () => {
                                         onChange={(e) => handleArrayItemChange('heroCarousel', index, 'isActive', e.target.checked)}
                                         className="mr-2"
                                     />
-                                    <span className="text-sm text-gray-700">Active</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-200">Active</span>
                                 </label>
                             </div>
                         </div>
@@ -410,7 +410,7 @@ const WebsiteContentManagement = () => {
     const renderNavigation = () => (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Navigation Menu</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Navigation Menu</h3>
                 <button
                     onClick={() => addArrayItem('navigationItems', { name: '', href: '', icon: '', order: 0, isActive: true })}
                     className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
@@ -423,7 +423,7 @@ const WebsiteContentManagement = () => {
                 {(content?.navigationItems || []).map((item, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium text-gray-900">Menu Item {index + 1}</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Menu Item {index + 1}</h4>
                             <button
                                 onClick={() => removeArrayItem('navigationItems', index)}
                                 className="text-red-600 hover:text-red-800"
@@ -434,7 +434,7 @@ const WebsiteContentManagement = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Name</label>
                                 <input
                                     type="text"
                                     value={item.name || ''}
@@ -444,7 +444,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">URL</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">URL</label>
                                 <input
                                     type="text"
                                     value={item.href || ''}
@@ -454,7 +454,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Icon</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Icon</label>
                                 <input
                                     type="text"
                                     value={item.icon || ''}
@@ -464,7 +464,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Order</label>
                                 <input
                                     type="number"
                                     value={item.order || 0}
@@ -481,7 +481,7 @@ const WebsiteContentManagement = () => {
                                         onChange={(e) => handleArrayItemChange('navigationItems', index, 'isActive', e.target.checked)}
                                         className="mr-2"
                                     />
-                                    <span className="text-sm text-gray-700">Active</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-200">Active</span>
                                 </label>
                             </div>
                         </div>
@@ -494,7 +494,7 @@ const WebsiteContentManagement = () => {
     const renderQuickLinks = () => (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Quick Links</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Quick Links</h3>
                 <button
                     onClick={() => addArrayItem('quickLinks', { name: '', icon: '', href: '', color: '', order: 0, isActive: true })}
                     className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
@@ -507,7 +507,7 @@ const WebsiteContentManagement = () => {
                 {(content?.quickLinks || []).map((link, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium text-gray-900">Quick Link {index + 1}</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Quick Link {index + 1}</h4>
                             <button
                                 onClick={() => removeArrayItem('quickLinks', index)}
                                 className="text-red-600 hover:text-red-800"
@@ -518,7 +518,7 @@ const WebsiteContentManagement = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Name</label>
                                 <input
                                     type="text"
                                     value={link.name || ''}
@@ -528,7 +528,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Icon URL</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Icon URL</label>
                                 <input
                                     type="text"
                                     value={link.icon || ''}
@@ -538,7 +538,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">URL</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">URL</label>
                                 <input
                                     type="text"
                                     value={link.href || ''}
@@ -548,7 +548,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Color</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Color</label>
                                 <input
                                     type="text"
                                     value={link.color || ''}
@@ -558,7 +558,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Order</label>
                                 <input
                                     type="number"
                                     value={link.order || 0}
@@ -575,7 +575,7 @@ const WebsiteContentManagement = () => {
                                         onChange={(e) => handleArrayItemChange('quickLinks', index, 'isActive', e.target.checked)}
                                         className="mr-2"
                                     />
-                                    <span className="text-sm text-gray-700">Active</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-200">Active</span>
                                 </label>
                             </div>
                         </div>
@@ -588,7 +588,7 @@ const WebsiteContentManagement = () => {
     const renderManagementTeam = () => (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Management Team</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Management Team</h3>
                 <button
                     onClick={() => addArrayItem('managementTeam', { name: '', position: '', image: '', bio: '', order: 0, isActive: true })}
                     className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
@@ -601,7 +601,7 @@ const WebsiteContentManagement = () => {
                 {(content?.managementTeam || []).map((member, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium text-gray-900">Team Member {index + 1}</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Team Member {index + 1}</h4>
                             <button
                                 onClick={() => removeArrayItem('managementTeam', index)}
                                 className="text-red-600 hover:text-red-800"
@@ -612,7 +612,7 @@ const WebsiteContentManagement = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Name</label>
                                 <input
                                     type="text"
                                     value={member.name || ''}
@@ -622,7 +622,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Position</label>
                                 <input
                                     type="text"
                                     value={member.position || ''}
@@ -632,7 +632,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image URL</label>
                                 <input
                                     type="text"
                                     value={member.image || ''}
@@ -642,7 +642,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Order</label>
                                 <input
                                     type="number"
                                     value={member.order || 0}
@@ -652,7 +652,7 @@ const WebsiteContentManagement = () => {
                             </div>
 
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Bio</label>
                                 <textarea
                                     value={member.bio || ''}
                                     onChange={(e) => handleArrayItemChange('managementTeam', index, 'bio', e.target.value)}
@@ -669,7 +669,7 @@ const WebsiteContentManagement = () => {
                                         onChange={(e) => handleArrayItemChange('managementTeam', index, 'isActive', e.target.checked)}
                                         className="mr-2"
                                     />
-                                    <span className="text-sm text-gray-700">Active</span>
+                                    <span className="text-sm text-gray-700 dark:text-gray-200">Active</span>
                                 </label>
                             </div>
                         </div>
@@ -681,11 +681,11 @@ const WebsiteContentManagement = () => {
 
     const renderChairmanMessage = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">Chairman Message</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Chairman Message</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Name</label>
                     <input
                         type="text"
                         value={content?.chairmanMessage?.name || ''}
@@ -695,7 +695,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Position</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Position</label>
                     <input
                         type="text"
                         value={content?.chairmanMessage?.position || ''}
@@ -705,7 +705,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image URL</label>
                     <input
                         type="text"
                         value={content?.chairmanMessage?.image || ''}
@@ -715,7 +715,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Message</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Message</label>
                     <textarea
                         value={content?.chairmanMessage?.message || ''}
                         onChange={(e) => handleInputChange('chairmanMessage.message', e.target.value)}
@@ -732,7 +732,7 @@ const WebsiteContentManagement = () => {
                             onChange={(e) => handleInputChange('chairmanMessage.isActive', e.target.checked)}
                             className="mr-2"
                         />
-                        <span className="text-sm text-gray-700">Active</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-200">Active</span>
                     </label>
                 </div>
             </div>
@@ -741,11 +741,11 @@ const WebsiteContentManagement = () => {
 
     const renderMilestone = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">Milestone</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Milestone</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Year</label>
                     <input
                         type="text"
                         value={content?.milestone?.year || ''}
@@ -755,7 +755,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Title</label>
                     <input
                         type="text"
                         value={content?.milestone?.title || ''}
@@ -765,7 +765,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image URL</label>
                     <input
                         type="text"
                         value={content?.milestone?.image || ''}
@@ -775,7 +775,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Description</label>
                     <textarea
                         value={content?.milestone?.description || ''}
                         onChange={(e) => handleInputChange('milestone.description', e.target.value)}
@@ -792,7 +792,7 @@ const WebsiteContentManagement = () => {
                             onChange={(e) => handleInputChange('milestone.isActive', e.target.checked)}
                             className="mr-2"
                         />
-                        <span className="text-sm text-gray-700">Active</span>
+                        <span className="text-sm text-gray-700 dark:text-gray-200">Active</span>
                     </label>
                 </div>
             </div>
@@ -801,11 +801,11 @@ const WebsiteContentManagement = () => {
 
     const renderFooterContent = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">Footer Content</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Footer Content</h3>
 
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">About Text</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">About Text</label>
                     <textarea
                         value={content?.footerContent?.aboutText || ''}
                         onChange={(e) => handleInputChange('footerContent.aboutText', e.target.value)}
@@ -815,7 +815,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Copyright Text</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Copyright Text</label>
                     <input
                         type="text"
                         value={content?.footerContent?.copyrightText || ''}
@@ -825,7 +825,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Disclaimer Text</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Disclaimer Text</label>
                     <textarea
                         value={content?.footerContent?.disclaimerText || ''}
                         onChange={(e) => handleInputChange('footerContent.disclaimerText', e.target.value)}
@@ -839,11 +839,11 @@ const WebsiteContentManagement = () => {
 
     const renderSEOSettings = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900">SEO Settings</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">SEO Settings</h3>
 
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Meta Title</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Meta Title</label>
                     <input
                         type="text"
                         value={content?.seoSettings?.metaTitle || ''}
@@ -853,7 +853,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Meta Description</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Meta Description</label>
                     <textarea
                         value={content?.seoSettings?.metaDescription || ''}
                         onChange={(e) => handleInputChange('seoSettings.metaDescription', e.target.value)}
@@ -863,7 +863,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Meta Keywords (comma separated)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Meta Keywords (comma separated)</label>
                     <input
                         type="text"
                         value={(content?.seoSettings?.metaKeywords || []).join(', ')}
@@ -873,7 +873,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Open Graph Title</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Open Graph Title</label>
                     <input
                         type="text"
                         value={content?.seoSettings?.ogTitle || ''}
@@ -883,7 +883,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Open Graph Description</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Open Graph Description</label>
                     <textarea
                         value={content?.seoSettings?.ogDescription || ''}
                         onChange={(e) => handleInputChange('seoSettings.ogDescription', e.target.value)}
@@ -893,7 +893,7 @@ const WebsiteContentManagement = () => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Open Graph Image URL</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Open Graph Image URL</label>
                     <input
                         type="text"
                         value={content?.seoSettings?.ogImage || ''}
@@ -909,7 +909,7 @@ const WebsiteContentManagement = () => {
     const renderApprovalsRecognitions = () => (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Approvals & Recognitions</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Approvals & Recognitions</h3>
                 <button
                     onClick={() => addArrayItem('approvalsRecognitions', { name: '', order: 0, isActive: true, approvals: [] })}
                     className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
@@ -922,7 +922,7 @@ const WebsiteContentManagement = () => {
                 {(content?.approvalsRecognitions || []).map((institution, index) => (
                     <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
                         <div className="flex justify-between items-center mb-4">
-                            <h4 className="font-medium text-gray-900">Institution: {institution.name || 'New Institution'}</h4>
+                            <h4 className="font-medium text-gray-900 dark:text-gray-100">Institution: {institution.name || 'New Institution'}</h4>
                             <button
                                 onClick={() => removeArrayItem('approvalsRecognitions', index)}
                                 className="text-red-600 hover:text-red-800"
@@ -933,7 +933,7 @@ const WebsiteContentManagement = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Institution Name</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Institution Name</label>
                                 <input
                                     type="text"
                                     value={institution.name || ''}
@@ -942,7 +942,7 @@ const WebsiteContentManagement = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Order</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Order</label>
                                 <input
                                     type="number"
                                     value={institution.order || 0}
@@ -957,13 +957,13 @@ const WebsiteContentManagement = () => {
                                     onChange={(e) => handleArrayItemChange('approvalsRecognitions', index, 'isActive', e.target.checked)}
                                     className="h-4 w-4 text-[#387B95] border-gray-300 rounded"
                                 />
-                                <label className="ml-2 block text-sm text-gray-900">Active</label>
+                                <label className="ml-2 block text-sm text-gray-900 dark:text-gray-100">Active</label>
                             </div>
                         </div>
 
                         <div className="mt-6 border-t border-gray-200 pt-4">
                             <div className="flex justify-between items-center mb-4">
-                                <h5 className="font-medium text-gray-700">Approvals / Documents</h5>
+                                <h5 className="font-medium text-gray-700 dark:text-gray-200">Approvals / Documents</h5>
                                 <button
                                     onClick={() => addNestedArrayItem('approvalsRecognitions', index, 'approvals', { name: '', logo: '', pdf: '' })}
                                     className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700 text-sm"
@@ -977,7 +977,7 @@ const WebsiteContentManagement = () => {
                                     <div key={appIdx} className="bg-white p-4 rounded border border-gray-100 flex gap-4 items-start">
                                         <div className="flex-1 space-y-3">
                                             <div>
-                                                <label className="block text-xs font-medium text-gray-500 mb-1">Approval Name</label>
+                                                <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Approval Name</label>
                                                 <input
                                                     type="text"
                                                     value={approval.name || ''}
@@ -987,7 +987,7 @@ const WebsiteContentManagement = () => {
                                             </div>
                                             <div className="grid grid-cols-2 gap-2">
                                                 <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1">Logo URL (Image)</label>
+                                                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Logo URL (Image)</label>
                                                     <input
                                                         type="text"
                                                         value={approval.logo || ''}
@@ -996,7 +996,7 @@ const WebsiteContentManagement = () => {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1">PDF URL</label>
+                                                    <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">PDF URL</label>
                                                     <input
                                                         type="text"
                                                         value={approval.pdf || ''}
@@ -1049,7 +1049,7 @@ const WebsiteContentManagement = () => {
     const renderStaffProfiles = () => (
         <div className="space-y-6">
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Staff Profiles (About Us)</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Staff Profiles (About Us)</h3>
                 <button
                     onClick={() => addArrayItem('staffProfiles', { name: '', designation: '', image: '', order: 0, isActive: true })}
                     className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
@@ -1063,7 +1063,7 @@ const WebsiteContentManagement = () => {
                     <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm relative">
                         <button
                             onClick={() => removeArrayItem('staffProfiles', index)}
-                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white rounded-full p-1 shadow"
+                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white dark:bg-[#2A1E2E] rounded-full p-1 shadow"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
@@ -1073,11 +1073,11 @@ const WebsiteContentManagement = () => {
                                 <img src={staff.image} alt="Staff" className="w-24 h-24 rounded-full mx-auto object-cover border-2 border-[#387B95]" />
                             ) : (
                                 <div className="w-24 h-24 rounded-full mx-auto bg-gray-200 flex items-center justify-center border-2 border-dashed border-gray-400">
-                                    <span className="text-gray-400 text-xs text-center px-2">No Image</span>
+                                    <span className="text-gray-400 dark:text-gray-300 text-xs text-center px-2">No Image</span>
                                 </div>
                             )}
                             <div className="mt-3 text-center">
-                                <label className="cursor-pointer bg-white text-xs px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 transition">
+                                <label className="cursor-pointer bg-white dark:bg-[#2A1E2E] text-xs px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 transition">
                                     {uploadingStaff ? 'Compressing & Uploading...' : 'Upload Image'}
                                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleStaffImageUpload(e, index)} disabled={uploadingStaff} />
                                 </label>
@@ -1086,7 +1086,7 @@ const WebsiteContentManagement = () => {
 
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">Name</label>
+                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">Name</label>
                                 <input
                                     type="text"
                                     value={staff.name || ''}
@@ -1096,7 +1096,7 @@ const WebsiteContentManagement = () => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-medium text-gray-700 mb-1">Designation</label>
+                                <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">Designation</label>
                                 <input
                                     type="text"
                                     value={staff.designation || ''}
@@ -1107,7 +1107,7 @@ const WebsiteContentManagement = () => {
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                                 <div>
-                                    <label className="block text-xs font-medium text-gray-700 mb-1">Order</label>
+                                    <label className="block text-xs font-medium text-gray-700 dark:text-gray-200 mb-1">Order</label>
                                     <input
                                         type="number"
                                         value={staff.order || 0}
@@ -1123,7 +1123,7 @@ const WebsiteContentManagement = () => {
                                             onChange={(e) => handleArrayItemChange('staffProfiles', index, 'isActive', e.target.checked)}
                                             className="h-4 w-4 text-[#387B95] border-gray-300 rounded mr-2"
                                         />
-                                        <span className="text-xs text-gray-700">Active</span>
+                                        <span className="text-xs text-gray-700 dark:text-gray-200">Active</span>
                                     </label>
                                 </div>
                             </div>
@@ -1183,8 +1183,8 @@ const WebsiteContentManagement = () => {
         <div className="space-y-6">
             <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-200">
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900">Gallery Management</h3>
-                    <p className="text-sm text-gray-500">Images are automatically compressed to WebP format under 100KB.</p>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Gallery Management</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-300">Images are automatically compressed to WebP format under 100KB.</p>
                 </div>
                 <label className="px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E] cursor-pointer transition">
                     {uploadingGallery ? 'Uploading & Compressing...' : 'Upload New Image'}
@@ -1204,7 +1204,7 @@ const WebsiteContentManagement = () => {
                     </div>
                 ))}
                 {galleryImages.length === 0 && !uploadingGallery && (
-                    <div className="col-span-full py-12 text-center text-gray-500">No images found in the gallery.</div>
+                    <div className="col-span-full py-12 text-center text-gray-500 dark:text-gray-300">No images found in the gallery.</div>
                 )}
             </div>
         </div>
@@ -1272,7 +1272,7 @@ const WebsiteContentManagement = () => {
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                                 ? 'border-blue-500 text-[#387B95]'
-                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
+                                : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600'
                                 }`}
                         >
                             <span className="mr-2">{tab.icon}</span>

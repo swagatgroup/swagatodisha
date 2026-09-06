@@ -61,11 +61,11 @@ const Location = () => {
                         <i className="fa-solid fa-map-marker-alt text-white text-3xl"></i>
                     </div>
 
-                    <h2 className="text-5xl md:text-7xl font-bold text-gray-800 mb-6">
+                    <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                         Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Location</span>
                     </h2>
 
-                    <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
+                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
                         Visit us at our state-of-the-art campuses in Sargiguda, Kantabanji, Balangir and Ghantiguda, Sinapali, Nuapada, Odisha
                     </p>
 
@@ -76,7 +76,7 @@ const Location = () => {
                                 <div className="w-16 h-16 bg-[#7B3FA0] rounded-2xl flex items-center justify-center mx-auto mb-6">
                                     <i className="fa-solid fa-map-marker-alt text-white text-2xl"></i>
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">{location.name}</h3>
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">{location.name}</h3>
 
                                 <div className="space-y-4">
                                     <div className="flex items-start">
@@ -84,8 +84,8 @@ const Location = () => {
                                             <i className="fa-solid fa-map-marker-alt text-[#7B3FA0] text-lg"></i>
                                         </div>
                                         <div className='text-left'>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-1">Address</h4>
-                                            <p className="text-gray-600 leading-relaxed">{location.address}</p>
+                                            <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">Address</h4>
+                                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{location.address}</p>
                                         </div>
                                     </div>
 
@@ -94,8 +94,8 @@ const Location = () => {
                                             <i className="fa-solid fa-phone text-[#7B3FA0] text-lg"></i>
                                         </div>
                                         <div className='text-left'>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-1">Phone</h4>
-                                            <p className="text-gray-600">{location.phone}</p>
+                                            <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">Phone</h4>
+                                            <p className="text-gray-600 dark:text-gray-300">{location.phone}</p>
                                         </div>
                                     </div>
 
@@ -104,8 +104,8 @@ const Location = () => {
                                             <i className="fa-solid fa-envelope text-[#7B3FA0] text-lg"></i>
                                         </div>
                                         <div className='text-left'>
-                                            <h4 className="text-lg font-semibold text-gray-800 mb-1">Email</h4>
-                                            <p className="text-gray-600">{location.email}</p>
+                                            <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">Email</h4>
+                                            <p className="text-gray-600 dark:text-gray-300">{location.email}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -119,7 +119,7 @@ const Location = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
                 {locationData.map((location, index) => (
                     <div key={index} className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">{location.name}</h3>
+                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">{location.name}</h3>
 
                         {/* Small Map */}
                         <div className="relative w-full h-64 mb-4 rounded-xl overflow-hidden">
@@ -139,15 +139,15 @@ const Location = () => {
                         <div className="space-y-3">
                             <div className="flex items-center">
                                 <i className="fa-solid fa-map-marker-alt text-[#7B3FA0] mr-3"></i>
-                                <span className="text-gray-700">{location.address}</span>
+                                <span className="text-gray-700 dark:text-gray-200">{location.address}</span>
                             </div>
                             <div className="flex items-center">
                                 <i className="fa-solid fa-phone text-[#7B3FA0] mr-3"></i>
-                                <span className="text-gray-700">{location.phone}</span>
+                                <span className="text-gray-700 dark:text-gray-200">{location.phone}</span>
                             </div>
                             <div className="flex items-center">
                                 <i className="fa-solid fa-envelope text-[#7B3FA0] mr-3"></i>
-                                <span className="text-gray-700">{location.email}</span>
+                                <span className="text-gray-700 dark:text-gray-200">{location.email}</span>
                             </div>
                         </div>
 
@@ -171,7 +171,7 @@ const Location = () => {
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                         <div>
-                            <h3 className="text-3xl font-bold text-gray-800 mb-6">
+                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                                 Why Choose Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Location</span>
                             </h3>
                             <div className="space-y-4">
@@ -180,8 +180,8 @@ const Location = () => {
                                         <i className="fa-solid fa-check text-white text-sm"></i>
                                     </div>
                                     <div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Strategic Locations</h4>
-                                        <p className="text-gray-600 text-sm">Located in Sargiguda, Kantabanji and Ghantiguda, Sinapali with easy access to major transportation routes</p>
+                                        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">Strategic Locations</h4>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">Located in Sargiguda, Kantabanji and Ghantiguda, Sinapali with easy access to major transportation routes</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start">
@@ -189,8 +189,8 @@ const Location = () => {
                                         <i className="fa-solid fa-check text-white text-sm"></i>
                                     </div>
                                     <div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Modern Infrastructure</h4>
-                                        <p className="text-gray-600 text-sm">State-of-the-art facilities with the latest technology and amenities</p>
+                                        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">Modern Infrastructure</h4>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">State-of-the-art facilities with the latest technology and amenities</p>
                                     </div>
                                 </div>
                                 <div className="flex items-start">
@@ -198,36 +198,36 @@ const Location = () => {
                                         <i className="fa-solid fa-check text-white text-sm"></i>
                                     </div>
                                     <div>
-                                        <h4 className="text-lg font-semibold text-gray-800 mb-1">Safe Environment</h4>
-                                        <p className="text-gray-600 text-sm">Secure campus with 24/7 security and a peaceful learning environment</p>
+                                        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-1">Safe Environment</h4>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">Secure campus with 24/7 security and a peaceful learning environment</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
-                            <h4 className="text-2xl font-bold text-gray-800 mb-6 text-center">Plan Your Visit</h4>
+                            <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Plan Your Visit</h4>
 
                             <div className="space-y-4">
                                 <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
                                     <i className="fa-solid fa-bus text-[#7B3FA0] text-xl mr-4"></i>
                                     <div>
-                                        <h5 className="font-semibold text-gray-800">By Bus</h5>
-                                        <p className="text-gray-600 text-sm">Kantabanji Bus Stand - 15 minutes drive</p>
+                                        <h5 className="font-semibold text-gray-800 dark:text-gray-100">By Bus</h5>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">Kantabanji Bus Stand - 15 minutes drive</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
                                     <i className="fa-solid fa-car text-[#387B95] text-xl mr-4"></i>
                                     <div>
-                                        <h5 className="font-semibold text-gray-800">By Car</h5>
-                                        <p className="text-gray-600 text-sm">NH 26 via Kantabanji - Easy access from Balangir</p>
+                                        <h5 className="font-semibold text-gray-800 dark:text-gray-100">By Car</h5>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">NH 26 via Kantabanji - Easy access from Balangir</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center p-4 bg-white rounded-xl shadow-sm">
                                     <i className="fa-solid fa-train text-green-600 text-xl mr-4"></i>
                                     <div>
-                                        <h5 className="font-semibold text-gray-800">By Train</h5>
-                                        <p className="text-gray-600 text-sm">Kantabanji Railway Station - 20 minutes drive</p>
+                                        <h5 className="font-semibold text-gray-800 dark:text-gray-100">By Train</h5>
+                                        <p className="text-gray-600 dark:text-gray-300 text-sm">Kantabanji Railway Station - 20 minutes drive</p>
                                     </div>
                                 </div>
                             </div>

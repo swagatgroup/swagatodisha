@@ -564,7 +564,7 @@ const SendMessage = () => {
                                                 <i className="fa-solid fa-phone text-white text-sm"></i>
                                             </div>
                                             <div className="flex-1">
-                                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Phone</p>
+                                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-1">Phone</p>
                                                 <a
                                                     href={`tel:${CONTACT_INFO.phone}`}
                                                     className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-[#7B3FA0] dark:hover:text-purple-400 transition-colors"
@@ -579,7 +579,7 @@ const SendMessage = () => {
                                                 <i className="fa-solid fa-envelope text-white text-sm"></i>
                                             </div>
                                             <div className="flex-1">
-                                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">Email</p>
+                                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-1">Email</p>
                                                 <a
                                                     href={`mailto:${CONTACT_INFO.email}`}
                                                     className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-[#387B95] dark:hover:text-blue-400 transition-colors break-all"
@@ -591,7 +591,7 @@ const SendMessage = () => {
                                     </div>
                                     
                                     <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
-                                        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                                             <i className="fa-solid fa-lightbulb text-yellow-500 mr-2"></i>
                                             <strong>Tip:</strong> Include as much detail as possible in your message to help us assist you better.
                                         </p>
@@ -609,7 +609,7 @@ const SendMessage = () => {
                                 <div className="bg-white/80 dark:bg-[#2A1E2E]/80 backdrop-blur-xl rounded-2xl p-6 md:p-8 lg:p-10 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
                                     <div className="mb-6">
                                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Get in Touch</h2>
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">Fill out the form below and we'll respond promptly</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">Fill out the form below and we'll respond promptly</p>
                                     </div>
                             
                             <form onSubmit={handleSubmit} className="space-y-5" encType="multipart/form-data">
@@ -634,7 +634,7 @@ const SendMessage = () => {
                                                 placeholder="John Doe"
                                                 required
                                             />
-                                            <i className="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                            <i className="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
                                         </div>
                                     </motion.div>
 
@@ -658,7 +658,7 @@ const SendMessage = () => {
                                                 placeholder="john@example.com"
                                                 required
                                             />
-                                            <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                            <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
                                         </div>
                                     </motion.div>
                                 </div>
@@ -685,7 +685,7 @@ const SendMessage = () => {
                                             pattern="[6-9]\d{9}"
                                             required
                                         />
-                                        <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                        <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
                                     </div>
                                 </motion.div>
 
@@ -709,7 +709,7 @@ const SendMessage = () => {
                                             placeholder="What is this about?"
                                             required
                                         />
-                                        <i className="fa-solid fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                                        <i className="fa-solid fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
                                     </div>
                                 </motion.div>
 
@@ -721,7 +721,7 @@ const SendMessage = () => {
                                     <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                                         <i className="fa-solid fa-message text-[#7B3FA0] text-xs"></i>
                                         Message <span className="text-red-500">*</span>
-                                        <span className="ml-auto text-xs font-normal text-gray-500 dark:text-gray-400">
+                                        <span className="ml-auto text-xs font-normal text-gray-500 dark:text-gray-300">
                                             {formData.message.trim().length}/5000
                                         </span>
                                     </label>
@@ -736,7 +736,7 @@ const SendMessage = () => {
                                             placeholder="Tell us more about your inquiry... (Minimum 10 characters)"
                                             required
                                         ></textarea>
-                                        <i className="fa-solid fa-message absolute left-4 top-4 text-gray-400 text-sm"></i>
+                                        <i className="fa-solid fa-message absolute left-4 top-4 text-gray-400 dark:text-gray-300 text-sm"></i>
                                     </div>
                                     {formData.message.trim().length > 0 && formData.message.trim().length < 10 && (
                                         <p className="mt-1 text-xs text-orange-600 flex items-center gap-1">
@@ -753,7 +753,7 @@ const SendMessage = () => {
                                 >
                                     <label htmlFor="documents" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
                                         <i className="fa-solid fa-paperclip text-[#7B3FA0] text-xs"></i>
-                                        Upload Documents <span className="text-xs font-normal text-gray-500 dark:text-gray-400">(Optional)</span>
+                                        Upload Documents <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(Optional)</span>
                                     </label>
                                     <div className="relative">
                                         <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 hover:border-[#7B3FA0] dark:hover:border-[#7B3FA0] transition-all duration-300 bg-gray-50/50 dark:bg-[#1A1212]/50">
@@ -767,11 +767,11 @@ const SendMessage = () => {
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                             />
                                             <div className="text-center">
-                                                <i className="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 dark:text-gray-600 mb-2"></i>
+                                                <i className="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 dark:text-gray-400 mb-2"></i>
                                                 <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                                     Click to upload or drag and drop
                                                 </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                <p className="text-xs text-gray-500 dark:text-gray-300">
                                                     PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file, up to 5 files)
                                                 </p>
                                             </div>
@@ -795,7 +795,7 @@ const SendMessage = () => {
                                                             </div>
                                                             <div className="flex-1 min-w-0">
                                                                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{file.name}</p>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-400">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-300">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                                             </div>
                                                         </div>
                                                     </motion.div>

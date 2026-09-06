@@ -225,11 +225,11 @@ const EnhancedAgentDashboard = () => {
                     className="bg-white dark:bg-[#2A1E2E] rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex items-center justify-between"
                 >
                     <div>
-                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">Your Assigned Manager</h3>
+                        <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1">Your Assigned Manager</h3>
                         <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             {user.assignedStaff.firstName} {user.assignedStaff.lastName}
                         </p>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                        <p className="text-sm text-gray-500 dark:text-gray-300">
                             {user.assignedStaff.department} • {user.assignedStaff.email}
                         </p>
                     </div>
@@ -276,7 +276,7 @@ const EnhancedAgentDashboard = () => {
                           className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                             agentView === key
                               ? 'bg-white dark:bg-[#2A1E2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
-                              : 'text-gray-600 dark:bg-transparent dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
+                              : 'text-gray-600 dark:bg-transparent dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                           }`}
                         >
                           {label}
@@ -284,7 +284,7 @@ const EnhancedAgentDashboard = () => {
                       ))}
                     </div>
 
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mb-3">
                       {agentView === 'combined'  && 'All students associated with your account.'}
                       {agentView === 'dashboard' && 'Students you registered directly from this dashboard.'}
                       {agentView === 'referral'  && 'Students who self-registered using your referral code.'}

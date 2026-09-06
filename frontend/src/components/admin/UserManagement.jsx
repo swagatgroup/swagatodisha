@@ -487,7 +487,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                         </div>
                                         <div className="ml-4">
                                             <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{user.name || user.fullName}</div>
-                                            <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">
+                                            <div className="text-sm text-gray-500 dark:text-gray-300">
                                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
                                                     {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : 'Unknown'}
                                                 </span>
@@ -496,8 +496,8 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <div className="text-sm text-gray-900 dark:text-gray-100 dark:text-gray-100">{user.email}</div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-400 dark:text-gray-400">{user.phone || user.phoneNumber}</div>
+                                    <div className="text-sm text-gray-900 dark:text-gray-100">{user.email}</div>
+                                    <div className="text-sm text-gray-500 dark:text-gray-300">{user.phone || user.phoneNumber}</div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(user.status)}`}>
@@ -565,7 +565,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                             </motion.tr>
                         )) : (
                             <tr>
-                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
+                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500 dark:text-gray-300">
                                     No users found
                                 </td>
                             </tr>
@@ -581,7 +581,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Previous
                         </button>
@@ -602,7 +602,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                         <button
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Next
                         </button>
@@ -619,7 +619,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Edit {userType === 'agents' ? 'Agent' : userType === 'staff' ? 'Staff' : 'User'}</h3>
                                 <button
                                     onClick={() => setShowEditModal(false)}
-                                    className="text-gray-400 hover:text-gray-600 dark:text-gray-400"
+                                    className="text-gray-400 hover:text-gray-600 dark:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

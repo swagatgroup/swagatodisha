@@ -280,10 +280,10 @@ const Register = () => {
             <div className={`min-h-screen flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200`}>
                 <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
                     <img className="mx-auto h-20 w-auto" src="/swagat-logo.png" alt="Swagat Group" />
-                    <h2 className={`mt-6 text-3xl font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <h2 className={`mt-6 text-3xl font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
                         Registrations Closed
                     </h2>
-                    <p className={`mt-4 text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                    <p className={`mt-4 text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}`}>
                         Currently we are not taking new registrations. Admissions are closed for this season.
                     </p>
                     <div className="mt-8">
@@ -417,7 +417,7 @@ const Register = () => {
                                     label="Password (Optional)"
                                     showStrengthIndicator={true}
                                 />
-                                <span className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                <span className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                     If left blank, a secure default password will be emailed to you.
                                 </span>
                             </div>
@@ -484,7 +484,7 @@ const Register = () => {
                                     Valid Code! Referred by: {referrerName}
                                 </p>
                             )}
-                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-300">
                                 Enter a valid referral code and verify it to apply the referral to your account.
                             </p>
                         </div>
@@ -530,7 +530,7 @@ const Register = () => {
                     >
                         <Link
                             to="/"
-                            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 flex items-center justify-center"
+                            className="text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 flex items-center justify-center"
                         >
                             <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

@@ -208,8 +208,8 @@ const EnhancedDocumentUpload = ({
                 <div className="flex items-start justify-between">
                     <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
-                            <DocumentIcon className="h-5 w-5 text-gray-600" />
-                            <h3 className="font-medium text-gray-900">
+                            <DocumentIcon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                            <h3 className="font-medium text-gray-900 dark:text-gray-100">
                                 {docInfo.label}
                                 {isRequired && <span className="text-red-500 ml-1">*</span>}
                             </h3>
@@ -218,7 +218,7 @@ const EnhancedDocumentUpload = ({
                             )}
                         </div>
 
-                        <p className="text-sm text-gray-600 mb-2">{docInfo.description}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{docInfo.description}</p>
 
                         {docInfo.validation?.note && (
                             <div className="flex items-center space-x-1 mb-2">
@@ -227,7 +227,7 @@ const EnhancedDocumentUpload = ({
                             </div>
                         )}
 
-                        <div className="text-xs text-gray-500 mb-2">
+                        <div className="text-xs text-gray-500 dark:text-gray-300 mb-2">
                             Allowed formats: {docInfo.allowedFormats.join(', ')} •
                             Max size: {Math.round(docInfo.maxSize / (1024 * 1024))}MB
                         </div>
@@ -236,8 +236,8 @@ const EnhancedDocumentUpload = ({
                             <div className="mt-2 p-2 bg-white rounded border">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm font-medium text-gray-900">{doc.name}</p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.name}</p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-300">
                                             {(doc.size / 1024).toFixed(1)} KB • {doc.type}
                                         </p>
                                     </div>
@@ -262,7 +262,7 @@ const EnhancedDocumentUpload = ({
                                             style={{ width: `${progress}%` }}
                                         />
                                     </div>
-                                    <span className="text-xs text-gray-600">{progress}%</span>
+                                    <span className="text-xs text-gray-600 dark:text-gray-300">{progress}%</span>
                                 </div>
                             </div>
                         )}
@@ -308,10 +308,10 @@ const EnhancedDocumentUpload = ({
             exit={{ opacity: 0, height: 0 }}
             className="border border-purple-200 bg-[#EDE0F7] rounded-lg p-4"
         >
-            <h4 className="font-medium text-gray-900 mb-3">Add Custom Document</h4>
+            <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Add Custom Document</h4>
             <div className="space-y-3">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Document Label
                     </label>
                     <input
@@ -324,7 +324,7 @@ const EnhancedDocumentUpload = ({
                     />
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         File
                     </label>
                     <input
@@ -343,7 +343,7 @@ const EnhancedDocumentUpload = ({
                     </button>
                     <button
                         onClick={() => setShowCustomForm(false)}
-                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                        className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50"
                     >
                         Cancel
                     </button>
@@ -362,7 +362,7 @@ const EnhancedDocumentUpload = ({
 
     if (!documentRequirements) {
         return (
-            <div className="text-center p-8 text-gray-500">
+            <div className="text-center p-8 text-gray-500 dark:text-gray-300">
                 Failed to load document requirements
             </div>
         );
@@ -372,7 +372,7 @@ const EnhancedDocumentUpload = ({
         <div className="space-y-6">
             {/* Required Documents */}
             <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                     Required Documents
                 </h3>
                 <div className="space-y-4">
@@ -384,7 +384,7 @@ const EnhancedDocumentUpload = ({
 
             {/* Optional Documents */}
             <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                     Optional Documents
                 </h3>
                 <div className="space-y-4">
@@ -398,7 +398,7 @@ const EnhancedDocumentUpload = ({
             {documentRequirements.requirements.custom.enabled && (
                 <div>
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             Custom Documents
                         </h3>
                         {!disabled && (
@@ -428,8 +428,8 @@ const EnhancedDocumentUpload = ({
                             >
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <h4 className="font-medium text-gray-900">{doc.customLabel}</h4>
-                                        <p className="text-sm text-gray-600">{doc.name}</p>
+                                        <h4 className="font-medium text-gray-900 dark:text-gray-100">{doc.customLabel}</h4>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300">{doc.name}</p>
                                     </div>
                                     {!disabled && (
                                         <button

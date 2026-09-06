@@ -256,10 +256,10 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
 
     const renderStep1 = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">Student & Personal Details</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Student & Personal Details</h3>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Select Student *
                 </label>
                 <select
@@ -279,7 +279,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Full Name *
                     </label>
                     <input
@@ -292,7 +292,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Father's Name *
                     </label>
                     <input
@@ -305,7 +305,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Mother's Name *
                     </label>
                     <input
@@ -318,7 +318,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Date of Birth *
                     </label>
                     <input
@@ -331,7 +331,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Gender *
                     </label>
                     <select
@@ -350,7 +350,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Aadhar Number *
                     </label>
                     <input
@@ -368,11 +368,11 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
 
     const renderStep2 = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">Contact Details</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Contact Details</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Phone Number *
                     </label>
                     <input
@@ -386,7 +386,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 </div>
 
                 <div className="md:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Email *
                     </label>
                     <input
@@ -400,10 +400,10 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
             </div>
 
             <div>
-                <h4 className="text-md font-medium text-gray-900 mb-4">Permanent Address</h4>
+                <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Permanent Address</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Street Address *
                         </label>
                         <input
@@ -416,7 +416,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             City *
                         </label>
                         <input
@@ -429,7 +429,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             State *
                         </label>
                         <select
@@ -448,7 +448,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Pincode *
                         </label>
                         <input
@@ -467,10 +467,10 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
 
     const renderStep3 = () => (
         <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">Course & Guardian Details</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Course & Guardian Details</h3>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Selected Course *
                 </label>
                 <select
@@ -490,7 +490,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Stream
                     </label>
                     <input
@@ -502,7 +502,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                         Campus
                     </label>
                     <select
@@ -518,10 +518,10 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
             </div>
 
             <div>
-                <h4 className="text-md font-medium text-gray-900 mb-4">Guardian Details</h4>
+                <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Guardian Details</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Guardian Name *
                         </label>
                         <input
@@ -534,7 +534,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Relationship *
                         </label>
                         <select
@@ -553,7 +553,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Guardian Phone *
                         </label>
                         <input
@@ -567,7 +567,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Guardian Email
                         </label>
                         <input
@@ -581,7 +581,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
             </div>
 
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Referral Code (Optional)
                 </label>
                 <input
@@ -603,12 +603,12 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
             >
                 <div className="p-6 border-b">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-2xl font-bold text-gray-900">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                             Submit Application for Student
                         </h2>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                         >
                             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -638,7 +638,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                                 </div>
                             ))}
                         </div>
-                        <div className="flex justify-between mt-2 text-sm text-gray-600">
+                        <div className="flex justify-between mt-2 text-sm text-gray-600 dark:text-gray-300">
                             <span>Personal Details</span>
                             <span>Contact Details</span>
                             <span>Course & Guardian</span>
@@ -657,7 +657,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         <button
                             onClick={handlePrevious}
                             disabled={currentStep === 1}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             Previous
                         </button>
@@ -665,7 +665,7 @@ const SubmitApplicationForStudent = ({ onClose, onSuccess }) => {
                         <div className="flex space-x-3">
                             <button
                                 onClick={onClose}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
                             >
                                 Cancel
                             </button>

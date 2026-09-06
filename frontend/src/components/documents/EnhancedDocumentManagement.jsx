@@ -197,8 +197,8 @@ const EnhancedDocumentManagement = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">Document Management</h2>
-                <p className="text-gray-600">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Document Management</h2>
+                <p className="text-gray-600 dark:text-gray-300">
                     Upload and manage your documents. Make sure all required documents are uploaded and submitted for review.
                 </p>
             </div>
@@ -217,8 +217,8 @@ const EnhancedDocumentManagement = () => {
                             </svg>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-600">Total</p>
-                            <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Total</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.total}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -236,8 +236,8 @@ const EnhancedDocumentManagement = () => {
                             </svg>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-600">Pending</p>
-                            <p className="text-2xl font-semibold text-gray-900">{stats.pending}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.pending}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -255,8 +255,8 @@ const EnhancedDocumentManagement = () => {
                             </svg>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-600">Under Review</p>
-                            <p className="text-2xl font-semibold text-gray-900">{stats.underReview}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Under Review</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.underReview}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -274,8 +274,8 @@ const EnhancedDocumentManagement = () => {
                             </svg>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-600">Approved</p>
-                            <p className="text-2xl font-semibold text-gray-900">{stats.approved}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Approved</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.approved}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -293,8 +293,8 @@ const EnhancedDocumentManagement = () => {
                             </svg>
                         </div>
                         <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-600">Rejected</p>
-                            <p className="text-2xl font-semibold text-gray-900">{stats.rejected}</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Rejected</p>
+                            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{stats.rejected}</p>
                         </div>
                     </div>
                 </motion.div>
@@ -302,11 +302,11 @@ const EnhancedDocumentManagement = () => {
 
             {/* Upload Section */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload New Document</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Upload New Document</h3>
 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Document Category *
                         </label>
                         <select
@@ -322,16 +322,16 @@ const EnhancedDocumentManagement = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                             Select File *
                         </label>
                         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-purple-400 transition-colors">
                             <div className="space-y-1 text-center">
-                                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" stroke="currentColor" fill="none" viewBox="0 0 48 48">
                                     <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
-                                <div className="flex text-sm text-gray-600">
-                                    <label htmlFor="file-input" className="relative cursor-pointer bg-white rounded-md font-medium text-[#7B3FA0] hover:text-[#7B3FA0] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#7B3FA0]">
+                                <div className="flex text-sm text-gray-600 dark:text-gray-300">
+                                    <label htmlFor="file-input" className="relative cursor-pointer bg-white dark:bg-[#2A1E2E] rounded-md font-medium text-[#7B3FA0] hover:text-[#7B3FA0] focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-[#7B3FA0]">
                                         <span>Upload a file</span>
                                         <input
                                             id="file-input"
@@ -344,11 +344,11 @@ const EnhancedDocumentManagement = () => {
                                     </label>
                                     <p className="pl-1">or drag and drop</p>
                                 </div>
-                                <p className="text-xs text-gray-500">PDF, PNG, JPG, WebP up to 10MB</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-300">PDF, PNG, JPG, WebP up to 10MB</p>
                             </div>
                         </div>
                         {selectedFile && (
-                            <div className="mt-2 text-sm text-gray-600">
+                            <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                                 Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                             </div>
                         )}
@@ -370,7 +370,7 @@ const EnhancedDocumentManagement = () => {
             <div className="bg-white rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold text-gray-900">My Documents</h3>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">My Documents</h3>
                         <select
                             value={filter}
                             onChange={(e) => setFilter(e.target.value)}
@@ -388,11 +388,11 @@ const EnhancedDocumentManagement = () => {
                 <div className="p-6">
                     {filteredDocuments.length === 0 ? (
                         <div className="text-center py-8">
-                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No documents found</h3>
-                            <p className="mt-1 text-sm text-gray-500">
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No documents found</h3>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
                                 {filter === 'all' ? 'Get started by uploading your first document.' : `No documents with status "${filter.toLowerCase()}".`}
                             </p>
                         </div>
@@ -414,13 +414,13 @@ const EnhancedDocumentManagement = () => {
                                             </div>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate">
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                                                 {document.documentType}
                                             </p>
-                                            <p className="text-sm text-gray-500">
+                                            <p className="text-sm text-gray-500 dark:text-gray-300">
                                                 {document.originalName} • {(document.fileSize / 1024 / 1024).toFixed(2)} MB
                                             </p>
-                                            <p className="text-xs text-gray-400">
+                                            <p className="text-xs text-gray-400 dark:text-gray-300">
                                                 Uploaded {new Date(document.uploadedAt).toLocaleDateString()}
                                             </p>
                                             {document.status === 'REJECTED' && document.remarks && (

@@ -9,7 +9,7 @@ const SocialFixed = () => {
                     <a
                         href={`tel:${SOCIAL_LINKS.phone}`}
                         target="_blank"
-                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
+                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white dark:bg-[#2A1E2E] text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
                     >
                         <i className="fa-solid fa-phone-flip m-2 mx-3"></i>
                         <span className="w-16 mr-4">Call</span>
@@ -19,7 +19,7 @@ const SocialFixed = () => {
                     <a
                         href={`mailto:${SOCIAL_LINKS.email}`}
                         target="_blank"
-                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
+                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white dark:bg-[#2A1E2E] text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
                     >
                         <i className="fa-solid fa-envelope m-2 mx-3"></i>
                         <span className="w-16 mr-4">E-Mail</span>
@@ -29,7 +29,7 @@ const SocialFixed = () => {
                     <a
                         href={SOCIAL_LINKS.facebook}
                         target="_blank"
-                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
+                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white dark:bg-[#2A1E2E] text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
                     >
                         <i className="fa-brands fa-facebook-f m-2 mx-3"></i>
                         <span className="w-16 mr-4">Facebook</span>
@@ -39,7 +39,7 @@ const SocialFixed = () => {
                     <a
                         href={SOCIAL_LINKS.twitter}
                         target="_blank"
-                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
+                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white dark:bg-[#2A1E2E] text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
                     >
                         <i className="fa-brands fa-twitter m-2 mx-3"></i>
                         <span className="w-16 mr-4">Twitter</span>
@@ -49,7 +49,7 @@ const SocialFixed = () => {
                     <a
                         href={SOCIAL_LINKS.instagram}
                         target="_blank"
-                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
+                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white dark:bg-[#2A1E2E] text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
                     >
                         <i className="fa-brands fa-instagram m-2 mx-3"></i>
                         <span className="w-16 mr-4">Instagram</span>
@@ -59,7 +59,7 @@ const SocialFixed = () => {
                     <a
                         href={SOCIAL_LINKS.youtube}
                         target="_blank"
-                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
+                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white dark:bg-[#2A1E2E] text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
                     >
                         <i className="fa-brands fa-youtube m-2 mx-3"></i>
                         <span className="w-16 mr-4">Youtube</span>
@@ -69,7 +69,7 @@ const SocialFixed = () => {
                     <a
                         href={SOCIAL_LINKS.linkedin}
                         target="_blank"
-                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
+                        className="flex justify-between items-center p-1 py-0 text-decoration-none bg-white dark:bg-[#2A1E2E] text-[#4c4cc8] w-full border-b border-black relative right-[-5.3rem] transition-right duration-300 ease-in-out hover:right-0"
                     >
                         <i className="fa-brands fa-linkedin m-2 mx-3"></i>
                         <span className="w-16 mr-4">Linkedin</span>

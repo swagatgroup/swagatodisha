@@ -946,10 +946,10 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-tight">
                         {application.personalDetails?.fullName || application.user?.fullName || 'N/A'}
                     </h3>
-                    <p className="text-xs text-gray-600 dark:text-gray-400">
+                    <p className="text-xs text-gray-600 dark:text-gray-300">
                         {application.contactDetails?.email || application.user?.email || 'N/A'}
                     </p>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                    <p className="text-[10px] text-gray-500 dark:text-gray-300 uppercase tracking-wide">
                         ID: {application.applicationId}
                     </p>
                 </div>
@@ -960,13 +960,13 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
 
             <div className="grid grid-cols-2 gap-2 mb-2">
                 <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">Phone</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-300 uppercase">Phone</p>
                     <p className="text-xs font-medium text-gray-900 dark:text-gray-100">
                         {application.contactDetails?.primaryPhone || application.user?.phoneNumber || 'N/A'}
                     </p>
                 </div>
                 <div>
-                    <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">Course</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-300 uppercase">Course</p>
                     <p className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate" title={application.courseDetails?.selectedCourse}>
                         {application.courseDetails?.selectedCourse || 'N/A'}
                     </p>
@@ -974,7 +974,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
             </div>
 
             <div className="flex justify-between items-center border-t border-gray-100 dark:border-gray-700 pt-2">
-                <div className="flex items-center text-[10px] text-gray-500 dark:text-gray-400">
+                <div className="flex items-center text-[10px] text-gray-500 dark:text-gray-300">
                     <ClockIcon className="h-3 w-3 mr-1" />
                     {new Date(application.submittedAt).toLocaleDateString()}
                 </div>
@@ -1018,7 +1018,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             </h3>
                             <button
                                 onClick={() => setShowDocumentViewer(false)}
-                                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                             >
                                 <XCircleIcon className="h-6 w-6" />
                             </button>
@@ -1049,7 +1049,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                 </div>
                             )}
                             {!selectedDocument.filePath && (
-                                <div className="text-center text-gray-500 py-8">
+                                <div className="text-center text-gray-500 dark:text-gray-300 py-8">
                                     <p>Document preview not available</p>
                                 </div>
                             )}
@@ -1087,7 +1087,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                                 {step.name}
                             </h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
                                 {step.description}
                             </p>
                         </div>
@@ -1096,7 +1096,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                         {status === 'verified' ? (
                             <CheckCircleIcon className="h-6 w-6 text-green-600" />
                         ) : (
-                            <ClockIcon className="h-6 w-6 text-gray-400" />
+                            <ClockIcon className="h-6 w-6 text-gray-400 dark:text-gray-300" />
                         )}
                     </div>
                 </div>
@@ -1141,7 +1141,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Application Review
                     </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
+                    <p className="text-gray-600 dark:text-gray-300">
                         Review and verify student applications
                     </p>
                 </div>
@@ -1156,7 +1156,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             onClick={() => setActiveTab(tab.id)}
                             className={`whitespace-nowrap py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.id
                                 ? 'border-blue-500 text-[#387B95] dark:text-[#60A5FA]'
-                                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'
+                                : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200'
                                 }`}
                         >
                             {tab.name}
@@ -1468,7 +1468,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             });
 
                             return filtered.length === 0 ? (
-                                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                     No applications found
                                 </div>
                             ) : (
@@ -1480,7 +1480,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     {/* Pagination UI */}
                     {totalPages > 1 && (
                         <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex flex-col items-center space-y-3">
-                            <div className="text-xs text-gray-500 dark:text-gray-400">
+                            <div className="text-xs text-gray-500 dark:text-gray-300">
                                 Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}
                             </div>
                             <div className="flex items-center space-x-1">
@@ -1528,10 +1528,10 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                             {selectedApplication.personalDetails?.fullName}
                                         </h3>
-                                        <p className="text-gray-600 dark:text-gray-400">
+                                        <p className="text-gray-600 dark:text-gray-300">
                                             {selectedApplication.personalDetails?.email}
                                         </p>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                        <p className="text-sm text-gray-500 dark:text-gray-300">
                                             Application ID: {selectedApplication.applicationId}
                                         </p>
                                     </div>
@@ -1701,16 +1701,16 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                 <p className="font-medium text-gray-900 dark:text-gray-100">
                                                                     {label}
                                                                 </p>
-                                                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                                <p className="text-sm text-gray-600 dark:text-gray-300">
                                                                     {item.name || 'Uploaded Document'}
                                                                 </p>
-                                                                <p className="text-xs text-gray-500">
+                                                                <p className="text-xs text-gray-500 dark:text-gray-300">
                                                                     {item.size ? `${(item.size / 1024).toFixed(1)} KB` : ''} {item.type ? `• ${item.type}` : ''}
                                                                 </p>
 
                                                                 {/* Upload timestamp */}
                                                                 {item.uploadedAt && (
-                                                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                                                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                                                         📅 Uploaded: {new Date(item.uploadedAt).toLocaleString()}
                                                                     </p>
                                                                 )}
@@ -1724,7 +1724,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                         {isApproved ? '✓ APPROVED' : isRejected ? '✗ REJECTED' : '⏳ PENDING'}
                                                                     </span>
                                                                     {item.reviewedAt && (
-                                                                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
+                                                                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-300">
                                                                             • Reviewed: {new Date(item.reviewedAt).toLocaleDateString()}
                                                                         </span>
                                                                     )}
@@ -1854,7 +1854,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                             );
                                         })
                                     ) : (
-                                        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                                        <div className="text-center py-4 text-gray-500 dark:text-gray-300">
                                             No documents uploaded during registration
                                         </div>
                                     )}
@@ -1868,7 +1868,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     <p className="font-medium text-gray-900 dark:text-gray-100">
                                                         Generated Application PDF
                                                     </p>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    <p className="text-sm text-gray-600 dark:text-gray-300">
                                                         Complete application form with all details
                                                     </p>
                                                     <span className="inline-block px-2 py-1 text-xs rounded-full mt-1 bg-[#EDE0F7] text-purple-800">
@@ -1977,7 +1977,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                 <div className="flex space-x-2">
                                                     <button
                                                         onClick={() => setDocumentDecisions({})}
-                                                        className="px-3 py-2 text-gray-600 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                        className="px-3 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                                                     >
                                                         Clear All
                                                     </button>
@@ -2010,7 +2010,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     <span className="px-2 py-1 rounded bg-green-100 text-green-800">Approved: {selectedApplication.reviewStatus.documentCounts.approved}</span>
                                                     <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-800">Pending: {selectedApplication.reviewStatus.documentCounts.pending}</span>
                                                     <span className="px-2 py-1 rounded bg-red-100 text-red-800">Rejected: {selectedApplication.reviewStatus.documentCounts.rejected}</span>
-                                                    <span className="px-2 py-1 rounded bg-gray-100 text-gray-800">Total: {selectedApplication.reviewStatus.documentCounts.total}</span>
+                                                    <span className="px-2 py-1 rounded bg-gray-100 text-gray-800 dark:text-gray-100">Total: {selectedApplication.reviewStatus.documentCounts.total}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -2021,11 +2021,11 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                         </div>
                     ) : (
                         <div className="text-center py-12">
-                            <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-400 dark:text-gray-600 mb-4" />
+                            <DocumentTextIcon className="h-16 w-16 mx-auto text-gray-400 dark:text-gray-400 mb-4" />
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                                 Select an Application
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400">
+                            <p className="text-gray-600 dark:text-gray-300">
                                 Choose an application from the list to review its details
                             </p>
                         </div>
@@ -2056,9 +2056,9 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                                 <div>
                                     <h3 className="text-xl font-bold text-red-600 dark:text-red-400">Reject Application</h3>
-                                    <p className="text-sm text-gray-500 mt-1">{selectedApplication.personalDetails?.fullName}</p>
+                                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{selectedApplication.personalDetails?.fullName}</p>
                                 </div>
-                                <button onClick={() => setShowRejectModal(false)} className="text-gray-400 hover:text-gray-600">
+                                <button onClick={() => setShowRejectModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
                                     <XCircleIcon className="h-6 w-6" />
                                 </button>
                             </div>
@@ -2080,7 +2080,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rejection Message * <span className="text-xs text-gray-400">(visible to student/agent)</span></label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Rejection Message * <span className="text-xs text-gray-400 dark:text-gray-300">(visible to student/agent)</span></label>
                                     <textarea
                                         value={rejectMessage}
                                         onChange={e => setRejectMessage(e.target.value)}
@@ -2135,14 +2135,14 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
                                         Select Documents for {generationType === 'pdf' ? 'PDF' : 'ZIP'}
                                     </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
                                         Choose which documents to include in the {generationType === 'pdf' ? 'combined PDF' : 'ZIP file'}
                                     </p>
                                 </div>
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
-                                    className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
                                 >
                                     <XCircleIcon className="h-6 w-6" />
                                 </button>
@@ -2163,7 +2163,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
 
                                     if (approvedDocs.length === 0) {
                                         return (
-                                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                            <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                                                 <ExclamationTriangleIcon className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
                                                 <p>No approved documents available</p>
                                             </div>
@@ -2173,7 +2173,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     return (
                                         <div className="space-y-3">
                                             <div className="flex justify-between items-center mb-4">
-                                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                                <span className="text-sm text-gray-600 dark:text-gray-300">
                                                     {approvedDocs.length} approved document{approvedDocs.length !== 1 ? 's' : ''} available
                                                 </span>
                                                 <div className="flex space-x-2">
@@ -2185,7 +2185,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     </button>
                                                     <button
                                                         onClick={clearDocumentSelection}
-                                                        className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-400"
+                                                        className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300"
                                                     >
                                                         Clear All
                                                     </button>
@@ -2217,14 +2217,14 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                             <p className="font-medium text-gray-900 dark:text-gray-100">
                                                                 {label}
                                                             </p>
-                                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                            <p className="text-sm text-gray-600 dark:text-gray-300">
                                                                 {doc.fileName || doc.documentType}
                                                             </p>
                                                             <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
                                                                 APPROVED
                                                             </span>
                                                         </div>
-                                                        <CheckCircleIcon className={`h-6 w-6 ${isSelected ? 'text-[#387B95]' : 'text-gray-400'}`} />
+                                                        <CheckCircleIcon className={`h-6 w-6 ${isSelected ? 'text-[#387B95]' : 'text-gray-400 dark:text-gray-300'}`} />
                                                     </div>
                                                 );
                                             })}

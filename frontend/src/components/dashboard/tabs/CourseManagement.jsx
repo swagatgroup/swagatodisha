@@ -358,7 +358,7 @@ const CourseManagement = () => {
                                         </div>
                                         <div className="flex-1">
                                             <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">{course.name}</h4>
-                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            <p className="text-sm text-gray-500 dark:text-gray-300">
                                                 {course.code} • {course.institutionType} • {course.level}
                                             </p>
                                             <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
@@ -422,7 +422,7 @@ const CourseManagement = () => {
                                         setEditingCourse(null);
                                         resetForm();
                                     }}
-                                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

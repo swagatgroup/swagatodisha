@@ -356,7 +356,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                 return (
                     <div className="space-y-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Full Name *
                             </label>
                             <input
@@ -369,7 +369,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Date of Birth *
                             </label>
                             <input
@@ -381,7 +381,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Gender *
                             </label>
                             <select
@@ -397,7 +397,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Aadhar Number *
                             </label>
                             <input
@@ -411,7 +411,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Blood Group
                             </label>
                             <select
@@ -438,7 +438,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Phone Number *
                                 </label>
                                 <input
@@ -451,7 +451,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Alternate Phone
                                 </label>
                                 <input
@@ -466,7 +466,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Email Address *
                             </label>
                             <input
@@ -479,7 +479,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <h4 className="text-lg font-medium text-gray-900 mb-4">Permanent Address *</h4>
+                            <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Permanent Address *</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="md:col-span-2">
                                     <input
@@ -521,7 +521,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <h4 className="text-lg font-medium text-gray-900 mb-4">Current Address</h4>
+                            <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Current Address</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="md:col-span-2">
                                     <input
@@ -568,10 +568,10 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                 return (
                     <div className="space-y-6">
                         <div>
-                            <h4 className="text-lg font-medium text-gray-900 mb-4">Previous Education *</h4>
+                            <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Previous Education *</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                         Qualification *
                                     </label>
                                     <select
@@ -588,7 +588,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                         Institution *
                                     </label>
                                     <input
@@ -600,7 +600,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                         Year of Passing *
                                     </label>
                                     <input
@@ -614,7 +614,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                         Percentage
                                     </label>
                                     <input
@@ -628,7 +628,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                         Board
                                     </label>
                                     <input
@@ -643,7 +643,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Desired Course *
                             </label>
                             <select
@@ -669,7 +669,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                 Preferred Campus *
                             </label>
                             <select
@@ -690,7 +690,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                     <div className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Father's Name *
                                 </label>
                                 <input
@@ -702,7 +702,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Mother's Name *
                                 </label>
                                 <input
@@ -717,7 +717,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Guardian Phone *
                                 </label>
                                 <input
@@ -730,7 +730,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Guardian Email
                                 </label>
                                 <input
@@ -745,7 +745,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Occupation
                                 </label>
                                 <input
@@ -757,7 +757,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
                                     Annual Income
                                 </label>
                                 <input
@@ -795,22 +795,22 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
+                        className="inline-block align-bottom bg-white dark:bg-[#2A1E2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full"
                     >
                         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             {/* Header */}
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h3 className="text-2xl font-bold text-gray-900">
+                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                                         Complete Your Profile
                                     </h3>
-                                    <p className="text-gray-600">
+                                    <p className="text-gray-600 dark:text-gray-300">
                                         Step {currentStep} of {steps.length} - {steps[currentStep - 1]?.title}
                                     </p>
                                 </div>
                                 <button
                                     onClick={onClose}
-                                    className="text-gray-400 hover:text-gray-600"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                                 >
                                     <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -820,7 +820,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
 
                             {/* Progress Bar */}
                             <div className="mb-6">
-                                <div className="flex justify-between text-sm text-gray-600 mb-2">
+                                <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300 mb-2">
                                     <span>Progress</span>
                                     <span>{completionPercentage}% Complete</span>
                                 </div>
@@ -872,7 +872,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     {currentStep > 1 && (
                                         <button
                                             onClick={handlePrevious}
-                                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
+                                            className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
                                         >
                                             Previous
                                         </button>
@@ -883,7 +883,7 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                     <button
                                         onClick={handleSave}
                                         disabled={saving}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] disabled:opacity-50"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : 'Save Draft'}
                                     </button>

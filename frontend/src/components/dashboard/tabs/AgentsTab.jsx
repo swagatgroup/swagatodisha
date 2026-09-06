@@ -87,8 +87,8 @@ return (
         {/* Header Section */}
         <div className="flex items-center justify-between">
             <div>
-                <h1 className="text-2xl font-bold text-gray-900">Agents List</h1>
-                <p className="text-sm text-gray-500 mt-1">Home / Agents</p>
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Agents List</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Home / Agents</p>
             </div>
             <button
                 onClick={() => setShowCreateModal(true)}
@@ -111,8 +111,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Total Agents</p>
-                        <p className="text-2xl font-semibold text-gray-900">{pagination.totalItems}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Agents</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{pagination.totalItems}</p>
                     </div>
                 </div>
             </div>
@@ -124,8 +124,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Active Agents</p>
-                        <p className="text-2xl font-semibold text-gray-900">{agents.filter(a => a.isActive).length}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Active Agents</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{agents.filter(a => a.isActive).length}</p>
                     </div>
                 </div>
             </div>
@@ -137,8 +137,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Total Referrals</p>
-                        <p className="text-2xl font-semibold text-gray-900">{agents.reduce((sum, agent) => sum + (agent.referralStats?.totalReferrals || 0), 0)}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Referrals</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{agents.reduce((sum, agent) => sum + (agent.referralStats?.totalReferrals || 0), 0)}</p>
                     </div>
                 </div>
             </div>
@@ -150,8 +150,8 @@ return (
                         </svg>
                     </div>
                     <div className="ml-4">
-                        <p className="text-sm font-medium text-gray-500">Total Commission</p>
-                        <p className="text-2xl font-semibold text-gray-900">₹{agents.reduce((sum, agent) => sum + (agent.referralStats?.totalCommission || 0), 0).toLocaleString()}</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Commission</p>
+                        <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">₹{agents.reduce((sum, agent) => sum + (agent.referralStats?.totalCommission || 0), 0).toLocaleString()}</p>
                     </div>
                 </div>
             </div>
@@ -174,7 +174,7 @@ return (
                             onChange={handleSearch}
                             className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 dark:bg-[#1A1212] dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
                         />
-                        <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
@@ -197,16 +197,16 @@ return (
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                     <thead className="bg-gray-50 dark:bg-[#1A1212]">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Agent Name</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Referral Code</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Assigned Staff</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Referrals</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Successful</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Pending</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Commission</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Agent Name</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Contact</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Referral Code</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Assigned Staff</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Referrals</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Successful</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pending</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Commission</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
@@ -215,13 +215,13 @@ return (
                                 <td colSpan="10" className="px-6 py-8 text-center">
                                     <div className="flex items-center justify-center">
                                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0]"></div>
-                                        <span className="ml-2 text-gray-600">Loading agents...</span>
+                                        <span className="ml-2 text-gray-600 dark:text-gray-300">Loading agents...</span>
                                     </div>
                                 </td>
                             </tr>
                         ) : agents.length === 0 ? (
                             <tr>
-                                <td colSpan="10" className="px-6 py-8 text-center text-gray-500">
+                                <td colSpan="10" className="px-6 py-8 text-center text-gray-500 dark:text-gray-300">
                                     No agents found
                                 </td>
                             </tr>
@@ -239,13 +239,13 @@ return (
                                             </div>
                                             <div className="ml-4">
                                                 <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{agent.fullName}</div>
-                                                <div className="text-sm text-gray-500 dark:text-gray-400">Joined: {new Date(agent.createdAt).toLocaleDateString()}</div>
+                                                <div className="text-sm text-gray-500 dark:text-gray-300">Joined: {new Date(agent.createdAt).toLocaleDateString()}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-gray-900 dark:text-gray-100">{agent.email}</div>
-                                        <div className="text-sm text-gray-500 dark:text-gray-400">{agent.phoneNumber}</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-300">{agent.phoneNumber}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -255,16 +255,16 @@ return (
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {agent.assignedStaff ? (
                                             <div className="text-sm">
-                                                <div className="font-medium text-gray-900">
+                                                <div className="font-medium text-gray-900 dark:text-gray-100">
                                                     {agent.assignedStaff.firstName} {agent.assignedStaff.lastName}
                                                 </div>
-                                                <div className="text-gray-500">{agent.assignedStaff.department}</div>
+                                                <div className="text-gray-500 dark:text-gray-300">{agent.assignedStaff.department}</div>
                                             </div>
                                         ) : (
-                                            <span className="text-sm text-gray-400">Not assigned</span>
+                                            <span className="text-sm text-gray-400 dark:text-gray-300">Not assigned</span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                         {agent.referralStats?.totalReferrals || 0}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-medium">
@@ -311,7 +311,7 @@ return (
                     <button
                         onClick={() => handlePageChange(pagination.current - 1)}
                         disabled={!pagination.hasPrev}
-                        className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -336,10 +336,10 @@ return (
 
                     {pagination.total > 5 && (
                         <>
-                            <span className="px-2 text-gray-500">...</span>
+                            <span className="px-2 text-gray-500 dark:text-gray-300">...</span>
                             <button
                                 onClick={() => handlePageChange(pagination.total)}
-                                className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700"
+                                className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700"
                             >
                                 {pagination.total}
                             </button>
@@ -349,7 +349,7 @@ return (
                     <button
                         onClick={() => handlePageChange(pagination.current + 1)}
                         disabled={!pagination.hasNext}
-                        className="px-3 py-1 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1 text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -357,8 +357,8 @@ return (
                     </button>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">10 / page</span>
-                    <svg className="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <span className="text-sm text-gray-500 dark:text-gray-300">10 / page</span>
+                    <svg className="h-4 w-4 text-gray-400 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                 </div>

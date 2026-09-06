@@ -201,24 +201,24 @@ const ReferralManagement = () => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                         <UsersIcon className="h-6 w-6 text-[#387B95]" />
-                        <h2 className="text-xl font-bold text-gray-900">Referral Code Management</h2>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Referral Code Management</h2>
                     </div>
                     <button
                         onClick={fetchUsers}
-                        className="flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition-colors"
+                        className="flex items-center px-3 py-2 text-sm bg-gray-100 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-200 transition-colors"
                     >
                         <RefreshIcon className="w-4 h-4 mr-2" />
                         Refresh
                     </button>
                 </div>
-                <p className="text-gray-600 mt-2">Manage referral codes for all users in the system.</p>
+                <p className="text-gray-600 dark:text-gray-300 mt-2">Manage referral codes for all users in the system.</p>
             </div>
 
             {/* FilterIcons */}
             <div className="p-6 border-b border-gray-200 bg-gray-50">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="relative">
-                        <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                        <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-300 h-4 w-4" />
                         <input
                             type="text"
                             placeholder="Search users or codes..."
@@ -257,22 +257,22 @@ const ReferralManagement = () => {
                 <table className="w-full">
                     <thead className="bg-gray-50">
                         <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 User
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Role
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Referral Code
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Status
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Stats
                             </th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Actions
                             </th>
                         </tr>
@@ -287,10 +287,10 @@ const ReferralManagement = () => {
                             >
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div>
-                                        <div className="text-sm font-medium text-gray-900">
+                                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {user.fullName || user.name}
                                         </div>
-                                        <div className="text-sm text-gray-500">{user.email}</div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-300">{user.email}</div>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -330,7 +330,7 @@ const ReferralManagement = () => {
                                         <div className="flex items-center space-x-2">
                                             {user.referralCode ? (
                                                 <>
-                                                    <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded">
+                                                    <span className="font-mono text-sm bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                                                         {user.referralCode}
                                                     </span>
                                                     <button
@@ -342,14 +342,14 @@ const ReferralManagement = () => {
                                                     </button>
                                                     <button
                                                         onClick={() => handleEditIconCode(user._id, user.referralCode)}
-                                                        className="p-1 text-gray-600 hover:bg-gray-50 rounded"
+                                                        className="p-1 text-gray-600 dark:text-gray-300 hover:bg-gray-50 rounded"
                                                         title="EditIcon code"
                                                     >
                                                         <EditIcon className="h-4 w-4" />
                                                     </button>
                                                 </>
                                             ) : (
-                                                <span className="text-gray-400 text-sm">No code</span>
+                                                <span className="text-gray-400 dark:text-gray-300 text-sm">No code</span>
                                             )}
                                         </div>
                                     )}
@@ -363,12 +363,12 @@ const ReferralManagement = () => {
                                             className="text-[#387B95] focus:ring-[#387B95]"
                                             disabled={!user.referralCode}
                                         />
-                                        <span className="ml-2 text-sm text-gray-700">
+                                        <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">
                                             {user.isReferralActive ? 'Active' : 'Inactive'}
                                         </span>
                                     </label>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                                     <div>
                                         Total: {user.referralStats?.totalReferrals || 0}
                                     </div>
@@ -392,7 +392,7 @@ const ReferralManagement = () => {
                                         ) : (
                                             <button
                                                 onClick={() => handleEditIconCode(user._id, '')}
-                                                className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#387B95]"
+                                                className="inline-flex items-center px-3 py-1 border border-gray-300 text-xs leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#387B95]"
                                             >
                                                 <PlusIcon className="h-3 w-3 mr-1" />
                                                 New Code
@@ -407,7 +407,7 @@ const ReferralManagement = () => {
             </div>
 
             {filteredUsersIcon.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 dark:text-gray-300">
                     No users found matching your criteria.
                 </div>
             )}

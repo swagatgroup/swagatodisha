@@ -133,7 +133,7 @@ const ProcessingStats = ({ data, onStatClick, activeFilter = 'all' }) => {
         <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Processing Statistics</h3>
-                <span className="text-sm text-gray-500 dark:text-gray-400">Session: {session || 'Current'}</span>
+                <span className="text-sm text-gray-500 dark:text-gray-300">Session: {session || 'Current'}</span>
             </div>
 
             {/* No Data Message for Session */}

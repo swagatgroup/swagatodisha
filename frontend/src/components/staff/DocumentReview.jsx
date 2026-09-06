@@ -150,7 +150,7 @@ const DocumentReview = ({ studentId, onClose }) => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg p-6">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0] mx-auto"></div>
-                    <p className="mt-2 text-gray-600">Loading documents...</p>
+                    <p className="mt-2 text-gray-600 dark:text-gray-300">Loading documents...</p>
                 </div>
             </div>
         );
@@ -161,10 +161,10 @@ const DocumentReview = ({ studentId, onClose }) => {
             <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
                 <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-bold text-gray-900">Document Review</h2>
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Document Review</h2>
                         <button
                             onClick={onClose}
-                            className="text-gray-400 hover:text-gray-600"
+                            className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -182,7 +182,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                     onChange={handleSelectAll}
                                     className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
                                 />
-                                <span className="text-sm font-medium text-gray-700">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                                     Select All ({selectedDocuments.length}/{documents.length})
                                 </span>
                             </div>
@@ -221,7 +221,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                                 onChange={(e) => setIsCustomRemarks(e.target.checked)}
                                                 className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
                                             />
-                                            <span className="ml-2 text-sm text-gray-700">Custom Remarks</span>
+                                            <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">Custom Remarks</span>
                                         </label>
 
                                         <textarea
@@ -249,7 +249,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                     <div className="space-y-4">
                         {documents.length === 0 ? (
                             <div className="text-center py-8">
-                                <p className="text-gray-500">No documents found for this student.</p>
+                                <p className="text-gray-500 dark:text-gray-300">No documents found for this student.</p>
                             </div>
                         ) : (
                             documents.map((document) => (
@@ -265,7 +265,7 @@ const DocumentReview = ({ studentId, onClose }) => {
 
                                             <div className="flex-1">
                                                 <div className="flex items-center space-x-2 mb-2">
-                                                    <h3 className="text-lg font-medium text-gray-900">
+                                                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                                                         {getDocumentTypeLabel(document.documentType)}
                                                     </h3>
                                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
@@ -273,17 +273,17 @@ const DocumentReview = ({ studentId, onClose }) => {
                                                     </span>
                                                 </div>
 
-                                                <p className="text-sm text-gray-600 mb-2">
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">
                                                     Original Name: {document.originalName}
                                                 </p>
 
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-gray-500 dark:text-gray-300">
                                                     Uploaded: {new Date(document.uploadedAt).toLocaleDateString()}
                                                 </p>
 
                                                 {document.currentRemarks && (
                                                     <div className="mt-2 p-2 bg-gray-50 rounded">
-                                                        <p className="text-sm text-gray-700">
+                                                        <p className="text-sm text-gray-700 dark:text-gray-200">
                                                             <strong>Current Remarks:</strong> {document.currentRemarks}
                                                         </p>
                                                     </div>
@@ -292,10 +292,10 @@ const DocumentReview = ({ studentId, onClose }) => {
                                                 {/* Verification History */}
                                                 {document.verificationHistory && document.verificationHistory.length > 0 && (
                                                     <div className="mt-3">
-                                                        <h4 className="text-sm font-medium text-gray-700 mb-2">Verification History:</h4>
+                                                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Verification History:</h4>
                                                         <div className="space-y-1">
                                                             {document.verificationHistory.map((history, index) => (
-                                                                <div key={index} className="text-xs text-gray-600 bg-gray-50 p-2 rounded">
+                                                                <div key={index} className="text-xs text-gray-600 dark:text-gray-300 bg-gray-50 p-2 rounded">
                                                                     <strong>{history.action.replace('_', ' ').toUpperCase()}</strong> by {history.reviewedByName} - {new Date(history.timestamp).toLocaleString()}
                                                                     {history.remarks && <p className="mt-1">{history.remarks}</p>}
                                                                 </div>

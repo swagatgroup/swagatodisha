@@ -126,7 +126,7 @@ const EnhancedDocumentManagement = () => {
             case 'under_review':
                 return <span className="text-blue-500 text-xl">🔍</span>;
             default:
-                return <span className="text-gray-500 text-xl">⏳</span>;
+                return <span className="text-gray-500 dark:text-gray-300 text-xl">⏳</span>;
         }
     };
 
@@ -176,11 +176,11 @@ const EnhancedDocumentManagement = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Upload Documents</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Upload Documents</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Category</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Select Category</label>
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
@@ -196,7 +196,7 @@ const EnhancedDocumentManagement = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Select File</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Select File</label>
                         <input
                             id="fileInput"
                             type="file"
@@ -209,7 +209,7 @@ const EnhancedDocumentManagement = () => {
 
                 {selectedFile && (
                     <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
                             <strong>Selected File:</strong> {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                         </p>
                     </div>
@@ -233,7 +233,7 @@ const EnhancedDocumentManagement = () => {
                 transition={{ delay: 0.1 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Document Status Overview</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Document Status Overview</h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {documentCategories.map(category => {
@@ -244,12 +244,12 @@ const EnhancedDocumentManagement = () => {
                         return (
                             <div key={category.id} className="border border-gray-200 rounded-lg p-4">
                                 <div className="flex items-center justify-between mb-2">
-                                    <h4 className="font-medium text-gray-900">{category.name}</h4>
+                                    <h4 className="font-medium text-gray-900 dark:text-gray-100">{category.name}</h4>
                                     {category.required && <span className="text-red-500 text-sm">*</span>}
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <span className="text-2xl font-bold text-[#7B3FA0]">{approvedCount}</span>
-                                    <span className="text-gray-500">/ {totalCount}</span>
+                                    <span className="text-gray-500 dark:text-gray-300">/ {totalCount}</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                                     <div
@@ -271,17 +271,17 @@ const EnhancedDocumentManagement = () => {
                 className="bg-white rounded-lg shadow"
             >
                 <div className="px-6 py-4 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-gray-900">Your Documents</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Your Documents</h3>
                 </div>
 
                 <div className="p-6">
                     {documents.length === 0 ? (
                         <div className="text-center py-8">
-                            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            <h3 className="mt-2 text-sm font-medium text-gray-900">No documents uploaded</h3>
-                            <p className="mt-1 text-sm text-gray-500">Get started by uploading your first document.</p>
+                            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No documents uploaded</h3>
+                            <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">Get started by uploading your first document.</p>
                         </div>
                     ) : (
                         <div className="space-y-4">
@@ -292,8 +292,8 @@ const EnhancedDocumentManagement = () => {
                                             {getStatusIcon(doc.status)}
                                         </div>
                                         <div>
-                                            <h4 className="font-medium text-gray-900">{doc.type}</h4>
-                                            <p className="text-sm text-gray-500">
+                                            <h4 className="font-medium text-gray-900 dark:text-gray-100">{doc.type}</h4>
+                                            <p className="text-sm text-gray-500 dark:text-gray-300">
                                                 {doc.category.charAt(0).toUpperCase() + doc.category.slice(1)} •
                                                 Uploaded {new Date(doc.uploadedAt).toLocaleDateString()}
                                             </p>

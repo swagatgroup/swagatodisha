@@ -276,7 +276,7 @@ const EnhancedStudentProfile = () => {
                 className="bg-white rounded-lg shadow p-6"
             >
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">Profile Completion</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Profile Completion</h3>
                     <span className="text-sm font-medium text-[#7B3FA0]">{completionPercentage}% Complete</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -286,7 +286,7 @@ const EnhancedStudentProfile = () => {
                     ></div>
                 </div>
                 {completionPercentage < 100 && (
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                         Complete all required fields to finish your profile setup.
                     </p>
                 )}
@@ -299,10 +299,10 @@ const EnhancedStudentProfile = () => {
                 transition={{ delay: 0.1 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Full Name *</label>
                         <input
                             type="text"
                             value={profileData.personalDetails.fullName}
@@ -317,7 +317,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Father's Name *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Father's Name *</label>
                         <input
                             type="text"
                             value={profileData.personalDetails.fathersName}
@@ -332,7 +332,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Mother's Name *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mother's Name *</label>
                         <input
                             type="text"
                             value={profileData.personalDetails.mothersName}
@@ -347,7 +347,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date of Birth *</label>
                         <input
                             type="date"
                             value={profileData.personalDetails.dateOfBirth}
@@ -361,7 +361,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Gender *</label>
                         <select
                             value={profileData.personalDetails.gender}
                             onChange={(e) => handleInputChange('personalDetails.gender', e.target.value)}
@@ -380,7 +380,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Aadhaar Number *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Aadhaar Number *</label>
                         <input
                             type="text"
                             value={profileData.personalDetails.aadharNumber}
@@ -404,10 +404,10 @@ const EnhancedStudentProfile = () => {
                 transition={{ delay: 0.2 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Contact Details</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Contact Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Phone Number *</label>
                         <input
                             type="tel"
                             value={profileData.contactDetails.primaryPhone}
@@ -425,7 +425,7 @@ const EnhancedStudentProfile = () => {
 
 
                     <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email Address *</label>
                         <input
                             type="email"
                             value={profileData.contactDetails.email}
@@ -442,10 +442,10 @@ const EnhancedStudentProfile = () => {
 
                 {/* Permanent Address */}
                 <div className="mt-6">
-                    <h4 className="text-md font-medium text-gray-900 mb-4">Permanent Address *</h4>
+                    <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Permanent Address *</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Street Address *</label>
                             <input
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.street}
@@ -456,7 +456,7 @@ const EnhancedStudentProfile = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">City *</label>
                             <input
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.city}
@@ -467,7 +467,7 @@ const EnhancedStudentProfile = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">State *</label>
                             <select
                                 value={profileData.contactDetails.permanentAddress.state}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.state', e.target.value)}
@@ -481,7 +481,7 @@ const EnhancedStudentProfile = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Pincode *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Pincode *</label>
                             <input
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.pincode}
@@ -493,7 +493,7 @@ const EnhancedStudentProfile = () => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Country</label>
                             <input
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.country}
@@ -512,10 +512,10 @@ const EnhancedStudentProfile = () => {
                 transition={{ delay: 0.3 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Course Selection</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Course Selection</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Select Course *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Select Course *</label>
                         <select
                             value={profileData.courseDetails.selectedCourse}
                             onChange={(e) => handleInputChange('courseDetails.selectedCourse', e.target.value)}
@@ -534,7 +534,7 @@ const EnhancedStudentProfile = () => {
 
                     {profileData.courseDetails.selectedCourse === 'Other' && (
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Custom Course</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Custom Course</label>
                             <input
                                 type="text"
                                 value={profileData.courseDetails.customCourse}
@@ -546,7 +546,7 @@ const EnhancedStudentProfile = () => {
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Stream/Subject</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Stream/Subject</label>
                         <input
                             type="text"
                             value={profileData.courseDetails.stream}
@@ -557,7 +557,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Campus</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Campus</label>
                         <select
                             value={profileData.courseDetails.campus}
                             onChange={(e) => handleInputChange('courseDetails.campus', e.target.value)}
@@ -578,10 +578,10 @@ const EnhancedStudentProfile = () => {
                 transition={{ delay: 0.4 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Guardian/Emergency Contact</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Guardian/Emergency Contact</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Name *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Name *</label>
                         <input
                             type="text"
                             value={profileData.guardianDetails.guardianName}
@@ -596,7 +596,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Relationship *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Relationship *</label>
                         <select
                             value={profileData.guardianDetails.relationship}
                             onChange={(e) => handleInputChange('guardianDetails.relationship', e.target.value)}
@@ -620,7 +620,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Phone *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Phone *</label>
                         <input
                             type="tel"
                             value={profileData.guardianDetails.guardianPhone}
@@ -636,7 +636,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Email</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Email</label>
                         <input
                             type="email"
                             value={profileData.guardianDetails.guardianEmail}
@@ -655,10 +655,10 @@ const EnhancedStudentProfile = () => {
                 transition={{ delay: 0.5 }}
                 className="bg-white rounded-lg shadow p-6"
             >
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Financial Details (Optional)</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Financial Details (Optional)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Bank Account Number</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Bank Account Number</label>
                         <input
                             type="text"
                             value={profileData.financialDetails.bankAccountNumber}
@@ -670,7 +670,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">IFSC Code</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">IFSC Code</label>
                         <input
                             type="text"
                             value={profileData.financialDetails.ifscCode}
@@ -682,7 +682,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Account Holder Name</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Account Holder Name</label>
                         <input
                             type="text"
                             value={profileData.financialDetails.accountHolderName}
@@ -693,7 +693,7 @@ const EnhancedStudentProfile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Bank Name</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Bank Name</label>
                         <input
                             type="text"
                             value={profileData.financialDetails.bankName}

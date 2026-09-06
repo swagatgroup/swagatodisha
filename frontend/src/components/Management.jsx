@@ -107,7 +107,7 @@ const Management = () => {
                                             <p className="text-purple-300 font-medium mb-1 group-hover:text-purple-200 transition-colors duration-300">
                                                 {leader.position}
                                             </p>
-                                            <p className="text-gray-400 text-sm group-hover:text-gray-300 transition-colors duration-300">
+                                            <p className="text-gray-400 dark:text-gray-300 text-sm group-hover:text-gray-300 transition-colors duration-300">
                                                 {leader.department}
                                             </p>
                                         </div>

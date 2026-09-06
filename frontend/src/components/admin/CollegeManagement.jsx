@@ -317,7 +317,7 @@ const CollegeManagement = () => {
                 </h2>
 
                 {colleges.length === 0 ? (
-                    <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                    <p className="text-gray-500 dark:text-gray-300 text-center py-8">
                         No institutions found. Create your first institution above.
                     </p>
                 ) : (
@@ -348,7 +348,7 @@ const CollegeManagement = () => {
                                                 </span>
                                             )}
                                         </div>
-                                        <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-400">
+                                        <div className="flex items-center space-x-4 text-xs text-gray-500 dark:text-gray-300">
                                         </div>
                                     </div>
                                     <div className="flex space-x-2 ml-4">
@@ -387,13 +387,13 @@ const CollegeManagement = () => {
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                                     {editingCourse ? 'Edit Course' : `Add Course to ${selectedCollege.name}`}
                                 </h2>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                     Manage courses and streams for this institution
                                 </p>
                             </div>
                             <button
                                 onClick={() => setSelectedCollege(null)}
-                                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded"
+                                className="text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded"
                             >
                                 Clear Selection
                             </button>
@@ -448,7 +448,7 @@ const CollegeManagement = () => {
                                                 <div key={index} className="flex items-center justify-between bg-gray-50 dark:bg-gray-700 p-2 rounded">
                                                     <div className="flex items-center gap-2">
                                                         <span className="text-sm text-gray-700 dark:text-gray-300">{stream.name}</span>
-                                                        <span className={`text-xs px-2 py-1 rounded ${stream.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' : 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-400'}`}>
+                                                        <span className={`text-xs px-2 py-1 rounded ${stream.isActive ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' : 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300'}`}>
                                                             {stream.isActive ? 'Active' : 'Inactive'}
                                                         </span>
                                                     </div>
@@ -515,7 +515,7 @@ const CollegeManagement = () => {
                         </h2>
 
                         {courses.length === 0 ? (
-                            <p className="text-gray-500 dark:text-gray-400 text-center py-8">
+                            <p className="text-gray-500 dark:text-gray-300 text-center py-8">
                                 No courses found. Create your first course above.
                             </p>
                         ) : (
@@ -541,7 +541,7 @@ const CollegeManagement = () => {
                                                 </div>
                                                 {course.streams && course.streams.length > 0 && (
                                                     <div className="mt-2">
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Streams:</p>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-300 mb-1">Streams:</p>
                                                         <div className="flex flex-wrap gap-1">
                                                             {course.streams.filter(s => s.isActive).map((stream, idx) => (
                                                                 <span key={idx} className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA] px-2 py-1 rounded">
@@ -576,10 +576,10 @@ const CollegeManagement = () => {
             ) : (
                 <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                     <div className="text-center py-8">
-                        <p className="text-gray-500 dark:text-gray-400 mb-2">
+                        <p className="text-gray-500 dark:text-gray-300 mb-2">
                             Select an institution from above to manage courses and streams
                         </p>
-                        <p className="text-sm text-gray-400 dark:text-gray-500">
+                        <p className="text-sm text-gray-400 dark:text-gray-300">
                             Click on any institution to view and add courses
                         </p>
                     </div>

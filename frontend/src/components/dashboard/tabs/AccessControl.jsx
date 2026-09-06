@@ -86,7 +86,7 @@ const AccessControl = () => {
             <div className="bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A1E2E]/50">
                     <h2 className="text-xl font-bold text-gray-900 dark:text-white">Access Control</h2>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-300">
                         Manage global platform availability and feature visibility
                     </p>
                 </div>
@@ -100,7 +100,7 @@ const AccessControl = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <h4 className="text-sm font-medium text-gray-900 dark:text-white">Accept New Registrations</h4>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mt-1">
+                                <p className="text-sm text-gray-500 dark:text-gray-300 max-w-2xl mt-1">
                                     When disabled, users will not be able to register. A message will be displayed stating that admissions are currently closed. This applies globally.
                                 </p>
                             </div>
@@ -124,7 +124,7 @@ const AccessControl = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <h4 className="text-sm font-medium text-gray-900 dark:text-white">Show Referral Benefits Tier</h4>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-2xl mt-1">
+                                <p className="text-sm text-gray-500 dark:text-gray-300 max-w-2xl mt-1">
                                     When enabled, the "Referral Benefits Tier" (prize money) section will be visible on everyone's dashboard. When disabled, it will be hidden globally (except for whitelisted users below).
                                 </p>
                             </div>
@@ -148,7 +148,7 @@ const AccessControl = () => {
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                                     Whitelist (Emails or Phone Numbers)
                                 </label>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+                                <p className="text-xs text-gray-500 dark:text-gray-300 mb-2">
                                     Even if hidden above, the following users will STILL see the Referral Benefits Tier. Separate multiple entries with commas.
                                 </p>
                                 <textarea

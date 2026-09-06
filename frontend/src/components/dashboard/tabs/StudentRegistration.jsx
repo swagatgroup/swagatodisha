@@ -229,7 +229,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
         <div className="space-y-6">
             {/* Header with Actions */}
             <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-gray-900">Student Registration</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Student Registration</h3>
                 <div className="flex space-x-3">
                     <button
                         onClick={() => setShowBulkImport(!showBulkImport)}
@@ -261,7 +261,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         type="file"
                         accept=".csv,.xlsx,.xls"
                         onChange={(e) => e.target.files[0] && handleBulkImport(e.target.files[0])}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
+                        className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#D0E8F0] file:text-[#1D4B5E] hover:file:bg-blue-100"
                     />
                 </motion.div>
             )}
@@ -274,10 +274,10 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-white rounded-lg shadow p-6"
                 >
-                    <h4 className="text-lg font-semibold text-gray-900 mb-6">Personal Information</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Personal Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Full Name *</label>
                             <input
                                 type="text"
                                 value={formData.personalDetails.fullName}
@@ -292,7 +292,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Father's Name *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Father's Name *</label>
                             <input
                                 type="text"
                                 value={formData.personalDetails.fathersName}
@@ -307,7 +307,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Mother's Name *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Mother's Name *</label>
                             <input
                                 type="text"
                                 value={formData.personalDetails.mothersName}
@@ -322,7 +322,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Date of Birth *</label>
                             <input
                                 type="date"
                                 value={formData.personalDetails.dateOfBirth}
@@ -336,7 +336,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Gender *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Gender *</label>
                             <select
                                 value={formData.personalDetails.gender}
                                 onChange={(e) => handleInputChange('personalDetails.gender', e.target.value)}
@@ -355,7 +355,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Aadhaar Number *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Aadhaar Number *</label>
                             <input
                                 type="text"
                                 value={formData.personalDetails.aadharNumber}
@@ -379,10 +379,10 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     transition={{ delay: 0.1 }}
                     className="bg-white rounded-lg shadow p-6"
                 >
-                    <h4 className="text-lg font-semibold text-gray-900 mb-6">Contact Details</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Contact Details</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Phone Number *</label>
                             <input
                                 type="tel"
                                 value={formData.contactDetails.primaryPhone}
@@ -400,7 +400,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
 
 
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Email Address *</label>
                             <input
                                 type="email"
                                 value={formData.contactDetails.email}
@@ -416,7 +416,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
 
                         {/* Address Fields */}
                         <div className="md:col-span-2">
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Street Address *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Street Address *</label>
                             <input
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.street}
@@ -427,7 +427,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">City *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">City *</label>
                             <input
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.city}
@@ -438,7 +438,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">State *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">State *</label>
                             <select
                                 value={formData.contactDetails.permanentAddress.state}
                                 onChange={(e) => handleInputChange('contactDetails.permanentAddress.state', e.target.value)}
@@ -452,7 +452,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Pincode *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Pincode *</label>
                             <input
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.pincode}
@@ -464,7 +464,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Country</label>
                             <input
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.country}
@@ -482,10 +482,10 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     transition={{ delay: 0.2 }}
                     className="bg-white rounded-lg shadow p-6"
                 >
-                    <h4 className="text-lg font-semibold text-gray-900 mb-6">Course Selection</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Course Selection</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Select Course *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Select Course *</label>
                             <select
                                 value={formData.courseDetails.selectedCourse}
                                 onChange={(e) => handleInputChange('courseDetails.selectedCourse', e.target.value)}
@@ -504,7 +504,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
 
                         {formData.courseDetails.selectedCourse === 'Other' && (
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Custom Course</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Custom Course</label>
                                 <input
                                     type="text"
                                     value={formData.courseDetails.customCourse}
@@ -516,7 +516,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         )}
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Stream/Subject</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Stream/Subject</label>
                             <input
                                 type="text"
                                 value={formData.courseDetails.stream}
@@ -536,10 +536,10 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     transition={{ delay: 0.3 }}
                     className="bg-white rounded-lg shadow p-6"
                 >
-                    <h4 className="text-lg font-semibold text-gray-900 mb-6">Guardian Details</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Guardian Details</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Name *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Name *</label>
                             <input
                                 type="text"
                                 value={formData.guardianDetails.guardianName}
@@ -554,7 +554,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Relationship *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Relationship *</label>
                             <select
                                 value={formData.guardianDetails.relationship}
                                 onChange={(e) => handleInputChange('guardianDetails.relationship', e.target.value)}
@@ -578,7 +578,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Phone *</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Phone *</label>
                             <input
                                 type="tel"
                                 value={formData.guardianDetails.guardianPhone}
@@ -594,7 +594,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">Guardian Email</label>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Guardian Email</label>
                             <input
                                 type="email"
                                 value={formData.guardianDetails.guardianEmail}

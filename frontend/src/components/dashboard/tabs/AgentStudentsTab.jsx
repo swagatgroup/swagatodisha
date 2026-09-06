@@ -558,13 +558,13 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
   if (!selectedSession) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
-        <svg className="h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
           No Session Selected
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-sm text-gray-500 dark:text-gray-300">
           Please select an academic session to view students.
         </p>
       </div>
@@ -583,8 +583,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">My Students</h2>
-        <div className="text-sm text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Students</h2>
+        <div className="text-sm text-gray-600 dark:text-gray-300">
           Total: {stats.total} | This Month: {stats.thisMonth}
         </div>
       </div>
@@ -609,10 +609,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">
                 Total Students
               </p>
-              <p className="text-2xl font-semibold text-gray-900">
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {stats.total}
               </p>
             </div>
@@ -637,8 +637,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-2xl font-semibold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {stats.pending}
               </p>
             </div>
@@ -663,8 +663,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Completed</p>
-              <p className="text-2xl font-semibold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {stats.completed}
               </p>
             </div>
@@ -689,8 +689,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">This Month</p>
-              <p className="text-2xl font-semibold text-gray-900">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">This Month</p>
+              <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {stats.thisMonth}
               </p>
             </div>
@@ -797,7 +797,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   setFilters({ search: "", status: "", course: "", admissionType: "" });
                   setTimeout(() => loadStudents(), 100);
                 }}
-                className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+                className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300"
               >
                 Clear
               </button>
@@ -845,19 +845,19 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 <tr>
                   <td colSpan="7" className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center">
-                      <svg className="h-12 w-12 text-gray-400 dark:text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                       </svg>
                       <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                         {students.length === 0 ? 'No Students Found' : 'No Students Match Filters'}
                       </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+                      <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                         {students.length === 0 
                           ? `No students found for the ${selectedSession} academic session.`
                           : 'Try adjusting your search or filter criteria.'}
                       </p>
                       {students.length === 0 && (
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                        <p className="text-xs text-gray-400 dark:text-gray-300">
                           Students will appear here once you register them.
                         </p>
                       )}
@@ -884,7 +884,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {student.personalDetails?.fullName || "N/A"}
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <div className="text-sm text-gray-500 dark:text-gray-300">
                           Aadhaar:{" "}
                           {student.personalDetails?.aadharNumber || "N/A"}
                         </div>
@@ -895,7 +895,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     <div className="text-sm text-gray-900 dark:text-gray-100">
                       {student.contactDetails?.primaryPhone || "N/A"}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 dark:text-gray-300">
                       {student.contactDetails?.email || "N/A"}
                     </div>
                   </td>
@@ -903,7 +903,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     <div className="text-sm text-gray-900 dark:text-gray-100">
                       {student.courseDetails?.selectedCourse || "N/A"}
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 dark:text-gray-300">
                       {student.courseDetails?.campus || "N/A"}
                     </div>
                   </td>
@@ -925,7 +925,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       {getStatusText(student.status)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                     {formatDate(student.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -1076,10 +1076,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             <div className="p-6 border-b border-gray-200 flex-shrink-0">
               <div className="flex justify-between items-center">
                 <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Edit Student: {selectedStudent.personalDetails?.fullName || 'Unknown'}
                 </h3>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                     Edit all student information fields below
                   </p>
                 </div>
@@ -1090,7 +1090,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     setSelectedStudent(null);
                     setEditData({});
                   }}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1112,10 +1112,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               <div className="space-y-6 pb-4">
                 {/* Personal Details */}
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">Personal Details</h4>
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Personal Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Full Name</label>
                       <input
                         type="text"
                         value={editData.personalDetails?.fullName || ''}
@@ -1127,7 +1127,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Father's Name</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Father's Name</label>
                       <input
                         type="text"
                         value={editData.personalDetails?.fathersName || ''}
@@ -1139,7 +1139,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Mother's Name</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Mother's Name</label>
                       <input
                         type="text"
                         value={editData.personalDetails?.mothersName || ''}
@@ -1151,7 +1151,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Gender</label>
                       <select
                         value={editData.personalDetails?.gender || ''}
                         onChange={(e) => setEditData({
@@ -1168,7 +1168,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Date of Birth</label>
                       <input
                         type="date"
                         value={editData.personalDetails?.dateOfBirth || ''}
@@ -1180,7 +1180,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Category</label>
                       <select
                         value={editData.personalDetails?.category || ''}
                         onChange={(e) => setEditData({
@@ -1198,7 +1198,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Aadhaar Number
                       </label>
                       <input
@@ -1215,7 +1215,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Status *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Status *</label>
                       <select
                         value={editData.status || selectedStudent?.status || ''}
                         onChange={(e) => setEditData({
@@ -1240,10 +1240,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
                 {/* Contact Details */}
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">Contact Details</h4>
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Phone Number *</label>
                       <input
                         type="tel"
                         value={editData.contactDetails?.primaryPhone || ''}
@@ -1259,7 +1259,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Secondary Phone</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Secondary Phone</label>
                       <input
                         type="tel"
                         value={editData.contactDetails?.secondaryPhone || ''}
@@ -1275,7 +1275,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Email *</label>
                       <input
                         type="email"
                         value={editData.contactDetails?.email || ''}
@@ -1290,10 +1290,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
                   {/* Permanent Address */}
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Permanent Address</h5>
+                    <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Permanent Address</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Street Address *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Street Address *</label>
                         <textarea
                           value={editData.contactDetails?.permanentAddress?.street || ''}
                           onChange={(e) => setEditData({
@@ -1311,7 +1311,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">City *</label>
                         <input
                           type="text"
                           value={editData.contactDetails?.permanentAddress?.city || ''}
@@ -1329,7 +1329,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">District *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">District *</label>
                         <input
                           type="text"
                           value={editData.contactDetails?.permanentAddress?.district || ''}
@@ -1347,7 +1347,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">State *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">State *</label>
                         <input
                           type="text"
                           value={editData.contactDetails?.permanentAddress?.state || ''}
@@ -1365,7 +1365,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Pincode *</label>
                         <input
                           type="text"
                           value={editData.contactDetails?.permanentAddress?.pincode || ''}
@@ -1387,7 +1387,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Country</label>
                         <input
                           type="text"
                           value={editData.contactDetails?.permanentAddress?.country || 'India'}
@@ -1409,10 +1409,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
                   {/* Current Address (Optional) */}
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <h5 className="text-sm font-semibold text-gray-900 mb-3">Current Address (Optional - if different from permanent)</h5>
+                    <h5 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Current Address (Optional - if different from permanent)</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Street Address</label>
                       <textarea
                           value={editData.contactDetails?.currentAddress?.street || ''}
                         onChange={(e) => setEditData({
@@ -1430,7 +1430,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">City</label>
                       <input
                         type="text"
                           value={editData.contactDetails?.currentAddress?.city || ''}
@@ -1448,7 +1448,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">State</label>
                       <input
                         type="text"
                           value={editData.contactDetails?.currentAddress?.state || ''}
@@ -1466,7 +1466,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Pincode</label>
                       <input
                         type="text"
                           value={editData.contactDetails?.currentAddress?.pincode || ''}
@@ -1493,12 +1493,12 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
                 {/* Education Details Section - RESTRICTED for Agents */}
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">
-                    Education Details <span className="text-xs font-normal text-gray-500">(Read-only for Agents)</span>
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    Education Details <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(Read-only for Agents)</span>
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Institution Name *
                       </label>
                       <select
@@ -1515,7 +1515,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           },
                         }))}
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 dark:text-gray-300 cursor-not-allowed"
                         title="Institution can only be changed by admin"
                       >
                         <option value="">{loadingColleges ? "Loading institutions..." : "Select Institution"}</option>
@@ -1527,7 +1527,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Course Name *
                       </label>
                       <select
@@ -1542,7 +1542,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           },
                         }))}
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 dark:text-gray-300 cursor-not-allowed"
                         title="Course can only be changed by admin"
                       >
                         <option value="">
@@ -1560,7 +1560,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Campus *
                       </label>
                       <select
@@ -1573,7 +1573,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           },
                         }))}
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 dark:text-gray-300 cursor-not-allowed"
                         title="Campus can only be changed by admin"
                       >
                         <option value="">
@@ -1595,7 +1595,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   {/* Stream Field - Below the three columns */}
                   {getStreamsForCourse().length > 0 && (
                     <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Stream (Optional)
                       </label>
                       <select
@@ -1608,7 +1608,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           },
                         }))}
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 dark:text-gray-300 cursor-not-allowed"
                         title="Stream can only be changed by admin"
                       >
                         <option value="">Select Stream (Optional)</option>
@@ -1624,7 +1624,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   {/* Custom Course Field - Show if "Other" is selected */}
                   {editData.courseDetails?.selectedCourse === 'Other' && (
                     <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Custom Course (if Other selected)
                       </label>
                       <input
@@ -1638,7 +1638,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           },
                         }))}
                         disabled
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 cursor-not-allowed"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-gray-500 dark:text-gray-300 cursor-not-allowed"
                         placeholder="Enter custom course name if 'Other' is selected"
                         title="Custom course can only be changed by admin"
                       />
@@ -1655,10 +1655,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
                 {/* Guardian Details */}
                 <div className="border border-gray-200 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 mb-4">Guardian Details</h4>
+                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Guardian Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Name</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Guardian Name</label>
                       <input
                         type="text"
                         value={editData.guardianDetails?.guardianName || ''}
@@ -1670,7 +1670,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Phone</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Guardian Phone</label>
                       <input
                         type="tel"
                         value={editData.guardianDetails?.guardianPhone || ''}
@@ -1686,7 +1686,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Guardian Email</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Guardian Email</label>
                       <input
                         type="email"
                         value={editData.guardianDetails?.guardianEmail || ''}
@@ -1698,7 +1698,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Relationship</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Relationship</label>
                       <select
                         value={editData.guardianDetails?.relationship || ''}
                         onChange={(e) => setEditData({
@@ -1749,7 +1749,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     setSelectedStudent(null);
                     setEditData({});
                   }}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancel
                 </button>
@@ -1772,12 +1772,12 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                   Rejection Details{selectedStudent && ` - ${selectedStudent.personalDetails?.fullName || 'Student'}`}
                 </h3>
                 <button
                   onClick={() => setShowRejectionModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
+                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1861,7 +1861,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         <div key={index} className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 dark:bg-[#2A1E2E]">
                           <p className="text-sm text-gray-900 dark:text-gray-100">{note.note || note}</p>
                           {note.addedAt && (
-                            <p className="text-xs text-gray-500 mt-1">{new Date(note.addedAt).toLocaleString()}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{new Date(note.addedAt).toLocaleString()}</p>
                           )}
                         </div>
                       ))}
@@ -1888,7 +1888,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                 <button
                   onClick={() => setShowRejectionModal(false)}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Close
                 </button>
@@ -1936,7 +1936,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     setShowViewModal(false);
                     setViewingStudent(null);
                   }}
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1949,13 +1949,13 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Application ID</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Application ID</p>
                       <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         {viewingStudent.applicationId || viewingStudent._id}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-gray-600 dark:text-gray-400">Status</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Status</p>
                       <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(viewingStudent.status)}`}>
                         {getStatusText(viewingStudent.status)}
                       </span>
@@ -1971,21 +1971,21 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Full Name:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Full Name:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.fullName || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Aadhaar:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Aadhaar:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.aadharNumber || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Date of Birth:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Date of Birth:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
                         {viewingStudent.personalDetails?.dateOfBirth ? formatDate(viewingStudent.personalDetails.dateOfBirth) : 'N/A'}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Gender:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Gender:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.gender || 'N/A'}</span>
                     </div>
                   </div>
@@ -1996,15 +1996,15 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Phone:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Phone:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.primaryPhone || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Email:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Email:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.email || 'N/A'}</span>
                     </div>
                     <div className="md:col-span-2">
-                      <span className="text-gray-600 dark:text-gray-400">Address:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Address:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.address || 'N/A'}</span>
                     </div>
                   </div>
@@ -2015,11 +2015,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Course Details</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Course:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Course:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.courseDetails?.selectedCourse || 'N/A'}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600 dark:text-gray-400">Registration Date:</span>
+                      <span className="text-gray-600 dark:text-gray-300">Registration Date:</span>
                       <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{formatDate(viewingStudent.createdAt)}</span>
                     </div>
                   </div>
