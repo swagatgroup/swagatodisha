@@ -55,6 +55,8 @@ const SuperAdminDashboard = () => {
         ourStudents:    { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
     });
     const [studentTableFilter, setStudentTableFilter] = useState('all');
+    const [scopedAgentId, setScopedAgentId] = useState(null); // When super admin views one agent's students
+    const [scopedStaffId, setScopedStaffId] = useState(null); // When super admin views one staff's students
     const [statModalOpen, setStatModalOpen] = useState(false);
     const [selectedStatKey, setSelectedStatKey] = useState(null);
 
@@ -1371,11 +1373,31 @@ const SuperAdminDashboard = () => {
             case 'students':
                 return (
                     <div className="dark:text-gray-100">
+                        {/* Banner shown when viewing a specific agent's or staff's students */}
+                        {(scopedAgentId || scopedStaffId) && (
+                            <div className="mb-4 flex items-center justify-between bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg px-4 py-2">
+                                <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                                    📋 Showing students scoped to selected {scopedAgentId ? 'agent' : 'staff'}
+                                </span>
+                                <button
+                                    onClick={() => { setScopedAgentId(null); setScopedStaffId(null); }}
+                                    className="text-xs text-purple-600 dark:text-purple-300 hover:underline ml-4"
+                                >
+                                    ✕ Clear filter — show all students
+                                </button>
+                            </div>
+                        )}
                         <ErrorBoundary>
-                            <StudentManagement initialFilter={studentTableFilter} listType="main" />
+                            <StudentManagement
+                                initialFilter={studentTableFilter}
+                                listType="main"
+                                agentId={scopedAgentId}
+                                staffId={scopedStaffId}
+                            />
                         </ErrorBoundary>
                     </div>
                 );
+
             case 'student-password-reset':
                 return (
                     <div className="dark:text-gray-100">
@@ -1395,13 +1417,29 @@ const SuperAdminDashboard = () => {
             case 'agents':
                 return (
                     <div className="dark:text-gray-100">
-                        <UserManagement userType="agents" rowHoverClass="dark:hover:bg-gray-700 hover:bg-gray-50" />
+                        <UserManagement
+                            userType="agents"
+                            rowHoverClass="dark:hover:bg-gray-700 hover:bg-gray-50"
+                            onViewStudents={(id) => {
+                                setScopedAgentId(id);
+                                setScopedStaffId(null);
+                                setActiveSidebarItem('students');
+                            }}
+                        />
                     </div>
                 );
             case 'staff':
                 return (
                     <div className="dark:text-gray-100">
-                        <UserManagement userType="staff" rowHoverClass="dark:hover:bg-gray-700 hover:bg-gray-50" />
+                        <UserManagement
+                            userType="staff"
+                            rowHoverClass="dark:hover:bg-gray-700 hover:bg-gray-50"
+                            onViewStudents={(id) => {
+                                setScopedStaffId(id);
+                                setScopedAgentId(null);
+                                setActiveSidebarItem('students');
+                            }}
+                        />
                     </div>
                 );
             case 'new-registration':

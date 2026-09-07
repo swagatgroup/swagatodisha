@@ -11,9 +11,10 @@ const { getSessionDateRange, getCurrentSession } = require("../utils/sessionHelp
 // All routes are protected
 router.use(protect);
 
-// Get students for staff processing
+// Get students for staff processing — scoped to this staff's own + their agents' students
 router.get("/students", async (req, res) => {
   try {
+    const staffId = req.user._id;
     const { page = 1, limit = 20, status, search, session: sessionParam } = req.query;
 
     // SESSION IS REQUIRED - Always filter by session
@@ -25,31 +26,45 @@ router.get("/students", async (req, res) => {
       });
     }
 
-    let query = {};
+    // --- Step 1: Find all agents assigned to this staff member ---
+    const agentsUnderStaff = await User.find(
+      { role: 'agent', assignedStaff: staffId },
+      '_id'
+    ).lean();
+    const agentIds = agentsUnderStaff.map(a => a._id);
 
-    // Add session filter - REQUIRED
-    // Session is based on registration year: registered in 2025 → session 2025-26
+    console.log(`👤 Staff ${staffId} has ${agentIds.length} agents assigned`);
+
+    // --- Step 2: Build scope filter (staff own + agents under staff) ---
+    const scopeIds = [staffId, ...agentIds];
+    const scopeFilter = {
+      $or: [
+        { 'referralInfo.referredBy': { $in: scopeIds } },
+        { submittedBy: { $in: scopeIds } },
+        { assignedAgent: { $in: agentIds } },  // students assigned to any agent under this staff
+        { assignedStaff: staffId },             // students directly assigned to this staff
+      ]
+    };
+
+    // --- Step 3: Build session date filter ---
+    let sessionDateFilter;
     try {
-      // Parse session to extract start year (e.g., "2025-26" → 2025, "26-27" → 2026)
       const parts = sessionParam.split('-');
       if (parts.length !== 2) {
         throw new Error(`Invalid session format: ${sessionParam}`);
       }
-      
+
       let startYear = parseInt(parts[0], 10);
-      // Handle 2-digit year format (e.g., "26-27" → 2026)
       if (startYear < 100) {
         startYear = 2000 + startYear;
       }
-      
+
       console.log(`📅 Staff route - Filtering by session ${sessionParam} (registration year: ${startYear})`);
-      
-      // Create date range for the entire year (Jan 1 to Dec 31) in UTC
-      const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0)); // January 1, startYear UTC
-      const yearEnd = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999)); // December 31, startYear UTC
-      
-      // Match students where registrationDate year OR createdAt year equals session start year
-      const sessionDateFilter = {
+
+      const yearStart = new Date(Date.UTC(startYear, 0, 1, 0, 0, 0, 0));
+      const yearEnd   = new Date(Date.UTC(startYear, 11, 31, 23, 59, 59, 999));
+
+      sessionDateFilter = {
         $or: [
           {
             $and: [
@@ -70,13 +85,6 @@ router.get("/students", async (req, res) => {
           }
         ]
       };
-      
-      // Combine session filter with existing query using $and
-      if (Object.keys(query).length > 0) {
-        query = { $and: [query, sessionDateFilter] };
-      } else {
-        Object.assign(query, sessionDateFilter);
-      }
     } catch (error) {
       console.error('❌ Session date range error:', error);
       return res.status(400).json({
@@ -86,39 +94,39 @@ router.get("/students", async (req, res) => {
       });
     }
 
+    // --- Step 4: Combine scope + session + optional filters ---
+    const andConditions = [scopeFilter, sessionDateFilter];
+
     if (status && status !== "all") {
-      // Combine status filter with existing query
-      if (query.$and) {
-        query.$and.push({ "workflowStatus.currentStage": status });
-      } else {
-        query["workflowStatus.currentStage"] = status;
-      }
+      andConditions.push({ status });
     }
 
     if (search) {
-      const searchFilter = {
+      andConditions.push({
         $or: [
           { "personalDetails.fullName": { $regex: search, $options: "i" } },
           { applicationId: { $regex: search, $options: "i" } },
           { "personalDetails.aadharNumber": { $regex: search, $options: "i" } },
+          { "contactDetails.primaryPhone": { $regex: search, $options: "i" } },
         ]
-      };
-      
-      // Combine search filter with existing query using $and
-      if (query.$and) {
-        query.$and.push(searchFilter);
-      } else {
-        query = { $and: [query, searchFilter] };
-      }
+      });
     }
 
-    const students = await StudentApplication.find(query)
-      .populate("user", "fullName email phoneNumber")
-      .sort({ createdAt: -1 })
-      .limit(limit * 1)
-      .skip((page - 1) * limit);
+    const finalQuery = { $and: andConditions };
 
-    const total = await StudentApplication.countDocuments(query);
+    console.log(`🔍 Staff students query (staff ${staffId}):`);
+
+    const students = await StudentApplication.find(finalQuery)
+      .populate("user", "fullName email phoneNumber")
+      .populate("referralInfo.referredBy", "fullName referralCode")
+      .populate("assignedAgent", "fullName referralCode")
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip((parseInt(page) - 1) * parseInt(limit));
+
+    const total = await StudentApplication.countDocuments(finalQuery);
+
+    console.log(`📊 Staff ${staffId} can see ${total} students total`);
 
     res.status(200).json({
       success: true,
@@ -126,7 +134,7 @@ router.get("/students", async (req, res) => {
         students,
         pagination: {
           current: parseInt(page),
-          pages: Math.ceil(total / limit),
+          pages: Math.ceil(total / parseInt(limit)),
           total,
         },
       },
@@ -143,6 +151,7 @@ router.get("/students", async (req, res) => {
     });
   }
 });
+
 
 // Get processing statistics
 router.get("/processing-stats", async (req, res) => {

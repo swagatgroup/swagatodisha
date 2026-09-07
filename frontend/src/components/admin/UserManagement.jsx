@@ -13,7 +13,7 @@ import PasswordInput from '../auth/PasswordInput';
 import CreateAgentModal from './CreateAgentModal';
 import CreateStaffModal from './CreateStaffModal';
 
-const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-50' }) => {
+const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-50', onViewStudents = null }) => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
@@ -538,7 +538,16 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                     </>
                                 )}
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div className="flex space-x-2">
+                                    <div className="flex space-x-2 flex-wrap gap-y-1">
+                                        {/* View Students button — only for agents/staff in super admin context */}
+                                        {onViewStudents && (userType === 'agents' || userType === 'staff') && (
+                                            <button
+                                                onClick={() => onViewStudents(user._id || user.id)}
+                                                className="text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 font-medium"
+                                            >
+                                                View Students
+                                            </button>
+                                        )}
                                         <button
                                             onClick={() => handleEdit(user)}
                                             className="text-[#7B3FA0] hover:text-purple-900"

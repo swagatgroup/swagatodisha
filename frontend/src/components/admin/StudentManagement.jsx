@@ -149,7 +149,7 @@ const compressImageToUnder50KB = async (photoUrl) => {
 };
 
 
-const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
+const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId = null, staffId = null }) => {
     const { selectedSession } = useSession();
     const { user } = useAuth();
     const [students, setStudents] = useState([]);
@@ -616,7 +616,9 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main' }) => {
                 ...(filterCampus !== 'all' && { campus: filterCampus }),
                 ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
-                listType: listType // Add listType to params
+                listType: listType, // Add listType to params
+                ...(agentId && { agentId }),   // Super admin: scope to one agent's students
+                ...(staffId && { staffId }),   // Super admin: scope to one staff's students
             });
 
             console.log('🔍 Fetching students from:', `/api/admin/students?${params}`);

@@ -166,8 +166,11 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             paymentStatus,
             listType = 'main',
             referralType,
-            admissionType
+            admissionType,
+            staffId,   // Super admin: filter to a specific staff's students (own + their agents)
+            agentId,   // Super admin: filter to a specific agent's students
         } = req.query;
+
 
         // Build filter query
         const filter = {};
@@ -361,6 +364,40 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 // It's a role - filter by role
                 filter.submitterRole = submitterRole;
             }
+        }
+
+        // Filter by a specific agent (super admin viewing one agent's students)
+        if (agentId && agentId.match(/^[0-9a-fA-F]{24}$/)) {
+            const mongoose = require('mongoose');
+            const agentObjId = new mongoose.Types.ObjectId(agentId);
+            andConditions.push({
+                $or: [
+                    { 'referralInfo.referredBy': agentObjId },
+                    { submittedBy: agentObjId },
+                    { assignedAgent: agentObjId },
+                ]
+            });
+        }
+
+        // Filter by a specific staff (super admin viewing one staff's students = staff own + their agents)
+        if (staffId && staffId.match(/^[0-9a-fA-F]{24}$/)) {
+            const mongoose = require('mongoose');
+            const staffObjId = new mongoose.Types.ObjectId(staffId);
+            // Find all agents under this staff
+            const agentsUnderStaff = await User.find(
+                { role: 'agent', assignedStaff: staffObjId },
+                '_id'
+            ).lean();
+            const staffAgentIds = agentsUnderStaff.map(a => a._id);
+            const scopeIds = [staffObjId, ...staffAgentIds];
+            andConditions.push({
+                $or: [
+                    { 'referralInfo.referredBy': { $in: scopeIds } },
+                    { submittedBy: { $in: scopeIds } },
+                    { assignedAgent: { $in: staffAgentIds } },
+                    { assignedStaff: staffObjId },
+                ]
+            });
         }
 
         // Filter by admissionType (free/paid)
