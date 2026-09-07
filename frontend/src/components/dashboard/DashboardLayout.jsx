@@ -209,17 +209,16 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
 
                                             <button
                                                 type="button"
-                                                onClick={(e) => {
-                                                    console.log('💥 BUTTON CLICKED - STARTING LOGOUT');
+                                                onMouseDown={(e) => {
+                                                    // Use onMouseDown to fire BEFORE the document mousedown closes this dropdown
                                                     e.preventDefault();
-                                                    logout();
-                                                    setTimeout(() => {
-                                                        console.log('💥 REDIRECTING NOW');
-                                                        window.location.href = '/login-portal';
-                                                    }, 100);
+                                                    e.stopPropagation();
+                                                    // Directly clear localStorage and hard-redirect — bypass all React state
+                                                    localStorage.removeItem('token');
+                                                    localStorage.removeItem('user');
+                                                    window.location.href = '/login-portal';
                                                 }}
-                                                
-                                                className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer relative z-[9999] pointer-events-auto"
+                                                className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
                                                 style={{ cursor: 'pointer' }}
                                             >
                                                 Sign out
