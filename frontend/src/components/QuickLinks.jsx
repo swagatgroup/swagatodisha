@@ -528,7 +528,7 @@ const QuickLinks = () => {
                             whileHover={{ y: -8 }}
                             transition={{ duration: 0.3, ease: "easeOut" }}
                             onMouseEnter={() => {
-                                if (link.category) {
+                                if (link.category && link.category !== 'career') {
                                     setActiveOverlay(link.category)
                                 }
                             }}
@@ -569,7 +569,7 @@ const QuickLinks = () => {
 
                             {/* Overlay - Absolute positioned, appears on hover */}
                             <AnimatePresence>
-                                {activeOverlay === link.category && (
+                                {activeOverlay === link.category && documentSections[link.category] && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 20, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
