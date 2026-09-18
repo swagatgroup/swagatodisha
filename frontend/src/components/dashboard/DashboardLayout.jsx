@@ -21,6 +21,20 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     const [recentPayments, setRecentPayments] = useState([]);
     const [paymentsLoading, setPaymentsLoading] = useState(false);
     const [showAllPaymentsModal, setShowAllPaymentsModal] = useState(false);
+
+    // Completely new logout function — decoupled from the cursed dropdown
+    const handleLogout = (e) => {
+        if (e) e.preventDefault();
+        console.log('💥 [SIDEBAR LOGOUT] Clicked!');
+        try {
+            setExplicitLogout(true);
+            clearAuthState();
+            window.location.replace('/login-portal');
+        } catch (err) {
+            console.error('Logout error:', err);
+            window.location.href = '/login-portal';
+        }
+    };
     const paymentsRef = useRef(null);
     const { user, logout } = useAuth();
     const { selectedSession, setSelectedSession, availableSessions } = useSession();
@@ -200,8 +214,8 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     <div
                                         className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#2A1E2E] rounded-md shadow-lg py-1 z-[9999] ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
                                     >
-                                        {/* User Info Section */}
-                                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623]">
+                                        {/* User Info Section ONLY — Logout moved to sidebar */}
+                                        <div className="px-4 py-3 border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623] rounded-md">
                                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                                 {user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || 'User'}
                                             </p>
@@ -209,43 +223,6 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 {user?.role ? user.role.replace('_', ' ') : 'User'}
                                             </p>
                                         </div>
-
-                                        {/* SIGN OUT — native <a> tag with href="/login-portal".
-                                            Even if ALL JavaScript fails, the browser will still
-                                            follow the <a href>. The onClick clears auth state
-                                            BEFORE navigation. This is the nuclear option. */}
-                                        <a
-                                            href="/login-portal"
-                                            onClick={(e) => {
-                                                console.log('💥 [SIGN OUT] Click event fired!');
-                                                
-                                                try {
-                                                    // 1. Tell the 401 interceptor to stand down
-                                                    console.log('💥 [SIGN OUT] 1. Setting explicit logout flag');
-                                                    setExplicitLogout(true);
-                                                    
-                                                    // 2. Wipe all auth data (localStorage, headers, etc.)
-                                                    console.log('💥 [SIGN OUT] 2. Calling clearAuthState()');
-                                                    clearAuthState();
-                                                    
-                                                    // 3. Cancel the native <a> navigation so we can use replace()
-                                                    console.log('💥 [SIGN OUT] 3. Calling e.preventDefault()');
-                                                    e.preventDefault();
-                                                    
-                                                    // 4. replace() removes the dashboard from browser history
-                                                    console.log('💥 [SIGN OUT] 4. Redirecting to /login-portal');
-                                                    window.location.replace('/login-portal');
-                                                } catch (err) {
-                                                    console.error('💥 [SIGN OUT] ERROR during sign out flow:', err);
-                                                    // Fallback if JS errors out somehow
-                                                    window.location.href = '/login-portal';
-                                                }
-                                            }}
-                                            style={{ cursor: 'pointer', pointerEvents: 'auto', position: 'relative', zIndex: 99999 }}
-                                            className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors no-underline cursor-pointer"
-                                        >
-                                            Sign out
-                                        </a>
                                     </div>
                                 )}
                             </div>
@@ -303,6 +280,16 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         </button>
                                     ))}
                                 </nav>
+                                {/* Mobile Sidebar Logout */}
+                                <div className="mt-auto px-2 pb-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                    <button
+                                        onClick={handleLogout}
+                                        className="group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                                    >
+                                        <span className="flex-shrink-0"><ArrowRightOnRectangleIcon className="w-5 h-5" /></span>
+                                        <span className="ml-3">Logout</span>
+                                    </button>
+                                </div>
                             </div>
                         </motion.div>
                     )}
@@ -335,6 +322,18 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         </button>
                                     ))}
                                 </nav>
+                                {/* Desktop Sidebar Logout */}
+                                <div className="mt-auto px-2 pb-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+                                    <button
+                                        onClick={handleLogout}
+                                        className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${
+                                            sidebarCollapsed ? 'justify-center' : ''
+                                        }`}
+                                    >
+                                        <span className="flex-shrink-0"><ArrowRightOnRectangleIcon className="w-5 h-5" /></span>
+                                        {!sidebarCollapsed && <span className="ml-3">Logout</span>}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
