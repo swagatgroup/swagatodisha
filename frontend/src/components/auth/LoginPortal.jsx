@@ -5,10 +5,21 @@ import ApplicationStatusSearch from '../ApplicationStatusSearch';
 import { useAuth } from '../../contexts/AuthContext';
 
 const LoginPortal = () => {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
+    const token = localStorage.getItem('token');
+
+    // If we're loading, or if we have a token but user hasn't populated yet, show a loader.
+    // This prevents the login UI from flashing if the user presses the Back button.
+    if (loading || (token && !user)) {
+        return (
+            <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+            </div>
+        );
+    }
 
     // Double check localStorage to avoid React batching race conditions where logout() hasn't cleared context yet
-    if (user && localStorage.getItem('token')) {
+    if (user && token) {
         const dashboardPath = {
             student: '/dashboard/student',
             user: '/dashboard/student',

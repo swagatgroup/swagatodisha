@@ -15,14 +15,23 @@ const Login = ({ title }) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showForgotPassword, setShowForgotPassword] = useState(false);
-    const { login, user } = useAuth();
+    const { login, user, loading: authLoading } = useAuth();
     const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
+
+    // Prevent login form from flashing if user hits the back button while authenticated
+    if (authLoading || (token && !user)) {
+        return (
+            <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+            </div>
+        );
+    }
 
     // Redirect already-authenticated users to their dashboard
-    // so the back button never shows the login page while logged in.
     // We double check localStorage to avoid React state batching race conditions during logout.
-    if (user && localStorage.getItem('token')) {
+    if (user && token) {
         const dashboardPath = {
             student: '/dashboard/student',
             user: '/dashboard/student',
