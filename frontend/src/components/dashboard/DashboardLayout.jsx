@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Bars3Icon, SunIcon, MoonIcon, BellIcon, ChevronDoubleLeftIcon, ChevronLeftIcon, ArrowRightOnRectangleIcon, UserIcon } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
+import { clearAuthState } from '../../contexts/AuthContext';
+import { setExplicitLogout } from '../../utils/api';
 import { useSession } from '../../contexts/SessionContext';
 import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -189,43 +191,48 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     </div>
                                 </button>
 
-                                <AnimatePresence>
-                                    {userMenuOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            exit={{ opacity: 0, y: 10 }}
-                                            className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#2A1E2E] rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
-                                        >
-                                            {/* User Info Section */}
-                                            <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623]">
-                                                <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                                                    {user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || 'User'}
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-300 capitalize mt-0.5 font-medium">
-                                                    {user?.role ? user.role.replace('_', ' ') : 'User'}
-                                                </p>
-                                            </div>
+                                {/* Dropdown Menu — rendered conditionally WITHOUT AnimatePresence.
+                                    AnimatePresence was causing the sign-out button to be trapped
+                                    inside a motion.div that could absorb/delay pointer events during
+                                    exit animations. Removing it means no fancy fade-out, but the
+                                    button ALWAYS works. Reliability > animation. */}
+                                {userMenuOpen && (
+                                    <div
+                                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#2A1E2E] rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
+                                    >
+                                        {/* User Info Section */}
+                                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623]">
+                                            <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                                                {user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || 'User'}
+                                            </p>
+                                            <p className="text-xs text-gray-500 dark:text-gray-300 capitalize mt-0.5 font-medium">
+                                                {user?.role ? user.role.replace('_', ' ') : 'User'}
+                                            </p>
+                                        </div>
 
-                                            <button
-                                                type="button"
-                                                onMouseDown={(e) => {
-                                                    // Use onMouseDown to fire BEFORE the document mousedown closes this dropdown
-                                                    e.preventDefault();
-                                                    e.stopPropagation();
-                                                    // Directly clear localStorage and hard-redirect — bypass all React state
-                                                    localStorage.removeItem('token');
-                                                    localStorage.removeItem('user');
-                                                    window.location.href = '/login-portal';
-                                                }}
-                                                className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
-                                                style={{ cursor: 'pointer' }}
-                                            >
-                                                Sign out
-                                            </button>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                        {/* SIGN OUT — native <a> tag with href="/login-portal".
+                                            Even if ALL JavaScript fails, the browser will still
+                                            follow the <a href>. The onClick clears auth state
+                                            BEFORE navigation. This is the nuclear option. */}
+                                        <a
+                                            href="/login-portal"
+                                            onClick={(e) => {
+                                                // 1. Tell the 401 interceptor to stand down
+                                                setExplicitLogout(true);
+                                                // 2. Wipe all auth data (localStorage, headers, etc.)
+                                                clearAuthState();
+                                                // 3. Cancel the native <a> navigation so we can use replace()
+                                                e.preventDefault();
+                                                // 4. replace() removes the dashboard from browser history
+                                                //    so pressing Back won't resurrect it (Case 7)
+                                                window.location.replace('/login-portal');
+                                            }}
+                                            className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer no-underline"
+                                        >
+                                            Sign out
+                                        </a>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>

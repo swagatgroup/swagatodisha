@@ -9,6 +9,16 @@ console.log('🌐 API Configuration:', {
     fullURL: API_BASE_URL ? `${API_BASE_URL}/api/contact/submit` : '/api/contact/submit'
 });
 
+// ─── EXPLICIT LOGOUT FLAG ──────────────────────────────────────────────────────
+// This flag is set by the Sign Out button handler BEFORE clearing auth data.
+// When true, the 401 interceptor below skips its auto-logout logic because
+// the user is already being navigated to /login-portal intentionally.
+// Using a module-level variable here (instead of importing from AuthContext)
+// to avoid circular dependency: api.js ← AuthContext.jsx ← api.js.
+let _isExplicitLogout = false;
+export function setExplicitLogout(val) { _isExplicitLogout = val; }
+export function getExplicitLogout() { return _isExplicitLogout; }
+
 // API Configuration
 const api = axios.create({
     baseURL: API_BASE_URL || '',
@@ -22,21 +32,14 @@ const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
-        console.log('🌐 API Request - URL:', config.url);
-        console.log('🌐 API Request - Token:', token ? 'Present' : 'Missing');
         
         // If the data is FormData, don't set Content-Type - let browser set it with boundary
         if (config.data instanceof FormData) {
-            // Remove Content-Type header to let browser set it automatically with boundary
             delete config.headers['Content-Type'];
-            console.log('🌐 API Request - FormData detected, letting browser set Content-Type');
         }
         
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
-            console.log('🌐 API Request - Authorization header set');
-        } else {
-            console.log('🌐 API Request - No token, no Authorization header');
         }
         return config;
     },
@@ -48,44 +51,33 @@ api.interceptors.request.use(
 // Response interceptor for error handling
 api.interceptors.response.use(
     (response) => {
-        console.log('🌐 API Response - URL:', response.config.url, 'Status:', response.status);
         return response;
     },
     (error) => {
-        const fullURL = error.config?.baseURL 
-            ? `${error.config.baseURL}${error.config.url}` 
-            : error.config?.url || 'unknown';
-        
-        console.log('🌐 API Error - URL:', error.config?.url);
-        console.log('🌐 API Error - Full URL:', fullURL);
-        console.log('🌐 API Error - Base URL:', error.config?.baseURL || '(empty - relative)');
-        console.log('🌐 API Error - Status:', error.response?.status || 'No response');
-        console.log('🌐 API Error - Message:', error.response?.data?.message || error.message);
-        console.log('🌐 API Error - Code:', error.code);
-        console.log('🌐 API Error - Request made:', !!error.request);
-        console.log('🌐 API Error - Response received:', !!error.response);
-        
         // Handle network errors (common in production)
         if (error.code === 'ERR_NETWORK' || error.message === 'Network Error' || !error.response) {
-            console.error('🌐 Network Error - Possible causes:', {
-                baseURL: error.config?.baseURL || '(not set - check VITE_API_BASE_URL)',
-                url: error.config?.url,
-                message: 'Check if backend is accessible and CORS is configured correctly'
-            });
+            console.error('🌐 Network Error:', error.config?.url);
         }
         
         // Handle 401 Unauthorized errors
         if (error.response?.status === 401) {
-            console.log('🌐 API Error - 401 Unauthorized, clearing token');
-            // Only redirect if we're not already on login/register pages to avoid infinite loops
+            console.log('🌐 401 Unauthorized:', error.config?.url);
+
+            // If the user explicitly clicked Sign Out, the clearAuthState() in the
+            // button handler already wiped everything and window.location.replace()
+            // is in progress. Skip — don't fight with the redirect.
+            if (_isExplicitLogout) {
+                console.log('🌐 Explicit logout in progress — skipping auto-logout');
+                return Promise.reject(error);
+            }
+
             const currentPath = window.location.pathname;
             const isAuthPage = currentPath === '/login' || currentPath === '/login-portal' || currentPath === '/register';
 
             // Clear invalid token
             localStorage.removeItem('token');
 
-            // Dispatch a custom event so React can handle logout gracefully
-            // (preserves browser history - no hard window.location redirect)
+            // Dispatch custom event so React (AuthContext) can handle it
             if (!isAuthPage) {
                 window.dispatchEvent(new CustomEvent('auth:unauthorized'));
             }

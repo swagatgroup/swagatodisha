@@ -67,10 +67,12 @@ const protect = async (req, res, next) => {
             req.user = user;
             req.userType = userType;
 
-            // Debug logging
-            console.log('Auth middleware - User role:', user.role);
-            console.log('Auth middleware - User type:', userType);
-            console.log('Auth middleware - User ID:', user._id);
+            // Prevent browser from caching authenticated responses.
+            // Without this, pressing Back after logout can resurrect a cached
+            // authenticated page from bfcache (Case 7 in the failure matrix).
+            res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+            res.set('Pragma', 'no-cache');
+            res.set('Expires', '0');
 
             next();
         } catch (error) {

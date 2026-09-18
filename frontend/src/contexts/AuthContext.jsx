@@ -1,8 +1,28 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import api from '../utils/api';
+import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import api, { setExplicitLogout } from '../utils/api';
 import { handleAPIError } from '../utils/apiErrorHandler';
 
 const AuthContext = createContext();
+
+// ─── SINGLE SOURCE OF TRUTH: clearAuthState() ─────────────────────────────────
+// Every path that ends a session (manual logout, 401, cross-tab sync) calls
+// this ONE function. Auth-clearing logic is NEVER duplicated elsewhere.
+export function clearAuthState() {
+    console.log('🔐 clearAuthState() — wiping ALL auth data');
+
+    // 1. localStorage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+
+    // 2. sessionStorage (in case anything ever writes here)
+    try { sessionStorage.removeItem('token'); } catch (_) { /* ignore */ }
+    try { sessionStorage.removeItem('user'); } catch (_) { /* ignore */ }
+
+    // 3. Axios default header (module-level singleton)
+    try {
+        delete api.defaults.headers.common['Authorization'];
+    } catch (_) { /* ignore */ }
+}
 
 export const useAuth = () => {
     const context = useContext(AuthContext);
@@ -19,99 +39,108 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-    // Initialize authentication on mount - combined token loading and auth check
+    // AbortController — aborts ALL in-flight requests on logout so late
+    // responses can never call setUser() after the session is destroyed.
+    const abortControllerRef = useRef(null);
+
+    // Helper: reset React state (called after clearAuthState cleans storage)
+    const resetReactAuthState = useCallback(() => {
+        setToken(null);
+        setUser(null);
+        setIsAuthenticated(false);
+        setError(null);
+    }, []);
+
+    // ─── CROSS-TAB LOGOUT SYNC (Case 10) ───────────────────────────────────────
+    // When another tab removes the 'token' key from localStorage, every other
+    // tab hears it via the native 'storage' event and logs out independently.
     useEffect(() => {
-        // Listen for auth:unauthorized event dispatched by api.js on 401 errors
-        // This allows graceful logout via React state instead of hard window.location redirect
-        // so the browser back-button history is preserved
+        const handleStorageChange = (e) => {
+            if (e.key === 'token' && e.newValue === null && e.oldValue !== null) {
+                console.log('🔐 Cross-tab logout detected — another tab removed the token');
+                resetReactAuthState();
+                window.location.replace('/login-portal');
+            }
+        };
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, [resetReactAuthState]);
+
+    // ─── 401 EVENT LISTENER ────────────────────────────────────────────────────
+    useEffect(() => {
         const handleUnauthorized = () => {
-            console.log('🔐 AuthContext - Received auth:unauthorized event, logging out gracefully');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            setToken(null);
-            setUser(null);
-            setIsAuthenticated(false);
-            setError(null);
-            delete api.defaults.headers.common['Authorization'];
+            console.log('🔐 AuthContext — auth:unauthorized event received');
+            clearAuthState();
+            resetReactAuthState();
         };
         window.addEventListener('auth:unauthorized', handleUnauthorized);
         return () => window.removeEventListener('auth:unauthorized', handleUnauthorized);
-    }, []);
+    }, [resetReactAuthState]);
 
-    // Initialize authentication on mount - load token and verify with backend
-
+    // ─── INITIALIZE AUTH ON MOUNT ──────────────────────────────────────────────
     useEffect(() => {
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
         const initializeAuth = async () => {
             try {
                 const storedToken = localStorage.getItem('token');
-                console.log('🔐 AuthContext - Checking stored token:', storedToken ? 'Token exists' : 'No token');
-                
-                if (storedToken) {
-                    // Set token and headers immediately
-                    setToken(storedToken);
-                    api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-                    
-                    // Recover user instantly if available in cache (prevents flashing & saves them from network errors)
-                    try {
-                        const cachedUser = localStorage.getItem('user');
-                        if (cachedUser) {
-                            setUser(JSON.parse(cachedUser));
-                            setIsAuthenticated(true);
-                        }
-                    } catch (e) {
-                        console.warn('Failed to parse cached user', e);
-                    }
-                    
-                    console.log('🔐 AuthContext - Token loaded from localStorage');
-                    
-                    // Verify token with backend
-                    try {
-                        console.log('🔐 AuthContext - Calling /api/auth/me with token');
-                        const response = await api.get('/api/auth/me');
-                        console.log('🔐 AuthContext - /api/auth/me response:', response.data);
-                        
-                        if (response.data.success) {
-                            const fetchedUser = response.data.data.user;
-                            setUser(fetchedUser);
-                            localStorage.setItem('user', JSON.stringify(fetchedUser));
-                            setIsAuthenticated(true);
-                            console.log('🔐 AuthContext - Authentication successful, user:', fetchedUser.fullName);
-                        } else {
-                            // Token is invalid
-                            console.log('🔐 AuthContext - Token invalid, removing from localStorage');
-                            localStorage.removeItem('token');
-                            localStorage.removeItem('user');
-                            setToken(null);
-                            setUser(null);
-                            setIsAuthenticated(false);
-                            delete api.defaults.headers.common['Authorization'];
-                        }
-                    } catch (error) {
-                        console.error('🔐 AuthContext - Auth check failed:', error);
-                        console.error('🔐 AuthContext - Error response:', error.response?.data);
-                        
-                        // ONLY clear token if it's explicitly a 401 Unauthorized or 403 Forbidden.
-                        // If it's a network error (no error.response) due to mobile sleeping/waking up,
-                        // do NOT aggressively clear the token and log them out!
-                        if (error.response?.status === 401 || error.response?.status === 403) {
-                            console.log('🔐 AuthContext - Token explicitly rejected, clearing...');
-                            localStorage.removeItem('token');
-                            setToken(null);
-                            setIsAuthenticated(false);
-                            delete api.defaults.headers.common['Authorization'];
-                        } else {
-                            console.log('🔐 AuthContext - Network/Server error during token verification. Retaining token to prevent sudden logout.');
-                            // Still set authenticated to true so they don't get booted to login page!
-                            // We just don't have the updated user object.
-                            setIsAuthenticated(true);
-                        }
-                    }
-                } else {
-                    console.log('🔐 AuthContext - No token found in localStorage');
+                console.log('🔐 AuthContext — init:', storedToken ? 'Token exists' : 'No token');
+
+                if (!storedToken) {
                     setIsAuthenticated(false);
+                    return;
+                }
+
+                // Set token and headers immediately
+                setToken(storedToken);
+                api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+
+                // Recover user from cache instantly (prevents flash)
+                try {
+                    const cachedUser = localStorage.getItem('user');
+                    if (cachedUser) {
+                        setUser(JSON.parse(cachedUser));
+                        setIsAuthenticated(true);
+                    }
+                } catch (e) {
+                    console.warn('Failed to parse cached user', e);
+                }
+
+                // Verify token with backend
+                try {
+                    const response = await api.get('/api/auth/me', {
+                        signal: controller.signal
+                    });
+
+                    // Guard: if we were aborted (logout happened during this request), bail
+                    if (controller.signal.aborted) return;
+
+                    if (response.data.success) {
+                        const fetchedUser = response.data.data.user;
+                        setUser(fetchedUser);
+                        localStorage.setItem('user', JSON.stringify(fetchedUser));
+                        setIsAuthenticated(true);
+                    } else {
+                        clearAuthState();
+                        resetReactAuthState();
+                    }
+                } catch (error) {
+                    if (error.name === 'AbortError' || error.name === 'CanceledError') return;
+                    if (controller.signal.aborted) return;
+
+                    console.error('🔐 Auth check failed:', error.response?.status || error.message);
+
+                    if (error.response?.status === 401 || error.response?.status === 403) {
+                        clearAuthState();
+                        resetReactAuthState();
+                    } else {
+                        // Network error — keep cached auth to avoid spurious logout
+                        setIsAuthenticated(true);
+                    }
                 }
             } catch (error) {
-                console.warn('🔐 AuthContext - Error reading token from localStorage:', error);
+                console.warn('🔐 Error reading token:', error);
                 setIsAuthenticated(false);
             } finally {
                 setLoading(false);
@@ -119,9 +148,13 @@ export const AuthProvider = ({ children }) => {
         };
 
         initializeAuth();
-    }, []);
 
-    // Set default headers when token changes (for login/logout)
+        return () => {
+            controller.abort();
+        };
+    }, [resetReactAuthState]);
+
+    // Sync axios header when React token state changes
     useEffect(() => {
         if (token) {
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -130,56 +163,46 @@ export const AuthProvider = ({ children }) => {
         }
     }, [token]);
 
+    // ─── LOGIN ──────────────────────────────────────────────────────────────────
     const login = async (email, password) => {
         try {
             setLoading(true);
             setError(null);
+            setExplicitLogout(false); // Reset the logout sentinel on login
 
-            // AuthContext login called
+            // Create a fresh AbortController for the new session
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+            abortControllerRef.current = new AbortController();
 
-            // Add retry logic for network issues
             let response;
             let retryCount = 0;
             const maxRetries = 3;
 
             while (retryCount < maxRetries) {
                 try {
-                    console.log('🚀 Login attempt:', { email, password: password ? '***' : 'MISSING' });
                     response = await api.post('/api/auth/login', {
                         email: email,
                         password: password
                     });
-                    console.log('✅ Login response:', response.data);
-                    break; // Success, exit retry loop
+                    break;
                 } catch (error) {
-                    console.log('❌ Login error:', error.response?.data || error.message);
                     retryCount++;
                     if (retryCount >= maxRetries || (error.response && error.response.status !== 500)) {
-                        throw error; // Don't retry for client errors or after max retries
+                        throw error;
                     }
-                    // Login attempt failed, retrying
-                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount)); // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
                 }
             }
-
-            // Login response received
 
             if (response.data.success) {
                 const { token, user } = response.data;
 
-                console.log('🔐 AuthContext - Login successful, storing token:', token ? 'Token received' : 'No token');
-                console.log('🔐 AuthContext - User data:', user);
-
-                // Store token and user
                 localStorage.setItem('token', token);
                 localStorage.setItem('user', JSON.stringify(user));
                 setToken(token);
-                console.log('🔐 AuthContext - Token and user stored in localStorage and state');
-
-                // Set authorization header
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                console.log('🔐 AuthContext - Authorization header set');
-
                 setUser(user);
                 setIsAuthenticated(true);
 
@@ -187,13 +210,9 @@ export const AuthProvider = ({ children }) => {
             } else {
                 throw new Error(response.data.message || 'Login failed');
             }
-
         } catch (error) {
             console.error('Login failed:', error);
-
-            // Use enhanced error handling
             const errorInfo = handleAPIError(error, false);
-
             setError(errorInfo.message);
             setIsAuthenticated(false);
             return { success: false, message: errorInfo.message };
@@ -202,19 +221,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    // ─── REGISTER ───────────────────────────────────────────────────────────────
     const register = async (userData) => {
         try {
             setLoading(true);
             setError(null);
-
-            // Frontend registration start
-            console.log('🚀 Registration request data:', {
-                fullName: userData.fullName,
-                email: userData.email,
-                password: userData.password ? '***' : 'MISSING',
-                phoneNumber: userData.phoneNumber,
-                role: userData.role || 'student'
-            });
 
             const response = await api.post('/api/auth/register', {
                 fullName: userData.fullName,
@@ -224,31 +235,22 @@ export const AuthProvider = ({ children }) => {
                 role: userData.role || 'student'
             });
 
-            // Registration response received
-            console.log('✅ Registration response:', response.data);
-
             const { user, message } = response.data;
 
-            // ✅ FIXED: Do NOT store the token or auto-login after registration
-            // The user should manually log in after registration
-            // Registration successful! User created but not logged in
             return {
                 success: true,
                 user,
                 message: message || 'Registration successful! Please log in with your credentials.'
             };
-
         } catch (error) {
             console.error('Registration failed:', error);
 
             let errorMessage = 'Registration failed. Please try again.';
-
             if (error.response?.data?.message) {
                 errorMessage = error.response.data.message;
             } else if (error.response?.status === 409) {
                 errorMessage = 'User already exists with this email or phone number.';
             } else if (error.response?.status === 400) {
-                // Handle validation errors
                 if (error.response.data?.errors) {
                     const validationErrors = error.response.data.errors.map(err => err.message).join(', ');
                     errorMessage = `Please fix the following: ${validationErrors}`;
@@ -267,23 +269,24 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const logout = () => {
+    // ─── LOGOUT ─────────────────────────────────────────────────────────────────
+    const logout = useCallback(() => {
         try {
-            console.log('💥 AuthContext logout called');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            if (api && api.defaults && api.defaults.headers && api.defaults.headers.common) {
-                delete api.defaults.headers.common['Authorization'];
+            console.log('💥 AuthContext logout() called');
+            setExplicitLogout(true);
+
+            // Abort all in-flight requests so late responses can't re-set user
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
             }
-            setToken(null);
-            setUser(null);
-            setIsAuthenticated(false);
-            setError(null);
-            console.log('💥 AuthContext logout finished');
+
+            clearAuthState();
+            resetReactAuthState();
+            console.log('💥 AuthContext logout() finished');
         } catch (error) {
-            console.error('💥 AuthContext logout failed', error);
+            console.error('💥 AuthContext logout() failed', error);
         }
-    };
+    }, [resetReactAuthState]);
 
     const updateUser = (updatedUser) => {
         setUser(updatedUser);
