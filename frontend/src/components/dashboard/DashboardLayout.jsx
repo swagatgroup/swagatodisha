@@ -198,7 +198,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     button ALWAYS works. Reliability > animation. */}
                                 {userMenuOpen && (
                                     <div
-                                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#2A1E2E] rounded-md shadow-lg py-1 z-50 ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
+                                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#2A1E2E] rounded-md shadow-lg py-1 z-[9999] ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
                                     >
                                         {/* User Info Section */}
                                         <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623]">
@@ -217,17 +217,32 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         <a
                                             href="/login-portal"
                                             onClick={(e) => {
-                                                // 1. Tell the 401 interceptor to stand down
-                                                setExplicitLogout(true);
-                                                // 2. Wipe all auth data (localStorage, headers, etc.)
-                                                clearAuthState();
-                                                // 3. Cancel the native <a> navigation so we can use replace()
-                                                e.preventDefault();
-                                                // 4. replace() removes the dashboard from browser history
-                                                //    so pressing Back won't resurrect it (Case 7)
-                                                window.location.replace('/login-portal');
+                                                console.log('💥 [SIGN OUT] Click event fired!');
+                                                
+                                                try {
+                                                    // 1. Tell the 401 interceptor to stand down
+                                                    console.log('💥 [SIGN OUT] 1. Setting explicit logout flag');
+                                                    setExplicitLogout(true);
+                                                    
+                                                    // 2. Wipe all auth data (localStorage, headers, etc.)
+                                                    console.log('💥 [SIGN OUT] 2. Calling clearAuthState()');
+                                                    clearAuthState();
+                                                    
+                                                    // 3. Cancel the native <a> navigation so we can use replace()
+                                                    console.log('💥 [SIGN OUT] 3. Calling e.preventDefault()');
+                                                    e.preventDefault();
+                                                    
+                                                    // 4. replace() removes the dashboard from browser history
+                                                    console.log('💥 [SIGN OUT] 4. Redirecting to /login-portal');
+                                                    window.location.replace('/login-portal');
+                                                } catch (err) {
+                                                    console.error('💥 [SIGN OUT] ERROR during sign out flow:', err);
+                                                    // Fallback if JS errors out somehow
+                                                    window.location.href = '/login-portal';
+                                                }
                                             }}
-                                            className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer no-underline"
+                                            style={{ cursor: 'pointer', pointerEvents: 'auto', position: 'relative', zIndex: 99999 }}
+                                            className="block w-full text-left px-4 py-3 text-sm font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors no-underline cursor-pointer"
                                         >
                                             Sign out
                                         </a>
