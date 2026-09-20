@@ -1,3 +1,4 @@
+import { RiCheckDoubleLine, RiPhoneLine } from '@remixicon/react';
 import React from 'react'
 
 const Admissions = () => {
