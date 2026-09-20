@@ -69,9 +69,8 @@ const Header = () => {
       {/* HEADER */}
       <header
         ref={headerRef}
-        className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300"
+        className="fixed top-0 left-0 right-0 z-50 transition-colors duration-300 bg-white/80 dark:bg-[#1A1212]/80 backdrop-blur-lg shadow-sm border-b border-gray-200/50 dark:border-gray-800/50"
         style={{
-          background: 'transparent',
           transform: 'translateZ(0)',
           WebkitTransform: 'translateZ(0)',
           willChange: 'background-color',
