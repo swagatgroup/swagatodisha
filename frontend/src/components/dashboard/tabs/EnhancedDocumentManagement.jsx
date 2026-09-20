@@ -133,15 +133,15 @@ const EnhancedDocumentManagement = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'approved':
-                return 'bg-green-100 text-green-800';
+                return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
             case 'rejected':
-                return 'bg-red-100 text-red-800';
+                return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
             case 'processing':
-                return 'bg-yellow-100 text-yellow-800';
+                return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
             case 'under_review':
-                return 'bg-blue-100 text-blue-800';
+                return 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -174,7 +174,7 @@ const EnhancedDocumentManagement = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Upload Documents</h3>
 
@@ -208,7 +208,7 @@ const EnhancedDocumentManagement = () => {
                 </div>
 
                 {selectedFile && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="mt-4 p-4 bg-gray-50 dark:bg-[#1A1212] rounded-lg">
                         <p className="text-sm text-gray-600 dark:text-gray-300">
                             <strong>Selected File:</strong> {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
                         </p>
@@ -231,7 +231,7 @@ const EnhancedDocumentManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Document Status Overview</h3>
 
@@ -268,7 +268,7 @@ const EnhancedDocumentManagement = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-lg shadow"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
             >
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Your Documents</h3>
@@ -286,7 +286,7 @@ const EnhancedDocumentManagement = () => {
                     ) : (
                         <div className="space-y-4">
                             {documents.map((doc) => (
-                                <div key={doc._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                                <div key={doc._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 dark:bg-[#1A1212]">
                                     <div className="flex items-center space-x-4">
                                         <div className="flex-shrink-0">
                                             {getStatusIcon(doc.status)}

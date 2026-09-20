@@ -172,7 +172,7 @@ const ContentManagement = () => {
                             key={course}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-white rounded-lg shadow"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
                         >
                             <div className="px-6 py-4 border-b border-gray-200">
                                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{course}</h4>
@@ -248,7 +248,7 @@ const ContentManagement = () => {
             {/* Upload Modal */}
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg max-w-2xl w-full mx-4">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg max-w-2xl w-full mx-4">
                         <div className="px-6 py-4 border-b border-gray-200">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Upload Content</h3>
                         </div>
@@ -339,7 +339,7 @@ const ContentManagement = () => {
                                 <button
                                     type="button"
                                     onClick={() => setShowUploadModal(false)}
-                                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                                    className="px-4 py-2 bg-gray-50 dark:bg-[#1A1212]0 text-white rounded hover:bg-gray-600"
                                 >
                                     Cancel
                                 </button>

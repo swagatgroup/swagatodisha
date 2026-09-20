@@ -176,19 +176,19 @@ const StudentApplication = ({ onStudentUpdate }) => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'draft':
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
             case 'generated':
-                return 'bg-blue-100 text-blue-800';
+                return 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200';
             case 'submitted':
-                return 'bg-green-100 text-green-800';
+                return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
             case 'under_review':
-                return 'bg-yellow-100 text-yellow-800';
+                return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
             case 'approved':
-                return 'bg-green-100 text-green-800';
+                return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
             case 'rejected':
-                return 'bg-red-100 text-red-800';
+                return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -222,7 +222,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
     return (
         <div className="space-y-6">
             {/* Header with Student Selection */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Student Application Management</h3>
 
                 <div className="flex flex-col sm:flex-row gap-4">
@@ -267,7 +267,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
             </div>
 
             {/* Application List */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100">Applications ({applications.length})</h4>
                 </div>
@@ -289,7 +289,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 dark:bg-[#1A1212]"
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-4">
@@ -360,7 +360,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                                         // View application details
                                                         alert('View application details functionality would be implemented here');
                                                     }}
-                                                    className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-800 text-sm font-medium"
+                                                    className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200 text-sm font-medium"
                                                 >
                                                     View
                                                 </button>
@@ -369,7 +369,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                     </div>
 
                                     {application.remarks && (
-                                        <div className="mt-3 p-3 bg-gray-50 rounded">
+                                        <div className="mt-3 p-3 bg-gray-50 dark:bg-[#1A1212] rounded">
                                             <p className="text-sm text-gray-600 dark:text-gray-300">
                                                 <strong>Remarks:</strong> {application.remarks}
                                             </p>
@@ -383,7 +383,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
             </div>
 
             {/* Terms and Conditions */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Terms and Conditions</h4>
                 <div className="prose max-w-none text-sm text-gray-600 dark:text-gray-300">
                     <p className="mb-4">
@@ -412,7 +412,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                 </h3>
                                 <button
                                     onClick={() => setShowRejectionModal(false)}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -451,9 +451,9 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                                             Issue #{index + 1}
                                                         </h5>
                                                         <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                                                            detail.priority === 'High' ? 'bg-red-100 text-red-800' :
-                                                            detail.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                            'bg-green-100 text-green-800'
+                                                            detail.priority === 'High' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' :
+                                                            detail.priority === 'Medium' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200' :
+                                                            'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
                                                         }`}>
                                                             {detail.priority} Priority
                                                         </span>
@@ -526,7 +526,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                             <div className="flex justify-end space-x-3 mt-6">
                                 <button
                                     onClick={() => setShowRejectionModal(false)}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-600"
                                 >
                                     Close
                                 </button>

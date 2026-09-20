@@ -222,21 +222,21 @@ const NotificationManagement = () => {
 
     const getPriorityColor = (priority) => {
         switch (priority) {
-            case 'Critical': return 'bg-red-100 text-red-800';
+            case 'Critical': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
             case 'High': return 'bg-orange-100 text-orange-800';
-            case 'Medium': return 'bg-yellow-100 text-yellow-800';
-            case 'Low': return 'bg-green-100 text-green-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'Medium': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
+            case 'Low': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'Published': return 'bg-green-100 text-green-800';
-            case 'Draft': return 'bg-yellow-100 text-yellow-800';
-            case 'Archived': return 'bg-gray-100 text-gray-800';
-            case 'Expired': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'Published': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
+            case 'Draft': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
+            case 'Archived': return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
+            case 'Expired': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -342,7 +342,7 @@ const NotificationManagement = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
-                            className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            className="p-6 hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                         >
                             <div className="flex items-start justify-between">
                                 <div className="flex-1">
@@ -355,12 +355,12 @@ const NotificationManagement = () => {
                                             {notification.status}
                                         </span>
                                         {notification.isUrgent && (
-                                            <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded-full">
+                                            <span className="px-2 py-1 text-xs font-medium bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/30 dark:text-red-300 rounded-full">
                                                 Urgent
                                             </span>
                                         )}
                                         {notification.isImportant && (
-                                            <span className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
+                                            <span className="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 dark:bg-blue-900/30 dark:text-blue-300 rounded-full">
                                                 Important
                                             </span>
                                         )}
@@ -421,7 +421,7 @@ const NotificationManagement = () => {
                                         setEditingNotification(null);
                                         resetForm();
                                     }}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -630,7 +630,7 @@ const NotificationManagement = () => {
                                             setEditingNotification(null);
                                             resetForm();
                                         }}
-                                        className="px-6 py-3 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600"
+                                        className="px-6 py-3 bg-gray-50 dark:bg-[#1A1212]0 text-white font-medium rounded-lg hover:bg-gray-600"
                                     >
                                         Cancel
                                     </button>

@@ -121,7 +121,7 @@ const PasswordsTab = () => {
                     </thead>
                     <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {filteredData.map((user) => (
-                            <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <tr key={user.id} className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-10 w-10">
@@ -141,8 +141,8 @@ const PasswordsTab = () => {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">{user.lastPasswordChange}</td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${user.status === 'Active'
-                                        ? 'bg-green-100 text-green-800'
-                                        : 'bg-red-100 text-red-800'
+                                        ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                                        : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'
                                         }`}>
                                         {user.status}
                                     </span>
@@ -241,7 +241,7 @@ const PasswordsTab = () => {
                             <div className="flex items-center justify-end px-4 py-3 bg-gray-50 dark:bg-gray-700 sm:px-6">
                                 <button
                                     onClick={() => setSelectedUser(null)}
-                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600 mr-3"
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-600 mr-3"
                                 >
                                     Cancel
                                 </button>

@@ -390,7 +390,7 @@ const ContentTab = () => {
             </div>
 
             {/* Content Form */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 {renderContent()}
             </div>
         </div>

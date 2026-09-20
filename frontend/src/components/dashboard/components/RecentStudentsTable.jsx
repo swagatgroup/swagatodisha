@@ -370,27 +370,27 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
 
     const getStatusBadgeColor = (status) => {
         switch (status) {
-            case 'APPROVED': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-            case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
-            case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-            case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'APPROVED': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/20 dark:text-green-400';
+            case 'SUBMITTED': return 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 dark:bg-blue-900/20 dark:text-[#60A5FA]';
+            case 'UNDER_REVIEW': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400';
+            case 'REJECTED': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/20 dark:text-red-400';
+            case 'DRAFT': return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'CANCELLED': return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
     const getCategoryColor = (category) => {
         switch (category) {
-            case 'A': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
-            case 'B1': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-            case 'B2': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+            case 'A': return 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 dark:bg-blue-900/20 dark:text-[#60A5FA]';
+            case 'B1': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/20 dark:text-green-400';
+            case 'B2': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'B3': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
             case 'B4': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             case 'C1': return 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400';
-            case 'C2': return 'bg-indigo-100 text-indigo-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
+            case 'C2': return 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             case 'C3': return 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -790,7 +790,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         key={student._id}
                                         initial={{ opacity: 0 }}
                                         animate={{ opacity: 1 }}
-                                        className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                                        className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
                                             {serialNumber}
@@ -839,8 +839,8 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                                 (student.courseDetails?.admissionType === 'free')
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-blue-100 text-blue-800'
+                                                    ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                                                    : 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200'
                                             }`}>
                                                 {(student.courseDetails?.admissionType === 'free') ? 'Free' : 'Paid'}
                                             </span>
@@ -939,7 +939,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                         <button
                             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600"
+                            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-600"
                         >
                             Previous
                         </button>
@@ -972,7 +972,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                         <button
                             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600"
+                            className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-600"
                         >
                             Next
                         </button>
@@ -997,7 +997,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 </div>
                                 <button
                                     onClick={() => setShowDetailsModal(false)}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1411,7 +1411,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
                                 <button
                                     onClick={() => setShowDetailsModal(false)}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                 >
                                     Close
                                 </button>
@@ -1450,7 +1450,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300 disabled:opacity-50"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1488,7 +1488,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                     </button>
                                                     <button
                                                         onClick={clearDocumentSelection}
-                                                        className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300"
+                                                        className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-300"
                                                     >
                                                         Clear All
                                                     </button>
@@ -1523,7 +1523,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                                             <p className="text-sm text-gray-600 dark:text-gray-300">
                                                                 {doc.fileName || doc.documentType}
                                                             </p>
-                                                            <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                                            <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/30 dark:text-green-300">
                                                                 APPROVED
                                                             </span>
                                                         </div>
@@ -1544,7 +1544,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
-                                    className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                                    className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700 disabled:opacity-50"
                                 >
                                     Cancel
                                 </button>
@@ -1604,7 +1604,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         setEditData({});
                                         setSelectedStudent(null);
                                     }}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1935,7 +1935,7 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
                                         setEditData({});
                                         setSelectedStudent(null);
                                     }}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                 >
                                     Cancel
                                 </button>

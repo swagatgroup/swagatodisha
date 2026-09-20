@@ -227,7 +227,7 @@ return (
                             </tr>
                         ) : (
                             agents.map((agent) => (
-                                <tr key={agent._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <tr key={agent._id} className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700">
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="flex items-center">
                                             <div className="flex-shrink-0 h-10 w-10">
@@ -248,7 +248,7 @@ return (
                                         <div className="text-sm text-gray-500 dark:text-gray-300">{agent.phoneNumber}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
                                             {agent.referralCode}
                                         </span>
                                     </td>
@@ -278,8 +278,8 @@ return (
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${agent.isActive
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
+                                            ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                                            : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'
                                             }`}>
                                             {agent.isActive ? 'Active' : 'Inactive'}
                                         </span>

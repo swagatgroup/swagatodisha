@@ -110,11 +110,11 @@ const DocumentReview = ({ studentId, onClose }) => {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'approved': return 'bg-green-100 text-green-800';
-            case 'rejected': return 'bg-red-100 text-red-800';
-            case 'pending': return 'bg-yellow-100 text-yellow-800';
+            case 'approved': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
+            case 'rejected': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
+            case 'pending': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
             case 'resubmission_required': return 'bg-orange-100 text-orange-800';
-            default: return 'bg-gray-100 text-gray-800';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -311,7 +311,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                                 href={document.fileUrl}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded hover:bg-blue-200"
+                                                className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 rounded hover:bg-blue-200"
                                             >
                                                 View
                                             </a>
@@ -319,7 +319,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                             {document.status !== 'approved' && (
                                                 <button
                                                     onClick={() => handleIndividualAction(document._id, 'approved')}
-                                                    className="px-3 py-1 text-sm bg-green-100 text-green-800 rounded hover:bg-green-200"
+                                                    className="px-3 py-1 text-sm bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded hover:bg-green-200"
                                                 >
                                                     Approve
                                                 </button>
@@ -328,7 +328,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                             {document.status !== 'rejected' && (
                                                 <button
                                                     onClick={() => handleIndividualAction(document._id, 'rejected')}
-                                                    className="px-3 py-1 text-sm bg-red-100 text-red-800 rounded hover:bg-red-200"
+                                                    className="px-3 py-1 text-sm bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 rounded hover:bg-red-200"
                                                 >
                                                     Reject
                                                 </button>

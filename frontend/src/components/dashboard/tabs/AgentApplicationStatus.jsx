@@ -453,12 +453,12 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
 
     const getStatusColor = (status) => {
         const colors = {
-            'SUBMITTED': 'bg-blue-100 text-blue-800',
-            'UNDER_REVIEW': 'bg-yellow-100 text-yellow-800',
-            'APPROVED': 'bg-green-100 text-green-800',
-            'REJECTED': 'bg-red-100 text-red-800'
+            'SUBMITTED': 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200',
+            'UNDER_REVIEW': 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200',
+            'APPROVED': 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200',
+            'REJECTED': 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'
         };
-        return colors[status] || 'bg-gray-100 text-gray-800';
+        return colors[status] || 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
     };
 
     const getStatusIcon = (status) => {
@@ -867,7 +867,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                         <div className="flex items-center justify-between mb-3">
                                             <h5 className="font-medium text-gray-900 dark:text-gray-100">Documents Status</h5>
                                             {selectedApplication.documents.some(doc => doc.status === 'REJECTED') && (
-                                                <span className="px-2 py-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 rounded">
+                                                <span className="px-2 py-1 text-xs bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/30 dark:text-red-300 rounded">
                                                     ⚠️ Action Required
                                                 </span>
                                             )}
@@ -1034,7 +1034,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                 </h3>
                                 <button
                                     onClick={() => setShowEditModal(false)}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1432,7 +1432,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                             <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
                                 <button
                                     onClick={() => setShowEditModal(false)}
-                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                 >
                                     Cancel
                                 </button>

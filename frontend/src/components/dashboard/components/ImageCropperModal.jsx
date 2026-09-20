@@ -81,7 +81,7 @@ export default function ImageCropperModal({ isOpen, onClose, imageFile, aspect, 
             <div className="bg-white dark:bg-[#231A2E] rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Crop Image</h3>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">✕</button>
+                    <button onClick={onClose} className="text-gray-500 dark:text-gray-400 hover:text-gray-700">✕</button>
                 </div>
                 
                 <div className="flex-1 overflow-auto p-4 flex justify-center bg-gray-100 dark:bg-gray-800">
@@ -104,7 +104,7 @@ export default function ImageCropperModal({ isOpen, onClose, imageFile, aspect, 
                 </div>
 
                 <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-                    <button onClick={onClose} className="px-4 py-2 text-gray-600 border rounded-lg">Cancel</button>
+                    <button onClick={onClose} className="px-4 py-2 text-gray-600 dark:text-gray-300 border rounded-lg">Cancel</button>
                     <button 
                         onClick={handleSave} 
                         disabled={!completedCrop}

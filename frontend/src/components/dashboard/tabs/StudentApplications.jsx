@@ -372,24 +372,24 @@ const StudentApplications = () => {
   };
 
   const getStatusColor = (status) => {
-    if (!status) return "bg-gray-100 text-gray-800";
+    if (!status) return "bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200";
     const normalizedStatus = typeof status === 'string' ? status.toUpperCase() : status;
 
     switch (normalizedStatus) {
       case "DRAFT":
       case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200";
       case "SUBMITTED":
       case "UNDER_REVIEW":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200";
       case "APPROVED":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200";
       case "REJECTED":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200";
       case "WITHDRAWN":
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200";
     }
   };
 
@@ -438,7 +438,7 @@ const StudentApplications = () => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-lg shadow p-6"
+        className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
       >
         <div className="flex items-center justify-between">
           <div>
@@ -484,7 +484,7 @@ const StudentApplications = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-lg shadow p-6"
+          className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
         >
           <div className="flex space-x-1">
             {tabs.map((tab) => (
@@ -492,7 +492,7 @@ const StudentApplications = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${activeTab === tab.id
-                  ? 'bg-[#F0E6FA] text-[#351458] border-2 border-purple-300'
+                  ? 'bg-[#F0E6FA] dark:bg-[#351458]/80 text-[#351458] border-2 border-purple-300'
                   : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
               >
@@ -509,7 +509,7 @@ const StudentApplications = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-lg shadow"
+          className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
         >
           {applications.length > 0 ? (
             // For students, show single application (not a list)
@@ -522,7 +522,7 @@ const StudentApplications = () => {
                     animate={{ opacity: 1, x: 0 }}
                     className="p-6"
                   >
-                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 mb-6">
+                    <div className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-[#351458]/40 dark:to-[#1D4B5E]/40 rounded-lg p-6 mb-6">
                       <div className="flex items-center justify-between mb-4">
                         <div className="flex items-center space-x-3">
                           <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -539,7 +539,7 @@ const StudentApplications = () => {
                             {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
                           </span>
                           {application.isOwnApplication && (
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
                                 Mine
                             </span>
                           )}
@@ -563,14 +563,14 @@ const StudentApplications = () => {
                           </button>
                           <button
                             onClick={() => printInvoice(application)}
-                            className="px-4 py-2 text-sm text-[#351458] bg-[#F0E6FA] border border-purple-200 hover:bg-purple-200 rounded-lg font-medium shadow-sm flex items-center"
+                            className="px-4 py-2 text-sm text-[#351458] dark:text-purple-100 bg-[#F0E6FA] dark:bg-[#351458]/80 dark:bg-[#351458]/80 border border-purple-200 hover:bg-purple-200 rounded-lg font-medium shadow-sm flex items-center"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-3a2 2 0 00-2-2H9a2 2 0 00-2 2v3a2 2 0 002 2zm5-17V7a4 4 0 00-8 0v4h8z" /></svg>
                             Invoice
                           </button>
                           <button
                             onClick={() => openInstallmentsModal(application)}
-                            className="px-4 py-2 text-sm text-[#1D4B5E] bg-blue-100 border border-blue-200 hover:bg-blue-200 rounded-lg font-medium shadow-sm flex items-center"
+                            className="px-4 py-2 text-sm text-[#1D4B5E] bg-blue-100 dark:bg-blue-900/40 border border-blue-200 hover:bg-blue-200 rounded-lg font-medium shadow-sm flex items-center"
                           >
                             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
                             Upload Slip
@@ -627,14 +627,14 @@ const StudentApplications = () => {
                           <p className="text-sm font-medium text-blue-900 mb-2">
                             Review Notes:
                           </p>
-                          <p className="text-sm text-blue-800">
+                          <p className="text-sm text-blue-800 dark:text-blue-200">
                             {application.reviewNotes}
                           </p>
                         </div>
                       )}
 
                       {application.notes && (
-                        <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                        <div className="p-4 bg-gray-50 dark:bg-[#1A1212] rounded-lg border border-gray-200">
                           <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
                             Notes:
                           </p>
@@ -656,7 +656,7 @@ const StudentApplications = () => {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="p-6 hover:bg-gray-50"
+                    className="p-6 hover:bg-gray-50 dark:bg-[#1A1212]"
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
@@ -675,7 +675,7 @@ const StudentApplications = () => {
                             {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
                           </span>
                           {application.isOwnApplication && (
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 ml-2">
                                 Mine
                             </span>
                           )}
@@ -717,7 +717,7 @@ const StudentApplications = () => {
                             <p className="text-sm font-medium text-blue-900">
                               Review Notes:
                             </p>
-                            <p className="text-sm text-blue-800">
+                            <p className="text-sm text-blue-800 dark:text-blue-200">
                               {application.reviewNotes}
                             </p>
                           </div>
@@ -736,19 +736,19 @@ const StudentApplications = () => {
                         )}
                         <button
                           onClick={() => openApplicationPdf(application._id)}
-                          className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 hover:bg-gray-100 rounded-lg"
+                          className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 rounded-lg"
                         >
                           View PDF
                         </button>
                         <button
                           onClick={() => printInvoice(application)}
-                          className="px-3 py-1 text-sm text-[#4A1D7A] hover:text-purple-800 hover:bg-[#F0E6FA] rounded-lg font-medium"
+                          className="px-3 py-1 text-sm text-[#4A1D7A] hover:text-purple-800 hover:bg-[#F0E6FA] dark:bg-[#351458]/80 rounded-lg font-medium"
                         >
                           Invoice
                         </button>
                         <button
                           onClick={() => openInstallmentsModal(application)}
-                          className="px-3 py-1 text-sm text-[#387B95] hover:text-blue-800 hover:bg-[#D0E8F0] rounded-lg font-medium"
+                          className="px-3 py-1 text-sm text-[#387B95] hover:text-blue-800 dark:text-blue-200 hover:bg-[#D0E8F0] rounded-lg font-medium"
                         >
                           Upload Slip
                         </button>
@@ -760,7 +760,7 @@ const StudentApplications = () => {
             )
           ) : (
             <div className="text-center py-12">
-              <div className="mx-auto h-12 w-12 bg-[#F0E6FA] rounded-full flex items-center justify-center mb-4">
+              <div className="mx-auto h-12 w-12 bg-[#F0E6FA] dark:bg-[#351458]/80 rounded-full flex items-center justify-center mb-4">
                 <svg
                   className="h-6 w-6 text-[#4A1D7A]"
                   fill="none"
@@ -846,7 +846,7 @@ const StudentApplications = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="p-4 border-b flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -916,7 +916,7 @@ const StudentApplications = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
           >
             <div className="p-4 border-b flex items-center justify-between">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -924,7 +924,7 @@ const StudentApplications = () => {
               </h3>
               <button
                 onClick={() => setShowInstallmentsModal(false)}
-                className="text-gray-400 dark:text-gray-300 hover:text-gray-500"
+                className="text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:text-gray-400"
               >
                 <span className="sr-only">Close</span>
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -933,10 +933,10 @@ const StudentApplications = () => {
               </button>
             </div>
             
-            <div className="flex-1 overflow-auto p-6 bg-gray-50">
-                <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-[#1A1212]">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg border border-gray-200 overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-[#1A1212]">
                             <tr>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Inst #</th>
                                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Date</th>
@@ -946,7 +946,7 @@ const StudentApplications = () => {
                                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200">
                             {(selectedAppForInstallments.financialStatus?.installments || []).map((inst) => (
                                 <tr key={inst._id || inst.installmentNumber}>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -960,16 +960,16 @@ const StudentApplications = () => {
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap">
                                         <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                                            inst.status === 'VERIFIED' ? 'bg-green-100 text-green-800' :
-                                            inst.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                                            'bg-yellow-100 text-yellow-800'
+                                            inst.status === 'VERIFIED' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200' :
+                                            inst.status === 'REJECTED' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' :
+                                            'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'
                                         }`}>
                                             {inst.status}
                                         </span>
                                     </td>
                                     <td className="px-4 py-4 whitespace-nowrap text-sm">
                                         {inst.receiptUrl ? (
-                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-[#387B95] hover:text-blue-800 hover:underline">
+                                            <a href={inst.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-[#387B95] hover:text-blue-800 dark:text-blue-200 hover:underline">
                                                 View Slip
                                             </a>
                                         ) : (
@@ -980,7 +980,7 @@ const StudentApplications = () => {
                                         {inst.status !== 'VERIFIED' && (
                                             <button
                                                 onClick={() => setTargetInstallmentNum(inst.installmentNumber)}
-                                                className="text-[#4A1D7A] hover:text-indigo-900 bg-[#F0E6FA] px-3 py-1 rounded-md"
+                                                className="text-[#4A1D7A] hover:text-indigo-900 bg-[#F0E6FA] dark:bg-[#351458]/80 px-3 py-1 rounded-md"
                                             >
                                                 Upload New Slip
                                             </button>
@@ -1003,7 +1003,7 @@ const StudentApplications = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mt-6 bg-white p-5 rounded-lg border border-indigo-200 shadow-sm"
+                        className="mt-6 bg-white dark:bg-[#231A2E] p-5 rounded-lg border border-indigo-200 shadow-sm"
                     >
                         <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-4">Upload Receipt for Installment #{targetInstallmentNum}</h4>
                         <div className="flex items-center space-x-4">
@@ -1011,7 +1011,7 @@ const StudentApplications = () => {
                                 type="file"
                                 accept=".pdf,image/*"
                                 onChange={(e) => setReceiptFile(e.target.files[0])}
-                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] file:text-[#351458] hover:file:bg-indigo-100"
+                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] dark:bg-[#351458]/80 file:text-[#351458] hover:file:bg-indigo-100"
                             />
                             <button
                                 onClick={handleReceiptUpload}
@@ -1036,10 +1036,10 @@ const StudentApplications = () => {
                 )}
             </div>
             
-            <div className="p-4 border-t bg-gray-50 flex justify-end">
+            <div className="p-4 border-t bg-gray-50 dark:bg-[#1A1212] flex justify-end">
               <button
                 onClick={() => setShowInstallmentsModal(false)}
-                className="px-4 py-2 bg-white border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50"
+                className="px-4 py-2 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-[#1A1212]"
               >
                 Close
               </button>

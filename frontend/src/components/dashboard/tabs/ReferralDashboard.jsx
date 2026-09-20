@@ -170,7 +170,7 @@ const ReferralDashboard = () => {
                         </div>
                         <button
                             onClick={copyReferralCode}
-                            className="bg-white/20 hover:bg-white/30 rounded-lg px-4 py-2 transition-colors duration-200 font-medium"
+                            className="bg-white/20 hover:bg-white dark:bg-[#231A2E]/30 rounded-lg px-4 py-2 transition-colors duration-200 font-medium"
                         >
                             {copied ? 'Copied!' : 'Copy'}
                         </button>
@@ -199,7 +199,7 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
                         <div className="w-12 h-12 rounded-lg bg-[#D0E8F0] flex items-center justify-center text-[#387B95]">
@@ -216,7 +216,7 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
                         <div className="w-12 h-12 rounded-lg bg-green-50 flex items-center justify-center text-green-600">
@@ -233,7 +233,7 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
                         <div className="w-12 h-12 rounded-lg bg-yellow-50 flex items-center justify-center text-yellow-600">
@@ -250,7 +250,7 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
                         <div className="w-12 h-12 rounded-lg bg-[#F0E6FA] flex items-center justify-center text-[#4A1D7A]">
@@ -270,7 +270,7 @@ const ReferralDashboard = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-white rounded-lg shadow-sm border border-gray-100 p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-100 p-6"
             >
                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">Share Your Referral Code</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -297,7 +297,7 @@ const ReferralDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.6 }}
-                    className="bg-white rounded-lg shadow-md border border-gray-100 overflow-hidden"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow-md border border-gray-100 overflow-hidden"
                 >
                     <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
@@ -386,13 +386,13 @@ const ReferralDashboard = () => {
                         </h3>
                         <div>
                             {bankDetails.verificationStatus === 'VERIFIED' && (
-                                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Verified</span>
+                                <span className="bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Verified</span>
                             )}
                             {bankDetails.verificationStatus === 'PENDING' && (
-                                <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Pending Verification</span>
+                                <span className="bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Pending Verification</span>
                             )}
                             {bankDetails.verificationStatus === 'REJECTED' && (
-                                <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Rejected</span>
+                                <span className="bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Rejected</span>
                             )}
                         </div>
                     </div>
@@ -483,7 +483,7 @@ const ReferralDashboard = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7 }}
-                className="bg-white rounded-lg shadow-sm border border-gray-100"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-100"
             >
                 <div className="px-6 py-5 border-b border-gray-100">
                     <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Recent Referrals</h3>
@@ -492,7 +492,7 @@ const ReferralDashboard = () => {
                     {referralData.recentReferrals.length > 0 ? (
                         <div className="space-y-3">
                             {referralData.recentReferrals.map((referral, index) => (
-                                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-[#D0E8F0]/30 transition-colors">
+                                <div key={index} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 dark:bg-[#1A1212] rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-[#D0E8F0]/30 transition-colors">
                                     <div className="flex items-center mb-3 sm:mb-0">
                                         <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center shadow-inner">
                                             <span className="text-[#1D4B5E] font-bold text-sm">
@@ -505,9 +505,9 @@ const ReferralDashboard = () => {
                                         </div>
                                     </div>
                                     <div className="text-left sm:text-right ml-14 sm:ml-0">
-                                        <span className={`inline-flex px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full ${referral.status === 'SUCCESSFUL' ? 'bg-green-100 text-green-800 border border-green-200' :
-                                                referral.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' :
-                                                    'bg-red-100 text-red-800 border border-red-200'
+                                        <span className={`inline-flex px-3 py-1 text-[10px] uppercase font-bold tracking-wider rounded-full ${referral.status === 'SUCCESSFUL' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 border border-green-200' :
+                                                referral.status === 'PENDING' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 border border-yellow-200' :
+                                                    'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 border border-red-200'
                                             }`}>
                                             {referral.status}
                                         </span>

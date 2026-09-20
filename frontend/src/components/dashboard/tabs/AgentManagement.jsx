@@ -61,13 +61,13 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'active':
-                return 'bg-green-100 text-green-800';
+                return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
             case 'inactive':
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
             case 'suspended':
-                return 'bg-red-100 text-red-800';
+                return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -80,7 +80,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
     return (
         <div className="space-y-6">
             {/* Header with Search and Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Agent Management</h3>
 
@@ -108,7 +108,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
             </div>
 
             {/* Agent List */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">
                         Agents ({filteredAgents.length})
@@ -137,7 +137,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 dark:bg-[#1A1212]"
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-4">
@@ -226,14 +226,14 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
             {/* Agent Details Modal */}
             {showDetailsModal && selectedAgent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
                         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 Agent Details - {selectedAgent.fullName}
                             </h3>
                             <button
                                 onClick={() => setShowDetailsModal(false)}
-                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
                             >
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -306,7 +306,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                                 {selectedAgent.assignedStudents?.length > 0 ? (
                                     <div className="space-y-2">
                                         {selectedAgent.assignedStudents.slice(0, 5).map((student) => (
-                                            <div key={student._id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                                            <div key={student._id} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-[#1A1212] rounded">
                                                 <div>
                                                     <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                         {student.personalDetails?.fullName}
@@ -335,7 +335,7 @@ const AgentManagement = ({ agents, onAgentUpdate }) => {
                             <div className="mt-6 flex justify-end space-x-4">
                                 <button
                                     onClick={() => setShowDetailsModal(false)}
-                                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                                    className="px-4 py-2 bg-gray-50 dark:bg-[#1A1212]0 text-white rounded hover:bg-gray-600"
                                 >
                                     Close
                                 </button>

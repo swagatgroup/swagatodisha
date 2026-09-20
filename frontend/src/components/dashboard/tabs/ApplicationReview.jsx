@@ -874,14 +874,14 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
 
     const getStatusColor = (status) => {
         const colors = {
-            'SUBMITTED': 'bg-indigo-100 text-indigo-800',
-            'UNDER_REVIEW': 'bg-yellow-100 text-yellow-800',
+            'SUBMITTED': 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200',
+            'UNDER_REVIEW': 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200',
             'APPROVED': 'bg-teal-100 text-teal-800',
-            'REJECTED': 'bg-red-100 text-red-800',
+            'REJECTED': 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200',
             'COMPLETION_REQUESTED': 'bg-[#F0E6FA] text-purple-800',
-            'COMPLETE': 'bg-green-100 text-green-800'
+            'COMPLETE': 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
         };
-        return colors[status] || 'bg-gray-100 text-gray-800';
+        return colors[status] || 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
     };
 
     const getVerificationStatus = (application, stepId) => {
@@ -981,7 +981,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                 <div className="flex items-center space-x-2">
                     {application.documentStats && (
                         <div className="flex items-center space-x-1 text-[10px]">
-                            <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800">
+                            <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
                                 {application.documentStats.reviewed}/{application.documentStats.total} reviewed
                             </span>
                         </div>
@@ -1018,7 +1018,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             </h3>
                             <button
                                 onClick={() => setShowDocumentViewer(false)}
-                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                             >
                                 <XCircleIcon className="h-6 w-6" />
                             </button>
@@ -1487,7 +1487,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                     disabled={currentPage === 1}
-                                    className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 text-xs"
+                                    className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 dark:bg-[#1A1212] text-xs"
                                 >
                                     Prev
                                 </button>
@@ -1508,7 +1508,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                     disabled={currentPage === totalPages}
-                                    className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 text-xs"
+                                    className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 hover:bg-gray-50 dark:bg-[#1A1212] text-xs"
                                 >
                                     Next
                                 </button>
@@ -1927,8 +1927,8 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                 <span className="text-blue-800 dark:text-blue-200">{docType}:</span>
                                                                 <div className="flex items-center space-x-2">
                                                                     <span className={`px-2 py-1 rounded text-xs ${decision === 'approve'
-                                                                        ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
-                                                                        : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300'
+                                                                        ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/30 dark:text-green-300'
+                                                                        : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/30 dark:text-red-300'
                                                                         }`}>
                                                                         {decision.toUpperCase()}
                                                                     </span>
@@ -1956,7 +1956,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                 handleDocumentDecision(docType, 'approve');
                                                             }
                                                         });
-                                                    }} className="mx-1 px-2 py-1 text-xs rounded bg-green-100 text-green-800 hover:bg-green-200">
+                                                    }} className="mx-1 px-2 py-1 text-xs rounded bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 hover:bg-green-200">
                                                         Approve All
                                                     </button>
                                                     <span className="ml-4">Reject with Remarks → </span>
@@ -1969,7 +1969,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                     handleDocumentDecision(docType, 'reject', r);
                                                                 }
                                                             });
-                                                        }} className="mx-1 px-2 py-1 text-xs rounded bg-red-100 text-red-800 hover:bg-red-200">
+                                                        }} className="mx-1 px-2 py-1 text-xs rounded bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 hover:bg-red-200">
                                                             {r}
                                                         </button>
                                                     ))}
@@ -1977,7 +1977,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                 <div className="flex space-x-2">
                                                     <button
                                                         onClick={() => setDocumentDecisions({})}
-                                                        className="px-3 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                        className="px-3 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                                     >
                                                         Clear All
                                                     </button>
@@ -2007,10 +2007,10 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
 
                                             {selectedApplication.reviewStatus?.documentCounts && (
                                                 <div className="flex items-center space-x-3 text-sm">
-                                                    <span className="px-2 py-1 rounded bg-green-100 text-green-800">Approved: {selectedApplication.reviewStatus.documentCounts.approved}</span>
-                                                    <span className="px-2 py-1 rounded bg-yellow-100 text-yellow-800">Pending: {selectedApplication.reviewStatus.documentCounts.pending}</span>
-                                                    <span className="px-2 py-1 rounded bg-red-100 text-red-800">Rejected: {selectedApplication.reviewStatus.documentCounts.rejected}</span>
-                                                    <span className="px-2 py-1 rounded bg-gray-100 text-gray-800 dark:text-gray-100">Total: {selectedApplication.reviewStatus.documentCounts.total}</span>
+                                                    <span className="px-2 py-1 rounded bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200">Approved: {selectedApplication.reviewStatus.documentCounts.approved}</span>
+                                                    <span className="px-2 py-1 rounded bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200">Pending: {selectedApplication.reviewStatus.documentCounts.pending}</span>
+                                                    <span className="px-2 py-1 rounded bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200">Rejected: {selectedApplication.reviewStatus.documentCounts.rejected}</span>
+                                                    <span className="px-2 py-1 rounded bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:text-gray-100">Total: {selectedApplication.reviewStatus.documentCounts.total}</span>
                                                 </div>
                                             )}
                                         </div>
@@ -2058,7 +2058,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     <h3 className="text-xl font-bold text-red-600 dark:text-red-400">Reject Application</h3>
                                     <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">{selectedApplication.personalDetails?.fullName}</p>
                                 </div>
-                                <button onClick={() => setShowRejectModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
+                                <button onClick={() => setShowRejectModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
                                     <XCircleIcon className="h-6 w-6" />
                                 </button>
                             </div>
@@ -2096,7 +2096,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
                                 <button
                                     onClick={() => setShowRejectModal(false)}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                 >
                                     Cancel
                                 </button>
@@ -2142,7 +2142,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-50"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300 disabled:opacity-50"
                                 >
                                     <XCircleIcon className="h-6 w-6" />
                                 </button>
@@ -2185,7 +2185,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     </button>
                                                     <button
                                                         onClick={clearDocumentSelection}
-                                                        className="text-sm text-gray-600 hover:text-gray-800 dark:text-gray-300"
+                                                        className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-300"
                                                     >
                                                         Clear All
                                                     </button>
@@ -2220,7 +2220,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                             <p className="text-sm text-gray-600 dark:text-gray-300">
                                                                 {doc.fileName || doc.documentType}
                                                             </p>
-                                                            <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                                                            <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/30 dark:text-green-300">
                                                                 APPROVED
                                                             </span>
                                                         </div>
@@ -2237,7 +2237,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                 <button
                                     onClick={() => !generating && setShowDocumentSelectionModal(false)}
                                     disabled={generating}
-                                    className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50"
+                                    className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700 disabled:opacity-50"
                                 >
                                     Cancel
                                 </button>

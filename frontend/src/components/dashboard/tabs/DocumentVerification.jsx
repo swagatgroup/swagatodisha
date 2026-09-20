@@ -119,15 +119,15 @@ const DocumentVerification = ({ onStudentUpdate }) => {
     const getStatusColor = (status) => {
         switch (status) {
             case 'approved':
-                return 'bg-green-100 text-green-800';
+                return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
             case 'rejected':
-                return 'bg-red-100 text-red-800';
+                return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
             case 'pending':
-                return 'bg-yellow-100 text-yellow-800';
+                return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
             case 'under_review':
-                return 'bg-blue-100 text-blue-800';
+                return 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200';
             default:
-                return 'bg-gray-100 text-gray-800';
+                return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -142,7 +142,7 @@ const DocumentVerification = ({ onStudentUpdate }) => {
     return (
         <div className="space-y-6">
             {/* Header with Filters */}
-            <div className="bg-white rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Document Verification</h3>
 
@@ -172,7 +172,7 @@ const DocumentVerification = ({ onStudentUpdate }) => {
             </div>
 
             {/* Document List */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <div className="flex items-center justify-between">
                         <h4 className="text-md font-medium text-gray-900 dark:text-gray-100">
@@ -220,7 +220,7 @@ const DocumentVerification = ({ onStudentUpdate }) => {
                                     initial={{ opacity: 0, y: 20 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50"
+                                    className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 dark:bg-[#1A1212]"
                                 >
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-4">
@@ -284,14 +284,14 @@ const DocumentVerification = ({ onStudentUpdate }) => {
             {/* Document Viewer Modal */}
             {showViewer && selectedDocument && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] w-full mx-4">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg max-w-4xl max-h-[90vh] w-full mx-4">
                         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 {selectedDocument.type} - {selectedDocument.student?.personalDetails?.fullName}
                             </h3>
                             <button
                                 onClick={() => setShowViewer(false)}
-                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
                             >
                                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -311,7 +311,7 @@ const DocumentVerification = ({ onStudentUpdate }) => {
                             <div className="mt-6 flex justify-end space-x-4">
                                 <button
                                     onClick={() => setShowViewer(false)}
-                                    className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                                    className="px-4 py-2 bg-gray-50 dark:bg-[#1A1212]0 text-white rounded hover:bg-gray-600"
                                 >
                                     Close
                                 </button>

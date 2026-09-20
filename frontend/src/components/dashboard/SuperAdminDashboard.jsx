@@ -280,14 +280,14 @@ const SuperAdminDashboard = () => {
 
     const getStatusColor = (status) => {
         switch (status) {
-            case 'APPROVED': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-            case 'SUBMITTED': return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-[#60A5FA]';
-            case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-            case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
-            case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'APPROVED': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/20 dark:text-green-400';
+            case 'SUBMITTED': return 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 dark:bg-blue-900/20 dark:text-[#60A5FA]';
+            case 'UNDER_REVIEW': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400';
+            case 'REJECTED': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/20 dark:text-red-400';
+            case 'DRAFT': return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            case 'CANCELLED': return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'COMPLETE': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
 
@@ -1101,7 +1101,7 @@ const SuperAdminDashboard = () => {
                                                             key={student._id}
                                                             initial={{ opacity: 0 }}
                                                             animate={{ opacity: 1 }}
-                                                            className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                                                            className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                                         >
                                                             {isSuperAdmin && (
                                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -1325,7 +1325,7 @@ const SuperAdminDashboard = () => {
                                             <button
                                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                                 disabled={currentPage === 1}
-                                                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600"
+                                                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-600"
                                             >
                                                 Previous
                                             </button>
@@ -1358,7 +1358,7 @@ const SuperAdminDashboard = () => {
                                             <button
                                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                                 disabled={currentPage === totalPages}
-                                                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:hover:bg-gray-600"
+                                                className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-600"
                                             >
                                                 Next
                                             </button>
@@ -1495,7 +1495,7 @@ const SuperAdminDashboard = () => {
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Student Details</h3>
-                                <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
+                                <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -1708,7 +1708,7 @@ const SuperAdminDashboard = () => {
                                     setShowEditModal(false);
                                     setEditData({});
                                     setSelectedStudent(null);
-                                }} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
+                                }} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                     </svg>
@@ -2165,7 +2165,7 @@ const SuperAdminDashboard = () => {
                                         setEditData({});
                                         setSelectedStudent(null);
                                     }}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                 >
                                     Cancel
                                 </button>
@@ -2185,7 +2185,7 @@ const SuperAdminDashboard = () => {
             {statModalOpen && selectedStatKey && (
                 <div className="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setStatModalOpen(false)}></div>
+                        <div className="fixed inset-0 bg-gray-50 dark:bg-[#1A1212]0 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setStatModalOpen(false)}></div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                         <div className="inline-block align-bottom bg-white dark:bg-[#231A2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                             <div className="bg-white dark:bg-[#231A2E] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -2236,7 +2236,7 @@ const SuperAdminDashboard = () => {
                                 <button 
                                     type="button" 
                                     onClick={() => setStatModalOpen(false)}
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white dark:bg-[#231A2E] text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-[#1A1212] focus:outline-none sm:mt-0 sm:w-auto sm:text-sm"
                                 >
                                     Cancel
                                 </button>

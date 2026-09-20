@@ -221,7 +221,7 @@ const StudentsTab = () => {
             </div>
 
             {/* Students Information Table */}
-            <div className="bg-white rounded-lg shadow">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow">
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Students Information</h3>
                 </div>
@@ -267,7 +267,7 @@ const StudentsTab = () => {
                 {/* Table */}
                 <div className="overflow-x-auto">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
+                        <thead className="bg-gray-50 dark:bg-[#1A1212]">
                             <tr>
                                 <th className="px-6 py-3 text-left">
                                     <input
@@ -289,7 +289,7 @@ const StudentsTab = () => {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
+                        <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200">
                             {loading ? (
                                 <tr>
                                     <td colSpan="9" className="px-6 py-4 text-center">
@@ -307,7 +307,7 @@ const StudentsTab = () => {
                                 </tr>
                             ) : (
                                 filteredStudents.map((student) => (
-                                    <tr key={student.id} className="hover:bg-gray-50">
+                                    <tr key={student.id} className="hover:bg-gray-50 dark:bg-[#1A1212]">
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <input
                                                 type="checkbox"
@@ -337,8 +337,8 @@ const StudentsTab = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                                                 ((student.admissionType || 'paid') === 'free')
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-blue-100 text-blue-800'
+                                                    ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                                                    : 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200'
                                             }`}>
                                                 {((student.admissionType || 'paid') === 'free') ? 'Free' : 'Paid'}
                                             </span>
@@ -347,11 +347,11 @@ const StudentsTab = () => {
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{student.phone}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             {student.referralCode ? (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200">
                                                     {student.referralCode}
                                                 </span>
                                             ) : (
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:text-gray-100">
+                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:text-gray-100">
                                                     Direct
                                                 </span>
                                             )}
@@ -421,7 +421,7 @@ const StudentsTab = () => {
             {/* Add/Edit Student Modal */}
             {showAddModal && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+                    <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-[#231A2E]">
                         <div className="mt-3">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -429,7 +429,7 @@ const StudentsTab = () => {
                                 </h3>
                                 <button
                                     onClick={() => setShowAddModal(false)}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -537,7 +537,7 @@ const StudentsTab = () => {
                                     <button
                                         type="button"
                                         onClick={() => setShowAddModal(false)}
-                                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212]"
                                     >
                                         Cancel
                                     </button>

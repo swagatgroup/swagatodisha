@@ -221,7 +221,7 @@ const WebsiteContentManagement = () => {
                 </div>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg">
                 <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Contact Information</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -266,7 +266,7 @@ const WebsiteContentManagement = () => {
                 </div>
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg">
                 <h4 className="text-md font-medium text-gray-900 dark:text-gray-100 mb-3">Social Media Links</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -337,7 +337,7 @@ const WebsiteContentManagement = () => {
 
             <div className="space-y-4">
                 {(content?.heroCarousel || []).map((slide, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div key={index} className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
                             <h4 className="font-medium text-gray-900 dark:text-gray-100">Slide {index + 1}</h4>
                             <button
@@ -433,7 +433,7 @@ const WebsiteContentManagement = () => {
 
             <div className="space-y-4">
                 {(content?.navigationItems || []).map((item, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div key={index} className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
                             <h4 className="font-medium text-gray-900 dark:text-gray-100">Menu Item {index + 1}</h4>
                             <button
@@ -517,7 +517,7 @@ const WebsiteContentManagement = () => {
 
             <div className="space-y-4">
                 {(content?.quickLinks || []).map((link, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div key={index} className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
                             <h4 className="font-medium text-gray-900 dark:text-gray-100">Quick Link {index + 1}</h4>
                             <button
@@ -611,7 +611,7 @@ const WebsiteContentManagement = () => {
 
             <div className="space-y-4">
                 {(content?.managementTeam || []).map((member, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                    <div key={index} className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-4">
                             <h4 className="font-medium text-gray-900 dark:text-gray-100">Team Member {index + 1}</h4>
                             <button
@@ -932,7 +932,7 @@ const WebsiteContentManagement = () => {
 
             <div className="space-y-6">
                 {(content?.approvalsRecognitions || []).map((institution, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <div key={index} className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg border border-gray-200">
                         <div className="flex justify-between items-center mb-4">
                             <h4 className="font-medium text-gray-900 dark:text-gray-100">Institution: {institution.name || 'New Institution'}</h4>
                             <button
@@ -986,7 +986,7 @@ const WebsiteContentManagement = () => {
 
                             <div className="space-y-4">
                                 {(institution.approvals || []).map((approval, appIdx) => (
-                                    <div key={appIdx} className="bg-white p-4 rounded border border-gray-100 flex gap-4 items-start">
+                                    <div key={appIdx} className="bg-white dark:bg-[#231A2E] p-4 rounded border border-gray-100 flex gap-4 items-start">
                                         <div className="flex-1 space-y-3">
                                             <div>
                                                 <label className="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Approval Name</label>
@@ -1072,7 +1072,7 @@ const WebsiteContentManagement = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {(content?.staffProfiles || []).map((staff, index) => (
-                    <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm relative">
+                    <div key={index} className="bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg border border-gray-200 shadow-sm relative">
                         <button
                             onClick={() => removeArrayItem('staffProfiles', index)}
                             className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white dark:bg-[#231A2E] rounded-full p-1 shadow"
@@ -1193,7 +1193,7 @@ const WebsiteContentManagement = () => {
 
     const renderGalleryManagement = () => (
         <div className="space-y-6">
-            <div className="flex justify-between items-center bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div className="flex justify-between items-center bg-gray-50 dark:bg-[#1A1212] p-4 rounded-lg border border-gray-200">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Gallery Management</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-300">Images are automatically compressed to WebP format under 100KB.</p>

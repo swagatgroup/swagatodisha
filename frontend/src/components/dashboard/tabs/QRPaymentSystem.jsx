@@ -15,24 +15,24 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <div className="text-center">
                     <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Scan & Pay</h3>
                     <p className="text-gray-600 dark:text-gray-300 mb-6">Scan the QR code below using any UPI app to make your payment.</p>
 
-                    <div className="bg-gray-50 rounded-lg p-8 mb-6 flex flex-col items-center">
+                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-8 mb-6 flex flex-col items-center">
                         {qrCodeImage ? (
                             <img 
                                 src={qrCodeImage} 
                                 alt="Payment QR Code" 
-                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white shadow-sm"
+                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white dark:bg-[#231A2E] shadow-sm"
                             />
                         ) : (
                             <img 
                                 src={defaultQrCode} 
                                 alt="Default Payment QR Code" 
-                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white shadow-sm opacity-80"
+                                className="w-64 h-64 object-contain border border-gray-300 rounded-lg bg-white dark:bg-[#231A2E] shadow-sm opacity-80"
                             />
                         )}
                         

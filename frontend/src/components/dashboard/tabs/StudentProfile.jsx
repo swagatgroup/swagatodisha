@@ -136,7 +136,7 @@ const StudentProfile = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-4">
@@ -154,7 +154,7 @@ const StudentProfile = () => {
                             <>
                                 <button
                                     onClick={handleCancel}
-                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50"
+                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-[#1A1212]"
                                 >
                                     Cancel
                                 </button>
@@ -179,13 +179,13 @@ const StudentProfile = () => {
 
                 {/* Status Badges */}
                 <div className="flex flex-wrap gap-2">
-                    <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 rounded-full text-sm font-medium">
                         Active Student
                     </span>
-                    <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 rounded-full text-sm font-medium">
                         {profile?.course || 'Course Not Assigned'}
                     </span>
-                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${profile?.isEmailVerified ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                    <span className={`px-3 py-1 rounded-full text-sm font-medium ${profile?.isEmailVerified ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200' : 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'
                         }`}>
                         {profile?.isEmailVerified ? 'Email Verified' : 'Email Not Verified'}
                     </span>
@@ -197,7 +197,7 @@ const StudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -209,7 +209,7 @@ const StudentProfile = () => {
                             value={formData.fullName}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         />
                     </div>
                     <div>
@@ -219,7 +219,7 @@ const StudentProfile = () => {
                             name="email"
                             value={formData.email}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 dark:text-gray-300"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 dark:bg-[#1A1212] text-gray-500 dark:text-gray-300"
                         />
                         <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Email cannot be changed</p>
                     </div>
@@ -231,7 +231,7 @@ const StudentProfile = () => {
                             value={formData.phoneNumber}
                             onChange={(e) => handleInputChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                             maxLength="10"
                         />
                     </div>
@@ -243,7 +243,7 @@ const StudentProfile = () => {
                             value={formData.dateOfBirth}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         />
                     </div>
                     <div>
@@ -253,7 +253,7 @@ const StudentProfile = () => {
                             value={formData.gender}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         >
                             <option value="">Select Gender</option>
                             <option value="male">Male</option>
@@ -268,7 +268,7 @@ const StudentProfile = () => {
                             value={formData.bloodGroup}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         >
                             <option value="">Select Blood Group</option>
                             <option value="A+">A+</option>
@@ -289,7 +289,7 @@ const StudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Address Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -301,7 +301,7 @@ const StudentProfile = () => {
                             value={formData.address.street}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         />
                     </div>
                     <div>
@@ -312,7 +312,7 @@ const StudentProfile = () => {
                             value={formData.address.city}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         />
                     </div>
                     <div>
@@ -323,7 +323,7 @@ const StudentProfile = () => {
                             value={formData.address.state}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         />
                     </div>
                     <div>
@@ -334,7 +334,7 @@ const StudentProfile = () => {
                             value={formData.address.pincode}
                             onChange={(e) => handleInputChange({ target: { name: 'address.pincode', value: e.target.value.replace(/\D/g, '').slice(0, 6) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                             maxLength="6"
                         />
                     </div>
@@ -346,7 +346,7 @@ const StudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Academic Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -357,7 +357,7 @@ const StudentProfile = () => {
                             name="course"
                             value={formData.course}
                             disabled
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 dark:text-gray-300"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 dark:bg-[#1A1212] text-gray-500 dark:text-gray-300"
                         />
                         <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Course is assigned by administration</p>
                     </div>
@@ -369,7 +369,7 @@ const StudentProfile = () => {
                             value={formData.aadharNumber}
                             onChange={(e) => handleInputChange({ target: { name: 'aadharNumber', value: e.target.value.replace(/\D/g, '').slice(0, 12) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                             maxLength="12"
                         />
                     </div>
@@ -381,7 +381,7 @@ const StudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Guardian Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -393,7 +393,7 @@ const StudentProfile = () => {
                             value={formData.guardianName}
                             onChange={handleInputChange}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                         />
                     </div>
                     <div>
@@ -404,7 +404,7 @@ const StudentProfile = () => {
                             value={formData.guardianPhone}
                             onChange={(e) => handleInputChange({ target: { name: 'guardianPhone', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                             maxLength="10"
                         />
                     </div>
@@ -416,7 +416,7 @@ const StudentProfile = () => {
                             value={formData.emergencyContact}
                             onChange={(e) => handleInputChange({ target: { name: 'emergencyContact', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
                             disabled={!editing}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent disabled:bg-gray-50 dark:bg-[#1A1212]"
                             maxLength="10"
                         />
                     </div>

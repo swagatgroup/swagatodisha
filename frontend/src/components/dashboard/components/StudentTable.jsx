@@ -757,7 +757,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                                className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                             >
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                     {index + 1}
@@ -775,8 +775,8 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                         (student.courseDetails?.admissionType === 'free')
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-blue-100 text-blue-800'
+                                            ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                                            : 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200'
                                     }`}>
                                         {(student.courseDetails?.admissionType === 'free') ? 'Free' : 'Paid'}
                                     </span>
@@ -1032,7 +1032,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                 </div>
                                 <button
                                     onClick={() => setShowDetailsModal(false)}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                 >
                                     <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1359,7 +1359,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                             <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex justify-end space-x-3">
                                 <button
                                     onClick={() => setShowDetailsModal(false)}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                 >
                                     Close
                                 </button>
@@ -1406,7 +1406,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                         setEditData({});
                                         setSelectedStudent(null);
                                     }}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                                 >
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -2078,7 +2078,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                         setEditData({});
                                         setSelectedStudent(null);
                                     }}
-                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                                 >
                                     Cancel
                                 </button>

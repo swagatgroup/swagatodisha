@@ -52,7 +52,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50/50 dark:bg-[#231A2E]/50">
+                    <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-[#1A1212]/50 dark:bg-[#231A2E]/50">
                         <div className="flex items-center space-x-3">
                             <div className="p-2 bg-[#F0E6FA] dark:bg-[#231A2E]/30 rounded-lg">
                                 <i className="fa-solid fa-money-check-dollar text-[#4A1D7A] dark:text-[#9B6FCC]"></i>
@@ -61,7 +61,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                            className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
                             <i className="fa-solid fa-xmark text-lg"></i>
                         </button>
@@ -142,7 +142,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
 
                     {/* Pagination Footer */}
                     {totalPages > 1 && (
-                        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-[#231A2E]/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1A1212]/50 dark:bg-[#231A2E]/50 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="text-sm text-gray-500 dark:text-gray-300">
                                 Showing page <span className="font-medium text-gray-900 dark:text-gray-100">{page}</span> of <span className="font-medium text-gray-900 dark:text-gray-100">{totalPages}</span>
                             </div>

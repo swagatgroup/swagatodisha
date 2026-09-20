@@ -24,16 +24,13 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
 
     // Completely new logout function — decoupled from the cursed dropdown
     const handleLogout = (e) => {
-        if (e) e.preventDefault();
-        console.log('💥 [SIDEBAR LOGOUT] Clicked!');
-        try {
-            setExplicitLogout(true);
-            clearAuthState();
-            window.location.replace('/login-portal');
-        } catch (err) {
-            console.error('Logout error:', err);
-            window.location.href = '/login-portal';
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
+        console.log('💥 [SIDEBAR LOGOUT] Clicked!');
+        logout();
+        navigate('/login-portal');
     };
     const paymentsRef = useRef(null);
     const { user, logout } = useAuth();
@@ -79,14 +76,14 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     return (
         <div className="h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#1A1212] pattern-bg dark:pattern-bg-dark overflow-hidden">
             {/* Top Navigation Bar */}
-            <nav className="flex-none bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-md shadow-sm border-b border-[#4A1D7A]/10 dark:border-white/10 z-20 relative">
+            <nav className="flex-none bg-white dark:bg-[#231A2E]/80 dark:bg-[#231A2E]/80 backdrop-blur-md shadow-sm border-b border-[#4A1D7A]/10 dark:border-white/10 z-20 relative">
                 <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
                     <div className="flex justify-between items-center h-16">
                         {/* Left side - Logo and Menu Button */}
                         <div className="flex items-center">
                             <button
                                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                                className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="lg:hidden p-2 rounded-md text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:text-gray-400 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                             >
                                 <Bars3Icon className="h-6 w-6" />
                             </button>
@@ -226,7 +223,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         {/* Fresh, simple, no-BS Logout Button */}
                                         <button
                                             type="button"
-                                            onClick={handleLogout}
+                                            onClick={handleLogout} onMouseDown={handleLogout}
                                             style={{ cursor: 'pointer' }}
                                             className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors flex items-center cursor-pointer pointer-events-auto"
                                         >
@@ -299,7 +296,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                 {/* Desktop sidebar */}
                 <div className={`hidden lg:flex lg:flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
                     <div className="flex flex-col w-full h-full relative z-10">
-                        <div className="flex flex-col h-full flex-1 bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-md border-r border-[#4A1D7A]/10 dark:border-white/10 relative">
+                        <div className="flex flex-col h-full flex-1 bg-white dark:bg-[#231A2E]/80 dark:bg-[#231A2E]/80 backdrop-blur-md border-r border-[#4A1D7A]/10 dark:border-white/10 relative">
                             <button
                                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                                 className="absolute top-2 left-2 p-2 rounded-md text-gray-400 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 z-10"

@@ -272,7 +272,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                 >
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Personal Information</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -377,7 +377,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                 >
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Contact Details</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -468,7 +468,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                             <input
                                 type="text"
                                 value={formData.contactDetails.permanentAddress.country}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 dark:bg-[#1A1212]"
                                 disabled
                             />
                         </div>
@@ -480,7 +480,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                 >
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Course Selection</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -534,7 +534,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                 >
                     <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Guardian Details</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -616,7 +616,7 @@ const StudentRegistration = ({ onStudentUpdate }) => {
                     <button
                         type="button"
                         onClick={resetForm}
-                        className="px-6 py-3 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                        className="px-6 py-3 bg-gray-50 dark:bg-[#1A1212]0 text-white font-medium rounded-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
                     >
                         Reset Form
                     </button>

@@ -474,18 +474,18 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       case "DRAFT":
       case "PENDING":
       case "SUBMITTED":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200";
       case "IN_PROGRESS":
       case "UNDER_REVIEW":
-        return "bg-blue-100 text-blue-800";
+        return "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200";
       case "APPROVED":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200";
       case "COMPLETE":
         return "bg-teal-100 text-teal-800";
       case "REJECTED":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200";
     }
   };
 
@@ -871,7 +871,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.05 }}
-                    className="hover:bg-gray-50"
+                    className="hover:bg-gray-50 dark:bg-[#1A1212]"
                   >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -910,8 +910,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                       (student.courseDetails?.admissionType === 'free')
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-blue-100 text-blue-800'
+                        ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                        : 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200'
                     }`}>
                       {(student.courseDetails?.admissionType === 'free') ? 'Free' : 'Paid'}
                     </span>
@@ -1066,7 +1066,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           }}
         >
           <div 
-            className="bg-white rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
+            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
             style={{ zIndex: 10000, maxHeight: '90vh', height: '90vh', display: 'flex', flexDirection: 'column' }}
             onClick={(e) => {
               e.stopPropagation();
@@ -1090,7 +1090,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     setSelectedStudent(null);
                     setEditData({});
                   }}
-                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
+                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1741,7 +1741,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               </div>
 
             {/* Footer with Actions */}
-            <div className="p-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+            <div className="p-6 border-t border-gray-200 bg-gray-50 dark:bg-[#1A1212] flex-shrink-0">
               <div className="flex justify-end space-x-3">
                 <button
                   onClick={() => {
@@ -1749,7 +1749,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     setSelectedStudent(null);
                     setEditData({});
                   }}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212]"
                 >
                   Cancel
                 </button>
@@ -1769,7 +1769,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       {/* Rejection Details Modal */}
       {showRejectionModal && rejectionDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -1777,7 +1777,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 </h3>
                 <button
                   onClick={() => setShowRejectionModal(false)}
-                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600"
+                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1835,7 +1835,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                             </div>
                             <div>
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Priority: </span>
-                              <span className={`text-sm px-2 py-1 rounded ${detail.priority === 'High' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                              <span className={`text-sm px-2 py-1 rounded ${detail.priority === 'High' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' : 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'}`}>
                                 {detail.priority}
                               </span>
                             </div>
@@ -1888,7 +1888,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
                 <button
                   onClick={() => setShowRejectionModal(false)}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212]"
                 >
                   Close
                 </button>
@@ -1936,7 +1936,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     setShowViewModal(false);
                     setViewingStudent(null);
                   }}
-                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
+                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -2034,9 +2034,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
                           <span className="text-sm text-gray-900 dark:text-gray-100">{doc.documentType}</span>
                           <span className={`px-2 py-1 text-xs font-semibold rounded ${
-                            doc.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                            doc.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                            'bg-yellow-100 text-yellow-800'
+                            doc.status === 'APPROVED' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200' :
+                            doc.status === 'REJECTED' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' :
+                            'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'
                           }`}>
                             {doc.status || 'PENDING'}
                           </span>
@@ -2054,7 +2054,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     setShowViewModal(false);
                     setViewingStudent(null);
                   }}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
                 >
                   Close
                 </button>

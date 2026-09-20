@@ -169,10 +169,10 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
 
     const getStatusColor = (status) => {
         switch (status?.toUpperCase()) {
-            case 'PENDING': return 'bg-yellow-100 text-yellow-800';
-            case 'VERIFIED': return 'bg-green-100 text-green-800';
-            case 'REJECTED': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'PENDING': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
+            case 'VERIFIED': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
+            case 'REJECTED': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -185,7 +185,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
+                    className="bg-white dark:bg-[#231A2E] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
                 >
                     <div className="flex items-center justify-between p-6 border-b">
                         <div>
@@ -198,13 +198,13 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                         </div>
                         <button
                             onClick={onClose}
-                            className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 rounded-full hover:bg-gray-100"
+                            className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-100"
                         >
                             <XMarkIcon className="w-6 h-6" />
                         </button>
                     </div>
 
-                    <div className="p-6 overflow-y-auto flex-1 bg-gray-50">
+                    <div className="p-6 overflow-y-auto flex-1 bg-gray-50 dark:bg-[#1A1212]">
                         {loading ? (
                             <div className="flex items-center justify-center h-32">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A]"></div>
@@ -213,19 +213,19 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                             <div className="space-y-6">
                                 {/* Summary Cards */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <div className="bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow-sm border border-gray-100">
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Total Fees</p>
                                         <p className="text-xl font-bold text-gray-900 dark:text-gray-100 mt-1">
                                             {formatCurrency(financialStatus.totalFees)}
                                         </p>
                                     </div>
-                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <div className="bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow-sm border border-gray-100">
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Paid (Verified)</p>
                                         <p className="text-xl font-bold text-green-600 mt-1">
                                             {formatCurrency(financialStatus.paidAmount)}
                                         </p>
                                     </div>
-                                    <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-100">
+                                    <div className="bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow-sm border border-gray-100">
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Due Amount</p>
                                         <p className="text-xl font-bold text-red-600 mt-1">
                                             {formatCurrency(financialStatus.dueAmount)}
@@ -234,7 +234,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                 </div>
 
                                 {/* Installments List */}
-                                <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200">
                                     <div className="p-4 border-b border-gray-200 flex justify-between items-center">
                                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Installments History</h3>
                                         <button
@@ -284,7 +284,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                         required
                                                         accept="image/*,.pdf"
                                                         onChange={handleFileChange}
-                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white"
+                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md bg-white dark:bg-[#231A2E]"
                                                     />
                                                 </div>
                                                 
@@ -385,7 +385,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                     <div className="divide-y divide-gray-200">
                                         {financialStatus.installments && financialStatus.installments.length > 0 ? (
                                             financialStatus.installments.map((inst, index) => (
-                                                <div key={index} className="p-4 hover:bg-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                                                <div key={index} className="p-4 hover:bg-gray-50 dark:bg-[#1A1212] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                                     <div>
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <span className="font-semibold text-gray-900 dark:text-gray-100">
@@ -408,7 +408,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                                                                 href={inst.receiptUrl} 
                                                                 target="_blank" 
                                                                 rel="noopener noreferrer"
-                                                                className="inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50"
+                                                                className="inline-flex items-center justify-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white dark:bg-[#231A2E] hover:bg-gray-50 dark:bg-[#1A1212]"
                                                             >
                                                                 View Slip
                                                             </a>

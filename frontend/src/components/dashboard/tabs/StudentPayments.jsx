@@ -171,11 +171,11 @@ const StudentPayments = () => {
 
     const getStatusColor = (status) => {
         switch (status?.toUpperCase()) {
-            case 'PENDING': return 'bg-yellow-100 text-yellow-800';
-            case 'VERIFIED': return 'bg-green-100 text-green-800';
-            case 'COMPLETED': return 'bg-green-100 text-green-800';
-            case 'REJECTED': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
+            case 'PENDING': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200';
+            case 'VERIFIED': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
+            case 'COMPLETED': return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200';
+            case 'REJECTED': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200';
+            default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200';
         }
     };
 
@@ -195,7 +195,7 @@ const StudentPayments = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -222,7 +222,7 @@ const StudentPayments = () => {
                 transition={{ delay: 0.1 }}
                 className="grid grid-cols-1 md:grid-cols-3 gap-6"
             >
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="p-3 bg-gray-100 rounded-full">
                             <svg className="h-6 w-6 text-gray-600 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -236,7 +236,7 @@ const StudentPayments = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="p-3 bg-green-100 rounded-full">
                             <svg className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -250,7 +250,7 @@ const StudentPayments = () => {
                     </div>
                 </div>
 
-                <div className="bg-white rounded-lg shadow p-6">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                     <div className="flex items-center">
                         <div className="p-3 bg-red-100 rounded-full">
                             <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -270,7 +270,7 @@ const StudentPayments = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-lg shadow"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
             >
                 <div className="px-6 py-4 border-b border-gray-200">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Installments History</h3>
@@ -283,7 +283,7 @@ const StudentPayments = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="p-6 hover:bg-gray-50"
+                                className="p-6 hover:bg-gray-50 dark:bg-[#1A1212]"
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
@@ -348,10 +348,10 @@ const StudentPayments = () => {
             {/* Update Slip Modal */}
             {showUpdateModal && selectedInstallment && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60] p-4">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-md">
                         <div className="p-4 border-b flex items-center justify-between">
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Update Payment Slip</h3>
-                            <button onClick={() => setShowUpdateModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
+                            <button onClick={() => setShowUpdateModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
@@ -433,10 +433,10 @@ const StudentPayments = () => {
             {/* Upload Slip Modal */}
             {showUploadModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-md">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-md">
                         <div className="p-4 border-b flex items-center justify-between">
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Upload Payment Slip</h3>
-                            <button onClick={() => setShowUploadModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
+                            <button onClick={() => setShowUploadModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>
@@ -518,10 +518,10 @@ const StudentPayments = () => {
             {/* QR Payment Modal */}
             {showPaymentModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
                         <div className="p-4 border-b flex items-center justify-between">
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Make QR Payment</h3>
-                            <button onClick={() => setShowPaymentModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600">
+                            <button onClick={() => setShowPaymentModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300">
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
                         </div>

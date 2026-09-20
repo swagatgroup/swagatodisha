@@ -64,7 +64,7 @@ const AgentPaymentsTab = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow-sm">
+      <div className="flex justify-between items-center bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow-sm">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Student Payments</h2>
           <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">Manage fee installments and upload payment slips for your students.</p>
@@ -81,10 +81,10 @@ const AgentPaymentsTab = () => {
         </div>
       </div>
 
-      <div className="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+      <div className="bg-white dark:bg-[#231A2E] shadow-sm rounded-lg overflow-hidden border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+            <thead className="bg-gray-50 dark:bg-[#1A1212]">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Student Details</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Course</th>
@@ -94,7 +94,7 @@ const AgentPaymentsTab = () => {
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Action</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200">
               {loading ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center">
@@ -105,7 +105,7 @@ const AgentPaymentsTab = () => {
                 students.map((student) => {
                   const fin = student.financialStatus || {};
                   return (
-                    <tr key={student._id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={student._id} className="hover:bg-gray-50 dark:bg-[#1A1212] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="font-medium text-gray-900 dark:text-gray-100">{student.personalDetails?.fullName || "N/A"}</div>
                         <div className="text-sm text-gray-500 dark:text-gray-300">{student.contactDetails?.primaryPhone || "No Phone"}</div>
@@ -122,9 +122,9 @@ const AgentPaymentsTab = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          fin.paymentStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                          fin.paymentStatus === 'PARTIAL' ? 'bg-blue-100 text-blue-800' :
-                          'bg-yellow-100 text-yellow-800'
+                          fin.paymentStatus === 'COMPLETED' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200' :
+                          fin.paymentStatus === 'PARTIAL' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200' :
+                          'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'
                         }`}>
                           {fin.paymentStatus || 'PENDING'}
                         </span>

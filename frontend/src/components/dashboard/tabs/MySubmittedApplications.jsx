@@ -75,17 +75,17 @@ const MySubmittedApplications = () => {
     const getStatusColor = (status) => {
         switch (status) {
             case "SUBMITTED":
-                return "bg-blue-100 text-blue-800";
+                return "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200";
             case "UNDER_REVIEW":
-                return "bg-yellow-100 text-yellow-800";
+                return "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200";
             case "APPROVED":
-                return "bg-green-100 text-green-800";
+                return "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200";
             case "REJECTED":
-                return "bg-red-100 text-red-800";
+                return "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200";
             case "DRAFT":
-                return "bg-gray-100 text-gray-800";
+                return "bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200";
             default:
-                return "bg-gray-100 text-gray-800";
+                return "bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200";
         }
     };
 
@@ -130,7 +130,7 @@ const MySubmittedApplications = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <div className="flex items-center justify-between">
                     <div>
@@ -152,7 +152,7 @@ const MySubmittedApplications = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <div className="flex flex-wrap gap-2">
                     {statusOptions.map((option) => (
@@ -175,7 +175,7 @@ const MySubmittedApplications = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-lg shadow"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
             >
                 {applications.length > 0 ? (
                     <div className="divide-y divide-gray-200">
@@ -185,7 +185,7 @@ const MySubmittedApplications = () => {
                                 initial={{ opacity: 0, x: -20 }}
                                 animate={{ opacity: 1, x: 0 }}
                                 transition={{ delay: index * 0.1 }}
-                                className="p-6 hover:bg-gray-50"
+                                className="p-6 hover:bg-gray-50 dark:bg-[#1A1212]"
                             >
                                 <div className="flex items-center justify-between">
                                     <div className="flex-1">
@@ -289,7 +289,7 @@ const MySubmittedApplications = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 }}
-                    className="bg-white rounded-lg shadow p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                 >
                     <div className="flex items-center justify-between">
                         <div className="text-sm text-gray-700 dark:text-gray-200">
@@ -299,14 +299,14 @@ const MySubmittedApplications = () => {
                             <button
                                 onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                                 disabled={currentPage === 1}
-                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Previous
                             </button>
                             <button
                                 onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                                 disabled={currentPage === totalPages}
-                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-3 py-2 text-sm font-medium text-gray-500 dark:text-gray-300 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Next
                             </button>

@@ -273,7 +273,7 @@ const EnhancedStudentProfile = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Profile Completion</h3>
@@ -297,7 +297,7 @@ const EnhancedStudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Personal Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -402,7 +402,7 @@ const EnhancedStudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Contact Details</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -497,7 +497,7 @@ const EnhancedStudentProfile = () => {
                             <input
                                 type="text"
                                 value={profileData.contactDetails.permanentAddress.country}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 dark:bg-[#1A1212]"
                                 disabled
                             />
                         </div>
@@ -510,7 +510,7 @@ const EnhancedStudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Course Selection</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -576,7 +576,7 @@ const EnhancedStudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Guardian/Emergency Contact</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -653,7 +653,7 @@ const EnhancedStudentProfile = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-white rounded-lg shadow p-6"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
             >
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">Financial Details (Optional)</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -697,7 +697,7 @@ const EnhancedStudentProfile = () => {
                         <input
                             type="text"
                             value={profileData.financialDetails.bankName}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 dark:bg-[#1A1212]"
                             placeholder="Auto-populated from IFSC code"
                             disabled
                         />

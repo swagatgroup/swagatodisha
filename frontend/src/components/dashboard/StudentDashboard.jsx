@@ -364,8 +364,8 @@ const StudentDashboard = () => {
                                                 </div>
                                                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 text-[#351458]' :
                                                     admission.status === 'pending' ? 'bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 text-[#351458]' :
-                                                        admission.status === 'rejected' ? 'bg-red-100 text-red-800' :
-                                                            'bg-gray-100 text-gray-800'
+                                                        admission.status === 'rejected' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' :
+                                                            'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200'
                                                     }`}>
                                                     {admission.status.charAt(0).toUpperCase() + admission.status.slice(1)}
                                                 </span>

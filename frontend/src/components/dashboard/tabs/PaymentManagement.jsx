@@ -626,7 +626,7 @@ const PaymentManagement = () => {
                     </div>
 
                     {recentLoading && (
-                        <div className="absolute inset-0 bg-white/60 dark:bg-[#231A2E]/60 z-10 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-white dark:bg-[#231A2E]/60 dark:bg-[#231A2E]/60 z-10 flex items-center justify-center">
                             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#4A1D7A]"></div>
                         </div>
                     )}
@@ -658,9 +658,9 @@ const PaymentManagement = () => {
                                     const finStatus = app.financialStatus || {};
                                     const inst = app._recentInstallment || {};
                                     const instDate = app._recentDate ? new Date(app._recentDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
-                                    const instStatusColor = inst.status === 'VERIFIED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                                                            inst.status === 'REJECTED' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
-                                                            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
+                                    const instStatusColor = inst.status === 'VERIFIED' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/30 dark:text-green-400' :
+                                                            inst.status === 'REJECTED' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/30 dark:text-red-400' :
+                                                            'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400';
                                     return (
                                         <tr key={`recent-${idx}`} className="hover:bg-[#F0E6FA]/40 dark:hover:bg-purple-900/10 transition-colors">
                                             <td className="px-6 py-4 whitespace-nowrap">
@@ -686,10 +686,10 @@ const PaymentManagement = () => {
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-green-600 font-semibold">₹{finStatus.paidAmount || 0}</td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                    finStatus.paymentStatus === 'COMPLETED' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                                                    finStatus.paymentStatus === 'PARTIAL' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                                                    finStatus.paymentStatus === 'OVERDUE' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
-                                                    'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'}`}>
+                                                    finStatus.paymentStatus === 'COMPLETED' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200 dark:bg-green-900/30 dark:text-green-400' :
+                                                    finStatus.paymentStatus === 'PARTIAL' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                                                    finStatus.paymentStatus === 'OVERDUE' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/30 dark:text-red-400' :
+                                                    'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-gray-700 dark:text-gray-300'}`}>
                                                     {finStatus.paymentStatus || 'PENDING'}
                                                 </span>
                                             </td>
@@ -712,7 +712,7 @@ const PaymentManagement = () => {
                                                 )}
                                                 <button
                                                     onClick={() => handlePrintReceipt()}
-                                                    className="text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
+                                                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
                                                     title="Print Receipt"
                                                 >
                                                     <i className="fa-solid fa-print text-xs"></i>
@@ -747,7 +747,7 @@ const PaymentManagement = () => {
             {activeStatus !== 'recent' && (
             <div className="relative bg-white dark:bg-[#231A2E] shadow rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                 {loading && (
-                    <div className="absolute inset-0 bg-white/60 dark:bg-[#231A2E]/60 z-10 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-white dark:bg-[#231A2E]/60 dark:bg-[#231A2E]/60 z-10 flex items-center justify-center">
                         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#387B95]"></div>
                     </div>
                 )}
@@ -795,7 +795,7 @@ const PaymentManagement = () => {
                                 applications.map((app) => {
                                     const finStatus = app.financialStatus || { totalFees: 0, paidAmount: 0, dueAmount: 0, paymentStatus: 'PENDING' };
                                     return (
-                                        <tr key={app._id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                        <tr key={app._id} className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <input 
                                                     type="checkbox" 
@@ -821,10 +821,10 @@ const PaymentManagement = () => {
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm">
                                                 <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                    ${finStatus.paymentStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' : 
-                                                    finStatus.paymentStatus === 'PARTIAL' ? 'bg-yellow-100 text-yellow-800' : 
-                                                    finStatus.paymentStatus === 'OVERDUE' ? 'bg-red-100 text-red-800' : 
-                                                    'bg-gray-100 text-gray-800'}`}>
+                                                    ${finStatus.paymentStatus === 'COMPLETED' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200' : 
+                                                    finStatus.paymentStatus === 'PARTIAL' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200' : 
+                                                    finStatus.paymentStatus === 'OVERDUE' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' : 
+                                                    'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200'}`}>
                                                     {finStatus.paymentStatus}
                                                 </span>
                                             </td>
@@ -899,7 +899,7 @@ const PaymentManagement = () => {
                                 Manage Payments for {selectedApp.personalDetails?.fullName}
                             </h3>
                             <button
-                                className="text-gray-400 dark:text-gray-300 hover:text-gray-500"
+                                className="text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:text-gray-400"
                                 onClick={() => setIsModalOpen(false)}
                             >
                                 <span className="text-2xl">×</span>
