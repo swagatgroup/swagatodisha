@@ -1,13 +1,15 @@
-import {
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion'
+import { 
+    RiMailSendFill, 
+    RiPhoneFill, 
+    RiMailFill, 
+    RiFileList3Fill, 
+    RiLoader4Line,
     RiFacebookBoxFill,
-    RiFileList3Fill,
+    RiTwitterXFill,
     RiInstagramFill,
     RiLinkedinBoxFill,
-    RiLoader4Line,
-    RiMailFill,
-    RiMailSendFill,
-    RiPhoneFill,
-    RiTwitterXFill,
     RiYoutubeFill
 } from '@remixicon/react';
 import { SOCIAL_LINKS, CONTACT_INFO } from '../utils/constants'

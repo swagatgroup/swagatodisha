@@ -1,7 +1,5 @@
-import {
-    RiCheckLine,
-    RiSchoolLine
-} from '@remixicon/react';
+import {useEffect} from 'react';
+import { RiCheckLine, RiSchoolLine } from '@remixicon/react';
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
 import Header from '../Header'

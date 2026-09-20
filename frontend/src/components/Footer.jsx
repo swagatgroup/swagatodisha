@@ -1,16 +1,20 @@
-import {
-    RiCustomerService2Line,
+import {useState} from 'react';
+import Swal from 'sweetalert2'
+import { 
+    RiLinkM,
+    RiMailSendLine,
+    RiLoader4Line,
     RiFacebookBoxFill,
-    RiGraduationCapLine,
-    RiHeartFill,
+    RiTwitterXFill,
     RiInstagramFill,
     RiLinkedinBoxFill,
-    RiLoader4Line,
-    RiMailFill,
-    RiMailSendLine,
+    RiYoutubeFill,
     RiPhoneFill,
-    RiTwitterXFill,
-    RiYoutubeFill
+    RiMailFill,
+    RiMapPin2Fill,
+    RiHeartFill,
+    RiGraduationCapLine,
+    RiCustomerService2Line
 } from '@remixicon/react';
 
 const Footer = () => {

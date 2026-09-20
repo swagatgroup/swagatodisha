@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-    RiArrowRightLine,
-    RiBookOpenLine,
-    RiBuildingLine,
-    RiComputerLine,
-    RiSchoolLine
-} from '@remixicon/react';
+import { RiArrowRightLine, RiBookOpenLine, RiBuildingLine, RiComputerLine, RiSchoolLine } from '@remixicon/react';
 import { motion } from 'framer-motion';
 
 const GatewayLoader = ({ onEnterMainSite }) => {

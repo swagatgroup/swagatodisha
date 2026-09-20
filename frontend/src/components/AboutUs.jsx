@@ -1,10 +1,6 @@
-import {
-    RiBankFill,
-    RiEarthFill,
-    RiGraduationCapFill,
-    RiGroupFill,
-    RiLightbulbFlashFill
-} from '@remixicon/react';
+import {useState, useEffect, useRef} from 'react';
+import { APP_CONFIG } from '../utils/constants'
+import { RiGraduationCapFill, RiLightbulbFlashFill, RiGroupFill, RiEarthFill, RiBankFill } from '@remixicon/react';
 
 const AboutUs = () => {
     const [isVisible, setIsVisible] = useState(false)

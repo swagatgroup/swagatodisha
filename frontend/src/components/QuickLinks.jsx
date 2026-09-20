@@ -1,3 +1,9 @@
+import {useEffect, useRef, useState} from 'react';
+import { motion, AnimatePresence } from 'framer-motion'
+import { gsap } from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { CONTACT_INFO } from '../utils/constants'
+import api from '../utils/api'
 import {
     RiArrowDownSLine,
     RiArrowRightSLine,
@@ -28,7 +34,7 @@ import {
     RiSettings3Line,
     RiStethoscopeLine,
     RiToolsLine
-} from '@remixicon/react';
+} from '@remixicon/react'
 
 // Register ScrollTrigger only on client side
 if (typeof window !== 'undefined') {
