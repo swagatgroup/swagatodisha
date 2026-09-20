@@ -1,6 +1,5 @@
 import {useState, useEffect, useRef} from 'react';
 import { APP_CONFIG } from '../utils/constants'
-import CloudWave from './CloudWave'
 
 const AboutUs = () => {
     const [isVisible, setIsVisible] = useState(false)
@@ -198,7 +197,6 @@ const AboutUs = () => {
             </div>
 
             {/* Cloud Wave Bottom Element */}
-            <CloudWave />
         </section>
     )
 }

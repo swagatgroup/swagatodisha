@@ -106,7 +106,6 @@ const AppContent = () => {
     return (
         <div className="App relative m-0 p-0 bg-white dark:bg-[#1A1212]">
             {/* Premium Floating Elements - Global Animation Layer */}
-            {/* <PremiumFloatingElements /> */}
 
             <Header isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
 
