@@ -100,7 +100,7 @@ const StudentAcademic = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -124,7 +124,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('overview')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'overview'
-                                ? 'bg-[#7B3FA0] text-white'
+                                ? 'bg-[#4A1D7A] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -133,7 +133,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('assignments')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'assignments'
-                                ? 'bg-[#7B3FA0] text-white'
+                                ? 'bg-[#4A1D7A] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -142,7 +142,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('grades')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'grades'
-                                ? 'bg-[#7B3FA0] text-white'
+                                ? 'bg-[#4A1D7A] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -151,7 +151,7 @@ const StudentAcademic = () => {
                         <button
                             onClick={() => setActiveTab('materials')}
                             className={`px-4 py-2 rounded-lg text-sm font-medium ${activeTab === 'materials'
-                                ? 'bg-[#7B3FA0] text-white'
+                                ? 'bg-[#4A1D7A] text-white'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                 }`}
                         >
@@ -192,7 +192,7 @@ const StudentAcademic = () => {
                                     <h5 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Course Progress</h5>
                                     <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
                                         <div
-                                            className="bg-[#7B3FA0] h-2 rounded-full"
+                                            className="bg-[#4A1D7A] h-2 rounded-full"
                                             style={{ width: `${academicData.course.progress || 0}%` }}
                                         ></div>
                                     </div>
@@ -254,8 +254,8 @@ const StudentAcademic = () => {
 
                         <div className="bg-white rounded-lg shadow p-6">
                             <div className="flex items-center">
-                                <div className="p-3 bg-[#EDE0F7] rounded-full">
-                                    <svg className="h-6 w-6 text-[#7B3FA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <div className="p-3 bg-[#F0E6FA] rounded-full">
+                                    <svg className="h-6 w-6 text-[#4A1D7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     </svg>
                                 </div>
@@ -340,7 +340,7 @@ const StudentAcademic = () => {
                                     </div>
                                     <div className="flex items-center space-x-2">
                                         {assignment.status === 'pending' && (
-                                            <button className="px-3 py-1 text-sm bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]">
+                                            <button className="px-3 py-1 text-sm bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458]">
                                                 Submit
                                             </button>
                                         )}
@@ -436,7 +436,7 @@ const StudentAcademic = () => {
                                     <span className="text-xs text-gray-500 dark:text-gray-300">
                                         {new Date(material.uploadDate).toLocaleDateString()}
                                     </span>
-                                    <a href={material.url || material.fileUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]">
+                                    <a href={material.url || material.fileUrl} target="_blank" rel="noopener noreferrer" className="px-3 py-1 text-sm bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458]">
                                         Download
                                     </a>
                                 </div>

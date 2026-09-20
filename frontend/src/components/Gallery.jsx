@@ -64,17 +64,17 @@ const Gallery = () => {
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">
                 <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#EDE0F7]/30 rounded-full blur-3xl"></div>
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
                 </div>
 
                 <div className="relative z-10 container mx-auto px-6 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
                         <i className="fa-solid fa-images text-white text-3xl"></i>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                        Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Gallery</span>
+                        Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Gallery</span>
                     </h1>
 
                     <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
@@ -93,7 +93,7 @@ const Gallery = () => {
                                 key={category.id}
                                 onClick={() => setSelectedCategory(category.id)}
                                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center space-x-2 ${selectedCategory === category.id
-                                    ? 'bg-[#7B3FA0] text-white shadow-lg'
+                                    ? 'bg-[#4A1D7A] text-white shadow-lg'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                     }`}
                             >
@@ -156,7 +156,7 @@ const Gallery = () => {
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
                         <div className="text-center">
-                            <div className="w-20 h-20 bg-[#7B3FA0] rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <div className="w-20 h-20 bg-[#4A1D7A] rounded-2xl flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-images text-white text-2xl"></i>
                             </div>
                             <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">{galleryImages.length}+</h3>
@@ -191,7 +191,7 @@ const Gallery = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-[#7B3FA0]">
+            <section className="py-20 bg-[#4A1D7A]">
                 <div className="container mx-auto px-6 text-center">
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                         Experience Our <span className="text-yellow-300">Campus</span> Life
@@ -201,10 +201,10 @@ const Gallery = () => {
                         and world-class facilities at Swagat Group of Institutions.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-white dark:bg-[#2A1E2E] text-[#7B3FA0] rounded-xl font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <button className="px-8 py-4 bg-white dark:bg-[#231A2E] text-[#4A1D7A] rounded-xl font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl">
                             Schedule a Visit
                         </button>
-                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white dark:bg-[#2A1E2E] hover:text-[#7B3FA0] transition-all duration-300">
+                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white dark:bg-[#231A2E] hover:text-[#4A1D7A] transition-all duration-300">
                             Contact Us
                         </button>
                     </div>
@@ -220,7 +220,7 @@ const Gallery = () => {
                     <div className="relative max-w-4xl max-h-full">
                         <button
                             onClick={closeLightbox}
-                            className="absolute top-4 right-4 w-12 h-12 bg-white dark:bg-[#2A1E2E]/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white dark:bg-[#2A1E2E]/30 transition-all duration-300 z-10"
+                            className="absolute top-4 right-4 w-12 h-12 bg-white dark:bg-[#231A2E]/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white dark:bg-[#231A2E]/30 transition-all duration-300 z-10"
                         >
                             <i className="fa-solid fa-times text-xl"></i>
                         </button>

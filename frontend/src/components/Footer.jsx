@@ -133,9 +133,9 @@ const Footer = () => {
                                     <li key={index}>
                                         <a
                                             href={link.url}
-                                            className="text-[#D0E8F0] hover:text-[#F5A623] transition-colors duration-300 flex items-center group font-lato text-sm"
+                                            className="text-[#D0E8F0] hover:text-[#E8A817] transition-colors duration-300 flex items-center group font-lato text-sm"
                                         >
-                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#F5A623] transition-colors duration-300"></div>
+                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#E8A817] transition-colors duration-300"></div>
                                             {link.name}
                                         </a>
                                     </li>
@@ -156,9 +156,9 @@ const Footer = () => {
                                     <li key={index}>
                                         <a
                                             href={program.url}
-                                            className="text-[#D0E8F0] hover:text-[#F5A623] transition-colors duration-300 flex items-center group font-lato text-sm"
+                                            className="text-[#D0E8F0] hover:text-[#E8A817] transition-colors duration-300 flex items-center group font-lato text-sm"
                                         >
-                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#F5A623] transition-colors duration-300"></div>
+                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#E8A817] transition-colors duration-300"></div>
                                             {program.name}
                                         </a>
                                     </li>
@@ -179,9 +179,9 @@ const Footer = () => {
                                     <li key={index}>
                                         <a
                                             href={item.url}
-                                            className="text-[#D0E8F0] hover:text-[#F5A623] transition-colors duration-300 flex items-center group font-lato text-sm"
+                                            className="text-[#D0E8F0] hover:text-[#E8A817] transition-colors duration-300 flex items-center group font-lato text-sm"
                                         >
-                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#F5A623] transition-colors duration-300"></div>
+                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#E8A817] transition-colors duration-300"></div>
                                             {item.name}
                                         </a>
                                     </li>
@@ -206,12 +206,12 @@ const Footer = () => {
                                     value={newsletterEmail}
                                     onChange={(e) => setNewsletterEmail(e.target.value)}
                                     placeholder="Enter your email"
-                                    className="w-full px-4 py-2.5 bg-[#1A3545]/60 border border-white/10 rounded-xl text-[#FAF7F2] placeholder-[#387B95] focus:outline-none focus:ring-2 focus:ring-[#F5A623] focus:border-transparent transition-all duration-300 text-sm font-lato"
+                                    className="w-full px-4 py-2.5 bg-[#1A3545]/60 border border-white/10 rounded-xl text-[#FAF7F2] placeholder-[#387B95] focus:outline-none focus:ring-2 focus:ring-[#E8A817] focus:border-transparent transition-all duration-300 text-sm font-lato"
                                 />
                                 <button
                                     type="submit"
                                     disabled={isSubscribing}
-                                    className="w-full px-4 py-2.5 bg-[#F5A623] text-[#1A1A1A] rounded-xl font-baloo font-bold hover:bg-[#D4880B] transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="w-full px-4 py-2.5 bg-[#E8A817] text-[#1A1A1A] rounded-xl font-baloo font-bold hover:bg-[#C48D0F] transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isSubscribing ? (
                                         <span className="flex items-center justify-center">
@@ -233,9 +233,9 @@ const Footer = () => {
                                 © {currentYear} Swagat Group of Institutions. All rights reserved.
                             </div>
                             <div className="flex items-center space-x-6 text-sm text-[#387B95] font-lato">
-                                <a href="#" className="hover:text-[#F5A623] transition-colors duration-300">Privacy Policy</a>
-                                <a href="#" className="hover:text-[#F5A623] transition-colors duration-300">Terms of Service</a>
-                                <a href="#" className="hover:text-[#F5A623] transition-colors duration-300">Cookie Policy</a>
+                                <a href="#" className="hover:text-[#E8A817] transition-colors duration-300">Privacy Policy</a>
+                                <a href="#" className="hover:text-[#E8A817] transition-colors duration-300">Terms of Service</a>
+                                <a href="#" className="hover:text-[#E8A817] transition-colors duration-300">Cookie Policy</a>
                             </div>
                         </div>
                     </div>

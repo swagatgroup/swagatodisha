@@ -6,22 +6,32 @@
 @tailwind utilities;
 
 /* ── Brand CSS Custom Properties ── */
+/* Royal Indigo + Warm Marigold Gold — NOT the generic AI purple */
 :root {
-  --color-primary:       #7B3FA0;
-  --color-primary-dark:  #5C2D80;
-  --color-primary-light: #EDE0F7;
-  --color-primary-muted: #905391;
-  --color-accent:        #F5A623;
-  --color-accent-dark:   #D4880B;
-  --color-accent-light:  #FEF3DC;
+  /* Primary: Deep Royal Indigo */
+  --color-primary:       #4A1D7A;
+  --color-primary-dark:  #351458;
+  --color-primary-light: #F0E6FA;
+  --color-primary-muted: #6B3F99;
+
+  /* Accent: Warm Marigold Gold */
+  --color-accent:        #E8A817;
+  --color-accent-dark:   #C48D0F;
+  --color-accent-light:  #FEF5DC;
+
+  /* Supporting: Academic Teal */
   --color-teal:          #1D4B5E;
   --color-teal-medium:   #387B95;
   --color-teal-light:    #D0E8F0;
+
+  /* Surfaces */
   --color-bg-cream:      #FAF7F2;
   --color-bg-white:      #FFFFFF;
   --color-text-dark:     #1A1A1A;
-  --color-text-muted:    #666666;
-  --color-wave-purple:   #7B3FA0;
+  --color-text-muted:    #5A5A5A;
+  --color-wave-purple:   #4A1D7A;
+
+  /* Fonts */
   --font-baloo:          "Baloo 2", cursive, system-ui;
   --font-lato:           Lato, system-ui, sans-serif;
 }
@@ -29,10 +39,10 @@
 /* ── Dark Mode CSS Variables ── */
 .dark {
   --color-bg-cream:     #1A1212;
-  --color-bg-white:     #2A1E2E;
+  --color-bg-white:     #231A2E;
   --color-text-dark:    #FAF7F2;
   --color-text-muted:   #B8A8C8;
-  --color-primary:      #A855D0;
+  --color-primary:      #9B6FCC;
   --color-primary-light:#3D2A4A;
   --color-teal:         #387B95;
   --color-teal-light:   #1A3545;
@@ -82,7 +92,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .pattern-bg::before {
-  background-image: url("data:image/svg+xml,%3Csvg width='240' height='240' viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.22' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M30,40 l3,-8 l8,-1 l-5,6 l2,8 l-8,-4 l-8,4 l2,-8 l-5,-6 l8,1 z' stroke='%237B3FA0' stroke-width='1.5' /%3E%3Cpath d='M90,60 q10,-15 20,0 t20,0' stroke='%23F5A623' stroke-width='2' /%3E%3Ccircle cx='180' cy='40' r='8' stroke='%231D4B5E' stroke-width='2' /%3E%3Cpolygon points='40,140 50,155 30,155' stroke='%23F5A623' stroke-width='2' /%3E%3Cpath d='M100,150 l12,12 m-12,0 l12,-12' stroke='%237B3FA0' stroke-width='2' /%3E%3Cpath d='M180,140 v12 m-6,-6 h12' stroke='%231D4B5E' stroke-width='2' /%3E%3Cpath d='M190,90 l-15,15 l-5,-5 l15,-15 z M175,105 l-3,6 l6,-3 z' stroke='%237B3FA0' stroke-width='1.5' /%3E%3Cpath d='M80,200 a6,6 0 0,1 12,0 c0,6 -6,10 -6,10 c0,0 -6,-4 -6,-10' stroke='%231D4B5E' stroke-width='1.5' /%3E%3Cpolygon points='160,200 170,190 180,200 170,210' stroke='%23F5A623' stroke-width='1.5' /%3E%3Ccircle cx='40' cy='220' r='5' stroke='%237B3FA0' stroke-width='1.5' /%3E%3Cpath d='M210,170 l8,0 m-4,-4 l0,8' stroke='%23F5A623' stroke-width='2' /%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='240' height='240' viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cg opacity='0.22' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M30,40 l3,-8 l8,-1 l-5,6 l2,8 l-8,-4 l-8,4 l2,-8 l-5,-6 l8,1 z' stroke='%234A1D7A' stroke-width='1.5' /%3E%3Cpath d='M90,60 q10,-15 20,0 t20,0' stroke='%23E8A817' stroke-width='2' /%3E%3Ccircle cx='180' cy='40' r='8' stroke='%231D4B5E' stroke-width='2' /%3E%3Cpolygon points='40,140 50,155 30,155' stroke='%23E8A817' stroke-width='2' /%3E%3Cpath d='M100,150 l12,12 m-12,0 l12,-12' stroke='%234A1D7A' stroke-width='2' /%3E%3Cpath d='M180,140 v12 m-6,-6 h12' stroke='%231D4B5E' stroke-width='2' /%3E%3Cpath d='M190,90 l-15,15 l-5,-5 l15,-15 z M175,105 l-3,6 l6,-3 z' stroke='%234A1D7A' stroke-width='1.5' /%3E%3Cpath d='M80,200 a6,6 0 0,1 12,0 c0,6 -6,10 -6,10 c0,0 -6,-4 -6,-10' stroke='%231D4B5E' stroke-width='1.5' /%3E%3Cpolygon points='160,200 170,190 180,200 170,210' stroke='%23E8A817' stroke-width='1.5' /%3E%3Ccircle cx='40' cy='220' r='5' stroke='%234A1D7A' stroke-width='1.5' /%3E%3Cpath d='M210,170 l8,0 m-4,-4 l0,8' stroke='%23E8A817' stroke-width='2' /%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* Dark Backgrounds — 15% opacity white outlines */
@@ -115,10 +125,10 @@ h1, h2, h3, h4, h5, h6 {
   .bg-criss-cross {
     background-color: var(--color-bg-cream);
     background-image:
-      repeating-linear-gradient(90deg, rgba(123,63,160,0.06) 0px, rgba(123,63,160,0.06) 1px, transparent 1px, transparent 200px),
-      repeating-linear-gradient(0deg,  rgba(123,63,160,0.06) 0px, rgba(123,63,160,0.06) 1px, transparent 1px, transparent 200px),
-      repeating-linear-gradient(0deg,  rgba(123,63,160,0.09) 0px, rgba(123,63,160,0.09) 1px, transparent 1px, transparent 40px),
-      repeating-linear-gradient(90deg, rgba(123,63,160,0.09) 0px, rgba(123,63,160,0.09) 1px, transparent 1px, transparent 40px);
+      repeating-linear-gradient(90deg, rgba(74,29,122,0.06) 0px, rgba(74,29,122,0.06) 1px, transparent 1px, transparent 200px),
+      repeating-linear-gradient(0deg,  rgba(74,29,122,0.06) 0px, rgba(74,29,122,0.06) 1px, transparent 1px, transparent 200px),
+      repeating-linear-gradient(0deg,  rgba(74,29,122,0.09) 0px, rgba(74,29,122,0.09) 1px, transparent 1px, transparent 40px),
+      repeating-linear-gradient(90deg, rgba(74,29,122,0.09) 0px, rgba(74,29,122,0.09) 1px, transparent 1px, transparent 40px);
     background-size: 200px 200px, 200px 200px, 40px 40px, 40px 40px;
   }
   .dark .bg-criss-cross {
@@ -136,12 +146,12 @@ h1, h2, h3, h4, h5, h6 {
     background-color: var(--color-bg-white);
     border-radius: 16px;
     box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-    border: 1px solid rgba(123,63,160,0.08);
+    border: 1px solid rgba(74,29,122,0.08);
   }
 
   .form-bg {
     background-color: var(--color-bg-white);
-    border: 1px solid rgba(123,63,160,0.12);
+    border: 1px solid rgba(74,29,122,0.12);
     border-radius: 12px;
   }
 
@@ -156,12 +166,12 @@ h1, h2, h3, h4, h5, h6 {
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 16px rgba(123,63,160,0.25);
+    box-shadow: 0 4px 16px rgba(74,29,122,0.25);
   }
   .btn-primary:hover {
     background-color: var(--color-primary-dark);
     transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(123,63,160,0.35);
+    box-shadow: 0 6px 20px rgba(74,29,122,0.35);
   }
   .btn-teal {
     background-color: var(--color-teal-medium);
@@ -200,7 +210,7 @@ h1, h2, h3, h4, h5, h6 {
 @layer components {
   .animate-float   { animation: float 6s ease-in-out infinite; }
   .animate-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(123,63,160,0.08), transparent);
+    background: linear-gradient(90deg, transparent, rgba(74,29,122,0.08), transparent);
     background-size: 200% 100%;
     animation: shimmer 2s infinite;
   }
@@ -223,7 +233,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── Scrollbar ── */
 ::-webkit-scrollbar        { width: 7px; }
-::-webkit-scrollbar-track  { background: rgba(123,63,160,0.05); border-radius: 4px; }
+::-webkit-scrollbar-track  { background: rgba(74,29,122,0.05); border-radius: 4px; }
 ::-webkit-scrollbar-thumb  { background: var(--color-primary); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-primary-dark); }
 
@@ -245,8 +255,8 @@ h1, h2, h3, h4, h5, h6 {
 .pause-animation:hover { animation-play-state: paused; }
 
 /* ── Legacy helpers that map to new palette ── */
-.text-shadow-premium  { text-shadow: 0 2px 12px rgba(123,63,160,0.15); }
-.border-premium       { border: 1px solid rgba(123,63,160,0.15); }
+.text-shadow-premium  { text-shadow: 0 2px 12px rgba(74,29,122,0.15); }
+.border-premium       { border: 1px solid rgba(74,29,122,0.15); }
 .bg-clean-white       { background-color: var(--color-bg-white); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 
 

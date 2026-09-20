@@ -339,7 +339,7 @@ const InstituteCourseManagement = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -363,7 +363,7 @@ const InstituteCourseManagement = () => {
                             setEditingCollege(null);
                             setCollegeFormData({ name: '', feeType: 'Paid', isActive: true });
                         }}
-                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
+                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors"
                     >
                         <i className="fa-solid fa-plus mr-2"></i>
                         Add Institute
@@ -389,7 +389,7 @@ const InstituteCourseManagement = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-md w-full p-6"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-md w-full p-6"
                         >
                             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 {editingCollege ? 'Edit Institute' : 'Add New Institute'}
@@ -403,7 +403,7 @@ const InstituteCourseManagement = () => {
                                         type="text"
                                         value={collegeFormData.name}
                                         onChange={(e) => setCollegeFormData(prev => ({ ...prev, name: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
                                     />
                                 </div>
@@ -414,7 +414,7 @@ const InstituteCourseManagement = () => {
                                         id="collegeActive"
                                         checked={collegeFormData.isActive}
                                         onChange={(e) => setCollegeFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                                        className="w-4 h-4 text-[#7B3FA0] border-gray-300 rounded focus:ring-[#7B3FA0]"
+                                        className="w-4 h-4 text-[#4A1D7A] border-gray-300 rounded focus:ring-[#4A1D7A]"
                                     />
                                     <label htmlFor="collegeActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                                         Active (visible in registration form)
@@ -434,7 +434,7 @@ const InstituteCourseManagement = () => {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : editingCollege ? 'Update' : 'Create'}
                                     </button>
@@ -463,7 +463,7 @@ const InstituteCourseManagement = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-md w-full p-6"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-md w-full p-6"
                         >
                             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 {editingCourse ? 'Edit Course' : 'Add New Course'}
@@ -480,7 +480,7 @@ const InstituteCourseManagement = () => {
                                         type="text"
                                         value={courseFormData.courseName}
                                         onChange={(e) => setCourseFormData(prev => ({ ...prev, courseName: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
                                     />
                                 </div>
@@ -500,7 +500,7 @@ const InstituteCourseManagement = () => {
                                                 }
                                             }}
                                             placeholder="Enter stream name"
-                                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         />
                                         <button
                                             type="button"
@@ -538,7 +538,7 @@ const InstituteCourseManagement = () => {
                                                                     streams: prev.streams.map((s, i) => i === index ? { ...s, price: newPrice } : s)
                                                                 }));
                                                             }}
-                                                            className="w-24 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-[#7B3FA0] dark:bg-[#2A1E2E] dark:text-white"
+                                                            className="w-24 px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded focus:ring-2 focus:ring-[#4A1D7A] dark:bg-[#231A2E] dark:text-white"
                                                             placeholder="Fee"
                                                         />
                                                     </div>
@@ -553,7 +553,7 @@ const InstituteCourseManagement = () => {
                                                                     streams: prev.streams.map((s, i) => i === index ? { ...s, isPaidOnly: e.target.checked } : s)
                                                                 }));
                                                             }}
-                                                            className="w-4 h-4 text-[#7B3FA0] rounded"
+                                                            className="w-4 h-4 text-[#4A1D7A] rounded"
                                                         />
                                                         <label htmlFor={`streamPaid-${index}`} className="text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
                                                             Paid Only
@@ -587,7 +587,7 @@ const InstituteCourseManagement = () => {
                                                     const val = e.target.value.replace(/[^0-9]/g, '');
                                                     setCourseFormData(prev => ({ ...prev, price: val === '' ? 0 : parseInt(val, 10) }));
                                                 }}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                                 placeholder="e.g. 25000"
                                                 required={courseFormData.streams.length === 0}
                                             />
@@ -598,7 +598,7 @@ const InstituteCourseManagement = () => {
                                                 id="coursePaidOnly"
                                                 checked={courseFormData.isPaidOnly}
                                                 onChange={(e) => setCourseFormData(prev => ({ ...prev, isPaidOnly: e.target.checked }))}
-                                                className="w-4 h-4 text-[#7B3FA0] border-gray-300 rounded focus:ring-[#7B3FA0]"
+                                                className="w-4 h-4 text-[#4A1D7A] border-gray-300 rounded focus:ring-[#4A1D7A]"
                                             />
                                             <label htmlFor="coursePaidOnly" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                                                 Paid Only (No Free/Scholarship admission)
@@ -612,7 +612,7 @@ const InstituteCourseManagement = () => {
                                         id="courseActive"
                                         checked={courseFormData.isActive}
                                         onChange={(e) => setCourseFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                                        className="w-4 h-4 text-[#7B3FA0] border-gray-300 rounded focus:ring-[#7B3FA0]"
+                                        className="w-4 h-4 text-[#4A1D7A] border-gray-300 rounded focus:ring-[#4A1D7A]"
                                     />
                                     <label htmlFor="courseActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                                         Active (visible in registration form)
@@ -632,7 +632,7 @@ const InstituteCourseManagement = () => {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : editingCourse ? 'Update' : 'Create'}
                                     </button>
@@ -661,7 +661,7 @@ const InstituteCourseManagement = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
                             onClick={(e) => e.stopPropagation()}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-md w-full p-6"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-md w-full p-6"
                         >
                             <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                                 {editingCampus ? 'Edit Campus' : 'Add New Campus'}
@@ -678,7 +678,7 @@ const InstituteCourseManagement = () => {
                                         type="text"
                                         value={campusFormData.name}
                                         onChange={(e) => setCampusFormData(prev => ({ ...prev, name: e.target.value }))}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
                                     />
                                 </div>
@@ -688,7 +688,7 @@ const InstituteCourseManagement = () => {
                                         id="campusActive"
                                         checked={campusFormData.isActive}
                                         onChange={(e) => setCampusFormData(prev => ({ ...prev, isActive: e.target.checked }))}
-                                        className="w-4 h-4 text-[#7B3FA0] border-gray-300 rounded focus:ring-[#7B3FA0]"
+                                        className="w-4 h-4 text-[#4A1D7A] border-gray-300 rounded focus:ring-[#4A1D7A]"
                                     />
                                     <label htmlFor="campusActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                                         Active (visible in registration form)
@@ -708,7 +708,7 @@ const InstituteCourseManagement = () => {
                                     <button
                                         type="submit"
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50"
                                     >
                                         {saving ? 'Saving...' : editingCampus ? 'Update' : 'Create'}
                                     </button>
@@ -722,7 +722,7 @@ const InstituteCourseManagement = () => {
             {/* Layout: Institutes on left, Courses and Campuses on right when selected */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Institutes List */}
-                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             Institutes ({colleges.length})
@@ -741,7 +741,7 @@ const InstituteCourseManagement = () => {
                                     key={college._id}
                                     className={`p-4 cursor-pointer transition-colors ${
                                         selectedCollege?._id === college._id
-                                            ? 'bg-[#EDE0F7] dark:bg-[#2A1E2E]/20'
+                                            ? 'bg-[#F0E6FA] dark:bg-[#231A2E]/20'
                                             : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
                                     }`}
                                     onClick={() => handleSelectCollege(college)}
@@ -794,7 +794,7 @@ const InstituteCourseManagement = () => {
                 </div>
 
                 {/* Courses List */}
-                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             Courses {selectedCollege ? `(${courses.length})` : ''}
@@ -807,7 +807,7 @@ const InstituteCourseManagement = () => {
                                     setCourseFormData({ courseName: '', streams: [], isActive: true });
                                     setNewStream('');
                                 }}
-                                className="px-3 py-1.5 bg-[#7B3FA0] text-white text-sm rounded-lg hover:bg-[#5C2D80] transition-colors"
+                                className="px-3 py-1.5 bg-[#4A1D7A] text-white text-sm rounded-lg hover:bg-[#351458] transition-colors"
                             >
                                 <i className="fa-solid fa-plus mr-1"></i>
                                 Add Course
@@ -890,7 +890,7 @@ const InstituteCourseManagement = () => {
                 </div>
 
                 {/* Campuses List */}
-                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                             Campuses {selectedCollege ? `(${campuses.length})` : ''}

@@ -514,7 +514,7 @@ const PaymentManagement = () => {
                     className={`p-3 rounded-lg border font-semibold text-center transition-all ${
                         activeStatus === 'all' 
                             ? 'bg-[#387B95] border-[#387B95] text-white shadow-md' 
-                            : 'bg-white dark:bg-[#2A1E2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : 'bg-white dark:bg-[#231A2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                 >
                     <div className="text-xs uppercase tracking-wider text-opacity-80">All Students</div>
@@ -526,7 +526,7 @@ const PaymentManagement = () => {
                     className={`p-3 rounded-lg border font-semibold text-center transition-all ${
                         activeStatus === 'PENDING' 
                             ? 'bg-yellow-600 border-yellow-600 text-white shadow-md' 
-                            : 'bg-white dark:bg-[#2A1E2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : 'bg-white dark:bg-[#231A2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                 >
                     <div className="text-xs uppercase tracking-wider text-opacity-80">Pending</div>
@@ -537,7 +537,7 @@ const PaymentManagement = () => {
                     className={`p-3 rounded-lg border font-semibold text-center transition-all ${
                         activeStatus === 'PARTIAL' 
                             ? 'bg-orange-600 border-orange-600 text-white shadow-md' 
-                            : 'bg-white dark:bg-[#2A1E2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : 'bg-white dark:bg-[#231A2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                 >
                     <div className="text-xs uppercase tracking-wider text-opacity-80">Partial</div>
@@ -548,7 +548,7 @@ const PaymentManagement = () => {
                     className={`p-3 rounded-lg border font-semibold text-center transition-all ${
                         activeStatus === 'OVERDUE' 
                             ? 'bg-red-600 border-red-600 text-white shadow-md' 
-                            : 'bg-white dark:bg-[#2A1E2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : 'bg-white dark:bg-[#231A2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                 >
                     <div className="text-xs uppercase tracking-wider text-opacity-80">Overdue</div>
@@ -559,7 +559,7 @@ const PaymentManagement = () => {
                     className={`p-3 rounded-lg border font-semibold text-center transition-all ${
                         activeStatus === 'COMPLETED' 
                             ? 'bg-green-600 border-green-600 text-white shadow-md' 
-                            : 'bg-white dark:bg-[#2A1E2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            : 'bg-white dark:bg-[#231A2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                 >
                     <div className="text-xs uppercase tracking-wider text-opacity-80">Completed</div>
@@ -570,8 +570,8 @@ const PaymentManagement = () => {
                     onClick={() => { setActiveStatus('recent'); setRecentPage(1); }}
                     className={`p-3 rounded-lg border font-semibold text-center transition-all ${
                         activeStatus === 'recent' 
-                            ? 'bg-[#7B3FA0] border-[#7B3FA0] text-white shadow-md' 
-                            : 'bg-white dark:bg-[#2A1E2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
+                            ? 'bg-[#4A1D7A] border-[#4A1D7A] text-white shadow-md' 
+                            : 'bg-white dark:bg-[#231A2E] border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700'
                     }`}
                 >
                     <div className="text-xs uppercase tracking-wider text-opacity-80 flex items-center justify-center gap-1">
@@ -583,7 +583,7 @@ const PaymentManagement = () => {
             </div>
 
             {/* Search Box */}
-            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col sm:flex-row gap-3 items-center justify-between bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
                 <form onSubmit={handleSearchSubmit} className="flex w-full sm:max-w-md items-center">
                     <div className="relative w-full">
                         <input
@@ -613,11 +613,11 @@ const PaymentManagement = () => {
 
             {/* ── RECENT PAYMENTS TABLE (shown when activeStatus === 'recent') ── */}
             {activeStatus === 'recent' && (
-                <div className="relative bg-white dark:bg-[#2A1E2E] shadow rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+                <div className="relative bg-white dark:bg-[#231A2E] shadow rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                     {/* Header bar */}
-                    <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-[#EDE0F7] dark:bg-[#2A1E2E]/10">
-                        <div className="p-2 bg-[#EDE0F7] dark:bg-[#2A1E2E]/30 rounded-lg">
-                            <i className="fa-solid fa-clock-rotate-left text-[#7B3FA0] dark:text-[#A855D0]"></i>
+                    <div className="flex items-center gap-3 px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-[#F0E6FA] dark:bg-[#231A2E]/10">
+                        <div className="p-2 bg-[#F0E6FA] dark:bg-[#231A2E]/30 rounded-lg">
+                            <i className="fa-solid fa-clock-rotate-left text-[#4A1D7A] dark:text-[#9B6FCC]"></i>
                         </div>
                         <div>
                             <h3 className="font-semibold text-gray-900 dark:text-gray-100">Recent Payments</h3>
@@ -626,8 +626,8 @@ const PaymentManagement = () => {
                     </div>
 
                     {recentLoading && (
-                        <div className="absolute inset-0 bg-white/60 dark:bg-[#2A1E2E]/60 z-10 flex items-center justify-center">
-                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#7B3FA0]"></div>
+                        <div className="absolute inset-0 bg-white/60 dark:bg-[#231A2E]/60 z-10 flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#4A1D7A]"></div>
                         </div>
                     )}
                     <div className="overflow-x-auto">
@@ -644,7 +644,7 @@ const PaymentManagement = () => {
                                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                                 {recentPayments.length === 0 && !recentLoading ? (
                                     <tr>
                                         <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
@@ -662,10 +662,10 @@ const PaymentManagement = () => {
                                                             inst.status === 'REJECTED' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
                                                             'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
                                     return (
-                                        <tr key={`recent-${idx}`} className="hover:bg-[#EDE0F7]/40 dark:hover:bg-purple-900/10 transition-colors">
+                                        <tr key={`recent-${idx}`} className="hover:bg-[#F0E6FA]/40 dark:hover:bg-purple-900/10 transition-colors">
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <div className="flex items-center gap-3">
-                                                    <div className="hidden sm:flex h-8 w-8 rounded-full bg-[#EDE0F7] dark:bg-[#2A1E2E]/30 items-center justify-center flex-shrink-0 text-[#7B3FA0] dark:text-[#A855D0] font-bold text-sm">
+                                                    <div className="hidden sm:flex h-8 w-8 rounded-full bg-[#F0E6FA] dark:bg-[#231A2E]/30 items-center justify-center flex-shrink-0 text-[#4A1D7A] dark:text-[#9B6FCC] font-bold text-sm">
                                                         {(app.personalDetails?.fullName || 'U').charAt(0)}
                                                     </div>
                                                     <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{app.personalDetails?.fullName || 'N/A'}</span>
@@ -734,7 +734,7 @@ const PaymentManagement = () => {
                             <div className="flex space-x-2">
                                 <button onClick={() => setRecentPage(p => Math.max(p - 1, 1))} disabled={recentPage === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 dark:bg-gray-800 transition-colors">Prev</button>
                                 {Array.from({ length: recentTotalPages }, (_, i) => i + 1).slice(Math.max(0, recentPage - 3), recentPage + 2).map(pn => (
-                                    <button key={pn} onClick={() => setRecentPage(pn)} className={`px-3 py-1 border rounded text-sm transition-colors ${recentPage === pn ? 'bg-[#7B3FA0] text-white border-[#7B3FA0] shadow-sm' : 'hover:bg-gray-50 dark:bg-gray-800'}`}>{pn}</button>
+                                    <button key={pn} onClick={() => setRecentPage(pn)} className={`px-3 py-1 border rounded text-sm transition-colors ${recentPage === pn ? 'bg-[#4A1D7A] text-white border-[#4A1D7A] shadow-sm' : 'hover:bg-gray-50 dark:bg-gray-800'}`}>{pn}</button>
                                 ))}
                                 <button onClick={() => setRecentPage(p => Math.min(p + 1, recentTotalPages))} disabled={recentPage === recentTotalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50 hover:bg-gray-50 dark:bg-gray-800 transition-colors">Next</button>
                             </div>
@@ -745,9 +745,9 @@ const PaymentManagement = () => {
 
             {/* ── STANDARD PAYMENTS TABLE (hidden when activeStatus === 'recent') ── */}
             {activeStatus !== 'recent' && (
-            <div className="relative bg-white dark:bg-[#2A1E2E] shadow rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="relative bg-white dark:bg-[#231A2E] shadow rounded-lg overflow-hidden border border-gray-100 dark:border-gray-700">
                 {loading && (
-                    <div className="absolute inset-0 bg-white/60 dark:bg-[#2A1E2E]/60 z-10 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-white/60 dark:bg-[#231A2E]/60 z-10 flex items-center justify-center">
                         <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#387B95]"></div>
                     </div>
                 )}
@@ -772,7 +772,7 @@ const PaymentManagement = () => {
                                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                        <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                             {activeStatus === null ? (
                                 <tr>
                                     <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-300">
@@ -893,7 +893,7 @@ const PaymentManagement = () => {
             {/* Manage Financial Modal */}
             {isModalOpen && selectedApp && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none bg-black bg-opacity-50">
-                    <div className="relative w-full max-w-md p-6 mx-auto bg-white dark:bg-[#2A1E2E] rounded-lg shadow-lg">
+                    <div className="relative w-full max-w-md p-6 mx-auto bg-white dark:bg-[#231A2E] rounded-lg shadow-lg">
                         <div className="flex items-start justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
                             <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
                                 Manage Payments for {selectedApp.personalDetails?.fullName}
@@ -961,7 +961,7 @@ const PaymentManagement = () => {
                                                             type="number" 
                                                             value={inst.amount}
                                                             onChange={(e) => handleInstallmentChange(index, 'amount', e.target.value)}
-                                                            className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#2A1E2E] text-sm p-1 border"
+                                                            className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#231A2E] text-sm p-1 border"
                                                         />
                                                     </div>
                                                     <div>
@@ -970,7 +970,7 @@ const PaymentManagement = () => {
                                                             type="date" 
                                                             value={inst.date ? inst.date.substring(0,10) : ''}
                                                             onChange={(e) => handleInstallmentChange(index, 'date', e.target.value)}
-                                                            className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#2A1E2E] text-sm p-1 border"
+                                                            className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#231A2E] text-sm p-1 border"
                                                         />
                                                     </div>
                                                 </div>
@@ -980,7 +980,7 @@ const PaymentManagement = () => {
                                                         <select 
                                                             value={inst.paymentMethod || 'Bank Transfer'}
                                                             onChange={(e) => handleInstallmentChange(index, 'paymentMethod', e.target.value)}
-                                                            className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#2A1E2E] text-sm p-1 border"
+                                                            className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#231A2E] text-sm p-1 border"
                                                         >
                                                             <option value="Bank Transfer">Bank Transfer</option>
                                                             <option value="UPI">UPI</option>
@@ -1009,7 +1009,7 @@ const PaymentManagement = () => {
                                                     <textarea 
                                                         value={inst.remarks || ''}
                                                         onChange={(e) => handleInstallmentChange(index, 'remarks', e.target.value)}
-                                                        className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#2A1E2E] text-sm p-1 border"
+                                                        className="w-full rounded border-gray-300 dark:border-gray-600 dark:bg-[#231A2E] text-sm p-1 border"
                                                         rows="1"
                                                         placeholder="Notes or transaction ID..."
                                                     />

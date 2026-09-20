@@ -62,8 +62,8 @@ const ClickSparkle = () => {
                                     marginLeft: -5,
                                     marginTop: -5,
                                     borderRadius: '50%',
-                                    backgroundColor: i % 2 === 0 ? '#7B3FA0' : '#E8A317', // Purple and Gold theme colors
-                                    boxShadow: `0 0 8px ${i % 2 === 0 ? '#7B3FA0' : '#E8A317'}`, // Glow effect
+                                    backgroundColor: i % 2 === 0 ? '#4A1D7A' : '#E8A317', // Purple and Gold theme colors
+                                    boxShadow: `0 0 8px ${i % 2 === 0 ? '#4A1D7A' : '#E8A317'}`, // Glow effect
                                     opacity: 1 // Full opacity
                                 }}
                             />

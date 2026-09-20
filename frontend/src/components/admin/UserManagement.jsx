@@ -364,7 +364,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
         switch (role) {
             case 'student': return 'bg-blue-100 text-blue-800';
             case 'agent': return 'bg-green-100 text-green-800';
-            case 'staff': return 'bg-[#EDE0F7] text-purple-800';
+            case 'staff': return 'bg-[#F0E6FA] text-purple-800';
             case 'super_admin': return 'bg-red-100 text-red-800';
             default: return 'bg-gray-100 text-gray-800';
         }
@@ -372,16 +372,16 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
 
     if (loading) {
         return (
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                     {userType === 'students' ? 'Our Students' :
@@ -391,7 +391,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                     {(userType === 'agents' || userType === 'staff') && (
                         <button
                             onClick={() => setShowCreateModal(true)}
-                            className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                            className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                         >
                             Add {userType === 'agents' ? 'Agent' : 'Staff'}
                         </button>
@@ -401,12 +401,12 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                         placeholder="Search users..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     />
                     <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Status</option>
                         <option value="active">Active</option>
@@ -468,7 +468,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {Array.isArray(users) ? users.map((user) => (
                             <motion.tr
                                 key={user.id}
@@ -479,8 +479,8 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <div className="flex items-center">
                                         <div className="flex-shrink-0 h-10 w-10">
-                                            <div className="h-10 w-10 rounded-full bg-[#EDE0F7] flex items-center justify-center">
-                                                <span className="text-sm font-medium text-[#7B3FA0]">
+                                            <div className="h-10 w-10 rounded-full bg-[#F0E6FA] flex items-center justify-center">
+                                                <span className="text-sm font-medium text-[#4A1D7A]">
                                                     {(user.name || user.fullName || 'U').split(' ').map(n => n[0] || 'U').join('')}
                                                 </span>
                                             </div>
@@ -550,7 +550,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                         )}
                                         <button
                                             onClick={() => handleEdit(user)}
-                                            className="text-[#7B3FA0] hover:text-purple-900"
+                                            className="text-[#4A1D7A] hover:text-purple-900"
                                         >
                                             Edit
                                         </button>
@@ -600,7 +600,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                 key={page}
                                 onClick={() => setCurrentPage(page)}
                                 className={`px-3 py-2 border rounded-md text-sm font-medium ${page === currentPage
-                                    ? 'border-[#7B3FA0] bg-[#EDE0F7] text-[#7B3FA0]'
+                                    ? 'border-[#4A1D7A] bg-[#F0E6FA] text-[#4A1D7A]'
                                     : 'border-gray-300 text-gray-700 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
                                     }`}
                             >
@@ -622,7 +622,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
             {/* Edit Modal */}
             {showEditModal && selectedUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className={`relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md bg-white dark:bg-[#2A1E2E] ${userType === 'agents' ? 'max-w-3xl w-full mx-4' : 'w-96'}`}>
+                    <div className={`relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md bg-white dark:bg-[#231A2E] ${userType === 'agents' ? 'max-w-3xl w-full mx-4' : 'w-96'}`}>
                         <div className="mt-3">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">Edit {userType === 'agents' ? 'Agent' : userType === 'staff' ? 'Staff' : 'User'}</h3>
@@ -650,7 +650,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                 ...prev, 
                                                 ...(userType === 'agents' ? { fullName: e.target.value } : { name: e.target.value })
                                             }))}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         />
                                     </div>
 
@@ -662,7 +662,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                             type="email"
                                             value={editData.email || ''}
                                             onChange={(e) => setEditData(prev => ({ ...prev, email: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         />
                                     </div>
                                 </div>
@@ -682,7 +682,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                     ...(userType === 'agents' ? { phoneNumber: value } : { phone: value })
                                                 }));
                                             }}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             maxLength="10"
                                         />
                                     </div>
@@ -694,7 +694,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                         <select
                                             value={editData.status || 'active'}
                                             onChange={(e) => setEditData(prev => ({ ...prev, status: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         >
                                             <option value="active">Active</option>
                                             <option value="inactive">Inactive</option>
@@ -714,7 +714,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                 <select
                                                     value={editData.gender || ''}
                                                     onChange={(e) => setEditData(prev => ({ ...prev, gender: e.target.value }))}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 >
                                                     <option value="">Select Gender</option>
                                                     <option value="male">Male</option>
@@ -731,7 +731,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                     type="date"
                                                     value={editData.dateOfBirth || ''}
                                                     onChange={(e) => setEditData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 />
                                             </div>
                                         </div>
@@ -743,7 +743,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                             <select
                                                 value={editData.assignedStaff || ''}
                                                 onChange={(e) => setEditData(prev => ({ ...prev, assignedStaff: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             >
                                                 <option value="">Select Staff Member</option>
                                                 {staffList.map(staff => (
@@ -762,7 +762,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                 type="text"
                                                 value={editData.referralCode || ''}
                                                 onChange={(e) => setEditData(prev => ({ ...prev, referralCode: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 readOnly
                                             />
                                         </div>
@@ -782,7 +782,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                         ...prev,
                                                         address: { ...prev.address, street: e.target.value }
                                                     }))}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                     placeholder="Enter street address"
                                                 />
                                             </div>
@@ -799,7 +799,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                             ...prev,
                                                             address: { ...prev.address, city: e.target.value }
                                                         }))}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                         placeholder="Enter city"
                                                     />
                                                 </div>
@@ -815,7 +815,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                             ...prev,
                                                             address: { ...prev.address, state: e.target.value }
                                                         }))}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                         placeholder="Enter state"
                                                     />
                                                 </div>
@@ -834,7 +834,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                                 address: { ...prev.address, pincode: value }
                                                             }));
                                                         }}
-                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                         placeholder="Enter pincode"
                                                         maxLength="6"
                                                     />
@@ -855,7 +855,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                 type="text"
                                                 value={editData.course || ''}
                                                 onChange={(e) => setEditData(prev => ({ ...prev, course: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -866,7 +866,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                                 type="text"
                                                 value={editData.aadharNumber || ''}
                                                 onChange={(e) => setEditData(prev => ({ ...prev, aadharNumber: e.target.value }))}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                     </>
@@ -882,7 +882,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                             type="text"
                                             value={editData.department || ''}
                                             onChange={(e) => setEditData(prev => ({ ...prev, department: e.target.value }))}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         />
                                     </div>
                                 )}
@@ -898,7 +898,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
                                 <button
                                     onClick={handleSave}
                                     disabled={saving}
-                                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#7B3FA0] hover:bg-[#5C2D80] disabled:opacity-50"
+                                    className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4A1D7A] hover:bg-[#351458] disabled:opacity-50"
                                 >
                                     {saving ? 'Saving...' : 'Save Changes'}
                                 </button>
@@ -911,7 +911,7 @@ const UserManagement = ({ userType = 'students', rowHoverClass = 'hover:bg-gray-
             {/* Password Reset Modal */}
             {showPasswordModal && selectedUser && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-                    <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-[#2A1E2E]">
+                    <div className="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-lg rounded-md bg-white dark:bg-[#231A2E]">
                         <div className="mt-3">
                             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                                 Reset Password for {selectedUser.name || selectedUser.fullName}

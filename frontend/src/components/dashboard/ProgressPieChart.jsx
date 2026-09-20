@@ -51,7 +51,7 @@ const ProgressPieChart = ({ chartData = [], onSectionClick }) => {
   ];
 
   return (
-    <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 mt-6 flex justify-center items-center h-80">
+    <div className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 mt-6 flex justify-center items-center h-80">
       <Chart
         chartType="PieChart"
         data={data}

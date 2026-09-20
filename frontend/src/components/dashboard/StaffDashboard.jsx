@@ -292,7 +292,7 @@ const EnhancedStaffDashboard = () => {
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
             case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            case 'COMPLETE': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
+            case 'COMPLETE': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
@@ -396,7 +396,7 @@ const EnhancedStaffDashboard = () => {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-gradient-to-r from-[#7B3FA0] to-[#5C2D80] rounded-lg p-6 text-white mb-6"
+                            className="bg-gradient-to-r from-[#4A1D7A] to-[#351458] rounded-lg p-6 text-white mb-6"
                         >
                             <div>
                                 <h2 className="text-2xl font-bold mb-2">
@@ -416,7 +416,7 @@ const EnhancedStaffDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="bg-white dark:bg-[#2A1E2E] rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6"
+                                className="bg-white dark:bg-[#231A2E] rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6"
                             >
                                 <div className="flex items-center justify-between mb-4">
                                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -470,7 +470,7 @@ const EnhancedStaffDashboard = () => {
                                                 onClick={() => setStudentView(key)}
                                                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                                                     studentView === key
-                                                        ? 'bg-white dark:bg-[#2A1E2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
+                                                        ? 'bg-white dark:bg-[#231A2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
                                                         : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                                                 }`}
                                             >
@@ -489,7 +489,7 @@ const EnhancedStaffDashboard = () => {
                                     <div className="grid grid-cols-3 gap-3 mb-4">
                                         <div 
                                             onClick={() => handleStatClick('all')}
-                                            className="bg-white dark:bg-[#2A1E2E] rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                            className="bg-white dark:bg-[#231A2E] rounded-lg p-3 border border-gray-200 dark:border-gray-700 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                                         >
                                             <p className="text-xs text-gray-500 dark:text-gray-300">Total</p>
                                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{active.total || 0}</p>
@@ -503,7 +503,7 @@ const EnhancedStaffDashboard = () => {
                                         </div>
                                         <div 
                                             onClick={() => handleStatClick('SUBMITTED')}
-                                            className="bg-white dark:bg-[#2A1E2E] rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                                            className="bg-white dark:bg-[#231A2E] rounded-lg p-3 border border-blue-200 dark:border-blue-800 text-center shadow-sm cursor-pointer hover:shadow-md transition-shadow"
                                         >
                                             <p className="text-xs text-[#387B95] dark:text-[#60A5FA]">Submitted</p>
                                             <p className="text-2xl font-bold text-[#1D4B5E] dark:text-blue-300">{active.submitted || 0}</p>
@@ -529,7 +529,7 @@ const EnhancedStaffDashboard = () => {
                                     <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-2">
                                         {[
                                             { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white',   inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200' },
-                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#7B3FA0] text-white',   inactiveClass: 'bg-indigo-100 dark:bg-gray-700 text-[#5C2D80] dark:text-indigo-300 hover:bg-indigo-200' },
+                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#4A1D7A] text-white',   inactiveClass: 'bg-indigo-100 dark:bg-gray-700 text-[#351458] dark:text-indigo-300 hover:bg-indigo-200' },
                                             { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',    inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 dark:text-red-300 hover:bg-red-200' },
                                             { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white', inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200' },
                                             { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-teal-500 text-white',  inactiveClass: 'bg-teal-100 dark:bg-gray-700 text-teal-700 dark:text-teal-300 hover:bg-teal-200' },
@@ -559,7 +559,7 @@ const EnhancedStaffDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700"
                         >
                             <div className="p-6">
                                 {/* Header */}
@@ -595,12 +595,12 @@ const EnhancedStaffDashboard = () => {
                                         placeholder="Search by name, Aadhar, phone, email..."
                                         value={searchTerm}
                                         onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     />
                                     <select
                                         value={filterStatus}
                                         onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="all">Total Students</option>
                                         {(filters.statuses || []).map(status => {
@@ -620,7 +620,7 @@ const EnhancedStaffDashboard = () => {
                                     <select
                                         value={sortBy}
                                         onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="latest">Latest First</option>
                                         <option value="oldest">Oldest First</option>
@@ -630,7 +630,7 @@ const EnhancedStaffDashboard = () => {
                                     <select
                                         value={filterCourse}
                                         onChange={(e) => setFilterCourse(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="all">All Courses</option>
                                         {(filters.courses || []).map(course => (
@@ -640,7 +640,7 @@ const EnhancedStaffDashboard = () => {
                                     <select
                                         value={filterSubmitterRole}
                                         onChange={(e) => setFilterSubmitterRole(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="all">All Submitters</option>
                                         <option value="student">Student</option>
@@ -700,12 +700,12 @@ const EnhancedStaffDashboard = () => {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                                             {studentsLoading ? (
                                                 <tr>
                                                     <td colSpan="9" className="px-6 py-12 text-center">
                                                         <div className="flex items-center justify-center">
-                                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0]"></div>
+                                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A]"></div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -897,7 +897,7 @@ const EnhancedStaffDashboard = () => {
                                                             key={pageNum}
                                                             onClick={() => setCurrentPage(pageNum)}
                                                             className={`px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm ${currentPage === pageNum
-                                                                ? 'bg-green-600 text-white border-[#7B3FA0]'
+                                                                ? 'bg-green-600 text-white border-[#4A1D7A]'
                                                                 : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                                                 }`}
                                                         >
@@ -948,7 +948,7 @@ const EnhancedStaffDashboard = () => {
                 onItemClick={setActiveTab}
             >
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
                 </div>
             </DashboardLayout>
         );
@@ -969,8 +969,8 @@ const EnhancedStaffDashboard = () => {
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setStatModalOpen(false)}></div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white dark:bg-[#2A1E2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white dark:bg-[#2A1E2E] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-white dark:bg-[#231A2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-white dark:bg-[#231A2E] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <div className="sm:flex sm:items-start">
                                     <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4" id="modal-title">
@@ -1003,9 +1003,9 @@ const EnhancedStaffDashboard = () => {
                                                     setActiveTab('direct-students');
                                                     setStatModalOpen(false);
                                                 }}
-                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#EDE0F7] dark:hover:bg-gray-700 transition-colors"
+                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#F0E6FA] dark:hover:bg-gray-700 transition-colors"
                                             >
-                                                <span className="text-2xl font-bold text-[#7B3FA0] dark:text-[#A855D0]">
+                                                <span className="text-2xl font-bold text-[#4A1D7A] dark:text-[#9B6FCC]">
                                                     {selectedStatKey === 'all' ? (processingStats.directStudents?.total || 0) : (processingStats.directStudents?.[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}
                                                 </span>
                                                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Direct Students</span>

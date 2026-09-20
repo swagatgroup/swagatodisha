@@ -105,7 +105,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2 }}
-                className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
+                className="bg-white dark:bg-[#231A2E] rounded-lg shadow-md border border-gray-200 dark:border-gray-700 overflow-hidden"
             >
                 {/* Card Header */}
                 <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -336,7 +336,7 @@ const AgentApplicationsTab = ({ applications = [], onRefresh }) => {
             </div>
 
             {/* Search and Filters */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-md p-4">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-md p-4">
                 <div className="flex flex-col lg:flex-row gap-4">
                     {/* Search */}
                     <div className="flex-1">

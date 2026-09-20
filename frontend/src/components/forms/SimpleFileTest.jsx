@@ -40,7 +40,7 @@ const SimpleFileTest = () => {
     };
 
     return (
-        <div className="p-4 bg-white dark:bg-[#2A1E2E] rounded-lg shadow">
+        <div className="p-4 bg-white dark:bg-[#231A2E] rounded-lg shadow">
             <h3 className="text-lg font-semibold mb-4">Simple File Input Test</h3>
 
             <div className="space-y-4">

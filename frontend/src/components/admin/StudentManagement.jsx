@@ -1314,7 +1314,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
             case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            case 'COMPLETE': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
+            case 'COMPLETE': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
@@ -1325,9 +1325,9 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             case 'B1': return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
             case 'B2': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'B3': return 'bg-orange-100 text-orange-800 dark:bg-orange-900/20 dark:text-orange-400';
-            case 'B4': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
+            case 'B4': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             case 'C1': return 'bg-pink-100 text-pink-800 dark:bg-pink-900/20 dark:text-pink-400';
-            case 'C2': return 'bg-indigo-100 text-indigo-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
+            case 'C2': return 'bg-indigo-100 text-indigo-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             case 'C3': return 'bg-teal-100 text-teal-800 dark:bg-teal-900/20 dark:text-teal-400';
             default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
@@ -1542,16 +1542,16 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
 
     if (loading) {
         return (
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
             {/* Header */}
             <div className="flex justify-between items-center mb-6">
                 <div>
@@ -1589,11 +1589,11 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         onKeyDown={handleSearchKeyDown}
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     />
                     <button
                         onClick={handleSearch}
-                        className="px-4 py-2 bg-[#7B3FA0] hover:bg-[#5C2D80] text-white rounded-md transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] focus:ring-offset-2"
+                        className="px-4 py-2 bg-[#4A1D7A] hover:bg-[#351458] text-white rounded-md transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:ring-offset-2"
                         title="Search (or press Enter)"
                     >
                         <i className="fa-solid fa-magnifying-glass"></i>
@@ -1607,7 +1607,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] font-medium"
+                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] font-medium"
                     >
                         <option value="latest">Latest First</option>
                         <option value="oldest">Oldest First</option>
@@ -1624,7 +1624,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterStatus}
                         onChange={(e) => setFilterStatus(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Status</option>
                         {filters.statuses?.map(status => (
@@ -1634,7 +1634,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterCourse}
                         onChange={(e) => setFilterCourse(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Courses</option>
                         {[...new Set(students.map(student => 
@@ -1646,7 +1646,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Categories</option>
                         {[...new Set(students.map(student => 
@@ -1658,7 +1658,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterGender}
                         onChange={(e) => setFilterGender(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Gender</option>
                         {[...new Set(students.map(student => 
@@ -1670,7 +1670,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterAdmissionType}
                         onChange={(e) => setFilterAdmissionType(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Adm. Types</option>
                         <option value="paid">Paid</option>
@@ -1681,7 +1681,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterState}
                         onChange={(e) => setFilterState(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All States</option>
                         {[...new Set(students.map(student => 
@@ -1693,7 +1693,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterDistrict}
                         onChange={(e) => setFilterDistrict(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Districts</option>
                         {[...new Set(students.map(student => 
@@ -1705,7 +1705,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterCity}
                         onChange={(e) => setFilterCity(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Cities</option>
                         {[...new Set(students.map(student => 
@@ -1717,7 +1717,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterStream}
                         onChange={(e) => setFilterStream(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Streams</option>
                         {[...new Set(students.map(student => 
@@ -1731,7 +1731,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterCollege}
                         onChange={(e) => setFilterCollege(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Colleges</option>
                         {colleges.map(college => {
@@ -1745,7 +1745,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterCampus}
                         onChange={(e) => setFilterCampus(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Campuses</option>
                         {Array.from(new Map(students
@@ -1764,7 +1764,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                     <select
                         value={filterSubmitterRole}
                         onChange={(e) => setFilterSubmitterRole(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Submitters</option>
                         <option value="student">By Student (Direct / Self Registered)</option>
@@ -1850,9 +1850,9 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
 
                 {/* Bulk Actions Bar */}
                 {selectedStudents.length > 0 && (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-[#EDE0F7] dark:bg-[#2A1E2E]/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 flex-1 min-w-[300px] gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-[#F0E6FA] dark:bg-[#231A2E]/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 flex-1 min-w-[300px] gap-4">
                         <div className="flex items-center space-x-2">
-                            <i className="fa-solid fa-check-square text-[#7B3FA0] dark:text-[#A855D0]"></i>
+                            <i className="fa-solid fa-check-square text-[#4A1D7A] dark:text-[#9B6FCC]"></i>
                             <span className="text-sm font-medium text-purple-900 dark:text-purple-100">
                                 {selectedStudents.length} student{selectedStudents.length > 1 ? 's' : ''} selected
                             </span>
@@ -1890,7 +1890,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                     type="checkbox"
                                     checked={selectedStudents.length === students.length && students.length > 0}
                                     onChange={(e) => handleSelectAll(e.target.checked)}
-                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                    className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                 />
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -1925,7 +1925,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                             </th>
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {students.length === 0 ? (
                             <tr>
                                 <td colSpan="11" className="px-6 py-12 text-center">
@@ -1968,7 +1968,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         setSelectedStudents(selectedStudents.filter(id => id !== student._id));
                                                     }
                                                 }}
-                                                className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                             />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">
@@ -1977,8 +1977,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <div className="h-10 w-10 rounded-full bg-[#EDE0F7] dark:bg-[#2A1E2E] flex items-center justify-center">
-                                                        <span className="text-sm font-medium text-[#7B3FA0] dark:text-[#C084FC]">
+                                                    <div className="h-10 w-10 rounded-full bg-[#F0E6FA] dark:bg-[#231A2E] flex items-center justify-center">
+                                                        <span className="text-sm font-medium text-[#4A1D7A] dark:text-[#C084FC]">
                                                             {student.fullName?.split(' ').map(n => n[0]).join('') || 'S'}
                                                         </span>
                                                     </div>
@@ -2271,7 +2271,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                                                 const fileName = `photo_${(student.personalDetails?.fullName || student.applicationId || 'student').replace(/\s+/g, '_')}.jpg`;
                                                                                 setPhotoPreview({ url: photoUrl, fileName });
                                                                             }}
-                                                                            className="text-[#7B3FA0] hover:text-purple-900 dark:text-[#A855D0] dark:hover:text-purple-300 ml-2"
+                                                                            className="text-[#4A1D7A] hover:text-purple-900 dark:text-[#9B6FCC] dark:hover:text-purple-300 ml-2"
                                                                             title="View Profile Photo"
                                                                         >
                                                                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2322,7 +2322,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                         key={pageNum}
                                         onClick={() => setCurrentPage(pageNum)}
                                         className={`px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm ${currentPage === pageNum
-                                            ? 'bg-[#7B3FA0] text-white border-[#7B3FA0]'
+                                            ? 'bg-[#4A1D7A] text-white border-[#4A1D7A]'
                                             : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                             }`}
                                     >
@@ -2345,7 +2345,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             {/* Full Application Details Modal */}
             {showDetailsModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             {/* Header */}
                             <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
@@ -2638,7 +2638,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         setCourseFeeInput(selectedStudent.financialStatus?.totalFees || '');
                                                     }
                                                 }}
-                                                className="text-sm px-3 py-1 bg-[#EDE0F7] text-[#5C2D80] hover:bg-purple-200 rounded-md"
+                                                className="text-sm px-3 py-1 bg-[#F0E6FA] text-[#351458] hover:bg-purple-200 rounded-md"
                                             >
                                                 {editingCourseFee ? 'Cancel' : 'Set Course Fee'}
                                             </button>
@@ -2654,13 +2654,13 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     value={courseFeeInput}
                                                     onChange={(e) => setCourseFeeInput(e.target.value)}
                                                     placeholder="Enter total course fee"
-                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                     required
                                                 />
                                                 <button
                                                     type="submit"
                                                     disabled={savingCourseFee}
-                                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] disabled:opacity-50"
+                                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50"
                                                 >
                                                     {savingCourseFee ? 'Saving...' : 'Save'}
                                                 </button>
@@ -2669,19 +2669,19 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                     )}
 
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div className="bg-white dark:bg-[#2A1E2E] p-3 rounded border border-gray-200 dark:border-gray-700">
+                                        <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Course Fee</label>
                                             <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
                                                 ₹{selectedStudent.financialStatus?.totalFees || 0}
                                             </p>
                                         </div>
-                                        <div className="bg-white dark:bg-[#2A1E2E] p-3 rounded border border-gray-200 dark:border-gray-700">
+                                        <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Paid</label>
                                             <p className="text-lg font-bold text-green-600">
                                                 ₹{selectedStudent.financialStatus?.paidAmount || 0}
                                             </p>
                                         </div>
-                                        <div className="bg-white dark:bg-[#2A1E2E] p-3 rounded border border-gray-200 dark:border-gray-700">
+                                        <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Due Amount</label>
                                             <p className="text-lg font-bold text-red-600">
                                                 ₹{selectedStudent.financialStatus?.dueAmount || 0}
@@ -2701,7 +2701,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {selectedStudent.documents.map((doc, index) => (
-                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#2A1E2E]">
+                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#231A2E]">
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType || doc.fileName}</p>
@@ -2847,7 +2847,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }}
                                                     disabled={!selectedStudent.documents.every(doc => doc.status === 'APPROVED')}
                                                     className={`flex items-center px-4 py-2 rounded-lg transition-colors ${selectedStudent.documents.every(doc => doc.status === 'APPROVED')
-                                                        ? 'bg-[#7B3FA0] text-white hover:bg-[#5C2D80]'
+                                                        ? 'bg-[#4A1D7A] text-white hover:bg-[#351458]'
                                                         : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                                                         }`}
                                                     title={selectedStudent.documents.every(doc => doc.status === 'APPROVED') ? 'Generate ZIP' : 'Please approve all documents first'}
@@ -2929,7 +2929,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     <label className="text-xs font-medium text-red-700 dark:text-red-300">Specific Issues</label>
                                                     <ul className="mt-2 space-y-2">
                                                         {selectedStudent.reviewInfo.rejectionDetails.map((detail, idx) => (
-                                                            <li key={idx} className="text-sm text-red-900 dark:text-red-100 bg-white dark:bg-[#2A1E2E] rounded p-2">
+                                                            <li key={idx} className="text-sm text-red-900 dark:text-red-100 bg-white dark:bg-[#231A2E] rounded p-2">
                                                                 <strong>{detail.documentType || detail.issue}:</strong> {detail.specificFeedback || detail.actionRequired}
                                                             </li>
                                                         ))}
@@ -2959,7 +2959,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             {/* Edit Modal */}
             {showEditModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] flex flex-col">
                         <div className="p-6 border-b border-gray-200 dark:border-gray-700">
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                 Edit Student - {selectedStudent.fullName || selectedStudent.personalDetails?.fullName || 'N/A'}
@@ -2987,7 +2987,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, fullName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -3001,7 +3001,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, fathersName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -3015,7 +3015,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, mothersName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -3029,7 +3029,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, dateOfBirth: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -3042,7 +3042,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, gender: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             >
                                                 <option value="">Select Gender</option>
                                                 <option value="Male">Male</option>
@@ -3064,7 +3064,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                 })}
                                                 disabled={!isSuperAdmin}
                                                 maxLength="12"
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                             />
                                         </div>
                                         <div>
@@ -3077,7 +3077,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, category: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 required
                                             >
                                                 <option value="">Select Category</option>
@@ -3111,7 +3111,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         primaryPhone: e.target.value.replace(/\D/g, '').slice(0, 10)
                                                     }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter 10-digit phone number"
                                                 maxLength="10"
                                             />
@@ -3130,7 +3130,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         whatsappNumber: e.target.value.replace(/\D/g, '').slice(0, 10)
                                                     }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter WhatsApp number (optional)"
                                                 maxLength="10"
                                             />
@@ -3150,7 +3150,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }
                                                 })}
                                                 style={{ textTransform: 'lowercase' }}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter email address"
                                                 required
                                             />
@@ -3174,7 +3174,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }
                                                 })}
                                                 style={{ textTransform: 'uppercase' }}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter street address"
                                             />
                                         </div>
@@ -3198,7 +3198,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }
                                                 })}
                                                 style={{ textTransform: 'uppercase' }}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter city"
                                                 required
                                             />
@@ -3224,7 +3224,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }
                                                 })}
                                                 style={{ textTransform: 'uppercase' }}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter district"
                                                 required
                                             />
@@ -3247,7 +3247,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }
                                                 })}
                                                 style={{ textTransform: 'uppercase' }}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter state"
                                                 required
                                             />
@@ -3270,7 +3270,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }
                                                 })}
                                                 maxLength="6"
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 placeholder="Enter 6-digit pincode"
                                                 required
                                             />
@@ -3292,7 +3292,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         }
                                                     }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                     </div>
@@ -3315,7 +3315,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianName: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -3328,7 +3328,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, relationship: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             >
                                                 <option value="">Select Relationship</option>
                                                 <option value="Father">Father</option>
@@ -3353,7 +3353,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianPhone: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -3367,7 +3367,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     ...editData,
                                                     guardianDetails: { ...editData.guardianDetails, guardianEmail: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                     </div>
@@ -3398,7 +3398,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         },
                                                     }))
                                                 }
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                                 required
                                                 disabled={!isSuperAdmin || loadingColleges}
                                             >
@@ -3427,7 +3427,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         },
                                                     }))
                                                 }
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                                 required
                                                 disabled={!isSuperAdmin || !editData.courseDetails?.selectedCollege || getCoursesForCollege().length === 0}
                                             >
@@ -3460,11 +3460,11 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         },
                                                     }))
                                                 }
-                                                className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-[#7B3FA0] transition-all ${
+                                                className={`w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-[#4A1D7A] transition-all ${
                                                     !editData.courseDetails?.selectedCollege 
-                                                        ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#2A1E2E] text-gray-400' 
+                                                        ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-[#231A2E] text-gray-400' 
                                                         : getCampusesForCollege().length > 0
-                                                            ? 'border-purple-300 dark:border-[#7B3FA0] bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
+                                                            ? 'border-purple-300 dark:border-[#4A1D7A] bg-white dark:bg-gray-700 text-gray-900 dark:text-white'
                                                             : 'border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 text-gray-700 dark:text-gray-300'
                                                 }`}
                                                 required
@@ -3504,7 +3504,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     }))
                                                 }
                                                 disabled={!isSuperAdmin}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                             >
                                                 <option value="">Select Stream (Optional)</option>
                                                 {getStreamsForCourse().map((stream) => (
@@ -3528,7 +3528,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     courseDetails: { ...editData.courseDetails, customCourse: e.target.value }
                                                 })}
                                                 disabled={!isSuperAdmin}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                                 placeholder="Enter custom course name if 'Other' is selected"
                                             />
                                         </div>
@@ -3546,7 +3546,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                 </button>
                                 <button
                                     onClick={handleEdit}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                 >
                                     Save Changes
                                 </button>
@@ -3559,7 +3559,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             {/* Document Selection Modal */}
             {showDocumentSelectionModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
                         <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
                             <div>
                                 <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -3675,7 +3675,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                 disabled={generating || selectedDocumentsForGeneration.length === 0}
                                 className={`px-6 py-2 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed ${generationType === 'pdf'
                                     ? 'bg-[#387B95] hover:bg-[#1D4B5E]'
-                                    : 'bg-[#7B3FA0] hover:bg-[#5C2D80]'
+                                    : 'bg-[#4A1D7A] hover:bg-[#351458]'
                                     }`}
                             >
                                 {generating ? (
@@ -3698,7 +3698,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             {/* PDF Generator Modal */}
             {showApplicationPDF && selectedStudentForPDF && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <ApplicationPDFGenerator
                             formData={selectedStudentForPDF.formData}
                             application={selectedStudentForPDF.application}
@@ -3731,7 +3731,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                             <div className="absolute inset-0 bg-gray-500 opacity-75" onClick={() => setPhotoPreview(null)}></div>
                         </div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white dark:bg-[#2A1E2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                        <div className="inline-block align-bottom bg-white dark:bg-[#231A2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <div className="sm:flex sm:items-start">
                                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
@@ -3752,7 +3752,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                             <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                                 <button
                                     type="button"
-                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#7B3FA0] text-base font-medium text-white hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] sm:ml-3 sm:w-auto sm:text-sm"
+                                    className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#4A1D7A] text-base font-medium text-white hover:bg-[#351458] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A1D7A] sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={async () => {
                                         try {
                                             const compressed = await compressImageToUnder50KB(photoPreview.url);
@@ -3785,7 +3785,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                 </button>
                                 <button
                                     type="button"
-                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                                    className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A1D7A] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                                     onClick={() => setPhotoPreview(null)}
                                 >
                                     Close
@@ -3800,7 +3800,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                 <div className="fixed inset-0 z-50 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen px-4">
                         <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowMigrateModal(false)} />
-                        <div className="relative bg-white dark:bg-[#2A1E2E] rounded-xl shadow-2xl w-full max-w-md p-6 z-10">
+                        <div className="relative bg-white dark:bg-[#231A2E] rounded-xl shadow-2xl w-full max-w-md p-6 z-10">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Migrate Student</h3>
                                 <button onClick={() => setShowMigrateModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200">
@@ -3846,7 +3846,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                             className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
                                                 migrateRole === role
                                                     ? role === 'agent' ? 'bg-[#387B95] text-white border-[#387B95]'
-                                                    : role === 'staff' ? 'bg-[#7B3FA0] text-white border-[#7B3FA0]'
+                                                    : role === 'staff' ? 'bg-[#4A1D7A] text-white border-[#4A1D7A]'
                                                     : 'bg-gray-800 text-white border-gray-800'
                                                     : 'bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-600 hover:bg-gray-100'
                                             }`}
@@ -3869,7 +3869,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                         <select
                                             value={migrateSelectedId}
                                             onChange={e => setMigrateSelectedId(e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         >
                                             <option value="">-- Select {migrateRole} --</option>
                                             {migrateMembers.map(m => (

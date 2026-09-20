@@ -163,7 +163,7 @@ const SimpleNotificationManagement = () => {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -183,7 +183,7 @@ const SimpleNotificationManagement = () => {
                         resetForm();
                         setShowForm(true);
                     }}
-                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
+                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors"
                 >
                     <i className="fa-solid fa-plus mr-2"></i>
                     Add Notification
@@ -195,7 +195,7 @@ const SimpleNotificationManagement = () => {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-6"
                 >
                     <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-4">
                         {editingNotification ? 'Edit Notification' : 'Add New Notification'}
@@ -210,7 +210,7 @@ const SimpleNotificationManagement = () => {
                                 required
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                 placeholder="Enter notification title"
                             />
                         </div>
@@ -223,7 +223,7 @@ const SimpleNotificationManagement = () => {
                                 type="file"
                                 onChange={handleFileSelect}
                                 accept=".pdf,.jpg,.jpeg,.png,.webp"
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7]"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] file:text-[#351458] hover:file:bg-[#F0E6FA]"
                             />
                             <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
                                 Supported formats: PDF, JPG, PNG, WebP (Max 10MB)
@@ -255,7 +255,7 @@ const SimpleNotificationManagement = () => {
                             <button
                                 type="submit"
                                 disabled={saving}
-                                className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors disabled:opacity-50"
+                                className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors disabled:opacity-50"
                             >
                                 {saving ? 'Saving...' : editingNotification ? 'Update' : 'Create'}
                             </button>
@@ -266,7 +266,7 @@ const SimpleNotificationManagement = () => {
 
             {/* Notifications List */}
             {!showForm && (
-                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     {notifications.length === 0 ? (
                         <div className="text-center py-12">
                             <i className="fa-solid fa-bell text-4xl text-gray-400 dark:text-gray-300 mb-4"></i>

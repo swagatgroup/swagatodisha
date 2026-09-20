@@ -80,7 +80,7 @@ const SecurityDashboard = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -154,7 +154,7 @@ const SecurityDashboard = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeTab === tab.id
-                                    ? 'border-[#7B3FA0] text-[#7B3FA0]'
+                                    ? 'border-[#4A1D7A] text-[#4A1D7A]'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                     }`}
                             >
@@ -297,7 +297,7 @@ const SecurityDashboard = () => {
                                 </div>
                                 <div className="bg-gray-50 rounded-lg p-4">
                                     <h5 className="font-semibold text-gray-900 dark:text-gray-100">Total Admins</h5>
-                                    <p className="text-2xl font-bold text-[#7B3FA0]">
+                                    <p className="text-2xl font-bold text-[#4A1D7A]">
                                         {securityReport.audits.database.adminCount}
                                     </p>
                                 </div>

@@ -394,7 +394,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                         const fileSize = (doc.size / 1024).toFixed(1);
 
                         return (
-                            <div key={docId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#2A1E2E] rounded-lg border border-gray-200 dark:border-gray-700">
+                            <div key={docId} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#231A2E] rounded-lg border border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center space-x-3">
                                     <DocumentIcon className="w-5 h-5 text-green-600 dark:text-green-400" />
                                     <div>
@@ -484,7 +484,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
                             </div>
 
                             {document ? (
-                                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#2A1E2E] rounded-lg">
+                                <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-[#231A2E] rounded-lg">
                                     <div className="flex items-center space-x-3">
                                         <div className={`p-2 rounded-full ${getStatusColor(status)}`}>
                                             {getStatusIcon(status)}

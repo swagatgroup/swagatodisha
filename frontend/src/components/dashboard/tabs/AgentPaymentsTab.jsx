@@ -75,7 +75,7 @@ const AgentPaymentsTab = () => {
             placeholder="Search student..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 pr-4 py-2 border rounded-md focus:ring-[#7B3FA0] focus:border-[#7B3FA0] w-64"
+            className="pl-10 pr-4 py-2 border rounded-md focus:ring-[#4A1D7A] focus:border-[#4A1D7A] w-64"
           />
           <MagnifyingGlassIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-300" />
         </div>
@@ -98,7 +98,7 @@ const AgentPaymentsTab = () => {
               {loading ? (
                 <tr>
                   <td colSpan="6" className="px-6 py-12 text-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A] mx-auto"></div>
                   </td>
                 </tr>
               ) : students.length > 0 ? (
@@ -135,7 +135,7 @@ const AgentPaymentsTab = () => {
                             setFinancialStudent(student);
                             setShowFinancialsModal(true);
                           }}
-                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-[#7B3FA0] hover:bg-[#5C2D80] rounded-md transition-colors shadow-sm"
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-white bg-[#4A1D7A] hover:bg-[#351458] rounded-md transition-colors shadow-sm"
                         >
                           <CurrencyRupeeIcon className="h-4 w-4 mr-1" />
                           Manage Slips

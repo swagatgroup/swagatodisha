@@ -249,7 +249,7 @@ const CollegeManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -257,7 +257,7 @@ const CollegeManagement = () => {
     return (
         <div className="space-y-6">
             {/* College Management */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     {editingCollege ? 'Edit Institution' : 'Add New Institution'}
                 </h2>
@@ -271,7 +271,7 @@ const CollegeManagement = () => {
                             type="text"
                             value={collegeFormData.name}
                             onChange={(e) => setCollegeFormData({ ...collegeFormData, name: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                             required
                             placeholder="Enter institution name"
                         />
@@ -283,7 +283,7 @@ const CollegeManagement = () => {
                             id="collegeIsActive"
                             checked={collegeFormData.isActive}
                             onChange={(e) => setCollegeFormData({ ...collegeFormData, isActive: e.target.checked })}
-                            className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                            className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                         />
                         <label htmlFor="collegeIsActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                             Active
@@ -293,7 +293,7 @@ const CollegeManagement = () => {
                     <div className="flex space-x-3">
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {editingCollege ? 'Update Institution' : 'Create Institution'}
                         </button>
@@ -311,7 +311,7 @@ const CollegeManagement = () => {
             </div>
 
             {/* Colleges List */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     Institutions ({colleges.length})
                 </h2>
@@ -328,7 +328,7 @@ const CollegeManagement = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 className={`border rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer ${selectedCollege?._id === college._id
-                                    ? 'border-[#7B3FA0] bg-[#EDE0F7] dark:bg-[#2A1E2E]/20'
+                                    ? 'border-[#4A1D7A] bg-[#F0E6FA] dark:bg-[#231A2E]/20'
                                     : 'border-gray-200 dark:border-gray-700'
                                     }`}
                                 onClick={() => {
@@ -381,7 +381,7 @@ const CollegeManagement = () => {
             {/* Course Management - Only show if college is selected */}
             {selectedCollege ? (
                 <>
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                         <div className="mb-4 flex items-center justify-between">
                             <div>
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
@@ -408,7 +408,7 @@ const CollegeManagement = () => {
                                     type="text"
                                     value={courseFormData.courseName}
                                     onChange={(e) => setCourseFormData({ ...courseFormData, courseName: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                     required
                                     placeholder="e.g., B.Tech Computer Science, B.Sc, B.Com"
                                 />
@@ -431,7 +431,7 @@ const CollegeManagement = () => {
                                                     addStream();
                                                 }
                                             }}
-                                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                             placeholder="Enter stream name (e.g., Physics, Chemistry, Biology)"
                                         />
                                         <button
@@ -481,7 +481,7 @@ const CollegeManagement = () => {
                                     id="courseIsActive"
                                     checked={courseFormData.isActive}
                                     onChange={(e) => setCourseFormData({ ...courseFormData, isActive: e.target.checked })}
-                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                    className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                 />
                                 <label htmlFor="courseIsActive" className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                                     Active
@@ -491,7 +491,7 @@ const CollegeManagement = () => {
                             <div className="flex space-x-3">
                                 <button
                                     type="submit"
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {editingCourse ? 'Update Course' : 'Create Course'}
                                 </button>
@@ -509,7 +509,7 @@ const CollegeManagement = () => {
                     </div>
 
                     {/* Courses List */}
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                         <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                             Courses for {selectedCollege.name} ({courses.length})
                         </h2>
@@ -574,7 +574,7 @@ const CollegeManagement = () => {
                     </div>
                 </>
             ) : (
-                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                     <div className="text-center py-8">
                         <p className="text-gray-500 dark:text-gray-300 mb-2">
                             Select an institution from above to manage courses and streams

@@ -71,7 +71,7 @@ const ApprovalsRecognitions = () => {
     if (universities.length === 0) return null; // Don't render section if no approvals
 
     return (
-        <div className="bg-[#7B3FA0] py-4 md:py-8">
+        <div className="bg-[#4A1D7A] py-4 md:py-8">
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 {/* Card Slider */}
                 <div className="relative max-w-6xl mx-auto">
@@ -85,7 +85,7 @@ const ApprovalsRecognitions = () => {
                                 duration: 0.8,
                                 ease: "easeInOut"
                             }}
-                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-[#7B3FA0]"
+                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-[#4A1D7A]"
                         >
                             {/* University Name */}
                             <div className="text-center mb-3 md:mb-6">
@@ -140,7 +140,7 @@ const ApprovalsRecognitions = () => {
                         <>
                             <button
                                 onClick={prevSlide}
-                                className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#2A1E2E]/20 hover:bg-white dark:bg-[#2A1E2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
+                                className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#231A2E]/20 hover:bg-white dark:bg-[#231A2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
                             >
                                 <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -149,7 +149,7 @@ const ApprovalsRecognitions = () => {
 
                             <button
                                 onClick={nextSlide}
-                                className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#2A1E2E]/20 hover:bg-white dark:bg-[#2A1E2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
+                                className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#231A2E]/20 hover:bg-white dark:bg-[#231A2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
                             >
                                 <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

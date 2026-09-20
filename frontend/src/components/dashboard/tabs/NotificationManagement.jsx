@@ -266,7 +266,7 @@ const NotificationManagement = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
@@ -329,7 +329,7 @@ const NotificationManagement = () => {
             </div>
 
             {/* Notification List */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Notifications ({filteredNotifications.length})
@@ -438,7 +438,7 @@ const NotificationManagement = () => {
                                             type="text"
                                             value={formData.title}
                                             onChange={(e) => handleInputChange('title', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -448,7 +448,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.type}
                                             onChange={(e) => handleInputChange('type', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {notificationTypes.map(type => (
@@ -462,7 +462,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.category}
                                             onChange={(e) => handleInputChange('category', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         >
                                             {categories.map(category => (
                                                 <option key={category} value={category}>{category}</option>
@@ -475,7 +475,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.targetAudience}
                                             onChange={(e) => handleInputChange('targetAudience', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             {targetAudiences.map(audience => (
@@ -489,7 +489,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.priority}
                                             onChange={(e) => handleInputChange('priority', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         >
                                             {priorities.map(priority => (
                                                 <option key={priority} value={priority}>{priority}</option>
@@ -502,7 +502,7 @@ const NotificationManagement = () => {
                                         <select
                                             value={formData.status}
                                             onChange={(e) => handleInputChange('status', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         >
                                             {statuses.map(status => (
                                                 <option key={status} value={status}>{status}</option>
@@ -517,7 +517,7 @@ const NotificationManagement = () => {
                                         type="text"
                                         value={formData.shortDescription}
                                         onChange={(e) => handleInputChange('shortDescription', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         maxLength={200}
                                     />
                                 </div>
@@ -528,7 +528,7 @@ const NotificationManagement = () => {
                                         value={formData.content}
                                         onChange={(e) => handleInputChange('content', e.target.value)}
                                         rows={6}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -541,7 +541,7 @@ const NotificationManagement = () => {
                                             type="date"
                                             value={formData.publishDate}
                                             onChange={(e) => handleInputChange('publishDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -551,7 +551,7 @@ const NotificationManagement = () => {
                                             type="date"
                                             value={formData.expiryDate}
                                             onChange={(e) => handleInputChange('expiryDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 
@@ -561,7 +561,7 @@ const NotificationManagement = () => {
                                             type="date"
                                             value={formData.eventDate}
                                             onChange={(e) => handleInputChange('eventDate', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
                                 </div>
@@ -574,7 +574,7 @@ const NotificationManagement = () => {
                                             type="number"
                                             value={formData.displayOrder}
                                             onChange={(e) => handleInputChange('displayOrder', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 

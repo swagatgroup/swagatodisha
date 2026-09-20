@@ -119,7 +119,7 @@ const MySubmittedApplications = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -258,9 +258,9 @@ const MySubmittedApplications = () => {
                     </div>
                 ) : (
                     <div className="text-center py-12">
-                        <div className="mx-auto h-12 w-12 bg-[#EDE0F7] rounded-full flex items-center justify-center mb-4">
+                        <div className="mx-auto h-12 w-12 bg-[#F0E6FA] rounded-full flex items-center justify-center mb-4">
                             <svg
-                                className="h-6 w-6 text-[#7B3FA0]"
+                                className="h-6 w-6 text-[#4A1D7A]"
                                 fill="none"
                                 viewBox="0 0 24 24"
                                 stroke="currentColor"

@@ -47,7 +47,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -70,7 +70,7 @@ const DashboardRouter = () => {
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -122,7 +122,7 @@ const AppContent = () => {
             </section>
 
             {/* 2. Quick Access */}
-            <section className="bg-white dark:bg-[#2A1E2E]">
+            <section className="bg-white dark:bg-[#231A2E]">
                 <QuickLinks />
             </section>
 
@@ -140,11 +140,11 @@ const AppContent = () => {
             <section className="py-20 bg-white dark:bg-[#1A1212]">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
-                        <div className="inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl">
+                        <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
                             <i className="fa-solid fa-map-marker-alt text-white text-3xl"></i>
                         </div>
                         <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Locations</span>
+                            Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Locations</span>
                         </h2>
                         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                             Visit us at our state-of-the-art campuses in Sargiguda, Kantabanji, Balangir and Ghantiguda, Sinapali, Nuapada, Odisha
@@ -164,7 +164,7 @@ const AppContent = () => {
                                 coordinates: { lat: 20.099885, lng: 82.677498 }
                             }
                         ].map((location, index) => (
-                            <div key={index} className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+                            <div key={index} className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
                                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">{location.name}</h3>
 
                                 {/* Small Map */}
@@ -187,7 +187,7 @@ const AppContent = () => {
                                         href={`https://www.google.com/maps/dir/?api=1&destination=${location.coordinates.lat},${location.coordinates.lng}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-block px-6 py-3 bg-[#7B3FA0] text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                        className="inline-block px-6 py-3 bg-[#4A1D7A] text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                                     >
                                         Get Directions
                                     </a>

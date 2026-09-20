@@ -110,7 +110,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="inline-block align-bottom bg-white dark:bg-[#2A1E2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full"
+                        className="inline-block align-bottom bg-white dark:bg-[#231A2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-6xl sm:w-full"
                     >
                         <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                             {/* Header */}
@@ -126,7 +126,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                 <div className="flex items-center space-x-2">
                                     <button
                                         onClick={handleExport}
-                                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
+                                        className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-gray-200 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A1D7A]"
                                     >
                                         <ArrowDownTrayIcon className="h-4 w-4 mr-2" />
                                         Export CSV
@@ -149,7 +149,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                             placeholder="Search..."
                                             value={searchTerm}
                                             onChange={(e) => handleSearch(e.target.value)}
-                                            className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full sm:w-64 pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         />
                                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                             <svg className="h-5 w-5 text-gray-400 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -163,7 +163,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                         <select
                                             value={sortBy}
                                             onChange={(e) => handleSort(e.target.value)}
-                                            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         >
                                             <option value="name">Name</option>
                                             <option value="email">Email</option>
@@ -220,8 +220,8 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10">
-                                                            <div className="h-10 w-10 rounded-full bg-[#EDE0F7] flex items-center justify-center">
-                                                                <span className="text-sm font-medium text-[#7B3FA0]">
+                                                            <div className="h-10 w-10 rounded-full bg-[#F0E6FA] flex items-center justify-center">
+                                                                <span className="text-sm font-medium text-[#4A1D7A]">
                                                                     {item.name.charAt(0).toUpperCase()}
                                                                 </span>
                                                             </div>
@@ -250,7 +250,7 @@ const DetailModal = ({ isOpen, onClose, data, title, type }) => {
                                                     {item.value || '-'}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                    <button className="text-[#7B3FA0] hover:text-purple-900">
+                                                    <button className="text-[#4A1D7A] hover:text-purple-900">
                                                         <EyeIcon className="h-4 w-4" />
                                                     </button>
                                                 </td>

@@ -15,7 +15,7 @@ const Admissions = () => {
 
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {/* Admission Process */}
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="text-center mb-6">
                             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-file-alt text-2xl text-[#387B95]"></i>
@@ -28,10 +28,10 @@ const Admissions = () => {
                     </div>
 
                     {/* Requirements */}
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="text-center mb-6">
-                            <div className="w-16 h-16 bg-[#EDE0F7] rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-check-circle text-2xl text-[#7B3FA0]"></i>
+                            <div className="w-16 h-16 bg-[#F0E6FA] rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i className="fa-solid fa-check-circle text-2xl text-[#4A1D7A]"></i>
                             </div>
                             <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">Requirements</h3>
                             <p className="text-gray-600 dark:text-gray-300">
@@ -41,7 +41,7 @@ const Admissions = () => {
                     </div>
 
                     {/* Contact */}
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300">
                         <div className="text-center mb-6">
                             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i className="fa-solid fa-phone text-2xl text-green-600"></i>
@@ -56,7 +56,7 @@ const Admissions = () => {
 
                 {/* CTA Section */}
                 <div className="text-center mt-16">
-                    <button className="bg-[#7B3FA0] text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
+                    <button className="bg-[#4A1D7A] text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
                         Apply Now
                     </button>
                     <p className="text-gray-600 dark:text-gray-300 mt-4">

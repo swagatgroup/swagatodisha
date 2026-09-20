@@ -306,7 +306,7 @@ const EnhancedDocumentUpload = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border border-purple-200 bg-[#EDE0F7] rounded-lg p-4"
+            className="border border-purple-200 bg-[#F0E6FA] rounded-lg p-4"
         >
             <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Add Custom Document</h4>
             <div className="space-y-3">
@@ -319,7 +319,7 @@ const EnhancedDocumentUpload = ({
                         value={customFormData.label}
                         onChange={(e) => setCustomFormData(prev => ({ ...prev, label: e.target.value }))}
                         placeholder="e.g., Medical Certificate, Character Certificate"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
                         maxLength={50}
                     />
                 </div>
@@ -331,13 +331,13 @@ const EnhancedDocumentUpload = ({
                         type="file"
                         accept=".jpg,.jpeg,.png,.pdf"
                         onChange={(e) => setCustomFormData(prev => ({ ...prev, file: e.target.files[0] }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
                     />
                 </div>
                 <div className="flex space-x-2">
                     <button
                         onClick={handleCustomDocumentAdd}
-                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80]"
+                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458]"
                     >
                         Add Document
                     </button>
@@ -404,7 +404,7 @@ const EnhancedDocumentUpload = ({
                         {!disabled && (
                             <button
                                 onClick={() => setShowCustomForm(!showCustomForm)}
-                                className="flex items-center space-x-1 px-3 py-1 text-sm text-[#7B3FA0] hover:text-purple-800 border border-purple-300 rounded"
+                                className="flex items-center space-x-1 px-3 py-1 text-sm text-[#4A1D7A] hover:text-purple-800 border border-purple-300 rounded"
                             >
                                 <PlusIcon className="h-4 w-4" />
                                 <span>Add Custom</span>
@@ -424,7 +424,7 @@ const EnhancedDocumentUpload = ({
                                 key={key}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="border border-purple-200 bg-[#EDE0F7] rounded-lg p-4"
+                                className="border border-purple-200 bg-[#F0E6FA] rounded-lg p-4"
                             >
                                 <div className="flex items-center justify-between">
                                     <div>

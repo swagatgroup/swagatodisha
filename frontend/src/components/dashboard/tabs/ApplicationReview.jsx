@@ -878,7 +878,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
             'UNDER_REVIEW': 'bg-yellow-100 text-yellow-800',
             'APPROVED': 'bg-teal-100 text-teal-800',
             'REJECTED': 'bg-red-100 text-red-800',
-            'COMPLETION_REQUESTED': 'bg-[#EDE0F7] text-purple-800',
+            'COMPLETION_REQUESTED': 'bg-[#F0E6FA] text-purple-800',
             'COMPLETE': 'bg-green-100 text-green-800'
         };
         return colors[status] || 'bg-gray-100 text-gray-800';
@@ -938,7 +938,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
             key={application._id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-md p-3 hover:shadow-md transition-shadow cursor-pointer mb-2"
+            className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-md p-3 hover:shadow-md transition-shadow cursor-pointer mb-2"
             onClick={() => fetchApplicationDetails(application.applicationId)}
         >
             <div className="flex justify-between items-start mb-2">
@@ -1009,7 +1009,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="bg-white dark:bg-[#2A1E2E] rounded-lg max-w-4xl max-h-[90vh] overflow-hidden"
+                        className="bg-white dark:bg-[#231A2E] rounded-lg max-w-4xl max-h-[90vh] overflow-hidden"
                         onClick={(e) => e.stopPropagation()}
                     >
                         <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
@@ -1072,7 +1072,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                 key={step.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className={`bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 ${status === 'verified' ? 'border-green-300 bg-green-50 dark:bg-green-900/20' : ''
+                className={`bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 ${status === 'verified' ? 'border-green-300 bg-green-50 dark:bg-green-900/20' : ''
                     }`}
             >
                 <div className="flex items-center justify-between mb-4">
@@ -1180,12 +1180,12 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                         placeholder="Search by name, ID, email, phone..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     />
                     <select
                         value={filterCourse}
                         onChange={(e) => setFilterCourse(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Courses</option>
                         {[...new Set(applications.map(app =>
@@ -1197,7 +1197,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Categories</option>
                         {[...new Set(applications.map(app =>
@@ -1209,7 +1209,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterGender}
                         onChange={(e) => setFilterGender(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Gender</option>
                         {[...new Set(applications.map(app =>
@@ -1225,7 +1225,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterState}
                         onChange={(e) => setFilterState(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All States</option>
                         {[...new Set(applications.map(app =>
@@ -1237,7 +1237,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterDistrict}
                         onChange={(e) => setFilterDistrict(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Districts</option>
                         {[...new Set(applications.map(app =>
@@ -1249,7 +1249,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterCity}
                         onChange={(e) => setFilterCity(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Cities</option>
                         {[...new Set(applications.map(app =>
@@ -1261,7 +1261,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={filterStream}
                         onChange={(e) => setFilterStream(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Streams</option>
                         {[...new Set(applications.map(app =>
@@ -1277,7 +1277,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="createdAt">Sort by: Date Created</option>
                         <option value="personalDetails.fullName">Sort by: Name</option>
@@ -1294,7 +1294,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     <select
                         value={sortOrder}
                         onChange={(e) => setSortOrder(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="desc">Descending</option>
                         <option value="asc">Ascending</option>
@@ -1522,7 +1522,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     {selectedApplication ? (
                         <div className="space-y-6">
                             {/* Application Header */}
-                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -1563,7 +1563,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         <button
                                             onClick={() => handleWorkflowAction('START_REVIEW')}
                                             disabled={workflowLoading}
-                                            className="flex items-center px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 font-medium text-sm shadow"
+                                            className="flex items-center px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 font-medium text-sm shadow"
                                             title="Move application to Under Review"
                                         >
                                             <PlayIcon className="h-4 w-4 mr-1" />
@@ -1602,7 +1602,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         <button
                                             onClick={() => handleWorkflowAction('REQUEST_COMPLETION')}
                                             disabled={workflowLoading}
-                                            className="flex items-center px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 font-medium text-sm shadow"
+                                            className="flex items-center px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 font-medium text-sm shadow"
                                             title="Request Super Admin to mark as Completed"
                                         >
                                             <FlagIcon className="h-4 w-4 mr-1" />
@@ -1634,7 +1634,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     </button>
                                     <button
                                         onClick={handleGenerateZIP}
-                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-[#7B3FA0] text-white hover:bg-[#5C2D80] text-sm"
+                                        className="flex items-center px-3 py-2 rounded-lg transition-colors bg-[#4A1D7A] text-white hover:bg-[#351458] text-sm"
                                         title="Generate ZIP of approved documents"
                                     >
                                         <ArchiveBoxIcon className="h-4 w-4 mr-1" />
@@ -1644,7 +1644,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             </div>
 
                             {/* Documents Review Section */}
-                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     Document Review
                                 </h4>
@@ -1764,7 +1764,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                         mimeType: item.type
                                                                     });
                                                                 }}
-                                                                className="flex items-center px-3 py-1 text-[#7B3FA0] hover:text-indigo-800 dark:text-[#A855D0]"
+                                                                className="flex items-center px-3 py-1 text-[#4A1D7A] hover:text-indigo-800 dark:text-[#9B6FCC]"
                                                                 title="Preview document in modal"
                                                             >
                                                                 <EyeIcon className="h-4 w-4 mr-1" />
@@ -1861,9 +1861,9 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
 
                                     {/* Generated Application PDF */}
                                     {selectedApplication.applicationPdfUrl && (
-                                        <div className="flex items-center justify-between p-4 border border-purple-200 dark:border-[#7B3FA0] rounded-lg bg-[#EDE0F7] dark:bg-[#2A1E2E]/20">
+                                        <div className="flex items-center justify-between p-4 border border-purple-200 dark:border-[#4A1D7A] rounded-lg bg-[#F0E6FA] dark:bg-[#231A2E]/20">
                                             <div className="flex items-center space-x-3">
-                                                <DocumentTextIcon className="h-8 w-8 text-[#7B3FA0]" />
+                                                <DocumentTextIcon className="h-8 w-8 text-[#4A1D7A]" />
                                                 <div>
                                                     <p className="font-medium text-gray-900 dark:text-gray-100">
                                                         Generated Application PDF
@@ -1871,7 +1871,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     <p className="text-sm text-gray-600 dark:text-gray-300">
                                                         Complete application form with all details
                                                     </p>
-                                                    <span className="inline-block px-2 py-1 text-xs rounded-full mt-1 bg-[#EDE0F7] text-purple-800">
+                                                    <span className="inline-block px-2 py-1 text-xs rounded-full mt-1 bg-[#F0E6FA] text-purple-800">
                                                         GENERATED PDF
                                                     </span>
                                                 </div>
@@ -1879,7 +1879,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                             <div className="flex items-center space-x-2">
                                                 <button
                                                     onClick={() => window.open(getDocumentUrl(selectedApplication.applicationPdfUrl), '_blank')}
-                                                    className="flex items-center px-3 py-1 text-[#7B3FA0] hover:text-purple-800 dark:text-[#A855D0]"
+                                                    className="flex items-center px-3 py-1 text-[#4A1D7A] hover:text-purple-800 dark:text-[#9B6FCC]"
                                                 >
                                                     <EyeIcon className="h-4 w-4 mr-1" />
                                                     View PDF
@@ -2050,7 +2050,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-xl shadow-2xl max-w-lg w-full"
+                            className="bg-white dark:bg-[#231A2E] rounded-xl shadow-2xl max-w-lg w-full"
                             onClick={e => e.stopPropagation()}
                         >
                             <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
@@ -2127,7 +2127,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                             initial={{ scale: 0.9, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.9, opacity: 0 }}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden"
                             onClick={(e) => e.stopPropagation()}
                         >
                             <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
@@ -2246,7 +2246,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                     disabled={generating || selectedDocumentsForGeneration.length === 0}
                                     className={`px-6 py-2 rounded-lg font-medium text-white disabled:opacity-50 disabled:cursor-not-allowed ${generationType === 'pdf'
                                         ? 'bg-[#387B95] hover:bg-[#1D4B5E]'
-                                        : 'bg-[#7B3FA0] hover:bg-[#5C2D80]'
+                                        : 'bg-[#4A1D7A] hover:bg-[#351458]'
                                         }`}
                                 >
                                     {generating ? (

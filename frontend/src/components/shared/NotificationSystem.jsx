@@ -153,7 +153,7 @@ const NotificationSystem = () => {
             document_approved: 'bg-green-50 border-l-green-500',
             document_rejected: 'bg-red-50 border-l-red-500',
             document_resubmission_required: 'bg-orange-50 border-l-orange-500',
-            referral_new: 'bg-[#EDE0F7] border-l-purple-500',
+            referral_new: 'bg-[#F0E6FA] border-l-purple-500',
             referral_approved: 'bg-green-50 border-l-green-500',
             system_update: 'bg-gray-50 border-l-gray-500',
             general: 'bg-[#D0E8F0] border-l-blue-500'

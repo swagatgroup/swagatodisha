@@ -218,11 +218,11 @@ const ReferralManagement = () => {
                         </div>
                     </div>
                 </div>
-                <div className="bg-[#EDE0F7] p-4 rounded-lg">
+                <div className="bg-[#F0E6FA] p-4 rounded-lg">
                     <div className="flex items-center">
-                        <div className="text-[#7B3FA0] text-2xl mr-3">📅</div>
+                        <div className="text-[#4A1D7A] text-2xl mr-3">📅</div>
                         <div>
-                            <p className="text-sm text-[#7B3FA0]">This Month</p>
+                            <p className="text-sm text-[#4A1D7A]">This Month</p>
                             <p className="text-xl font-semibold text-purple-900">{stats.thisMonthReferrals}</p>
                         </div>
                     </div>
@@ -237,7 +237,7 @@ const ReferralManagement = () => {
                         <p className="text-sm text-gray-600 dark:text-gray-300">Share this code with students to track referrals</p>
                     </div>
                     <div className="flex items-center space-x-2">
-                        <code className="px-3 py-2 bg-white dark:bg-[#2A1E2E] border border-gray-300 rounded-md font-mono text-lg">
+                        <code className="px-3 py-2 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md font-mono text-lg">
                             {user?.referralCode || 'AGENT001'}
                         </code>
                         <button

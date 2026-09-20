@@ -295,7 +295,7 @@ const ReferralManagement = () => {
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full
-                    ${user.role === 'admin' || user.role === 'super_admin' ? 'bg-[#EDE0F7] text-purple-800' :
+                    ${user.role === 'admin' || user.role === 'super_admin' ? 'bg-[#F0E6FA] text-purple-800' :
                                             user.role === 'staff' ? 'bg-blue-100 text-blue-800' :
                                                 user.role === 'agent' ? 'bg-green-100 text-green-800' :
                                                     'bg-gray-100 text-gray-800'}

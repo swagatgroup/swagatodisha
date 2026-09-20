@@ -286,7 +286,7 @@ const SuperAdminDashboard = () => {
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
             case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            case 'COMPLETE': return 'bg-[#EDE0F7] text-purple-800 dark:bg-[#2A1E2E]/20 dark:text-[#A855D0]';
+            case 'COMPLETE': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };
@@ -541,11 +541,11 @@ const SuperAdminDashboard = () => {
                             {/* Total Students */}
                             <div
                                 onClick={() => setActiveSidebarItem('students')}
-                                className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                                className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#4A1D7A]/30 transition-all duration-300"
                             >
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" fill="currentColor" viewBox="0 0 24 24">
                                             <path fillRule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
                                         </svg>
                                     </div>
@@ -559,11 +559,11 @@ const SuperAdminDashboard = () => {
                             {/* Total Agents */}
                             <div
                                 onClick={() => setActiveSidebarItem('agents')}
-                                className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                                className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#4A1D7A]/30 transition-all duration-300"
                             >
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" fill="currentColor" viewBox="0 0 24 24">
                                             <path fillRule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clipRule="evenodd" />
                                             <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 016.576-3.036c.32.32.61.666.868 1.042l-3.874-2.052z" />
                                             <path d="M18.918 14.254a8.287 8.287 0 011.308 5.135 9.687 9.687 0 001.764-.44l.115-.04a.563.563 0 00.373-.487l.01-.121a3.75 3.75 0 00-6.576-3.036c-.32.32-.61.666-.868 1.042l3.874-2.052z" />
@@ -579,11 +579,11 @@ const SuperAdminDashboard = () => {
                             {/* Total Staff */}
                             <div
                                 onClick={() => setActiveSidebarItem('staff')}
-                                className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                                className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#4A1D7A]/30 transition-all duration-300"
                             >
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="currentColor" viewBox="0 0 24 24">
+                                        <svg className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" fill="currentColor" viewBox="0 0 24 24">
                                             <path fillRule="evenodd" d="M3 6a3 3 0 013-3h12a3 3 0 013 3v12a3 3 0 01-3 3H6a3 3 0 01-3-3V6zm4.5 7.5a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zm3.75-1.5a.75.75 0 00-.75.75v3.75a.75.75 0 001.5 0V12a.75.75 0 00-.75-.75zm3.75-1.5a.75.75 0 00-.75.75v5.25a.75.75 0 001.5 0v-5.25a.75.75 0 00-.75-.75zM9 5.25a.75.75 0 00-.75.75v2.25a.75.75 0 001.5 0V6a.75.75 0 00-.75-.75z" clipRule="evenodd" />
                                         </svg>
                                     </div>
@@ -597,7 +597,7 @@ const SuperAdminDashboard = () => {
                             {/* Referral Conversions */}
                             <div
                                 onClick={() => { setActiveSidebarItem('students'); setStudentView('our'); }}
-                                className="bg-white dark:bg-[#2A1E2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#7B3FA0]/30 transition-all duration-300"
+                                className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#4A1D7A]/30 transition-all duration-300"
                             >
                                 <div className="flex items-center space-x-4">
                                     <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
@@ -651,7 +651,7 @@ const SuperAdminDashboard = () => {
                                                 onClick={() => setStudentView(key)}
                                                 className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                                                     studentView === key
-                                                        ? 'bg-white dark:bg-[#2A1E2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
+                                                        ? 'bg-white dark:bg-[#231A2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
                                                         : 'text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                                                 }`}
                                             >
@@ -670,9 +670,9 @@ const SuperAdminDashboard = () => {
                                     {/* Unified Status Filters Row */}
                                     <div className="grid grid-cols-3 sm:grid-cols-7 gap-2 md:gap-3 mb-6">
                                         {[
-                                            { key: 'all',          label: 'Total',        count: active.total,        activeClass: 'bg-gray-800 text-white', inactiveClass: 'bg-white dark:bg-[#2A1E2E] text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700' },
+                                            { key: 'all',          label: 'Total',        count: active.total,        activeClass: 'bg-gray-800 text-white', inactiveClass: 'bg-white dark:bg-[#231A2E] text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700' },
                                             { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white', inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' },
-                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#7B3FA0] text-white',  inactiveClass: 'bg-indigo-50 dark:bg-gray-700 text-[#5C2D80] dark:text-indigo-300 border border-indigo-100 dark:border-gray-600' },
+                                            { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#4A1D7A] text-white',  inactiveClass: 'bg-indigo-50 dark:bg-gray-700 text-[#351458] dark:text-indigo-300 border border-indigo-100 dark:border-gray-600' },
                                             { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white',inactiveClass: 'bg-yellow-50 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 border border-yellow-100 dark:border-gray-600' },
                                             { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-teal-500 text-white', inactiveClass: 'bg-teal-50 dark:bg-gray-700 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-gray-600' },
                                             { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',   inactiveClass: 'bg-red-50 dark:bg-gray-700 text-red-700 dark:text-red-300 border border-red-100 dark:border-gray-600' },
@@ -695,7 +695,7 @@ const SuperAdminDashboard = () => {
                                     
                                     {/* Charts Section */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                                        <div className="bg-white dark:bg-[#2A1E2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
+                                        <div className="bg-white dark:bg-[#231A2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center">
                                             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 w-full text-center">Application Progress</h3>
                                             <div className="w-full max-w-sm">
                                                 <ProgressPieChart
@@ -712,7 +712,7 @@ const SuperAdminDashboard = () => {
                                             </div>
                                         </div>
                                         
-                                        <div className="bg-white dark:bg-[#2A1E2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center min-h-[300px]">
+                                        <div className="bg-white dark:bg-[#231A2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center min-h-[300px]">
                                             <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 w-full text-center">Payment Status Overview</h3>
                                             {stats.paymentStats ? (
                                                 <div className="w-full h-64">
@@ -774,35 +774,35 @@ const SuperAdminDashboard = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Registration & Referral Tracking</h3>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                                     <div 
-                                        className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'self' ? 'ring-2 ring-orange-500' : ''}`}
+                                        className={`bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'self' ? 'ring-2 ring-orange-500' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'self' ? 'all' : 'self'); setCurrentPage(1); }}
                                     >
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium text-center leading-tight">Direct/Self<br/>Registered</p>
                                         <p className="text-2xl font-bold text-orange-600 dark:text-orange-400 mt-1">{stats.referralStats.selfRegistered || 0}</p>
                                     </div>
                                     <div 
-                                        className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'student' ? 'ring-2 ring-green-500' : ''}`}
+                                        className={`bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'student' ? 'ring-2 ring-green-500' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'student' ? 'all' : 'student'); setCurrentPage(1); }}
                                     >
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Student</p>
                                         <p className="text-2xl font-bold text-green-600 dark:text-green-400 mt-1">{stats.referralStats.studentReferred || 0}</p>
                                     </div>
                                     <div 
-                                        className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'agent' ? 'ring-2 ring-blue-500' : ''}`}
+                                        className={`bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'agent' ? 'ring-2 ring-blue-500' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'agent' ? 'all' : 'agent'); setCurrentPage(1); }}
                                     >
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Agent</p>
                                         <p className="text-2xl font-bold text-[#387B95] dark:text-[#60A5FA] mt-1">{stats.referralStats.agentReferred || 0}</p>
                                     </div>
                                     <div 
-                                        className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'staff' ? 'ring-2 ring-[#7B3FA0]' : ''}`}
+                                        className={`bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'staff' ? 'ring-2 ring-[#4A1D7A]' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'staff' ? 'all' : 'staff'); setCurrentPage(1); }}
                                     >
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Staff</p>
-                                        <p className="text-2xl font-bold text-[#7B3FA0] dark:text-[#A855D0] mt-1">{stats.referralStats.staffReferred || 0}</p>
+                                        <p className="text-2xl font-bold text-[#4A1D7A] dark:text-[#9B6FCC] mt-1">{stats.referralStats.staffReferred || 0}</p>
                                     </div>
                                     <div 
-                                        className={`bg-white dark:bg-[#2A1E2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'super_admin' ? 'ring-2 ring-gray-900 dark:ring-gray-100' : ''}`}
+                                        className={`bg-white dark:bg-[#231A2E] p-4 rounded-lg shadow border border-gray-200 dark:border-gray-700 flex flex-col justify-center items-center cursor-pointer hover:shadow-lg transition-shadow ${filterReferralType === 'super_admin' ? 'ring-2 ring-gray-900 dark:ring-gray-100' : ''}`}
                                         onClick={() => { setFilterReferralType(filterReferralType === 'super_admin' ? 'all' : 'super_admin'); setCurrentPage(1); }}
                                     >
                                         <p className="text-sm text-gray-500 dark:text-gray-300 font-medium">Super Admin</p>
@@ -834,8 +834,8 @@ const SuperAdminDashboard = () => {
                                                 }}
                                                 className={`px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border w-full ${
                                                     filterSubmitterRole === staff._id
-                                                    ? 'bg-[#7B3FA0] text-white border-[#7B3FA0] shadow-md'
-                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-gray-800 hover:border-purple-300'
+                                                    ? 'bg-[#4A1D7A] text-white border-[#4A1D7A] shadow-md'
+                                                    : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-gray-800 hover:border-purple-300'
                                                 }`}
                                             >
                                                 <div className="flex flex-col items-center gap-2">
@@ -875,7 +875,7 @@ const SuperAdminDashboard = () => {
                                                 className={`px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border w-full ${
                                                     filterSubmitterRole === agent._id
                                                     ? 'bg-[#387B95] text-white border-[#387B95] shadow-md'
-                                                    : 'bg-white dark:bg-[#2A1E2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300'
+                                                    : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300'
                                                 }`}
                                             >
                                                 <div className="flex flex-col items-center gap-2">
@@ -900,7 +900,7 @@ const SuperAdminDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 }}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700"
                         >
                             <div className="p-6">
                                 {/* Header */}
@@ -936,12 +936,12 @@ const SuperAdminDashboard = () => {
                                         placeholder="Search by name, Aadhar, phone, email..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     />
                                     <select
                                         value={filterStatus}
                                         onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="all">Total Students</option>
                                         {(filters.statuses || []).map(status => {
@@ -961,7 +961,7 @@ const SuperAdminDashboard = () => {
                                     <select
                                         value={sortBy}
                                         onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="latest">Latest First</option>
                                         <option value="oldest">Oldest First</option>
@@ -971,7 +971,7 @@ const SuperAdminDashboard = () => {
                                     <select
                                         value={filterCourse}
                                         onChange={(e) => { setFilterCourse(e.target.value); setCurrentPage(1); }}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="all">All Courses</option>
                                         {(filters.courses || []).map(course => (
@@ -981,7 +981,7 @@ const SuperAdminDashboard = () => {
                                     <select
                                         value={filterSubmitterRole}
                                         onChange={(e) => setFilterSubmitterRole(e.target.value)}
-                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                     >
                                         <option value="all">All Submitters</option>
                                         <option value="student">Student</option>
@@ -1018,7 +1018,7 @@ const SuperAdminDashboard = () => {
                                                             type="checkbox"
                                                             checked={selectedStudents.length === students.length && students.length > 0}
                                                             onChange={(e) => handleSelectAll(e.target.checked)}
-                                                            className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                            className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                                         />
                                                     </th>
                                                 )}
@@ -1051,12 +1051,12 @@ const SuperAdminDashboard = () => {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                                        <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                                             {studentsLoading ? (
                                                 <tr>
                                                     <td colSpan={isSuperAdmin ? "10" : "9"} className="px-6 py-12 text-center">
                                                         <div className="flex items-center justify-center">
-                                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0]"></div>
+                                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A]"></div>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -1085,7 +1085,7 @@ const SuperAdminDashboard = () => {
                                                                         setFilterCourse('all');
                                                                         setFilterSubmitterRole('all');
                                                                     }}
-                                                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] transition-colors"
+                                                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] transition-colors"
                                                                 >
                                                                     Clear Filters
                                                                 </button>
@@ -1109,7 +1109,7 @@ const SuperAdminDashboard = () => {
                                                                         type="checkbox"
                                                                         checked={selectedStudents.includes(student._id)}
                                                                         onChange={(e) => handleSelectStudent(student._id, e.target.checked)}
-                                                                        className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                                        className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                                                     />
                                                                 </td>
                                                             )}
@@ -1119,8 +1119,8 @@ const SuperAdminDashboard = () => {
                                                             <td className="px-6 py-4 whitespace-nowrap">
                                                                 <div className="flex items-center">
                                                                     <div className="flex-shrink-0 h-10 w-10">
-                                                                        <div className="h-10 w-10 rounded-full bg-[#EDE0F7] dark:bg-[#2A1E2E] flex items-center justify-center">
-                                                                            <span className="text-sm font-medium text-[#7B3FA0] dark:text-[#C084FC]">
+                                                                        <div className="h-10 w-10 rounded-full bg-[#F0E6FA] dark:bg-[#231A2E] flex items-center justify-center">
+                                                                            <span className="text-sm font-medium text-[#4A1D7A] dark:text-[#C084FC]">
                                                                                 {student.fullName?.split(' ').map(n => n[0]).join('') || 'S'}
                                                                             </span>
                                                                         </div>
@@ -1346,7 +1346,7 @@ const SuperAdminDashboard = () => {
                                                             key={pageNum}
                                                             onClick={() => setCurrentPage(pageNum)}
                                                             className={`px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm ${currentPage === pageNum
-                                                                ? 'bg-[#7B3FA0] text-white border-[#7B3FA0]'
+                                                                ? 'bg-[#4A1D7A] text-white border-[#4A1D7A]'
                                                                 : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'
                                                                 }`}
                                                         >
@@ -1474,7 +1474,7 @@ const SuperAdminDashboard = () => {
                 sidebarItems={sidebarItems}
             >
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
                 </div>
             </DashboardLayout>
         );
@@ -1491,7 +1491,7 @@ const SuperAdminDashboard = () => {
             {/* Modals for Dashboard tab */}
             {activeSidebarItem === 'dashboard' && showDetailsModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowDetailsModal(false)}>
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Student Details</h3>
@@ -1690,7 +1690,7 @@ const SuperAdminDashboard = () => {
                                 )}
                             </div>
                             <div className="mt-6 flex justify-end">
-                                <button onClick={() => setShowDetailsModal(false)} className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80]">Close</button>
+                                <button onClick={() => setShowDetailsModal(false)} className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458]">Close</button>
                             </div>
                         </div>
                     </div>
@@ -1700,7 +1700,7 @@ const SuperAdminDashboard = () => {
             
             {activeSidebarItem === 'dashboard' && showEditModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowEditModal(false)}>
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Edit Student</h3>
@@ -1967,7 +1967,7 @@ const SuperAdminDashboard = () => {
                                                     },
                                                 }))
                                             }
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             required
                                             disabled={loadingColleges}
                                         >
@@ -1996,7 +1996,7 @@ const SuperAdminDashboard = () => {
                                                     },
                                                 }))
                                             }
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             required
                                             disabled={!editData.courseDetails?.selectedCollege || getCoursesForCollege().length === 0}
                                         >
@@ -2029,7 +2029,7 @@ const SuperAdminDashboard = () => {
                                                     },
                                                 }))
                                             }
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             required
                                             disabled={!editData.courseDetails?.selectedCollege}
                                         >
@@ -2066,7 +2066,7 @@ const SuperAdminDashboard = () => {
                                                     },
                                                 }))
                                             }
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                         >
                                             <option value="">Select Stream (Optional)</option>
                                             {getStreamsForCourse().map((stream) => (
@@ -2089,7 +2089,7 @@ const SuperAdminDashboard = () => {
                                                 ...editData,
                                                 courseDetails: { ...editData.courseDetails, customCourse: e.target.value }
                                             })}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             placeholder="Enter custom course name if 'Other' is selected"
                                         />
                                     </div>
@@ -2171,7 +2171,7 @@ const SuperAdminDashboard = () => {
                                 </button>
                                 <button
                                     onClick={handleEdit}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80]"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458]"
                                 >
                                     Save Changes
                                 </button>
@@ -2187,8 +2187,8 @@ const SuperAdminDashboard = () => {
                     <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={() => setStatModalOpen(false)}></div>
                         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                        <div className="inline-block align-bottom bg-white dark:bg-[#2A1E2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                            <div className="bg-white dark:bg-[#2A1E2E] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div className="inline-block align-bottom bg-white dark:bg-[#231A2E] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                            <div className="bg-white dark:bg-[#231A2E] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 <div className="sm:flex sm:items-start">
                                     <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                                         <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-white mb-4" id="modal-title">
@@ -2221,9 +2221,9 @@ const SuperAdminDashboard = () => {
                                                     setActiveSidebarItem('direct-students');
                                                     setStatModalOpen(false);
                                                 }}
-                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#EDE0F7] dark:hover:bg-gray-700 transition-colors"
+                                                className="flex flex-col items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-[#F0E6FA] dark:hover:bg-gray-700 transition-colors"
                                             >
-                                                <span className="text-2xl font-bold text-[#7B3FA0] dark:text-[#A855D0]">
+                                                <span className="text-2xl font-bold text-[#4A1D7A] dark:text-[#9B6FCC]">
                                                     {selectedStatKey === 'all' ? (stats.directStudents?.total || 0) : (stats.directStudents?.[selectedStatKey === 'UNDER_REVIEW' ? 'underReview' : selectedStatKey.toLowerCase()] || 0)}
                                                 </span>
                                                 <span className="text-sm font-medium text-gray-600 dark:text-gray-300 mt-1">Direct Students</span>

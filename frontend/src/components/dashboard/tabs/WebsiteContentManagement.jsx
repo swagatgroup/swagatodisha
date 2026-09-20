@@ -1063,7 +1063,7 @@ const WebsiteContentManagement = () => {
                     <div key={index} className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm relative">
                         <button
                             onClick={() => removeArrayItem('staffProfiles', index)}
-                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white dark:bg-[#2A1E2E] rounded-full p-1 shadow"
+                            className="absolute top-2 right-2 text-red-500 hover:text-red-700 bg-white dark:bg-[#231A2E] rounded-full p-1 shadow"
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
@@ -1077,7 +1077,7 @@ const WebsiteContentManagement = () => {
                                 </div>
                             )}
                             <div className="mt-3 text-center">
-                                <label className="cursor-pointer bg-white dark:bg-[#2A1E2E] text-xs px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 transition">
+                                <label className="cursor-pointer bg-white dark:bg-[#231A2E] text-xs px-3 py-1 rounded border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 transition">
                                     {uploadingStaff ? 'Compressing & Uploading...' : 'Upload Image'}
                                     <input type="file" className="hidden" accept="image/*" onChange={(e) => handleStaffImageUpload(e, index)} disabled={uploadingStaff} />
                                 </label>
@@ -1283,7 +1283,7 @@ const WebsiteContentManagement = () => {
             </div>
 
             {/* Tab Content */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={activeTab}

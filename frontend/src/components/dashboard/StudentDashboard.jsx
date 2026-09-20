@@ -158,7 +158,7 @@ const StudentDashboard = () => {
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="bg-[#7B3FA0] rounded-lg p-6 text-white mb-6"
+                            className="bg-[#4A1D7A] rounded-lg p-6 text-white mb-6"
                         >
                             <h2 className="text-2xl font-bold mb-2">
                                 Welcome back, {user?.fullName || `${user?.firstName} ${user?.lastName}`}! 👋
@@ -174,10 +174,10 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6"
+                                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 rounded-full">
+                                    <div className="p-3 bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 rounded-full">
                                         <svg className="h-6 w-6 text-[#387B95]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                         </svg>
@@ -193,11 +193,11 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6"
+                                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 rounded-full">
-                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="p-3 bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 rounded-full">
+                                        <svg className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
@@ -212,11 +212,11 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.3 }}
-                                className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6"
+                                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 rounded-full">
-                                        <svg className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="p-3 bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 rounded-full">
+                                        <svg className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                     </div>
@@ -231,11 +231,11 @@ const StudentDashboard = () => {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
-                                className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6"
+                                className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6"
                             >
                                 <div className="flex items-center">
-                                    <div className="p-3 bg-[#EDE0F7] rounded-full">
-                                        <svg className="h-6 w-6 text-[#7B3FA0]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <div className="p-3 bg-[#F0E6FA] rounded-full">
+                                        <svg className="h-6 w-6 text-[#4A1D7A]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                         </svg>
                                     </div>
@@ -254,13 +254,13 @@ const StudentDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 mb-8"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 mb-8"
                         >
                             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Quick Actions</h3>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <button
                                     onClick={() => setActiveSidebarItem('applications')}
-                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-[#EDE0F7] transition-colors duration-200"
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-[#F0E6FA] transition-colors duration-200"
                                 >
                                     <svg className="h-8 w-8 text-gray-400 dark:text-gray-300 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -270,7 +270,7 @@ const StudentDashboard = () => {
 
                                 <button
                                     onClick={() => setActiveSidebarItem('applications')}
-                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-[#EDE0F7] transition-colors duration-200"
+                                    className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-purple-400 hover:bg-[#F0E6FA] transition-colors duration-200"
                                 >
                                     <svg className="h-8 w-8 text-gray-400 dark:text-gray-300 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -285,7 +285,7 @@ const StudentDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.6 }}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow mb-8"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow mb-8"
                         >
                             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Application Progress</h3>
@@ -300,8 +300,8 @@ const StudentDashboard = () => {
                                             { stage: 'Approval', status: applicationStage === 'APPROVED' ? 'completed' : 'pending', label: 'Final Approval' }
                                         ].map((step, index) => (
                                             <div key={step.stage} className="flex flex-col items-center">
-                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 text-[#5C2D80]' :
-                                                    step.status === 'current' ? 'bg-[#EDE0F7] text-purple-800' :
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${step.status === 'completed' ? 'bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 text-[#351458]' :
+                                                    step.status === 'current' ? 'bg-[#F0E6FA] text-purple-800' :
                                                         'bg-gray-100 text-gray-400'
                                                     }`}>
                                                     {step.status === 'completed' ? '✓' : index + 1}
@@ -311,7 +311,7 @@ const StudentDashboard = () => {
                                         ))}
                                     </div>
                                     <div className="absolute top-4 left-4 right-4 h-0.5 bg-gray-200 -z-10">
-                                        <div className="h-full bg-[#7B3FA0] transition-all duration-500" style={{ width: `${(profileCompletion / 100) * 75}%` }}></div>
+                                        <div className="h-full bg-[#4A1D7A] transition-all duration-500" style={{ width: `${(profileCompletion / 100) * 75}%` }}></div>
                                     </div>
                                 </div>
                             </div>
@@ -347,7 +347,7 @@ const StudentDashboard = () => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.8 }}
-                            className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow"
+                            className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
                         >
                             <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Applications</h3>
@@ -362,8 +362,8 @@ const StudentDashboard = () => {
                                                     <p className="text-sm text-gray-500 dark:text-gray-300">{admission.institution?.name}</p>
                                                     <p className="text-xs text-gray-400 dark:text-gray-300">Applied on {new Date(admission.applicationDate).toLocaleDateString()}</p>
                                                 </div>
-                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 text-[#5C2D80]' :
-                                                    admission.status === 'pending' ? 'bg-[#EDE0F7] dark:bg-[#7B3FA0]/20 text-[#5C2D80]' :
+                                                <span className={`px-3 py-1 rounded-full text-xs font-medium ${admission.status === 'approved' ? 'bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 text-[#351458]' :
+                                                    admission.status === 'pending' ? 'bg-[#F0E6FA] dark:bg-[#4A1D7A]/20 text-[#351458]' :
                                                         admission.status === 'rejected' ? 'bg-red-100 text-red-800' :
                                                             'bg-gray-100 text-gray-800'
                                                     }`}>
@@ -382,7 +382,7 @@ const StudentDashboard = () => {
                                         <div className="mt-6">
                                             <button
                                                 onClick={() => setActiveSidebarItem('applications')}
-                                                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#7B3FA0] hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7B3FA0]"
+                                                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-[#4A1D7A] hover:bg-[#351458] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4A1D7A]"
                                             >
                                                 View Applications
                                             </button>
@@ -400,9 +400,9 @@ const StudentDashboard = () => {
             case 'refer_friend':
                 return (
                     <div>
-                        <div className="mb-6 p-4 bg-[#EDE0F7] dark:bg-[#2A1E2E]/20 border border-[#7B3FA0]/30 dark:border-white/10 rounded-xl">
-                            <h2 className="text-xl font-bold text-[#5C2D80] dark:text-[#A855D0] mb-1">Refer a Friend</h2>
-                            <p className="text-sm text-[#7B3FA0] dark:text-[#A855D0]">
+                        <div className="mb-6 p-4 bg-[#F0E6FA] dark:bg-[#231A2E]/20 border border-[#4A1D7A]/30 dark:border-white/10 rounded-xl">
+                            <h2 className="text-xl font-bold text-[#351458] dark:text-[#9B6FCC] mb-1">Refer a Friend</h2>
+                            <p className="text-sm text-[#4A1D7A] dark:text-[#9B6FCC]">
                                 Fill this form for someone you are referring. Your referral code is pre-applied — this application will be counted in your referrals.
                             </p>
                         </div>
@@ -426,7 +426,7 @@ const StudentDashboard = () => {
         return (
             <DashboardLayout title="Student Dashboard" sidebarItems={sidebarItems} activeItem={activeSidebarItem} onItemClick={setActiveSidebarItem} showSessionSelector={false}>
                 <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
                 </div>
             </DashboardLayout>
         );

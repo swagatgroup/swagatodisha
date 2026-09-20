@@ -37,8 +37,8 @@ const QRPaymentSystem = ({ qrCodeImage, amount }) => {
                         )}
                         
                         {amount > 0 ? (
-                            <div className="mt-6 p-4 bg-[#EDE0F7] text-purple-900 rounded-lg w-full max-w-sm border border-purple-100">
-                                <p className="text-sm text-[#5C2D80] font-medium">Due Amount</p>
+                            <div className="mt-6 p-4 bg-[#F0E6FA] text-purple-900 rounded-lg w-full max-w-sm border border-purple-100">
+                                <p className="text-sm text-[#351458] font-medium">Due Amount</p>
                                 <p className="text-2xl font-bold">{formatAmount(amount)}</p>
                             </div>
                         ) : (

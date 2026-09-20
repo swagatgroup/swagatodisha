@@ -206,7 +206,7 @@ const WebsiteContentManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -233,7 +233,7 @@ const WebsiteContentManagement = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700 p-6">
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Website Content Management</h2>
@@ -250,7 +250,7 @@ const WebsiteContentManagement = () => {
             </div>
 
             {/* Tabs */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 dark:border-gray-700">
                 <div className="border-b border-gray-200">
                     <nav className="flex space-x-8 px-6 overflow-x-auto">
                         {tabs.map((tab) => (
@@ -258,7 +258,7 @@ const WebsiteContentManagement = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap flex items-center space-x-2 ${activeTab === tab.id
-                                    ? 'border-[#7B3FA0] text-[#7B3FA0]'
+                                    ? 'border-[#4A1D7A] text-[#4A1D7A]'
                                     : 'border-transparent text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300'
                                     }`}
                             >
@@ -277,7 +277,7 @@ const WebsiteContentManagement = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Hero Section</h3>
                                 <button
                                     onClick={() => setEditingSection(editingSection === 'hero' ? null : 'hero')}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors"
                                 >
                                     {editingSection === 'hero' ? <EyeIcon className="h-4 w-4 mr-2 inline" /> : <EditIcon className="h-4 w-4 mr-2 inline" />}
                                     {editingSection === 'hero' ? 'Preview' : 'Edit'}
@@ -296,7 +296,7 @@ const WebsiteContentManagement = () => {
                                                     ...settings,
                                                     heroSection: { ...settings.heroSection, title: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -308,7 +308,7 @@ const WebsiteContentManagement = () => {
                                                     heroSection: { ...settings.heroSection, subtitle: e.target.value }
                                                 })}
                                                 rows={3}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -320,7 +320,7 @@ const WebsiteContentManagement = () => {
                                                     ...settings,
                                                     heroSection: { ...settings.heroSection, ctaText: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -332,7 +332,7 @@ const WebsiteContentManagement = () => {
                                                     ...settings,
                                                     heroSection: { ...settings.heroSection, ctaLink: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -345,7 +345,7 @@ const WebsiteContentManagement = () => {
                                                         ...settings,
                                                         heroSection: { ...settings.heroSection, backgroundImage: e.target.value }
                                                     })}
-                                                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 />
                                                 <input
                                                     type="file"
@@ -377,7 +377,7 @@ const WebsiteContentManagement = () => {
                                                 <div>
                                                     <h1 className="text-2xl font-bold mb-2">{settings.heroSection.title}</h1>
                                                     <p className="text-lg mb-4">{settings.heroSection.subtitle}</p>
-                                                    <button className="px-6 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80]">
+                                                    <button className="px-6 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458]">
                                                         {settings.heroSection.ctaText}
                                                     </button>
                                                 </div>
@@ -415,7 +415,7 @@ const WebsiteContentManagement = () => {
                                     <button
                                         onClick={() => handleSave({ heroSection: settings.heroSection })}
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50"
                                     >
                                         <SaveIcon className="h-4 w-4 mr-2 inline" />
                                         {saving ? 'Saving...' : 'Save Changes'}
@@ -432,7 +432,7 @@ const WebsiteContentManagement = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">About Section</h3>
                                 <button
                                     onClick={() => setEditingSection(editingSection === 'about' ? null : 'about')}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors"
                                 >
                                     {editingSection === 'about' ? <EyeIcon className="h-4 w-4 mr-2 inline" /> : <EditIcon className="h-4 w-4 mr-2 inline" />}
                                     {editingSection === 'about' ? 'Preview' : 'Edit'}
@@ -451,7 +451,7 @@ const WebsiteContentManagement = () => {
                                                     ...settings,
                                                     aboutSection: { ...settings.aboutSection, title: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -463,7 +463,7 @@ const WebsiteContentManagement = () => {
                                                     aboutSection: { ...settings.aboutSection, description: e.target.value }
                                                 })}
                                                 rows={4}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -476,7 +476,7 @@ const WebsiteContentManagement = () => {
                                                         ...settings,
                                                         aboutSection: { ...settings.aboutSection, image: e.target.value }
                                                     })}
-                                                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 />
                                                 <input
                                                     type="file"
@@ -539,7 +539,7 @@ const WebsiteContentManagement = () => {
                                     <button
                                         onClick={() => handleSave({ aboutSection: settings.aboutSection })}
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50"
                                     >
                                         <SaveIcon className="h-4 w-4 mr-2 inline" />
                                         {saving ? 'Saving...' : 'Save Changes'}
@@ -556,7 +556,7 @@ const WebsiteContentManagement = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Contact Information</h3>
                                 <button
                                     onClick={() => setEditingSection(editingSection === 'contact' ? null : 'contact')}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors"
                                 >
                                     {editingSection === 'contact' ? <EyeIcon className="h-4 w-4 mr-2 inline" /> : <EditIcon className="h-4 w-4 mr-2 inline" />}
                                     {editingSection === 'contact' ? 'Preview' : 'Edit'}
@@ -575,7 +575,7 @@ const WebsiteContentManagement = () => {
                                                     ...settings,
                                                     contactInfo: { ...settings.contactInfo, phone: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -587,7 +587,7 @@ const WebsiteContentManagement = () => {
                                                     ...settings,
                                                     contactInfo: { ...settings.contactInfo, whatsapp: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -599,7 +599,7 @@ const WebsiteContentManagement = () => {
                                                     ...settings,
                                                     contactInfo: { ...settings.contactInfo, email: e.target.value }
                                                 })}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                         <div>
@@ -611,7 +611,7 @@ const WebsiteContentManagement = () => {
                                                     contactInfo: { ...settings.contactInfo, address: e.target.value }
                                                 })}
                                                 rows={3}
-                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                             />
                                         </div>
                                     </div>
@@ -661,7 +661,7 @@ const WebsiteContentManagement = () => {
                                     <button
                                         onClick={() => handleSave({ contactInfo: settings.contactInfo })}
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50"
                                     >
                                         <SaveIcon className="h-4 w-4 mr-2 inline" />
                                         {saving ? 'Saving...' : 'Save Changes'}
@@ -678,7 +678,7 @@ const WebsiteContentManagement = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">System Settings</h3>
                                 <button
                                     onClick={() => setEditingSection(editingSection === 'system' ? null : 'system')}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors"
                                 >
                                     {editingSection === 'system' ? <EyeIcon className="h-4 w-4 mr-2 inline" /> : <EditIcon className="h-4 w-4 mr-2 inline" />}
                                     {editingSection === 'system' ? 'Preview' : 'Edit'}
@@ -698,7 +698,7 @@ const WebsiteContentManagement = () => {
                                                         ...settings,
                                                         systemSettings: { ...settings.systemSettings, maintenanceMode: e.target.checked }
                                                     })}
-                                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                    className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                                 />
                                             </div>
                                             <div className="flex items-center justify-between">
@@ -710,7 +710,7 @@ const WebsiteContentManagement = () => {
                                                         ...settings,
                                                         systemSettings: { ...settings.systemSettings, allowRegistration: e.target.checked }
                                                     })}
-                                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                    className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                                 />
                                             </div>
                                             <div className="flex items-center justify-between">
@@ -722,7 +722,7 @@ const WebsiteContentManagement = () => {
                                                         ...settings,
                                                         systemSettings: { ...settings.systemSettings, allowAgentRegistration: e.target.checked }
                                                     })}
-                                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                    className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                                 />
                                             </div>
                                             <div className="flex items-center justify-between">
@@ -734,7 +734,7 @@ const WebsiteContentManagement = () => {
                                                         ...settings,
                                                         systemSettings: { ...settings.systemSettings, requireEmailVerification: e.target.checked }
                                                     })}
-                                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                    className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                                 />
                                             </div>
                                         </div>
@@ -748,7 +748,7 @@ const WebsiteContentManagement = () => {
                                                         ...settings,
                                                         systemSettings: { ...settings.systemSettings, maxFileSize: parseInt(e.target.value) }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 />
                                             </div>
                                             <div>
@@ -763,7 +763,7 @@ const WebsiteContentManagement = () => {
                                                             allowedFileTypes: e.target.value.split(',').map(type => type.trim())
                                                         }
                                                     })}
-                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                                 />
                                             </div>
                                         </div>
@@ -795,7 +795,7 @@ const WebsiteContentManagement = () => {
                                     <button
                                         onClick={() => handleSave({ systemSettings: settings.systemSettings })}
                                         disabled={saving}
-                                        className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] disabled:opacity-50"
+                                        className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50"
                                     >
                                         <SaveIcon className="h-4 w-4 mr-2 inline" />
                                         {saving ? 'Saving...' : 'Save Changes'}
@@ -812,7 +812,7 @@ const WebsiteContentManagement = () => {
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Payment Settings</h3>
                                 <button
                                     onClick={() => setEditingSection(editingSection === 'payment' ? null : 'payment')}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] transition-colors"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] transition-colors"
                                 >
                                     {editingSection === 'payment' ? <EyeIcon className="h-4 w-4 mr-2 inline" /> : <EditIcon className="h-4 w-4 mr-2 inline" />}
                                     {editingSection === 'payment' ? 'Preview' : 'Edit'}
@@ -823,7 +823,7 @@ const WebsiteContentManagement = () => {
                                 <div className="space-y-6">
                                     <div className="space-y-4">
                                         <h4 className="font-medium text-gray-900 dark:text-gray-100">Payment QR Code</h4>
-                                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#2A1E2E]">
+                                        <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#231A2E]">
                                             <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
                                                 Upload the QR Code image that will be shown to students for collecting payments.
                                             </p>
@@ -868,7 +868,7 @@ const WebsiteContentManagement = () => {
                                         <button
                                             onClick={() => handleSave({ paymentSettings: settings.paymentSettings })}
                                             disabled={saving}
-                                            className="px-4 py-2 bg-[#7B3FA0] text-white rounded-md hover:bg-[#5C2D80] disabled:opacity-50 inline-flex items-center"
+                                            className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50 inline-flex items-center"
                                         >
                                             <SaveIcon className="h-4 w-4 mr-2" />
                                             {saving ? 'Saving...' : 'Save Changes'}
@@ -878,7 +878,7 @@ const WebsiteContentManagement = () => {
                             ) : (
                                 <div className="space-y-4">
                                     <h4 className="font-medium text-gray-900 dark:text-gray-100">Payment QR Code Preview</h4>
-                                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-[#2A1E2E] text-center">
+                                    <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 bg-gray-50 dark:bg-[#231A2E] text-center">
                                         {settings.paymentSettings?.qrCodeImage ? (
                                             <img
                                                 src={settings.paymentSettings.qrCodeImage}

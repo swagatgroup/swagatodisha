@@ -149,7 +149,7 @@ const DocumentReview = ({ studentId, onClose }) => {
         return (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-lg p-6">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7B3FA0] mx-auto"></div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A] mx-auto"></div>
                     <p className="mt-2 text-gray-600 dark:text-gray-300">Loading documents...</p>
                 </div>
             </div>
@@ -180,7 +180,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                     type="checkbox"
                                     checked={selectedDocuments.length === documents.length}
                                     onChange={handleSelectAll}
-                                    className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                    className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                 />
                                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                                     Select All ({selectedDocuments.length}/{documents.length})
@@ -191,7 +191,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                 <select
                                     value={bulkAction}
                                     onChange={(e) => setBulkAction(e.target.value)}
-                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
+                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
                                 >
                                     <option value="">Select Action</option>
                                     <option value="approved">Approve All</option>
@@ -204,7 +204,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                         <select
                                             value={remarkType}
                                             onChange={(e) => setRemarkType(e.target.value)}
-                                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
+                                            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
                                         >
                                             <option value="">Select Remark Type</option>
                                             <option value="poor_quality">Poor Quality</option>
@@ -219,7 +219,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                                 type="checkbox"
                                                 checked={isCustomRemarks}
                                                 onChange={(e) => setIsCustomRemarks(e.target.checked)}
-                                                className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                                                className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                             />
                                             <span className="ml-2 text-sm text-gray-700 dark:text-gray-200">Custom Remarks</span>
                                         </label>
@@ -228,7 +228,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                             value={remarks}
                                             onChange={(e) => setRemarks(e.target.value)}
                                             placeholder="Enter remarks..."
-                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent"
+                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
                                             rows="2"
                                         />
                                     </>
@@ -237,7 +237,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                 <button
                                     onClick={handleBulkAction}
                                     disabled={!bulkAction || (bulkAction !== 'approved' && !remarks.trim())}
-                                    className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     Apply to Selected
                                 </button>
@@ -260,7 +260,7 @@ const DocumentReview = ({ studentId, onClose }) => {
                                                 type="checkbox"
                                                 checked={selectedDocuments.includes(document._id)}
                                                 onChange={() => handleDocumentSelect(document._id)}
-                                                className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded mt-1"
+                                                className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded mt-1"
                                             />
 
                                             <div className="flex-1">

@@ -160,12 +160,12 @@ const ReferralDashboard = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-[#7B3FA0] rounded-lg p-6 text-white shadow-lg"
+                className="bg-[#4A1D7A] rounded-lg p-6 text-white shadow-lg"
             >
                 <div className="text-center">
                     <h3 className="text-xl font-semibold mb-2">Your Referral Code</h3>
                     <div className="flex items-center justify-center space-x-4 mb-4">
-                        <div className="bg-white dark:bg-[#2A1E2E]/20 rounded-lg px-4 py-2 text-2xl font-mono font-bold tracking-wider">
+                        <div className="bg-white dark:bg-[#231A2E]/20 rounded-lg px-4 py-2 text-2xl font-mono font-bold tracking-wider">
                             {referralData.referralCode || 'N/A'}
                         </div>
                         <button
@@ -253,13 +253,13 @@ const ReferralDashboard = () => {
                     className="bg-white rounded-lg shadow-md border border-gray-100 p-6"
                 >
                     <div className="flex items-center">
-                        <div className="w-12 h-12 rounded-lg bg-[#EDE0F7] flex items-center justify-center text-[#7B3FA0]">
+                        <div className="w-12 h-12 rounded-lg bg-[#F0E6FA] flex items-center justify-center text-[#4A1D7A]">
                             <i className="fa-solid fa-wallet text-xl"></i>
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Total Earnings</p>
                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">₹{referralData.totalEarnings}</p>
-                            <p className="text-xs text-[#7B3FA0] font-medium mt-1">Tier-based rewards active</p>
+                            <p className="text-xs text-[#4A1D7A] font-medium mt-1">Tier-based rewards active</p>
                         </div>
                     </div>
                 </motion.div>
@@ -301,7 +301,7 @@ const ReferralDashboard = () => {
                 >
                     <div className="px-6 py-5 bg-gradient-to-r from-blue-50 to-purple-50 border-b border-gray-200">
                         <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center">
-                            <i className="fa-solid fa-gift text-[#7B3FA0] mr-3"></i> 
+                            <i className="fa-solid fa-gift text-[#4A1D7A] mr-3"></i> 
                             Referral Benefits Tier 
                             {user?.role === 'agent' && (
                                 <span className="text-sm text-red-500 font-semibold ml-3 bg-red-50 px-2 py-0.5 rounded-full border border-red-100">* Terms & conditions apply</span>
@@ -344,14 +344,14 @@ const ReferralDashboard = () => {
                             </div>
                             
                             {/* Ultimate Tier */}
-                            <div className="border-2 border-purple-400 bg-[#EDE0F7] rounded-xl p-5 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
+                            <div className="border-2 border-purple-400 bg-[#F0E6FA] rounded-xl p-5 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 bg-gradient-to-r from-yellow-400 to-yellow-500 text-[10px] font-bold px-3 py-1 rounded-bl-xl text-yellow-900 shadow-sm">ULTIMATE</div>
-                                <div className="w-12 h-12 bg-purple-200 text-[#5C2D80] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 bg-purple-200 text-[#351458] rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold group-hover:scale-110 transition-transform">
                                     <i className="fa-solid fa-motorcycle"></i>
                                 </div>
                                 <h4 className="font-bold text-purple-900 text-sm">100+ Referrals</h4>
-                                <p className="text-base font-extrabold text-[#5C2D80] mt-2 leading-tight">Royal Enfield 350</p>
-                                <p className="text-xs text-[#7B3FA0] font-semibold mt-0.5 tracking-tight">or iPhone 17 Pro Max</p>
+                                <p className="text-base font-extrabold text-[#351458] mt-2 leading-tight">Royal Enfield 350</p>
+                                <p className="text-xs text-[#4A1D7A] font-semibold mt-0.5 tracking-tight">or iPhone 17 Pro Max</p>
                             </div>
                         </div>
 
@@ -376,7 +376,7 @@ const ReferralDashboard = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm border border-gray-100 p-6 mb-6"
+                className="bg-white dark:bg-[#231A2E] rounded-xl shadow-sm border border-gray-100 p-6 mb-6"
             >
                 <div className="border-b border-gray-100 pb-4 mb-6">
                     <div className="flex justify-between items-center">
@@ -468,10 +468,10 @@ const ReferralDashboard = () => {
                     <p className="text-sm text-blue-800 font-medium mb-1">Note: Verification Required</p>
                     <p className="text-sm text-[#1D4B5E]">Team Swagat Odisha will verify these details. While claiming the amount, once you add everything, please contact Team Swagat Odisha for help.</p>
                     <div className="mt-3 flex flex-wrap gap-4">
-                        <a href="tel:+917855959544" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white dark:bg-[#2A1E2E] px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-[#D0E8F0] transition-colors">
+                        <a href="tel:+917855959544" className="inline-flex items-center text-sm font-medium text-blue-900 bg-white dark:bg-[#231A2E] px-3 py-1.5 rounded shadow-sm border border-blue-200 hover:bg-[#D0E8F0] transition-colors">
                             <i className="fa-solid fa-phone mr-2"></i> +91 78559 59544
                         </a>
-                        <a href="https://wa.me/917855959544" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white dark:bg-[#2A1E2E] px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
+                        <a href="https://wa.me/917855959544" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-sm font-medium text-green-700 bg-white dark:bg-[#231A2E] px-3 py-1.5 rounded shadow-sm border border-green-200 hover:bg-green-50 transition-colors">
                             <i className="fa-brands fa-whatsapp mr-2"></i> WhatsApp Support
                         </a>
                     </div>

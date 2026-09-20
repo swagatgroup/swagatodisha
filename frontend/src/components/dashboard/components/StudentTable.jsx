@@ -661,7 +661,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
             {/* Table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-[#2A1E2E]">
+                    <thead className="bg-gray-50 dark:bg-[#231A2E]">
                         <tr>
                             <th
                                 className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -750,7 +750,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                             )}
                         </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {sortedStudents.map((student, index) => (
                             <motion.tr
                                 key={student._id}
@@ -997,7 +997,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
             {/* Student Details Modal */}
             {showDetailsModal && selectedStudent && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             {/* Header */}
                             <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
@@ -1289,7 +1289,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                         </h4>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {selectedStudent.documents.map((doc, index) => (
-                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#2A1E2E]">
+                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#231A2E]">
                                                     <div className="flex items-start justify-between">
                                                         <div className="flex-1">
                                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType || doc.fileName}</p>
@@ -1382,7 +1382,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                     }}
                 >
                     <div 
-                        className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
+                        className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full flex flex-col relative"
                         style={{ zIndex: 10000, maxHeight: '90vh', height: '90vh', display: 'flex', flexDirection: 'column' }}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -1529,7 +1529,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 disabled={isAgent}
                                                 className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#231A2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 title={isAgent ? "Aadhaar number can only be edited by admin" : ""}
@@ -1838,7 +1838,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 }))}
                                                 className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#231A2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 required
@@ -1870,7 +1870,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 }))}
                                                 className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#231A2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 required
@@ -1906,7 +1906,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 }))}
                                                 className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#231A2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 required
@@ -1946,7 +1946,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 }))}
                                                 className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#231A2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 disabled={isAgent}
@@ -1978,7 +1978,7 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 }))}
                                                 className={`w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] ${
                                                     isAgent 
-                                                        ? 'bg-gray-100 dark:bg-[#2A1E2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
+                                                        ? 'bg-gray-100 dark:bg-[#231A2E] text-gray-500 dark:text-gray-300 cursor-not-allowed' 
                                                         : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100'
                                                 }`}
                                                 disabled={isAgent}

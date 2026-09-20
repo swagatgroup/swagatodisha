@@ -13,7 +13,7 @@ const LoginPortal = () => {
     if (loading || (token && !user)) {
         return (
             <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -61,8 +61,8 @@ const LoginPortal = () => {
         <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] py-12 px-4 sm:px-6 lg:px-8 pt-24 pb-20 relative z-0">
             {/* Background Decorations */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-[#7B3FA0] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
-                <div className="absolute -bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-[#905391] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000"></div>
+                <div className="absolute -top-1/4 -right-1/4 w-1/2 h-1/2 bg-[#4A1D7A] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob"></div>
+                <div className="absolute -bottom-1/4 -left-1/4 w-1/2 h-1/2 bg-[#6B3F99] rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-2000"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 bg-blue-400 rounded-full mix-blend-multiply filter blur-[100px] opacity-20 animate-blob animation-delay-4000"></div>
             </div>
 
@@ -73,7 +73,7 @@ const LoginPortal = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4"
                     >
-                        Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#7B3FA0] to-[#905391]">Swagat Odisha</span>
+                        Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A1D7A] to-[#6B3F99]">Swagat Odisha</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: -20 }}
@@ -94,7 +94,7 @@ const LoginPortal = () => {
                             transition={{ delay: index * 0.1 }}
                         >
                             <Link to={section.link} className="block group h-full">
-                                <div className="bg-white dark:bg-[#2A1E2E] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 h-full border border-gray-100 dark:border-gray-700 hover:-translate-y-2 relative overflow-hidden">
+                                <div className="bg-white dark:bg-[#231A2E] rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 p-8 h-full border border-gray-100 dark:border-gray-700 hover:-translate-y-2 relative overflow-hidden">
                                     <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${section.color} opacity-10 rounded-bl-full transition-transform duration-300 group-hover:scale-110`}></div>
                                     
                                     <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${section.color} flex items-center justify-center text-white text-2xl mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
@@ -109,7 +109,7 @@ const LoginPortal = () => {
                                         {section.description}
                                     </p>
 
-                                    <div className="mt-6 flex items-center text-[#7B3FA0] dark:text-[#A855D0] font-semibold group-hover:translate-x-2 transition-transform duration-300">
+                                    <div className="mt-6 flex items-center text-[#4A1D7A] dark:text-[#9B6FCC] font-semibold group-hover:translate-x-2 transition-transform duration-300">
                                         <span>Login Now</span>
                                         <i className="fa-solid fa-arrow-right ml-2"></i>
                                     </div>
@@ -125,7 +125,7 @@ const LoginPortal = () => {
                     transition={{ delay: 0.4 }}
                     className="max-w-3xl mx-auto"
                 >
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
                         <div className="text-center mb-8">
                             <div className="w-16 h-16 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 text-2xl mx-auto mb-4">
                                 <i className="fa-solid fa-magnifying-glass-location"></i>

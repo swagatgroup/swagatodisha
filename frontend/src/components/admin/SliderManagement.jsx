@@ -272,7 +272,7 @@ const SliderManagement = () => {
         const isUploading = uploading[sectionType];
 
         return (
-            <div className={`bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 ${!isActive ? 'hidden' : ''}`}>
+            <div className={`bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6 ${!isActive ? 'hidden' : ''}`}>
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     {sectionType === 'horizontal' ? '🖥️ Horizontal Slider' : '📱 Vertical Slider'}
                     <span className="text-sm font-normal text-gray-500 dark:text-gray-300 ml-2">
@@ -299,7 +299,7 @@ const SliderManagement = () => {
                                 type="text"
                                 value={formData.title}
                                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                 required
                             />
                         </div>
@@ -312,7 +312,7 @@ const SliderManagement = () => {
                                 type="number"
                                 value={formData.order}
                                 onChange={(e) => setFormData({ ...formData, order: parseInt(e.target.value) || 0 })}
-                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                 min="0"
                             />
                         </div>
@@ -326,7 +326,7 @@ const SliderManagement = () => {
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             rows="3"
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                         />
                     </div>
 
@@ -338,7 +338,7 @@ const SliderManagement = () => {
                             type="url"
                             value={formData.link}
                             onChange={(e) => setFormData({ ...formData, link: e.target.value })}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#7B3FA0] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                             placeholder="https://example.com"
                         />
                     </div>
@@ -352,7 +352,7 @@ const SliderManagement = () => {
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileSelect}
-                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#EDE0F7] file:text-[#5C2D80] hover:file:bg-[#EDE0F7] dark:file:bg-purple-900 dark:file:text-purple-300"
+                                className="block w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] file:text-[#351458] hover:file:bg-[#F0E6FA] dark:file:bg-purple-900 dark:file:text-purple-300"
                             />
                             {previewImage && (
                                 <div className="relative">
@@ -372,7 +372,7 @@ const SliderManagement = () => {
                             id={`isActive-${sectionType}`}
                             checked={formData.isActive}
                             onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                            className="h-4 w-4 text-[#7B3FA0] focus:ring-[#7B3FA0] border-gray-300 rounded"
+                            className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                         />
                         <label htmlFor={`isActive-${sectionType}`} className="ml-2 text-sm text-gray-700 dark:text-gray-300">
                             Active
@@ -383,7 +383,7 @@ const SliderManagement = () => {
                         <button
                             type="submit"
                             disabled={isUploading}
-                            className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isUploading ? 'Saving...' : editingSlider && editingSlider.sliderType === sectionType ? 'Update Slider' : 'Create Slider'}
                         </button>
@@ -405,7 +405,7 @@ const SliderManagement = () => {
     // Render slider list for a specific section
     const renderSliderList = (sectionType, slidersList) => {
         return (
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700 p-6">
                 <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-4">
                     {sectionType === 'horizontal' ? '🖥️ Horizontal Sliders' : '📱 Vertical Sliders'} ({slidersList.length})
                 </h2>
@@ -437,7 +437,7 @@ const SliderManagement = () => {
                                             Inactive
                                         </div>
                                     )}
-                                    <div className="absolute top-2 left-2 bg-[#7B3FA0] text-white px-2 py-1 rounded text-xs">
+                                    <div className="absolute top-2 left-2 bg-[#4A1D7A] text-white px-2 py-1 rounded text-xs">
                                         {slider.sliderType === 'vertical' ? '📱 Vertical' : '🖥️ Horizontal'}
                                     </div>
                                 </div>
@@ -490,7 +490,7 @@ const SliderManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -531,7 +531,7 @@ const SliderManagement = () => {
             </div>
 
             {/* Section Tabs */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                 <div className="border-b border-gray-200 dark:border-gray-700">
                     <nav className="flex space-x-8 px-6">
                         <button
@@ -542,7 +542,7 @@ const SliderManagement = () => {
                                 setActiveSection('horizontal');
                             }}
                             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeSection === 'horizontal'
-                                    ? 'border-[#7B3FA0] text-[#7B3FA0] dark:text-[#A855D0]'
+                                    ? 'border-[#4A1D7A] text-[#4A1D7A] dark:text-[#9B6FCC]'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-300 dark:hover:text-gray-300'
                                 }`}
                         >
@@ -557,7 +557,7 @@ const SliderManagement = () => {
                                 setActiveSection('vertical');
                             }}
                             className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${activeSection === 'vertical'
-                                    ? 'border-[#7B3FA0] text-[#7B3FA0] dark:text-[#A855D0]'
+                                    ? 'border-[#4A1D7A] text-[#4A1D7A] dark:text-[#9B6FCC]'
                                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-300 dark:hover:text-gray-300'
                                 }`}
                         >

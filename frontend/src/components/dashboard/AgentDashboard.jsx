@@ -203,7 +203,7 @@ const EnhancedAgentDashboard = () => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-[#7B3FA0] rounded-lg p-6 text-white mb-6"
+              className="bg-[#4A1D7A] rounded-lg p-6 text-white mb-6"
             >
               <h2 className="text-2xl font-bold mb-2">
                 Welcome back, {user?.fullName}! 👋
@@ -222,7 +222,7 @@ const EnhancedAgentDashboard = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 }}
-                    className="bg-white dark:bg-[#2A1E2E] rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex items-center justify-between"
+                    className="bg-white dark:bg-[#231A2E] rounded-lg p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-6 flex items-center justify-between"
                 >
                     <div>
                         <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 mb-1">Your Assigned Manager</h3>
@@ -275,7 +275,7 @@ const EnhancedAgentDashboard = () => {
                           onClick={() => setAgentView(key)}
                           className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                             agentView === key
-                              ? 'bg-white dark:bg-[#2A1E2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
+                              ? 'bg-white dark:bg-[#231A2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
                               : 'text-gray-600 dark:bg-transparent dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100'
                           }`}
                         >
@@ -309,7 +309,7 @@ const EnhancedAgentDashboard = () => {
                         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 md:gap-3 mt-4">
                         {[
                           { key: 'DRAFT',        label: 'Draft',        count: active.draft,        activeClass: 'bg-gray-600 text-white',   inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 hover:bg-gray-200' },
-                          { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#7B3FA0] text-white',   inactiveClass: 'bg-indigo-100 dark:bg-gray-700 text-[#5C2D80] hover:bg-indigo-200' },
+                          { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,    activeClass: 'bg-[#4A1D7A] text-white',   inactiveClass: 'bg-indigo-100 dark:bg-gray-700 text-[#351458] hover:bg-indigo-200' },
                           { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,     activeClass: 'bg-red-600 text-white',    inactiveClass: 'bg-red-100 dark:bg-gray-700 text-red-700 hover:bg-red-200' },
                           { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview,  activeClass: 'bg-yellow-600 text-white', inactiveClass: 'bg-yellow-100 dark:bg-gray-700 text-yellow-700 hover:bg-yellow-200' },
                           { key: 'APPROVED',     label: 'Approved',     count: active.approved,     activeClass: 'bg-teal-500 text-white',  inactiveClass: 'bg-teal-100 dark:bg-gray-700 text-teal-700 hover:bg-teal-200' },
@@ -341,7 +341,7 @@ const EnhancedAgentDashboard = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
-              className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow"
+              className="bg-white dark:bg-[#231A2E] rounded-lg shadow"
             >
               <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -397,7 +397,7 @@ const EnhancedAgentDashboard = () => {
         onItemClick={setActiveTab}
       >
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
         </div>
       </DashboardLayout>
     );

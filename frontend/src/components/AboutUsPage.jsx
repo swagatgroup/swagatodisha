@@ -102,17 +102,17 @@ const AboutUsPage = () => {
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">
                 <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#EDE0F7]/30 rounded-full blur-3xl"></div>
+                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
                 </div>
 
                 <div className="relative z-10 container mx-auto px-6 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#7B3FA0] rounded-3xl mb-6 shadow-2xl">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
                         <i className="fa-solid fa-info-circle text-white text-3xl"></i>
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                        About <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Us</span>
+                        About <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Us</span>
                     </h1>
 
                     <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
@@ -128,7 +128,7 @@ const AboutUsPage = () => {
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
                         <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
-                            <div className="w-16 h-16 bg-[#7B3FA0] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                            <div className="w-16 h-16 bg-[#4A1D7A] rounded-2xl flex items-center justify-center mx-auto mb-6">
                                 <i className="fa-solid fa-bullseye text-white text-2xl"></i>
                             </div>
                             <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">Our Mission</h2>
@@ -157,7 +157,7 @@ const AboutUsPage = () => {
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Values</span>
+                            Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Values</span>
                         </h2>
                         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                             The core principles that guide our institution and shape our educational approach.
@@ -166,7 +166,7 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
                         {values.map((value, index) => (
-                            <div key={index} className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                            <div key={index} className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                                 <div className={`w-16 h-16 bg-gradient-to-r ${value.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
                                     <i className={`${value.icon} text-white text-2xl`}></i>
                                 </div>
@@ -183,7 +183,7 @@ const AboutUsPage = () => {
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Journey</span>
+                            Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Journey</span>
                         </h2>
                         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                             Key milestones that mark our growth and success in the field of education.
@@ -193,14 +193,14 @@ const AboutUsPage = () => {
                     <div className="max-w-6xl mx-auto">
                         <div className="relative">
                             {/* Timeline Line */}
-                            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-[#7B3FA0] to-[#5C2D80]"></div>
+                            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-[#4A1D7A] to-[#351458]"></div>
 
                             <div className="space-y-12">
                                 {milestones.map((milestone, index) => (
                                     <div key={index} className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
                                         <div className="w-1/2 px-8">
-                                            <div className={`bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                                                <div className="inline-flex items-center justify-center w-12 h-12 bg-[#7B3FA0] rounded-xl mb-3">
+                                            <div className={`bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                                                <div className="inline-flex items-center justify-center w-12 h-12 bg-[#4A1D7A] rounded-xl mb-3">
                                                     <i className={`${milestone.icon} text-white text-lg`}></i>
                                                 </div>
                                                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">{milestone.title}</h3>
@@ -208,7 +208,7 @@ const AboutUsPage = () => {
                                             </div>
                                         </div>
 
-                                        <div className="w-8 h-8 bg-[#7B3FA0] rounded-full flex items-center justify-center z-10 relative">
+                                        <div className="w-8 h-8 bg-[#4A1D7A] rounded-full flex items-center justify-center z-10 relative">
                                             <span className="text-white font-bold text-sm">{milestone.year}</span>
                                         </div>
 
@@ -226,7 +226,7 @@ const AboutUsPage = () => {
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                            Leadership <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Team</span>
+                            Leadership <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Team</span>
                         </h2>
                         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
                             Meet the dedicated leaders who guide our institution towards excellence.
@@ -235,8 +235,8 @@ const AboutUsPage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {team.map((member, index) => (
-                            <div key={index} className="bg-white dark:bg-[#2A1E2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                                <div className="w-24 h-24 bg-[#7B3FA0] rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
+                            <div key={index} className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                                <div className="w-24 h-24 bg-[#4A1D7A] rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
                                     <img
                                         src={member.image}
                                         alt={member.name}
@@ -244,7 +244,7 @@ const AboutUsPage = () => {
                                     />
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-center">{member.name}</h3>
-                                <p className="text-[#7B3FA0] font-semibold text-center mb-3">{member.position}</p>
+                                <p className="text-[#4A1D7A] font-semibold text-center mb-3">{member.position}</p>
                                 <p className="text-gray-600 dark:text-gray-300 text-center text-sm leading-relaxed">{member.description}</p>
                             </div>
                         ))}
@@ -259,12 +259,12 @@ const AboutUsPage = () => {
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                             <div>
                                 <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                    Why Choose <span className="text-transparent bg-clip-text bg-[#7B3FA0]">Us</span>
+                                    Why Choose <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Us</span>
                                 </h2>
 
                                 <div className="space-y-6">
                                     <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-[#7B3FA0] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <div className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                                             <i className="fa-solid fa-graduation-cap text-white text-xl"></i>
                                         </div>
                                         <div>
@@ -274,7 +274,7 @@ const AboutUsPage = () => {
                                     </div>
 
                                     <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-[#7B3FA0] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <div className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                                             <i className="fa-solid fa-users text-white text-xl"></i>
                                         </div>
                                         <div>
@@ -284,7 +284,7 @@ const AboutUsPage = () => {
                                     </div>
 
                                     <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-[#7B3FA0] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
+                                        <div className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
                                             <i className="fa-solid fa-laptop text-white text-xl"></i>
                                         </div>
                                         <div>
@@ -299,21 +299,21 @@ const AboutUsPage = () => {
                                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Our Achievements</h3>
 
                                 <div className="space-y-4">
-                                    <div className="flex items-center p-4 bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-trophy text-[#7B3FA0] text-xl mr-4"></i>
+                                    <div className="flex items-center p-4 bg-white dark:bg-[#231A2E] rounded-xl shadow-sm">
+                                        <i className="fa-solid fa-trophy text-[#4A1D7A] text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800 dark:text-gray-100">Multiple Awards</h5>
                                             <p className="text-gray-600 dark:text-gray-300 text-sm">Recognized for excellence in education</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center p-4 bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm">
+                                    <div className="flex items-center p-4 bg-white dark:bg-[#231A2E] rounded-xl shadow-sm">
                                         <i className="fa-solid fa-users text-[#387B95] text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800 dark:text-gray-100">1000+ Students</h5>
                                             <p className="text-gray-600 dark:text-gray-300 text-sm">Successfully educated students</p>
                                         </div>
                                     </div>
-                                    <div className="flex items-center p-4 bg-white dark:bg-[#2A1E2E] rounded-xl shadow-sm">
+                                    <div className="flex items-center p-4 bg-white dark:bg-[#231A2E] rounded-xl shadow-sm">
                                         <i className="fa-solid fa-star text-green-600 text-xl mr-4"></i>
                                         <div>
                                             <h5 className="font-semibold text-gray-800 dark:text-gray-100">High Satisfaction</h5>
@@ -328,7 +328,7 @@ const AboutUsPage = () => {
             </section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-[#7B3FA0]">
+            <section className="py-20 bg-[#4A1D7A]">
                 <div className="container mx-auto px-6 text-center">
                     <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
                         Join Our <span className="text-yellow-300">Educational</span> Journey
@@ -338,10 +338,10 @@ const AboutUsPage = () => {
                         Start your educational journey with us today.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-white dark:bg-[#2A1E2E] text-[#7B3FA0] rounded-xl font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        <button className="px-8 py-4 bg-white dark:bg-[#231A2E] text-[#4A1D7A] rounded-xl font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl">
                             Apply Now
                         </button>
-                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white dark:bg-[#2A1E2E] hover:text-[#7B3FA0] transition-all duration-300">
+                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white dark:bg-[#231A2E] hover:text-[#4A1D7A] transition-all duration-300">
                             Learn More
                         </button>
                     </div>
@@ -354,18 +354,18 @@ const AboutUsPage = () => {
                     <div className="container mx-auto px-4 md:px-6">
                         <div className="text-center mb-16">
                             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Team</h2>
-                            <div className="w-24 h-1 bg-[#7B3FA0] mx-auto rounded-full"></div>
+                            <div className="w-24 h-1 bg-[#4A1D7A] mx-auto rounded-full"></div>
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
                             {staffProfiles.map((staff, idx) => (
-                                <div key={idx} className="bg-gray-50 dark:bg-[#2A1E2E] rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition duration-300">
+                                <div key={idx} className="bg-gray-50 dark:bg-[#231A2E] rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition duration-300">
                                     <img 
                                         src={staff.image || '/Swagat_Favicon.png'} 
                                         alt={staff.name}
                                         className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white dark:border-[#1A1212] shadow-lg mb-4"
                                     />
                                     <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{staff.name}</h3>
-                                    <p className="text-sm text-[#7B3FA0] dark:text-[#A855D0] font-medium">{staff.designation}</p>
+                                    <p className="text-sm text-[#4A1D7A] dark:text-[#9B6FCC] font-medium">{staff.designation}</p>
                                 </div>
                             ))}
                         </div>

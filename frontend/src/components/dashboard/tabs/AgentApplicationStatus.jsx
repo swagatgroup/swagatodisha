@@ -497,7 +497,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             key={application._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+            className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => fetchApplicationDetails(application.applicationId)}
         >
             <div className="flex justify-between items-start mb-4">
@@ -618,7 +618,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     {selectedApplication ? (
                         <div className="space-y-6">
                             {/* Application Header */}
-                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div className="flex-1">
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -835,7 +835,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                             </div>
 
                             {/* Application Summary */}
-                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     Application Summary
                                 </h4>
@@ -1026,7 +1026,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
             {/* Edit Modal */}
             {showEditModal && selectedApplication && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">

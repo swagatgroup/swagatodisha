@@ -260,7 +260,7 @@ const ApplicationVerification = () => {
             key={application._id}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
+            className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer"
             onClick={() => fetchApplicationDetails(application.applicationId)}
         >
             <div className="flex justify-between items-start mb-4">
@@ -319,7 +319,7 @@ const ApplicationVerification = () => {
     );
 
     const renderRejectionForm = () => (
-        <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+        <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
             <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Rejection Details
             </h4>
@@ -453,7 +453,7 @@ const ApplicationVerification = () => {
             </div>
 
             {/* Filter Controls */}
-            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+            <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Filter Applications</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
@@ -515,7 +515,7 @@ const ApplicationVerification = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <DocumentTextIcon className="h-6 w-6 text-[#387B95] dark:text-[#60A5FA]" />
@@ -527,7 +527,7 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
                             <ClockIcon className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
@@ -539,7 +539,7 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
                             <CheckCircleIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
@@ -551,7 +551,7 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
                         <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
                             <XCircleIcon className="h-6 w-6 text-red-600 dark:text-red-400" />
@@ -566,10 +566,10 @@ const ApplicationVerification = () => {
 
             {/* Submit Type Breakdown */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
-                        <div className="p-2 bg-indigo-100 dark:bg-[#2A1E2E]/30 rounded-lg">
-                            <DocumentTextIcon className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" />
+                        <div className="p-2 bg-indigo-100 dark:bg-[#231A2E]/30 rounded-lg">
+                            <DocumentTextIcon className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" />
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Direct Student Submissions</p>
@@ -578,10 +578,10 @@ const ApplicationVerification = () => {
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#2A1E2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
+                <div className="bg-white dark:bg-[#231A2E] p-6 rounded-lg shadow border border-gray-200 dark:border-gray-700">
                     <div className="flex items-center">
-                        <div className="p-2 bg-[#EDE0F7] dark:bg-[#2A1E2E]/30 rounded-lg">
-                            <UserIcon className="h-6 w-6 text-[#7B3FA0] dark:text-[#A855D0]" />
+                        <div className="p-2 bg-[#F0E6FA] dark:bg-[#231A2E]/30 rounded-lg">
+                            <UserIcon className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" />
                         </div>
                         <div className="ml-4">
                             <p className="text-sm font-medium text-gray-500 dark:text-gray-300">Agent Submissions</p>
@@ -637,7 +637,7 @@ const ApplicationVerification = () => {
                     {selectedApplication ? (
                         <div className="space-y-6">
                             {/* Application Header */}
-                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -711,7 +711,7 @@ const ApplicationVerification = () => {
                             ) : null}
 
                             {/* Application Details */}
-                            <div className="bg-white dark:bg-[#2A1E2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                            <div className="bg-white dark:bg-[#231A2E] border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                                     Application Details
                                 </h4>

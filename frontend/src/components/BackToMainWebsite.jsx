@@ -18,10 +18,10 @@ const BackToMainWebsite = ({
     }
 
     const variantStyles = {
-        "default": "bg-[#7B3FA0] text-white hover:from-purple-700 hover:to-blue-700",
-        "outline": "bg-white/90 backdrop-blur-sm text-[#7B3FA0] border-2 border-[#7B3FA0] hover:bg-[#7B3FA0] hover:text-white",
+        "default": "bg-[#4A1D7A] text-white hover:from-purple-700 hover:to-blue-700",
+        "outline": "bg-white/90 backdrop-blur-sm text-[#4A1D7A] border-2 border-[#4A1D7A] hover:bg-[#4A1D7A] hover:text-white",
         "minimal": "bg-gray-100/90 backdrop-blur-sm text-gray-700 hover:bg-gray-200",
-        "floating": "bg-white shadow-2xl text-[#7B3FA0] hover:shadow-3xl hover:scale-105"
+        "floating": "bg-white shadow-2xl text-[#4A1D7A] hover:shadow-3xl hover:scale-105"
     }
 
     return (

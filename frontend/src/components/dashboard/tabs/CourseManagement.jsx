@@ -283,7 +283,7 @@ const CourseManagement = () => {
             </div>
 
             {/* Filters */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Search</label>
@@ -333,7 +333,7 @@ const CourseManagement = () => {
             </div>
 
             {/* Course List */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
                 <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Courses ({filteredCourses.length})
@@ -439,7 +439,7 @@ const CourseManagement = () => {
                                             type="text"
                                             value={formData.name}
                                             onChange={(e) => handleInputChange('name', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -450,7 +450,7 @@ const CourseManagement = () => {
                                             type="text"
                                             value={formData.code}
                                             onChange={(e) => handleInputChange('code', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -460,7 +460,7 @@ const CourseManagement = () => {
                                         <select
                                             value={formData.institutionType}
                                             onChange={(e) => handleInputChange('institutionType', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             <option value="">Select Type</option>
@@ -475,7 +475,7 @@ const CourseManagement = () => {
                                         <select
                                             value={formData.level}
                                             onChange={(e) => handleInputChange('level', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         >
                                             <option value="">Select Level</option>
@@ -491,7 +491,7 @@ const CourseManagement = () => {
                                             type="text"
                                             value={formData.duration}
                                             onChange={(e) => handleInputChange('duration', e.target.value)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             placeholder="e.g., 3 Years, 2 Years, 1 Year"
                                             required
                                         />
@@ -503,7 +503,7 @@ const CourseManagement = () => {
                                             type="number"
                                             value={formData.pricing.totalFee}
                                             onChange={(e) => handleInputChange('pricing.totalFee', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             required
                                         />
                                     </div>
@@ -515,7 +515,7 @@ const CourseManagement = () => {
                                         value={formData.description}
                                         onChange={(e) => handleInputChange('description', e.target.value)}
                                         rows={4}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -526,7 +526,7 @@ const CourseManagement = () => {
                                         type="text"
                                         value={formData.shortDescription}
                                         onChange={(e) => handleInputChange('shortDescription', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         maxLength={200}
                                     />
                                 </div>
@@ -537,7 +537,7 @@ const CourseManagement = () => {
                                         value={formData.eligibility}
                                         onChange={(e) => handleInputChange('eligibility', e.target.value)}
                                         rows={3}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         required
                                     />
                                 </div>
@@ -550,7 +550,7 @@ const CourseManagement = () => {
                                             value={formData.features.join(', ')}
                                             onChange={(e) => handleArrayChange('features', e.target.value)}
                                             rows={3}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             placeholder="Feature 1, Feature 2, Feature 3"
                                         />
                                     </div>
@@ -561,7 +561,7 @@ const CourseManagement = () => {
                                             value={formData.highlights.join(', ')}
                                             onChange={(e) => handleArrayChange('highlights', e.target.value)}
                                             rows={3}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                             placeholder="Highlight 1, Highlight 2, Highlight 3"
                                         />
                                     </div>
@@ -575,7 +575,7 @@ const CourseManagement = () => {
                                             type="number"
                                             value={formData.displayOrder}
                                             onChange={(e) => handleInputChange('displayOrder', parseInt(e.target.value) || 0)}
-                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#2A1E2E] text-gray-900 dark:text-gray-100"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100"
                                         />
                                     </div>
 

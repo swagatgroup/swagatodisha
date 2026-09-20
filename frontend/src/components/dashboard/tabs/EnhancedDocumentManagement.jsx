@@ -163,7 +163,7 @@ const EnhancedDocumentManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -184,7 +184,7 @@ const EnhancedDocumentManagement = () => {
                         <select
                             value={selectedCategory}
                             onChange={(e) => setSelectedCategory(e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                         >
                             <option value="">Select document category</option>
                             {documentCategories.map(category => (
@@ -202,7 +202,7 @@ const EnhancedDocumentManagement = () => {
                             type="file"
                             onChange={handleFileSelect}
                             accept=".pdf,.jpg,.jpeg,.png"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                         />
                     </div>
                 </div>
@@ -219,7 +219,7 @@ const EnhancedDocumentManagement = () => {
                     <button
                         onClick={handleUpload}
                         disabled={uploading || !selectedFile || !selectedCategory}
-                        className="px-6 py-3 bg-[#7B3FA0] text-white font-medium rounded-lg hover:bg-[#5C2D80] focus:outline-none focus:ring-2 focus:ring-[#7B3FA0] disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-6 py-3 bg-[#4A1D7A] text-white font-medium rounded-lg hover:bg-[#351458] focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {uploading ? 'Uploading...' : 'Upload Document'}
                     </button>
@@ -248,12 +248,12 @@ const EnhancedDocumentManagement = () => {
                                     {category.required && <span className="text-red-500 text-sm">*</span>}
                                 </div>
                                 <div className="flex items-center space-x-2">
-                                    <span className="text-2xl font-bold text-[#7B3FA0]">{approvedCount}</span>
+                                    <span className="text-2xl font-bold text-[#4A1D7A]">{approvedCount}</span>
                                     <span className="text-gray-500 dark:text-gray-300">/ {totalCount}</span>
                                 </div>
                                 <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
                                     <div
-                                        className="bg-[#7B3FA0] h-2 rounded-full transition-all duration-500"
+                                        className="bg-[#4A1D7A] h-2 rounded-full transition-all duration-500"
                                         style={{ width: totalCount > 0 ? `${(approvedCount / totalCount) * 100}%` : '0%' }}
                                     ></div>
                                 </div>
@@ -309,10 +309,10 @@ const EnhancedDocumentManagement = () => {
                                             {getStatusText(doc.status)}
                                         </span>
                                         <div className="flex space-x-2">
-                                            <button className="text-[#7B3FA0] hover:text-purple-800 text-sm font-medium">
+                                            <button className="text-[#4A1D7A] hover:text-purple-800 text-sm font-medium">
                                                 View
                                             </button>
-                                            <button className="text-[#7B3FA0] hover:text-purple-800 text-sm font-medium">
+                                            <button className="text-[#4A1D7A] hover:text-purple-800 text-sm font-medium">
                                                 Download
                                             </button>
                                             {doc.status === 'rejected' && (

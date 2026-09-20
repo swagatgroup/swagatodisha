@@ -79,7 +79,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     return (
         <div className="h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#1A1212] pattern-bg dark:pattern-bg-dark overflow-hidden">
             {/* Top Navigation Bar */}
-            <nav className="flex-none bg-white/80 dark:bg-[#2A1E2E]/80 backdrop-blur-md shadow-sm border-b border-[#7B3FA0]/10 dark:border-white/10 z-20 relative">
+            <nav className="flex-none bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-md shadow-sm border-b border-[#4A1D7A]/10 dark:border-white/10 z-20 relative">
                 <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
                     <div className="flex justify-between items-center h-16">
                         {/* Left side - Logo and Menu Button */}
@@ -102,7 +102,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     }}
                                 />
                                 <div className="hidden sm:flex flex-col ml-3">
-                                    <span className="text-xl font-bold font-baloo tracking-tight text-[#7B3FA0] dark:text-[#A855D0] leading-none">
+                                    <span className="text-xl font-bold font-baloo tracking-tight text-[#4A1D7A] dark:text-[#9B6FCC] leading-none">
                                         Swagat
                                     </span>
                                     <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-300 leading-tight">
@@ -131,7 +131,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     <select
                                         value={selectedSession}
                                         onChange={(e) => setSelectedSession(e.target.value)}
-                                        className="form-select block w-32 pl-3 pr-10 py-1.5 text-sm border-gray-300 dark:border-gray-600 dark:bg-[#2A1E2E] dark:text-white focus:outline-none focus:ring-[#7B3FA0] focus:border-[#7B3FA0] rounded-md"
+                                        className="form-select block w-32 pl-3 pr-10 py-1.5 text-sm border-gray-300 dark:border-gray-600 dark:bg-[#231A2E] dark:text-white focus:outline-none focus:ring-[#4A1D7A] focus:border-[#4A1D7A] rounded-md"
                                     >
                                         {availableSessions.map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
@@ -161,7 +161,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     >
                                         <BellIcon className="w-5 h-5" />
                                         {recentPayments.length > 0 && (
-                                            <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-[#2A1E2E]">
+                                            <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-[#231A2E]">
                                                 {recentPayments.length}
                                             </span>
                                         )}
@@ -169,8 +169,8 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
 
                                     {/* Payments Dropdown Menu */}
                                     {paymentsOpen && (
-                                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 z-50">
-                                            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A1E2E]/50 rounded-t-lg">
+                                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#231A2E] rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 z-50">
+                                            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#231A2E]/50 rounded-t-lg">
                                                 <div className="flex items-center justify-between">
                                                     <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Recent Payments</h3>
                                                 </div>
@@ -186,8 +186,8 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                     ))
                                                 )}
                                             </div>
-                                            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#2A1E2E]/50 rounded-b-lg">
-                                                <button onClick={() => { setPaymentsOpen(false); setShowAllPaymentsModal(true); }} className="w-full text-center text-sm font-medium text-[#7B3FA0]">View All</button>
+                                            <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#231A2E]/50 rounded-b-lg">
+                                                <button onClick={() => { setPaymentsOpen(false); setShowAllPaymentsModal(true); }} className="w-full text-center text-sm font-medium text-[#4A1D7A]">View All</button>
                                             </div>
                                         </div>
                                     )}
@@ -200,7 +200,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     onClick={() => toggleUserMenu()}
                                     className="flex items-center space-x-2 focus:outline-none"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7B3FA0] to-[#5C2D80] flex items-center justify-center text-white">
+                                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4A1D7A] to-[#351458] flex items-center justify-center text-white">
                                         <UserIcon className="w-5 h-5" />
                                     </div>
                                 </button>
@@ -212,7 +212,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     button ALWAYS works. Reliability > animation. */}
                                 {userMenuOpen && (
                                     <div
-                                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#2A1E2E] rounded-md shadow-lg py-1 z-[9999] ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
+                                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#231A2E] rounded-md shadow-lg py-1 z-[9999] ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
                                     >
                                         {/* User Info Section ONLY — Logout moved to sidebar */}
                                         <div className="px-4 py-3 border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623] rounded-md">
@@ -253,12 +253,12 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             animate={{ x: 0 }}
                             exit={{ x: '-100%' }}
                             transition={{ type: 'tween', duration: 0.3 }}
-                            className="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-[#2A1E2E] shadow-xl lg:hidden flex flex-col"
+                            className="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-[#231A2E] shadow-xl lg:hidden flex flex-col"
                         >
                             <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                                 <div className="flex items-center flex-shrink-0 px-4 mb-4">
                                     <img src="/Swagat_Favicon.png" alt="Logo" className="h-8 w-auto dark:brightness-0 dark:invert" />
-                                    <span className="ml-3 text-xl font-bold text-[#7B3FA0] dark:text-[#A855D0] font-baloo tracking-tight">Swagat</span>
+                                    <span className="ml-3 text-xl font-bold text-[#4A1D7A] dark:text-[#9B6FCC] font-baloo tracking-tight">Swagat</span>
                                 </div>
                                 <nav className="flex-1 px-2 space-y-1">
                                     {sidebarItems.map((item) => (
@@ -271,7 +271,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             }}
                                             className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                                                 activeItem === item.id 
-                                                    ? 'bg-[#EDE0F7] dark:bg-[#5C2D80] text-purple-900 dark:text-white' 
+                                                    ? 'bg-[#F0E6FA] dark:bg-[#351458] text-purple-900 dark:text-white' 
                                                     : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/10'
                                             }`}
                                         >
@@ -298,7 +298,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                 {/* Desktop sidebar */}
                 <div className={`hidden lg:flex lg:flex-shrink-0 transition-all duration-300 ${sidebarCollapsed ? 'w-16' : 'w-64'}`}>
                     <div className="flex flex-col w-full h-full relative z-10">
-                        <div className="flex flex-col h-full flex-1 bg-white/80 dark:bg-[#2A1E2E]/80 backdrop-blur-md border-r border-[#7B3FA0]/10 dark:border-white/10 relative">
+                        <div className="flex flex-col h-full flex-1 bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-md border-r border-[#4A1D7A]/10 dark:border-white/10 relative">
                             <button
                                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
                                 className="absolute top-2 left-2 p-2 rounded-md text-gray-400 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 z-10"
@@ -313,7 +313,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                             onClick={() => onItemClick ? onItemClick(item.id) : navigate(item.href)}
                                             className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md transition-colors ${
                                                 activeItem === item.id 
-                                                ? 'bg-[#EDE0F7] dark:bg-[#5C2D80] text-purple-900 dark:text-white' 
+                                                ? 'bg-[#F0E6FA] dark:bg-[#351458] text-purple-900 dark:text-white' 
                                                 : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/10'
                                             }`}
                                         >

@@ -591,7 +591,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-blue-100 rounded-lg">
               <svg
@@ -619,7 +619,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-yellow-100 rounded-lg">
               <svg
@@ -645,7 +645,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
           <div className="flex items-center">
             <div className="p-2 bg-green-100 rounded-lg">
               <svg
@@ -671,11 +671,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+        <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
           <div className="flex items-center">
-            <div className="p-2 bg-[#EDE0F7] rounded-lg">
+            <div className="p-2 bg-[#F0E6FA] rounded-lg">
               <svg
-                className="w-6 h-6 text-[#7B3FA0]"
+                className="w-6 h-6 text-[#4A1D7A]"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -699,7 +699,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -807,7 +807,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       </div>
 
       {/* Students List */}
-      <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow">
+      <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Students ({filteredStudents.length})
@@ -840,7 +840,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
               {filteredStudents.length === 0 ? (
                 <tr>
                   <td colSpan="7" className="px-6 py-12 text-center">
@@ -1008,7 +1008,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           setFinancialStudent(student);
                           setShowFinancialsModal(true);
                         }}
-                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#5C2D80] bg-[#EDE0F7] hover:bg-[#EDE0F7] rounded-md transition-colors"
+                        className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#351458] bg-[#F0E6FA] hover:bg-[#F0E6FA] rounded-md transition-colors"
                         title="View Financials"
                       >
                         <CurrencyRupeeIcon className="h-4 w-4 mr-1" />
@@ -1036,7 +1036,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         <button
                           onClick={() => resubmitApplication(student._id)}
                           disabled={resubmitting}
-                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#5C2D80] bg-[#EDE0F7] hover:bg-[#EDE0F7] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-[#351458] bg-[#F0E6FA] hover:bg-[#F0E6FA] rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                           title="Resubmit application for review"
                         >
                           <ArrowPathIcon className="h-4 w-4 mr-1" />
@@ -1819,7 +1819,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     </h4>
                     <div className="space-y-4">
                       {rejectionDetails.rejectionDetails.map((detail, index) => (
-                        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#2A1E2E]">
+                        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#231A2E]">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Issue: </span>
@@ -1858,7 +1858,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Additional Notes</h4>
                     <div className="space-y-2">
                       {rejectionDetails.adminNotes.map((note, index) => (
-                        <div key={index} className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 dark:bg-[#2A1E2E]">
+                        <div key={index} className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50 dark:bg-[#231A2E]">
                           <p className="text-sm text-gray-900 dark:text-gray-100">{note.note || note}</p>
                           {note.addedAt && (
                             <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{new Date(note.addedAt).toLocaleString()}</p>
@@ -1925,7 +1925,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       {/* View Details Modal */}
       {showViewModal && viewingStudent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">

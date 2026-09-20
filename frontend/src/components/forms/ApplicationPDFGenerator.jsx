@@ -957,10 +957,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 </p>
             </div>
 
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center space-x-3">
-                        <DocumentIcon className="w-8 h-8 text-[#7B3FA0]" />
+                        <DocumentIcon className="w-8 h-8 text-[#4A1D7A]" />
                         <div>
                             <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
                                 Student Application
@@ -975,7 +975,7 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                         <button
                             onClick={generatePDF}
                             disabled={isGenerating}
-                            className="px-4 py-2 bg-[#7B3FA0] text-white rounded-lg hover:bg-[#5C2D80] disabled:opacity-50 flex items-center space-x-2"
+                            className="px-4 py-2 bg-[#4A1D7A] text-white rounded-lg hover:bg-[#351458] disabled:opacity-50 flex items-center space-x-2"
                         >
                             <DocumentIcon className="w-4 h-4" />
                             <span>{isGenerating ? 'Generating...' : 'Generate PDF'}</span>

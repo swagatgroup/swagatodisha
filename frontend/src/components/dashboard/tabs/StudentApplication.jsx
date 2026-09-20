@@ -404,7 +404,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
             {/* Rejection Details Modal */}
             {showRejectionModal && rejectionDetails && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="p-6">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
@@ -445,7 +445,7 @@ const StudentApplication = ({ onStudentUpdate }) => {
                                         </h4>
                                         <div className="space-y-4">
                                             {rejectionDetails.rejectionDetails.map((detail, index) => (
-                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#2A1E2E]">
+                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-[#231A2E]">
                                                     <div className="flex justify-between items-start mb-2">
                                                         <h5 className="font-medium text-gray-900 dark:text-gray-100">
                                                             Issue #{index + 1}

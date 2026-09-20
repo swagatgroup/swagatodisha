@@ -158,7 +158,7 @@ const PasswordManagement = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#7B3FA0]"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
             </div>
         );
     }
@@ -174,7 +174,7 @@ const PasswordManagement = () => {
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Password Management</h2>
@@ -200,7 +200,7 @@ const PasswordManagement = () => {
             </div>
 
             {/* Password Security Overview */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Password Security Overview</h3>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
@@ -243,7 +243,7 @@ const PasswordManagement = () => {
             </div>
 
             {/* Password Strength Distribution */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Password Strength Distribution</h3>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
@@ -296,7 +296,7 @@ const PasswordManagement = () => {
 
             {/* UsersIcon with Weak Passwords */}
             {passwordAudit.weakPasswordDetails && passwordAudit.weakPasswordDetails.length > 0 && (
-                <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+                <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">UsersIcon with Weak Passwords</h3>
                         <div className="flex space-x-3">
@@ -307,13 +307,13 @@ const PasswordManagement = () => {
                                     placeholder="SearchIcon users..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchIconTerm(e.target.value)}
-                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                                 />
                             </div>
                             <select
                                 value={filterStatus}
                                 onChange={(e) => setFilterIconStatus(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#7B3FA0]"
+                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                             >
                                 <option value="all">All Strength</option>
                                 <option value="weak">Weak</option>
@@ -344,7 +344,7 @@ const PasswordManagement = () => {
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white dark:bg-[#2A1E2E] divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                                 {filteredUsersIcon.map((user, index) => (
                                     <motion.tr
                                         key={index}
@@ -355,8 +355,8 @@ const PasswordManagement = () => {
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
                                                 <div className="flex-shrink-0 h-10 w-10">
-                                                    <div className="h-10 w-10 rounded-full bg-[#EDE0F7] flex items-center justify-center">
-                                                        <span className="text-sm font-medium text-[#7B3FA0]">
+                                                    <div className="h-10 w-10 rounded-full bg-[#F0E6FA] flex items-center justify-center">
+                                                        <span className="text-sm font-medium text-[#4A1D7A]">
                                                             {user.email.split('@')[0].substring(0, 2).toUpperCase()}
                                                         </span>
                                                     </div>
@@ -409,7 +409,7 @@ const PasswordManagement = () => {
             )}
 
             {/* Password Security Recommendations */}
-            <div className="bg-white dark:bg-[#2A1E2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Security Recommendations</h3>
                 <div className="space-y-4">
                     {[
