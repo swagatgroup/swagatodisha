@@ -4,6 +4,14 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CONTACT_INFO } from '../utils/constants'
 import api from '../utils/api'
+import {
+    RiCalendarScheduleLine,
+    RiRoadMapLine,
+    RiNotification3Line,
+    RiBarChartLine,
+    RiFilePdf2Line,
+    RiImageLine,
+} from '@remixicon/react'
 
 // Register ScrollTrigger only on client side
 if (typeof window !== 'undefined') {
@@ -404,36 +412,32 @@ const QuickLinks = () => {
             id: 1,
             title: "Time Tables",
             description: "View schedules from different universities",
-            icon: "fa-solid fa-calendar-days",
-            color: "#8B5CF6",
-            bgColor: "from-purple-500 to-purple-600",
+            icon: <RiCalendarScheduleLine size={28} className="text-white" />,
+            bgStyle: { background: "linear-gradient(135deg, #4A1D7A 0%, #351458 100%)" },
             category: "timetable"
         },
         {
             id: 2,
             title: "Career Roadmaps",
             description: "Explore career paths and opportunities",
-            icon: "fa-solid fa-route",
-            color: "#3B82F6",
-            bgColor: "from-blue-500 to-blue-600",
+            icon: <RiRoadMapLine size={28} className="text-white" />,
+            bgStyle: { background: "linear-gradient(135deg, #E8A817 0%, #C48D0F 100%)" },
             category: "career"
         },
         {
             id: 3,
             title: "Notifications",
             description: "Stay updated with latest news",
-            icon: "fa-solid fa-newspaper",
-            color: "#10B981",
-            bgColor: "from-emerald-500 to-emerald-600",
+            icon: <RiNotification3Line size={28} className="text-white" />,
+            bgStyle: { background: "linear-gradient(135deg, #1D4B5E 0%, #387B95 100%)" },
             category: "notifications"
         },
         {
             id: 4,
             title: "Results",
             description: "Check academic performance",
-            icon: "fa-solid fa-chart-line",
-            color: "#F59E0B",
-            bgColor: "from-amber-500 to-amber-600",
+            icon: <RiBarChartLine size={28} className="text-white" />,
+            bgStyle: { background: "linear-gradient(135deg, #4A1D7A 0%, #1D4B5E 100%)" },
             category: "results"
         }
     ]
@@ -521,22 +525,16 @@ const QuickLinks = () => {
                 {/* Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {quickLinks.map((link, index) => (
-                        <motion.div
+                        <div
                             key={link.id}
                             ref={el => cardsRef.current[index] = el}
-                            className="group cursor-pointer relative"
-                            whileHover={{ y: -8 }}
-                            transition={{ duration: 0.3, ease: "easeOut" }}
+                            className="group cursor-pointer relative transition-transform duration-300 ease-out hover:-translate-y-2"
                             onMouseEnter={() => {
                                 if (link.category && link.category !== 'career') {
                                     setActiveOverlay(link.category)
                                 }
                             }}
-                            onMouseLeave={() => {
-                                {
-                                    setActiveOverlay(null)
-                                }
-                            }}
+                            onMouseLeave={() => setActiveOverlay(null)}
                             onClick={() => {
                                 if (link.category === 'career') {
                                     setCareerModal({ isOpen: true })
@@ -547,8 +545,11 @@ const QuickLinks = () => {
                             <div className="relative h-48 bg-white dark:bg-[#231A2E] rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group-hover:shadow-2xl transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-600">
                                 {/* Icon Container */}
                                 <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
-                                    <div className={`w-16 h-16 bg-gradient-to-r ${link.bgColor} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
-                                        <i className={`${link.icon} text-white text-2xl`}></i>
+                                    <div
+                                        className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300"
+                                        style={link.bgStyle}
+                                    >
+                                        {link.icon}
                                     </div>
                                 </div>
 
@@ -611,12 +612,12 @@ const QuickLinks = () => {
                                             >
                                                 {loadingDocuments ? (
                                                     <div className="text-center py-8 text-gray-500 dark:text-gray-300">
-                                                        <i className="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
+                                                        <svg className="animate-spin w-6 h-6 mx-auto mb-2 text-[#4A1D7A]" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
                                                         <p className="text-sm">Loading documents...</p>
                                                     </div>
                                                 ) : documentSections[link.category].documents.length === 0 ? (
                                                     <div className="text-center py-8 text-gray-500 dark:text-gray-300">
-                                                        <i className="fa-solid fa-file text-2xl mb-2"></i>
+                                                        <svg className="w-6 h-6 mx-auto mb-2 text-[#4A1D7A]/40" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><polyline points="14 2 14 8 20 8"/></svg>
                                                         <p className="text-sm">No documents available</p>
                                                     </div>
                                                 ) : (
@@ -643,7 +644,7 @@ const QuickLinks = () => {
                                                         >
                                                             <div className="flex items-center">
                                                                 <div className="w-8 h-8 bg-[#4A1D7A] rounded-md flex items-center justify-center mr-2">
-                                                                    <i className={`fa-solid ${doc.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'} text-white text-sm`}></i>
+                                                                    {doc.type === 'pdf' ? <RiFilePdf2Line size={16} className="text-white" /> : <RiImageLine size={16} className="text-white" />}
                                                                 </div>
                                                                 <div className="flex-1">
                                                                     <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
@@ -660,7 +661,7 @@ const QuickLinks = () => {
                                                                     ? 'animate-bounce text-[#4A1D7A]'
                                                                     : 'text-gray-400 group-hover:text-[#4A1D7A]'
                                                                     }`}>
-                                                                    <i className="fa-solid fa-download"></i>
+                                                                    ↓
                                                                 </div>
                                                             </div>
                                                         </motion.button>
@@ -689,7 +690,7 @@ const QuickLinks = () => {
                                                         >
                                                             <div className="flex items-center">
                                                                 <div className="w-8 h-8 bg-[#4A1D7A] rounded-md flex items-center justify-center mr-2">
-                                                                    <i className={`fa-solid ${doc.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-image'} text-white text-sm`}></i>
+                                                                    {doc.type === 'pdf' ? <RiFilePdf2Line size={16} className="text-white" /> : <RiImageLine size={16} className="text-white" />}
                                                                 </div>
                                                                 <div className="flex-1">
                                                                     <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
@@ -706,7 +707,7 @@ const QuickLinks = () => {
                                                                     ? 'animate-bounce text-[#4A1D7A]'
                                                                     : 'text-gray-400 group-hover:text-[#4A1D7A]'
                                                                     }`}>
-                                                                    <i className="fa-solid fa-download"></i>
+                                                                    ↓
                                                                 </div>
                                                             </div>
                                                         </motion.button>
@@ -719,7 +720,7 @@ const QuickLinks = () => {
                                     </motion.div>
                                 )}
                             </AnimatePresence>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
 
