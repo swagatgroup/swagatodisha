@@ -350,13 +350,25 @@ const WebsiteContentManagement = () => {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image URL</label>
-                                <input
-                                    type="text"
-                                    value={slide.image || ''}
-                                    onChange={(e) => handleArrayItemChange('heroCarousel', index, 'image', e.target.value)}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
-                                />
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Image URL or Upload</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="text"
+                                        value={slide.image || ''}
+                                        onChange={(e) => handleArrayItemChange('heroCarousel', index, 'image', e.target.value)}
+                                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                                        placeholder="Enter URL or upload ->"
+                                    />
+                                    <label className="cursor-pointer px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] flex items-center justify-center whitespace-nowrap">
+                                        Upload & Crop
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={(e) => handleHeroImageSelect(e, index)}
+                                        />
+                                    </label>
+                                </div>
                             </div>
 
                             <div>
@@ -1251,6 +1263,13 @@ const WebsiteContentManagement = () => {
 
     return (
         <div className="space-y-6">
+            <ImageCropperModal
+                isOpen={cropperOpen}
+                onClose={() => { setCropperOpen(false); setCropImageFile(null); }}
+                imageFile={cropImageFile}
+                aspect={window.innerWidth < 768 ? 9 / 16 : 1920 / 820}
+                onCropComplete={handleCropComplete}
+            />
             {/* Header */}
             <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Website Content Management</h2>

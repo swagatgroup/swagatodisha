@@ -212,12 +212,12 @@ const QuickLinks = () => {
         science: {
             title: "🔬 Science Stream",
             description: "Explore the world of science and technology",
-            icon: "fa-solid fa-flask",
+            icon: RiFlaskLine,
             color: "from-blue-500 to-cyan-500",
             paths: [
                 {
                     name: "Engineering",
-                    icon: "fa-solid fa-cogs",
+                    icon: RiSettings3Line,
                     description: "Build the future with technology",
                     careers: [
                         { name: "Computer Science Engineering", duration: "4 years", scope: "Software Development, AI, Cybersecurity" },
@@ -234,7 +234,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Medical",
-                    icon: "fa-solid fa-stethoscope",
+                    icon: RiStethoscopeLine,
                     description: "Heal and save lives",
                     careers: [
                         { name: "MBBS (Doctor)", duration: "5.5 years", scope: "Hospitals, Clinics, Research" },
@@ -251,7 +251,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Pure Sciences",
-                    icon: "fa-solid fa-atom",
+                    icon: RiAtomLine,
                     description: "Discover the mysteries of nature",
                     careers: [
                         { name: "B.Sc Physics", duration: "3 years", scope: "Research, Teaching, Technology" },
@@ -271,12 +271,12 @@ const QuickLinks = () => {
         commerce: {
             title: "💼 Commerce Stream",
             description: "Master the world of business and finance",
-            icon: "fa-solid fa-chart-line",
+            icon: RiLineChartLine,
             color: "from-green-500 to-emerald-500",
             paths: [
                 {
                     name: "Business & Management",
-                    icon: "fa-solid fa-briefcase",
+                    icon: RiBriefcaseLine,
                     description: "Lead organizations to success",
                     careers: [
                         { name: "BBA (Business Administration)", duration: "3 years", scope: "Management, Entrepreneurship, Consulting" },
@@ -293,7 +293,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Finance & Banking",
-                    icon: "fa-solid fa-coins",
+                    icon: RiCoinsLine,
                     description: "Navigate the financial world",
                     careers: [
                         { name: "Banking & Insurance", duration: "3 years", scope: "Banks, Insurance Companies, Financial Services" },
@@ -305,7 +305,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Marketing & Sales",
-                    icon: "fa-solid fa-bullhorn",
+                    icon: RiMegaphoneLine,
                     description: "Connect products with people",
                     careers: [
                         { name: "Digital Marketing", duration: "3 years", scope: "Social Media, SEO, Content Marketing" },
@@ -320,12 +320,12 @@ const QuickLinks = () => {
         arts: {
             title: "🎨 Arts & Humanities",
             description: "Express creativity and understand society",
-            icon: "fa-solid fa-palette",
+            icon: RiPaletteLine,
             color: "from-[#4A1D7A] to-[#6B3F99]",
             paths: [
                 {
                     name: "Literature & Languages",
-                    icon: "fa-solid fa-book",
+                    icon: RiBookLine,
                     description: "Master the power of words",
                     careers: [
                         { name: "English Literature", duration: "3 years", scope: "Teaching, Writing, Publishing, Media" },
@@ -337,7 +337,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Social Sciences",
-                    icon: "fa-solid fa-users",
+                    icon: RiGroupLine,
                     description: "Understand human society",
                     careers: [
                         { name: "Psychology", duration: "3 years", scope: "Counseling, HR, Research, Clinical Practice" },
@@ -349,7 +349,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Fine Arts & Design",
-                    icon: "fa-solid fa-paintbrush",
+                    icon: RiBrushLine,
                     description: "Create visual masterpieces",
                     careers: [
                         { name: "Fine Arts", duration: "4 years", scope: "Artist, Art Teacher, Gallery Curator" },
@@ -364,12 +364,12 @@ const QuickLinks = () => {
         vocational: {
             title: "🔧 Vocational & Technical",
             description: "Learn practical skills for immediate employment",
-            icon: "fa-solid fa-tools",
+            icon: RiToolsLine,
             color: "from-orange-500 to-red-500",
             paths: [
                 {
                     name: "IT & Computer",
-                    icon: "fa-solid fa-laptop-code",
+                    icon: RiComputerLine,
                     description: "Master digital technology",
                     careers: [
                         { name: "Diploma in Computer Engineering", duration: "3 years", scope: "Software Development, IT Support, Networking" },
@@ -381,7 +381,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Healthcare & Paramedical",
-                    icon: "fa-solid fa-heart-pulse",
+                    icon: RiHeartPulseLine,
                     description: "Support healthcare professionals",
                     careers: [
                         { name: "Medical Lab Technology", duration: "2-3 years", scope: "Hospitals, Diagnostic Centers, Research" },
@@ -393,7 +393,7 @@ const QuickLinks = () => {
                 },
                 {
                     name: "Skilled Trades",
-                    icon: "fa-solid fa-hammer",
+                    icon: RiHammerLine,
                     description: "Master hands-on skills",
                     careers: [
                         { name: "Electrician", duration: "2-3 years", scope: "Construction, Maintenance, Industrial" },
@@ -771,7 +771,7 @@ const QuickLinks = () => {
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                     >
-                                        <i className="fa-solid fa-times"></i>
+                                        <RiCloseLine size={24} />
                                     </motion.button>
                                 </div>
                             </div>
@@ -788,7 +788,7 @@ const QuickLinks = () => {
                                             className="bg-[#4A1D7A] text-white rounded-2xl p-6 shadow-2xl border-4 border-white"
                                         >
                                             <div className="text-center">
-                                                <i className="fa-solid fa-graduation-cap text-4xl mb-3"></i>
+                                                <RiGraduationCapLine className="w-10 h-10 mb-3" />
                                                 <h3 className="text-2xl font-bold">Career Tree</h3>
                                                 <p className="text-sm opacity-90">Choose Your Path After 10th</p>
                                             </div>
@@ -831,7 +831,7 @@ const QuickLinks = () => {
                                                             transition={{ duration: 0.3 }}
                                                             className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center"
                                                         >
-                                                            <i className="fa-solid fa-chevron-down text-white"></i>
+                                                            <RiArrowDownSLine className="text-white" />
                                                         </motion.div>
                                                     </div>
                                                 </motion.div>
@@ -884,7 +884,7 @@ const QuickLinks = () => {
                                                                                 transition={{ duration: 0.3 }}
                                                                                 className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center"
                                                                             >
-                                                                                <i className="fa-solid fa-chevron-right text-gray-600 dark:text-gray-300 text-xs"></i>
+                                                                                <RiArrowRightSLine className="text-gray-600 dark:text-gray-300 w-3 h-3" />
                                                                             </motion.div>
                                                                         </div>
                                                                     </motion.div>
@@ -943,7 +943,7 @@ const QuickLinks = () => {
                                                                                             whileHover={{ scale: 1.05 }}
                                                                                             whileTap={{ scale: 0.95 }}
                                                                                         >
-                                                                                            <i className={`fa-solid ${showAllCareers.has(`${key}-${pathIndex}`) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-2`}></i>
+                                                                                            {showAllCareers.has(`${key}-${pathIndex}`) ? <RiArrowUpSLine className="mr-2" /> : <RiArrowDownSLine className="mr-2" />}
                                                                                             {showAllCareers.has(`${key}-${pathIndex}`)
                                                                                                 ? 'Show Less'
                                                                                                 : `View ${path.careers.length - 3} More Options`
@@ -980,7 +980,7 @@ const QuickLinks = () => {
                                             whileHover={{ scale: 1.05 }}
                                             whileTap={{ scale: 0.95 }}
                                         >
-                                            <i className="fa-solid fa-phone mr-2"></i>
+                                            <RiPhoneLine className="mr-2" />
                                             Call for Career Counseling
                                         </motion.button>
                                     </div>
@@ -1032,7 +1032,7 @@ const QuickLinks = () => {
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                     >
-                                        <i className="fa-solid fa-download mr-2"></i>
+                                        <RiDownloadLine className="mr-2" />
                                         Download
                                     </motion.button>
 
@@ -1043,7 +1043,7 @@ const QuickLinks = () => {
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                     >
-                                        <i className="fa-solid fa-times"></i>
+                                        <RiCloseLine size={24} />
                                     </motion.button>
                                 </div>
                             </div>

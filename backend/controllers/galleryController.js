@@ -259,7 +259,8 @@ const getFeaturedGalleryItems = async (req, res) => {
 
         const galleryItems = await Gallery.find({
             isFeatured: true,
-            isActive: true
+            isActive: true,
+            approvalStatus: 'Approved'
         })
             .select('title description imageUrl thumbnailUrl category tags views')
             .sort({ displayOrder: 1, createdAt: -1 })
@@ -351,6 +352,47 @@ const incrementDownloadCount = async (req, res) => {
     }
 };
 
+
+const approveGalleryItem = async (req, res) => {
+    try {
+        const { itemId } = req.params;
+        const { status } = req.body; // 'Approved' or 'Rejected'
+        
+        if (!['Approved', 'Rejected'].includes(status)) {
+            return res.status(400).json({ success: false, message: 'Invalid status' });
+        }
+
+        const galleryItem = await Gallery.findByIdAndUpdate(
+            itemId,
+            { 
+                approvalStatus: status,
+                approvedBy: req.admin._id,
+                approvedAt: new Date()
+            },
+            { new: true, runValidators: true }
+        );
+
+        if (!galleryItem) {
+            return res.status(404).json({
+                success: false,
+                message: 'Gallery item not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: `Gallery item ${status.toLowerCase()} successfully`,
+            data: galleryItem
+        });
+    } catch (error) {
+        console.error('Approve gallery item error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to approve gallery item'
+        });
+    }
+};
+
 module.exports = {
     getGalleryItems,
     getGalleryItemById,
@@ -361,5 +403,6 @@ module.exports = {
     getGalleryItemsByCategory,
     getFeaturedGalleryItems,
     getGalleryStats,
+    approveGalleryItem,
     incrementDownloadCount
 };

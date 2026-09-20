@@ -38,7 +38,7 @@ const Milestone = () => {
 
                         <div className="text-center mt-8">
                             <div className="inline-flex items-center space-x-2 bg-white/20 px-6 py-3 rounded-full">
-                                <i className="fa-solid fa-flag text-yellow-300 text-xl"></i>
+                                <RiFlagFill className="text-yellow-300 text-xl" />
                                 <span className="text-white font-semibold">A Historic Beginning</span>
                             </div>
                         </div>

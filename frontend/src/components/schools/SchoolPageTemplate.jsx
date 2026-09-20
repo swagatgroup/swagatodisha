@@ -60,7 +60,7 @@ const SchoolPageTemplate = ({
                             transition={{ duration: 0.8 }}
                         >
                             <div className="inline-flex items-center justify-center w-24 h-24 bg-[#4A1D7A] rounded-3xl mb-8 shadow-2xl">
-                                <i className="fa-solid fa-school text-white text-4xl"></i>
+                                <RiSchoolLine className="text-white w-10 h-10" />
                             </div>
 
                             <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
@@ -162,7 +162,7 @@ const SchoolPageTemplate = ({
                                     <ul className="space-y-2">
                                         {program.subjects.map((subject, subIndex) => (
                                             <li key={subIndex} className="flex items-center text-gray-600 dark:text-gray-300">
-                                                <i className="fa-solid fa-check text-[#4A1D7A] mr-2"></i>
+                                                <RiCheckLine className="text-[#4A1D7A] w-5 h-5 mr-2" />
                                                 {subject}
                                             </li>
                                         ))}

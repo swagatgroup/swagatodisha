@@ -43,6 +43,16 @@ const gallerySchema = new mongoose.Schema({
         ref: 'Course'
     },
 
+        approvalStatus: {
+        type: String,
+        enum: ['Pending', 'Approved', 'Rejected'],
+        default: 'Pending'
+    },
+    approvedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin'
+    },
+    approvedAt: Date,
     // Display settings
     isActive: {
         type: Boolean,

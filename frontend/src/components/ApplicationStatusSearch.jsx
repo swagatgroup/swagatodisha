@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { RiCloseLine, RiMapPin2Line, RiBankCardLine, RiLoader4Line, RiArrowRightLine, RiErrorWarningLine, RiShieldKeyholeLine, RiPencilLine, RiSendPlaneLine, RiSearchLine, RiCheckLine, RiGraduationCapLine } from '@remixicon/react';
 import api from '../utils/api';
 
 const ApplicationStatusSearch = () => {
@@ -51,7 +52,7 @@ const ApplicationStatusSearch = () => {
             return (
                 <div className="mt-8 bg-red-50 border border-red-200 rounded-xl p-6 text-center">
                     <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i className="fa-solid fa-xmark text-3xl"></i>
+                        <RiCloseLine className="text-3xl" />
                     </div>
                     <h3 className="text-xl font-bold text-red-700">Application {status === 'REJECTED' ? 'Rejected' : 'Cancelled'}</h3>
                     <p className="text-red-600 mt-2">Please contact our administration office for further details.</p>
@@ -60,11 +61,11 @@ const ApplicationStatusSearch = () => {
         }
 
         const steps = [
-            { label: 'Draft', icon: 'fa-pen-to-square' },
-            { label: 'Submitted', icon: 'fa-paper-plane' },
-            { label: 'Under Review', icon: 'fa-magnifying-glass' },
-            { label: 'Approved', icon: 'fa-check-circle' },
-            { label: 'Complete', icon: 'fa-graduation-cap' }
+            { label: 'Draft', icon: RiPencilLine },
+            { label: 'Submitted', icon: RiSendPlaneLine },
+            { label: 'Under Review', icon: RiSearchLine },
+            { label: 'Approved', icon: RiCheckLine },
+            { label: 'Complete', icon: RiGraduationCapLine }
         ];
 
         return (
@@ -87,7 +88,7 @@ const ApplicationStatusSearch = () => {
                                         ${isCompleted ? 'bg-gradient-to-r from-green-400 to-green-600 text-white transform scale-110' : 'bg-white text-gray-400 border-2 border-gray-200'}
                                         ${isCurrent ? 'ring-4 ring-green-100' : ''}
                                     `}>
-                                        <i className={`fa-solid ${step.icon}`}></i>
+                                        <step.icon size={20} />
                                     </div>
                                     
                                     {/* Step Label */}
@@ -109,7 +110,7 @@ const ApplicationStatusSearch = () => {
                 <div className="px-8 py-10 md:p-12">
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl mb-4 shadow-inner">
-                            <i className="fa-solid fa-search-location text-2xl text-[#4A1D7A]"></i>
+                            <RiMapPin2Line className="text-2xl text-[#4A1D7A]" />
                         </div>
                         <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Track Your Application</h2>
                         <p className="text-gray-500 dark:text-gray-300 max-w-xl mx-auto">
@@ -120,7 +121,7 @@ const ApplicationStatusSearch = () => {
                     <form onSubmit={handleSearch} className="max-w-2xl mx-auto relative">
                         <div className="relative flex items-center shadow-sm rounded-2xl bg-white focus-within:shadow-md transition-all">
                             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <i className="fa-solid fa-id-card text-gray-400 dark:text-gray-300"></i>
+                                <RiBankCardLine className="text-gray-400 dark:text-gray-300" />
                             </div>
                             <input
                                 type="text"
@@ -136,9 +137,9 @@ const ApplicationStatusSearch = () => {
                                 className="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 rounded-xl hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-70 flex items-center"
                             >
                                 {loading ? (
-                                    <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                                    <RiLoader4Line className="animate-spin mr-2" />
                                 ) : (
-                                    <i className="fa-solid fa-arrow-right mr-2"></i>
+                                    <RiArrowRightLine className="mr-2" />
                                 )}
                                 <span className="hidden sm:inline">Track</span>
                             </button>
@@ -155,7 +156,7 @@ const ApplicationStatusSearch = () => {
                             >
                                 <div className="flex items-center">
                                     <div className="flex-shrink-0">
-                                        <i className="fa-solid fa-circle-exclamation text-red-500"></i>
+                                        <RiErrorWarningLine className="text-red-500" />
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm text-red-700 font-medium">{error}</p>
@@ -184,7 +185,7 @@ const ApplicationStatusSearch = () => {
                                 {renderStepper(result.status)}
                                 
                                 <div className="mt-12 text-center text-xs text-gray-400 dark:text-gray-300 flex items-center justify-center">
-                                    <i className="fa-solid fa-shield-halved mr-2"></i>
+                                    <RiShieldKeyholeLine className="mr-2" />
                                     Status metadata securely updated on {new Date(result.updatedAt).toLocaleDateString()}
                                 </div>
                             </motion.div>

@@ -34,12 +34,12 @@ const Gallery = () => {
     }, []);
 
     const categories = [
-        { id: 'all', name: 'All Photos', icon: 'fa-solid fa-images' },
-        { id: 'campus', name: 'Campus Life', icon: 'fa-solid fa-school' },
-        { id: 'events', name: 'Events', icon: 'fa-solid fa-calendar' },
-        { id: 'students', name: 'Students', icon: 'fa-solid fa-user-graduate' },
-        { id: 'faculty', name: 'Faculty', icon: 'fa-solid fa-chalkboard-user' },
-        { id: 'infrastructure', name: 'Infrastructure', icon: 'fa-solid fa-building' }
+        { id: 'all', name: 'All Photos', icon: RiImageFill },
+        { id: 'campus', name: 'Campus Life', icon: RiSchoolLine },
+        { id: 'events', name: 'Events', icon: RiCalendarLine },
+        { id: 'students', name: 'Students', icon: RiGraduationCapLine },
+        { id: 'faculty', name: 'Faculty', icon: RiTeamLine },
+        { id: 'infrastructure', name: 'Infrastructure', icon: RiBuildingLine }
     ]
 
     
@@ -56,7 +56,7 @@ const Gallery = () => {
         setSelectedImage(null)
     }
 
-    if (loading) return <div className="min-h-[50vh] flex items-center justify-center text-purple-600"><i className="fa-solid fa-spinner fa-spin text-3xl"></i></div>;
+    if (loading) return <div className="min-h-[50vh] flex items-center justify-center text-purple-600"><RiLoader4Line className="animate-spin text-3xl" /></div>;
     return (
         <div className="min-h-screen bg-[#FAF7F2]">
             <BackToMainWebsite variant="floating" />
@@ -70,7 +70,7 @@ const Gallery = () => {
 
                 <div className="relative z-10 container mx-auto px-6 text-center">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
-                        <i className="fa-solid fa-images text-white text-3xl"></i>
+                        <RiImageFill className="text-white text-3xl" />
                     </div>
 
                     <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
@@ -133,7 +133,7 @@ const Gallery = () => {
 
                                 {/* Zoom Icon */}
                                 <div className="absolute top-4 right-4 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                    <i className="fa-solid fa-search-plus text-white"></i>
+                                    <RiZoomInLine className="text-white" />
                                 </div>
                             </div>
                         ))}
@@ -142,7 +142,7 @@ const Gallery = () => {
                     {filteredImages.length === 0 && (
                         <div className="text-center py-20">
                             <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                                <i className="fa-solid fa-image text-gray-400 dark:text-gray-300 text-3xl"></i>
+                                <RiImageLine className="text-gray-400 dark:text-gray-300 text-3xl" />
                             </div>
                             <h3 className="text-2xl font-bold text-gray-600 dark:text-gray-300 mb-2">No Images Found</h3>
                             <p className="text-gray-500 dark:text-gray-300">Try selecting a different category or check back later.</p>
@@ -157,7 +157,7 @@ const Gallery = () => {
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-w-6xl mx-auto">
                         <div className="text-center">
                             <div className="w-20 h-20 bg-[#4A1D7A] rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-images text-white text-2xl"></i>
+                                <RiImageFill className="text-white text-2xl" />
                             </div>
                             <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">{galleryImages.length}+</h3>
                             <p className="text-gray-600 dark:text-gray-300">Total Photos</p>
@@ -165,7 +165,7 @@ const Gallery = () => {
 
                         <div className="text-center">
                             <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-school text-white text-2xl"></i>
+                                <RiSchoolLine className="text-white text-2xl" />
                             </div>
                             <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">6</h3>
                             <p className="text-gray-600 dark:text-gray-300">Categories</p>
@@ -173,7 +173,7 @@ const Gallery = () => {
 
                         <div className="text-center">
                             <div className="w-20 h-20 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-calendar text-white text-2xl"></i>
+                                <RiCalendarLine className="text-white text-2xl" />
                             </div>
                             <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">365</h3>
                             <p className="text-gray-600 dark:text-gray-300">Days of Memories</p>
@@ -181,7 +181,7 @@ const Gallery = () => {
 
                         <div className="text-center">
                             <div className="w-20 h-20 bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                <i className="fa-solid fa-heart text-white text-2xl"></i>
+                                <RiHeartLine className="text-white text-2xl" />
                             </div>
                             <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">100%</h3>
                             <p className="text-gray-600 dark:text-gray-300">Quality Content</p>
@@ -222,7 +222,7 @@ const Gallery = () => {
                             onClick={closeLightbox}
                             className="absolute top-4 right-4 w-12 h-12 bg-white dark:bg-[#231A2E]/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white dark:bg-[#231A2E]/30 transition-all duration-300 z-10"
                         >
-                            <i className="fa-solid fa-times text-xl"></i>
+                            <RiCloseLine className="text-xl" />
                         </button>
 
                         <img

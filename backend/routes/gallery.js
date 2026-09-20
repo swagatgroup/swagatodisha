@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
+const { protect, authorize } = require('../middleware/auth');
 const {
     getGalleryItems,
     getGalleryItemById,
@@ -11,6 +11,7 @@ const {
     getGalleryItemsByCategory,
     getFeaturedGalleryItems,
     getGalleryStats,
+    approveGalleryItem,
     incrementDownloadCount
 } = require('../controllers/galleryController');
 
@@ -27,5 +28,9 @@ router.get('/', protect, getGalleryItems);
 router.post('/', protect, createGalleryItem);
 router.put('/:itemId', protect, updateGalleryItem);
 router.delete('/:itemId', protect, deleteGalleryItem);
+
+
+// Super Admin approval route
+router.patch('/:itemId/approve', protect, authorize('super_admin'), approveGalleryItem);
 
 module.exports = router;

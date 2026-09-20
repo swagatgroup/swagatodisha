@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import { RiPhoneFill, RiMegaphoneFill, RiWhatsappFill, RiAddLine, RiCustomerService2Fill } from '@remixicon/react';;
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CONTACT_INFO } from '../utils/constants';
@@ -46,7 +47,7 @@ const FloatingContact = () => {
                         >
                             <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">Call Us</span>
                             <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-[#387B95] dark:bg-blue-900/30 dark:text-[#60A5FA] rounded-full group-hover:scale-110 transition-transform">
-                                <i className="fa-solid fa-phone"></i>
+                                <RiPhoneFill />
                             </div>
                         </a>
 
@@ -60,7 +61,7 @@ const FloatingContact = () => {
                         >
                             <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">Join Channel</span>
                             <div className="w-10 h-10 flex items-center justify-center bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-full group-hover:scale-110 transition-transform">
-                                <i className="fa-solid fa-bullhorn"></i>
+                                <RiMegaphoneFill />
                             </div>
                         </a>
 
@@ -74,7 +75,7 @@ const FloatingContact = () => {
                         >
                             <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">WhatsApp Chat</span>
                             <div className="w-10 h-10 flex items-center justify-center bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-full group-hover:scale-110 transition-transform">
-                                <i className="fa-brands fa-whatsapp text-xl"></i>
+                                <RiWhatsappFill className="text-xl" />
                             </div>
                         </a>
                     </motion.div>
@@ -92,7 +93,7 @@ const FloatingContact = () => {
                     animate={{ rotate: isOpen ? 45 : 0 }}
                     transition={{ duration: 0.2 }}
                 >
-                    <i className={`fa-solid ${isOpen ? 'fa-plus text-2xl' : 'fa-headset text-2xl'}`}></i>
+                    {isOpen ? <RiAddLine className="text-2xl" /> : <RiCustomerService2Fill className="text-2xl" />}
                 </motion.div>
             </button>
         </div>

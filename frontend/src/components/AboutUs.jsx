@@ -1,35 +1,35 @@
 import {useState, useEffect, useRef} from 'react';
 import { APP_CONFIG } from '../utils/constants'
+import { RiGraduationCapFill, RiLightbulbFlashFill, RiGroupFill, RiEarthFill, RiBankFill } from '@remixicon/react';
 
 const AboutUs = () => {
     const [isVisible, setIsVisible] = useState(false)
-    const [activeFeature, setActiveFeature] = useState(0)
     const aboutRef = useRef(null)
 
     const features = [
         {
-            icon: "fa-solid fa-graduation-cap",
+            icon: RiGraduationCapFill,
             title: "Academic Excellence",
             description: "Comprehensive curriculum designed for modern learning needs",
-            color: "from-[#4A1D7A] to-[#351458]"
+            color: "from-[#4A1D7A] to-[#351458]" // Primary Brand
         },
         {
-            icon: "fa-solid fa-lightbulb",
+            icon: RiLightbulbFlashFill,
             title: "Innovation Hub",
             description: "Cutting-edge facilities fostering creativity and research",
-            color: "from-blue-500 to-blue-600"
+            color: "from-[#E8A817] to-[#C98B05]" // Accent Gold
         },
         {
-            icon: "fa-solid fa-users",
+            icon: RiGroupFill,
             title: "Community Focus",
             description: "Building strong relationships with students and families",
-            color: "from-green-500 to-green-600"
+            color: "from-[#1D4B5E] to-[#133A4A]" // Teal Brand
         },
         {
-            icon: "fa-solid fa-globe",
+            icon: RiEarthFill,
             title: "Global Perspective",
             description: "International partnerships and opportunities",
-            color: "from-orange-500 to-orange-600"
+            color: "from-[#4A1D7A] to-[#1D4B5E]" // Primary to Teal
         }
     ]
 
@@ -50,50 +50,24 @@ const AboutUs = () => {
         return () => observer.disconnect()
     }, [])
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setActiveFeature((prev) => (prev + 1) % features.length)
-        }, 3000)
-
-        return () => clearInterval(interval)
-    }, [features.length])
-
     return (
         <section
             ref={aboutRef}
             id="about-us"
-            className="relative py-20"
+            className="relative py-20 bg-gray-50/50 dark:bg-[#1A1212]/50"
         >
-            {/* Parallax Background Elements */}
-            <div className="absolute inset-0">
-                <div className={`absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] rounded-full blur-3xl transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
-                    }`}></div>
-                <div className={`absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full blur-3xl transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
-                    }`}></div>
-
-                {/* Floating geometric shapes */}
-                <div className={`absolute top-1/3 right-1/4 w-16 h-16 bg-gradient-to-r from-[#9B6FCC]/30 to-[#387B95]/30 rounded-lg blur-xl transition-all duration-1000 delay-500 ${isVisible ? 'animate-float-slow opacity-100' : 'opacity-0'
-                    }`}></div>
-                <div className={`absolute bottom-1/3 left-1/4 w-20 h-20 bg-gradient-to-r from-blue-400/30 to-green-400/30 rounded-full blur-xl transition-all duration-1000 delay-700 ${isVisible ? 'animate-float-medium opacity-100' : 'opacity-0'
-                    }`}></div>
-            </div>
-
             <div className="container mx-auto px-6 relative z-10">
                 {/* Section Header */}
-                <div className={`text-center mb-20 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                    }`}>
-                    <div className={`inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl transition-all duration-1000 delay-300 ${isVisible ? 'scale-100 rotate-0' : 'scale-0 rotate-180'
-                        }`}>
-                        <i className="fa-solid fa-university text-white text-3xl"></i>
+                <div className={`text-center mb-16 transition-all duration-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-[#4A1D7A] rounded-2xl mb-6 shadow-brand">
+                        <RiBankFill className="text-white w-8 h-8" />
                     </div>
 
-                    <h2 className={`text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-200 mb-6 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                        }`}>
-                        About <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Us</span>
+                    <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                        About <span className="text-[#4A1D7A] dark:text-[#9B6FCC]">Us</span>
                     </h2>
 
-                    <p className={`text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed transition-all duration-1000 delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                        }`}>
+                    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
                         Discover the story behind our commitment to educational excellence and innovation
                     </p>
                 </div>
@@ -102,79 +76,67 @@ const AboutUs = () => {
                 <div className="max-w-7xl mx-auto">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         {/* Left Side - About Content */}
-                        <div className={`space-y-8 transition-all duration-1000 delay-900 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
-                            }`}>
+                        <div className={`space-y-8 transition-all duration-700 delay-100 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-8'}`}>
                             <div>
-                                <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">
+                                <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
                                     {APP_CONFIG.name}
                                 </h3>
-                                <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                                    Swagat Group of Institutions is a premier educational organization committed to providing
-                                    quality education and fostering innovation in the field of learning. Our journey began with
-                                    a vision to revolutionize education and create opportunities for students to excel in their chosen fields.
-                                </p>
-                                <p className="text-lg text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                                    We believe in the power of education to transform lives and communities. Our comprehensive
-                                    range of institutions covers every aspect of learning, from primary education to higher studies,
-                                    ensuring that students receive the best possible foundation for their future.
-                                </p>
+                                <div className="space-y-4 text-gray-600 dark:text-gray-300 text-lg leading-relaxed">
+                                    <p>
+                                        Swagat Group of Institutions is a premier educational organization committed to providing
+                                        quality education and fostering innovation in the field of learning. Our journey began with
+                                        a vision to revolutionize education and create opportunities for students to excel in their chosen fields.
+                                    </p>
+                                    <p>
+                                        We believe in the power of education to transform lives and communities. Our comprehensive
+                                        range of institutions covers every aspect of learning, from primary education to higher studies,
+                                        ensuring that students receive the best possible foundation for their future.
+                                    </p>
+                                </div>
                             </div>
 
                             {/* Interactive Stats */}
                             <div className="grid grid-cols-2 gap-6">
-                                <div className={`text-center p-6 bg-white dark:bg-[#231A2E] rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1100 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                                    }`}>
-                                    <div className="text-3xl font-bold text-[#4A1D7A] mb-2">25+</div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">Years of Excellence</div>
+                                <div className="text-center p-6 bg-white dark:bg-[#231A2E] rounded-2xl shadow-card border border-[#4A1D7A]/10 hover:-translate-y-1 transition-transform">
+                                    <div className="text-3xl font-bold text-[#4A1D7A] dark:text-[#9B6FCC] mb-2">25+</div>
+                                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Years of Excellence</div>
                                 </div>
-                                <div className={`text-center p-6 bg-white dark:bg-[#231A2E] rounded-2xl shadow-lg border border-gray-100 transition-all duration-700 delay-1300 hover:scale-105 hover:shadow-xl ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                                    }`}>
-                                    <div className="text-3xl font-bold text-[#387B95] mb-2">50K+</div>
-                                    <div className="text-sm text-gray-600 dark:text-gray-300">Students Impacted</div>
+                                <div className="text-center p-6 bg-white dark:bg-[#231A2E] rounded-2xl shadow-card border border-[#1D4B5E]/10 hover:-translate-y-1 transition-transform">
+                                    <div className="text-3xl font-bold text-[#1D4B5E] dark:text-[#5293AD] mb-2">50K+</div>
+                                    <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Students Impacted</div>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Right Side - Interactive Features */}
-                        <div className={`relative transition-all duration-1000 delay-1100 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-                            }`}>
-                            <div className="grid grid-cols-2 gap-6">
-                                {features.map((feature, index) => (
-                                    <div
-                                        key={index}
-                                        className={`relative p-6 bg-white rounded-2xl shadow-lg border border-gray-100 transition-all duration-500 cursor-pointer group hover:scale-105 hover:shadow-xl ${activeFeature === index ? 'ring-2 ring-[#4A1D7A] ring-opacity-50' : ''
-                                            }`}
-                                        onMouseEnter={() => setActiveFeature(index)}
-                                    >
-                                        {/* Background Pattern */}
-                                        <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500 rounded-2xl`}></div>
-
-                                        {/* Icon */}
-                                        <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-4 transition-all duration-500 group-hover:scale-110 ${activeFeature === index ? 'animate-pulse-slow' : ''
-                                            }`}>
-                                            <i className={`${feature.icon} text-white text-2xl`}></i>
+                        {/* Right Side - Features Grid */}
+                        <div className={`relative transition-all duration-700 delay-200 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-8'}`}>
+                            <div className="grid grid-cols-2 gap-4 md:gap-6">
+                                {features.map((feature, index) => {
+                                    const Icon = feature.icon;
+                                    return (
+                                        <div
+                                            key={index}
+                                            className="p-6 bg-white dark:bg-[#231A2E] rounded-2xl shadow-card border border-gray-100 dark:border-gray-800 hover:-translate-y-1 hover:shadow-lg transition-all"
+                                        >
+                                            <div className={`w-12 h-12 bg-gradient-to-br ${feature.color} rounded-xl flex items-center justify-center mb-4 shadow-sm`}>
+                                                <Icon className="text-white w-6 h-6" />
+                                            </div>
+                                            <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                                                {feature.title}
+                                            </h4>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                {feature.description}
+                                            </p>
                                         </div>
-
-                                        {/* Content */}
-                                        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 group-hover:text-[#4A1D7A] transition-colors duration-300">
-                                            {feature.title}
-                                        </h4>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                                            {feature.description}
-                                        </p>
-
-                                        {/* Hover Effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-[#4A1D7A]/5 to-[#1D4B5E]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
 
                             {/* Floating Achievement Badge */}
-                            <div className={`absolute -top-8 -right-8 w-32 h-32 bg-[#4A1D7A] rounded-full flex items-center justify-center text-white shadow-2xl transition-all duration-1000 delay-1500 ${isVisible ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-0 rotate-180'
-                                }`}>
+                            <div className="absolute -top-6 -right-6 md:-right-8 w-24 h-24 md:w-32 md:h-32 bg-[#E8A817] rounded-full flex items-center justify-center text-white shadow-lg border-4 border-white dark:border-[#231A2E] z-10">
                                 <div className="text-center">
-                                    <div className="text-2xl font-bold">100+</div>
-                                    <div className="text-xs">Partnerships</div>
+                                    <div className="text-xl md:text-2xl font-bold">100+</div>
+                                    <div className="text-[10px] md:text-xs font-medium uppercase tracking-wider">Partners</div>
                                 </div>
                             </div>
                         </div>
@@ -182,21 +144,12 @@ const AboutUs = () => {
                 </div>
 
                 {/* Call to Action */}
-                <div className={`text-center mt-20 transition-all duration-1000 delay-1700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-                    }`}>
-                    <button className="group relative px-8 py-4 bg-[#4A1D7A] text-white rounded-2xl font-semibold text-lg overflow-hidden transition-all duration-500 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25">
-                        <span className="relative z-10">Discover More</span>
-
-                        {/* Animated background */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#351458] to-[#133A4A] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-                        {/* Shimmer effect */}
-                        <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <div className={`text-center mt-16 transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+                    <button className="px-8 py-3.5 bg-[#4A1D7A] text-white rounded-pill font-bold text-sm shadow-brand hover:bg-[#351458] hover:-translate-y-0.5 transition-all">
+                        Discover More
                     </button>
                 </div>
             </div>
-
-            {/* Cloud Wave Bottom Element */}
         </section>
     )
 }
