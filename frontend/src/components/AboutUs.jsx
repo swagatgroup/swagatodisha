@@ -12,7 +12,7 @@ const AboutUs = () => {
             icon: "fa-solid fa-graduation-cap",
             title: "Academic Excellence",
             description: "Comprehensive curriculum designed for modern learning needs",
-            color: "from-purple-500 to-purple-600"
+            color: "from-[#4A1D7A] to-[#351458]"
         },
         {
             icon: "fa-solid fa-lightbulb",
@@ -67,13 +67,13 @@ const AboutUs = () => {
         >
             {/* Parallax Background Elements */}
             <div className="absolute inset-0">
-                <div className={`absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-purple-100 to-blue-100 rounded-full blur-3xl transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
+                <div className={`absolute top-20 left-10 w-64 h-64 bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] rounded-full blur-3xl transition-all duration-1000 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
                     }`}></div>
                 <div className={`absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full blur-3xl transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'
                     }`}></div>
 
                 {/* Floating geometric shapes */}
-                <div className={`absolute top-1/3 right-1/4 w-16 h-16 bg-gradient-to-r from-purple-400/30 to-blue-400/30 rounded-lg blur-xl transition-all duration-1000 delay-500 ${isVisible ? 'animate-float-slow opacity-100' : 'opacity-0'
+                <div className={`absolute top-1/3 right-1/4 w-16 h-16 bg-gradient-to-r from-[#9B6FCC]/30 to-[#387B95]/30 rounded-lg blur-xl transition-all duration-1000 delay-500 ${isVisible ? 'animate-float-slow opacity-100' : 'opacity-0'
                     }`}></div>
                 <div className={`absolute bottom-1/3 left-1/4 w-20 h-20 bg-gradient-to-r from-blue-400/30 to-green-400/30 rounded-full blur-xl transition-all duration-1000 delay-700 ${isVisible ? 'animate-float-medium opacity-100' : 'opacity-0'
                     }`}></div>
@@ -165,7 +165,7 @@ const AboutUs = () => {
                                         </p>
 
                                         {/* Hover Effect */}
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
+                                        <div className="absolute inset-0 bg-gradient-to-r from-[#4A1D7A]/5 to-[#1D4B5E]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
                                     </div>
                                 ))}
                             </div>
@@ -189,7 +189,7 @@ const AboutUs = () => {
                         <span className="relative z-10">Discover More</span>
 
                         {/* Animated background */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-700 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-[#351458] to-[#133A4A] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                         {/* Shimmer effect */}
                         <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>

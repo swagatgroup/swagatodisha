@@ -70,7 +70,7 @@ const AboutUsPage = () => {
             title: 'Community',
             description: 'Building strong relationships with students, parents, and the community',
             icon: 'fa-solid fa-users',
-            color: 'from-purple-500 to-pink-500'
+            color: 'from-[#4A1D7A] to-[#6B3F99]'
         }
     ]
 
@@ -127,7 +127,7 @@ const AboutUsPage = () => {
             <section className="py-20 bg-white dark:bg-[#1A1212]">
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-                        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
+                        <div className="bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0] rounded-3xl p-8 border border-[#F0E6FA]">
                             <div className="w-16 h-16 bg-[#4A1D7A] rounded-2xl flex items-center justify-center mx-auto mb-6">
                                 <i className="fa-solid fa-bullseye text-white text-2xl"></i>
                             </div>
@@ -153,7 +153,7 @@ const AboutUsPage = () => {
             </section>
 
             {/* Values Section */}
-            <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50">
+            <section className="py-20 bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0]">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
@@ -222,7 +222,7 @@ const AboutUsPage = () => {
             </section>
 
             {/* Team Section */}
-            <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50">
+            <section className="py-20 bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0]">
                 <div className="container mx-auto px-6">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
@@ -295,7 +295,7 @@ const AboutUsPage = () => {
                                 </div>
                             </div>
 
-                            <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-3xl p-8 border border-purple-100">
+                            <div className="bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0] rounded-3xl p-8 border border-[#F0E6FA]">
                                 <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Our Achievements</h3>
 
                                 <div className="space-y-4">

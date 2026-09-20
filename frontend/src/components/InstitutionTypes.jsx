@@ -2007,7 +2007,7 @@ const InstitutionTypes = () => {
                                     Close
                                 </button>
                                 {!selectedProgram.hasSubCategories && (
-                                    <button className="px-6 py-2 bg-[#4A1D7A] text-white rounded-lg font-medium hover:from-purple-700 hover:to-blue-700 transition-all duration-200">
+                                    <button className="px-6 py-2 bg-[#4A1D7A] text-white rounded-lg font-medium hover:bg-[#351458] transition-all duration-200">
                                         Apply Now
                                     </button>
                                 )}

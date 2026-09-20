@@ -48,9 +48,9 @@ const SchoolPageTemplate = ({
                 <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
                     {/* Background Elements */}
                     <div className="absolute inset-0">
-                        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-purple-100/30 to-blue-100/30 rounded-full blur-3xl"></div>
+                        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-[#F0E6FA]/30 to-[#D0E8F0]/30 rounded-full blur-3xl"></div>
                         <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-50/20 to-blue-50/20 rounded-full blur-3xl"></div>
+                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#F0E6FA]/20 to-[#D0E8F0]/20 rounded-full blur-3xl"></div>
                     </div>
 
                     <div className="relative z-10 container mx-auto px-6 text-center">
@@ -83,7 +83,7 @@ const SchoolPageTemplate = ({
                             >
                                 <a
                                     href="#programs"
-                                    className="px-8 py-4 bg-[#4A1D7A] text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    className="px-8 py-4 bg-[#4A1D7A] text-white rounded-xl font-semibold text-lg hover:bg-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl"
                                 >
                                     Explore Programs
                                 </a>
@@ -154,7 +154,7 @@ const SchoolPageTemplate = ({
                                     initial={{ opacity: 0, y: 30 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                                    className="bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
                                 >
                                     <div className="text-3xl mb-4">{program.icon}</div>
                                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">{program.name}</h3>

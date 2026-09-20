@@ -1850,7 +1850,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
 
                 {/* Bulk Actions Bar */}
                 {selectedStudents.length > 0 && (
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-[#F0E6FA] dark:bg-[#231A2E]/20 border border-purple-200 dark:border-purple-800 rounded-lg p-4 flex-1 min-w-[300px] gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-[#F0E6FA] dark:bg-[#231A2E]/20 border border-[#D0E8F0] dark:border-purple-800 rounded-lg p-4 flex-1 min-w-[300px] gap-4">
                         <div className="flex items-center space-x-2">
                             <i className="fa-solid fa-check-square text-[#4A1D7A] dark:text-[#9B6FCC]"></i>
                             <span className="text-sm font-medium text-purple-900 dark:text-purple-100">
@@ -2646,7 +2646,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                     </h4>
 
                                     {editingCourseFee && (
-                                        <form onSubmit={handleUpdateCourseFee} className="mb-4 p-4 border border-purple-200 bg-white rounded-lg">
+                                        <form onSubmit={handleUpdateCourseFee} className="mb-4 p-4 border border-[#D0E8F0] bg-white rounded-lg">
                                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Total Course Fee (₹)</label>
                                             <div className="flex gap-2">
                                                 <input

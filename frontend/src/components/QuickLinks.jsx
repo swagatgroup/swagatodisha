@@ -321,7 +321,7 @@ const QuickLinks = () => {
             title: "🎨 Arts & Humanities",
             description: "Express creativity and understand society",
             icon: "fa-solid fa-palette",
-            color: "from-purple-500 to-pink-500",
+            color: "from-[#4A1D7A] to-[#6B3F99]",
             paths: [
                 {
                     name: "Literature & Languages",
@@ -576,7 +576,7 @@ const QuickLinks = () => {
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 20, scale: 0.95 }}
                                         transition={{ duration: 0.3, ease: "easeOut" }}
-                                        className="absolute top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#231A2E]/95 backdrop-blur-md rounded-2xl shadow-2xl border border-purple-200 dark:border-gray-700 overflow-hidden"
+                                        className="absolute top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#231A2E]/95 backdrop-blur-md rounded-2xl shadow-2xl border border-[#D0E8F0] dark:border-gray-700 overflow-hidden"
                                         style={{ height: '400px' }}
                                     >
                                         {/* Overlay Header */}
@@ -636,7 +636,7 @@ const QuickLinks = () => {
                                                             onMouseEnter={() => handleDocumentHover(doc.name)}
                                                             disabled={loadingDocuments}
                                                             className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
-                                                                ? 'border-[#4A1D7A] bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
+                                                                ? 'border-[#4A1D7A] bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] shadow-lg'
                                                                 : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
                                                                 } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                             whileHover={loadingDocuments ? {} : { scale: 1.02 }}
@@ -682,7 +682,7 @@ const QuickLinks = () => {
                                                             onMouseEnter={() => handleDocumentHover(doc.name)}
                                                             disabled={loadingDocuments}
                                                             className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
-                                                                ? 'border-[#4A1D7A] bg-gradient-to-r from-purple-100 to-blue-100 shadow-lg'
+                                                                ? 'border-[#4A1D7A] bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] shadow-lg'
                                                                 : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
                                                                 } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                             whileHover={loadingDocuments ? {} : { scale: 1.02 }}
@@ -806,7 +806,7 @@ const QuickLinks = () => {
                                                 className="relative"
                                             >
                                                 {/* Branch Line */}
-                                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-gradient-to-b from-purple-600 to-transparent"></div>
+                                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-gradient-to-b from-[#4A1D7A] to-transparent"></div>
 
                                                 {/* Main Branch Node */}
                                                 <motion.div

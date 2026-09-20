@@ -1,5 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion'
+import { 
+    RiMailSendFill, 
+    RiPhoneFill, 
+    RiMailFill, 
+    RiFileList3Fill, 
+    RiLoader4Line,
+    RiFacebookBoxFill,
+    RiTwitterXFill,
+    RiInstagramFill,
+    RiLinkedinBoxFill,
+    RiYoutubeFill
+} from '@remixicon/react';
 import { SOCIAL_LINKS, CONTACT_INFO } from '../utils/constants'
 import {
     showSuccess,
@@ -335,13 +347,13 @@ const ContactUs = () => {
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 dark:bg-[#231A2E]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 dark:from-purple-900/10 dark:to-blue-900/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#F0E6FA]/20 to-[#D0E8F0]/20 dark:from-[#4A1D7A]/10 dark:to-[#1D4B5E]/10 rounded-full blur-3xl"></div>
             </div>
 
             {/* Section Header */}
             <div className="relative z-10 text-center mb-16">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
-                    <i className="fa-solid fa-envelope text-white text-3xl"></i>
+                    <RiMailSendFill size={32} className="text-white" />
                 </div>
                 <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                     Get In <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Touch</span>
@@ -391,12 +403,12 @@ const ContactUs = () => {
                                 <div className="space-y-3">
                                     {/* Phone Contact */}
                                     <div className="flex items-center">
-                                        <i className="fa-solid fa-phone text-[#4A1D7A] mr-3 text-lg"></i>
+                                        <RiPhoneFill size={20} className="text-[#4A1D7A] mr-3 flex-shrink-0" />
                                         <div>
                                             <p className="text-sm text-gray-600 dark:text-gray-300">Call Us</p>
                                             <a
                                                 href={`tel:${CONTACT_INFO.phone}`}
-                                                className="text-lg font-semibold text-transparent bg-clip-text bg-[#4A1D7A] hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                                                className="text-lg font-semibold text-transparent bg-clip-text bg-[#4A1D7A] hover:text-[#351458] transition-all duration-300"
                                             >
                                                 {CONTACT_INFO.phone}
                                             </a>
@@ -405,12 +417,12 @@ const ContactUs = () => {
 
                                     {/* Email Contact */}
                                     <div className="flex items-center">
-                                        <i className="fa-solid fa-envelope text-[#4A1D7A] mr-3 text-lg"></i>
+                                        <RiMailFill size={20} className="text-[#4A1D7A] mr-3 flex-shrink-0" />
                                         <div>
                                             <p className="text-sm text-gray-600 dark:text-gray-300">Email Us</p>
                                             <a
                                                 href={`mailto:${CONTACT_INFO.email}`}
-                                                className="text-lg font-semibold text-transparent bg-clip-text bg-[#4A1D7A] hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                                                className="text-lg font-semibold text-transparent bg-clip-text bg-[#4A1D7A] hover:text-[#351458] transition-all duration-300"
                                             >
                                                 {CONTACT_INFO.email}
                                             </a>
@@ -422,20 +434,30 @@ const ContactUs = () => {
                             {/* Social Media */}
                             <div>
                                 <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Connect With Us</h4>
-                                <div className="flex space-x-4">
-                                    {SOCIAL_LINKS.map((social, index) => (
-                                        <motion.a
-                                            key={index}
-                                            href={social.url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.95 }}
-                                            className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center text-white hover:from-purple-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                        >
-                                            <i className={`${social.icon} text-lg`}></i>
-                                        </motion.a>
-                                    ))}
+                                <div className="flex gap-4">
+                                    {SOCIAL_LINKS.map((social, index) => {
+                                        const SOCIAL_ICON_MAP = {
+                                            'Facebook': RiFacebookBoxFill,
+                                            'Twitter': RiTwitterXFill,
+                                            'Instagram': RiInstagramFill,
+                                            'YouTube': RiYoutubeFill,
+                                            'LinkedIn': RiLinkedinBoxFill
+                                        };
+                                        const SocialIcon = SOCIAL_ICON_MAP[social.name] || RiMailFill;
+                                        
+                                        return (
+                                            <a
+                                                key={index}
+                                                href={social.url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center text-white hover:bg-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl"
+                                                title={social.name}
+                                            >
+                                                <SocialIcon size={24} />
+                                            </a>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
@@ -551,7 +573,7 @@ const ContactUs = () => {
                                                     <ul className="text-xs text-gray-500 dark:text-gray-300 space-y-1">
                                                         {Array.from(formData.documents).map((file, index) => (
                                                             <li key={index} className="flex items-center">
-                                                                <i className="fa-solid fa-file mr-2 text-[#4A1D7A]"></i>
+                                                                <RiFileList3Fill size={16} className="text-[#4A1D7A] mr-2 flex-shrink-0 inline" />
                                                                 {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
                                                             </li>
                                                         ))}
@@ -578,11 +600,11 @@ const ContactUs = () => {
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="w-full py-4 bg-[#4A1D7A] text-white rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full py-4 bg-[#4A1D7A] text-white rounded-xl font-semibold text-lg hover:text-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isSubmitting ? (
                                             <span className="flex items-center justify-center">
-                                                <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                                                <RiLoader4Line size={20} className="animate-spin mr-2 inline" />
                                                 Sending Message...
                                             </span>
                                         ) : (

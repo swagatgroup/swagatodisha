@@ -1375,7 +1375,7 @@ const SuperAdminDashboard = () => {
                     <div className="dark:text-gray-100">
                         {/* Banner shown when viewing a specific agent's or staff's students */}
                         {(scopedAgentId || scopedStaffId) && (
-                            <div className="mb-4 flex items-center justify-between bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg px-4 py-2">
+                            <div className="mb-4 flex items-center justify-between bg-purple-50 dark:bg-purple-900/20 border border-[#D0E8F0] dark:border-purple-700 rounded-lg px-4 py-2">
                                 <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
                                     📋 Showing students scoped to selected {scopedAgentId ? 'agent' : 'staff'}
                                 </span>

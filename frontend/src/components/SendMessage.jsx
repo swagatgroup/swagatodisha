@@ -430,7 +430,7 @@ const SendMessage = () => {
                     >
                         <button
                             onClick={() => navigate(getDashboardRoute())}
-                            className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-lg bg-[#4A1D7A] text-white hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl group"
+                            className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-lg bg-[#4A1D7A] text-white hover:bg-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl group"
                         >
                             <motion.div
                                 whileHover={{ x: -3 }}
@@ -465,9 +465,9 @@ const SendMessage = () => {
             
             {/* Enhanced Background Elements */}
             <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-purple-200/40 to-transparent dark:from-purple-900/30 rounded-full blur-3xl animate-pulse"></div>
+                <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-[#F0E6FA]/40 to-transparent dark:from-[#4A1D7A]/30 rounded-full blur-3xl animate-pulse"></div>
                 <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-tl from-blue-200/40 to-transparent dark:from-blue-900/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-r from-purple-100/20 via-blue-100/20 to-purple-100/20 dark:from-purple-900/10 dark:via-blue-900/10 dark:to-purple-900/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-r from-[#F0E6FA]/20 via-[#D0E8F0]/20 to-[#F0E6FA]/20 dark:from-[#4A1D7A]/10 dark:via-[#1D4B5E]/10 dark:to-[#4A1D7A]/10 rounded-full blur-3xl"></div>
                 {/* Grid Pattern Overlay */}
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] dark:opacity-20"></div>
             </div>
@@ -485,7 +485,7 @@ const SendMessage = () => {
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 rounded-3xl mb-6 shadow-2xl shadow-purple-500/30 relative"
+                            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-[#4A1D7A] via-[#1D4B5E] to-[#351458] rounded-3xl mb-6 shadow-2xl shadow-[#4A1D7A]/30 relative"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-3xl"></div>
                             <i className="fa-solid fa-paper-plane text-white text-4xl relative z-10"></i>
@@ -501,10 +501,10 @@ const SendMessage = () => {
                         >
                             Send Us a{' '}
                             <span className="relative inline-block">
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 animate-gradient bg-[length:200%_auto]">
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A1D7A] via-[#1D4B5E] to-[#4A1D7A] animate-gradient bg-[length:200%_auto]">
                                     Message
                                 </span>
-                                <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 rounded-full opacity-30"></span>
+                                <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-[#4A1D7A] via-[#1D4B5E] to-[#4A1D7A] rounded-full opacity-30"></span>
                             </span>
                         </motion.h1>
                         
@@ -559,7 +559,7 @@ const SendMessage = () => {
                                     </h3>
                                     
                                     <div className="space-y-4 mb-6">
-                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border border-purple-100 dark:border-purple-800/50">
+                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] dark:from-[#4A1D7A]/20 dark:to-[#1D4B5E]/20 border border-[#F0E6FA] dark:border-[#4A1D7A]/50">
                                             <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#4A1D7A] flex items-center justify-center shadow-lg">
                                                 <i className="fa-solid fa-phone text-white text-sm"></i>
                                             </div>
@@ -787,7 +787,7 @@ const SendMessage = () => {
                                                         key={index}
                                                         initial={{ opacity: 0, x: -10 }}
                                                         animate={{ opacity: 1, x: 0 }}
-                                                        className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-800/50"
+                                                        className="flex items-center justify-between p-3 bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] dark:from-[#4A1D7A]/20 dark:to-[#1D4B5E]/20 rounded-lg border border-[#D0E8F0] dark:border-[#4A1D7A]/50"
                                                     >
                                                         <div className="flex items-center gap-3 flex-1 min-w-0">
                                                             <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#4A1D7A] flex items-center justify-center">
@@ -823,9 +823,9 @@ const SendMessage = () => {
                                     disabled={isSubmitting}
                                     whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
                                     whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                                    className="w-full py-4 bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-[length:200%_auto] text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
+                                    className="w-full py-4 bg-gradient-to-r from-[#4A1D7A] via-[#1D4B5E] to-[#4A1D7A] bg-[length:200%_auto] text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-[#4A1D7A]/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
                                 >
-                                    <span className="absolute inset-0 bg-gradient-to-r from-purple-700 via-blue-700 to-purple-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                                    <span className="absolute inset-0 bg-gradient-to-r from-[#351458] via-[#133A4A] to-[#351458] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                                     <span className="relative z-10 flex items-center justify-center gap-2">
                                         {isSubmitting ? (
                                             <>

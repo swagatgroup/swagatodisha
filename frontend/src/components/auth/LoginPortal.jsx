@@ -43,7 +43,7 @@ const LoginPortal = () => {
             id: 'agent',
             title: 'Agent Login',
             icon: 'fa-solid fa-user-tie',
-            color: 'from-purple-500 to-pink-500',
+            color: 'from-[#4A1D7A] to-[#6B3F99]',
             link: '/login/agent',
             description: 'Manage your referrals, track commissions, and view student progress.'
         },

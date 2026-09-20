@@ -90,7 +90,7 @@ const GatewayLoader = ({ onEnterMainSite }) => {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="relative group w-full max-w-[320px] block"
         >
-          <div className="h-72 bg-[#F0E6FA] rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-purple-100/50">
+          <div className="h-72 bg-[#F0E6FA] rounded-[2.5rem] p-6 flex flex-col items-center justify-center text-center transition-all duration-500 group-hover:-translate-y-3 group-hover:shadow-2xl shadow-lg border border-[#F0E6FA]/50">
             <div className="w-20 h-20 bg-white dark:bg-[#231A2E] rounded-full mb-6 flex items-center justify-center text-[#4A1D7A] text-3xl shadow-sm border border-purple-50">
                <i className="fa-solid fa-school"></i>
             </div>

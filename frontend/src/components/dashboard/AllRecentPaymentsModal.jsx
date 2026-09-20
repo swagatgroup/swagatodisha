@@ -96,7 +96,7 @@ const AllRecentPaymentsModal = ({ isOpen, onClose }) => {
                                     });
 
                                     return (
-                                        <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-purple-200 dark:hover:border-purple-800 hover:shadow-md transition-all bg-white dark:bg-[#231A2E]/50 group">
+                                        <div key={idx} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-gray-100 dark:border-gray-700 hover:border-[#D0E8F0] dark:hover:border-purple-800 hover:shadow-md transition-all bg-white dark:bg-[#231A2E]/50 group">
                                             <div className="flex items-start sm:items-center space-x-4">
                                                 <div className="hidden sm:flex h-12 w-12 rounded-full bg-[#F0E6FA] dark:bg-[#231A2E]/20 items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                                                     <span className="text-[#4A1D7A] dark:text-[#9B6FCC] font-bold text-lg">

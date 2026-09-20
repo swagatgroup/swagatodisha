@@ -106,7 +106,7 @@ const Gallery = () => {
             </section>
 
             {/* Gallery Grid */}
-            <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50">
+            <section className="py-20 bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0]">
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
                         {filteredImages.map((image) => (

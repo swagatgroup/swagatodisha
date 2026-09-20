@@ -1,5 +1,21 @@
 import {useState} from 'react';
 import Swal from 'sweetalert2'
+import { 
+    RiLinkM,
+    RiMailSendLine,
+    RiLoader4Line,
+    RiFacebookBoxFill,
+    RiTwitterXFill,
+    RiInstagramFill,
+    RiLinkedinBoxFill,
+    RiYoutubeFill,
+    RiPhoneFill,
+    RiMailFill,
+    RiMapPin2Fill,
+    RiHeartFill,
+    RiGraduationCapLine,
+    RiCustomerService2Line
+} from '@remixicon/react';
 
 const Footer = () => {
     const currentYear = new Date().getFullYear()
@@ -48,7 +64,7 @@ const Footer = () => {
                 icon: 'error',
                 title: 'Email Required',
                 text: 'Please enter your email address',
-                confirmButtonColor: '#8B5CF6'
+                confirmButtonColor: '#4A1D7A'
             })
             return false
         }
@@ -57,7 +73,7 @@ const Footer = () => {
                 icon: 'error',
                 title: 'Invalid Email',
                 text: 'Please enter a valid email address',
-                confirmButtonColor: '#8B5CF6'
+                confirmButtonColor: '#4A1D7A'
             })
             return false
         }
@@ -92,7 +108,7 @@ const Footer = () => {
                     icon: 'success',
                     title: 'Successfully Subscribed!',
                     text: 'Thank you for subscribing to our newsletter. You will receive updates about our latest news, events, and educational insights!',
-                    confirmButtonColor: '#8B5CF6',
+                    confirmButtonColor: '#4A1D7A',
                     confirmButtonText: 'Great!'
                 })
 
@@ -106,7 +122,7 @@ const Footer = () => {
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Something went wrong! Please try again later.',
-                confirmButtonColor: '#8B5CF6'
+                confirmButtonColor: '#4A1D7A'
             })
         } finally {
             setIsSubscribing(false)
@@ -124,7 +140,7 @@ const Footer = () => {
                         <div>
                             <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
                                 <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <i className="fa-solid fa-link text-[#FAF7F2] text-sm"></i>
+                                    <RiLinkM size={16} className="text-[#FAF7F2]" />
                                 </div>
                                 Quick Links
                             </h4>
@@ -147,7 +163,7 @@ const Footer = () => {
                         <div>
                             <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
                                 <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <i className="fa-solid fa-graduation-cap text-[#FAF7F2] text-sm"></i>
+                                    <RiGraduationCapLine size={16} className="text-[#FAF7F2]" />
                                 </div>
                                 Our Programs
                             </h4>
@@ -170,7 +186,7 @@ const Footer = () => {
                         <div>
                             <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
                                 <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <i className="fa-solid fa-headset text-[#FAF7F2] text-sm"></i>
+                                    <RiCustomerService2Line size={16} className="text-[#FAF7F2]" />
                                 </div>
                                 Support
                             </h4>
@@ -193,7 +209,7 @@ const Footer = () => {
                         <div>
                             <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
                                 <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <i className="fa-solid fa-envelope text-[#FAF7F2] text-sm"></i>
+                                    <RiMailSendLine size={16} className="text-[#FAF7F2]" />
                                 </div>
                                 Stay Updated
                             </h4>
@@ -215,7 +231,7 @@ const Footer = () => {
                                 >
                                     {isSubscribing ? (
                                         <span className="flex items-center justify-center">
-                                            <i className="fa-solid fa-spinner fa-spin mr-2"></i>
+                                            <RiLoader4Line size={16} className="animate-spin mr-2 inline" />
                                             Subscribing...
                                         </span>
                                     ) : (

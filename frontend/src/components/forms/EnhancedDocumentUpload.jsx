@@ -306,7 +306,7 @@ const EnhancedDocumentUpload = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="border border-purple-200 bg-[#F0E6FA] rounded-lg p-4"
+            className="border border-[#D0E8F0] bg-[#F0E6FA] rounded-lg p-4"
         >
             <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3">Add Custom Document</h4>
             <div className="space-y-3">
@@ -424,7 +424,7 @@ const EnhancedDocumentUpload = ({
                                 key={key}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="border border-purple-200 bg-[#F0E6FA] rounded-lg p-4"
+                                className="border border-[#D0E8F0] bg-[#F0E6FA] rounded-lg p-4"
                             >
                                 <div className="flex items-center justify-between">
                                     <div>

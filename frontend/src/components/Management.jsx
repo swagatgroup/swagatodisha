@@ -13,7 +13,7 @@ const Management = () => {
             expertise: "Educational Leadership, Strategic Planning",
             vision: "To create a world-class educational ecosystem that nurtures innovation and excellence",
             achievements: ["Founded 15+ Institutions", "50,000+ Students Impacted", "100+ Industry Partnerships"],
-            color: "from-purple-500 to-purple-600"
+            color: "from-[#4A1D7A] to-[#351458]"
         },
         {
             id: 2,
@@ -56,7 +56,7 @@ const Management = () => {
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-[#4A1D7A]/10 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#D0E8F0]0/10 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-500/5 to-blue-500/5 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#4A1D7A]/5 to-[#1D4B5E]/5 rounded-full blur-3xl"></div>
             </div>
 
             <div className="container mx-auto px-6 relative z-10">
@@ -67,7 +67,7 @@ const Management = () => {
                     </div>
 
                     <h2 className="text-5xl md:text-7xl font-bold text-white mb-6">
-                        Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Leadership</span>
+                        Our <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A1D7A] to-[#1D4B5E]">Leadership</span>
                     </h2>
 
                     <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
@@ -87,14 +87,14 @@ const Management = () => {
                             <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 overflow-hidden transition-all duration-500 hover:scale-105 hover:bg-white/20 hover:shadow-2xl hover:shadow-purple-500/25">
                                 {/* Background Pattern */}
                                 <div className="absolute inset-0 opacity-10">
-                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-400 to-blue-400 rounded-full blur-2xl"></div>
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-[#4A1D7A] to-[#1D4B5E] rounded-full blur-2xl"></div>
                                     <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full blur-2xl"></div>
                                 </div>
 
                                 {/* Enhanced Hover Effects */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-3xl"></div>
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 to-blue-400 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
-                                <div className="absolute bottom-0 right-0 w-1 h-full bg-gradient-to-b from-purple-400 to-blue-400 transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-bottom"></div>
+                                <div className="absolute inset-0 bg-gradient-to-r from-[#4A1D7A]/10 to-[#1D4B5E]/10 opacity-0 group-hover:opacity-100 transition-all duration-500 rounded-3xl"></div>
+                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#4A1D7A] to-[#1D4B5E] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                                <div className="absolute bottom-0 right-0 w-1 h-full bg-gradient-to-b from-[#4A1D7A] to-[#1D4B5E] transform scale-y-0 group-hover:scale-y-100 transition-transform duration-500 origin-bottom"></div>
 
                                 {/* Content */}
                                 <div className="relative z-10">
@@ -201,7 +201,7 @@ const Management = () => {
                         <div className="p-8 text-center">
                             <button
                                 onClick={() => setSelectedLeader(null)}
-                                className="px-8 py-3 bg-[#4A1D7A] text-white rounded-xl font-semibold hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                                className="px-8 py-3 bg-[#4A1D7A] text-white rounded-xl font-semibold hover:bg-[#351458] transition-all duration-300"
                             >
                                 Close
                             </button>

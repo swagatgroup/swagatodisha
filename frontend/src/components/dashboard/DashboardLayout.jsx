@@ -214,8 +214,8 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     <div
                                         className="absolute right-0 mt-2 w-56 bg-white dark:bg-[#231A2E] rounded-md shadow-lg py-1 z-[9999] ring-1 ring-black ring-opacity-5 border border-gray-100 dark:border-gray-700"
                                     >
-                                        {/* User Info Section ONLY — Logout moved to sidebar */}
-                                        <div className="px-4 py-3 border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623] rounded-md">
+                                        {/* User Info Section */}
+                                        <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-[#1f1623]">
                                             <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                                                 {user?.fullName || user?.name || (user?.firstName ? `${user.firstName} ${user.lastName || ''}` : '') || 'User'}
                                             </p>
@@ -223,6 +223,16 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 {user?.role ? user.role.replace('_', ' ') : 'User'}
                                             </p>
                                         </div>
+                                        {/* Fresh, simple, no-BS Logout Button */}
+                                        <button
+                                            type="button"
+                                            onClick={handleLogout}
+                                            style={{ cursor: 'pointer' }}
+                                            className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-colors flex items-center cursor-pointer pointer-events-auto"
+                                        >
+                                            <ArrowRightOnRectangleIcon className="w-5 h-5 mr-3" />
+                                            Sign Out
+                                        </button>
                                     </div>
                                 )}
                             </div>
@@ -280,16 +290,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         </button>
                                     ))}
                                 </nav>
-                                {/* Mobile Sidebar Logout */}
-                                <div className="mt-auto px-2 pb-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                                    <button
-                                        onClick={handleLogout}
-                                        className="group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                    >
-                                        <span className="flex-shrink-0"><ArrowRightOnRectangleIcon className="w-5 h-5" /></span>
-                                        <span className="ml-3">Logout</span>
-                                    </button>
-                                </div>
+                                
                             </div>
                         </motion.div>
                     )}
@@ -322,18 +323,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                         </button>
                                     ))}
                                 </nav>
-                                {/* Desktop Sidebar Logout */}
-                                <div className="mt-auto px-2 pb-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                                    <button
-                                        onClick={handleLogout}
-                                        className={`group flex items-center w-full px-2 py-2 text-sm font-medium rounded-md text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${
-                                            sidebarCollapsed ? 'justify-center' : ''
-                                        }`}
-                                    >
-                                        <span className="flex-shrink-0"><ArrowRightOnRectangleIcon className="w-5 h-5" /></span>
-                                        {!sidebarCollapsed && <span className="ml-3">Logout</span>}
-                                    </button>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>

@@ -1667,7 +1667,7 @@ const UniversalStudentRegistration = ({
           const isFreeAdm = currentAdmType === 'free';
 
           return (
-            <div className="rounded-2xl overflow-hidden border border-purple-200 dark:border-[#351458] shadow-md">
+            <div className="rounded-2xl overflow-hidden border border-[#D0E8F0] dark:border-[#351458] shadow-md">
               {/* Header */}
               <div className="bg-[#4A1D7A] px-5 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -1719,7 +1719,7 @@ const UniversalStudentRegistration = ({
 
                 {/* Note */}
                 {!isFreeAdm && coursePrice !== null && coursePrice > 0 && (
-                  <div className="mt-3 text-xs bg-[#F0E6FA] dark:bg-[#231A2E]/20 border border-purple-100 dark:border-purple-800 rounded-lg px-3 py-2 text-[#351458] dark:text-[#C084FC]">
+                  <div className="mt-3 text-xs bg-[#F0E6FA] dark:bg-[#231A2E]/20 border border-[#F0E6FA] dark:border-purple-800 rounded-lg px-3 py-2 text-[#351458] dark:text-[#C084FC]">
                     <i className="fa-solid fa-circle-info mr-1"></i>
                     The displayed fee is the annual course fee. Payment schedule will be communicated after admission confirmation.
                   </div>
