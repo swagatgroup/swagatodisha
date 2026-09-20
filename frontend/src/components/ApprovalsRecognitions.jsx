@@ -71,7 +71,10 @@ const ApprovalsRecognitions = () => {
     if (universities.length === 0) return null; // Don't render section if no approvals
 
     return (
-        <div className="bg-[#4A1D7A] py-4 md:py-8">
+        <div
+            className="py-4 md:py-8"
+            style={{ background: "linear-gradient(135deg, #4A1D7A 0%, #1D4B5E 100%)" }}
+        >
             <div className="container mx-auto px-4 md:px-6 relative z-10">
                 {/* Card Slider */}
                 <div className="relative max-w-6xl mx-auto">
@@ -81,11 +84,8 @@ const ApprovalsRecognitions = () => {
                             initial={{ x: 300, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: -300, opacity: 0 }}
-                            transition={{
-                                duration: 0.8,
-                                ease: "easeInOut"
-                            }}
-                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-[#4A1D7A]"
+                            transition={{ duration: 0.8, ease: "easeInOut" }}
+                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-white/5 border border-white/10"
                         >
                             {/* University Name */}
                             <div className="text-center mb-3 md:mb-6">
@@ -101,16 +101,13 @@ const ApprovalsRecognitions = () => {
                             {/* Approvals Grid */}
                             <div className="flex flex-wrap justify-center gap-3 md:gap-6">
                                 {(universities[currentSlide].approvals || []).map((approval, index) => (
-                                    <motion.div
+                                    <div
                                         key={index}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: index * 0.1, duration: 0.5 }}
                                         className="group cursor-pointer flex flex-col items-center"
                                         onClick={() => handleApprovalClick(approval)}
                                         title={`Click to download ${approval.name} approval PDF`}
                                     >
-                                        <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-full p-2 md:p-3 shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-105 border border-purple-100 w-12 h-12 md:w-20 md:h-20 flex items-center justify-center overflow-hidden">
+                                        <div className="bg-white/10 hover:bg-white/20 rounded-full p-2 md:p-3 shadow-lg transition-all duration-300 group-hover:scale-105 border border-white/20 w-12 h-12 md:w-20 md:h-20 flex items-center justify-center overflow-hidden">
                                             <img
                                                 src={approval.logo}
                                                 alt={approval.name}
@@ -120,7 +117,7 @@ const ApprovalsRecognitions = () => {
                                         </div>
                                         {/* Fixed height container for consistent vertical spacing */}
                                         <div className="h-10 md:h-12 flex items-center justify-center mt-2 w-20 md:w-24">
-                                            <p className="text-[8px] md:text-[10px] font-semibold text-white text-center leading-tight group-hover:text-purple-300 transition-colors duration-300">
+                                            <p className="text-[8px] md:text-[10px] font-semibold text-white/90 text-center leading-tight group-hover:text-[#E8A817] transition-colors duration-300">
                                                 {approval.name ? approval.name.split(' ').map((word, wordIndex) => (
                                                     <span key={wordIndex}>
                                                         {word}
@@ -129,7 +126,7 @@ const ApprovalsRecognitions = () => {
                                                 )) : 'Approval'}
                                             </p>
                                         </div>
-                                    </motion.div>
+                                    </div>
                                 ))}
                             </div>
                         </motion.div>

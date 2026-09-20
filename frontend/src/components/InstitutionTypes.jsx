@@ -1,5 +1,33 @@
 import {useState, useCallback, useEffect} from 'react';
 import { useNavigate } from 'react-router-dom'
+import {
+    RiSchoolLine,
+    RiGraduationCapLine,
+    RiBuildingLine,
+    RiBriefcaseLine,
+    RiHospitalLine,
+    RiSettings3Line,
+    RiTeamLine,
+    RiComputerLine,
+    RiBuildingFill,
+    RiCloseLine,
+    RiStackLine,
+    RiGlobalLine,
+    RiArrowRightSLine,
+    RiExternalLinkLine,
+} from '@remixicon/react'
+
+// Map of old FA icon strings → Remix Icon components
+const ICON_MAP = {
+    'fa-solid fa-school':               <RiSchoolLine size={24} className="text-white" />,
+    'fa-solid fa-graduation-cap':       <RiGraduationCapLine size={24} className="text-white" />,
+    'fa-solid fa-university':           <RiBuildingLine size={24} className="text-white" />,
+    'fa-solid fa-briefcase':            <RiBriefcaseLine size={24} className="text-white" />,
+    'fa-solid fa-heart-pulse':          <RiHospitalLine size={24} className="text-white" />,
+    'fa-solid fa-cogs':                 <RiSettings3Line size={24} className="text-white" />,
+    'fa-solid fa-chalkboard-teacher':   <RiTeamLine size={24} className="text-white" />,
+    'fa-solid fa-laptop-code':          <RiComputerLine size={24} className="text-white" />,
+}
 
 const InstitutionTypes = () => {
     const navigate = useNavigate()
@@ -22,7 +50,7 @@ const InstitutionTypes = () => {
             subtitle: "Primary & Secondary Education",
             description: "Comprehensive education from primary to secondary levels with modern teaching methodologies and holistic development focus across multiple campuses.",
             icon: "fa-solid fa-school",
-            iconBg: "from-green-500 to-emerald-600",
+            iconBg: "from-teal-600 to-teal-700",
             color: "green",
             programs: [
                 {
@@ -72,7 +100,7 @@ const InstitutionTypes = () => {
             subtitle: "Advanced Secondary Education",
             description: "Specialized higher secondary education with focus on academic excellence and career preparation through multiple recognized boards.",
             icon: "fa-solid fa-graduation-cap",
-            iconBg: "from-blue-500 to-cyan-600",
+            iconBg: "from-[#387B95] to-[#1D4B5E]",
             color: "blue",
             programs: [
                 {
@@ -116,7 +144,7 @@ const InstitutionTypes = () => {
             subtitle: "Undergraduate & Postgraduate Programs",
             description: "Comprehensive degree programs across various disciplines with industry-aligned curriculum and expert faculty.",
             icon: "fa-solid fa-university",
-            iconBg: "from-purple-500 to-indigo-600",
+            iconBg: "from-[#4A1D7A] to-[#351458]",
             color: "purple",
             programs: [
                 {
@@ -274,7 +302,7 @@ const InstitutionTypes = () => {
             subtitle: "Business & Management Education",
             description: "Professional management education with practical business insights and leadership development programs.",
             icon: "fa-solid fa-briefcase",
-            iconBg: "from-orange-500 to-red-600",
+            iconBg: "from-[#E8A817] to-[#C48D0F]",
             color: "orange",
             programs: [
                 {
@@ -486,7 +514,7 @@ const InstitutionTypes = () => {
             subtitle: "Medical & Healthcare Training",
             description: "Professional healthcare training programs with practical experience and industry-standard certifications.",
             icon: "fa-solid fa-heart-pulse",
-            iconBg: "from-pink-500 to-rose-600",
+            iconBg: "from-[#6B3F99] to-[#4A1D7A]",
             color: "pink",
             programs: [
                 {
@@ -745,7 +773,7 @@ const InstitutionTypes = () => {
             subtitle: "Technical Engineering Education",
             description: "State-of-the-art engineering programs with modern laboratories and industry partnerships for practical learning.",
             icon: "fa-solid fa-cogs",
-            iconBg: "from-indigo-500 to-purple-600",
+            iconBg: "from-[#351458] to-[#4A1D7A]",
             color: "indigo",
             programs: [
                 {
@@ -1305,7 +1333,7 @@ const InstitutionTypes = () => {
             subtitle: "Professional Teacher Training",
             description: "Professional teacher training programs with modern pedagogical approaches and practical teaching experience.",
             icon: "fa-solid fa-chalkboard-teacher",
-            iconBg: "from-teal-500 to-green-600",
+            iconBg: "from-[#1D4B5E] to-[#387B95]",
             color: "teal",
             programs: [
                 {
@@ -1349,7 +1377,7 @@ const InstitutionTypes = () => {
             subtitle: "IT & Computer Training",
             description: "Specialized computer training programs with latest technology curriculum and industry-standard certifications.",
             icon: "fa-solid fa-laptop-code",
-            iconBg: "from-gray-500 to-slate-600",
+            iconBg: "from-[#5A5A5A] to-[#1A1A1A]",
             color: "gray",
             programs: [
                 {
@@ -1747,13 +1775,13 @@ const InstitutionTypes = () => {
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 dark:bg-[#231A2E]/20 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-100/20 to-blue-100/20 dark:from-purple-900/10 dark:to-blue-900/10 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#F0E6FA]/20 to-[#D0E8F0]/20 dark:from-[#4A1D7A]/10 dark:to-[#1D4B5E]/10 rounded-full blur-3xl"></div>
             </div>
 
             {/* Section Header */}
             <div className="relative z-10 text-center mb-16">
                 <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
-                    <i className="fa-solid fa-building-columns text-white text-3xl"></i>
+                    <RiBuildingFill size={32} className="text-white" />
                 </div>
                 <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
                     Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Institution Types</span>
@@ -1774,7 +1802,7 @@ const InstitutionTypes = () => {
                         >
                             {/* Icon Container */}
                             <div className={`w-16 h-16 bg-gradient-to-r ${institution.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                                <i className={`${institution.icon} text-white text-2xl`}></i>
+                                {ICON_MAP[institution.icon] || <RiBuildingLine size={24} className="text-white" />}
                             </div>
 
                             {/* Content */}
@@ -1812,7 +1840,7 @@ const InstitutionTypes = () => {
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center space-x-4">
                                     <div className={`w-12 h-12 bg-gradient-to-r ${selectedInstitution.iconBg} rounded-xl flex items-center justify-center`}>
-                                        <i className={`${selectedInstitution.icon} text-white text-xl`}></i>
+                                        {ICON_MAP[selectedInstitution.icon] || <RiBuildingLine size={20} className="text-white" />}
                                     </div>
                                     <div>
                                         <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedInstitution.name}</h3>
@@ -1823,7 +1851,7 @@ const InstitutionTypes = () => {
                                     onClick={(event) => handleCloseButtonClick(event, 'main')}
                                     className="w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors duration-200"
                                 >
-                                    <i className="fa-solid fa-times text-gray-600 dark:text-gray-300"></i>
+                                    <RiCloseLine size={20} />
                                 </button>
                             </div>
                             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedInstitution.description}</p>
@@ -1855,20 +1883,23 @@ const InstitutionTypes = () => {
                                                 <div className="mt-2 flex flex-wrap gap-2">
                                                     {program.hasSubCategories && (
                                                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#F0E6FA] dark:bg-[#231A2E] text-purple-800 dark:text-purple-200">
-                                                            <i className="fa-solid fa-layer-group mr-1"></i>
+                                                            <RiStackLine size={14} className="inline mr-1" />
                                                             Has Sub-Categories
                                                         </span>
                                                     )}
                                                     {program.hasWebsite && (
                                                         <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                                                            <i className="fa-solid fa-globe mr-1"></i>
+                                                            <RiGlobalLine size={14} className="inline mr-1" />
                                                             Visit Website
                                                         </span>
                                                     )}
                                                 </div>
                                             </div>
                                             <div className="ml-4">
-                                                <i className={`fa-solid ${program.hasWebsite ? 'fa-external-link-alt' : 'fa-chevron-right'} text-[#4A1D7A] dark:text-[#9B6FCC]`}></i>
+                                                {program.hasWebsite
+                                                    ? <RiExternalLinkLine size={16} className="text-[#4A1D7A] dark:text-[#9B6FCC]" />
+                                                    : <RiArrowRightSLine size={16} className="text-[#4A1D7A] dark:text-[#9B6FCC]" />
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -1891,7 +1922,7 @@ const InstitutionTypes = () => {
                         onClick={(event) => event.stopPropagation()}
                     >
                         {/* Sub Modal Header */}
-                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20">
+                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] dark:from-[#4A1D7A]/20 dark:to-[#1D4B5E]/20">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedProgram.name}</h3>
@@ -1901,7 +1932,7 @@ const InstitutionTypes = () => {
                                     onClick={(event) => handleCloseButtonClick(event, 'sub')}
                                     className="w-10 h-10 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm"
                                 >
-                                    <i className="fa-solid fa-times text-gray-600 dark:text-gray-300"></i>
+                                    <RiCloseLine size={20} />
                                 </button>
                             </div>
                             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedProgram.details}</p>
@@ -1927,7 +1958,7 @@ const InstitutionTypes = () => {
                                                         <p className="text-xs text-gray-500 dark:text-gray-300">{course.details}</p>
                                                     </div>
                                                     <div className="ml-4">
-                                                        <i className="fa-solid fa-chevron-right text-[#4A1D7A] dark:text-[#9B6FCC]"></i>
+                                                        <RiArrowRightSLine size={16} className="text-[#4A1D7A] dark:text-[#9B6FCC]" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -1998,7 +2029,7 @@ const InstitutionTypes = () => {
                         onClick={(event) => event.stopPropagation()}
                     >
                         {/* Course Modal Header */}
-                        <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-green-50 to-teal-50">
+                        <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-[#D0E8F0] to-[#FAF7F2]">
                             <div className="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedCourse.name}</h3>
@@ -2008,7 +2039,7 @@ const InstitutionTypes = () => {
                                     onClick={(event) => handleCloseButtonClick(event, 'course')}
                                     className="w-10 h-10 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm"
                                 >
-                                    <i className="fa-solid fa-times text-gray-600 dark:text-gray-300"></i>
+                                    <RiCloseLine size={20} />
                                 </button>
                             </div>
                             <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedCourse.details}</p>
@@ -2021,7 +2052,7 @@ const InstitutionTypes = () => {
                                 {Object.entries(selectedCourse.feeStructure).map(([key, value]) => (
                                     <div key={key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                                         <div className="flex items-center">
-                                            <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-teal-500 rounded-full mr-3"></div>
+                                            <div className="w-3 h-3 bg-gradient-to-r from-[#1D4B5E] to-[#387B95] rounded-full mr-3"></div>
                                             <span className="text-gray-700 dark:text-gray-300 font-medium capitalize">
                                                 {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
                                             </span>
@@ -2053,7 +2084,7 @@ const InstitutionTypes = () => {
                                 >
                                     Close
                                 </button>
-                                <button className="px-6 py-2 bg-gradient-to-r from-green-600 to-teal-600 text-white rounded-lg font-medium hover:from-green-700 hover:to-teal-700 transition-all duration-200">
+                                <button className="px-6 py-2 bg-gradient-to-r from-[#1D4B5E] to-[#387B95] text-white rounded-lg font-medium hover:from-[#387B95] hover:to-[#1D4B5E] transition-all duration-200">
                                     Apply Now
                                 </button>
                             </div>
