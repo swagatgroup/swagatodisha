@@ -3,6 +3,27 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import DarkModeToggle from "./shared/DarkModeToggle";
 import { NAV_ITEMS } from "../utils/constants";
+import {
+  RiHomeLine,
+  RiInformationLine,
+  RiBuildingLine,
+  RiAwardLine,
+  RiGalleryLine,
+  RiCustomerService2Line,
+  RiLoginBoxLine,
+  RiUserAddLine,
+  RiCloseLine,
+} from "@remixicon/react";
+
+// Map nav item names → Remix icons for mobile sidebar
+const NAV_ICONS = {
+  "Home":         <RiHomeLine size={18} />,
+  "About Us":     <RiInformationLine size={18} />,
+  "Institutions": <RiBuildingLine size={18} />,
+  "Approvals":    <RiAwardLine size={18} />,
+  "Gallery":      <RiGalleryLine size={18} />,
+  "Contact Us":   <RiCustomerService2Line size={18} />,
+};
 
 const Header = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -106,15 +127,17 @@ const Header = () => {
 
               <Link
                 to="/login-portal"
-                className="px-5 py-2 text-[#4A1D7A] dark:text-[#9B6FCC] border-2 border-[#4A1D7A] dark:border-[#9B6FCC] rounded-pill font-bold text-sm hover:bg-[#4A1D7A] dark:hover:bg-[#9B6FCC] hover:text-white transition-all duration-200"
+                className="flex items-center gap-1.5 px-5 py-2 text-[#4A1D7A] dark:text-[#9B6FCC] border-2 border-[#4A1D7A] dark:border-[#9B6FCC] rounded-pill font-bold text-sm hover:bg-[#4A1D7A] dark:hover:bg-[#9B6FCC] hover:text-white transition-all duration-200"
               >
+                <RiLoginBoxLine size={15} />
                 Login
               </Link>
 
               <Link
                 to="/register"
-                className="px-5 py-2 bg-[#6B3F99] text-white rounded-pill font-bold text-sm shadow-brand hover:bg-[#351458] transition-all duration-200"
+                className="flex items-center gap-1.5 px-5 py-2 bg-[#4A1D7A] text-white rounded-pill font-bold text-sm shadow-brand hover:bg-[#351458] transition-all duration-200"
               >
+                <RiUserAddLine size={15} />
                 Register
               </Link>
             </div>
@@ -163,57 +186,63 @@ const Header = () => {
               animate="open"
               exit="closed"
               variants={sidebarVariants}
-              className="fixed top-0 left-0 h-full w-[70vw] max-w-sm bg-[#FAF7F2] dark:bg-[#231A2E] shadow-2xl z-50 lg:hidden flex flex-col overflow-hidden"
+              className="fixed top-0 left-0 h-full w-[78vw] max-w-[320px] bg-[#FAF7F2] dark:bg-[#1C1228] shadow-2xl z-50 lg:hidden flex flex-col overflow-hidden"
             >
-              {/* Sidebar Header — Purple bar like reference */}
-              <div className="flex items-center justify-between px-6 py-5 bg-[#6B3F99]">
+              {/* Sidebar Header — deep indigo gradient, not flat AI-purple */}
+              <div
+                className="flex items-center justify-between px-5 py-5"
+                style={{ background: "linear-gradient(135deg, #4A1D7A 0%, #231A2E 100%)" }}
+              >
                 <img
                   src="/Swagat_Logo.png"
                   alt="Swagat Group of Institutions"
-                  className="w-32 h-auto object-contain brightness-0 invert"
+                  className="w-28 h-auto object-contain brightness-0 invert"
                 />
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center gap-2">
                   <DarkModeToggle />
                   <button
                     onClick={toggleNav}
-                    className="w-8 h-8 bg-white dark:bg-[#231A2E]/20 hover:bg-white dark:bg-[#231A2E]/30 rounded-full flex items-center justify-center transition text-white"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-white/80 hover:bg-white/15 transition"
                     aria-label="Close menu"
                   >
-                    <svg className="w-4 h-4" viewBox="0 0 24 24">
-                      <path fill="currentColor" d="M18.3 5.71a1 1 0 0 0-1.41 0L12 10.59 7.11 5.7A1 1 0 0 0 5.7 7.11L10.59 12l-4.89 4.89a1 1 0 1 0 1.41 1.41L12 13.41l4.89 4.89a1 1 0 0 0 1.41-1.41L13.41 12l4.89-4.89a1 1 0 0 0 0-1.4z" />
-                    </svg>
+                    <RiCloseLine size={20} />
                   </button>
                 </div>
               </div>
 
-              {/* Links */}
-              <nav className="flex-1 px-6 py-8 space-y-2 overflow-auto">
+              {/* Links with Remix icons */}
+              <nav className="flex-1 px-4 py-6 space-y-1 overflow-auto">
                 {NAV_ITEMS.map((item, index) => (
                   <Link
                     key={index}
                     to={item.href.startsWith("#") ? "#" : item.href}
                     onClick={() => handleNavClick(item.href)}
-                    className="flex items-center gap-3 py-3.5 px-4 text-lg text-[#1A1A1A] dark:text-[#FAF7F2] font-baloo font-semibold rounded-xl hover:bg-[#6B3F99]/10 hover:text-[#6B3F99] dark:hover:text-[#9B6FCC] transition-all"
+                    className="flex items-center gap-3 py-3 px-4 text-[#1A1A1A] dark:text-[#FAF7F2] font-baloo font-semibold text-base rounded-xl hover:bg-[#4A1D7A]/8 hover:text-[#4A1D7A] dark:hover:text-[#9B6FCC] transition-all"
                   >
+                    <span className="text-[#4A1D7A] dark:text-[#9B6FCC] opacity-75">
+                      {NAV_ICONS[item.name] || <RiHomeLine size={18} />}
+                    </span>
                     {item.name}
                   </Link>
                 ))}
               </nav>
 
               {/* Auth Footer */}
-              <div className="px-6 pb-8 pt-4 border-t border-[#6B3F99]/15 space-y-3">
+              <div className="px-5 pb-8 pt-4 border-t border-[#4A1D7A]/10 dark:border-[#9B6FCC]/15 space-y-3">
                 <Link
                   to="/login-portal"
                   onClick={() => setIsNavOpen(false)}
-                  className="block py-3 text-center border-2 border-[#4A1D7A] text-[#4A1D7A] dark:text-[#9B6FCC] dark:border-[#9B6FCC] rounded-pill font-bold hover:bg-[#4A1D7A] hover:text-white transition"
+                  className="flex items-center justify-center gap-2 py-3 border-2 border-[#4A1D7A] text-[#4A1D7A] dark:text-[#9B6FCC] dark:border-[#9B6FCC] rounded-pill font-bold hover:bg-[#4A1D7A] hover:text-white transition"
                 >
+                  <RiLoginBoxLine size={16} />
                   Login
                 </Link>
                 <Link
                   to="/register"
                   onClick={() => setIsNavOpen(false)}
-                  className="block py-3 text-center bg-[#6B3F99] text-white rounded-pill font-bold shadow-brand hover:bg-[#351458] transition"
+                  className="flex items-center justify-center gap-2 py-3 bg-[#4A1D7A] text-white rounded-pill font-bold shadow-brand hover:bg-[#351458] transition"
                 >
+                  <RiUserAddLine size={16} />
                   Register
                 </Link>
               </div>

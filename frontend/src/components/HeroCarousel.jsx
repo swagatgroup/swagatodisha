@@ -157,42 +157,60 @@ const HeroCarousel = () => {
         return null;
     }
 
-    // Determine height based on slider type
-    const heightClass = sliderType === 'horizontal' 
-        ? 'aspect-[4/3] md:aspect-[1920/820]' 
-        : 'aspect-[4/3] md:aspect-[16/9]';
+    // ─── Responsive height logic ──────────────────────────────────────────────
+    // Desktop (>768px): fill from navbar bottom to viewport bottom.
+    //   The navbar is 64px tall (fixed). We cap at 820px so banners don't
+    //   look stretched on ultra-tall monitors — those will show a gap below.
+    // Mobile (<768px): full 100vh so the banner is immersive on first load.
+    //
+    // IMAGE UPLOAD SPECS (tell the owner):
+    //   Desktop banner: 1920 × 820 px  (landscape, ~2.34:1)
+    //   Mobile  banner: 1080 × 1920 px (portrait, 9:16)
+    //
+    const NAVBAR_HEIGHT = 64; // px — matches Header fixed height
+
+    const heroStyle =
+        sliderType === 'horizontal'
+            ? {
+                  // Desktop: viewport height minus navbar, max 820px
+                  height: `min(calc(100vh - ${NAVBAR_HEIGHT}px), 820px)`,
+                  minHeight: '480px',
+              }
+            : {
+                  // Mobile: full 100vh so it feels immersive
+                  height: '100vh',
+                  minHeight: '500px',
+              };
 
     return (
         <section
             id="hero"
             ref={containerRef}
-            className={`relative w-full ${heightClass} mt-20 sm:mt-16 md:mt-16 overflow-hidden`}
+            className="relative w-full overflow-hidden"
             style={{
+                ...heroStyle,
+                marginTop: `${NAVBAR_HEIGHT}px`,
                 isolation: 'isolate',
                 transform: 'none',
                 willChange: 'auto',
                 position: 'relative',
-                zIndex: 1
+                zIndex: 1,
             }}
         >
             {/* Slider Container */}
             <div
                 className="relative w-full h-full"
-                style={{
-                    isolation: 'isolate',
-                    transform: 'none',
-                    willChange: 'auto'
-                }}
+                style={{ isolation: 'isolate', transform: 'none', willChange: 'auto' }}
             >
-                {/* Slides - Using opacity fade instead of transform to prevent affecting navbar */}
+                {/* Slides — opacity-crossfade so z-index on navbar stays clean */}
                 {slides.map((slide, index) => (
                     <div
                         key={index}
-                        className="absolute inset-0 w-full h-full transition-opacity duration-500 ease-in-out"
+                        className="absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out"
                         style={{
                             opacity: index === currentSlide ? 1 : 0,
                             pointerEvents: index === currentSlide ? 'auto' : 'none',
-                            visibility: index === currentSlide ? 'visible' : 'hidden'
+                            visibility: index === currentSlide ? 'visible' : 'hidden',
                         }}
                     >
                         <img
@@ -207,15 +225,13 @@ const HeroCarousel = () => {
 
                 {/* Slide Indicators */}
                 {slides.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-3 z-20">
+                    <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex gap-2.5 z-20">
                         {slides.map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => goToSlide(index)}
                                 onMouseEnter={() => {
-                                    if (timerRef.current) {
-                                        clearInterval(timerRef.current);
-                                    }
+                                    if (timerRef.current) clearInterval(timerRef.current);
                                 }}
                                 onMouseLeave={() => {
                                     if (slides.length > 1) {
@@ -224,10 +240,11 @@ const HeroCarousel = () => {
                                         }, 5000);
                                     }
                                 }}
-                                className={`rounded-full transition-all duration-300 ease-in-out ${index === currentSlide
-                                    ? 'bg-white w-8 h-3 shadow-lg'
-                                    : 'bg-white/50 hover:bg-white/75 w-3 h-3'
-                                    }`}
+                                className={`rounded-full transition-all duration-300 ease-in-out ${
+                                    index === currentSlide
+                                        ? 'bg-white w-8 h-2.5 shadow-lg'
+                                        : 'bg-white/50 hover:bg-white/75 w-2.5 h-2.5'
+                                }`}
                                 aria-label={`Go to slide ${index + 1}`}
                             />
                         ))}
