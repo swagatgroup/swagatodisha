@@ -145,7 +145,7 @@ const AboutUs = () => {
 
                 {/* Call to Action */}
                 <div className={`text-center mt-16 transition-all duration-700 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-                    <button className="px-8 py-3.5 bg-[#4A1D7A] text-white rounded-pill font-bold text-sm shadow-brand hover:bg-[#351458] hover:-translate-y-0.5 transition-all">
+                    <button className="px-8 py-3.5 bg-[#4A1D7A] text-white rounded-full font-bold text-sm shadow-brand hover:bg-[#351458] hover:-translate-y-0.5 transition-all">
                         Discover More
                     </button>
                 </div>
