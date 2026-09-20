@@ -1,19 +1,14 @@
-import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
-import DarkModeToggle from "./shared/DarkModeToggle";
-import { NAV_ITEMS } from "../utils/constants";
 import {
-  RiHomeLine,
-  RiInformationLine,
-  RiBuildingLine,
-  RiAwardLine,
-  RiGalleryLine,
-  RiCustomerService2Line,
-  RiLoginBoxLine,
-  RiUserAddLine,
-  RiCloseLine,
-} from "@remixicon/react";
+    RiAwardLine,
+    RiBuildingLine,
+    RiCloseLine,
+    RiCustomerService2Line,
+    RiGalleryLine,
+    RiHomeLine,
+    RiInformationLine,
+    RiLoginBoxLine,
+    RiUserAddLine
+} from '@remixicon/react';
 
 // Map nav item names → Remix icons for mobile sidebar
 const NAV_ICONS = {

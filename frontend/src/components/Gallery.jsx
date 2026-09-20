@@ -1,5 +1,16 @@
-import {useState, useEffect} from 'react';
-import { RiBuildingLine, RiCalendarLine, RiCloseLine, RiGraduationCapLine, RiHeartLine, RiImageFill, RiImageLine, RiSchoolLine, RiTeamLine, RiZoomInLine } from '@remixicon/react';
+import {
+    RiBuildingLine,
+    RiCalendarLine,
+    RiCloseLine,
+    RiGraduationCapLine,
+    RiHeartLine,
+    RiImageFill,
+    RiImageLine,
+    RiLoader4Line,
+    RiSchoolLine,
+    RiTeamLine,
+    RiZoomInLine
+} from '@remixicon/react';
 import BackToMainWebsite from './BackToMainWebsite'
 
 const Gallery = () => {

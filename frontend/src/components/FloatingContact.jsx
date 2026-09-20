@@ -1,5 +1,11 @@
 import React, { useState } from 'react'
-import { RiPhoneFill, RiMegaphoneFill, RiWhatsappFill, RiAddLine, RiCustomerService2Fill } from '@remixicon/react';;
+import {
+    RiAddLine,
+    RiCustomerService2Fill,
+    RiMegaphoneFill,
+    RiPhoneFill,
+    RiWhatsappFill
+} from '@remixicon/react';;
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CONTACT_INFO } from '../utils/constants';

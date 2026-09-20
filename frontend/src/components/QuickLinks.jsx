@@ -1,17 +1,34 @@
-import {useEffect, useRef, useState} from 'react';
-import { motion, AnimatePresence } from 'framer-motion'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { CONTACT_INFO } from '../utils/constants'
-import api from '../utils/api'
 import {
-    RiCalendarScheduleLine,
-    RiRoadMapLine,
-    RiNotification3Line,
+    RiArrowDownSLine,
+    RiArrowRightSLine,
+    RiArrowUpSLine,
+    RiAtomLine,
     RiBarChartLine,
+    RiBookLine,
+    RiBriefcaseLine,
+    RiBrushLine,
+    RiCalendarScheduleLine,
+    RiCloseLine,
+    RiCoinsLine,
+    RiComputerLine,
+    RiDownloadLine,
     RiFilePdf2Line,
+    RiFlaskLine,
+    RiGraduationCapLine,
+    RiGroupLine,
+    RiHammerLine,
+    RiHeartPulseLine,
     RiImageLine,
-} from '@remixicon/react'
+    RiLineChartLine,
+    RiMegaphoneLine,
+    RiNotification3Line,
+    RiPaletteLine,
+    RiPhoneLine,
+    RiRoadMapLine,
+    RiSettings3Line,
+    RiStethoscopeLine,
+    RiToolsLine
+} from '@remixicon/react';
 
 // Register ScrollTrigger only on client side
 if (typeof window !== 'undefined') {

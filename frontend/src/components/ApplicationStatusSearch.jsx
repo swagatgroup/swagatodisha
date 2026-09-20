@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { RiCloseLine, RiMapPin2Line, RiBankCardLine, RiLoader4Line, RiArrowRightLine, RiErrorWarningLine, RiShieldKeyholeLine, RiPencilLine, RiSendPlaneLine, RiSearchLine, RiCheckLine, RiGraduationCapLine } from '@remixicon/react';
+import {
+    RiArrowRightLine,
+    RiBankCardLine,
+    RiCheckLine,
+    RiCloseLine,
+    RiErrorWarningLine,
+    RiGraduationCapLine,
+    RiLoader4Line,
+    RiMapPin2Line,
+    RiPencilLine,
+    RiSearchLine,
+    RiSendPlaneLine,
+    RiShieldKeyholeLine
+} from '@remixicon/react';
 import api from '../utils/api';
 
 const ApplicationStatusSearch = () => {
