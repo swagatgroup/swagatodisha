@@ -67,6 +67,8 @@ const SuperAdminDashboard = () => {
     const [filterStatus, setFilterStatus] = useState('all');
     const [filterCourse, setFilterCourse] = useState('all');
     const [filterSubmitterRole, setFilterSubmitterRole] = useState('all');
+    const [filterAgentId, setFilterAgentId] = useState(null);   // Filter by specific agent ID
+    const [filterStaffId, setFilterStaffId] = useState(null);   // Filter by specific staff ID
     const [filterReferralType, setFilterReferralType] = useState('all');
     const [sortBy, setSortBy] = useState('latest');
     const [currentPage, setCurrentPage] = useState(1);
@@ -192,7 +194,7 @@ const SuperAdminDashboard = () => {
             fetchStudents();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterReferralType, sortBy, selectedSession, activeSidebarItem, studentView]);
+    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterAgentId, filterStaffId, filterReferralType, sortBy, selectedSession, activeSidebarItem, studentView]);
 
     const fetchStudents = async () => {
         try {
@@ -240,7 +242,11 @@ const SuperAdminDashboard = () => {
                 ...(searchTerm && { search: searchTerm }),
                 ...(filterStatus !== 'all' && { status: filterStatus }),
                 ...(filterCourse !== 'all' && { course: filterCourse }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
+                // Only send submitterRole if NOT filtering by specific agent/staff
+                ...(filterSubmitterRole !== 'all' && !filterAgentId && !filterStaffId && { submitterRole: filterSubmitterRole }),
+                // Dedicated agent/staff ID filters — these are the correct params the backend already supports
+                ...(filterAgentId && { agentId: filterAgentId }),
+                ...(filterStaffId && { staffId: filterStaffId }),
                 ...(filterReferralType !== 'all' && { referralType: filterReferralType }),
                 ...(studentView === 'our' && { listType: 'main' }),
                 ...(studentView === 'direct' && { listType: 'direct' })
@@ -827,20 +833,22 @@ const SuperAdminDashboard = () => {
                                             <button
                                                 key={staff._id}
                                                 onClick={() => {
+                                                    const isActive = filterStaffId === staff._id;
+                                                    setFilterStaffId(isActive ? null : staff._id);
+                                                    setFilterAgentId(null); // Clear agent filter
                                                     setStudentView('our');
                                                     setActiveSidebarItem('students');
-                                                    setFilterSubmitterRole(filterSubmitterRole === staff._id ? 'all' : staff._id);
                                                     setCurrentPage(1);
                                                 }}
                                                 className={`px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border w-full ${
-                                                    filterSubmitterRole === staff._id
+                                                    filterStaffId === staff._id
                                                     ? 'bg-[#4A1D7A] text-white border-[#4A1D7A] shadow-md'
                                                     : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-gray-800 hover:border-purple-300'
                                                 }`}
                                             >
                                                 <div className="flex flex-col items-center gap-2">
                                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
-                                                        filterSubmitterRole === staff._id
+                                                        filterStaffId === staff._id
                                                         ? 'bg-white/20 text-white'
                                                         : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600'
                                                     }`}>
@@ -867,20 +875,22 @@ const SuperAdminDashboard = () => {
                                             <button
                                                 key={agent._id}
                                                 onClick={() => {
+                                                    const isActive = filterAgentId === agent._id;
+                                                    setFilterAgentId(isActive ? null : agent._id);
+                                                    setFilterStaffId(null); // Clear staff filter
                                                     setStudentView('our');
                                                     setActiveSidebarItem('students');
-                                                    setFilterSubmitterRole(filterSubmitterRole === agent._id ? 'all' : agent._id);
                                                     setCurrentPage(1);
                                                 }}
                                                 className={`px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border w-full ${
-                                                    filterSubmitterRole === agent._id
+                                                    filterAgentId === agent._id
                                                     ? 'bg-[#387B95] text-white border-[#387B95] shadow-md'
                                                     : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300'
                                                 }`}
                                             >
                                                 <div className="flex flex-col items-center gap-2">
                                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
-                                                        filterSubmitterRole === agent._id
+                                                        filterAgentId === agent._id
                                                         ? 'bg-white/20 text-white'
                                                         : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'
                                                     }`}>
