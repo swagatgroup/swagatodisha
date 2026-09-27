@@ -412,50 +412,8 @@ const EnhancedStaffDashboard = () => {
 
 
 
-                        {/* Filter by Agent — clickable filter buttons for agents under this staff */}
-                        {agents && agents.length > 0 && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.1 }}
-                                className="mb-6"
-                            >
-                                <h3 className="text-sm font-semibold text-gray-600 dark:text-gray-300 mb-3 uppercase tracking-wider">
-                                    Filter by Agent
-                                </h3>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-                                    {agents.map(agent => {
-                                        const agentId = agent._id;
-                                        const agentName = agent.fullName || `${agent.firstName || ''} ${agent.lastName || ''}`.trim() || agent.email;
-                                        const isActive = filterAgentId === agentId;
-                                        return (
-                                            <button
-                                                key={agentId}
-                                                onClick={() => {
-                                                    setFilterAgentId(isActive ? null : agentId);
-                                                    setCurrentPage(1);
-                                                    setStudentView('our');
-                                                }}
-                                                className={`px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border w-full ${
-                                                    isActive
-                                                    ? 'bg-[#387B95] text-white border-[#387B95] shadow-md'
-                                                    : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300'
-                                                }`}
-                                            >
-                                                <div className="flex flex-col items-center gap-2">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
-                                                        isActive ? 'bg-white/20 text-white' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'
-                                                    }`}>
-                                                        {agentName.charAt(0).toUpperCase()}
-                                                    </div>
-                                                    <span className="text-center text-xs leading-tight font-semibold">{agentName}</span>
-                                                </div>
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-                            </motion.div>
-                        )}
+
+
 
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
