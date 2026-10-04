@@ -215,7 +215,18 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
     const [filterStream, setFilterStream] = useState('all');
     const [filterCampus, setFilterCampus] = useState('all');
     const [filterAdmissionType, setFilterAdmissionType] = useState('all');
-    const [filterSubmitterRole, setFilterSubmitterRole] = useState('all'); // Includes staff and agent
+    const [filterSubmitterRole, setFilterSubmitterRole] = useState(agentId || staffId || 'all');
+
+    // Sync submitter role filter if agentId or staffId props change (e.g. from SuperAdmin Dashboard clicks)
+    useEffect(() => {
+        if (agentId) {
+            setFilterSubmitterRole(agentId);
+        } else if (staffId) {
+            setFilterSubmitterRole(staffId);
+        } else {
+            setFilterSubmitterRole('all');
+        }
+    }, [agentId, staffId]);
     const prevSortByRef = useRef('latest');
 
     useEffect(() => {
@@ -617,9 +628,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                 ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
                 listType: listType, // Add listType to params
-                ...(agentId && { agentId }),   // Super admin: scope to one agent's students
-                ...(staffId && { staffId }),   // Super admin: scope to one staff's students
-            });
+                                            });
 
             console.log('🔍 Fetching students from:', `/api/admin/students?${params}`);
             const response = await api.get(`/api/admin/students?${params}`);

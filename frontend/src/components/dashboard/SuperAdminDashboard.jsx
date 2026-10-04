@@ -835,22 +835,21 @@ const SuperAdminDashboard = () => {
                                             <button
                                                 key={staff._id}
                                                 onClick={() => {
-                                                    const isActive = filterStaffId === staff._id;
-                                                    setFilterStaffId(isActive ? null : staff._id);
-                                                    setFilterAgentId(null); // Clear agent filter
-                                                    setStudentView('our');
-                                                    setActiveSidebarItem('students');
-                                                    setCurrentPage(1);
-                                                }}
+        const isActive = scopedStaffId === staff._id;
+        setScopedStaffId(isActive ? null : staff._id);
+        setScopedAgentId(null);
+        setStudentView('our');
+        setActiveSidebarItem('students');
+    }}
                                                 className={`flex-1 min-w-[140px] px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border ${
-                                                    filterStaffId === staff._id
+                                                    scopedStaffId === staff._id
                                                     ? 'bg-[#4A1D7A] text-white border-[#4A1D7A] shadow-md'
                                                     : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-purple-50 dark:hover:bg-gray-800 hover:border-purple-300'
                                                 }`}
                                             >
                                                 <div className="flex flex-col items-center gap-2">
                                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
-                                                        filterStaffId === staff._id
+                                                        scopedStaffId === staff._id
                                                         ? 'bg-white/20 text-white'
                                                         : 'bg-purple-100 dark:bg-purple-900/30 text-purple-600'
                                                     }`}>
@@ -877,22 +876,21 @@ const SuperAdminDashboard = () => {
                                             <button
                                                 key={agent._id}
                                                 onClick={() => {
-                                                    const isActive = filterAgentId === agent._id;
-                                                    setFilterAgentId(isActive ? null : agent._id);
-                                                    setFilterStaffId(null); // Clear staff filter
-                                                    setStudentView('our');
-                                                    setActiveSidebarItem('students');
-                                                    setCurrentPage(1);
-                                                }}
+        const isActive = scopedAgentId === agent._id;
+        setScopedAgentId(isActive ? null : agent._id);
+        setScopedStaffId(null);
+        setStudentView('our');
+        setActiveSidebarItem('students');
+    }}
                                                 className={`flex-1 min-w-[140px] px-4 py-4 rounded-xl text-sm font-medium transition-all shadow-sm border ${
-                                                    filterAgentId === agent._id
+                                                    scopedAgentId === agent._id
                                                     ? 'bg-[#387B95] text-white border-[#387B95] shadow-md'
                                                     : 'bg-white dark:bg-[#231A2E] text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-gray-800 hover:border-blue-300'
                                                 }`}
                                             >
                                                 <div className="flex flex-col items-center gap-2">
                                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold ${
-                                                        filterAgentId === agent._id
+                                                        scopedAgentId === agent._id
                                                         ? 'bg-white/20 text-white'
                                                         : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'
                                                     }`}>
