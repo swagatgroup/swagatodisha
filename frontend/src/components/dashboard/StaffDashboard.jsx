@@ -14,6 +14,7 @@ import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ApplicationReview from './tabs/ApplicationReview';
 import PaymentManagement from './tabs/PaymentManagement';
 import ProgressPieChart from './ProgressPieChart';
+import PaymentPieChart from './PaymentPieChart';
 import {
     showSuccess,
     showLoading,
@@ -363,32 +364,12 @@ const EnhancedStaffDashboard = () => {
                                         />
                                     </div>
                                 </div>
-                                <div className="bg-white dark:bg-[#231A2E] rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col items-center justify-center min-h-[300px]">
-                                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4 w-full text-center">Payment Status Overview</h3>
-                                    {stats.paymentStats ? (
-                                        <div className="w-full h-64">
-                                            <ResponsiveContainer width="100%" height="100%">
-                                                <BarChart data={[
-                                                    { name: 'Completed', count: stats.paymentStats.completed || 0 },
-                                                    { name: 'Partial',   count: stats.paymentStats.partial   || 0 },
-                                                    { name: 'Pending',   count: stats.paymentStats.pending   || 0 },
-                                                    { name: 'Overdue',   count: stats.paymentStats.overdue   || 0 },
-                                                ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "#374151" : "#E5E7EB"} />
-                                                    <XAxis dataKey="name" tick={{ fontSize: 12, fill: isDarkMode ? "#E5E7EB" : "#6B7280" }} axisLine={false} tickLine={false} />
-                                                    <YAxis tick={{ fontSize: 12, fill: isDarkMode ? "#E5E7EB" : "#6B7280" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                                                    <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', backgroundColor: isDarkMode ? '#1F2937' : '#FFFFFF', color: isDarkMode ? '#F3F4F6' : '#111827' }} />
-                                                    <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={50}>
-                                                        {['#22C55E', '#EAB308', '#3B82F6', '#EF4444'].map(function(color, i) {
-                                                            return <Cell key={i} fill={color} />;
-                                                        })}
-                                                    </Bar>
-                                                </BarChart>
-                                            </ResponsiveContainer>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center h-full text-gray-400 text-sm">No payment data</div>
-                                    )}
+                                <div className="w-full flex justify-center items-center">
+                                    <div className="w-full max-w-sm">
+                                        <PaymentPieChart
+                                            paymentStats={stats.paymentStats}
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

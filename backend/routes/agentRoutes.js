@@ -430,6 +430,13 @@ router.get("/my-students", async (req, res) => {
       assignedAgent: app.assignedAgent,
       user: app.user,
       documents: app.documents || [], // Include documents for view functionality
+      financialStatus: app.financialStatus || {
+        totalFees: 0,
+        paidAmount: 0,
+        dueAmount: 0,
+        paymentStatus: 'PENDING',
+        installments: []
+      },
       createdAt: app.createdAt,
       updatedAt: app.updatedAt,
       submittedBy: app.submittedBy, // Include submittedBy for tracking
@@ -837,6 +844,23 @@ router.get("/stats", async (req, res) => {
       StudentApplication.countDocuments({ ...refBase, status: 'COMPLETE' }),
     ]);
 
+    // Payment stats aggregation for agent's students
+    let paymentStatsData = { total: 0, pending: 0, partial: 0, overdue: 0, completed: 0 };
+    try {
+      const paymentGroups = await StudentApplication.aggregate([
+        { $match: agentQuery },
+        { $group: { _id: '$financialStatus.paymentStatus', count: { $sum: 1 } } }
+      ]);
+      paymentGroups.forEach(g => {
+        const s = (g._id || '').toUpperCase();
+        paymentStatsData.total += g.count;
+        if (s === 'PARTIAL') paymentStatsData.partial = g.count;
+        else if (s === 'OVERDUE') paymentStatsData.overdue = g.count;
+        else if (s === 'COMPLETED' || s === 'COMPLETE') paymentStatsData.completed = g.count;
+        else paymentStatsData.pending += g.count;
+      });
+    } catch (e) { /* non-fatal */ }
+
     res.status(200).json({
       success: true,
       data: {
@@ -848,6 +872,7 @@ router.get("/stats", async (req, res) => {
         approved: approvedStudents,
         rejected: rejectedStudents,
         completed: completedStudents,
+        paymentStats: paymentStatsData,
         // Dashboard registered (agent submitted directly)
         dashboardRegistered: {
           total: dashTotal,
