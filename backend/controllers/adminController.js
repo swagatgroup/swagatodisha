@@ -228,22 +228,28 @@ exports.getDashboardStats = async (req, res) => {
             });
         } catch (e) { /* non-fatal */ }
 
-        // Staff members list
+        // Staff members list (only for super_admin callers — staff don't need to see other staff)
         let staffMembersData = [];
-        try {
-            const staffDocs = await Admin.find({ role: 'staff', isActive: true })
-                .select('_id firstName lastName fullName email').lean();
-            staffMembersData = staffDocs.map(s => ({
-                _id: s._id,
-                name: s.fullName || [s.firstName, s.lastName].filter(Boolean).join(' ') || s.email,
-                email: s.email
-            }));
-        } catch (e) { /* non-fatal */ }
+        if (req.user.role === 'super_admin') {
+            try {
+                const staffDocs = await Admin.find({ role: 'staff', isActive: true })
+                    .select('_id firstName lastName fullName email').lean();
+                staffMembersData = staffDocs.map(s => ({
+                    _id: s._id,
+                    name: s.fullName || [s.firstName, s.lastName].filter(Boolean).join(' ') || s.email,
+                    email: s.email
+                }));
+            } catch (e) { /* non-fatal */ }
+        }
 
-        // Agent members list
+        // Agent members list — scoped to assigned agents when caller is staff
         let agentMembersData = [];
         try {
-            const agentDocs = await User.find({ role: 'agent', isActive: true })
+            const agentFilter = { role: 'agent', isActive: true };
+            if (req.user.role === 'staff') {
+                agentFilter.assignedStaff = req.user._id;
+            }
+            const agentDocs = await User.find(agentFilter)
                 .select('_id fullName firstName lastName name email').lean();
             agentMembersData = agentDocs.map(a => ({
                 _id: a._id,
@@ -517,6 +523,11 @@ exports.getAllAgents = async (req, res) => {
         try {
             // Build filter query
             const filter = { role: 'agent' };
+
+            // Staff can only see agents assigned to them
+            if (req.user.role === 'staff') {
+                filter.assignedStaff = req.user._id;
+            }
 
             if (search) {
                 filter.$or = [
