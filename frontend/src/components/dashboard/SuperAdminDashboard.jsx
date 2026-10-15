@@ -447,14 +447,8 @@ const SuperAdminDashboard = () => {
                 }
             };
 
-            // Remove empty address fields
-            if (updatePayload.contactDetails.permanentAddress) {
-                Object.keys(updatePayload.contactDetails.permanentAddress).forEach(key => {
-                    if (!updatePayload.contactDetails.permanentAddress[key]) {
-                        delete updatePayload.contactDetails.permanentAddress[key];
-                    }
-                });
-            }
+            // Note: Don't delete empty address fields as it can strip required fields like 'district'
+            // The backend handles empty strings gracefully
 
             const response = await api.put(`/api/admin/students/${selectedStudent._id}`, updatePayload);
             
@@ -1174,8 +1168,10 @@ const SuperAdminDashboard = () => {
                                                                         </svg>
                                                                     </button>
 
+                                                                    {['DRAFT', 'SUBMITTED'].includes(student.status) && (
                                                                     <button
                                                                         onClick={async () => {
+                                                                         try {
                                                                             setSelectedStudent(student);
                                                                             
                                                                             // Helper function to format date for input field
@@ -1269,6 +1265,10 @@ const SuperAdminDashboard = () => {
                                                                                 }
                                                                             });
                                                                             setShowEditModal(true);
+                                                                         } catch (error) {
+                                                                            console.error('Failed to open edit modal:', error);
+                                                                            setSelectedStudent(null);
+                                                                         }
                                                                         }}
                                                                         className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 cursor-pointer"
                                                                         title="Edit"
@@ -1277,6 +1277,7 @@ const SuperAdminDashboard = () => {
                                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                                         </svg>
                                                                     </button>
+                                                                    )}
                                                                 </div>
                                                             </td>
                                                         </motion.tr>

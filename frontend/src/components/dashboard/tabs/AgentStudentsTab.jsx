@@ -969,15 +969,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           });
                         }
                         
-                        // Allow editing for:
-                        // 1. DRAFT - always
-                        // 2. REJECTED - always
-                        // 3. SUBMITTED - allow (backend will check if documents are approved)
-                        // 4. UNDER_REVIEW status - always
-                        const canEdit = isDraft || 
-                                       isRejected || 
-                                       isSubmitted ||
-                                       isUnderReviewStatus;
+                        // Allow editing for DRAFT and SUBMITTED only
+                        // Once verified/approved, no more edits
+                        const canEdit = isDraft || isSubmitted;
                         
                         if (canEdit) {
                           return (

@@ -72,13 +72,25 @@ class PDFGenerator {
             // Create a new PDF document using pdf-lib for merging
             const mergedPdf = await PDFLib.create();
 
-            // Helper function to download file with timeout
-            const downloadFile = (url) => {
+            // Helper function to download file with timeout and redirect handling
+            const downloadFile = (url, maxRedirects = 5) => {
                 return new Promise((resolve, reject) => {
                     const protocol = url.startsWith('https') ? https : http;
                     const timeout = 90000; // 90 seconds timeout for large files
 
                     const request = protocol.get(url, (res) => {
+                        if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                            if (maxRedirects <= 0) {
+                                reject(new Error('Too many redirects'));
+                                return;
+                            }
+                            const redirectUrl = res.headers.location.startsWith('http')
+                                ? res.headers.location
+                                : new URL(res.headers.location, url).toString();
+                            resolve(downloadFile(redirectUrl, maxRedirects - 1));
+                            return;
+                        }
+
                         if (res.statusCode !== 200) {
                             reject(new Error(`Failed to download: ${res.statusCode}`));
                             return;
@@ -144,9 +156,10 @@ class PDFGenerator {
                 if (doc.storageType === 'cloudinary' || doc.cloudinaryPublicId) {
                     const publicId = doc.cloudinaryPublicId || doc.filePath?.replace(/^.*\//, '').replace(/\.[^.]+$/, '');
                     if (publicId) {
+                        const isPdf = doc.mimeType === 'application/pdf' || doc.fileName?.toLowerCase().endsWith('.pdf') || doc.filePath?.toLowerCase().endsWith('.pdf');
                         return cloudinary.url(publicId, {
                             secure: true,
-                            fetch_format: 'auto'
+                            ...(isPdf ? { resource_type: 'raw' } : { fetch_format: 'auto' })
                         });
                     }
                 }
@@ -244,7 +257,7 @@ class PDFGenerator {
                         folder: `swagat-odisha/processed-pdfs`,
                         resource_type: 'raw', // PDFs are raw files
                         type: 'upload', // Public upload type for direct access
-                        public_id: fileName.replace('.pdf', ''),
+                        public_id: fileName,
                         use_filename: false,
                         unique_filename: false
                     });

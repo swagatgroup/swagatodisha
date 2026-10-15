@@ -1340,13 +1340,14 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
             });
         }
 
-        // Staff can only edit applications when status is UNDER_REVIEW
-        // Super admin can edit any status
+        // Both staff and super admin can edit applications in DRAFT, SUBMITTED, or UNDER_REVIEW
+        // Once approved/completed/cancelled, no edits allowed
         const isSuperAdmin = req.user.role === 'super_admin';
-        if (!isSuperAdmin && application.status !== 'UNDER_REVIEW') {
+        const editableStatuses = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'];
+        if (!editableStatuses.includes(application.status)) {
             return res.status(400).json({
                 success: false,
-                message: `Cannot edit application when status is ${application.status}. Staff can only edit applications with status: UNDER_REVIEW.`
+                message: `Cannot edit application when status is ${application.status}. Applications can only be edited when status is: ${editableStatuses.join(', ')}.`
             });
         }
 

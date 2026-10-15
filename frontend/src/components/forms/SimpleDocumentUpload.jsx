@@ -220,9 +220,9 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
 
         const fileExtension = file.name.split('.').pop().toLowerCase();
         
-        // Special validation for PDFs: must be < 1MB
-        if (fileExtension === 'pdf' && file.size > 1024 * 1024) {
-            alert('PDF files must be strictly under 1MB in size. Please compress your PDF before uploading.');
+        // Special validation for PDFs: must be < 5MB
+        if (fileExtension === 'pdf' && file.size > 5 * 1024 * 1024) {
+            alert('PDF files must be under 5MB in size. Please compress your PDF before uploading.');
             return;
         }
 

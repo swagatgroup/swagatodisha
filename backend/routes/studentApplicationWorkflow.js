@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
+const StudentApplication = require('../models/StudentApplication');
 const { protect, authorize } = require('../middleware/auth');
 const {
     createApplication,
@@ -97,6 +99,117 @@ router.post('/fix-data-integrity', protect, authorize('super_admin'), async (req
             message: 'Failed to fix data integrity',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
+    }
+});
+
+// Student rejection details & resubmit routes
+// @route   GET /api/student-application/:applicationId/rejection-details
+// @desc    Get rejection details for a student's application
+// @access  Private - Student only
+router.get('/:applicationId/rejection-details', protect, async (req, res) => {
+    try {
+        const application = await StudentApplication.findOne({ 
+            applicationId: req.params.applicationId,
+            user: req.user._id 
+        });
+
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+
+        if (application.status !== 'REJECTED') {
+            return res.status(400).json({ success: false, message: 'Application is not in rejected status' });
+        }
+
+        res.json({
+            success: true,
+            data: {
+                rejectionReason: application.reviewInfo?.rejectionReason || '',
+                rejectionMessage: application.reviewInfo?.rejectionMessage || 'Application was rejected',
+                rejectionDetails: application.reviewInfo?.rejectionDetails || [],
+                rejectedAt: application.reviewInfo?.reviewedAt,
+                rejectedBy: application.reviewInfo?.reviewedBy
+            }
+        });
+    } catch (error) {
+        console.error('Error fetching rejection details:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch rejection details' });
+    }
+});
+
+// @route   POST /api/student-application/:applicationId/resubmit
+// @desc    Resubmit a rejected application
+// @access  Private - Student only
+router.post('/:applicationId/resubmit', protect, async (req, res) => {
+    try {
+        const application = await StudentApplication.findOne({ 
+            applicationId: req.params.applicationId,
+            user: req.user._id 
+        });
+
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+
+        if (application.status !== 'REJECTED') {
+            return res.status(400).json({ 
+                success: false, 
+                message: `Cannot resubmit. Application status is ${application.status}, must be REJECTED.` 
+            });
+        }
+
+        // Use the model method if available, otherwise do it manually
+        if (typeof application.resubmitApplication === 'function') {
+            await application.resubmitApplication(req.user._id, req.body.reason || 'Student resubmission after corrections');
+        } else {
+            application.status = 'SUBMITTED';
+            application.currentStage = 'SUBMITTED';
+            application.submittedAt = new Date();
+            
+            // Clear review info
+            application.reviewInfo = {};
+            if (application.reviewStatus) {
+                application.reviewStatus.documentsVerified = false;
+                application.reviewStatus.overallApproved = false;
+            }
+            
+            // Track resubmission
+            if (!application.resubmissionInfo) application.resubmissionInfo = {};
+            application.resubmissionInfo.isResubmission = true;
+            application.resubmissionInfo.resubmissionCount = (application.resubmissionInfo.resubmissionCount || 0) + 1;
+            application.resubmissionInfo.resubmittedAt = new Date();
+            application.resubmissionInfo.resubmittedBy = req.user._id;
+            application.resubmissionInfo.resubmissionReason = req.body.reason || 'Student resubmission after corrections';
+            
+            // Add to workflow history
+            if (!application.workflowHistory) application.workflowHistory = [];
+            application.workflowHistory.push({
+                action: 'RESUBMIT',
+                performedBy: req.user._id,
+                timestamp: new Date(),
+                details: 'Student resubmitted application after rejection'
+            });
+            
+            // Add admin note
+            if (!application.adminNotes) application.adminNotes = [];
+            application.adminNotes.push({
+                type: 'RESUBMISSION',
+                message: 'Application resubmitted by student after making corrections',
+                addedBy: req.user._id,
+                addedAt: new Date()
+            });
+            
+            await application.save();
+        }
+
+        res.json({
+            success: true,
+            message: 'Application resubmitted successfully. It will be reviewed again.',
+            data: { status: application.status, applicationId: application.applicationId }
+        });
+    } catch (error) {
+        console.error('Error resubmitting application:', error);
+        res.status(500).json({ success: false, message: 'Failed to resubmit application' });
     }
 });
 

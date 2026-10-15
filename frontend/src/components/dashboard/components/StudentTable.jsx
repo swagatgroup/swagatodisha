@@ -847,26 +847,15 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                         });
                                                     }
                                                     
-                                                    // Allow editing for:
-                                                    // 1. DRAFT - always
-                                                    // 2. REJECTED - always
-                                                    // 3. SUBMITTED - allow (backend will check if documents are approved)
-                                                    // 4. UNDER_REVIEW status - always
-                                                    const canEdit = isDraft || 
-                                                                   isRejected || 
-                                                                   isSubmitted ||
-                                                                   isUnderReviewStatus;
-                                                    
-                                                    if (isSubmitted || isUnderReviewStatus) {
-                                                        console.log('✅ Can edit result (StudentTable):', canEdit);
-                                                    }
+                                                    // Allow editing for DRAFT and SUBMITTED only
+                                                    // Once verified/approved, no more edits
+                                                    const canEdit = isDraft || isSubmitted;
                                                     
                                                     if (canEdit) {
                                                         return (
                                                 <button
                                                     onClick={() => {
                                                                 setSelectedStudent(student);
-                                                        setSelectedStudent(student);
                                                         setEditData({
                                                                 status: student.status || '',
                                                             personalDetails: {

@@ -93,6 +93,30 @@ const StudentApplications = () => {
     }
   };
 
+  const handleResubmit = async (application) => {
+    try {
+      const result = await showConfirm(
+        'Resubmit Application',
+        'Have you made all the necessary corrections? This will resubmit your application for admin review.',
+        "Yes, Resubmit",
+        'Cancel'
+      );
+      if (!result || !result.isConfirmed) return;
+
+      const response = await api.post(`/api/student-application/${application.applicationId}/resubmit`, {
+        reason: 'Student resubmission after corrections'
+      });
+
+      if (response.data?.success) {
+        showSuccess('Application resubmitted successfully! It will be reviewed again.');
+        await fetchApplications();
+      }
+    } catch (error) {
+      console.error('Error resubmitting application:', error);
+      showErrorToast(error.response?.data?.message || 'Failed to resubmit application');
+    }
+  };
+
   const openApplicationPdf = (applicationId) => {
     // Determine the array to search based on userRole
     let sourceApplications = applications;
@@ -618,7 +642,51 @@ const StudentApplications = () => {
                           )}
                         </p>
                       </div>
-                    </div>
+                      </div>
+
+                    {/* Rejection Details Banner */}
+                    {application.status === 'REJECTED' && (
+                      <div className="mt-4 p-5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                        <div className="flex items-center mb-3">
+                          <svg className="w-5 h-5 text-red-600 dark:text-red-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                          </svg>
+                          <h4 className="text-lg font-semibold text-red-800 dark:text-red-300">Application Rejected</h4>
+                        </div>
+                        <p className="text-sm text-red-700 dark:text-red-300 mb-3">
+                          {application.reviewInfo?.rejectionMessage || 'Your application was rejected. Please review the issues below and resubmit.'}
+                        </p>
+                        {application.reviewInfo?.rejectionDetails && application.reviewInfo.rejectionDetails.length > 0 && (
+                          <div className="mb-4">
+                            <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">Issues to fix:</p>
+                            <ul className="space-y-1">
+                              {application.reviewInfo.rejectionDetails.map((detail, idx) => (
+                                <li key={idx} className="flex items-start text-sm text-red-700 dark:text-red-300">
+                                  <span className="text-red-500 mr-2 mt-0.5">•</span>
+                                  <span>
+                                    {detail.section && <span className="font-medium">{detail.section}: </span>}
+                                    {detail.message}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        <div className="flex items-center space-x-3 mt-4">
+                          <button
+                            onClick={() => handleResubmit(application)}
+                            className="px-5 py-2.5 text-sm font-medium text-white bg-[#4A1D7A] hover:bg-[#351458] rounded-lg shadow-sm transition-colors"
+                          >
+                            <span className="flex items-center">
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                              Resubmit Application
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Application Details */}
                     <div className="space-y-4">

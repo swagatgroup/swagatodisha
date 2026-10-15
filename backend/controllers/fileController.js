@@ -28,25 +28,28 @@ const uploadSingleFile = asyncHandler(async (req, res) => {
         const { originalname, buffer, mimetype, size } = req.file;
         const category = getFileCategory(mimetype);
         const uniqueFileName = generateUniqueFileName(originalname);
+        const isPdf = mimetype === 'application/pdf' || originalname?.toLowerCase().endsWith('.pdf');
 
         // Upload to Cloudinary with compression and optimization settings
         const cloudinaryResult = await new Promise((resolve, reject) => {
             cloudinary.uploader.upload_stream(
                 {
-                    resource_type: 'auto',
+                    resource_type: isPdf ? 'raw' : 'auto',
                     type: 'upload', // Public upload type for direct access
                     public_id: `swagat-odisha/${category}/${uniqueFileName}`,
                     folder: 'swagat-odisha',
                     use_filename: true,
                     unique_filename: true,
-                    transformation: [
-                        { quality: 'auto:good' }, // Cloudinary's auto quality optimization
-                        { fetch_format: 'auto' },  // Auto-optimize format
-                        { flags: 'progressive' }   // Progressive JPEG for images
-                    ],
-                    eager: [
-                        { quality: 'auto:good', fetch_format: 'auto' }
-                    ]
+                    ...(isPdf ? {} : {
+                        transformation: [
+                            { quality: 'auto:good' }, // Cloudinary's auto quality optimization
+                            { fetch_format: 'auto' },  // Auto-optimize format
+                            { flags: 'progressive' }   // Progressive JPEG for images
+                        ],
+                        eager: [
+                            { quality: 'auto:good', fetch_format: 'auto' }
+                        ]
+                    })
                 },
                 (error, result) => {
                     if (error) reject(error);
@@ -129,25 +132,28 @@ const uploadMultipleFiles = asyncHandler(async (req, res) => {
             const { originalname, buffer, mimetype, size } = uploadedFile;
             const category = getFileCategory(mimetype);
             const uniqueFileName = generateUniqueFileName(originalname);
+            const isPdf = mimetype === 'application/pdf' || originalname?.toLowerCase().endsWith('.pdf');
 
             // Upload to Cloudinary with compression and optimization settings
             const cloudinaryResult = await new Promise((resolve, reject) => {
                 cloudinary.uploader.upload_stream(
                     {
-                        resource_type: 'auto',
+                        resource_type: isPdf ? 'raw' : 'auto',
                         type: 'upload', // Public upload type for direct access
                         public_id: `swagat-odisha/${category}/${uniqueFileName}`,
                         folder: 'swagat-odisha',
                         use_filename: true,
                         unique_filename: true,
-                        transformation: [
-                            { quality: 'auto:good' }, // Cloudinary's auto quality optimization
-                            { fetch_format: 'auto' },  // Auto-optimize format
-                            { flags: 'progressive' }   // Progressive JPEG for images
-                        ],
-                        eager: [
-                            { quality: 'auto:good', fetch_format: 'auto' }
-                        ]
+                        ...(isPdf ? {} : {
+                            transformation: [
+                                { quality: 'auto:good' }, // Cloudinary's auto quality optimization
+                                { fetch_format: 'auto' },  // Auto-optimize format
+                                { flags: 'progressive' }   // Progressive JPEG for images
+                            ],
+                            eager: [
+                                { quality: 'auto:good', fetch_format: 'auto' }
+                            ]
+                        })
                     },
                     (error, result) => {
                         if (error) reject(error);
