@@ -1214,20 +1214,33 @@ router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req
             });
         }
 
-        // Enforce strict workflow: SUBMITTED -> UNDER_REVIEW -> APPROVED
-        if (status === 'APPROVED' && application.status !== 'UNDER_REVIEW') {
-            return res.status(400).json({
-                success: false,
-                message: 'Application must be reviewed (Status: UNDER_REVIEW) before it can be approved.'
-            });
-        }
-        
-        // Enforce strict workflow: SUBMITTED -> UNDER_REVIEW -> REJECTED
-        if (status === 'REJECTED' && application.status !== 'UNDER_REVIEW') {
-            return res.status(400).json({
-                success: false,
-                message: 'Application must be reviewed (Status: UNDER_REVIEW) before it can be rejected.'
-            });
+        const isSuperAdmin = req.user.role === 'super_admin';
+
+        // Workflow transition validation (Super Admin can bypass if needed)
+        if (!isSuperAdmin) {
+            // Allow approving from SUBMITTED or UNDER_REVIEW
+            if (status === 'APPROVED' && !['SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Application must be in SUBMITTED or UNDER_REVIEW status before it can be approved.'
+                });
+            }
+            
+            // Allow rejecting from SUBMITTED or UNDER_REVIEW
+            if (status === 'REJECTED' && !['SUBMITTED', 'UNDER_REVIEW'].includes(application.status)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Application must be in SUBMITTED or UNDER_REVIEW status before it can be rejected.'
+                });
+            }
+
+            // Allow completing from APPROVED or COMPLETION_REQUESTED
+            if (status === 'COMPLETE' && !['APPROVED', 'COMPLETION_REQUESTED'].includes(application.status)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Application must be APPROVED before it can be marked as COMPLETE.'
+                });
+            }
         }
 
         // Handle rejection with specific reasons
@@ -1340,14 +1353,14 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
             });
         }
 
-        // Both staff and super admin can edit applications in DRAFT, SUBMITTED, or UNDER_REVIEW
-        // Once approved/completed/cancelled, no edits allowed
+        // Staff can edit applications in DRAFT, SUBMITTED, or UNDER_REVIEW
+        // Once approved/completed/cancelled, staff edits are blocked; Super Admin can edit any status
         const isSuperAdmin = req.user.role === 'super_admin';
         const editableStatuses = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'];
-        if (!editableStatuses.includes(application.status)) {
+        if (!isSuperAdmin && !editableStatuses.includes(application.status)) {
             return res.status(400).json({
                 success: false,
-                message: `Cannot edit application when status is ${application.status}. Applications can only be edited when status is: ${editableStatuses.join(', ')}.`
+                message: `Cannot edit application when status is ${application.status}. Staff can only edit applications when status is: ${editableStatuses.join(', ')}.`
             });
         }
 

@@ -108,9 +108,20 @@ router.post('/fix-data-integrity', protect, authorize('super_admin'), async (req
 // @access  Private - Student only
 router.get('/:applicationId/rejection-details', protect, async (req, res) => {
     try {
-        const application = await StudentApplication.findOne({ 
-            applicationId: req.params.applicationId,
-            user: req.user._id 
+        const isObjectId = mongoose.Types.ObjectId.isValid(req.params.applicationId);
+        const application = await StudentApplication.findOne({
+            $or: [
+                { applicationId: req.params.applicationId },
+                ...(isObjectId ? [{ _id: req.params.applicationId }] : [])
+            ],
+            $and: [
+                {
+                    $or: [
+                        { user: req.user._id },
+                        { submittedBy: req.user._id }
+                    ]
+                }
+            ]
         });
 
         if (!application) {
@@ -142,9 +153,20 @@ router.get('/:applicationId/rejection-details', protect, async (req, res) => {
 // @access  Private - Student only
 router.post('/:applicationId/resubmit', protect, async (req, res) => {
     try {
-        const application = await StudentApplication.findOne({ 
-            applicationId: req.params.applicationId,
-            user: req.user._id 
+        const isObjectId = mongoose.Types.ObjectId.isValid(req.params.applicationId);
+        const application = await StudentApplication.findOne({
+            $or: [
+                { applicationId: req.params.applicationId },
+                ...(isObjectId ? [{ _id: req.params.applicationId }] : [])
+            ],
+            $and: [
+                {
+                    $or: [
+                        { user: req.user._id },
+                        { submittedBy: req.user._id }
+                    ]
+                }
+            ]
         });
 
         if (!application) {

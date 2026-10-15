@@ -2496,10 +2496,12 @@ const advanceWorkflowStep = async (req, res) => {
         }
 
         const validTransitions = {
-            'START_REVIEW': { from: 'SUBMITTED', to: 'UNDER_REVIEW' },
-            'APPROVE': { from: 'UNDER_REVIEW', to: 'APPROVED' },
-            'REQUEST_COMPLETION': { from: 'APPROVED', to: 'COMPLETION_REQUESTED' },
-            'MARK_COMPLETED': { from: 'COMPLETION_REQUESTED', to: 'COMPLETE' }
+            'SUBMIT': { from: ['DRAFT'], to: 'SUBMITTED' },
+            'START_REVIEW': { from: ['SUBMITTED'], to: 'UNDER_REVIEW' },
+            'APPROVE': { from: ['SUBMITTED', 'UNDER_REVIEW'], to: 'APPROVED' },
+            'REJECT': { from: ['SUBMITTED', 'UNDER_REVIEW'], to: 'REJECTED' },
+            'REQUEST_COMPLETION': { from: ['APPROVED'], to: 'COMPLETION_REQUESTED' },
+            'MARK_COMPLETED': { from: ['APPROVED', 'COMPLETION_REQUESTED'], to: 'COMPLETE' }
         };
 
         const transition = validTransitions[action];
@@ -2507,10 +2509,11 @@ const advanceWorkflowStep = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Invalid action' });
         }
 
-        if (application.status !== transition.from) {
+        const allowedFrom = Array.isArray(transition.from) ? transition.from : [transition.from];
+        if (!allowedFrom.includes(application.status)) {
             return res.status(400).json({ 
                 success: false, 
-                message: `Cannot perform ${action}. Application is currently in ${application.status} status. Expected ${transition.from}.` 
+                message: `Cannot perform ${action}. Application is currently in ${application.status} status. Expected ${allowedFrom.join(' or ')}.` 
             });
         }
 
