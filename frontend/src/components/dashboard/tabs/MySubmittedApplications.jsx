@@ -222,7 +222,7 @@ const MySubmittedApplications = () => {
                                                     <span className="font-medium">Course:</span> {application.courseDetails?.selectedCourse || 'N/A'}
                                                 </p>
                                                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                                                    <span className="font-medium">Campus:</span> {application.courseDetails?.campus || 'N/A'}
+                                                    <span className="font-medium">Campus:</span> {application.courseDetails?.campus?.name || (typeof application.courseDetails?.campus === 'string' && !/^[0-9a-fA-F]{24}$/.test(application.courseDetails.campus) ? application.courseDetails.campus : 'N/A')}
                                                 </p>
                                                 <p className="text-sm text-gray-600 dark:text-gray-300">
                                                     <span className="font-medium">Application ID:</span> {application.applicationId}

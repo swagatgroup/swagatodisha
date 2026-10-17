@@ -16,7 +16,7 @@ import {
 import AgentStudentFinancialsModal from "./AgentStudentFinancialsModal";
 import TablePagination from "../../shared/TablePagination";
 import ApplicationDetailsModal, { mergeUploadedDocument } from "../../shared/ApplicationDetailsModal";
-import { APPLICATION_STATUS_OPTIONS, canEditApplication } from "../../../utils/applicationStatuses";
+import { APPLICATION_STATUS_OPTIONS } from "../../../utils/applicationStatuses";
 
 const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
   const { user } = useAuth();
@@ -841,6 +841,12 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   Student
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Father's Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  Aadhar
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Contact
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -863,7 +869,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="px-6 py-12 text-center">
+                  <td colSpan="10" className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -908,11 +914,16 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           {student.personalDetails?.fullName || "N/A"}
                         </div>
                         <div className="text-sm text-gray-500 dark:text-gray-300">
-                          Aadhaar:{" "}
-                          {student.personalDetails?.aadharNumber || "N/A"}
+                          ID: {student.applicationId || "N/A"}
                         </div>
                       </div>
                     </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                    {student.personalDetails?.fathersName || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
+                    {student.personalDetails?.aadharNumber || "N/A"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 dark:text-gray-100">
@@ -927,7 +938,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                       {student.courseDetails?.selectedCourse || "N/A"}
                     </div>
                     <div className="text-sm text-gray-500 dark:text-gray-300">
-                      {student.courseDetails?.campus || "N/A"}
+                      {student.courseDetails?.campus?.name || (typeof student.courseDetails?.campus === "string" && !/^[0-9a-fA-F]{24}$/.test(student.courseDetails.campus) ? student.courseDetails.campus : "N/A")}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -962,60 +973,6 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         <EyeIcon className="h-4 w-4 mr-1" />
                         View
                       </button>
-
-                      {/* Edit - DRAFT, REJECTED, SUBMITTED (with UNDER_REVIEW), or UNDER_REVIEW (documents not all approved) */}
-                      {(() => {
-                        const isDraft = student.status === 'DRAFT';
-                        const isRejected = student.status === 'REJECTED';
-                        const isSubmitted = student.status === 'SUBMITTED';
-                        const isUnderReviewStatus = student.status === 'UNDER_REVIEW';
-                        const isApproved = student.status === 'APPROVED';
-                        
-                        // Check if documents are all approved
-                        const documentsAllApproved = student.reviewStatus?.overallDocumentReviewStatus === 'ALL_APPROVED' || 
-                                                      student.reviewStatus?.documentsVerified === true;
-                        
-                        // Check if currentStage is UNDER_REVIEW - check multiple possible locations
-                        const currentStageValue = student.currentStage || 
-                                                  student.workflowStatus?.currentStage || 
-                                                  student.workflow?.currentStage;
-                        const isUnderReviewStage = currentStageValue === 'UNDER_REVIEW';
-                        
-                        // Debug logging for SUBMITTED status
-                        if (isSubmitted) {
-                          console.log('🔍 SUBMITTED application check:', {
-                            status: student.status,
-                            currentStage: currentStageValue,
-                            isUnderReviewStage,
-                            documentsAllApproved,
-                            reviewStatus: student.reviewStatus
-                          });
-                        }
-                        
-                        // Edit lock shared with the backend: Draft, Rejected, Submitted only
-                        const canEdit = canEditApplication('agent', student.status);
-                        
-                        if (canEdit) {
-                          return (
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log('🖱️ Edit button clicked directly, student:', student);
-                            handleEditStudent(student);
-                          }}
-                          className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-md transition-colors"
-                              title="Edit application"
-                        >
-                          <PencilIcon className="h-4 w-4 mr-1" />
-                              Edit
-                        </button>
-                          );
-                        } else {
-                          console.log('❌ Edit button NOT showing for:', student.personalDetails?.fullName, 'Status:', student.status);
-                          return null;
-                        }
-                      })()}
 
                       <button
                         onClick={(e) => {

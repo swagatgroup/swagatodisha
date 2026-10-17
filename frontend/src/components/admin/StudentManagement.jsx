@@ -15,7 +15,7 @@ import {
 import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 import StaffDocumentUploader from '../shared/StaffDocumentUploader';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../shared/ApplicationDetailsModal';
-import { APPLICATION_STATUS_OPTIONS, canEditApplication } from '../../utils/applicationStatuses';
+import { APPLICATION_STATUS_OPTIONS } from '../../utils/applicationStatuses';
 
 // Helper function to convert and compress image to under 50KB JPG
 const compressImageToUnder50KB = async (photoUrl) => {
@@ -1418,6 +1418,122 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
         }
     };
 
+    // Opens the Edit modal for a student (called from the shared View Application modal)
+    const openEditModal = async (student) => {
+        try {
+            setSelectedStudent(student);
+        
+            // Helper function to format date for input field
+            const formatDateForInput = (dateValue) => {
+                if (!dateValue) return '';
+                try {
+                    const date = new Date(dateValue);
+                    if (isNaN(date.getTime())) return '';
+                    return date.toISOString().split('T')[0];
+                } catch (e) {
+                    return '';
+                }
+            };
+        
+            // Helper to get campus ID
+            const getCampusId = (campus) => {
+                if (!campus) return '';
+                if (typeof campus === 'string') {
+                    // Check if it's already an ID or needs to be found
+                    return campus;
+                }
+                if (typeof campus === 'object' && campus._id) {
+                    return campus._id.toString();
+                }
+                return '';
+            };
+        
+            // Ensure colleges are loaded before setting edit data
+            let loadedColleges = colleges;
+            if (loadedColleges.length === 0) {
+                await fetchColleges();
+                // Re-fetch colleges from state after loading
+                // We need to wait a bit for state to update
+                await new Promise(resolve => setTimeout(resolve, 100));
+                // Fetch again to get updated colleges
+                const response = await api.get('/api/colleges/public');
+                if (response.data.success) {
+                    loadedColleges = response.data.data || [];
+                }
+            }
+        
+            // Find college ID from existing data
+            const findCollegeId = () => {
+                // If selectedCollege is already an ID (string)
+                if (student.courseDetails?.selectedCollege && typeof student.courseDetails.selectedCollege === 'string') {
+                    return student.courseDetails.selectedCollege;
+                }
+                // If selectedCollege is an object with _id
+                if (student.courseDetails?.selectedCollege && typeof student.courseDetails.selectedCollege === 'object' && student.courseDetails.selectedCollege._id) {
+                    return student.courseDetails.selectedCollege._id.toString();
+                }
+                // Try to find by institutionName
+                if (student.courseDetails?.institutionName && loadedColleges.length > 0) {
+                    const foundCollege = loadedColleges.find(c => 
+                        c.name === student.courseDetails.institutionName || 
+                        c.name?.toLowerCase() === student.courseDetails.institutionName?.toLowerCase()
+                    );
+                    if (foundCollege) return foundCollege._id.toString();
+                }
+                return '';
+            };
+        
+            const initialEditData = {
+                personalDetails: {
+                    fullName: student.personalDetails?.fullName || student.fullName || '',
+                    fathersName: student.personalDetails?.fathersName || '',
+                    mothersName: student.personalDetails?.mothersName || '',
+                    dateOfBirth: formatDateForInput(student.personalDetails?.dateOfBirth) || '',
+                    gender: student.personalDetails?.gender || '',
+                    aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
+                    category: student.personalDetails?.category || ''
+                },
+                contactDetails: {
+                    email: student.contactDetails?.email || student.email || '',
+                    primaryPhone: student.contactDetails?.primaryPhone || student.phone || '',
+                    whatsappNumber: student.contactDetails?.whatsappNumber || '',
+                    permanentAddress: {
+                        street: student.contactDetails?.permanentAddress?.street || student.contactDetails?.address || '',
+                        city: student.contactDetails?.permanentAddress?.city || student.contactDetails?.city || '',
+                        district: student.contactDetails?.permanentAddress?.district || '',
+                        state: student.contactDetails?.permanentAddress?.state || '',
+                        pincode: student.contactDetails?.permanentAddress?.pincode || '',
+                        country: student.contactDetails?.permanentAddress?.country || 'India'
+                    }
+                },
+                courseDetails: {
+                    selectedCollege: findCollegeId(),
+                    institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' && student.courseDetails.selectedCollege !== null ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
+                    selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
+                    customCourse: student.courseDetails?.customCourse || '',
+                    stream: student.courseDetails?.stream || '',
+                    campus: getCampusId(student.courseDetails?.campus) || ''
+                },
+                guardianDetails: {
+                    guardianName: student.guardianDetails?.guardianName || '',
+                    relationship: student.guardianDetails?.relationship || '',
+                    guardianPhone: student.guardianDetails?.guardianPhone || '',
+                    guardianEmail: student.guardianDetails?.guardianEmail || ''
+                }
+            };
+        
+            console.log('📝 Initializing edit data for student:', student._id);
+            console.log('📝 Student data:', student);
+            console.log('📝 Colleges loaded:', loadedColleges.length);
+            console.log('📝 Edit data to be set:', initialEditData);
+        
+            setEditData(initialEditData);
+            setShowEditModal(true);
+        } catch (editErr) {
+            console.error('❌ Error preparing edit data:', editErr);
+        }
+    };
+
     const formatDate = (dateString) => {
         if (!dateString) return 'N/A';
         return new Date(dateString).toLocaleDateString('en-IN', {
@@ -1996,6 +2112,9 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 Student
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Father's Name
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Aadhar
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -2024,7 +2143,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {students.length === 0 ? (
                             <tr>
-                                <td colSpan="11" className="px-6 py-12 text-center">
+                                <td colSpan="12" className="px-6 py-12 text-center">
                                     <div className="flex flex-col items-center justify-center">
                                         <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -2088,6 +2207,9 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                     </div>
                                                 </div>
                                             </div>
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                            {student.personalDetails?.fathersName || 'N/A'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
                                             {student.aadharNumber}
@@ -2249,130 +2371,6 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                     </svg>
                                                 </button>
 
-                                                {canEditApplication(user?.role, student.status) && (
-                                                <button
-                                                    onClick={async () => {
-                                                        try {
-                                                        setSelectedStudent(student);
-                                                        
-                                                        // Helper function to format date for input field
-                                                        const formatDateForInput = (dateValue) => {
-                                                            if (!dateValue) return '';
-                                                            try {
-                                                                const date = new Date(dateValue);
-                                                                if (isNaN(date.getTime())) return '';
-                                                                return date.toISOString().split('T')[0];
-                                                            } catch (e) {
-                                                                return '';
-                                                            }
-                                                        };
-                                                        
-                                                        // Helper to get campus ID
-                                                        const getCampusId = (campus) => {
-                                                            if (!campus) return '';
-                                                            if (typeof campus === 'string') {
-                                                                // Check if it's already an ID or needs to be found
-                                                                return campus;
-                                                            }
-                                                            if (typeof campus === 'object' && campus._id) {
-                                                                return campus._id.toString();
-                                                            }
-                                                            return '';
-                                                        };
-                                                        
-                                                        // Ensure colleges are loaded before setting edit data
-                                                        let loadedColleges = colleges;
-                                                        if (loadedColleges.length === 0) {
-                                                            await fetchColleges();
-                                                            // Re-fetch colleges from state after loading
-                                                            // We need to wait a bit for state to update
-                                                            await new Promise(resolve => setTimeout(resolve, 100));
-                                                            // Fetch again to get updated colleges
-                                                            const response = await api.get('/api/colleges/public');
-                                                            if (response.data.success) {
-                                                                loadedColleges = response.data.data || [];
-                                                            }
-                                                        }
-                                                        
-                                                        // Find college ID from existing data
-                                                        const findCollegeId = () => {
-                                                            // If selectedCollege is already an ID (string)
-                                                            if (student.courseDetails?.selectedCollege && typeof student.courseDetails.selectedCollege === 'string') {
-                                                                return student.courseDetails.selectedCollege;
-                                                            }
-                                                            // If selectedCollege is an object with _id
-                                                            if (student.courseDetails?.selectedCollege && typeof student.courseDetails.selectedCollege === 'object' && student.courseDetails.selectedCollege._id) {
-                                                                return student.courseDetails.selectedCollege._id.toString();
-                                                            }
-                                                            // Try to find by institutionName
-                                                            if (student.courseDetails?.institutionName && loadedColleges.length > 0) {
-                                                                const foundCollege = loadedColleges.find(c => 
-                                                                    c.name === student.courseDetails.institutionName || 
-                                                                    c.name?.toLowerCase() === student.courseDetails.institutionName?.toLowerCase()
-                                                                );
-                                                                if (foundCollege) return foundCollege._id.toString();
-                                                            }
-                                                            return '';
-                                                        };
-                                                        
-                                                        const initialEditData = {
-                                                            personalDetails: {
-                                                                fullName: student.personalDetails?.fullName || student.fullName || '',
-                                                                fathersName: student.personalDetails?.fathersName || '',
-                                                                mothersName: student.personalDetails?.mothersName || '',
-                                                                dateOfBirth: formatDateForInput(student.personalDetails?.dateOfBirth) || '',
-                                                                gender: student.personalDetails?.gender || '',
-                                                                aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
-                                                                category: student.personalDetails?.category || ''
-                                                            },
-                                                            contactDetails: {
-                                                                email: student.contactDetails?.email || student.email || '',
-                                                                primaryPhone: student.contactDetails?.primaryPhone || student.phone || '',
-                                                                whatsappNumber: student.contactDetails?.whatsappNumber || '',
-                                                                permanentAddress: {
-                                                                    street: student.contactDetails?.permanentAddress?.street || student.contactDetails?.address || '',
-                                                                    city: student.contactDetails?.permanentAddress?.city || student.contactDetails?.city || '',
-                                                                    district: student.contactDetails?.permanentAddress?.district || '',
-                                                                    state: student.contactDetails?.permanentAddress?.state || '',
-                                                                    pincode: student.contactDetails?.permanentAddress?.pincode || '',
-                                                                    country: student.contactDetails?.permanentAddress?.country || 'India'
-                                                                }
-                                                            },
-                                                            courseDetails: {
-                                                                selectedCollege: findCollegeId(),
-                                                                institutionName: student.courseDetails?.institutionName || (typeof student.courseDetails?.selectedCollege === 'object' && student.courseDetails.selectedCollege !== null ? student.courseDetails.selectedCollege?.name || student.courseDetails.selectedCollege?.code || '' : '') || '',
-                                                                selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
-                                                                customCourse: student.courseDetails?.customCourse || '',
-                                                                stream: student.courseDetails?.stream || '',
-                                                                campus: getCampusId(student.courseDetails?.campus) || ''
-                                                            },
-                                                            guardianDetails: {
-                                                                guardianName: student.guardianDetails?.guardianName || '',
-                                                                relationship: student.guardianDetails?.relationship || '',
-                                                                guardianPhone: student.guardianDetails?.guardianPhone || '',
-                                                                guardianEmail: student.guardianDetails?.guardianEmail || ''
-                                                            }
-                                                        };
-                                                        
-                                                        console.log('📝 Initializing edit data for student:', student._id);
-                                                        console.log('📝 Student data:', student);
-                                                        console.log('📝 Colleges loaded:', loadedColleges.length);
-                                                        console.log('📝 Edit data to be set:', initialEditData);
-                                                        
-                                                        setEditData(initialEditData);
-                                                        setShowEditModal(true);
-                                                    } catch (editErr) {
-                                                        console.error('❌ Error preparing edit data:', editErr);
-                                                    }
-                                                    }}
-                                                    className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300"
-                                                    title="Edit"
-                                                >
-                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                                    </svg>
-                                                </button>
-                                                )}
                                                 <button
                                                     onClick={() => {
                                                         const getCampusId = (campus) => {
@@ -2526,6 +2524,10 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     role={user?.role}
                     colleges={colleges}
                     onClose={() => setShowDetailsModal(false)}
+                    onEdit={(student) => {
+                        setShowDetailsModal(false);
+                        openEditModal(student);
+                    }}
                     onDocumentUploaded={(doc) => {
                         setSelectedStudent(prev => mergeUploadedDocument(prev, doc));
                         fetchStudents();

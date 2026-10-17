@@ -404,6 +404,7 @@ router.get("/my-students", async (req, res) => {
       .populate('user', 'fullName email phoneNumber')
       .populate('referralInfo.referredBy', 'fullName email phoneNumber referralCode')
       .populate('assignedAgent', 'fullName email phoneNumber referralCode')
+      .populate('courseDetails.campus', 'name code')
       .sort(sort)
       .limit(parsedLimit)
       .skip((parsedPage - 1) * parsedLimit)
@@ -531,6 +532,7 @@ router.get("/students", async (req, res) => {
       .populate('user', 'firstName lastName email phone')
       .populate('referralInfo.referredBy', 'firstName lastName referralCode')
       .populate('assignedAgent', 'firstName lastName referralCode')
+      .populate('courseDetails.campus', 'name code')
       .sort(sort)
       .limit(limit * 1)
       .skip((page - 1) * limit)
@@ -1062,7 +1064,8 @@ router.get("/submitted-applications/:id", async (req, res) => {
       .populate("user", "fullName email phoneNumber")
       .populate("submittedBy", "fullName email")
       .populate("referralInfo.referredBy", "fullName email")
-      .populate("assignedAgent", "fullName email");
+      .populate("assignedAgent", "fullName email")
+      .populate("courseDetails.campus", "name code");
 
     // If not found and the ID looks like an ObjectId, try that
     if (!application && mongoose.Types.ObjectId.isValid(applicationId)) {
@@ -1074,7 +1077,8 @@ router.get("/submitted-applications/:id", async (req, res) => {
         .populate("user", "fullName email phoneNumber")
         .populate("submittedBy", "fullName email")
         .populate("referralInfo.referredBy", "fullName email")
-        .populate("assignedAgent", "fullName email");
+        .populate("assignedAgent", "fullName email")
+        .populate("courseDetails.campus", "name code");
     }
 
     console.log('📝 Found application:', application ? 'Yes' : 'No');
@@ -1203,6 +1207,7 @@ router.get("/my-submitted-applications", async (req, res) => {
     const applications = await StudentApplication.find(query)
         .populate("user", "fullName email phoneNumber")
         .populate("submittedBy", "fullName email")
+        .populate("courseDetails.campus", "name code")
         .sort({ createdAt: -1 })
         .limit(limit * 1)
         .skip((page - 1) * limit);
@@ -1578,6 +1583,10 @@ router.put('/students/:id', async (req, res) => {
     // Update course details
     if (updateData.courseDetails) {
       const courseDetailsUpdate = { ...updateData.courseDetails };
+      // Campus may come back populated ({ _id, name }); store only its id
+      if (courseDetailsUpdate.campus && typeof courseDetailsUpdate.campus === 'object') {
+        courseDetailsUpdate.campus = courseDetailsUpdate.campus._id;
+      }
       
       // Agents can now update all course details (like super admin)
       Object.keys(courseDetailsUpdate).forEach(key => {

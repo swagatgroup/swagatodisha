@@ -21,7 +21,7 @@ import PaymentPieChart from "./PaymentPieChart";
 import StatusFilterRow from "./components/StatusFilterRow";
 import TablePagination from "../shared/TablePagination";
 import ApplicationDetailsModal, { mergeUploadedDocument } from "../shared/ApplicationDetailsModal";
-import { APPLICATION_STATUS_OPTIONS, buildStatusChartData, canEditApplication } from "../../utils/applicationStatuses";
+import { APPLICATION_STATUS_OPTIONS, buildStatusChartData } from "../../utils/applicationStatuses";
 import {
   showSuccess,
   showError,
@@ -61,7 +61,11 @@ const EnhancedAgentDashboard = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  // Recent Students: same rules as the other dashboards (last 5 registered, newest first)
+  const itemsPerPage = 5;
+  const [sortBy, setSortBy] = useState('latest');
+  const [recentListType, setRecentListType] = useState('combined'); // 'combined' | 'dashboard' | 'referral'
+  const [recentStatus, setRecentStatus] = useState('all');
 
   const isLoadingRef = useRef(false);
 
@@ -186,13 +190,16 @@ const EnhancedAgentDashboard = () => {
     }
   };
 
+  useEffect(() => { setRecentListType(agentView); setCurrentPage(1); }, [agentView]);
+
   // COMPLETION_REQUESTED sits between Approved and Complete; count/filter it as Approved
   const normalizeStatus = (status) => (status === 'COMPLETION_REQUESTED' ? 'APPROVED' : status);
 
-  const matchesAgentView = (student) =>
-    agentView === 'combined' ||
-    (agentView === 'dashboard' && student.relationshipType !== 'referral') ||
-    (agentView === 'referral' && student.relationshipType === 'referral');
+  const matchesView = (view, student) =>
+    view === 'combined' ||
+    (view === 'dashboard' && student.relationshipType !== 'referral') ||
+    (view === 'referral' && student.relationshipType === 'referral');
+  const matchesAgentView = (student) => matchesView(agentView, student);
 
   // Status counts come from the same list the table shows, so they always match the table and sum to Total
   const viewStudents = students.filter(matchesAgentView);
@@ -207,25 +214,37 @@ const EnhancedAgentDashboard = () => {
     complete:    countStatus('COMPLETE'),
   };
 
-  // Filter students for inline dashboard table
+  const studentName = (s) => s.fullName || s.personalDetails?.fullName || '';
+
+  // Recent Students table (this agent's own students only)
   const filteredStudents = students.filter(student => {
-    const name = student.fullName || student.personalDetails?.fullName || '';
+    const name = studentName(student);
     const aadhar = student.aadharNumber || student.personalDetails?.aadharNumber || '';
     const phone = student.phone || student.contactDetails?.primaryPhone || '';
+    const email = student.email || student.contactDetails?.email || '';
     const appNumber = student.applicationId || '';
+    const term = searchTerm.toLowerCase();
 
     const matchesSearch = !searchTerm ||
-      name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      name.toLowerCase().includes(term) ||
       aadhar.includes(searchTerm) ||
       phone.includes(searchTerm) ||
-      appNumber.toLowerCase().includes(searchTerm.toLowerCase());
+      email.toLowerCase().includes(term) ||
+      appNumber.toLowerCase().includes(term);
 
-    const matchesStatus = studentTableFilter === 'all' || normalizeStatus(student.status) === studentTableFilter;
+    const matchesStatus = recentStatus === 'all' || normalizeStatus(student.status) === recentStatus;
 
     const course = student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '';
     const matchesCourse = filterCourse === 'all' || course === filterCourse;
 
-    return matchesSearch && matchesStatus && matchesCourse && matchesAgentView(student);
+    return matchesSearch && matchesStatus && matchesCourse && matchesView(recentListType, student);
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case 'oldest':    return new Date(a.createdAt) - new Date(b.createdAt);
+      case 'name_asc':  return studentName(a).localeCompare(studentName(b));
+      case 'name_desc': return studentName(b).localeCompare(studentName(a));
+      default:          return new Date(b.createdAt) - new Date(a.createdAt);
+    }
   });
 
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage) || 1;
@@ -322,7 +341,7 @@ const EnhancedAgentDashboard = () => {
               <StatusFilterRow
                 counts={active}
                 activeKey={studentTableFilter}
-                onSelect={(key) => { setStudentTableFilter(key); setCurrentPage(1); }}
+                onSelect={handleStatClick}
               />
 
               {/* 2-Column Charts Grid: Application Progress + Payment Status Overview */}
@@ -350,161 +369,201 @@ const EnhancedAgentDashboard = () => {
               </div>
             </div>
 
-            {/* Recent Students Table */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white dark:bg-[#231A2E] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden"
-            >
-              <div className="p-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                      My Students
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-0.5">
-                      View and manage your student applications
-                    </p>
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-300">
-                    {filteredStudents.length > 0 ? (
-                      `${filteredStudents.length} ${filteredStudents.length === 1 ? 'Student' : 'Students'}`
-                    ) : 'No students found'}
-                  </div>
+            {/* Recent Students - same layout and rules as the other dashboards, scoped to this agent */}
+            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+              {/* Header */}
+              <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Students</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Last registered students</p>
                 </div>
-
-                {/* Filters */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  <input
-                    type="text"
-                    placeholder="Search by name, Aadhar, phone..."
-                    value={searchTerm}
-                    onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                  />
-                  <select
-                    value={studentTableFilter}
-                    onChange={(e) => { setStudentTableFilter(e.target.value); setCurrentPage(1); }}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                  >
-                    <option value="all">All Statuses</option>
-                    {APPLICATION_STATUS_OPTIONS.map(o => (
-                      <option key={o.key} value={o.key}>{o.label}</option>
-                    ))}
-                  </select>
-                  <select
-                    value={filterCourse}
-                    onChange={(e) => { setFilterCourse(e.target.value); setCurrentPage(1); }}
-                    className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                  >
-                    <option value="all">All Courses</option>
-                    {availableCourses.map(course => (
-                      <option key={course} value={course}>{course}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Table */}
-                <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-700/50">
-                      <tr>
-                        {['S.No', 'Student', 'Aadhar', 'Phone', 'Course', 'Status', 'Relationship', 'Actions'].map(h => (
-                          <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
-                      {paginatedStudents.length === 0 ? (
-                        <tr>
-                          <td colSpan="8" className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                            No students found matching current filters.
-                          </td>
-                        </tr>
-                      ) : (
-                        paginatedStudents.map((student, index) => {
-                          const serialNumber = ((currentPage - 1) * itemsPerPage) + index + 1;
-                          const name = student.fullName || student.personalDetails?.fullName || 'N/A';
-                          const aadhar = student.aadharNumber || student.personalDetails?.aadharNumber || 'N/A';
-                          const phone = student.phone || student.contactDetails?.primaryPhone || 'N/A';
-                          const course = student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName || 'N/A';
-                          const isReferral = student.relationshipType === 'referral';
-
-                          return (
-                            <tr key={student._id} className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700 transition-colors">
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">{serialNumber}</td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <div className="flex items-center">
-                                  <div className="h-9 w-9 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-[#4A1D7A] dark:text-[#C084FC] font-semibold text-sm">
-                                    {typeof name === 'string' ? name.charAt(0).toUpperCase() : 'S'}
-                                  </div>
-                                  <div className="ml-3">
-                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{name}</div>
-                                    <div className="text-xs text-gray-400">ID: {student.applicationId || student._id}</div>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-700 dark:text-gray-300">{aadhar}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{phone}</td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{course}</td>
-                              <td className="px-6 py-4 whitespace-nowrap">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
-                                  {student.status}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-xs">
-                                <span className={`px-2 py-1 rounded-md font-medium ${isReferral ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-300' : 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300'}`}>
-                                  {isReferral ? 'Referral Signup' : 'Registered by me'}
-                                </span>
-                              </td>
-                              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                <div className="flex items-center space-x-3">
-                                  <button
-                                    onClick={() => { setSelectedStudent(student); setShowDetailsModal(true); }}
-                                    className="text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]"
-                                    title="View Details"
-                                  >
-                                    View
-                                  </button>
-                                  {canEditApplication('agent', student.status) && (
-                                  <button
-                                    onClick={() => {
-                                      setSelectedStudent(student);
-                                      setEditData({
-                                        personalDetails: student.personalDetails || {},
-                                        contactDetails:  student.contactDetails  || {},
-                                        courseDetails:   student.courseDetails   || {},
-                                        guardianDetails: student.guardianDetails || {}
-                                      });
-                                      setShowEditModal(true);
-                                    }}
-                                    className="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400"
-                                    title="Edit Student"
-                                  >
-                                    Edit
-                                  </button>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          );
-                        })
+                <select
+                  value={recentListType}
+                  onChange={(e) => { setRecentListType(e.target.value); setCurrentPage(1); }}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                >
+                  <option value="combined">Both</option>
+                  <option value="dashboard">Registered by me</option>
+                  <option value="referral">Used my referral code</option>
+                </select>
+                <div className="text-sm text-gray-500 dark:text-gray-300">
+                  {filteredStudents.length > 0 ? (
+                    <>
+                      {filteredStudents.length} {filteredStudents.length === 1 ? 'Student' : 'Students'}
+                      {totalPages > 1 && (
+                        <span className="ml-2 text-gray-400 dark:text-gray-300">
+                          (Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length})
+                        </span>
                       )}
-                    </tbody>
-                  </table>
+                    </>
+                  ) : 'No students found'}
                 </div>
-
-                {/* Pagination */}
-                <TablePagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  itemsPerPage={itemsPerPage}
-                  totalItems={filteredStudents.length}
-                  onPageChange={setCurrentPage}
-                />
               </div>
-            </motion.div>
+
+              {/* Search and Sort */}
+              <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                <input
+                  type="text"
+                  placeholder="Search by name, Aadhar, phone, email..."
+                  value={searchTerm}
+                  onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                />
+                <div className="flex items-center gap-4">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by:</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] font-medium"
+                  >
+                    <option value="latest">Latest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="name_asc">Name A-Z</option>
+                    <option value="name_desc">Name Z-A</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <select
+                  value={recentStatus}
+                  onChange={(e) => { setRecentStatus(e.target.value); setCurrentPage(1); }}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                >
+                  <option value="all">All Status</option>
+                  {APPLICATION_STATUS_OPTIONS.map(o => (
+                    <option key={o.key} value={o.key}>{o.label}</option>
+                  ))}
+                </select>
+                <select
+                  value={filterCourse}
+                  onChange={(e) => { setFilterCourse(e.target.value); setCurrentPage(1); }}
+                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                >
+                  <option value="all">All Courses</option>
+                  {availableCourses.map(course => (
+                    <option key={course} value={course}>{course}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead className="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                      {['S.No', 'Student', "Father's Name", 'Aadhar', 'Phone', 'Email', 'Course', 'Adm. Type', 'Status', 'Submitted By', 'Actions'].map(h => (
+                        <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
+                    {paginatedStudents.length === 0 ? (
+                      <tr>
+                        <td colSpan="11" className="px-6 py-12 text-center">
+                          <div className="flex flex-col items-center justify-center">
+                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                            </svg>
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No students found</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
+                              {searchTerm || recentStatus !== 'all' || filterCourse !== 'all'
+                                ? 'Try adjusting your search criteria or filters.'
+                                : selectedSession
+                                  ? `No admissions found for the ${selectedSession} academic session.`
+                                  : 'No student applications have been submitted yet.'}
+                            </p>
+                          </div>
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedStudents.map((student, index) => {
+                        const serialNumber = ((currentPage - 1) * itemsPerPage) + index + 1;
+                        const name = studentName(student) || 'N/A';
+                        const isReferral = student.relationshipType === 'referral';
+                        return (
+                          <motion.tr
+                            key={student._id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                          >
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">{serialNumber}</td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="flex items-center">
+                                <div className="flex-shrink-0 h-10 w-10">
+                                  <div className="h-10 w-10 rounded-full bg-[#F0E6FA] dark:bg-[#231A2E] flex items-center justify-center">
+                                    <span className="text-sm font-medium text-[#4A1D7A] dark:text-[#C084FC]">
+                                      {name.split(' ').map(n => n[0]).join('') || 'S'}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="ml-4">
+                                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{name}</div>
+                                  <div className="text-sm text-gray-500 dark:text-gray-300">ID: {student.applicationId}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                              {student.personalDetails?.fathersName || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
+                              {student.aadharNumber || student.personalDetails?.aadharNumber || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                              {student.phone || student.contactDetails?.primaryPhone || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                              {student.email || student.contactDetails?.email || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                              {student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName || 'N/A'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${student.courseDetails?.admissionType === 'free' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
+                                {student.courseDetails?.admissionType === 'free' ? 'Free' : 'Paid'}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
+                                {student.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                              {isReferral ? 'Student (your referral code)' : 'You (Agent)'}
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <div className="flex space-x-2">
+                                <button
+                                  onClick={() => { setSelectedStudent(student); setShowDetailsModal(true); }}
+                                  className="text-[#387B95] hover:text-blue-900 dark:text-[#60A5FA] dark:hover:text-blue-300"
+                                  title="View Details"
+                                >
+                                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </td>
+                          </motion.tr>
+                        );
+                      })
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              <TablePagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                itemsPerPage={itemsPerPage}
+                totalItems={filteredStudents.length}
+                onPageChange={setCurrentPage}
+              />
+            </div>
           </div>
         );
       }

@@ -128,6 +128,11 @@ const ApplicationDetailsModal = ({
         return 'Swagat Group of Institutions';
     })();
 
+    // Campus is populated ({ name, code }) by the APIs; never show a raw id
+    const rawCampus = app.courseDetails?.campus;
+    const campusName = rawCampus?.name
+        || (typeof rawCampus === 'string' && !/^[0-9a-fA-F]{24}$/.test(rawCampus) ? rawCampus : '');
+
     const contact = app.contactDetails || {};
     const fin = app.financialStatus || {};
     const bank = app.user?.financialDetails;
@@ -152,17 +157,42 @@ const ApplicationDetailsModal = ({
                                 Application ID: {app.applicationId} | Status: <span className={`px-2 py-0.5 rounded font-semibold ${getStatusColor(app.status)}`}>{app.status}</span>
                             </p>
                         </div>
-                        <button onClick={onClose} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
+                        <div className="flex items-center gap-3">
+                            {/* Edit (top right). Disabled once review starts, except for Super Admin. */}
+                            {onEdit && (
+                                <button
+                                    type="button"
+                                    onClick={() => canEdit && onEdit(app)}
+                                    disabled={!canEdit}
+                                    title={canEdit ? 'Edit application' : 'Editing is locked once the application is under review'}
+                                    className={`inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-md shadow-sm ${canEdit
+                                        ? 'text-white bg-[#4A1D7A] hover:bg-[#351458]'
+                                        : 'text-gray-500 bg-gray-200 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed'}`}
+                                >
+                                    {canEdit ? (
+                                        <svg className="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                        </svg>
+                                    ) : (
+                                        <svg className="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                        </svg>
+                                    )}
+                                    Edit
+                                </button>
+                            )}
+                            <button onClick={onClose} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300">
+                                <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
-                    {/* Edit lock notice for students and agents */}
-                    {!isStaffSide && !canEdit && (
+                    {/* Edit lock notice (everyone except Super Admin) */}
+                    {!canEdit && (
                         <div className="mb-6 p-3 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 text-sm text-yellow-800 dark:text-yellow-200">
-                            This application is {app.status === 'UNDER_REVIEW' ? 'under review' : app.status.toLowerCase().replace('_', ' ')}. It can no longer be edited and documents can no longer be changed.
+                            This application is {app.status === 'UNDER_REVIEW' ? 'under review' : app.status.toLowerCase().replace('_', ' ')}. {isStaffSide ? 'Application details can no longer be edited; you can still review documents and change the status.' : 'It can no longer be edited and documents can no longer be changed.'}
                         </div>
                     )}
 
@@ -218,7 +248,7 @@ const ApplicationDetailsModal = ({
                                 <Field label="Institution Name" value={institutionName} />
                                 <Field label="Course Name" value={app.courseDetails?.selectedCourse || app.course} />
                                 <Field label="Stream" value={app.courseDetails?.stream} />
-                                <Field label="Campus" value={app.courseDetails?.campus?.name || (typeof app.courseDetails?.campus === 'string' ? app.courseDetails.campus : '')} />
+                                <Field label="Campus" value={campusName} />
                             </div>
                         </Section>
 
@@ -392,14 +422,6 @@ const ApplicationDetailsModal = ({
                     <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-2 justify-between items-center">
                         <div className="flex flex-wrap items-center gap-2">
                             {footerActions}
-                            {onEdit && canEdit && (
-                                <button
-                                    onClick={() => onEdit(app)}
-                                    className="px-3 py-1.5 text-xs font-medium text-white bg-[#4A1D7A] hover:bg-[#351458] rounded-md shadow-sm"
-                                >
-                                    Edit Application
-                                </button>
-                            )}
                         </div>
                         <button
                             onClick={onClose}
