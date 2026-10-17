@@ -274,7 +274,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
         gender: student.personalDetails?.gender || '',
         dateOfBirth: student.personalDetails?.dateOfBirth || '',
         aadharNumber: student.personalDetails?.aadharNumber || '',
-        category: student.personalDetails?.category || ''
+        category: student.personalDetails?.category || '',
+        pmKisanNumber: student.personalDetails?.pmKisanNumber || '',
+        cmKisanNumber: student.personalDetails?.cmKisanNumber || ''
       },
       contactDetails: {
         primaryPhone: student.contactDetails?.primaryPhone || '',
@@ -307,7 +309,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           ? student.courseDetails.campus._id
           : student.courseDetails?.campus || '',
         institutionName: student.courseDetails?.institutionName || '',
-        preferredLanguage: student.courseDetails?.preferredLanguage || ''
+        preferredLanguage: student.courseDetails?.preferredLanguage || '',
+        admissionType: student.courseDetails?.admissionType === 'free' ? 'free' : 'paid'
       },
       guardianDetails: {
         guardianName: student.guardianDetails?.guardianName || '',
@@ -331,6 +334,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
   };
 
   const handleSaveEdit = async () => {
+    if (editData.courseDetails?.admissionType === 'free' && ['General', 'OBC'].includes(editData.personalDetails?.category)
+      && !editData.personalDetails?.pmKisanNumber && !editData.personalDetails?.cmKisanNumber) {
+      showError('Enter either PM Kisan Number or CM Kisan Number for Free (Kisan) admission');
+      return;
+    }
     try {
       showLoading('Updating student...');
       
@@ -343,7 +351,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           dateOfBirth: editData.personalDetails?.dateOfBirth,
           gender: editData.personalDetails?.gender,
           category: editData.personalDetails?.category,
-          aadharNumber: editData.personalDetails?.aadharNumber
+          aadharNumber: editData.personalDetails?.aadharNumber,
+          pmKisanNumber: editData.personalDetails?.pmKisanNumber || '',
+          cmKisanNumber: editData.personalDetails?.cmKisanNumber || ''
         },
         contactDetails: {
           primaryPhone: editData.contactDetails?.primaryPhone,
@@ -374,7 +384,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           courseName: editData.courseDetails?.courseName,
           stream: editData.courseDetails?.stream,
           campus: editData.courseDetails?.campus,
-          customCourse: editData.courseDetails?.customCourse
+          customCourse: editData.courseDetails?.customCourse,
+          admissionType: editData.courseDetails?.admissionType || 'paid'
         },
         guardianDetails: {
           guardianName: editData.guardianDetails?.guardianName,
@@ -1195,6 +1206,53 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                         <option value="PwD">PwD</option>
                       </select>
                     </div>
+                    {/* Admission Type (Free/Paid): free only for SC/ST and General/OBC (Kisan), never for paid-only courses */}
+                    {(() => {
+                      const cat = editData.personalDetails?.category;
+                      const course = getCoursesForCollege().find(c => c.courseName === editData.courseDetails?.selectedCourse);
+                      const stream = (course?.streams || []).find(st => typeof st === 'object' && st.name === editData.courseDetails?.stream);
+                      const freeAllowed = ['SC', 'ST', 'General', 'OBC'].includes(cat) && !course?.isPaidOnly && !stream?.isPaidOnly;
+                      const admissionType = editData.courseDetails?.admissionType === 'free' && freeAllowed ? 'free' : 'paid';
+                      const setAdmissionType = (type) => setEditData(prev => ({
+                        ...prev,
+                        courseDetails: { ...prev.courseDetails, admissionType: type }
+                      }));
+                      return (
+                        <>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Admission Type</label>
+                            <div className="flex items-center gap-6 px-3 py-2 border border-gray-300 rounded-md">
+                              <label className="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="agentEditAdmissionType" checked={admissionType === 'paid'} onChange={() => setAdmissionType('paid')} className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]" />
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">Paid</span>
+                              </label>
+                              <label className={`flex items-center gap-2 ${freeAllowed ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+                                <input type="radio" name="agentEditAdmissionType" checked={admissionType === 'free'} disabled={!freeAllowed} onChange={() => setAdmissionType('free')} className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]" />
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-200">{['SC', 'ST'].includes(cat) ? 'Free' : 'Free (Kisan)'}</span>
+                              </label>
+                            </div>
+                          </div>
+                          {admissionType === 'free' && ['General', 'OBC'].includes(cat) && [['pmKisanNumber', 'PM Kisan Number'], ['cmKisanNumber', 'CM Kisan Number']].map(([field, label]) => (
+                            <div key={field}>
+                              <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                                {label} <span className="text-xs text-gray-500 dark:text-gray-300">(either one)</span>
+                              </label>
+                              <input
+                                type="text"
+                                value={editData.personalDetails?.[field] || ''}
+                                onChange={(e) => setEditData(prev => ({
+                                  ...prev,
+                                  personalDetails: { ...prev.personalDetails, [field]: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) }
+                                }))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                                placeholder="e.g. UP89G70308900G"
+                                maxLength="20"
+                              />
+                            </div>
+                          ))}
+                        </>
+                      );
+                    })()}
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                         Aadhaar Number

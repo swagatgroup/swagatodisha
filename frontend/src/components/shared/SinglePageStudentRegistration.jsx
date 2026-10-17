@@ -1592,6 +1592,36 @@ const SinglePageStudentRegistration = ({
                             </div>
                         );
                     })()}
+
+                    {/* PM Kisan / CM Kisan numbers: General/OBC free admission, either one is mandatory */}
+                    {formData.courseDetails.admissionType === 'free' && ['General', 'OBC'].includes(formData.personalDetails.category) &&
+                        [['pmKisanNumber', 'PM Kisan Number'], ['cmKisanNumber', 'CM Kisan Number']].map(([field, label]) => (
+                            <div key={field}>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    {label} <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(enter either one) *</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.personalDetails[field] || ''}
+                                    onChange={(e) =>
+                                        setFormData((prev) => ({
+                                            ...prev,
+                                            personalDetails: {
+                                                ...prev.personalDetails,
+                                                [field]: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20),
+                                            },
+                                        }))
+                                    }
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
+                                    placeholder="e.g. UP89G70308900G"
+                                    maxLength="20"
+                                />
+                                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Up to 20 capital letters and digits</p>
+                                {field === 'pmKisanNumber' && errors["personalDetails.kisanNumber"] && (
+                                    <p className="text-red-500 text-sm mt-1">{errors["personalDetails.kisanNumber"]}</p>
+                                )}
+                            </div>
+                        ))}
                 </div>
             </motion.div>
 
@@ -2188,39 +2218,6 @@ const SinglePageStudentRegistration = ({
                           </span>
                         )}
                       </div>
-
-                      {/* PM Kisan / CM Kisan numbers (General/OBC free admission, either one is mandatory) */}
-                      {currentAdmType === 'free' && isKisanEligible && (
-                        <div className="mt-4">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[['pmKisanNumber', 'PM Kisan Number'], ['cmKisanNumber', 'CM Kisan Number']].map(([field, label]) => (
-                              <div key={field}>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">{label}</label>
-                                <input
-                                  type="text"
-                                  value={formData.personalDetails[field] || ''}
-                                  onChange={(e) =>
-                                    setFormData((prev) => ({
-                                      ...prev,
-                                      personalDetails: {
-                                        ...prev.personalDetails,
-                                        [field]: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20),
-                                      },
-                                    }))
-                                  }
-                                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
-                                  placeholder="e.g. UP89G70308900G"
-                                  maxLength="20"
-                                />
-                              </div>
-                            ))}
-                          </div>
-                          <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Up to 20 capital letters and digits. Enter any one (either is mandatory).</p>
-                          {errors["personalDetails.kisanNumber"] && (
-                            <p className="text-red-500 text-sm mt-1">{errors["personalDetails.kisanNumber"]}</p>
-                          )}
-                        </div>
-                      )}
 
                       {/* Document hint based on type */}
                       <div className={`mt-3 text-xs rounded-lg px-3 py-2 ${

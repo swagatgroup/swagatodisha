@@ -1,5 +1,6 @@
 const express = require('express');
 const { canEditApplication, editLockedMessage } = require('../utils/applicationEditLock');
+const { checkFreeAdmission, feeKey, recalculateFees } = require('../utils/admissionTypeRules');
 const mongoose = require('mongoose');
 const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
@@ -1365,11 +1366,7 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 
         const updateData = req.body;
         // Remember what decides the fee, so it can be recalculated if any of it changes
-        const feeKeyBefore = JSON.stringify([
-            String(application.courseDetails?.selectedCollege || ''),
-            application.courseDetails?.selectedCourse || '',
-            application.courseDetails?.admissionType || 'paid'
-        ]);
+        const feeKeyBefore = feeKey(application);
 
         // Update status (super admin can set any status, staff cannot change status via this route)
         if (updateData.status && isSuperAdmin) {
@@ -1487,23 +1484,9 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
                 }
             });
 
-            // Free admission: SC/ST, or General/OBC with a PM Kisan / CM Kisan number, and never on a paid-only course/stream
-            if (application.courseDetails.admissionType === 'free') {
-                const category = application.personalDetails?.category;
-                if (!['SC', 'ST', 'General', 'OBC'].includes(category)) {
-                    return res.status(400).json({ success: false, message: `Free admission is not available for category ${category || 'N/A'}` });
-                }
-                const CollegeCourse = require('../models/CollegeCourse');
-                const course = application.courseDetails.selectedCollege && application.courseDetails.selectedCourse
-                    ? await CollegeCourse.findOne({ college: application.courseDetails.selectedCollege, courseName: application.courseDetails.selectedCourse }).lean()
-                    : null;
-                const stream = course?.streams?.find(st => st.name === application.courseDetails.stream);
-                if (course?.isPaidOnly || stream?.isPaidOnly) {
-                    return res.status(400).json({ success: false, message: 'This course/stream is paid-only and cannot be free' });
-                }
-                if (['General', 'OBC'].includes(category) && !application.personalDetails?.pmKisanNumber && !application.personalDetails?.cmKisanNumber) {
-                    return res.status(400).json({ success: false, message: 'Enter either PM Kisan Number or CM Kisan Number for Free (Kisan) admission' });
-                }
+            const freeError = await checkFreeAdmission(application);
+            if (freeError) {
+                return res.status(400).json({ success: false, message: freeError });
             }
         }
 
@@ -1540,18 +1523,8 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         }
 
         // Course or admission type changed: recalculate fees; payments already made are kept
-        const feeKeyAfter = JSON.stringify([
-            String(application.courseDetails?.selectedCollege || ''),
-            application.courseDetails?.selectedCourse || '',
-            application.courseDetails?.admissionType || 'paid'
-        ]);
-        if (feeKeyAfter !== feeKeyBefore) {
-            const { calculateTotalFees } = require('../controllers/studentApplicationWorkflowController');
-            const fees = await calculateTotalFees(application.courseDetails, application.personalDetails?.category);
-            if (!application.financialStatus) application.financialStatus = {};
-            application.financialStatus.totalFees = fees;
-            application.financialStatus.dueAmount = Math.max(fees - (application.financialStatus.paidAmount || 0), 0);
-            application.markModified('financialStatus');
+        if (feeKey(application) !== feeKeyBefore) {
+            await recalculateFees(application);
         }
 
         await application.save();

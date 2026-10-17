@@ -1,5 +1,6 @@
 const express = require("express");
 const { canEditApplication, editLockedMessage } = require('../utils/applicationEditLock');
+const { checkFreeAdmission, feeKey, recalculateFees } = require('../utils/admissionTypeRules');
 const router = express.Router();
 const mongoose = require("mongoose");
 const { protect } = require("../middleware/auth");
@@ -1554,6 +1555,7 @@ router.put('/students/:id', async (req, res) => {
     console.log(`✅ Agent ${agentId} editing application ${applicationId} with status: ${application.status}`);
 
     const updateData = req.body;
+    const feeKeyBefore = feeKey(application);
 
     // SECURITY: Agents cannot update currentStage - this is controlled by staff/admin only
     // Note: Status can now be updated by agents
@@ -1594,6 +1596,11 @@ router.put('/students/:id', async (req, res) => {
           application.courseDetails[key] = courseDetailsUpdate[key];
         }
       });
+
+      const freeError = await checkFreeAdmission(application);
+      if (freeError) {
+        return res.status(400).json({ success: false, message: freeError });
+      }
     }
 
     // Update guardian details
@@ -1635,6 +1642,11 @@ router.put('/students/:id', async (req, res) => {
       addedAt: new Date(),
       type: 'EDIT'
     });
+
+    // Course or admission type changed: recalculate fees; payments already made are kept
+    if (feeKey(application) !== feeKeyBefore) {
+      await recalculateFees(application);
+    }
 
     await application.save();
 
