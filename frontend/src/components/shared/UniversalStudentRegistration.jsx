@@ -735,7 +735,7 @@ const UniversalStudentRegistration = ({
                         campus: formData.courseDetails?.campus || '',
                         institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
                         courseName: formData.courseDetails?.selectedCourse || '',
-                        admissionType: formData.courseDetails?.admissionType || ''
+                        admissionType: formData.courseDetails?.admissionType || 'paid'
                     },
                     guardianDetails: formData.guardianDetails,
                     documents: formData.documents,
@@ -771,7 +771,7 @@ const UniversalStudentRegistration = ({
                       campus: formData.courseDetails?.campus || '',
                       institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
                       courseName: formData.courseDetails?.selectedCourse || '',
-                      admissionType: formData.courseDetails?.admissionType || ''
+                      admissionType: formData.courseDetails?.admissionType || 'paid'
                   },
                   guardianDetails: formData.guardianDetails,
                   documents: formData.documents,
@@ -888,7 +888,7 @@ const UniversalStudentRegistration = ({
                             campus: formData.courseDetails?.campus || '',
                             institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
                             courseName: formData.courseDetails?.selectedCourse || '',
-                            admissionType: formData.courseDetails?.admissionType || ''
+                            admissionType: formData.courseDetails?.admissionType || 'paid'
                         },
                         guardianDetails: formData.guardianDetails,
                         documents: formData.documents,

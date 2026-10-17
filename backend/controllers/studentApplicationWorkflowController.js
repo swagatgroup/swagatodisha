@@ -7,9 +7,21 @@ const CollegeCourse = require('../models/CollegeCourse');
 const College = require('../models/College');
 
 // Enrich courseDetails with human-readable institutionName from College model
+// The schema only accepts 'free' | 'paid'. The registration forms leave admissionType empty when
+// the default "Paid" option is never clicked, and an empty value fails enum validation, which
+// made the whole save (including uploaded documents) fail for paid students.
+const normalizeAdmissionType = (courseDetails, fallback) => {
+    if (!courseDetails || typeof courseDetails !== 'object') return courseDetails;
+    const valid = ['free', 'paid'];
+    const admissionType = valid.includes(courseDetails.admissionType)
+        ? courseDetails.admissionType
+        : (valid.includes(fallback) ? fallback : 'paid');
+    return { ...courseDetails, admissionType };
+};
+
 const enrichCourseDetails = async (courseDetails) => {
     if (!courseDetails) return courseDetails;
-    const enriched = { ...courseDetails };
+    const enriched = normalizeAdmissionType(courseDetails);
     if (courseDetails.selectedCollege && !enriched.institutionName) {
         try {
             const college = await College.findById(courseDetails.selectedCollege).select('name');
@@ -634,6 +646,9 @@ const saveDraft = async (req, res) => {
                         } else {
                             console.warn(`No valid documents found for application ${applicationId}`);
                         }
+                    } else if (key === 'courseDetails') {
+                        // Keep the stored admission type when the payload omits it (some callers send partial courseDetails)
+                        appDoc.courseDetails = normalizeAdmissionType(data.courseDetails, appDoc.courseDetails?.admissionType);
                     } else {
                         appDoc[key] = data[key];
                     }
@@ -1180,56 +1195,27 @@ const getApplicationsByStatus = async (req, res) => {
             const rejectedDocs = documents.filter(doc => doc.status === 'REJECTED').length;
             const pendingDocs = documents.filter(doc => doc.status === 'PENDING').length;
 
-            // Determine review status and update application status
+            // Determine document review status. The application's own status/currentStage are
+            // returned exactly as stored: transitions are persisted by the document review,
+            // start-review, approve and reject handlers, and re-deriving them here made the
+            // Under Review / Approved / Rejected counters and tabs disagree with the database.
             let reviewStatus = 'not_reviewed';
-            let applicationStatus = app.status;
-            let currentStage = app.currentStage;
-
             if (totalDocs === 0) {
                 reviewStatus = 'no_documents';
-                // Applications without documents should not be approved
-                if (app.status === 'APPROVED') {
-                    applicationStatus = 'SUBMITTED';
-                    currentStage = 'DOCUMENTS';
-                }
             } else if (reviewedDocs === totalDocs) {
                 if (rejectedDocs === 0) {
                     reviewStatus = 'all_approved';
-                    // All documents approved - already in UNDER_REVIEW, ready for final approval
-                    // Status remains UNDER_REVIEW
                 } else if (approvedDocs === 0) {
                     reviewStatus = 'all_rejected';
-                    // All documents rejected - keep as SUBMITTED, needs re-upload
-                    applicationStatus = 'SUBMITTED';
-                    currentStage = 'DOCUMENTS';
                 } else {
                     reviewStatus = 'mixed_results';
-                    // Mixed results - keep under review
-                    applicationStatus = 'UNDER_REVIEW';
-                    currentStage = 'DOCUMENTS';
                 }
             } else if (reviewedDocs > 0) {
                 reviewStatus = 'partially_reviewed';
-                // Partially reviewed - move to UNDER_REVIEW if no rejections
-                if (rejectedDocs === 0) {
-                    applicationStatus = 'UNDER_REVIEW';
-                    currentStage = 'DOCUMENTS';
-                } else {
-                    applicationStatus = 'SUBMITTED';
-                    currentStage = 'DOCUMENTS';
-                }
-            }
-
-            // Additional validation: Ensure APPROVED status only if all documents are approved
-            if (applicationStatus === 'APPROVED' && totalDocs > 0 && approvedDocs !== totalDocs) {
-                applicationStatus = 'UNDER_REVIEW';
-                currentStage = 'UNDER_REVIEW';
             }
 
             return {
                 ...app.toObject(),
-                status: applicationStatus,
-                currentStage: currentStage,
                 documentStats: {
                     total: totalDocs,
                     reviewed: reviewedDocs,

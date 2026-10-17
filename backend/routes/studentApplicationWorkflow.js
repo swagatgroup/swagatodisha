@@ -154,19 +154,24 @@ router.get('/:applicationId/rejection-details', protect, async (req, res) => {
 router.post('/:applicationId/resubmit', protect, async (req, res) => {
     try {
         const isObjectId = mongoose.Types.ObjectId.isValid(req.params.applicationId);
+        // Staff/super admins can resubmit any rejected application (after uploading corrected
+        // documents from Application Review); students/agents only their own.
+        const isReviewer = ['staff', 'super_admin'].includes(req.user.role);
         const application = await StudentApplication.findOne({
             $or: [
                 { applicationId: req.params.applicationId },
                 ...(isObjectId ? [{ _id: req.params.applicationId }] : [])
             ],
-            $and: [
-                {
-                    $or: [
-                        { user: req.user._id },
-                        { submittedBy: req.user._id }
-                    ]
-                }
-            ]
+            ...(isReviewer ? {} : {
+                $and: [
+                    {
+                        $or: [
+                            { user: req.user._id },
+                            { submittedBy: req.user._id }
+                        ]
+                    }
+                ]
+            })
         });
 
         if (!application) {
@@ -180,9 +185,24 @@ router.post('/:applicationId/resubmit', protect, async (req, res) => {
             });
         }
 
+        // Staff must replace every rejected document before sending it back for review
+        if (isReviewer) {
+            const stillRejected = (application.documents || []).filter(doc => doc.status === 'REJECTED');
+            if (stillRejected.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Upload corrected files for all rejected documents first (${stillRejected.map(d => d.documentType).join(', ')})`
+                });
+            }
+        }
+
+        const defaultReason = isReviewer
+            ? `Corrected documents uploaded by ${req.user.role === 'super_admin' ? 'super admin' : 'staff'}`
+            : 'Student resubmission after corrections';
+
         // Use the model method if available, otherwise do it manually
         if (typeof application.resubmitApplication === 'function') {
-            await application.resubmitApplication(req.user._id, req.body.reason || 'Student resubmission after corrections');
+            await application.resubmitApplication(req.user._id, req.body.reason || defaultReason);
         } else {
             application.status = 'SUBMITTED';
             application.currentStage = 'SUBMITTED';
@@ -201,7 +221,7 @@ router.post('/:applicationId/resubmit', protect, async (req, res) => {
             application.resubmissionInfo.resubmissionCount = (application.resubmissionInfo.resubmissionCount || 0) + 1;
             application.resubmissionInfo.resubmittedAt = new Date();
             application.resubmissionInfo.resubmittedBy = req.user._id;
-            application.resubmissionInfo.resubmissionReason = req.body.reason || 'Student resubmission after corrections';
+            application.resubmissionInfo.resubmissionReason = req.body.reason || defaultReason;
             
             // Add to workflow history
             if (!application.workflowHistory) application.workflowHistory = [];

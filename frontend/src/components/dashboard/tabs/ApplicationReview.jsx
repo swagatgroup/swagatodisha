@@ -18,7 +18,9 @@ import {
     EyeSlashIcon,
     ExclamationTriangleIcon,
     PlayIcon,
-    FlagIcon
+    FlagIcon,
+    ArrowUpTrayIcon,
+    ArrowPathIcon
 } from '@heroicons/react/24/outline';
 import { useSession } from '../../../contexts/SessionContext';
 import api from '../../../utils/api';
@@ -54,6 +56,11 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
     const [selectedDocumentsForGeneration, setSelectedDocumentsForGeneration] = useState([]);
     const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
     const [generating, setGenerating] = useState(false);
+    // Staff correction of rejected applications
+    const [staffUploading, setStaffUploading] = useState({});
+    const [documentTypeOptions, setDocumentTypeOptions] = useState([]);
+    const [missingDocType, setMissingDocType] = useState('');
+    const [resubmitting, setResubmitting] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState('createdAt');
     const [sortOrder, setSortOrder] = useState('desc');
@@ -539,6 +546,78 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
             showError(error.response?.data?.message || 'Failed to reject application');
         } finally {
             setWorkflowLoading(false);
+        }
+    };
+
+    // Load document types once a rejected application is opened (for "Upload missing document")
+    useEffect(() => {
+        if (selectedApplication?.status !== 'REJECTED' || documentTypeOptions.length > 0) return;
+        api.get('/api/student-application/document-requirements')
+            .then((response) => {
+                const reqs = response.data?.data?.requirements;
+                if (reqs) {
+                    setDocumentTypeOptions([...(reqs.required || []), ...(reqs.optional || [])]);
+                }
+            })
+            .catch((error) => console.error('Error fetching document requirements:', error));
+    }, [selectedApplication?.status]);
+
+    // Staff uploads a corrected document for a rejected application.
+    // Reuses the standard upload: replaces the document of the same type and saves it as PENDING.
+    const handleStaffDocumentUpload = async (documentType, file) => {
+        if (!file || !documentType || !selectedApplication?._id) return;
+        try {
+            setStaffUploading(prev => ({ ...prev, [documentType]: true }));
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('documentType', documentType);
+            formData.append('studentId', selectedApplication._id);
+            const response = await api.post('/api/documents/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            if (response.data?.success) {
+                showSuccess(`${formatDocumentLabel(documentType)} uploaded`);
+                setMissingDocType('');
+                setDocumentDecisions(prev => {
+                    const next = { ...prev };
+                    delete next[documentType];
+                    return next;
+                });
+                await fetchApplicationDetails(selectedApplication.applicationId);
+            } else {
+                showError(response.data?.message || 'Upload failed');
+            }
+        } catch (error) {
+            showError(error.response?.data?.message || 'Failed to upload document');
+        } finally {
+            setStaffUploading(prev => ({ ...prev, [documentType]: false }));
+        }
+    };
+
+    // REJECTED → SUBMITTED after staff has replaced the rejected documents
+    const handleStaffResubmit = async () => {
+        const result = await showConfirm(
+            'Resubmit Application',
+            'Send this application back for review with the corrected documents?',
+            { confirmButtonText: 'Yes, Resubmit', cancelButtonText: 'Cancel' }
+        );
+        if (!result?.isConfirmed) return;
+
+        try {
+            setResubmitting(true);
+            const response = await api.post(`/api/student-application/${selectedApplication.applicationId}/resubmit`);
+            if (response.data?.success) {
+                showSuccess('Application resubmitted. It is back in the review queue.');
+                await fetchApplicationDetails(selectedApplication.applicationId);
+                await fetchApplications();
+                fetchAllApplicationsForStats();
+            } else {
+                showError(response.data?.message || 'Resubmission failed');
+            }
+        } catch (error) {
+            showError(error.response?.data?.message || 'Failed to resubmit application');
+        } finally {
+            setResubmitting(false);
         }
     };
 
@@ -1747,6 +1826,24 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center space-x-2">
+                                                            {selectedApplication.status === 'REJECTED' && isRejected && (
+                                                                <label
+                                                                    className={`flex items-center px-3 py-1 rounded bg-[#4A1D7A] text-white hover:bg-[#351458] text-sm cursor-pointer ${staffUploading[item.documentType] ? 'opacity-50 pointer-events-none' : ''}`}
+                                                                    title="Upload the corrected file for this document"
+                                                                >
+                                                                    <ArrowUpTrayIcon className="h-4 w-4 mr-1" />
+                                                                    {staffUploading[item.documentType] ? 'Uploading...' : 'Replace'}
+                                                                    <input
+                                                                        type="file"
+                                                                        accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                                                        className="hidden"
+                                                                        onChange={(e) => {
+                                                                            handleStaffDocumentUpload(item.documentType, e.target.files?.[0]);
+                                                                            e.target.value = '';
+                                                                        }}
+                                                                    />
+                                                                </label>
+                                                            )}
                                                             <button
                                                                 onClick={() => {
                                                                     const fullUrl = getDocumentUrl(item.url);
@@ -1858,6 +1955,63 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                             No documents uploaded during registration
                                         </div>
                                     )}
+
+                                    {/* Staff correction for rejected applications: replace/upload documents, then resubmit */}
+                                    {selectedApplication.status === 'REJECTED' && (() => {
+                                        const docs = Array.isArray(selectedApplication.documents) ? selectedApplication.documents : [];
+                                        const stillRejected = docs.filter(doc => doc.status === 'REJECTED');
+                                        const uploadedTypes = new Set(docs.map(doc => doc.documentType));
+                                        const missingOptions = documentTypeOptions.filter(opt => !uploadedTypes.has(opt.key));
+                                        return (
+                                            <div className="p-4 border border-orange-200 dark:border-orange-900/40 rounded-lg bg-orange-50 dark:bg-orange-900/10">
+                                                <p className="font-medium text-gray-900 dark:text-gray-100">Correct & Resubmit</p>
+                                                <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
+                                                    {stillRejected.length > 0
+                                                        ? `Replace the ${stillRejected.length} rejected document(s) above, then resubmit the application for review.`
+                                                        : 'All rejected documents have been replaced. Resubmit to send the application back for review.'}
+                                                </p>
+
+                                                <div className="flex flex-wrap items-center gap-2 mt-3">
+                                                    <select
+                                                        value={missingDocType}
+                                                        onChange={(e) => setMissingDocType(e.target.value)}
+                                                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-700 dark:text-white"
+                                                    >
+                                                        <option value="">Upload missing document...</option>
+                                                        {missingOptions.map(opt => (
+                                                            <option key={opt.key} value={opt.key}>{opt.label || formatDocumentLabel(opt.key)}</option>
+                                                        ))}
+                                                    </select>
+                                                    <label
+                                                        className={`flex items-center px-3 py-2 rounded-lg text-sm text-white ${missingDocType && !staffUploading[missingDocType] ? 'bg-[#4A1D7A] hover:bg-[#351458] cursor-pointer' : 'bg-gray-400 pointer-events-none'}`}
+                                                    >
+                                                        <ArrowUpTrayIcon className="h-4 w-4 mr-1" />
+                                                        {staffUploading[missingDocType] ? 'Uploading...' : 'Choose File'}
+                                                        <input
+                                                            type="file"
+                                                            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                                            className="hidden"
+                                                            disabled={!missingDocType}
+                                                            onChange={(e) => {
+                                                                handleStaffDocumentUpload(missingDocType, e.target.files?.[0]);
+                                                                e.target.value = '';
+                                                            }}
+                                                        />
+                                                    </label>
+
+                                                    <button
+                                                        onClick={handleStaffResubmit}
+                                                        disabled={resubmitting || stillRejected.length > 0}
+                                                        className="flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm shadow sm:ml-auto"
+                                                        title={stillRejected.length > 0 ? 'Replace all rejected documents first' : 'Send back for review'}
+                                                    >
+                                                        <ArrowPathIcon className="h-4 w-4 mr-1" />
+                                                        {resubmitting ? 'Resubmitting...' : 'Resubmit for Review'}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })()}
 
                                     {/* Generated Application PDF */}
                                     {selectedApplication.applicationPdfUrl && (
