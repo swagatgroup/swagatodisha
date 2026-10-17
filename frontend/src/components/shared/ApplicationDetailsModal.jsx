@@ -132,6 +132,14 @@ const ApplicationDetailsModal = ({
     const fin = app.financialStatus || {};
     const bank = app.user?.financialDetails;
 
+    // Approval date: latest APPROVED entry in the workflow history, else the review date (only once approved)
+    const approvedDate = (() => {
+        if (!['APPROVED', 'COMPLETION_REQUESTED', 'COMPLETE'].includes(app.status)) return null;
+        const approvals = (app.workflowHistory || []).filter(h => h.status === 'APPROVED' || h.stage === 'APPROVED');
+        if (approvals.length > 0) return approvals[approvals.length - 1].timestamp;
+        return app.approvedAt || app.reviewInfo?.reviewedAt || app.reviewStatus?.reviewedAt || null;
+    })();
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
@@ -337,9 +345,7 @@ const ApplicationDetailsModal = ({
                                 <Field label="Approved By" value={app.approvedBy || 'Pending'} />
                                 <Field label="Referral Code" value={app.referralCode} />
                                 <Field label="Submitted Date" value={formatDate(app.submittedAt || app.createdAt)} />
-                                {(app.reviewInfo?.reviewedAt || app.reviewStatus?.reviewedAt) && app.status === 'APPROVED' && (
-                                    <Field label="Approved Date" value={formatDate(app.reviewInfo?.reviewedAt || app.reviewStatus?.reviewedAt)} />
-                                )}
+                                <Field label="Approved Date" value={approvedDate ? formatDate(approvedDate) : 'N/A'} />
                                 <Field label="Current Stage" value={['APPROVED', 'REJECTED'].includes(app.status) ? app.status : (app.currentStage || app.status)} />
                             </div>
                         </Section>
