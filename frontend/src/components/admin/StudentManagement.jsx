@@ -13,6 +13,7 @@ import {
     handleApiError
 } from '../../utils/sweetAlert';
 import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
+import StaffDocumentUploader from '../shared/StaffDocumentUploader';
 
 // Helper function to convert and compress image to under 50KB JPG
 const compressImageToUnder50KB = async (photoUrl) => {
@@ -2811,6 +2812,31 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                 </div>
 
                                 {/* Documents */}
+                                {(!Array.isArray(selectedStudent.documents) || selectedStudent.documents.length === 0) && (
+                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
+                                        <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 flex items-center">
+                                            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Uploaded Documents (0)
+                                        </h4>
+                                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
+                                            No documents are saved on this application. Upload the student's documents below;
+                                            they are added as pending for review.
+                                        </p>
+                                        <StaffDocumentUploader
+                                            applicationId={selectedStudent._id}
+                                            existingTypes={[]}
+                                            onUploaded={(doc) => {
+                                                setSelectedStudent(prev => ({
+                                                    ...prev,
+                                                    documents: [...(Array.isArray(prev.documents) ? prev.documents : []), { ...doc, uploadedAt: new Date().toISOString() }]
+                                                }));
+                                                fetchStudents();
+                                            }}
+                                        />
+                                    </div>
+                                )}
                                 {selectedStudent.documents && selectedStudent.documents.length > 0 && (
                                     <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
                                         <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
@@ -2852,6 +2878,23 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     </div>
                                                 </div>
                                             ))}
+                                        </div>
+                                        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
+                                            <p className="text-xs font-medium text-gray-500 dark:text-gray-300 mb-2">Add a missing document</p>
+                                            <StaffDocumentUploader
+                                                applicationId={selectedStudent._id}
+                                                existingTypes={selectedStudent.documents.map(d => d.documentType)}
+                                                onUploaded={(doc) => {
+                                                    setSelectedStudent(prev => ({
+                                                        ...prev,
+                                                        documents: [
+                                                            ...prev.documents.filter(d => d.documentType !== doc.documentType),
+                                                            { ...doc, uploadedAt: new Date().toISOString() }
+                                                        ]
+                                                    }));
+                                                    fetchStudents();
+                                                }}
+                                            />
                                         </div>
 
                                   {/* Financial / Bank Information */}

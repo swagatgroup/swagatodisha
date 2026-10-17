@@ -70,6 +70,10 @@ const fileSchema = new mongoose.Schema({
         author: String,
         title: String,
         description: String,
+        // Upload context (previously dropped by strict mode, so uploads couldn't be traced to a document type)
+        documentType: String,
+        isCustom: Boolean,
+        customLabel: String,
         // Cloudinary-specific metadata
         cloudinaryId: String,
         cloudinaryUrl: String,

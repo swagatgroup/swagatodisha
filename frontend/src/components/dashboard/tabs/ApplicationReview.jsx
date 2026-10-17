@@ -551,7 +551,8 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
 
     // Load document types once a rejected application is opened (for "Upload missing document")
     useEffect(() => {
-        if (selectedApplication?.status !== 'REJECTED' || documentTypeOptions.length > 0) return;
+        const hasNoDocuments = !Array.isArray(selectedApplication?.documents) || selectedApplication.documents.length === 0;
+        if (!selectedApplication || (selectedApplication.status !== 'REJECTED' && !hasNoDocuments) || documentTypeOptions.length > 0) return;
         api.get('/api/student-application/document-requirements')
             .then((response) => {
                 const reqs = response.data?.data?.requirements;
@@ -560,7 +561,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                 }
             })
             .catch((error) => console.error('Error fetching document requirements:', error));
-    }, [selectedApplication?.status]);
+    }, [selectedApplication?.status, selectedApplication?.documents?.length]);
 
     // Staff uploads a corrected document for a rejected application.
     // Reuses the standard upload: replaces the document of the same type and saves it as PENDING.
@@ -1770,9 +1771,9 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                     isApproved ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-900/30' :
                                                         'border-gray-200 dark:border-gray-600'
                                                     }`}>
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex items-center space-x-3 flex-1">
-                                                            <DocumentIcon className={`h-8 w-8 ${isApproved ? 'text-green-600' :
+                                                    <div className="flex flex-col gap-3">
+                                                        <div className="flex items-start space-x-3 min-w-0">
+                                                            <DocumentIcon className={`h-8 w-8 flex-shrink-0 ${isApproved ? 'text-green-600' :
                                                                 isRejected ? 'text-red-600' :
                                                                     'text-[#387B95]'
                                                                 }`} />
@@ -1780,7 +1781,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                 <p className="font-medium text-gray-900 dark:text-gray-100">
                                                                     {label}
                                                                 </p>
-                                                                <p className="text-sm text-gray-600 dark:text-gray-300">
+                                                                <p className="text-sm text-gray-600 dark:text-gray-300 break-all">
                                                                     {item.name || 'Uploaded Document'}
                                                                 </p>
                                                                 <p className="text-xs text-gray-500 dark:text-gray-300">
@@ -1825,7 +1826,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                                 )}
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center space-x-2">
+                                                        <div className="flex flex-wrap items-center gap-2">
                                                             {selectedApplication.status === 'REJECTED' && isRejected && (
                                                                 <label
                                                                     className={`flex items-center px-3 py-1 rounded bg-[#4A1D7A] text-white hover:bg-[#351458] text-sm cursor-pointer ${staffUploading[item.documentType] ? 'opacity-50 pointer-events-none' : ''}`}
@@ -1956,17 +1957,23 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         </div>
                                     )}
 
-                                    {/* Staff correction for rejected applications: replace/upload documents, then resubmit */}
-                                    {selectedApplication.status === 'REJECTED' && (() => {
+                                    {/* Staff upload: rejected applications (replace/upload, then resubmit), and any
+                                        application whose documents are missing (e.g. paid students whose
+                                        registration save failed before the admissionType fix) */}
+                                    {(() => {
                                         const docs = Array.isArray(selectedApplication.documents) ? selectedApplication.documents : [];
+                                        const isRejectedApp = selectedApplication.status === 'REJECTED';
+                                        if (!isRejectedApp && docs.length > 0) return null;
                                         const stillRejected = docs.filter(doc => doc.status === 'REJECTED');
                                         const uploadedTypes = new Set(docs.map(doc => doc.documentType));
                                         const missingOptions = documentTypeOptions.filter(opt => !uploadedTypes.has(opt.key));
                                         return (
                                             <div className="p-4 border border-orange-200 dark:border-orange-900/40 rounded-lg bg-orange-50 dark:bg-orange-900/10">
-                                                <p className="font-medium text-gray-900 dark:text-gray-100">Correct & Resubmit</p>
+                                                <p className="font-medium text-gray-900 dark:text-gray-100">{isRejectedApp ? 'Correct & Resubmit' : 'Upload Documents'}</p>
                                                 <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                                    {stillRejected.length > 0
+                                                    {!isRejectedApp
+                                                        ? 'No documents are saved on this application. Upload the student\'s documents here; they will be added as pending for review.'
+                                                        : stillRejected.length > 0
                                                         ? `Replace the ${stillRejected.length} rejected document(s) above, then resubmit the application for review.`
                                                         : 'All rejected documents have been replaced. Resubmit to send the application back for review.'}
                                                 </p>
@@ -1999,6 +2006,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                         />
                                                     </label>
 
+                                                    {isRejectedApp && (
                                                     <button
                                                         onClick={handleStaffResubmit}
                                                         disabled={resubmitting || stillRejected.length > 0}
@@ -2008,6 +2016,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                                         <ArrowPathIcon className="h-4 w-4 mr-1" />
                                                         {resubmitting ? 'Resubmitting...' : 'Resubmit for Review'}
                                                     </button>
+                                                    )}
                                                 </div>
                                             </div>
                                         );
