@@ -18,7 +18,10 @@ import TablePagination from "../../shared/TablePagination";
 import ApplicationDetailsModal, { mergeUploadedDocument } from "../../shared/ApplicationDetailsModal";
 import { APPLICATION_STATUS_OPTIONS } from "../../../utils/applicationStatuses";
 
-const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
+// One students table for the agent, used for both "My Students" (mode="main") and the dashboard's
+// "Recent Students" (mode="recent": last 10, newest first), like StudentManagement on the other dashboards.
+const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main', listType = 'combined' }) => {
+  const isRecent = mode === 'recent';
   const { user } = useAuth();
   const { selectedSession } = useSession();
   const [students, setStudents] = useState([]);
@@ -40,7 +43,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
     status: initialFilter !== 'all' ? initialFilter : "",
     course: "",
     admissionType: "",
+    listType: listType || "combined", // 'combined' | 'dashboard' | 'referral'
   });
+  const [sortBy, setSortBy] = useState("latest");
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -48,7 +53,12 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
     thisMonth: 0,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = isRecent ? 10 : 20;
+
+  // Follow the dashboard's view toggle (Both / Registered by me / Used my referral code)
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, listType: listType || "combined" }));
+  }, [listType]);
 
   // Debug stats state changes
   useEffect(() => {
@@ -556,14 +566,34 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       student.courseDetails?.admissionType === filters.admissionType ||
       (filters.admissionType === 'paid' && !student.courseDetails?.admissionType); // Assume paid if undefined for older records
 
-    return matchesSearch && matchesStatus && matchesCourse && matchesAdmissionType;
+    // Registered by me / Used my referral code
+    const matchesListType =
+      !filters.listType || filters.listType === 'combined' ||
+      (filters.listType === 'dashboard' && student.relationshipType !== 'referral') ||
+      (filters.listType === 'referral' && student.relationshipType === 'referral');
+
+    return matchesSearch && matchesStatus && matchesCourse && matchesAdmissionType && matchesListType;
+  }).sort((a, b) => {
+    const nameA = a.personalDetails?.fullName || '';
+    const nameB = b.personalDetails?.fullName || '';
+    switch (sortBy) {
+      case 'oldest':    return new Date(a.createdAt) - new Date(b.createdAt);
+      case 'name_asc':  return nameA.localeCompare(nameB);
+      case 'name_desc': return nameB.localeCompare(nameA);
+      default:          return new Date(b.createdAt) - new Date(a.createdAt); // most recent first
+    }
   });
+
+  // Course options from this agent's own students
+  const availableCourses = Array.from(new Set(
+    students.map(s => s.courseDetails?.selectedCourse || s.courseDetails?.courseName).filter(Boolean)
+  )).sort();
 
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage) || 1;
   const paginatedStudents = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   // Back to page 1 whenever filters change
-  useEffect(() => { setCurrentPage(1); }, [filters]);
+  useEffect(() => { setCurrentPage(1); }, [filters, sortBy]);
 
   // Summary cards derived from this agent's loaded students (the stats API has no thisMonth)
   const now = new Date();
@@ -603,6 +633,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
 
   return (
     <div className="space-y-6">
+      {!isRecent && (
+      <>
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Students</h2>
@@ -719,6 +751,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
           </div>
         </div>
       </div>
+      </>
+      )}
 
       {/* Filters */}
       <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6">
@@ -766,20 +800,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Courses</option>
-              <option value="B.Tech Computer Science">
-                B.Tech Computer Science
-              </option>
-              <option value="B.Tech Mechanical Engineering">
-                B.Tech Mechanical Engineering
-              </option>
-              <option value="B.Tech Electrical Engineering">
-                B.Tech Electrical Engineering
-              </option>
-              <option value="MBA">MBA</option>
-              <option value="BCA">BCA</option>
-              <option value="B.Com">B.Com</option>
-              <option value="BA">BA</option>
-              <option value="Other">Other</option>
+              {availableCourses.map(course => (
+                <option key={course} value={course}>{course}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -798,6 +821,37 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               <option value="free">Free</option>
             </select>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Registered By
+            </label>
+            <select
+              value={filters.listType}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, listType: e.target.value }))
+              }
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            >
+              <option value="combined">Both</option>
+              <option value="dashboard">Registered by me</option>
+              <option value="referral">Used my referral code</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Sort By
+            </label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+            >
+              <option value="latest">Latest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="name_asc">Name A-Z</option>
+              <option value="name_desc">Name Z-A</option>
+            </select>
+          </div>
           <div className="flex items-end">
             <button
               onClick={() => {
@@ -808,10 +862,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             >
               Apply Filters
             </button>
-            {(filters.search || filters.status || filters.course || filters.admissionType) && (
+            {(filters.search || filters.status || filters.course || filters.admissionType || filters.listType !== 'combined') && (
               <button
                 onClick={() => {
-                  setFilters({ search: "", status: "", course: "", admissionType: "" });
+                  setFilters({ search: "", status: "", course: "", admissionType: "", listType: "combined" });
                   setTimeout(() => loadStudents(), 100);
                 }}
                 className="ml-2 px-4 py-2 bg-gray-200 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-300"
@@ -827,8 +881,11 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow">
         <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-            Students ({filteredStudents.length})
+            {isRecent ? 'Recent Students' : 'Students'} ({filteredStudents.length})
           </h3>
+          {isRecent && (
+            <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Last registered students</p>
+          )}
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">

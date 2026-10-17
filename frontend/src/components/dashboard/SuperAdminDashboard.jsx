@@ -877,7 +877,7 @@ const SuperAdminDashboard = () => {
                             <StudentManagement
                                 listType={studentView === 'direct' ? 'direct' : studentView === 'our' ? 'main' : 'all'}
                                 showListTypeFilter
-                                pageSize={5}
+                                pageSize={10}
                                 title="Recent Students"
                                 subtitle="Last registered students"
                             />

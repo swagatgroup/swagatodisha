@@ -19,17 +19,8 @@ import ReferralDashboard from "./tabs/ReferralDashboard";
 import ProgressPieChart from "./ProgressPieChart";
 import PaymentPieChart from "./PaymentPieChart";
 import StatusFilterRow from "./components/StatusFilterRow";
-import TablePagination from "../shared/TablePagination";
-import ApplicationDetailsModal, { mergeUploadedDocument } from "../shared/ApplicationDetailsModal";
-import { APPLICATION_STATUS_OPTIONS, buildStatusChartData } from "../../utils/applicationStatuses";
-import {
-  showSuccess,
-  showError,
-  showLoading,
-  closeLoading,
-  handleApiError,
-  showSuccessToast
-} from "../../utils/sweetAlert";
+import { buildStatusChartData } from "../../utils/applicationStatuses";
+import { showSuccessToast } from "../../utils/sweetAlert";
 import api from "../../utils/api";
 
 const EnhancedAgentDashboard = () => {
@@ -53,19 +44,6 @@ const EnhancedAgentDashboard = () => {
     referralSignups:     { total: 0, draft: 0, submitted: 0, underReview: 0, approved: 0, rejected: 0, complete: 0 },
   });
 
-  // Table filter states for dashboard
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterCourse, setFilterCourse] = useState('all');
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editData, setEditData] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
-  // Recent Students: same rules as the other dashboards (last 5 registered, newest first)
-  const itemsPerPage = 5;
-  const [sortBy, setSortBy] = useState('latest');
-  const [recentListType, setRecentListType] = useState('combined'); // 'combined' | 'dashboard' | 'referral'
-  const [recentStatus, setRecentStatus] = useState('all');
 
   const isLoadingRef = useRef(false);
 
@@ -159,47 +137,15 @@ const EnhancedAgentDashboard = () => {
     window.dispatchEvent(new CustomEvent('refreshStudentsList'));
   };
 
-  const handleEditSave = async () => {
-    try {
-      showLoading('Updating student...');
-      const response = await api.put(`/api/agents/students/${selectedStudent._id}`, editData);
-      closeLoading();
-      if (response.data && response.data.success) {
-        showSuccess('Student updated successfully!');
-        setShowEditModal(false);
-        setSelectedStudent(null);
-        handleStudentUpdate();
-      } else {
-        showError(response.data?.message || 'Failed to update student');
-      }
-    } catch (error) {
-      closeLoading();
-      handleApiError(error);
-    }
-  };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'APPROVED':     return 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400';
-      case 'SUBMITTED':    return 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-[#60A5FA]';
-      case 'UNDER_REVIEW': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-400';
-      case 'REJECTED':     return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-400';
-      case 'DRAFT':        return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-300';
-      case 'COMPLETE':     return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
-      default:             return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-300';
-    }
-  };
-
-  useEffect(() => { setRecentListType(agentView); setCurrentPage(1); }, [agentView]);
 
   // COMPLETION_REQUESTED sits between Approved and Complete; count/filter it as Approved
   const normalizeStatus = (status) => (status === 'COMPLETION_REQUESTED' ? 'APPROVED' : status);
 
-  const matchesView = (view, student) =>
-    view === 'combined' ||
-    (view === 'dashboard' && student.relationshipType !== 'referral') ||
-    (view === 'referral' && student.relationshipType === 'referral');
-  const matchesAgentView = (student) => matchesView(agentView, student);
+  const matchesAgentView = (student) =>
+    agentView === 'combined' ||
+    (agentView === 'dashboard' && student.relationshipType !== 'referral') ||
+    (agentView === 'referral' && student.relationshipType === 'referral');
 
   // Status counts come from the same list the table shows, so they always match the table and sum to Total
   const viewStudents = students.filter(matchesAgentView);
@@ -214,46 +160,6 @@ const EnhancedAgentDashboard = () => {
     complete:    countStatus('COMPLETE'),
   };
 
-  const studentName = (s) => s.fullName || s.personalDetails?.fullName || '';
-
-  // Recent Students table (this agent's own students only)
-  const filteredStudents = students.filter(student => {
-    const name = studentName(student);
-    const aadhar = student.aadharNumber || student.personalDetails?.aadharNumber || '';
-    const phone = student.phone || student.contactDetails?.primaryPhone || '';
-    const email = student.email || student.contactDetails?.email || '';
-    const appNumber = student.applicationId || '';
-    const term = searchTerm.toLowerCase();
-
-    const matchesSearch = !searchTerm ||
-      name.toLowerCase().includes(term) ||
-      aadhar.includes(searchTerm) ||
-      phone.includes(searchTerm) ||
-      email.toLowerCase().includes(term) ||
-      appNumber.toLowerCase().includes(term);
-
-    const matchesStatus = recentStatus === 'all' || normalizeStatus(student.status) === recentStatus;
-
-    const course = student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '';
-    const matchesCourse = filterCourse === 'all' || course === filterCourse;
-
-    return matchesSearch && matchesStatus && matchesCourse && matchesView(recentListType, student);
-  }).sort((a, b) => {
-    switch (sortBy) {
-      case 'oldest':    return new Date(a.createdAt) - new Date(b.createdAt);
-      case 'name_asc':  return studentName(a).localeCompare(studentName(b));
-      case 'name_desc': return studentName(b).localeCompare(studentName(a));
-      default:          return new Date(b.createdAt) - new Date(a.createdAt);
-    }
-  });
-
-  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage) || 1;
-  const paginatedStudents = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
-  // Available unique courses for dropdown
-  const availableCourses = Array.from(new Set(
-    students.map(s => s.course || s.courseDetails?.selectedCourse || s.courseDetails?.courseName).filter(Boolean)
-  ));
 
   const renderDashboardContent = () => {
     switch (activeTab) {
@@ -319,7 +225,7 @@ const EnhancedAgentDashboard = () => {
                 ].map(([key, label]) => (
                   <button
                     key={key}
-                    onClick={() => { setAgentView(key); setCurrentPage(1); }}
+                    onClick={() => setAgentView(key)}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
                       agentView === key
                         ? 'bg-white dark:bg-[#231A2E] text-[#387B95] dark:text-[#60A5FA] shadow-md'
@@ -369,201 +275,12 @@ const EnhancedAgentDashboard = () => {
               </div>
             </div>
 
-            {/* Recent Students - same layout and rules as the other dashboards, scoped to this agent */}
-            <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
-              {/* Header */}
-              <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Students</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">Last registered students</p>
-                </div>
-                <select
-                  value={recentListType}
-                  onChange={(e) => { setRecentListType(e.target.value); setCurrentPage(1); }}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                >
-                  <option value="combined">Both</option>
-                  <option value="dashboard">Registered by me</option>
-                  <option value="referral">Used my referral code</option>
-                </select>
-                <div className="text-sm text-gray-500 dark:text-gray-300">
-                  {filteredStudents.length > 0 ? (
-                    <>
-                      {filteredStudents.length} {filteredStudents.length === 1 ? 'Student' : 'Students'}
-                      {totalPages > 1 && (
-                        <span className="ml-2 text-gray-400 dark:text-gray-300">
-                          (Showing {((currentPage - 1) * itemsPerPage) + 1}-{Math.min(currentPage * itemsPerPage, filteredStudents.length)} of {filteredStudents.length})
-                        </span>
-                      )}
-                    </>
-                  ) : 'No students found'}
-                </div>
-              </div>
-
-              {/* Search and Sort */}
-              <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <input
-                  type="text"
-                  placeholder="Search by name, Aadhar, phone, email..."
-                  value={searchTerm}
-                  onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-                  className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                />
-                <div className="flex items-center gap-4">
-                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Sort by:</label>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => { setSortBy(e.target.value); setCurrentPage(1); }}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] font-medium"
-                  >
-                    <option value="latest">Latest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="name_asc">Name A-Z</option>
-                    <option value="name_desc">Name Z-A</option>
-                  </select>
-                </div>
-              </div>
-
-              {/* Filters */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <select
-                  value={recentStatus}
-                  onChange={(e) => { setRecentStatus(e.target.value); setCurrentPage(1); }}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                >
-                  <option value="all">All Status</option>
-                  {APPLICATION_STATUS_OPTIONS.map(o => (
-                    <option key={o.key} value={o.key}>{o.label}</option>
-                  ))}
-                </select>
-                <select
-                  value={filterCourse}
-                  onChange={(e) => { setFilterCourse(e.target.value); setCurrentPage(1); }}
-                  className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                >
-                  <option value="all">All Courses</option>
-                  {availableCourses.map(course => (
-                    <option key={course} value={course}>{course}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Table */}
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                      {['S.No', 'Student', "Father's Name", 'Aadhar', 'Phone', 'Email', 'Course', 'Adm. Type', 'Status', 'Submitted By', 'Actions'].map(h => (
-                        <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
-                    {paginatedStudents.length === 0 ? (
-                      <tr>
-                        <td colSpan="11" className="px-6 py-12 text-center">
-                          <div className="flex flex-col items-center justify-center">
-                            <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                            </svg>
-                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No students found</h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
-                              {searchTerm || recentStatus !== 'all' || filterCourse !== 'all'
-                                ? 'Try adjusting your search criteria or filters.'
-                                : selectedSession
-                                  ? `No admissions found for the ${selectedSession} academic session.`
-                                  : 'No student applications have been submitted yet.'}
-                            </p>
-                          </div>
-                        </td>
-                      </tr>
-                    ) : (
-                      paginatedStudents.map((student, index) => {
-                        const serialNumber = ((currentPage - 1) * itemsPerPage) + index + 1;
-                        const name = studentName(student) || 'N/A';
-                        const isReferral = student.relationshipType === 'referral';
-                        return (
-                          <motion.tr
-                            key={student._id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                          >
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">{serialNumber}</td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="flex items-center">
-                                <div className="flex-shrink-0 h-10 w-10">
-                                  <div className="h-10 w-10 rounded-full bg-[#F0E6FA] dark:bg-[#231A2E] flex items-center justify-center">
-                                    <span className="text-sm font-medium text-[#4A1D7A] dark:text-[#C084FC]">
-                                      {name.split(' ').map(n => n[0]).join('') || 'S'}
-                                    </span>
-                                  </div>
-                                </div>
-                                <div className="ml-4">
-                                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{name}</div>
-                                  <div className="text-sm text-gray-500 dark:text-gray-300">ID: {student.applicationId}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                              {student.personalDetails?.fathersName || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
-                              {student.aadharNumber || student.personalDetails?.aadharNumber || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                              {student.phone || student.contactDetails?.primaryPhone || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                              {student.email || student.contactDetails?.email || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                              {student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName || 'N/A'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${student.courseDetails?.admissionType === 'free' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}`}>
-                                {student.courseDetails?.admissionType === 'free' ? 'Free' : 'Paid'}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
-                                {student.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                              {isReferral ? 'Student (your referral code)' : 'You (Agent)'}
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex space-x-2">
-                                <button
-                                  onClick={() => { setSelectedStudent(student); setShowDetailsModal(true); }}
-                                  className="text-[#387B95] hover:text-blue-900 dark:text-[#60A5FA] dark:hover:text-blue-300"
-                                  title="View Details"
-                                >
-                                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                  </svg>
-                                </button>
-                              </div>
-                            </td>
-                          </motion.tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Pagination */}
-              <TablePagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                itemsPerPage={itemsPerPage}
-                totalItems={filteredStudents.length}
-                onPageChange={setCurrentPage}
-              />
-            </div>
+            {/* Recent Students - the same table as My Students (last 10, newest first), like the other dashboards */}
+            <AgentStudentsTab
+              mode="recent"
+              listType={agentView}
+              onStudentUpdate={handleStudentUpdate}
+            />
           </div>
         );
       }
@@ -648,112 +365,6 @@ const EnhancedAgentDashboard = () => {
     >
       {renderDashboardContent()}
 
-      {/* Student Details Modal (shared across all dashboards) */}
-      {showDetailsModal && selectedStudent && (
-        <ApplicationDetailsModal
-          student={selectedStudent}
-          role="agent"
-          onClose={() => setShowDetailsModal(false)}
-          onDocumentUploaded={(doc) => {
-            setSelectedStudent(prev => mergeUploadedDocument(prev, doc));
-            setStudents(prev => prev.map(s => (s._id === selectedStudent._id ? mergeUploadedDocument(s, doc) : s)));
-          }}
-          onEdit={(student) => {
-            setShowDetailsModal(false);
-            setEditData({
-              personalDetails: student.personalDetails || {},
-              contactDetails:  student.contactDetails  || {},
-              courseDetails:   student.courseDetails   || {},
-              guardianDetails: student.guardianDetails || {}
-            });
-            setShowEditModal(true);
-          }}
-        />
-      )}
-
-      {/* Edit Modal */}
-      {showEditModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 overflow-y-auto" onClick={() => setShowEditModal(false)}>
-          <div className="flex items-center justify-center min-h-screen px-4">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
-            <div className="relative bg-white dark:bg-[#231A2E] rounded-2xl shadow-xl max-w-2xl w-full p-6 z-10 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Edit Student</h3>
-                <button onClick={() => setShowEditModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-2">Personal Details</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      ['fullName', 'Full Name'],
-                      ['fathersName', "Father's Name"],
-                      ['mothersName', "Mother's Name"],
-                      ['gender', 'Gender'],
-                      ['aadharNumber', 'Aadhar Number']
-                    ].map(([field, label]) => (
-                      <div key={field}>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
-                        <input
-                          type="text"
-                          value={(editData.personalDetails && editData.personalDetails[field]) || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEditData(prev => ({
-                              ...prev,
-                              personalDetails: { ...prev.personalDetails, [field]: val }
-                            }));
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-2">Contact Details</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      ['email', 'Email'],
-                      ['primaryPhone', 'Phone']
-                    ].map(([field, label]) => (
-                      <div key={field}>
-                        <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">{label}</label>
-                        <input
-                          type="text"
-                          value={(editData.contactDetails && editData.contactDetails[field]) || ''}
-                          onChange={(e) => {
-                            const val = e.target.value;
-                            setEditData(prev => ({
-                              ...prev,
-                              contactDetails: { ...prev.contactDetails, [field]: val }
-                            }));
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl text-sm"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleEditSave}
-                  className="px-4 py-2 bg-[#4A1D7A] text-white rounded-xl text-sm font-medium hover:bg-[#351458]"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </DashboardLayout>
   );
 };
