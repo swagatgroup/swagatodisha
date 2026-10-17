@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
 const PDFGenerator = require('../utils/pdfGenerator');
@@ -18,6 +19,17 @@ const normalizeAdmissionType = (courseDetails, fallback) => {
         : (valid.includes(fallback) ? fallback : 'paid');
     return { ...courseDetails, admissionType };
 };
+
+// Inactive institutes are hidden from the application form; also refuse them server-side so a form
+// opened before the institute was deactivated can't still pick it. Keeping an already-stored
+// institute is allowed, so existing applications remain editable.
+const isInactiveCollegeSelection = async (newCollegeId, currentCollegeId) => {
+    if (!newCollegeId || !mongoose.Types.ObjectId.isValid(newCollegeId)) return false;
+    if (currentCollegeId && currentCollegeId.toString() === newCollegeId.toString()) return false;
+    const college = await College.findById(newCollegeId).select('isActive').lean();
+    return !!college && college.isActive === false;
+};
+const INACTIVE_COLLEGE_MESSAGE = 'The selected institute is not accepting applications. Please choose another institute.';
 
 const enrichCourseDetails = async (courseDetails) => {
     if (!courseDetails) return courseDetails;
@@ -220,6 +232,10 @@ const createApplication = async (req, res) => {
             password,
             isReferral,
         } = req.body;
+
+        if (await isInactiveCollegeSelection(courseDetails?.selectedCollege)) {
+            return res.status(400).json({ success: false, message: INACTIVE_COLLEGE_MESSAGE });
+        }
 
         // Handle referral code if provided - search both User AND Admin models
         let referralInfo = {};
@@ -613,6 +629,10 @@ const saveDraft = async (req, res) => {
                 if (data.personalDetails.dateOfBirth) {
                     data.personalDetails.dateOfBirth = new Date(data.personalDetails.dateOfBirth);
                 }
+            }
+
+            if (data.courseDetails && await isInactiveCollegeSelection(data.courseDetails.selectedCollege, appDoc.courseDetails?.selectedCollege)) {
+                return res.status(400).json({ success: false, message: INACTIVE_COLLEGE_MESSAGE });
             }
 
             Object.keys(data).forEach((key) => {

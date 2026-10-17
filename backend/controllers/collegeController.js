@@ -419,7 +419,8 @@ const deleteCollegeCourse = asyncHandler(async (req, res) => {
 // @route   GET /api/colleges/public
 // @access  Public
 const getPublicColleges = asyncHandler(async (req, res) => {
-    const colleges = await College.find({ isActive: true })
+    // $ne: false (not true) so institutes saved before isActive existed stay visible - no migration needed
+    const colleges = await College.find({ isActive: { $ne: false } })
         .sort({ name: 1 })
         .select('name');
 
@@ -428,14 +429,14 @@ const getPublicColleges = asyncHandler(async (req, res) => {
         colleges.map(async (college) => {
             const courses = await CollegeCourse.find({
                 college: college._id,
-                isActive: true
+                isActive: { $ne: false }
             })
                 .sort({ courseName: 1 })
                 .select('courseName courseCode price isPaidOnly streams');
 
             const campuses = await Campus.find({
                 college: college._id,
-                isActive: true
+                isActive: { $ne: false }
             })
                 .sort({ name: 1 })
                 .select('name feeType');

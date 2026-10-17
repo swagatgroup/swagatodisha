@@ -132,6 +132,33 @@ const InstituteCourseManagement = () => {
         }
     };
 
+    // One-click Active/Inactive toggle. Inactive institutes are hidden from the application form.
+    const [togglingCollegeId, setTogglingCollegeId] = useState(null);
+    const handleToggleCollegeActive = async (college) => {
+        const nextActive = college.isActive === false;
+        const applyActive = (isActive) => {
+            setColleges(prev => prev.map(c => (c._id === college._id ? { ...c, isActive } : c)));
+            setSelectedCollege(prev => (prev?._id === college._id ? { ...prev, isActive } : prev));
+        };
+
+        applyActive(nextActive); // optimistic
+        setTogglingCollegeId(college._id);
+        try {
+            const response = await api.put(`/api/colleges/${college._id}`, { isActive: nextActive });
+            if (!response.data?.success) throw new Error(response.data?.message);
+            showSuccessToast(
+                nextActive
+                    ? `${college.name} is now active and visible in the application form`
+                    : `${college.name} is now inactive and hidden from the application form`
+            );
+        } catch (error) {
+            applyActive(!nextActive);
+            showErrorToast(error.response?.data?.message || error.message || 'Failed to update institute status');
+        } finally {
+            setTogglingCollegeId(null);
+        }
+    };
+
     const handleCourseSubmit = async (e) => {
         e.preventDefault();
         if (!selectedCollege) {
@@ -752,16 +779,27 @@ const InstituteCourseManagement = () => {
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">
                                                     {college.name}
                                                 </h4>
-                                                {college.isActive ? (
-                                                    <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full">
-                                                        Active
-                                                    </span>
-                                                ) : (
-                                                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">
-                                                        Inactive
-                                                    </span>
-                                                )}
                                             </div>
+                                            <button
+                                                type="button"
+                                                role="switch"
+                                                aria-checked={college.isActive !== false}
+                                                aria-label={`${college.name}: ${college.isActive !== false ? 'Active' : 'Inactive'}`}
+                                                disabled={togglingCollegeId === college._id}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleToggleCollegeActive(college);
+                                                }}
+                                                className="mt-2 inline-flex items-center gap-2 disabled:opacity-60"
+                                                title={college.isActive !== false ? 'Click to deactivate (hide from application form)' : 'Click to activate (show in application form)'}
+                                            >
+                                                <span className={`relative inline-flex h-5 w-9 flex-shrink-0 rounded-full transition-colors ${college.isActive !== false ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                                                    <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${college.isActive !== false ? 'translate-x-4' : ''}`} />
+                                                </span>
+                                                <span className={`text-xs font-medium ${college.isActive !== false ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-300'}`}>
+                                                    {college.isActive !== false ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </button>
 
                                         </div>
                                         <div className="flex space-x-2 ml-4">
@@ -770,20 +808,22 @@ const InstituteCourseManagement = () => {
                                                     e.stopPropagation();
                                                     handleEditCollege(college);
                                                 }}
-                                                className="p-2 text-[#387B95] dark:text-[#60A5FA] hover:bg-[#D0E8F0] dark:hover:bg-blue-900/20 rounded"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-[#387B95] dark:text-[#60A5FA] hover:bg-[#D0E8F0] dark:hover:bg-blue-900/20 rounded"
                                                 title="Edit"
                                             >
-                                                <i className="fa-solid fa-edit"></i>
+                                                <i className="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                                                Edit
                                             </button>
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleDeleteCollege(college._id);
                                                 }}
-                                                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                                                 title="Delete"
                                             >
-                                                <i className="fa-solid fa-trash"></i>
+                                                <i className="fa-solid fa-trash" aria-hidden="true"></i>
+                                                Delete
                                             </button>
                                         </div>
                                     </div>
@@ -869,17 +909,19 @@ const InstituteCourseManagement = () => {
                                         <div className="flex space-x-2 ml-4">
                                             <button
                                                 onClick={() => handleEditCourse(course)}
-                                                className="p-2 text-[#387B95] dark:text-[#60A5FA] hover:bg-[#D0E8F0] dark:hover:bg-blue-900/20 rounded"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-[#387B95] dark:text-[#60A5FA] hover:bg-[#D0E8F0] dark:hover:bg-blue-900/20 rounded"
                                                 title="Edit"
                                             >
-                                                <i className="fa-solid fa-edit"></i>
+                                                <i className="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                                                Edit
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteCourse(course._id)}
-                                                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                                                 title="Delete"
                                             >
-                                                <i className="fa-solid fa-trash"></i>
+                                                <i className="fa-solid fa-trash" aria-hidden="true"></i>
+                                                Delete
                                             </button>
                                         </div>
                                     </div>
@@ -954,17 +996,19 @@ const InstituteCourseManagement = () => {
                                         <div className="flex space-x-2 ml-4">
                                             <button
                                                 onClick={() => handleEditCampus(campus)}
-                                                className="p-2 text-[#387B95] dark:text-[#60A5FA] hover:bg-[#D0E8F0] dark:hover:bg-blue-900/20 rounded"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-[#387B95] dark:text-[#60A5FA] hover:bg-[#D0E8F0] dark:hover:bg-blue-900/20 rounded"
                                                 title="Edit"
                                             >
-                                                <i className="fa-solid fa-edit"></i>
+                                                <i className="fa-solid fa-pen-to-square" aria-hidden="true"></i>
+                                                Edit
                                             </button>
                                             <button
                                                 onClick={() => handleDeleteCampus(campus._id)}
-                                                className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                                                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
                                                 title="Delete"
                                             >
-                                                <i className="fa-solid fa-trash"></i>
+                                                <i className="fa-solid fa-trash" aria-hidden="true"></i>
+                                                Delete
                                             </button>
                                         </div>
                                     </div>

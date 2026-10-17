@@ -341,6 +341,19 @@ app.post('/api/application/create', protect, async (req, res) => {
         // Import the StudentApplication model
         const StudentApplication = require('./models/StudentApplication');
 
+        // Inactive institutes are not accepting applications
+        const selectedCollegeId = req.body.courseDetails?.selectedCollege;
+        if (selectedCollegeId && mongoose.Types.ObjectId.isValid(selectedCollegeId)) {
+            const College = require('./models/College');
+            const college = await College.findById(selectedCollegeId).select('isActive').lean();
+            if (college && college.isActive === false) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'The selected institute is not accepting applications. Please choose another institute.'
+                });
+            }
+        }
+
         // Check if user already has an application (only for students)
         if (req.user.role === 'student') {
             const existingApplication = await StudentApplication.findOne({ user: req.user._id });
