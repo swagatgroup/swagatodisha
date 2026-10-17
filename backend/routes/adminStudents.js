@@ -2178,13 +2178,15 @@ router.put('/:id/migrate', protect, authorize('staff', 'super_admin'), async (re
             referrer = await Admin.findById(referrerId).select('_id firstName lastName fullName referralCode role').lean();
         }
 
+        // Moving to Direct Students doesn't need a student login account (the Direct list only checks
+        // submitterRole + no referral). Some staff-submitted applications have none because the
+        // auto-created account failed at registration, so fall back to the student's name.
+        if (!referrer && referrerRole === 'student') {
+            referrer = { _id: null, fullName: application.personalDetails?.fullName || 'Student', referralCode: '' };
+        }
+
         if (!referrer) {
-            return res.status(404).json({
-                success: false,
-                message: referrerRole === 'student'
-                    ? 'No student account found for this application, so it cannot be moved to Direct Students'
-                    : 'User/Referrer not found'
-            });
+            return res.status(404).json({ success: false, message: 'User/Referrer not found' });
         }
 
         const referrerName = referrer.fullName || referrer.name || 
@@ -2194,7 +2196,7 @@ router.put('/:id/migrate', protect, authorize('staff', 'super_admin'), async (re
         if (referrerRole === 'student') {
             // Convert back to direct student: remove referralInfo and reset submitter to student
             application.referralInfo = undefined;
-            application.submittedBy = referrer._id;
+            if (referrer._id) application.submittedBy = referrer._id; // submittedBy is required; keep it if there's no account
             application.submitterRole = 'student';
         } else {
             // Convert to Our Students: set referralInfo and change ownership
@@ -2207,7 +2209,7 @@ router.put('/:id/migrate', protect, authorize('staff', 'super_admin'), async (re
             application.submitterRole = referrerRole;
         }
 
-        await application.save();
+        await application.save({ validateModifiedOnly: true }); // older records may lack fields added later
 
         const successMessage = referrerRole === 'student'
             ? `Student successfully reverted to Direct Students (No Referral)`
