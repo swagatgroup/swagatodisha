@@ -16,7 +16,8 @@ import {
 import AgentStudentFinancialsModal from "./AgentStudentFinancialsModal";
 import TablePagination from "../../shared/TablePagination";
 import ApplicationDetailsModal, { mergeUploadedDocument } from "../../shared/ApplicationDetailsModal";
-import { APPLICATION_STATUS_OPTIONS } from "../../../utils/applicationStatuses";
+import { APPLICATION_STATUS_OPTIONS, normalizeApplicationStatus, getApplicationStatusLabel } from "../../../utils/applicationStatuses";
+import { getStatusBadgeClasses } from "../../../utils/statusColors";
 
 // One students table for the agent, used for both "My Students" (mode="main") and the dashboard's
 // "Recent Students" (mode="recent": last 10, newest first), like StudentManagement on the other dashboards.
@@ -138,7 +139,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
     const selectedCourse = availableCourses.find(
       (course) => course.courseName === editData.courseDetails.selectedCourse
     );
-    return selectedCourse?.streams || [];
+    // Streams can be objects ({ name, price, isPaidOnly }); the dropdown needs plain names
+    return (selectedCourse?.streams || []).map(s => typeof s === 'object' ? s.name : s).filter(Boolean);
   };
 
   // Get campuses for selected college
@@ -483,48 +485,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
     }
   };
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "DRAFT":
-      case "PENDING":
-      case "SUBMITTED":
-        return "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200";
-      case "IN_PROGRESS":
-      case "UNDER_REVIEW":
-        return "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200";
-      case "APPROVED":
-        return "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200";
-      case "COMPLETE":
-        return "bg-teal-100 text-teal-800";
-      case "REJECTED":
-        return "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200";
-      default:
-        return "bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200";
-    }
-  };
-
-  const getStatusText = (status) => {
-    console.log('🏷️ Converting status:', status, 'type:', typeof status);
-    switch (status) {
-      case "SUBMITTED":
-        return "Submitted";
-      case "DRAFT":
-      case "PENDING":
-        return "Pending";
-      case "IN_PROGRESS":
-      case "UNDER_REVIEW":
-        return "In Progress";
-      case "APPROVED":
-        return "Approved";
-      case "COMPLETE":
-        return "Completed";
-      case "REJECTED":
-        return "Rejected";
-      default:
-        console.log('❌ Unknown status found:', status);
-        return status || "Unknown";
-    }
-  };
+  // Shared labels/colours: only Draft, Rejected, Submitted, Under Review, Approved, Complete
+  const getStatusColor = (status) => getStatusBadgeClasses(normalizeApplicationStatus(status));
+  const getStatusText = (status) => getApplicationStatusLabel(status);
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-IN", {
@@ -547,12 +510,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
       student.applicationId?.toLowerCase().includes(filters.search.toLowerCase());
 
     // Status filter - handle multiple status values
-    const matchesStatus = !filters.status || 
-      student.status === filters.status ||
-      student.status === filters.status.toUpperCase() ||
-      (filters.status === 'PENDING' && (student.status === 'SUBMITTED' || student.status === 'PENDING')) ||
-      (filters.status === 'IN_PROGRESS' && (student.status === 'UNDER_REVIEW' || student.status === 'IN_PROGRESS')) ||
-      (filters.status === 'COMPLETED' && student.status === 'COMPLETE');
+    const matchesStatus = !filters.status ||
+      normalizeApplicationStatus(student.status) === normalizeApplicationStatus(filters.status);
 
     // Course filter
     const matchesCourse =
@@ -691,7 +650,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Draft / Submitted</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {cardStats.pending}
               </p>
@@ -717,7 +676,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Complete</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
                 {cardStats.completed}
               </p>

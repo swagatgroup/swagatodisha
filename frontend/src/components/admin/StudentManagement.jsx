@@ -15,7 +15,7 @@ import {
 import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 import StaffDocumentUploader from '../shared/StaffDocumentUploader';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../shared/ApplicationDetailsModal';
-import { APPLICATION_STATUS_OPTIONS } from '../../utils/applicationStatuses';
+import { APPLICATION_STATUS_OPTIONS, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 
 // Helper function to convert and compress image to under 50KB JPG
 const compressImageToUnder50KB = async (photoUrl) => {
@@ -2234,7 +2234,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(student.status)}`}>
-                                                {student.status}
+                                                {getApplicationStatusLabel(student.status)}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">

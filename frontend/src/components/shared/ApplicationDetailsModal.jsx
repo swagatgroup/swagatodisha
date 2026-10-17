@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StaffDocumentUploader from './StaffDocumentUploader';
-import { canEditApplication } from '../../utils/applicationStatuses';
+import { canEditApplication, normalizeApplicationStatus, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 
 // One "View Application" used by all four dashboards. Content and layout are identical for every
 // role; roles differ only through `role` and the optional action slots that staff/super admin pass:
@@ -154,7 +154,7 @@ const ApplicationDetailsModal = ({
                         <div>
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Full Application Details</h3>
                             <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
-                                Application ID: {app.applicationId} | Status: <span className={`px-2 py-0.5 rounded font-semibold ${getStatusColor(app.status)}`}>{app.status}</span>
+                                Application ID: {app.applicationId} | Status: <span className={`px-2 py-0.5 rounded font-semibold ${getStatusColor(normalizeApplicationStatus(app.status))}`}>{getApplicationStatusLabel(app.status)}</span>
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ const ApplicationDetailsModal = ({
                     {/* Edit lock notice (everyone except Super Admin) */}
                     {!canEdit && (
                         <div className="mb-6 p-3 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 text-sm text-yellow-800 dark:text-yellow-200">
-                            This application is {app.status === 'UNDER_REVIEW' ? 'under review' : app.status.toLowerCase().replace('_', ' ')}. {isStaffSide ? 'Application details can no longer be edited; you can still review documents and change the status.' : 'It can no longer be edited and documents can no longer be changed.'}
+                            This application is {getApplicationStatusLabel(app.status).toLowerCase()}. {isStaffSide ? 'Application details can no longer be edited; you can still review documents and change the status.' : 'It can no longer be edited and documents can no longer be changed.'}
                         </div>
                     )}
 
@@ -376,7 +376,7 @@ const ApplicationDetailsModal = ({
                                 <Field label="Referral Code" value={app.referralCode} />
                                 <Field label="Submitted Date" value={formatDate(app.submittedAt || app.createdAt)} />
                                 <Field label="Approved Date" value={approvedDate ? formatDate(approvedDate) : 'N/A'} />
-                                <Field label="Current Stage" value={['APPROVED', 'REJECTED'].includes(app.status) ? app.status : (app.currentStage || app.status)} />
+                                <Field label="Current Stage" value={getApplicationStatusLabel(app.status)} />
                             </div>
                         </Section>
 

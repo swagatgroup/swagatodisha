@@ -17,7 +17,7 @@ import { showSuccess, showError, showConfirm, showLoading, closeLoading } from '
 import { getDocumentUrl } from '../../../utils/documentUtils';
 import { useSession } from '../../../contexts/SessionContext';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../../shared/ApplicationDetailsModal';
-import { canEditApplication } from '../../../utils/applicationStatuses';
+import { canEditApplication, getApplicationStatusLabel } from '../../../utils/applicationStatuses';
 
 const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     const { selectedSession } = useSession();
@@ -518,7 +518,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                 <div className="flex items-center space-x-2">
                     {getStatusIcon(effectiveStatus)}
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(effectiveStatus)}`}>
-                        {effectiveStatus}
+                        {getApplicationStatusLabel(effectiveStatus)}
                     </span>
                 </div>
             </div>
@@ -660,7 +660,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     <>
                                                         {getStatusIcon(effectiveStatus)}
                                                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(effectiveStatus)}`}>
-                                                            {effectiveStatus}
+                                                            {getApplicationStatusLabel(effectiveStatus)}
                                                         </span>
                                                     </>
                                                 );

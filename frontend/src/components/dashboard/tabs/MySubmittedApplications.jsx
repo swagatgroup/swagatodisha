@@ -6,6 +6,7 @@ import {
     showErrorToast,
     showConfirm,
 } from "../../../utils/sweetAlert";
+import { getApplicationStatusLabel } from "../../../utils/applicationStatuses";
 
 const MySubmittedApplications = () => {
     const [applications, setApplications] = useState([]);
@@ -201,7 +202,7 @@ const MySubmittedApplications = () => {
                                                 <span className="mr-1">
                                                     {getStatusIcon(application.status)}
                                                 </span>
-                                                {application.status?.replace("_", " ")}
+                                                {getApplicationStatusLabel(application.status)}
                                             </span>
                                         </div>
 

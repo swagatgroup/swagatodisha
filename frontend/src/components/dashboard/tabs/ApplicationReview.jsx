@@ -26,6 +26,7 @@ import { useSession } from '../../../contexts/SessionContext';
 import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
+import { getApplicationStatusLabel } from '../../../utils/applicationStatuses';
 
 const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
     const { selectedSession } = useSession();
@@ -1034,7 +1035,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                     </p>
                 </div>
                 <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor(application.status)}`}>
-                    {application.status}
+                    {getApplicationStatusLabel(application.status)}
                 </span>
             </div>
 
@@ -1616,7 +1617,7 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                         </p>
                                     </div>
                                     <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedApplication.status)}`}>
-                                        {selectedApplication.status}
+                                        {getApplicationStatusLabel(selectedApplication.status)}
                                     </span>
                                 </div>
 

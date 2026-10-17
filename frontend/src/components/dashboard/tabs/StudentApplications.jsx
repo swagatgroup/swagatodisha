@@ -13,6 +13,7 @@ import MySubmittedApplications from "./MySubmittedApplications";
 import ApplicationPDFGenerator from "../../forms/ApplicationPDFGenerator";
 import PaymentModalShell from "../../shared/PaymentModalShell";
 import ApplicationDetailsModal, { mergeUploadedDocument } from "../../shared/ApplicationDetailsModal";
+import { normalizeApplicationStatus, getApplicationStatusLabel } from "../../../utils/applicationStatuses";
 
 const StudentApplications = ({ onEditApplication }) => {
   const [applications, setApplications] = useState([]);
@@ -560,13 +561,13 @@ const StudentApplications = ({ onEditApplication }) => {
                           </h3>
                           <span
                             className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
-                              application.workflowStatus?.currentStage || application.status
+                              normalizeApplicationStatus(application.status)
                             )}`}
                           >
                             <span className="mr-2">
-                              {getStatusIcon(application.workflowStatus?.currentStage || application.status)}
+                              {getStatusIcon(normalizeApplicationStatus(application.status))}
                             </span>
-                            {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
+                            {getApplicationStatusLabel(application.status)}
                           </span>
                           {application.isOwnApplication && (
                             <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200">
@@ -746,13 +747,13 @@ const StudentApplications = ({ onEditApplication }) => {
                           </h3>
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                              application.workflowStatus?.currentStage || application.status
+                              normalizeApplicationStatus(application.status)
                             )}`}
                           >
                             <span className="mr-1">
-                              {getStatusIcon(application.workflowStatus?.currentStage || application.status)}
+                              {getStatusIcon(normalizeApplicationStatus(application.status))}
                             </span>
-                            {(application.workflowStatus?.currentStage || application.status || 'PENDING').replace(/_/g, " ")}
+                            {getApplicationStatusLabel(application.status)}
                           </span>
                           {application.isOwnApplication && (
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200 ml-2">

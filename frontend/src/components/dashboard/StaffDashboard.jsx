@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import StatusFilterRow from './components/StatusFilterRow';
-import { APPLICATION_STATUS_OPTIONS, buildStatusChartData } from '../../utils/applicationStatuses';
+import { APPLICATION_STATUS_OPTIONS, buildStatusChartData, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from 'recharts';
 import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserPlusIcon, ClipboardDocumentCheckIcon, CreditCardIcon, KeyIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
@@ -668,7 +668,7 @@ const EnhancedStaffDashboard = () => {
                                 <div><span className="font-medium text-gray-500 dark:text-gray-400">Phone:</span><p className="text-gray-900 dark:text-gray-100 mt-1">{selectedStudent.phone}</p></div>
                                 <div><span className="font-medium text-gray-500 dark:text-gray-400">Course:</span><p className="text-gray-900 dark:text-gray-100 mt-1">{selectedStudent.course || (selectedStudent.courseDetails && selectedStudent.courseDetails.selectedCourse) || 'N/A'}</p></div>
                                 <div><span className="font-medium text-gray-500 dark:text-gray-400">Aadhar:</span><p className="text-gray-900 dark:text-gray-100 mt-1 font-mono">{selectedStudent.aadharNumber}</p></div>
-                                <div><span className="font-medium text-gray-500 dark:text-gray-400">Status:</span><p className="mt-1"><span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(selectedStudent.status)}>{selectedStudent.status}</span></p></div>
+                                <div><span className="font-medium text-gray-500 dark:text-gray-400">Status:</span><p className="mt-1"><span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(selectedStudent.status)}>{getApplicationStatusLabel(selectedStudent.status)}</span></p></div>
                             </div>
                             <div className="mt-6 flex flex-wrap gap-2 justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-4">
                                 <div className="flex flex-wrap items-center gap-2">

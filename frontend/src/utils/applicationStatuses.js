@@ -27,3 +27,23 @@ export const buildStatusChartData = (counts = {}) =>
 export const EDITABLE_STATUSES = ['DRAFT', 'REJECTED', 'SUBMITTED'];
 export const canEditApplication = (role, status) =>
     role === 'super_admin' || EDITABLE_STATUSES.includes(status);
+
+// Only six application statuses are ever shown: Draft, Rejected, Submitted, Under Review, Approved, Complete.
+// Legacy/internal values are shown as the status they belong to.
+const STATUS_ALIASES = {
+    PENDING: 'SUBMITTED',
+    IN_PROGRESS: 'UNDER_REVIEW',
+    COMPLETION_REQUESTED: 'APPROVED',
+    COMPLETED: 'COMPLETE',
+};
+
+export const normalizeApplicationStatus = (status) => {
+    const key = (status || '').toString().toUpperCase().trim();
+    return STATUS_ALIASES[key] || key || 'DRAFT';
+};
+
+export const getApplicationStatusLabel = (status) => {
+    const key = normalizeApplicationStatus(status);
+    const match = APPLICATION_STATUS_OPTIONS.find(o => o.key === key);
+    return match ? match.label : key.charAt(0) + key.slice(1).toLowerCase().replace(/_/g, ' ');
+};
