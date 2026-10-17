@@ -5,6 +5,8 @@ import { showSuccess, showError } from '../../../utils/sweetAlert';
 import { XMarkIcon, CurrencyRupeeIcon, DocumentArrowUpIcon } from '@heroicons/react/24/outline';
 import QRPaymentSystem from './QRPaymentSystem';
 
+import PaymentModalShell from '../../shared/PaymentModalShell';
+
 const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
     const [financialStatus, setFinancialStatus] = useState({
         totalFees: 0,
@@ -180,31 +182,11 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black bg-opacity-50">
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="bg-white dark:bg-[#231A2E] rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
-                >
-                    <div className="flex items-center justify-between p-6 border-b">
-                        <div>
-                            <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                                Financials: {student.personalDetails?.fullName || 'Student'}
-                            </h2>
-                            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
-                                Manage installments and upload slips
-                            </p>
-                        </div>
-                        <button
-                            onClick={onClose}
-                            className="p-2 text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 rounded-full hover:bg-gray-100"
-                        >
-                            <XMarkIcon className="w-6 h-6" />
-                        </button>
-                    </div>
-
-                    <div className="p-6 overflow-y-auto flex-1 bg-gray-50 dark:bg-[#1A1212]">
+            <PaymentModalShell
+                title={`Financials: ${student.personalDetails?.fullName || 'Student'}`}
+                subtitle="Manage installments and upload slips"
+                onClose={onClose}
+            >
                         {loading ? (
                             <div className="flex items-center justify-center h-32">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A]"></div>
@@ -447,9 +429,7 @@ const AgentStudentFinancialsModal = ({ student, onClose, onUpdate }) => {
                         <div className="mt-8 mb-4 border-t border-gray-200 pt-6">
                             <QRPaymentSystem qrCodeImage={qrCodeImage} amount={financialStatus.dueAmount} />
                         </div>
-                    </div>
-                </motion.div>
-            </div>
+            </PaymentModalShell>
         </AnimatePresence>
     );
 };

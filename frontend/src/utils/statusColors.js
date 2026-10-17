@@ -34,11 +34,6 @@ export const STATUS_COLORS = {
         text: 'text-red-800',
         hex: '#EF4444'
     },
-    CANCELLED: {
-        bg: 'bg-[#F0E6FA]',
-        text: 'text-purple-800',
-        hex: '#A855F7'
-    },
     PENDING: {
         bg: 'bg-orange-100',
         text: 'text-orange-800',

@@ -17,10 +17,10 @@ const MySubmittedApplications = () => {
 
     const statusOptions = [
         { value: "all", label: "All Applications", color: "gray" },
+        { value: "REJECTED", label: "Rejected", color: "red" },
         { value: "SUBMITTED", label: "Submitted", color: "blue" },
         { value: "UNDER_REVIEW", label: "Under Review", color: "yellow" },
         { value: "APPROVED", label: "Approved", color: "green" },
-        { value: "REJECTED", label: "Rejected", color: "red" },
     ];
 
     useEffect(() => {

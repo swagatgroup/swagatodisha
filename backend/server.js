@@ -353,6 +353,16 @@ app.post('/api/application/create', protect, async (req, res) => {
                 });
             }
         }
+        const selectedCourseName = req.body.courseDetails?.selectedCourse;
+        if (selectedCourseName && selectedCollegeId && mongoose.Types.ObjectId.isValid(selectedCollegeId)) {
+            const CollegeCourse = require('./models/CollegeCourse');
+            if (await CollegeCourse.exists({ college: selectedCollegeId, courseName: selectedCourseName, isActive: false })) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'The selected course is not accepting applications. Please choose another course.'
+                });
+            }
+        }
 
         // Check if user already has an application (only for students)
         if (req.user.role === 'student') {

@@ -18,6 +18,10 @@ import AgentPaymentsTab from "./tabs/AgentPaymentsTab";
 import ReferralDashboard from "./tabs/ReferralDashboard";
 import ProgressPieChart from "./ProgressPieChart";
 import PaymentPieChart from "./PaymentPieChart";
+import StatusFilterRow from "./components/StatusFilterRow";
+import TablePagination from "../shared/TablePagination";
+import ApplicationDetailsModal, { mergeUploadedDocument } from "../shared/ApplicationDetailsModal";
+import { APPLICATION_STATUS_OPTIONS, buildStatusChartData, canEditApplication } from "../../utils/applicationStatuses";
 import {
   showSuccess,
   showError,
@@ -57,7 +61,7 @@ const EnhancedAgentDashboard = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 15;
+  const itemsPerPage = 20;
 
   const isLoadingRef = useRef(false);
 
@@ -182,6 +186,27 @@ const EnhancedAgentDashboard = () => {
     }
   };
 
+  // COMPLETION_REQUESTED sits between Approved and Complete; count/filter it as Approved
+  const normalizeStatus = (status) => (status === 'COMPLETION_REQUESTED' ? 'APPROVED' : status);
+
+  const matchesAgentView = (student) =>
+    agentView === 'combined' ||
+    (agentView === 'dashboard' && student.relationshipType !== 'referral') ||
+    (agentView === 'referral' && student.relationshipType === 'referral');
+
+  // Status counts come from the same list the table shows, so they always match the table and sum to Total
+  const viewStudents = students.filter(matchesAgentView);
+  const countStatus = (status) => viewStudents.filter(s => normalizeStatus(s.status) === status).length;
+  const statusCounts = {
+    total:       viewStudents.length,
+    draft:       countStatus('DRAFT'),
+    rejected:    countStatus('REJECTED'),
+    submitted:   countStatus('SUBMITTED'),
+    underReview: countStatus('UNDER_REVIEW'),
+    approved:    countStatus('APPROVED'),
+    complete:    countStatus('COMPLETE'),
+  };
+
   // Filter students for inline dashboard table
   const filteredStudents = students.filter(student => {
     const name = student.fullName || student.personalDetails?.fullName || '';
@@ -195,17 +220,12 @@ const EnhancedAgentDashboard = () => {
       phone.includes(searchTerm) ||
       appNumber.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesStatus = studentTableFilter === 'all' || student.status === studentTableFilter;
+    const matchesStatus = studentTableFilter === 'all' || normalizeStatus(student.status) === studentTableFilter;
 
     const course = student.course || student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '';
     const matchesCourse = filterCourse === 'all' || course === filterCourse;
 
-    const matchesView =
-      agentView === 'combined' ||
-      (agentView === 'dashboard' && student.relationshipType !== 'referral') ||
-      (agentView === 'referral' && student.relationshipType === 'referral');
-
-    return matchesSearch && matchesStatus && matchesCourse && matchesView;
+    return matchesSearch && matchesStatus && matchesCourse && matchesAgentView(student);
   });
 
   const totalPages = Math.ceil(filteredStudents.length / itemsPerPage) || 1;
@@ -219,20 +239,7 @@ const EnhancedAgentDashboard = () => {
   const renderDashboardContent = () => {
     switch (activeTab) {
       case "dashboard": {
-        const viewData = {
-          combined: {
-            total:       stats.totalStudents,
-            draft:       stats.draftStudents,
-            submitted:   stats.pendingStudents,
-            underReview: stats.underReviewStudents,
-            approved:    stats.approvedStudents,
-            rejected:    stats.rejectedStudents,
-            complete:    stats.completedStudents,
-          },
-          dashboard: stats.dashboardRegistered || {},
-          referral:  stats.referralSignups     || {},
-        };
-        const active = viewData[agentView] || viewData.combined;
+        const active = statusCounts;
 
         return (
           <div className="space-y-6">
@@ -258,60 +265,6 @@ const EnhancedAgentDashboard = () => {
                 Register Student
               </button>
             </motion.div>
-
-            {/* Quick Summary Stat Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Total Students Card */}
-              <div
-                onClick={() => setActiveTab('students')}
-                className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#4A1D7A]/30 transition-all duration-300"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl">
-                    <UsersIcon className="h-6 w-6 text-[#4A1D7A] dark:text-[#9B6FCC]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Students</p>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.totalStudents}</p>
-                    <p className="text-xs text-gray-400 mt-1">Click to view all</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Application Status Card */}
-              <div
-                onClick={() => setActiveTab('application-status')}
-                className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#4A1D7A]/30 transition-all duration-300"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-teal-50 dark:bg-teal-900/20 rounded-xl">
-                    <ClipboardDocumentCheckIcon className="h-6 w-6 text-teal-600 dark:text-teal-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Approved / Active</p>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.approvedStudents + stats.completedStudents}</p>
-                    <p className="text-xs text-gray-400 mt-1">{stats.underReviewStudents} under review · {stats.pendingStudents} submitted</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Student Payments Card */}
-              <div
-                onClick={() => setActiveTab('payments')}
-                className="bg-white dark:bg-[#231A2E] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-white/5 cursor-pointer hover:shadow-md hover:border-[#4A1D7A]/30 transition-all duration-300"
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl">
-                    <CreditCardIcon className="h-6 w-6 text-green-600 dark:text-green-400" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Student Payments</p>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{stats.paymentStats?.completed || 0}</p>
-                    <p className="text-xs text-gray-400 mt-1">{stats.paymentStats?.partial || 0} partial · {stats.paymentStats?.pending || 0} pending</p>
-                  </div>
-                </div>
-              </div>
-            </div>
 
             {/* Assigned Manager Section */}
             {user?.assignedStaff && (
@@ -366,33 +319,11 @@ const EnhancedAgentDashboard = () => {
               </p>
 
               {/* Status Filter Buttons */}
-              <div className="grid grid-cols-3 sm:grid-cols-7 gap-2 md:gap-3 mb-6">
-                {[
-                  { key: 'all',          label: 'Total',        count: active.total,       activeClass: 'bg-gray-800 text-white',    inactiveClass: 'bg-white dark:bg-[#231A2E] text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700' },
-                  { key: 'DRAFT',        label: 'Draft',        count: active.draft,       activeClass: 'bg-gray-600 text-white',    inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' },
-                  { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,   activeClass: 'bg-[#4A1D7A] text-white',   inactiveClass: 'bg-indigo-50 dark:bg-gray-700 text-[#351458] dark:text-indigo-300 border border-indigo-100 dark:border-gray-600' },
-                  { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview, activeClass: 'bg-yellow-600 text-white',  inactiveClass: 'bg-yellow-50 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 border border-yellow-100 dark:border-gray-600' },
-                  { key: 'APPROVED',     label: 'Approved',     count: active.approved,    activeClass: 'bg-teal-500 text-white',    inactiveClass: 'bg-teal-50 dark:bg-gray-700 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-gray-600' },
-                  { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,    activeClass: 'bg-red-600 text-white',     inactiveClass: 'bg-red-50 dark:bg-gray-700 text-red-700 dark:text-red-300 border border-red-100 dark:border-gray-600' },
-                  { key: 'COMPLETE',     label: 'Complete',     count: active.complete,    activeClass: 'bg-green-600 text-white',   inactiveClass: 'bg-green-50 dark:bg-gray-700 text-green-800 dark:text-green-200 border border-green-100 dark:border-gray-600' },
-                ].map(({ key, label, count, activeClass, inactiveClass }) => {
-                  const isActive = studentTableFilter === key || (key === 'all' && studentTableFilter === 'all');
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => { setStudentTableFilter(key); setCurrentPage(1); }}
-                      className={`px-2 py-3 rounded-xl font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md ${
-                        isActive ? activeClass + ' shadow-lg scale-[1.02]' : inactiveClass
-                      }`}
-                    >
-                      <div className="flex flex-col items-center">
-                        <span className="text-xs font-medium mb-1 opacity-80">{label}</span>
-                        <span className="text-xl font-bold">{count || 0}</span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
+              <StatusFilterRow
+                counts={active}
+                activeKey={studentTableFilter}
+                onSelect={(key) => { setStudentTableFilter(key); setCurrentPage(1); }}
+              />
 
               {/* 2-Column Charts Grid: Application Progress + Payment Status Overview */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -401,14 +332,7 @@ const EnhancedAgentDashboard = () => {
                   <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 w-full text-center">Application Progress</h3>
                   <div className="w-full max-w-sm">
                     <ProgressPieChart
-                      chartData={[
-                        { label: 'Draft',        value: active.draft       || 0, color: '#6B7280', filterKey: 'DRAFT' },
-                        { label: 'Submitted',    value: active.submitted   || 0, color: '#6366F1', filterKey: 'SUBMITTED' },
-                        { label: 'Rejected',     value: active.rejected    || 0, color: '#EF4444', filterKey: 'REJECTED' },
-                        { label: 'Under Review', value: active.underReview || 0, color: '#EAB308', filterKey: 'UNDER_REVIEW' },
-                        { label: 'Approved',     value: active.approved    || 0, color: '#14B8A6', filterKey: 'APPROVED' },
-                        { label: 'Completed',    value: active.complete    || 0, color: '#22C55E', filterKey: 'COMPLETE' },
-                      ]}
+                      chartData={buildStatusChartData(active)}
                       onSectionClick={handleStatClick}
                     />
                   </div>
@@ -465,12 +389,9 @@ const EnhancedAgentDashboard = () => {
                     className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                   >
                     <option value="all">All Statuses</option>
-                    <option value="DRAFT">Draft</option>
-                    <option value="SUBMITTED">Submitted</option>
-                    <option value="UNDER_REVIEW">Under Review</option>
-                    <option value="APPROVED">Approved</option>
-                    <option value="REJECTED">Rejected</option>
-                    <option value="COMPLETE">Complete</option>
+                    {APPLICATION_STATUS_OPTIONS.map(o => (
+                      <option key={o.key} value={o.key}>{o.label}</option>
+                    ))}
                   </select>
                   <select
                     value={filterCourse}
@@ -546,6 +467,7 @@ const EnhancedAgentDashboard = () => {
                                   >
                                     View
                                   </button>
+                                  {canEditApplication('agent', student.status) && (
                                   <button
                                     onClick={() => {
                                       setSelectedStudent(student);
@@ -562,6 +484,7 @@ const EnhancedAgentDashboard = () => {
                                   >
                                     Edit
                                   </button>
+                                  )}
                                 </div>
                               </td>
                             </tr>
@@ -573,29 +496,13 @@ const EnhancedAgentDashboard = () => {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-between mt-6">
-                    <div className="text-sm text-gray-500">
-                      Page {currentPage} of {totalPages}
-                    </div>
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                        disabled={currentPage === 1}
-                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50"
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages))}
-                        disabled={currentPage === totalPages}
-                        className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-lg text-sm disabled:opacity-50"
-                      >
-                        Next
-                      </button>
-                    </div>
-                  </div>
-                )}
+                <TablePagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  itemsPerPage={itemsPerPage}
+                  totalItems={filteredStudents.length}
+                  onPageChange={setCurrentPage}
+                />
               </div>
             </motion.div>
           </div>
@@ -682,64 +589,27 @@ const EnhancedAgentDashboard = () => {
     >
       {renderDashboardContent()}
 
-      {/* Student Details Modal */}
+      {/* Student Details Modal (shared across all dashboards) */}
       {showDetailsModal && selectedStudent && (
-        <div className="fixed inset-0 z-50 overflow-y-auto" onClick={() => setShowDetailsModal(false)}>
-          <div className="flex items-center justify-center min-h-screen px-4">
-            <div className="fixed inset-0 bg-gray-500 bg-opacity-75"></div>
-            <div className="relative bg-white dark:bg-[#231A2E] rounded-2xl shadow-xl max-w-2xl w-full p-6 z-10" onClick={e => e.stopPropagation()}>
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Student Details</h3>
-                <button onClick={() => setShowDetailsModal(false)} className="text-gray-400 hover:text-gray-600">✕</button>
-              </div>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Full Name:</span>
-                  <p className="text-gray-900 dark:text-gray-100 mt-0.5">{selectedStudent.fullName || selectedStudent.personalDetails?.fullName || 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Application ID:</span>
-                  <p className="text-gray-900 dark:text-gray-100 mt-0.5">{selectedStudent.applicationId || 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Phone:</span>
-                  <p className="text-gray-900 dark:text-gray-100 mt-0.5">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Email:</span>
-                  <p className="text-gray-900 dark:text-gray-100 mt-0.5">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Aadhar Number:</span>
-                  <p className="text-gray-900 dark:text-gray-100 mt-0.5 font-mono">{selectedStudent.aadharNumber || selectedStudent.personalDetails?.aadharNumber || 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Course:</span>
-                  <p className="text-gray-900 dark:text-gray-100 mt-0.5">{selectedStudent.course || selectedStudent.courseDetails?.selectedCourse || selectedStudent.courseDetails?.courseName || 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Status:</span>
-                  <p className="mt-0.5">
-                    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedStudent.status)}`}>
-                      {selectedStudent.status}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <span className="font-medium text-gray-500 dark:text-gray-400">Registration Type:</span>
-                  <p className="text-gray-900 dark:text-gray-100 mt-0.5">
-                    {selectedStudent.relationshipType === 'referral' ? 'Referral Signup' : 'Direct Dashboard Registration'}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-6 flex justify-end">
-                <button onClick={() => setShowDetailsModal(false)} className="px-4 py-2 bg-[#4A1D7A] text-white rounded-xl text-sm font-medium">
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ApplicationDetailsModal
+          student={selectedStudent}
+          role="agent"
+          onClose={() => setShowDetailsModal(false)}
+          onDocumentUploaded={(doc) => {
+            setSelectedStudent(prev => mergeUploadedDocument(prev, doc));
+            setStudents(prev => prev.map(s => (s._id === selectedStudent._id ? mergeUploadedDocument(s, doc) : s)));
+          }}
+          onEdit={(student) => {
+            setShowDetailsModal(false);
+            setEditData({
+              personalDetails: student.personalDetails || {},
+              contactDetails:  student.contactDetails  || {},
+              courseDetails:   student.courseDetails   || {},
+              guardianDetails: student.guardianDetails || {}
+            });
+            setShowEditModal(true);
+          }}
+        />
       )}
 
       {/* Edit Modal */}

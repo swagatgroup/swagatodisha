@@ -1,4 +1,5 @@
 const express = require('express');
+const { canEditApplication, editLockedMessage } = require('../utils/applicationEditLock');
 const mongoose = require('mongoose');
 const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
@@ -1353,14 +1354,12 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
             });
         }
 
-        // Staff can edit applications in DRAFT, SUBMITTED, or UNDER_REVIEW
-        // Once approved/completed/cancelled, staff edits are blocked; Super Admin can edit any status
+        // Edit lock: staff can edit only before review starts (Draft, Rejected, Submitted); Super Admin can edit any status
         const isSuperAdmin = req.user.role === 'super_admin';
-        const editableStatuses = ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW'];
-        if (!isSuperAdmin && !editableStatuses.includes(application.status)) {
-            return res.status(400).json({
+        if (!canEditApplication(req.user.role, application.status)) {
+            return res.status(403).json({
                 success: false,
-                message: `Cannot edit application when status is ${application.status}. Staff can only edit applications when status is: ${editableStatuses.join(', ')}.`
+                message: editLockedMessage(application.status)
             });
         }
 
@@ -2112,6 +2111,90 @@ router.put('/:id/bank-verification', protect, authorize('super_admin', 'admin', 
             message: 'Server error while verifying bank details',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
+    }
+});
+
+// @desc    Convert a student between Paid and Free admission
+// @route   PUT /api/admin/students/:id/admission-type
+// @access  Private (Staff, Super Admin)
+// Paid → Free requires every document free admission needs; missing ones are returned so the
+// UI can ask staff to upload them (via /api/documents/upload) before retrying.
+router.put('/:id/admission-type', protect, authorize('staff', 'super_admin'), async (req, res) => {
+    try {
+        const { admissionType } = req.body;
+        if (!['free', 'paid'].includes(admissionType)) {
+            return res.status(400).json({ success: false, message: "admissionType must be 'free' or 'paid'" });
+        }
+
+        const application = await StudentApplication.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Student application not found' });
+        }
+
+        const current = application.courseDetails?.admissionType === 'free' ? 'free' : 'paid';
+        if (current === admissionType) {
+            return res.status(400).json({ success: false, message: `Student is already ${admissionType}` });
+        }
+
+        const { validateDocumentRequirements, calculateTotalFees } = require('../controllers/studentApplicationWorkflowController');
+
+        if (admissionType === 'free') {
+            const category = application.personalDetails?.category;
+            if (!['SC', 'ST', 'General', 'OBC'].includes(category)) {
+                return res.status(400).json({ success: false, message: `Free admission is not available for category ${category || 'N/A'}` });
+            }
+
+            // Paid-only course/stream can't be free
+            const CollegeCourse = require('../models/CollegeCourse');
+            const course = application.courseDetails?.selectedCollege && application.courseDetails?.selectedCourse
+                ? await CollegeCourse.findOne({ college: application.courseDetails.selectedCollege, courseName: application.courseDetails.selectedCourse }).lean()
+                : null;
+            const stream = course?.streams?.find(s => s.name === application.courseDetails?.stream);
+            if (course?.isPaidOnly || stream?.isPaidOnly) {
+                return res.status(400).json({ success: false, message: 'This course/stream is paid-only and cannot be converted to free' });
+            }
+
+            const { missing } = validateDocumentRequirements(application.documents || [], {
+                courseDetails: { admissionType: 'free' },
+                personalDetails: application.personalDetails
+            });
+            if (missing.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    code: 'MISSING_DOCUMENTS',
+                    message: 'Upload the documents required for free admission before converting',
+                    missing
+                });
+            }
+        }
+
+        application.courseDetails.admissionType = admissionType;
+
+        // Recalculate fees for the new admission type; payments already made are kept
+        const fees = await calculateTotalFees(application.courseDetails, application.personalDetails?.category);
+        if (!application.financialStatus) application.financialStatus = {};
+        application.financialStatus.totalFees = fees;
+        application.financialStatus.dueAmount = Math.max(fees - (application.financialStatus.paidAmount || 0), 0);
+
+        application.workflowHistory.push({
+            stage: application.currentStage,
+            status: application.status,
+            updatedBy: req.user._id,
+            action: 'SAVE_DRAFT',
+            remarks: `Admission type changed from ${current} to ${admissionType} by ${req.user.role}`,
+            timestamp: new Date()
+        });
+
+        await application.save();
+
+        res.json({
+            success: true,
+            message: `Student converted to ${admissionType === 'free' ? 'Free' : 'Paid'} admission`,
+            data: { admissionType, financialStatus: application.financialStatus }
+        });
+    } catch (error) {
+        console.error('Admission type conversion error:', error);
+        res.status(500).json({ success: false, message: 'Failed to change admission type' });
     }
 });
 

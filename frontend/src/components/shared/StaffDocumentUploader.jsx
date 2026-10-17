@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import api from '../../utils/api';
 import { showSuccess, showError } from '../../utils/sweetAlert';
 
-// Lets staff attach a document to an existing application (e.g. when the student's own
-// upload was never saved). Uses the standard upload endpoint with `studentId`, which stores
-// the file on the application as PENDING and replaces any earlier file of the same type.
-const StaffDocumentUploader = ({ applicationId, existingTypes = [], onUploaded }) => {
+// Attaches a document to an existing application (any role; the backend checks access and the
+// edit lock). Uses the standard upload endpoint with `studentId`, which stores the file on the
+// application as PENDING and replaces any earlier file of the same type.
+// With `replaceType` it renders a single "Replace" button for that document type.
+const StaffDocumentUploader = ({ applicationId, existingTypes = [], allowedTypes = null, replaceType = null, onUploaded }) => {
     const [documentTypes, setDocumentTypes] = useState([]);
-    const [documentType, setDocumentType] = useState('');
+    const [documentType, setDocumentType] = useState(replaceType || '');
     const [uploading, setUploading] = useState(false);
 
     useEffect(() => {
+        if (replaceType) return;
         api.get('/api/student-application/document-requirements')
             .then((response) => {
                 const reqs = response.data?.data?.requirements;
@@ -32,7 +34,7 @@ const StaffDocumentUploader = ({ applicationId, existingTypes = [], onUploaded }
             });
             if (!response.data?.success) throw new Error(response.data?.message);
             showSuccess('Document uploaded');
-            setDocumentType('');
+            setDocumentType(replaceType || '');
             onUploaded?.(response.data.data);
         } catch (error) {
             showError(error.response?.data?.message || error.message || 'Failed to upload document');
@@ -41,7 +43,26 @@ const StaffDocumentUploader = ({ applicationId, existingTypes = [], onUploaded }
         }
     };
 
-    const available = documentTypes.filter(t => !existingTypes.includes(t.key));
+    const available = documentTypes.filter(t => !existingTypes.includes(t.key) && (!allowedTypes || allowedTypes.includes(t.key)));
+
+    if (replaceType) {
+        return (
+            <label className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${uploading ? 'bg-gray-200 text-gray-500 pointer-events-none' : 'bg-[#F0E6FA] text-[#351458] hover:bg-purple-200 cursor-pointer'}`}>
+                <i className="fa-solid fa-arrow-up-from-bracket mr-1" aria-hidden="true"></i>
+                {uploading ? 'Uploading...' : 'Replace'}
+                <input
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => {
+                        handleFile(e.target.files?.[0]);
+                        e.target.value = '';
+                    }}
+                />
+            </label>
+        );
+    }
 
     return (
         <div className="flex flex-wrap items-center gap-2">

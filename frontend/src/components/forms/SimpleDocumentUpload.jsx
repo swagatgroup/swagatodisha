@@ -39,7 +39,7 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
         }
 
         // Apply dynamic rules based on admissionType and category
-        const baseRequired = ['passport_photo', 'aadhar_card', 'marksheet_10th'];
+        const baseRequired = ['passport_photo', 'aadhar_card', 'marksheet_10th', 'tenth_marksheet_certificate'];
         let requiredForThisStudent = [...baseRequired];
 
         if (admissionType === 'free') {

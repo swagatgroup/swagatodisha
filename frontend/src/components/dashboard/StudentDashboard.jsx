@@ -394,7 +394,7 @@ const StudentDashboard = () => {
                     </>
                 );
             case 'applications':
-                return <StudentApplications />;
+                return <StudentApplications onEditApplication={() => setActiveSidebarItem('registration')} />;
             case 'referrals':
                 return <ReferralDashboard />;
             case 'refer_friend':

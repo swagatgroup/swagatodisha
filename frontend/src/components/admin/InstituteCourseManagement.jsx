@@ -159,6 +159,31 @@ const InstituteCourseManagement = () => {
         }
     };
 
+    // One-click Active/Inactive toggle for courses. Inactive courses are hidden from the application form.
+    const [togglingCourseId, setTogglingCourseId] = useState(null);
+    const handleToggleCourseActive = async (course) => {
+        const nextActive = course.isActive === false;
+        const applyActive = (isActive) =>
+            setCourses(prev => prev.map(c => (c._id === course._id ? { ...c, isActive } : c)));
+
+        applyActive(nextActive); // optimistic
+        setTogglingCourseId(course._id);
+        try {
+            const response = await api.put(`/api/colleges/${selectedCollege._id}/courses/${course._id}`, { isActive: nextActive });
+            if (!response.data?.success) throw new Error(response.data?.message);
+            showSuccessToast(
+                nextActive
+                    ? `${course.courseName} is now active and visible in the application form`
+                    : `${course.courseName} is now inactive and hidden from the application form`
+            );
+        } catch (error) {
+            applyActive(!nextActive);
+            showErrorToast(error.response?.data?.message || error.message || 'Failed to update course status');
+        } finally {
+            setTogglingCourseId(null);
+        }
+    };
+
     const handleCourseSubmit = async (e) => {
         e.preventDefault();
         if (!selectedCollege) {
@@ -875,16 +900,24 @@ const InstituteCourseManagement = () => {
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">
                                                     {course.courseName}
                                                 </h4>
-                                                {course.isActive ? (
-                                                    <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 text-xs rounded-full">
-                                                        Active
-                                                    </span>
-                                                ) : (
-                                                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 text-xs rounded-full">
-                                                        Inactive
-                                                    </span>
-                                                )}
                                             </div>
+                                            <button
+                                                type="button"
+                                                role="switch"
+                                                aria-checked={course.isActive !== false}
+                                                aria-label={`${course.courseName}: ${course.isActive !== false ? 'Active' : 'Inactive'}`}
+                                                disabled={togglingCourseId === course._id}
+                                                onClick={() => handleToggleCourseActive(course)}
+                                                className="mt-2 inline-flex items-center gap-2 disabled:opacity-60"
+                                                title={course.isActive !== false ? 'Click to deactivate (hide from application form)' : 'Click to activate (show in application form)'}
+                                            >
+                                                <span className={`relative inline-flex h-5 w-9 flex-shrink-0 rounded-full transition-colors ${course.isActive !== false ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                                                    <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform ${course.isActive !== false ? 'translate-x-4' : ''}`} />
+                                                </span>
+                                                <span className={`text-xs font-medium ${course.isActive !== false ? 'text-green-700 dark:text-green-400' : 'text-gray-500 dark:text-gray-300'}`}>
+                                                    {course.isActive !== false ? 'Active' : 'Inactive'}
+                                                </span>
+                                            </button>
                                             {course.courseCode && (
                                                 <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
                                                     Code: {course.courseCode}

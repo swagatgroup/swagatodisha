@@ -363,7 +363,6 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             case 'UNDER_REVIEW': return 'text-yellow-600 dark:text-yellow-400';
             case 'REJECTED': return 'text-red-600 dark:text-red-400';
             case 'DRAFT': return 'text-gray-600 dark:text-gray-300';
-            case 'CANCELLED': return 'text-gray-600 dark:text-gray-300';
             default: return 'text-gray-600 dark:text-gray-300';
         }
     };
@@ -375,7 +374,6 @@ const RecentStudentsTable = ({ onStudentUpdate, initialFilter = 'all' }) => {
             case 'UNDER_REVIEW': return 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'REJECTED': return 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200 dark:bg-red-900/20 dark:text-red-400';
             case 'DRAFT': return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            case 'CANCELLED': return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
             default: return 'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
     };

@@ -77,9 +77,9 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
     // Make tabs reactive to state changes
     const getTabs = () => [
         { id: 'all_submission', name: 'All Submission', count: tabStats.all_submission, color: 'blue' },
+        { id: 'rejected', name: 'Rejected', count: tabStats.rejected, color: 'red' },
         { id: 'under_review', name: 'Under Review', count: tabStats.under_review, color: 'yellow' },
         { id: 'approved', name: 'Approved', count: tabStats.approved, color: 'green' },
-        { id: 'rejected', name: 'Rejected', count: tabStats.rejected, color: 'red' },
         { id: 'completion_requested', name: 'Completion Requests', count: tabStats.completion_requested, color: 'purple' }
     ];
 

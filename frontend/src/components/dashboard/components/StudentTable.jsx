@@ -4,6 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import api from '../../../utils/api';
 import Swal from 'sweetalert2';
 import { showSuccess, showError, showLoading, closeLoading, handleApiError } from '../../../utils/sweetAlert';
+import { APPLICATION_STATUS_OPTIONS } from '../../../utils/applicationStatuses';
 
 const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFilter = 'all' }) => {
     const { user } = useAuth();
@@ -532,12 +533,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:focus:ring-blue-400"
                     >
                         <option value="all">All Status</option>
-                        <option value="DRAFT">Draft</option>
-                        <option value="SUBMITTED">Submitted</option>
-                        <option value="UNDER_REVIEW">Under Review</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="COMPLETE">Complete</option>
+                        {APPLICATION_STATUS_OPTIONS.map(o => (
+                          <option key={o.key} value={o.key}>{o.label}</option>
+                        ))}
                     </select>
                     
                     <select
@@ -1535,14 +1533,9 @@ const StudentTable = ({ students, onStudentUpdate, showActions = true, initialFi
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                                             >
                                                 <option value="">Select Status</option>
-                                                <option value="DRAFT">Draft</option>
-                                                <option value="SUBMITTED">Submitted</option>
-                                                <option value="PENDING">Pending</option>
-                                                <option value="UNDER_REVIEW">Under Review</option>
-                                                <option value="IN_PROGRESS">In Progress</option>
-                                                <option value="APPROVED">Approved</option>
-                                                <option value="REJECTED">Rejected</option>
-                                                <option value="COMPLETE">Completed</option>
+                                                {APPLICATION_STATUS_OPTIONS.map(o => (
+                                                  <option key={o.key} value={o.key}>{o.label}</option>
+                                                ))}
                                             </select>
                                         </div>
                                     </div>

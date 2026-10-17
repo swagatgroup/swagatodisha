@@ -14,6 +14,8 @@ import {
 } from '../../utils/sweetAlert';
 import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 import StaffDocumentUploader from '../shared/StaffDocumentUploader';
+import ApplicationDetailsModal, { mergeUploadedDocument } from '../shared/ApplicationDetailsModal';
+import { APPLICATION_STATUS_OPTIONS, canEditApplication } from '../../utils/applicationStatuses';
 
 // Helper function to convert and compress image to under 50KB JPG
 const compressImageToUnder50KB = async (photoUrl) => {
@@ -150,7 +152,8 @@ const compressImageToUnder50KB = async (photoUrl) => {
 };
 
 
-const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId = null, staffId = null }) => {
+// pageSize/showListTypeFilter/title let dashboards reuse this table (e.g. Recent Students: last 5, Our/Direct/Both)
+const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'main', agentId = null, staffId = null, pageSize = 20, showListTypeFilter = false, title = null, subtitle = null }) => {
     const { selectedSession } = useSession();
     const { user } = useAuth();
     const [students, setStudents] = useState([]);
@@ -161,7 +164,9 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [totalItems, setTotalItems] = useState(0);
-    const [itemsPerPage, setItemsPerPage] = useState(20);
+    const [itemsPerPage, setItemsPerPage] = useState(pageSize);
+    const [listType, setListType] = useState(listTypeProp);
+    useEffect(() => { setListType(listTypeProp); }, [listTypeProp]);
     const [selectedStudent, setSelectedStudent] = useState(null);
     const [showDetailsModal, setShowDetailsModal] = useState(false);
     const [showStatusModal, setShowStatusModal] = useState(false);
@@ -237,13 +242,13 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
 
     // Apply initial filter when component mounts or filter changes
     useEffect(() => {
-        if (initialFilter && initialFilter !== 'all') {
+        if (initialFilter) {
             console.log('🔍 StudentManagement: Applying initial filter:', initialFilter);
             // Map COMPLETED to APPROVED for filter (completed = approved)
             const filterToApply = initialFilter === 'COMPLETED' ? 'APPROVED' : initialFilter;
             setFilterStatus(filterToApply);
             // Trigger a reload if we have a session
-            if (selectedSession) {
+            if (selectedSession && initialFilter !== 'all') {
                 setTimeout(() => {
                     fetchStudents();
                 }, 100);
@@ -337,6 +342,45 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
         filterStream, filterCampus, filterAdmissionType, filterSubmitterRole, selectedSession,
         sortBy, listType, currentPage
     ]);
+
+    // Paid <-> Free conversion. Paid -> Free is refused by the server until every document free
+    // admission needs is uploaded; the missing list is shown with uploaders in the student view.
+    const [convertingAdmission, setConvertingAdmission] = useState(false);
+    const [conversionMissingDocs, setConversionMissingDocs] = useState(null);
+    useEffect(() => { setConversionMissingDocs(null); }, [selectedStudent?._id]);
+    const handleConvertAdmissionType = async (admissionType) => {
+        if (!selectedStudent) return;
+        if (admissionType === 'paid') {
+            const confirm = await Swal.fire({
+                icon: 'question',
+                title: 'Convert to Paid?',
+                text: 'Course fees will be recalculated for paid admission.',
+                showCancelButton: true,
+                confirmButtonText: 'Convert'
+            });
+            if (!confirm.isConfirmed) return;
+        }
+        try {
+            setConvertingAdmission(true);
+            const response = await api.put(`/api/admin/students/${selectedStudent._id}/admission-type`, { admissionType });
+            setConversionMissingDocs(null);
+            setSelectedStudent(prev => ({
+                ...prev,
+                courseDetails: { ...prev.courseDetails, admissionType },
+                financialStatus: response.data?.data?.financialStatus || prev.financialStatus
+            }));
+            fetchStudents();
+            Swal.fire({ icon: 'success', title: 'Converted', text: response.data?.message, timer: 2000, showConfirmButton: false });
+        } catch (error) {
+            if (error.response?.data?.code === 'MISSING_DOCUMENTS') {
+                setConversionMissingDocs(error.response.data.missing || []);
+            } else {
+                Swal.fire({ icon: 'error', title: 'Error', text: error.response?.data?.message || 'Failed to change admission type' });
+            }
+        } finally {
+            setConvertingAdmission(false);
+        }
+    };
 
     const fetchRejectionReasons = async () => {
         try {
@@ -609,7 +653,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
 
             const params = new URLSearchParams({
                 page: currentPage,
-                limit: 20,
+                limit: pageSize,
                 session: selectedSession, // REQUIRED - always pass session
                 sortBy: backendSortBy,
                 sortOrder: backendSortOrder,
@@ -643,7 +687,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                 const pagination = response.data.data.pagination || {};
                 setTotalPages(pagination.totalPages || 1);
                 setTotalItems(pagination.totalItems || 0);
-                setItemsPerPage(pagination.itemsPerPage || 20);
+                setItemsPerPage(pagination.itemsPerPage || pageSize);
                 setFilters(response.data.data.filters || {
                     statuses: ['DRAFT', 'SUBMITTED', 'UNDER_REVIEW', 'APPROVED', 'REJECTED'],
                     courses: [],
@@ -1355,7 +1399,6 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             case 'UNDER_REVIEW': return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
             case 'REJECTED': return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
             case 'DRAFT': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
-            case 'CANCELLED': return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
             case 'COMPLETE': return 'bg-[#F0E6FA] text-purple-800 dark:bg-[#231A2E]/20 dark:text-[#9B6FCC]';
             default: return 'bg-gray-100 text-gray-800 dark:bg-[#1A1212]/20 dark:text-gray-300';
         }
@@ -1598,14 +1641,25 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {listType === 'direct' ? 'Direct Students' : 'Our Students'}
+                        {title || (listType === 'direct' ? 'Direct Students' : 'Our Students')}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                        {listType === 'direct' 
+                        {subtitle || (listType === 'direct' 
                             ? 'View and manage self-registered students and student-to-student referrals' 
-                            : 'View and manage all verified student applications from agents, staff, and super admins'}
+                            : 'View and manage all verified student applications from agents, staff, and super admins')}
                     </p>
                 </div>
+                {showListTypeFilter && (
+                    <select
+                        value={listType}
+                        onChange={(e) => setListType(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                    >
+                        <option value="all">Both</option>
+                        <option value="main">Our Students</option>
+                        <option value="direct">Direct Students</option>
+                    </select>
+                )}
                 <div className="text-sm text-gray-500 dark:text-gray-300">
                     {totalItems > 0 ? (
                         <>
@@ -1669,8 +1723,8 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     >
                         <option value="all">All Status</option>
-                        {filters.statuses?.map(status => (
-                            <option key={status} value={status}>{status}</option>
+                        {APPLICATION_STATUS_OPTIONS.map(o => (
+                            <option key={o.key} value={o.key}>{o.label}</option>
                         ))}
                     </select>
                     <select
@@ -2195,6 +2249,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                     </svg>
                                                 </button>
 
+                                                {canEditApplication(user?.role, student.status) && (
                                                 <button
                                                     onClick={async () => {
                                                         try {
@@ -2317,6 +2372,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
                                                 </button>
+                                                )}
                                                 <button
                                                     onClick={() => {
                                                         const getCampusId = (campus) => {
@@ -2463,731 +2519,248 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                 </div>
             )}
 
-            {/* Full Application Details Modal */}
+            {/* Full Application Details Modal (shared across all dashboards) */}
             {showDetailsModal && selectedStudent && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6">
-                            {/* Header */}
-                            <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                                        Full Application Details
-                                    </h3>
-                                    <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
-                                        Application ID: {selectedStudent.applicationId} | Status: <span className={`font-semibold ${getStatusColor(selectedStudent.status)}`}>{selectedStudent.status}</span>
+                <ApplicationDetailsModal
+                    student={selectedStudent}
+                    role={user?.role}
+                    colleges={colleges}
+                    onClose={() => setShowDetailsModal(false)}
+                    onDocumentUploaded={(doc) => {
+                        setSelectedStudent(prev => mergeUploadedDocument(prev, doc));
+                        fetchStudents();
+                    }}
+                    courseExtras={
+                        <>
+                            <button
+                                type="button"
+                                disabled={convertingAdmission}
+                                onClick={() => handleConvertAdmissionType(selectedStudent.courseDetails?.admissionType === 'free' ? 'paid' : 'free')}
+                                className="text-sm px-3 py-1 bg-[#F0E6FA] text-[#351458] hover:bg-purple-200 rounded-md disabled:opacity-50"
+                            >
+                                {convertingAdmission ? 'Converting...' : `Convert to ${selectedStudent.courseDetails?.admissionType === 'free' ? 'Paid' : 'Free'}`}
+                            </button>
+                            {conversionMissingDocs && (
+                                <div className="w-full mt-3 p-3 border border-orange-200 dark:border-orange-900/40 rounded-lg bg-orange-50 dark:bg-orange-900/10">
+                                    <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                        {conversionMissingDocs.length > 0
+                                            ? 'Upload these documents required for free admission to complete the conversion:'
+                                            : 'All required documents are uploaded. Complete the conversion now.'}
                                     </p>
-                                </div>
-                                <button
-                                    onClick={() => setShowDetailsModal(false)}
-                                    className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-300"
-                                >
-                                    <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-
-                            <div className="space-y-6">
-                                {/* Personal Information */}
-                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                                        <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
-                                        Personal Information
-                                    </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Full Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.fullName || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Father's Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.fathersName || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Mother's Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.mothersName || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Gender</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.gender || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Date of Birth</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                {selectedStudent.personalDetails?.dateOfBirth 
-                                                    ? formatDate(selectedStudent.personalDetails.dateOfBirth) 
-                                                    : 'N/A'}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Aadhar Number</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.aadharNumber || selectedStudent.aadharNumber || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Category</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.category || selectedStudent.personalDetails?.status || selectedStudent.category || 'N/A'}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Contact Information */}
-                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                                        <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                        </svg>
-                                        Contact Information
-                                    </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Phone Number</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.phone || selectedStudent.contactDetails?.primaryPhone || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Email</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.email || selectedStudent.contactDetails?.email || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">WhatsApp Number</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.contactDetails?.whatsappNumber || 'N/A'}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Address Information */}
-                                {(selectedStudent.contactDetails?.permanentAddress || selectedStudent.contactDetails?.currentAddress || selectedStudent.contactDetails?.address) && (
-                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                        <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                                            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            </svg>
-                                            Address Information
-                                        </h4>
-                                        <div className="space-y-4">
-                                            {/* Permanent Address */}
-                                            {(selectedStudent.contactDetails?.permanentAddress || (selectedStudent.contactDetails?.address && selectedStudent.contactDetails?.city)) && (
-                                                <div>
-                                                    <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Permanent Address</h5>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div className="md:col-span-2">
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Street Address</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails?.permanentAddress?.street || selectedStudent.contactDetails?.address || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">City</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails?.permanentAddress?.city || selectedStudent.contactDetails?.city || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">State</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails?.permanentAddress?.state || selectedStudent.contactDetails?.state || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Pincode</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails?.permanentAddress?.pincode || selectedStudent.contactDetails?.pincode || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">District</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails?.district || selectedStudent.contactDetails?.permanentAddress?.district || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Country</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails?.permanentAddress?.country || 'India'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                            {/* Current Address */}
-                                            {selectedStudent.contactDetails?.currentAddress?.street && (
-                                                <div>
-                                                    <h5 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Current Address</h5>
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                        <div className="md:col-span-2">
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Street Address</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails.currentAddress.street || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">City</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails.currentAddress.city || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">State</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails.currentAddress.state || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Pincode</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails.currentAddress.pincode || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">District</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails?.currentAddress?.district || 'N/A'}
-                                                            </p>
-                                                        </div>
-                                                        <div>
-                                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Country</label>
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                                {selectedStudent.contactDetails.currentAddress.country || 'India'}
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Course Information */}
-                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                                        <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                        </svg>
-                                        Course Details
-                                    </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Institution Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                 {(() => {
-                                                     const inst = selectedStudent.courseDetails?.institutionName || selectedStudent.institutionName;
-                                                     if (inst) {
-                                                         if (typeof inst === 'object' && inst !== null) return inst.name || inst.institutionName || 'Swagat Group of Institutions';
-                                                         if (/^[0-9a-fA-F]{24}$/.test(inst)) {
-                                                             const matched = colleges.find(c => c._id === inst);
-                                                             if (matched) return matched.name;
-                                                         }
-                                                         return inst;
-                                                     }
-                                                     const college = selectedStudent.courseDetails?.selectedCollege;
-                                                     if (college) {
-                                                         if (typeof college === 'object' && college !== null) return college.name || college.institutionName || 'Swagat Group of Institutions';
-                                                         if (/^[0-9a-fA-F]{24}$/.test(college)) {
-                                                             const matched = colleges.find(c => c._id === college);
-                                                             if (matched) return matched.name;
-                                                         }
-                                                         return college;
-                                                     }
-                                                     return 'Swagat Group of Institutions';
-                                                 })()}
-                                             </p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Course Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.selectedCourse || selectedStudent.course || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Stream</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.courseDetails?.stream || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Campus</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                {selectedStudent.courseDetails?.campus?.name || 
-                                                 (typeof selectedStudent.courseDetails?.campus === 'string' ? selectedStudent.courseDetails.campus : '') || 
-                                                 'N/A'}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Guardian Information */}
-                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                                        <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                        </svg>
-                                        Guardian Information
-                                    </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Name</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianName || selectedStudent.guardianName || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Phone</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianPhone || selectedStudent.guardianPhone || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Relation</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.relationship || selectedStudent.guardianDetails?.guardianRelation || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Guardian Email</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.guardianDetails?.guardianEmail || 'N/A'}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Financial Information */}
-                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center justify-between">
-                                        <div className="flex items-center">
-                                            <svg className="h-5 w-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            Financial Information
-                                        </div>
-                                        {['APPROVED', 'COMPLETE'].includes(selectedStudent.status) && (
-                                            <button
-                                                onClick={() => {
-                                                    setEditingCourseFee(!editingCourseFee);
-                                                    if (!editingCourseFee) {
-                                                        setCourseFeeInput(selectedStudent.financialStatus?.totalFees || '');
-                                                    }
-                                                }}
-                                                className="text-sm px-3 py-1 bg-[#F0E6FA] text-[#351458] hover:bg-purple-200 rounded-md"
-                                            >
-                                                {editingCourseFee ? 'Cancel' : 'Set Course Fee'}
-                                            </button>
-                                        )}
-                                    </h4>
-
-                                    {editingCourseFee && (
-                                        <form onSubmit={handleUpdateCourseFee} className="mb-4 p-4 border border-[#D0E8F0] bg-white rounded-lg">
-                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Total Course Fee (₹)</label>
-                                            <div className="flex gap-2">
-                                                <input
-                                                    type="number"
-                                                    value={courseFeeInput}
-                                                    onChange={(e) => setCourseFeeInput(e.target.value)}
-                                                    placeholder="Enter total course fee"
-                                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                                                    required
-                                                />
-                                                <button
-                                                    type="submit"
-                                                    disabled={savingCourseFee}
-                                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50"
-                                                >
-                                                    {savingCourseFee ? 'Saving...' : 'Save'}
-                                                </button>
-                                            </div>
-                                        </form>
-                                    )}
-
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Course Fee</label>
-                                            <p className="text-lg font-bold text-gray-900 dark:text-gray-100">
-                                                ₹{selectedStudent.financialStatus?.totalFees || 0}
-                                            </p>
-                                        </div>
-                                        <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Total Paid</label>
-                                            <p className="text-lg font-bold text-green-600">
-                                                ₹{selectedStudent.financialStatus?.paidAmount || 0}
-                                            </p>
-                                        </div>
-                                        <div className="bg-white dark:bg-[#231A2E] p-3 rounded border border-gray-200 dark:border-gray-700">
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Due Amount</label>
-                                            <p className="text-lg font-bold text-red-600">
-                                                ₹{selectedStudent.financialStatus?.dueAmount || 0}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Documents */}
-                                {(!Array.isArray(selectedStudent.documents) || selectedStudent.documents.length === 0) && (
-                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                        <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-2 flex items-center">
-                                            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                            </svg>
-                                            Uploaded Documents (0)
-                                        </h4>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">
-                                            No documents are saved on this application. Upload the student's documents below;
-                                            they are added as pending for review.
-                                        </p>
-                                        <StaffDocumentUploader
-                                            applicationId={selectedStudent._id}
-                                            existingTypes={[]}
-                                            onUploaded={(doc) => {
-                                                setSelectedStudent(prev => ({
-                                                    ...prev,
-                                                    documents: [...(Array.isArray(prev.documents) ? prev.documents : []), { ...doc, uploadedAt: new Date().toISOString() }]
-                                                }));
-                                                fetchStudents();
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                                {selectedStudent.documents && selectedStudent.documents.length > 0 && (
-                                    <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                        <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                                            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                            </svg>
-                                            Uploaded Documents ({selectedStudent.documents.length})
-                                        </h4>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {selectedStudent.documents.map((doc, index) => (
-                                                <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 bg-white dark:bg-[#231A2E]">
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex-1">
-                                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{doc.documentType || doc.fileName}</p>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
-                                                                Status: <span className={`font-semibold ${doc.status === 'APPROVED' ? 'text-green-600' : doc.status === 'REJECTED' ? 'text-red-600' : 'text-yellow-600'}`}>
-                                                                    {doc.status || 'PENDING'}
-                                                                </span>
-                                                            </p>
-                                                            {doc.uploadedAt && (
-                                                                <p className="text-xs text-gray-500 dark:text-gray-300">
-                                                                    Uploaded: {formatDate(doc.uploadedAt)}
-                                                                </p>
-                                                            )}
-                                                        </div>
-                                                        {doc.filePath && (
-                                                            <a
-                                                                href={doc.filePath}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="ml-2 text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]"
-                                                            >
-                                                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                                </svg>
-                                                            </a>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
-                                            <p className="text-xs font-medium text-gray-500 dark:text-gray-300 mb-2">Add a missing document</p>
+                                    {conversionMissingDocs.map(doc => (
+                                        <div key={doc.key} className="mt-3">
+                                            <p className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">{doc.label}</p>
                                             <StaffDocumentUploader
                                                 applicationId={selectedStudent._id}
-                                                existingTypes={selectedStudent.documents.map(d => d.documentType)}
-                                                onUploaded={(doc) => {
+                                                allowedTypes={doc.anyOf || [doc.key]}
+                                                onUploaded={(uploaded) => {
                                                     setSelectedStudent(prev => ({
                                                         ...prev,
                                                         documents: [
-                                                            ...prev.documents.filter(d => d.documentType !== doc.documentType),
-                                                            { ...doc, uploadedAt: new Date().toISOString() }
+                                                            ...(Array.isArray(prev.documents) ? prev.documents : []).filter(d => d.documentType !== uploaded.documentType),
+                                                            { ...uploaded, uploadedAt: new Date().toISOString() }
                                                         ]
                                                     }));
-                                                    fetchStudents();
+                                                    setConversionMissingDocs(prev => prev.filter(m => !(m.anyOf || [m.key]).includes(uploaded.documentType)));
                                                 }}
                                             />
                                         </div>
-
-                                  {/* Financial / Bank Information */}
-                                  {selectedStudent.user && selectedStudent.user.financialDetails && selectedStudent.user.financialDetails.bankAccountNumber && (
-                                      <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                          <div className="flex justify-between items-start mb-4">
-                                              <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 flex items-center">
-                                                  <i className="fa-solid fa-building-columns text-[#387B95] mr-2"></i>
-                                                  Bank Information (For Payouts)
-                                              </h4>
-                                              <div>
-                                                  {selectedStudent.user.financialDetails.verificationStatus === 'VERIFIED' && (
-                                                      <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Verified</span>
-                                                  )}
-                                                  {selectedStudent.user.financialDetails.verificationStatus === 'PENDING' && (
-                                                      <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">Pending</span>
-                                                  )}
-                                                  {selectedStudent.user.financialDetails.verificationStatus === 'REJECTED' && (
-                                                      <span className="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">Rejected</span>
-                                                  )}
-                                              </div>
-                                          </div>
-                                          
-                                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                              <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Account Holder Name</label>
-                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.accountHolderName}</p>
-                                              </div>
-                                              <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Bank Name</label>
-                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.bankName}</p>
-                                              </div>
-                                              <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Account Number</label>
-                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.bankAccountNumber}</p>
-                                              </div>
-                                              <div>
-                                                  <label className="text-xs font-medium text-gray-500 dark:text-gray-300">IFSC Code</label>
-                                                  <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.user.financialDetails.ifscCode}</p>
-                                              </div>
-                                          </div>
-                                          
-                                          {selectedStudent.user.financialDetails.verificationStatus === 'REJECTED' && selectedStudent.user.financialDetails.verificationNotes && (
-                                              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-md">
-                                                  <p className="text-sm text-red-600 dark:text-red-400"><span className="font-semibold">Rejection Reason:</span> {selectedStudent.user.financialDetails.verificationNotes}</p>
-                                              </div>
-                                          )}
-
-                                          <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                              {selectedStudent.user.financialDetails.verificationStatus !== 'VERIFIED' && (
-                                                  <button 
-                                                      onClick={() => handleBankVerification('VERIFIED')}
-                                                      className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition-colors"
-                                                  >
-                                                      Verify Details
-                                                  </button>
-                                              )}
-                                              {selectedStudent.user.financialDetails.verificationStatus !== 'REJECTED' && (
-                                                  <button 
-                                                      onClick={() => {
-                                                          const reason = window.prompt('Enter rejection reason for bank details:');
-                                                          if (reason !== null && reason.trim() !== '') {
-                                                              handleBankVerification('REJECTED', reason);
-                                                          }
-                                                      }}
-                                                      className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 transition-colors"
-                                                  >
-                                                      Reject Details
-                                                  </button>
-                                              )}
-                                          </div>
-                                      </div>
-                                  )}
-
-                                        {/* Generate PDF/ZIP Buttons */}
-                                        {selectedStudent.documents && selectedStudent.documents.length > 0 && (
-                                            <div className="mt-4 flex space-x-3">
-                                                <button
-                                                    onClick={() => {
-                                                        const allApproved = selectedStudent.documents.every(doc => doc.status === 'APPROVED');
-                                                        if (!allApproved) {
-                                                            showError('Please approve all documents before generating PDF');
-                                                            return;
-                                                        }
-                                                        const approvedDocs = selectedStudent.documents.filter(doc => doc.status === 'APPROVED');
-                                                        setSelectedDocumentsForGeneration(approvedDocs.map((doc, idx) => doc._id?.toString() || doc.documentType || `doc_${idx}`));
-                                                        setGenerationType('pdf');
-                                                        setShowDocumentSelectionModal(true);
-                                                    }}
-                                                    disabled={!selectedStudent.documents.every(doc => doc.status === 'APPROVED')}
-                                                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${selectedStudent.documents.every(doc => doc.status === 'APPROVED')
-                                                        ? 'bg-[#387B95] text-white hover:bg-[#1D4B5E]'
-                                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                                                        }`}
-                                                    title={selectedStudent.documents.every(doc => doc.status === 'APPROVED') ? 'Generate combined PDF' : 'Please approve all documents first'}
-                                                >
-                                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                                    </svg>
-                                                    Generate PDF
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        const allApproved = selectedStudent.documents.every(doc => doc.status === 'APPROVED');
-                                                        if (!allApproved) {
-                                                            showError('Please approve all documents before generating ZIP');
-                                                            return;
-                                                        }
-                                                        const approvedDocs = selectedStudent.documents.filter(doc => doc.status === 'APPROVED');
-                                                        setSelectedDocumentsForGeneration(approvedDocs.map((doc, idx) => doc._id?.toString() || doc.documentType || `doc_${idx}`));
-                                                        setGenerationType('zip');
-                                                        setShowDocumentSelectionModal(true);
-                                                    }}
-                                                    disabled={!selectedStudent.documents.every(doc => doc.status === 'APPROVED')}
-                                                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${selectedStudent.documents.every(doc => doc.status === 'APPROVED')
-                                                        ? 'bg-[#4A1D7A] text-white hover:bg-[#351458]'
-                                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                                                        }`}
-                                                    title={selectedStudent.documents.every(doc => doc.status === 'APPROVED') ? 'Generate ZIP' : 'Please approve all documents first'}
-                                                >
-                                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                                                    </svg>
-                                                    Generate ZIP
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* Referral & Submission Info */}
-                                <div className="bg-gray-50 dark:bg-[#1A1212] rounded-lg p-4">
-                                    <h4 className="font-semibold text-lg text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                                        <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                        </svg>
-                                        Application Tracking
-                                    </h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Submitted By</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.referredBy || 'Direct Student'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Approved By</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.approvedBy || 'Pending'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Referral Code</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.referralCode || 'N/A'}</p>
-                                        </div>
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Submitted Date</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.submittedAt || selectedStudent.createdAt)}</p>
-                                        </div>
-                                        {(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt) && selectedStudent.status === 'APPROVED' && (
-                                            <div>
-                                                <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Approved Date</label>
-                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{formatDate(selectedStudent.reviewInfo?.reviewedAt || selectedStudent.reviewStatus?.reviewedAt)}</p>
-                                            </div>
-                                        )}
-                                        <div>
-                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Current Stage</label>
-                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                                                {['APPROVED', 'REJECTED'].includes(selectedStudent.status) ? selectedStudent.status : (selectedStudent.currentStage || selectedStudent.status)}
-                                            </p>
-                                        </div>
+                                    ))}
+                                    <div className="flex gap-2 mt-3">
+                                        <button
+                                            type="button"
+                                            disabled={convertingAdmission || conversionMissingDocs.length > 0}
+                                            onClick={() => handleConvertAdmissionType('free')}
+                                            className="text-sm px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+                                        >
+                                            Complete Conversion to Free
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setConversionMissingDocs(null)}
+                                            className="text-sm px-3 py-1.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md"
+                                        >
+                                            Cancel
+                                        </button>
                                     </div>
                                 </div>
-
-                                {/* Review Information (if rejected) */}
-                                {selectedStudent.status === 'REJECTED' && selectedStudent.reviewInfo && (
-                                    <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-                                        <h4 className="font-semibold text-lg text-red-800 dark:text-red-200 mb-4 flex items-center">
-                                            <svg className="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                            </svg>
-                                            Rejection Details
-                                        </h4>
-                                        <div className="space-y-3">
-                                            {selectedStudent.reviewInfo.rejectionReason && (
-                                                <div>
-                                                    <label className="text-xs font-medium text-red-700 dark:text-red-300">Reason</label>
-                                                    <p className="text-sm text-red-900 dark:text-red-100">{selectedStudent.reviewInfo.rejectionReason}</p>
-                                                </div>
-                                            )}
-                                            {selectedStudent.reviewInfo.rejectionMessage && (
-                                                <div>
-                                                    <label className="text-xs font-medium text-red-700 dark:text-red-300">Message</label>
-                                                    <p className="text-sm text-red-900 dark:text-red-100">{selectedStudent.reviewInfo.rejectionMessage}</p>
-                                                </div>
-                                            )}
-                                            {selectedStudent.reviewInfo.rejectionDetails && selectedStudent.reviewInfo.rejectionDetails.length > 0 && (
-                                                <div>
-                                                    <label className="text-xs font-medium text-red-700 dark:text-red-300">Specific Issues</label>
-                                                    <ul className="mt-2 space-y-2">
-                                                        {selectedStudent.reviewInfo.rejectionDetails.map((detail, idx) => (
-                                                            <li key={idx} className="text-sm text-red-900 dark:text-red-100 bg-white dark:bg-[#231A2E] rounded p-2">
-                                                                <strong>{detail.documentType || detail.issue}:</strong> {detail.specificFeedback || detail.actionRequired}
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                )}
+                            )}
+                        </>
+                    }
+                    financialHeaderActions={['APPROVED', 'COMPLETE'].includes(selectedStudent.status) && (
+                        <button
+                            onClick={() => {
+                                setEditingCourseFee(!editingCourseFee);
+                                if (!editingCourseFee) {
+                                    setCourseFeeInput(selectedStudent.financialStatus?.totalFees || '');
+                                }
+                            }}
+                            className="text-sm px-3 py-1 bg-[#F0E6FA] text-[#351458] hover:bg-purple-200 rounded-md"
+                        >
+                            {editingCourseFee ? 'Cancel' : 'Set Course Fee'}
+                        </button>
+                    )}
+                    financialForm={editingCourseFee && (
+                        <form onSubmit={handleUpdateCourseFee} className="mb-4 p-4 border border-[#D0E8F0] bg-white rounded-lg">
+                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">Total Course Fee (₹)</label>
+                            <div className="flex gap-2">
+                                <input
+                                    type="number"
+                                    value={courseFeeInput}
+                                    onChange={(e) => setCourseFeeInput(e.target.value)}
+                                    placeholder="Enter total course fee"
+                                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                                    required
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={savingCourseFee}
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] disabled:opacity-50"
+                                >
+                                    {savingCourseFee ? 'Saving...' : 'Save'}
+                                </button>
                             </div>
-
-                            {/* Footer Actions */}
-                            <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-2 justify-between items-center">
-                                <div className="flex flex-wrap items-center gap-2">
-                                    <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Change Stage:</span>
-                                    {selectedStudent.status === 'DRAFT' && (
-                                        <button
-                                            onClick={() => {
-                                                setShowDetailsModal(false);
-                                                handleSubmitApplication(selectedStudent);
-                                            }}
-                                            className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm"
-                                        >
-                                            Submit Application
-                                        </button>
-                                    )}
-                                    {(selectedStudent.status === 'SUBMITTED' || selectedStudent.status === 'UNDER_REVIEW') && (
-                                        <>
-                                            <button
-                                                onClick={() => {
-                                                    setShowDetailsModal(false);
-                                                    handleAcceptApplication(selectedStudent);
-                                                }}
-                                                className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm"
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    setShowDetailsModal(false);
-                                                    setStatusData({
-                                                        status: 'REJECTED',
-                                                        notes: '',
-                                                        rejectionReason: '',
-                                                        rejectionMessage: '',
-                                                        rejectionDetails: []
-                                                    });
-                                                    setShowRejectionForm(true);
-                                                    setShowStatusModal(true);
-                                                }}
-                                                className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md shadow-sm"
-                                            >
-                                                Reject
-                                            </button>
-                                        </>
-                                    )}
-                                    {selectedStudent.status === 'APPROVED' && (
-                                        <button
-                                            onClick={() => {
-                                                setShowDetailsModal(false);
-                                                handleCompleteApplication(selectedStudent);
-                                            }}
-                                            className="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-md shadow-sm"
-                                        >
-                                            Mark Complete
-                                        </button>
-                                    )}
+                        </form>
+                    )}
+                    bankActions={selectedStudent.user?.financialDetails && (
+                        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            {selectedStudent.user.financialDetails.verificationStatus !== 'VERIFIED' && (
+                                <button
+                                    onClick={() => handleBankVerification('VERIFIED')}
+                                    className="px-3 py-1.5 bg-green-600 text-white text-sm font-medium rounded hover:bg-green-700 transition-colors"
+                                >
+                                    Verify Details
+                                </button>
+                            )}
+                            {selectedStudent.user.financialDetails.verificationStatus !== 'REJECTED' && (
+                                <button
+                                    onClick={() => {
+                                        const reason = window.prompt('Enter rejection reason for bank details:');
+                                        if (reason !== null && reason.trim() !== '') {
+                                            handleBankVerification('REJECTED', reason);
+                                        }
+                                    }}
+                                    className="px-3 py-1.5 bg-red-600 text-white text-sm font-medium rounded hover:bg-red-700 transition-colors"
+                                >
+                                    Reject Details
+                                </button>
+                            )}
+                        </div>
+                    )}
+                    documentActions={selectedStudent.documents && selectedStudent.documents.length > 0 && (() => {
+                        const allApproved = selectedStudent.documents.every(doc => doc.status === 'APPROVED');
+                        const openGeneration = (type) => {
+                            if (!allApproved) {
+                                showError(`Please approve all documents before generating ${type.toUpperCase()}`);
+                                return;
+                            }
+                            const approvedDocs = selectedStudent.documents.filter(doc => doc.status === 'APPROVED');
+                            setSelectedDocumentsForGeneration(approvedDocs.map((doc, idx) => doc._id?.toString() || doc.documentType || `doc_${idx}`));
+                            setGenerationType(type);
+                            setShowDocumentSelectionModal(true);
+                        };
+                        return (
+                            <div className="mt-4 flex space-x-3">
+                                <button
+                                    onClick={() => openGeneration('pdf')}
+                                    disabled={!allApproved}
+                                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${allApproved ? 'bg-[#387B95] text-white hover:bg-[#1D4B5E]' : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}
+                                    title={allApproved ? 'Generate combined PDF' : 'Please approve all documents first'}
+                                >
+                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Generate PDF
+                                </button>
+                                <button
+                                    onClick={() => openGeneration('zip')}
+                                    disabled={!allApproved}
+                                    className={`flex items-center px-4 py-2 rounded-lg transition-colors ${allApproved ? 'bg-[#4A1D7A] text-white hover:bg-[#351458]' : 'bg-gray-400 text-gray-200 cursor-not-allowed'}`}
+                                    title={allApproved ? 'Generate ZIP' : 'Please approve all documents first'}
+                                >
+                                    <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                    </svg>
+                                    Generate ZIP
+                                </button>
+                            </div>
+                        );
+                    })()}
+                    footerActions={
+                        <>
+                            <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Change Stage:</span>
+                            {selectedStudent.status === 'DRAFT' && (
+                                <button
+                                    onClick={() => {
+                                        setShowDetailsModal(false);
+                                        handleSubmitApplication(selectedStudent);
+                                    }}
+                                    className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-sm"
+                                >
+                                    Submit Application
+                                </button>
+                            )}
+                            {(selectedStudent.status === 'SUBMITTED' || selectedStudent.status === 'UNDER_REVIEW') && (
+                                <>
+                                    <button
+                                        onClick={() => {
+                                            setShowDetailsModal(false);
+                                            handleAcceptApplication(selectedStudent);
+                                        }}
+                                        className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm"
+                                    >
+                                        Approve
+                                    </button>
                                     <button
                                         onClick={() => {
                                             setShowDetailsModal(false);
                                             setStatusData({
-                                                status: selectedStudent.status,
+                                                status: 'REJECTED',
                                                 notes: '',
                                                 rejectionReason: '',
                                                 rejectionMessage: '',
                                                 rejectionDetails: []
                                             });
-                                            setShowRejectionForm(selectedStudent.status === 'REJECTED');
+                                            setShowRejectionForm(true);
                                             setShowStatusModal(true);
                                         }}
-                                        className="px-3 py-1.5 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-md shadow-sm"
+                                        className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md shadow-sm"
                                     >
-                                        Update Status...
+                                        Reject
                                     </button>
-                                </div>
+                                </>
+                            )}
+                            {selectedStudent.status === 'APPROVED' && (
                                 <button
-                                    onClick={() => setShowDetailsModal(false)}
-                                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                    onClick={() => {
+                                        setShowDetailsModal(false);
+                                        handleCompleteApplication(selectedStudent);
+                                    }}
+                                    className="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-md shadow-sm"
                                 >
-                                    Close
+                                    Mark Complete
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            )}
+                            <button
+                                onClick={() => {
+                                    setShowDetailsModal(false);
+                                    setStatusData({
+                                        status: selectedStudent.status,
+                                        notes: '',
+                                        rejectionReason: '',
+                                        rejectionMessage: '',
+                                        rejectionDetails: []
+                                    });
+                                    setShowRejectionForm(selectedStudent.status === 'REJECTED');
+                                    setShowStatusModal(true);
+                                }}
+                                className="px-3 py-1.5 text-xs font-medium text-white bg-purple-600 hover:bg-purple-700 rounded-md shadow-sm"
+                            >
+                                Update Status...
+                            </button>
+                        </>
+                    }
+                />
             )}
 
             {/* Status Update Modal */}
@@ -3230,13 +2803,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     >
                                         <option value="">Select Status</option>
-                                        <option value="DRAFT">Draft</option>
-                                        <option value="SUBMITTED">Submitted</option>
-                                        <option value="UNDER_REVIEW">Under Review</option>
-                                        <option value="APPROVED">Approved</option>
-                                        <option value="REJECTED">Rejected</option>
-                                        <option value="COMPLETE">Complete (Graduated)</option>
-                                        <option value="CANCELLED">Cancelled</option>
+                                        {APPLICATION_STATUS_OPTIONS.map(o => <option key={o.key} value={o.key}>{o.key === 'COMPLETE' ? 'Complete (Graduated)' : o.label}</option>)}
                                     </select>
                                 </div>
 

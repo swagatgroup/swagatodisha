@@ -216,6 +216,8 @@ exports.getDashboardStats = async (req, res) => {
         try {
             const paymentGroups = await StudentApplication.aggregate([
                 { $match: sessionQuery },
+                // Only students with fees set or a payment recorded; others default to PENDING and would skew the chart
+                { $match: { $or: [{ 'financialStatus.totalFees': { $gt: 0 } }, { 'financialStatus.paidAmount': { $gt: 0 } }] } },
                 { $group: { _id: '$financialStatus.paymentStatus', count: { $sum: 1 } } }
             ]);
             paymentGroups.forEach(g => {

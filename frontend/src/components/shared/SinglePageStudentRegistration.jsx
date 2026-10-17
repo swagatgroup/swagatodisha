@@ -8,6 +8,7 @@ import ApplicationPDFGenerator from "../forms/ApplicationPDFGenerator";
 import TermsAndConditions from "../legal/TermsAndConditions";
 import { showSuccessToast, showErrorToast, showLoading, closeLoading } from "../../utils/sweetAlert";
 import { formatDateForInput } from "../../utils/dateUtils";
+import { canEditApplication } from "../../utils/applicationStatuses";
 import Swal from 'sweetalert2';
 
 const BLANK_FORM = {
@@ -2326,6 +2327,12 @@ const SinglePageStudentRegistration = ({
                                 ...prev,
                                 documents: documents,
                             }));
+
+                            // Persist uploads to the draft immediately so they aren't lost if the final save/submit fails
+                            if (application?.applicationId && application.status === 'DRAFT') {
+                                api.put(`/api/student-application/${application.applicationId}/save-draft`, { data: { documents } })
+                                    .catch((err) => console.warn('Could not save documents to draft:', err?.response?.data || err?.message));
+                            }
                         }}
                         initialDocuments={formData.documents}
                         isRequired={true}
@@ -2388,6 +2395,9 @@ const SinglePageStudentRegistration = ({
         );
     }
 
+    // Edit lock (same rule as the backend): once review starts the student can no longer change anything
+    const isLocked = !referralMode && !!application?.status && !canEditApplication(userRole, application.status);
+
     return (
         <div className="max-w-4xl mx-auto p-6">
             {showTitle && (
@@ -2406,9 +2416,18 @@ const SinglePageStudentRegistration = ({
             )}
 
 
+            {isLocked && (
+                <div className="mb-6 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20 text-sm text-yellow-800 dark:text-yellow-200">
+                    <i className="fa-solid fa-lock mr-2" aria-hidden="true"></i>
+                    Your application is {application.status === 'UNDER_REVIEW' ? 'under review' : application.status.toLowerCase().replace('_', ' ')}. It can no longer be edited and documents can no longer be changed.
+                </div>
+            )}
+
             <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-lg p-6 space-y-8">
                 {/* Form Content */}
-                {renderForm()}
+                <fieldset disabled={isLocked} className={isLocked ? 'opacity-75' : ''}>
+                    {renderForm()}
+                </fieldset>
 
                 {/* PDF Section */}
                 {renderPDFSection()}
@@ -2428,6 +2447,7 @@ const SinglePageStudentRegistration = ({
                 )}
 
                 {/* Action Buttons */}
+                {!isLocked && (
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -2452,6 +2472,7 @@ const SinglePageStudentRegistration = ({
                         {loading ? "Submitting..." : "Submit Application"}
                     </button>
                 </motion.div>
+                )}
             </div>
         </div>
     );

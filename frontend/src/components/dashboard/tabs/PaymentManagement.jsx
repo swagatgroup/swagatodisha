@@ -3,6 +3,7 @@ import api from '../../../utils/api';
 import { useSession } from '../../../contexts/SessionContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { showError, showSuccess } from '../../../utils/sweetAlert';
+import PaymentModalShell from '../../shared/PaymentModalShell';
 
 const PaymentManagement = () => {
     const { user } = useAuth();
@@ -892,19 +893,10 @@ const PaymentManagement = () => {
 
             {/* Manage Financial Modal */}
             {isModalOpen && selectedApp && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto outline-none focus:outline-none bg-black bg-opacity-50">
-                    <div className="relative w-full max-w-md p-6 mx-auto bg-white dark:bg-[#231A2E] rounded-lg shadow-lg">
-                        <div className="flex items-start justify-between border-b border-gray-200 dark:border-gray-700 pb-4 mb-4">
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                                Manage Payments for {selectedApp.personalDetails?.fullName}
-                            </h3>
-                            <button
-                                className="text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:text-gray-400"
-                                onClick={() => setIsModalOpen(false)}
-                            >
-                                <span className="text-2xl">×</span>
-                            </button>
-                        </div>
+                <PaymentModalShell
+                    title={`Manage Payments for ${selectedApp.personalDetails?.fullName || 'Student'}`}
+                    onClose={() => setIsModalOpen(false)}
+                >
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Total Fees (₹)</label>
@@ -1102,8 +1094,7 @@ const PaymentManagement = () => {
                                 </button>
                             </div>
                         </div>
-                    </div>
-                </div>
+                </PaymentModalShell>
             )}
         </div>
     );

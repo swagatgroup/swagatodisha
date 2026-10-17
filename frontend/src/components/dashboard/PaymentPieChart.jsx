@@ -27,7 +27,7 @@ const PaymentPieChart = ({ paymentStats, onSectionClick, title = "Payment Status
 
   const options = {
     title: title,
-    is3D: true,
+    is3D: false,
     backgroundColor: 'transparent',
     colors: colors,
     chartArea: { width: '90%', height: '80%' },

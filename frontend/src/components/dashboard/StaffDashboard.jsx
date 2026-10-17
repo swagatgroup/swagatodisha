@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import StatusFilterRow from './components/StatusFilterRow';
+import { APPLICATION_STATUS_OPTIONS, buildStatusChartData } from '../../utils/applicationStatuses';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from 'recharts';
 import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserPlusIcon, ClipboardDocumentCheckIcon, CreditCardIcon, KeyIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
@@ -17,6 +19,7 @@ import ProgressPieChart from './ProgressPieChart';
 import PaymentPieChart from './PaymentPieChart';
 import {
     showSuccess,
+    showError,
     showLoading,
     closeLoading,
     handleApiError,
@@ -446,27 +449,7 @@ const EnhancedStaffDashboard = () => {
                             </p>
 
                             {/* Status Filter Buttons */}
-                            <div className="grid grid-cols-3 sm:grid-cols-7 gap-2 md:gap-3 mb-6">
-                                {[
-                                    { key: 'all',          label: 'Total',        count: active.total,       activeClass: 'bg-gray-800 text-white',    inactiveClass: 'bg-white dark:bg-[#231A2E] text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700' },
-                                    { key: 'DRAFT',        label: 'Draft',        count: active.draft,       activeClass: 'bg-gray-600 text-white',    inactiveClass: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300' },
-                                    { key: 'SUBMITTED',    label: 'Submitted',    count: active.submitted,   activeClass: 'bg-[#4A1D7A] text-white',   inactiveClass: 'bg-indigo-50 dark:bg-gray-700 text-[#351458] dark:text-indigo-300 border border-indigo-100 dark:border-gray-600' },
-                                    { key: 'UNDER_REVIEW', label: 'Under Review', count: active.underReview, activeClass: 'bg-yellow-600 text-white',  inactiveClass: 'bg-yellow-50 dark:bg-gray-700 text-yellow-700 dark:text-yellow-300 border border-yellow-100 dark:border-gray-600' },
-                                    { key: 'APPROVED',     label: 'Approved',     count: active.approved,    activeClass: 'bg-teal-500 text-white',    inactiveClass: 'bg-teal-50 dark:bg-gray-700 text-teal-700 dark:text-teal-300 border border-teal-100 dark:border-gray-600' },
-                                    { key: 'REJECTED',     label: 'Rejected',     count: active.rejected,    activeClass: 'bg-red-600 text-white',     inactiveClass: 'bg-red-50 dark:bg-gray-700 text-red-700 dark:text-red-300 border border-red-100 dark:border-gray-600' },
-                                    { key: 'COMPLETE',     label: 'Complete',     count: active.complete,    activeClass: 'bg-green-600 text-white',   inactiveClass: 'bg-green-50 dark:bg-gray-700 text-green-800 dark:text-green-200 border border-green-100 dark:border-gray-600' },
-                                ].map(function(item) {
-                                    const isActive = filterStatus === item.key || (item.key === 'all' && filterStatus === 'all');
-                                    return (
-                                        <button key={item.key} onClick={() => handleStatClick(item.key)} className={'px-2 py-3 rounded-xl font-medium transition-all duration-200 text-sm shadow-sm hover:shadow-md ' + (isActive ? item.activeClass + ' shadow-lg scale-[1.02]' : item.inactiveClass)}>
-                                            <div className="flex flex-col items-center">
-                                                <span className="text-xs font-medium mb-1 opacity-80">{item.label}</span>
-                                                <span className="text-xl font-bold">{item.count || 0}</span>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-                            </div>
+                            <StatusFilterRow counts={active} activeKey={filterStatus} onSelect={handleStatClick} />
 
                             {/* Charts */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -474,14 +457,7 @@ const EnhancedStaffDashboard = () => {
                                     <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 w-full text-center">Application Progress</h3>
                                     <div className="w-full max-w-sm">
                                         <ProgressPieChart
-                                            chartData={[
-                                                { label: 'Draft',        value: active.draft       || 0, color: '#6B7280', filterKey: 'DRAFT' },
-                                                { label: 'Submitted',    value: active.submitted   || 0, color: '#6366F1', filterKey: 'SUBMITTED' },
-                                                { label: 'Rejected',     value: active.rejected    || 0, color: '#EF4444', filterKey: 'REJECTED' },
-                                                { label: 'Under Review', value: active.underReview || 0, color: '#EAB308', filterKey: 'UNDER_REVIEW' },
-                                                { label: 'Approved',     value: active.approved    || 0, color: '#14B8A6', filterKey: 'APPROVED' },
-                                                { label: 'Completed',    value: active.complete    || 0, color: '#22C55E', filterKey: 'COMPLETE' },
-                                            ]}
+                                            chartData={buildStatusChartData(active)}
                                             onSectionClick={handleStatClick}
                                         />
                                     </div>
@@ -557,235 +533,16 @@ const EnhancedStaffDashboard = () => {
                             </div>
                         )}
 
-                        {/* Students Table */}
-                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-[#231A2E] rounded-lg shadow border border-gray-200 dark:border-gray-700">
-                            <div className="p-6">
-                                <div className="flex justify-between items-center mb-6">
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">Recent Students</h3>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 mt-1">View and manage all student applications</p>
-                                    </div>
-                                    <div className="text-sm text-gray-500 dark:text-gray-300">
-                                        {totalItems > 0 ? (totalItems + (totalItems === 1 ? ' Student' : ' Students')) : 'No students found'}
-                                    </div>
-                                </div>
-
-                                {/* Filters */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                                    <input type="text" placeholder="Search by name, Aadhar, phone..." value={searchTerm} onChange={function(e) { setSearchTerm(e.target.value); }} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]" />
-                                    <select value={filterStatus} onChange={function(e) { setFilterStatus(e.target.value); setCurrentPage(1); }} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]">
-                                        <option value="all">Total Students</option>
-                                        <option value="DRAFT">Draft</option>
-                                        <option value="SUBMITTED">Submitted</option>
-                                        <option value="UNDER_REVIEW">Under Review</option>
-                                        <option value="APPROVED">Approved</option>
-                                        <option value="REJECTED">Rejected</option>
-                                        <option value="COMPLETE">Complete</option>
-                                    </select>
-                                    <select value={sortBy} onChange={function(e) { setSortBy(e.target.value); setCurrentPage(1); }} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]">
-                                        <option value="latest">Latest First</option>
-                                        <option value="oldest">Oldest First</option>
-                                        <option value="name_asc">Name A-Z</option>
-                                        <option value="name_desc">Name Z-A</option>
-                                    </select>
-                                    <select value={filterSubmitterRole} onChange={function(e) { setFilterSubmitterRole(e.target.value); }} className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]">
-                                        <option value="all">All Submitters</option>
-                                        <option value="student">Student</option>
-                                        <optgroup label="Agents">
-                                            {(filters.submitters || []).filter(function(s) { return s.role === 'agent'; }).map(function(s) {
-                                                return <option key={s.id} value={s.id}>{s.name} ({s.count} submissions)</option>;
-                                            })}
-                                        </optgroup>
-                                        <optgroup label="Staff">
-                                            {(filters.submitters || []).filter(function(s) { return s.role === 'staff'; }).map(function(s) {
-                                                return <option key={s.id} value={s.id}>{s.name} ({s.count} submissions)</option>;
-                                            })}
-                                        </optgroup>
-                                        <option value="super_admin">Super Admin</option>
-                                    </select>
-                                </div>
-
-                                <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead className="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                {['S.No','Student','Aadhar','Phone','Email','Course','Status','Submitted By','Actions'].map(function(h) {
-                                                    return <th key={h} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">{h}</th>;
-                                                })}
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
-                                            {studentsLoading ? (
-                                                <tr><td colSpan="9" className="px-6 py-12 text-center"><div className="flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4A1D7A]"></div></div></td></tr>
-                                            ) : students.length === 0 ? (
-                                                <tr><td colSpan="9" className="px-6 py-12 text-center">
-                                                    <div className="flex flex-col items-center">
-                                                        <svg className="h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" /></svg>
-                                                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No students found</h3>
-                                                        <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">{(searchTerm || filterStatus !== 'all' || filterSubmitterRole !== 'all') ? 'Try adjusting your filters.' : (selectedSession ? 'No admissions for ' + selectedSession + '.' : 'No applications yet.')}</p>
-                                                        {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterSubmitterRole !== 'all' || filterAgentId) && (
-                                                            <button onClick={function() { setSearchTerm(''); setFilterStatus('all'); setFilterCourse('all'); setFilterSubmitterRole('all'); setFilterAgentId(null); }} className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458]">Clear Filters</button>
-                                                        )}
-                                                    </div>
-                                                </td></tr>
-                                            ) : students.map(function(student, index) {
-                                                const serialNumber = ((currentPage - 1) * itemsPerPage) + index + 1;
-                                                const nameRaw = student.fullName || (student.personalDetails && student.personalDetails.fullName);
-                                                const name = nameRaw ? (typeof nameRaw === 'object' ? (nameRaw.fullName || nameRaw.name || 'N/A') : nameRaw) : 'N/A';
-                                                const courseRaw = student.course || (student.courseDetails && (student.courseDetails.selectedCourse || student.courseDetails.courseName));
-                                                const course = courseRaw ? (typeof courseRaw === 'object' ? (courseRaw.courseName || courseRaw.name || 'N/A') : courseRaw) : 'N/A';
-                                                let submitterName = 'Direct';
-                                                if (student.referredBy && student.referredBy !== 'Direct' && student.referredBy !== 'Unknown' && student.referredBy.trim() !== '') {
-                                                    submitterName = student.referredBy.trim();
-                                                } else if (student.submittedBy && student.submittedBy.fullName) {
-                                                    const n = student.submittedBy.fullName;
-                                                    submitterName = (typeof n === 'object' ? (n.fullName || n.name || '') : n).trim() || 'Direct';
-                                                }
-                                                const role = student.submitterRole || 'student';
-                                                const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
-                                                const displaySubmitter = (submitterName && submitterName !== 'Direct' && submitterName !== 'Unknown')
-                                                    ? submitterName + ' (' + roleLabel + ')'
-                                                    : 'Direct (' + roleLabel + ')';
-
-                                                return (
-                                                    <motion.tr key={student._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700">
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center">{serialNumber}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap">
-                                                            <div className="flex items-center">
-                                                                <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center flex-shrink-0">
-                                                                    <span className="text-sm font-medium text-green-600 dark:text-green-300">{name.split(' ').map(function(n) { return n[0]; }).join('') || 'S'}</span>
-                                                                </div>
-                                                                <div className="ml-4">
-                                                                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{name}</div>
-                                                                    <div className="text-sm text-gray-500 dark:text-gray-300">ID: {student.applicationId}</div>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">{student.aadharNumber}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{student.phone}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{student.email}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{course}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap"><span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(student.status)}>{student.status}</span></td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{displaySubmitter}</td>
-                                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                                            <div className="flex space-x-2">
-                                                                <button onClick={function() { setSelectedStudent(student); setShowDetailsModal(true); }} className="text-[#387B95] hover:text-blue-900 dark:text-[#60A5FA]" title="View Details">
-                                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                                                                </button>
-                                                                {/* Step Progression (N -> N+1) Actions */}
-                                                                {student.status === 'DRAFT' && (
-                                                                    <button
-                                                                        onClick={() => handleSubmitApplication(student)}
-                                                                        className="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 cursor-pointer"
-                                                                        title="Submit Application (Move to Submitted)"
-                                                                    >
-                                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                                                        </svg>
-                                                                    </button>
-                                                                )}
-                                                                {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
-                                                                    <button
-                                                                        onClick={() => handleAcceptApplication(student)}
-                                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 cursor-pointer"
-                                                                        title="Approve Application"
-                                                                    >
-                                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                                        </svg>
-                                                                    </button>
-                                                                )}
-                                                                {(student.status === 'SUBMITTED' || student.status === 'UNDER_REVIEW') && (
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            setSelectedStudent(student);
-                                                                            setStatusData({
-                                                                                status: 'REJECTED',
-                                                                                notes: '',
-                                                                                rejectionReason: '',
-                                                                                rejectionMessage: '',
-                                                                                rejectionDetails: []
-                                                                            });
-                                                                            setShowRejectionForm(true);
-                                                                            setShowStatusModal(true);
-                                                                        }}
-                                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 cursor-pointer"
-                                                                        title="Reject Application"
-                                                                    >
-                                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                                        </svg>
-                                                                    </button>
-                                                                )}
-                                                                {student.status === 'APPROVED' && (
-                                                                    <button
-                                                                        onClick={() => handleCompleteApplication(student)}
-                                                                        className="text-emerald-600 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300 cursor-pointer"
-                                                                        title="Mark Complete (Graduated)"
-                                                                    >
-                                                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                                                                        </svg>
-                                                                    </button>
-                                                                )}
-
-                                                                {/* Update Status Button */}
-                                                                <button
-                                                                    onClick={() => {
-                                                                        setSelectedStudent(student);
-                                                                        setStatusData({ 
-                                                                            status: student.status, 
-                                                                            notes: '',
-                                                                            rejectionReason: '',
-                                                                            rejectionMessage: '',
-                                                                            rejectionDetails: []
-                                                                        });
-                                                                        setShowRejectionForm(student.status === 'REJECTED');
-                                                                        setShowStatusModal(true);
-                                                                    }}
-                                                                    className="text-purple-600 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300 cursor-pointer"
-                                                                    title="Update Status"
-                                                                >
-                                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                                    </svg>
-                                                                </button>
-
-                                                                {['DRAFT', 'SUBMITTED'].includes(student.status) && (
-                                                                <button onClick={function() { setSelectedStudent(student); setEditData({ personalDetails: student.personalDetails || {}, contactDetails: student.contactDetails || {}, courseDetails: student.courseDetails || {}, guardianDetails: student.guardianDetails || {} }); setShowEditModal(true); }} className="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400" title="Edit">
-                                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                                                </button>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                    </motion.tr>
-                                                );
-                                            })}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {totalPages > 1 && (
-                                    <div className="flex items-center justify-between mt-6">
-                                        <div className="text-sm text-gray-700 dark:text-gray-300">Showing {((currentPage-1)*itemsPerPage)+1} to {Math.min(currentPage*itemsPerPage,totalItems)} of {totalItems} students</div>
-                                        <div className="flex items-center space-x-2">
-                                            <button onClick={function() { setCurrentPage(function(p) { return Math.max(p-1,1); }); }} disabled={currentPage===1} className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">Previous</button>
-                                            <div className="flex space-x-1">
-                                                {Array.from({ length: Math.min(totalPages,5) }, function(_,i) {
-                                                    var p;
-                                                    if (totalPages<=5) p=i+1;
-                                                    else if (currentPage<=3) p=i+1;
-                                                    else if (currentPage>=totalPages-2) p=totalPages-4+i;
-                                                    else p=currentPage-2+i;
-                                                    return <button key={p} onClick={function() { setCurrentPage(p); }} className={'px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md text-sm ' + (currentPage===p?'bg-[#4A1D7A] text-white border-[#4A1D7A]':'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50')}>{p}</button>;
-                                                })}
-                                            </div>
-                                            <button onClick={function() { setCurrentPage(function(p) { return Math.min(p+1,totalPages); }); }} disabled={currentPage===totalPages} className="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50">Next</button>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
+                        {/* Recent Students - reuses the Our/Direct Students table */}
+                        <ErrorBoundary>
+                            <StudentManagement
+                                listType={studentView === 'direct' ? 'direct' : studentView === 'our' ? 'main' : 'all'}
+                                showListTypeFilter
+                                pageSize={5}
+                                title="Recent Students"
+                                subtitle="Last registered students"
+                            />
+                        </ErrorBoundary>
                     </div>
                 );
             }
@@ -1033,13 +790,7 @@ const EnhancedStaffDashboard = () => {
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-500"
                                     >
                                         <option value="">Select Status</option>
-                                        <option value="DRAFT">Draft</option>
-                                        <option value="SUBMITTED">Submitted</option>
-                                        <option value="UNDER_REVIEW">Under Review</option>
-                                        <option value="APPROVED">Approved</option>
-                                        <option value="REJECTED">Rejected</option>
-                                        <option value="COMPLETE">Complete (Graduated)</option>
-                                        <option value="CANCELLED">Cancelled</option>
+                                        {APPLICATION_STATUS_OPTIONS.map(function(o) { return <option key={o.key} value={o.key}>{o.key === 'COMPLETE' ? 'Complete (Graduated)' : o.label}</option>; })}
                                     </select>
                                 </div>
 

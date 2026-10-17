@@ -6,6 +6,7 @@ const fs = require('fs');
 const crypto = require('crypto');
 const cloudinary = require('cloudinary').v2;
 const { logDeleteAttempt, logDeleteResult } = require('../utils/auditLogger');
+const { canEditApplication, editLockedMessage } = require('../utils/applicationEditLock');
 
 // Configure Cloudinary
 cloudinary.config({
@@ -106,6 +107,24 @@ const uploadDocument = async (req, res) => {
                         message: 'You do not have permission to upload documents for this application'
                     });
                 }
+            }
+
+            if (req.user.role === 'student' || req.user.role === 'user') {
+                const ownerId = application.user?.toString();
+                if (ownerId !== req.user._id.toString()) {
+                    return res.status(403).json({
+                        success: false,
+                        message: 'You do not have permission to upload documents for this application'
+                    });
+                }
+            }
+
+            // Edit lock: students and agents cannot change documents once review has started
+            if (['student', 'user', 'agent'].includes(req.user.role) && !canEditApplication(req.user.role, application.status)) {
+                return res.status(403).json({
+                    success: false,
+                    message: editLockedMessage(application.status)
+                });
             }
 
             // Find and delete old Cloudinary document if it exists

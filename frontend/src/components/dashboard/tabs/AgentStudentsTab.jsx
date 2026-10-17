@@ -14,6 +14,9 @@ import {
   CurrencyRupeeIcon
 } from "@heroicons/react/24/outline";
 import AgentStudentFinancialsModal from "./AgentStudentFinancialsModal";
+import TablePagination from "../../shared/TablePagination";
+import ApplicationDetailsModal, { mergeUploadedDocument } from "../../shared/ApplicationDetailsModal";
+import { APPLICATION_STATUS_OPTIONS, canEditApplication } from "../../../utils/applicationStatuses";
 
 const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
   const { user } = useAuth();
@@ -44,6 +47,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
     completed: 0,
     thisMonth: 0,
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
 
   // Debug stats state changes
   useEffect(() => {
@@ -319,7 +324,6 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       
       // Structure the data properly for the backend
       const updatePayload = {
-        status: editData.status || selectedStudent?.status,
         personalDetails: {
           fullName: editData.personalDetails?.fullName,
           fathersName: editData.personalDetails?.fathersName,
@@ -555,6 +559,24 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
     return matchesSearch && matchesStatus && matchesCourse && matchesAdmissionType;
   });
 
+  const totalPages = Math.ceil(filteredStudents.length / itemsPerPage) || 1;
+  const paginatedStudents = filteredStudents.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Back to page 1 whenever filters change
+  useEffect(() => { setCurrentPage(1); }, [filters]);
+
+  // Summary cards derived from this agent's loaded students (the stats API has no thisMonth)
+  const now = new Date();
+  const cardStats = {
+    total: students.length,
+    pending: students.filter(s => s.status === 'DRAFT' || s.status === 'SUBMITTED').length,
+    completed: students.filter(s => s.status === 'COMPLETE').length,
+    thisMonth: students.filter(s => {
+      const d = new Date(s.createdAt);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length,
+  };
+
   if (!selectedSession) {
     return (
       <div className="flex flex-col items-center justify-center h-64">
@@ -585,7 +607,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">My Students</h2>
         <div className="text-sm text-gray-600 dark:text-gray-300">
-          Total: {stats.total} | This Month: {stats.thisMonth}
+          Total: {cardStats.total} | This Month: {cardStats.thisMonth}
         </div>
       </div>
 
@@ -613,7 +635,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                 Total Students
               </p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                {stats.total}
+                {cardStats.total}
               </p>
             </div>
           </div>
@@ -639,7 +661,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Pending</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                {stats.pending}
+                {cardStats.pending}
               </p>
             </div>
           </div>
@@ -665,7 +687,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">Completed</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                {stats.completed}
+                {cardStats.completed}
               </p>
             </div>
           </div>
@@ -691,7 +713,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600 dark:text-gray-300">This Month</p>
               <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
-                {stats.thisMonth}
+                {cardStats.thisMonth}
               </p>
             </div>
           </div>
@@ -727,14 +749,9 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
             >
               <option value="">All Statuses</option>
-              <option value="DRAFT">Draft</option>
-              <option value="SUBMITTED">Submitted</option>
-              <option value="PENDING">Pending</option>
-              <option value="UNDER_REVIEW">Under Review</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="APPROVED">Approved</option>
-              <option value="REJECTED">Rejected</option>
-              <option value="COMPLETE">Completed</option>
+              {APPLICATION_STATUS_OPTIONS.map(o => (
+                <option key={o.key} value={o.key}>{o.label}</option>
+              ))}
             </select>
           </div>
           <div>
@@ -868,7 +885,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                   </td>
                 </tr>
               ) : (
-                filteredStudents.map((student, index) => (
+                paginatedStudents.map((student, index) => (
                   <motion.tr
                     key={student._id}
                     initial={{ opacity: 0, y: 20 }}
@@ -877,7 +894,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                     className="hover:bg-gray-50 dark:bg-[#1A1212]"
                   >
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                    {index + 1}
+                    {(currentPage - 1) * itemsPerPage + index + 1}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -975,9 +992,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                           });
                         }
                         
-                        // Allow editing for DRAFT and SUBMITTED only
-                        // Once verified/approved, no more edits
-                        const canEdit = isDraft || isSubmitted;
+                        // Edit lock shared with the backend: Draft, Rejected, Submitted only
+                        const canEdit = canEditApplication('agent', student.status);
                         
                         if (canEdit) {
                           return (
@@ -1050,6 +1066,15 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="px-6 pb-4">
+          <TablePagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            totalItems={filteredStudents.length}
+            onPageChange={setCurrentPage}
+          />
         </div>
       </div>
 
@@ -1213,27 +1238,6 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">Status *</label>
-                      <select
-                        value={editData.status || selectedStudent?.status || ''}
-                        onChange={(e) => setEditData({
-                          ...editData,
-                          status: e.target.value
-                        })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
-                      >
-                        <option value="">Select Status</option>
-                        <option value="DRAFT">Draft</option>
-                        <option value="SUBMITTED">Submitted</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="UNDER_REVIEW">Under Review</option>
-                        <option value="IN_PROGRESS">In Progress</option>
-                        <option value="APPROVED">Approved</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="COMPLETE">Completed</option>
-                      </select>
                     </div>
                   </div>
                 </div>
@@ -1922,157 +1926,24 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate }) => {
         </div>
       )}
 
-      {/* View Details Modal */}
+      {/* View Details Modal (shared across all dashboards) */}
       {showViewModal && viewingStudent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Application Details - {viewingStudent.personalDetails?.fullName || 'Student'}
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowViewModal(false);
-                    setViewingStudent(null);
-                  }}
-                  className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-300"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {/* Application Status */}
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Application ID</p>
-                      <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {viewingStudent.applicationId || viewingStudent._id}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Status</p>
-                      <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${getStatusColor(viewingStudent.status)}`}>
-                        {getStatusText(viewingStudent.status)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Personal Details */}
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
-                    <DocumentTextIcon className="h-5 w-5 mr-2" />
-                    Personal Details
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Full Name:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.fullName || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Aadhaar:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.aadharNumber || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Date of Birth:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">
-                        {viewingStudent.personalDetails?.dateOfBirth ? formatDate(viewingStudent.personalDetails.dateOfBirth) : 'N/A'}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Gender:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.personalDetails?.gender || 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Contact Details */}
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Contact Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Phone:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.primaryPhone || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Email:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.email || 'N/A'}</span>
-                    </div>
-                    <div className="md:col-span-2">
-                      <span className="text-gray-600 dark:text-gray-300">Address:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.contactDetails?.address || 'N/A'}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Course Details */}
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Course Details</h4>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Course:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{viewingStudent.courseDetails?.selectedCourse || 'N/A'}</span>
-                    </div>
-                    <div>
-                      <span className="text-gray-600 dark:text-gray-300">Registration Date:</span>
-                      <span className="ml-2 font-medium text-gray-900 dark:text-gray-100">{formatDate(viewingStudent.createdAt)}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Documents Status */}
-                {viewingStudent.documents && viewingStudent.documents.length > 0 && (
-                  <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                    <h4 className="text-md font-semibold text-gray-900 dark:text-gray-100 mb-4">Documents</h4>
-                    <div className="space-y-2">
-                      {viewingStudent.documents.map((doc, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                          <span className="text-sm text-gray-900 dark:text-gray-100">{doc.documentType}</span>
-                          <span className={`px-2 py-1 text-xs font-semibold rounded ${
-                            doc.status === 'APPROVED' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200' :
-                            doc.status === 'REJECTED' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' :
-                            'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200'
-                          }`}>
-                            {doc.status || 'PENDING'}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Modal Actions */}
-              <div className="flex justify-end space-x-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <button
-                  onClick={() => {
-                    setShowViewModal(false);
-                    setViewingStudent(null);
-                  }}
-                  className="px-4 py-2 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-[#1A1212] dark:hover:bg-gray-700"
-                >
-                  Close
-                </button>
-                {(viewingStudent.status === 'DRAFT' || viewingStudent.status === 'REJECTED') && (
-                  <button
-                    onClick={() => {
-                      setShowViewModal(false);
-                      handleEditStudent(viewingStudent);
-                    }}
-                    className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E]"
-                  >
-                    Edit Application
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <ApplicationDetailsModal
+          student={viewingStudent}
+          role="agent"
+          onClose={() => {
+            setShowViewModal(false);
+            setViewingStudent(null);
+          }}
+          onDocumentUploaded={(doc) => {
+            setViewingStudent(prev => mergeUploadedDocument(prev, doc));
+            setStudents(prev => prev.map(s => (s._id === viewingStudent._id ? mergeUploadedDocument(s, doc) : s)));
+          }}
+          onEdit={(student) => {
+            setShowViewModal(false);
+            handleEditStudent(student);
+          }}
+        />
       )}
 
       {/* Financials Modal */}

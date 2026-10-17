@@ -16,12 +16,15 @@ import api from '../../../utils/api';
 import { showSuccess, showError, showConfirm, showLoading, closeLoading } from '../../../utils/sweetAlert';
 import { getDocumentUrl } from '../../../utils/documentUtils';
 import { useSession } from '../../../contexts/SessionContext';
+import ApplicationDetailsModal, { mergeUploadedDocument } from '../../shared/ApplicationDetailsModal';
+import { canEditApplication } from '../../../utils/applicationStatuses';
 
 const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     const { selectedSession } = useSession();
     const [applications, setApplications] = useState([]);
     const [allApplications, setAllApplications] = useState([]); // Store all applications for tab counts
     const [selectedApplication, setSelectedApplication] = useState(null);
+    const [showFullDetails, setShowFullDetails] = useState(false);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(initialTab);
     const [resubmitting, setResubmitting] = useState(false);
@@ -729,10 +732,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                 // 2. REJECTED - always
                                                 // 3. SUBMITTED - allow (backend will check if documents are approved)
                                                 // 4. UNDER_REVIEW status - always
-                                                const canEdit = isDraft || 
-                                                               isRejected || 
-                                                               isSubmitted ||
-                                                               isUnderReviewStatus;
+                                                const canEdit = canEditApplication('agent', status);
                                                 
                                                 console.log('✅ Can edit result (AgentApplicationStatus):', canEdit);
                                                 
@@ -782,13 +782,18 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                     // 2. REJECTED - always
                                     // 3. SUBMITTED - allow (backend will check if documents are approved)
                                     // 4. UNDER_REVIEW status - always
-                                    const canEdit = isDraft || 
-                                                   isRejected || 
-                                                   isSubmitted ||
-                                                   isUnderReviewStatus;
+                                    const canEdit = canEditApplication('agent', selectedApplication.status);
                                     
-                                    return canEdit ? (
+                                    return (
                                         <div className="flex space-x-2 mt-4">
+                                            <button
+                                                onClick={() => setShowFullDetails(true)}
+                                                className="flex items-center px-4 py-2 border border-[#4A1D7A] text-[#4A1D7A] dark:text-purple-100 rounded-lg hover:bg-[#F0E6FA] dark:hover:bg-[#351458]/60"
+                                            >
+                                                <EyeIcon className="h-4 w-4 mr-2" />
+                                                View Full Application
+                                            </button>
+                                            {canEdit && (
                                             <button
                                                 onClick={() => handleEditApplication(selectedApplication)}
                                                 className="flex items-center px-4 py-2 bg-[#387B95] text-white rounded-lg hover:bg-[#1D4B5E]"
@@ -796,8 +801,9 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                 <DocumentTextIcon className="h-4 w-4 mr-2" />
                                                 Edit Application
                                             </button>
+                                            )}
                                         </div>
-                                    ) : null;
+                                    );
                                 })()}
 
 
@@ -959,7 +965,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                 </div>
                                                                 
                                                                 {/* Reupload button for rejected documents */}
-                                                                {isRejected && (
+                                                                {isRejected && canEditApplication('agent', selectedApplication.status) && (
                                                                     <div className="relative">
                                                                         <input
                                                                             type="file"
@@ -1022,6 +1028,20 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     )}
                 </div>
             </div>
+
+            {/* Full Application (shared across all dashboards) */}
+            {showFullDetails && selectedApplication && (
+                <ApplicationDetailsModal
+                    student={selectedApplication}
+                    role="agent"
+                    onClose={() => setShowFullDetails(false)}
+                    onDocumentUploaded={(doc) => setSelectedApplication(prev => mergeUploadedDocument(prev, doc))}
+                    onEdit={(app) => {
+                        setShowFullDetails(false);
+                        handleEditApplication(app);
+                    }}
+                />
+            )}
 
             {/* Edit Modal */}
             {showEditModal && selectedApplication && (

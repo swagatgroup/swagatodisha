@@ -1,4 +1,5 @@
 const express = require("express");
+const { canEditApplication, editLockedMessage } = require('../utils/applicationEditLock');
 const router = express.Router();
 const mongoose = require("mongoose");
 const { protect } = require("../middleware/auth");
@@ -442,7 +443,7 @@ router.get("/my-students", async (req, res) => {
       submittedBy: app.submittedBy, // Include submittedBy for tracking
       submitterRole: app.submitterRole,
       // Add relationship type for agent reference
-      relationshipType: app.referralInfo?.referredBy?.toString() === agentId.toString()
+      relationshipType: (app.referralInfo?.referredBy?._id || app.referralInfo?.referredBy)?.toString() === agentId.toString()
         ? 'referral'
         : 'assigned'
     }));
@@ -555,7 +556,7 @@ router.get("/students", async (req, res) => {
       createdAt: app.createdAt,
       updatedAt: app.updatedAt,
       // Add relationship type for agent reference
-      relationshipType: app.referralInfo?.referredBy?.toString() === agentId.toString()
+      relationshipType: (app.referralInfo?.referredBy?._id || app.referralInfo?.referredBy)?.toString() === agentId.toString()
         ? 'referral'
         : 'assigned'
     }));
@@ -849,6 +850,8 @@ router.get("/stats", async (req, res) => {
     try {
       const paymentGroups = await StudentApplication.aggregate([
         { $match: agentQuery },
+        // Only students with fees set or a payment recorded; others default to PENDING and would skew the chart
+        { $match: { $or: [{ 'financialStatus.totalFees': { $gt: 0 } }, { 'financialStatus.paidAmount': { $gt: 0 } }] } },
         { $group: { _id: '$financialStatus.paymentStatus', count: { $sum: 1 } } }
       ]);
       paymentGroups.forEach(g => {
@@ -1535,19 +1538,11 @@ router.put('/students/:id', async (req, res) => {
       });
     }
 
-    // Agents can edit based on status and document approval:
-    // - DRAFT: Always editable
-    // Editing rules:
-    // - DRAFT: Always editable
-    // - SUBMITTED: Editable (students/agents can still make corrections)
-    // - All other statuses (UNDER_REVIEW, APPROVED, REJECTED, COMPLETE): Not editable
-    
-    const editableStatuses = ['DRAFT', 'SUBMITTED'];
-    
-    if (!editableStatuses.includes(application.status)) {
-      return res.status(400).json({
+    // Edit lock: agents can edit only before review starts (Draft, Rejected, Submitted)
+    if (!canEditApplication('agent', application.status)) {
+      return res.status(403).json({
         success: false,
-        message: `Cannot edit application when status is ${application.status}. Applications can only be edited in DRAFT or SUBMITTED status.`
+        message: editLockedMessage(application.status)
       });
     }
 
@@ -1602,10 +1597,7 @@ router.put('/students/:id', async (req, res) => {
       Object.assign(application.financialDetails, updateData.financialDetails);
     }
 
-    // Update status if provided
-    if (updateData.status) {
-      application.status = updateData.status;
-    }
+    // Agents cannot change status here; status moves through the review workflow
 
     // Mark nested objects as modified for Mongoose to save them properly
     if (updateData.personalDetails) {

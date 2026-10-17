@@ -40,7 +40,6 @@ const ApplicationStatusSearch = () => {
             case 'APPROVED': return 3;
             case 'COMPLETE': return 4;
             case 'REJECTED': return -1;
-            case 'CANCELLED': return -1;
             default: return 0;
         }
     };
@@ -48,13 +47,13 @@ const ApplicationStatusSearch = () => {
     const renderStepper = (status) => {
         const activeStep = getActiveStep(status);
         
-        if (status === 'REJECTED' || status === 'CANCELLED') {
+        if (status === 'REJECTED') {
             return (
                 <div className="mt-8 bg-red-50 border border-red-200 rounded-xl p-6 text-center">
                     <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
                         <RiCloseLine className="text-3xl" />
                     </div>
-                    <h3 className="text-xl font-bold text-red-700">Application {status === 'REJECTED' ? 'Rejected' : 'Cancelled'}</h3>
+                    <h3 className="text-xl font-bold text-red-700">Application Rejected</h3>
                     <p className="text-red-600 mt-2">Please contact our administration office for further details.</p>
                 </div>
             );

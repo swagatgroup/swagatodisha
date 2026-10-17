@@ -4,14 +4,17 @@ import api from "../../../utils/api";
 import {
   showSuccess,
   showErrorToast,
+  showError,
   showConfirm,
 } from "../../../utils/sweetAlert";
 import EnhancedStudentApplicationForm from "../../forms/EnhancedStudentApplicationForm";
 import SubmitApplicationForStudent from "../../forms/SubmitApplicationForStudent";
 import MySubmittedApplications from "./MySubmittedApplications";
 import ApplicationPDFGenerator from "../../forms/ApplicationPDFGenerator";
+import PaymentModalShell from "../../shared/PaymentModalShell";
+import ApplicationDetailsModal, { mergeUploadedDocument } from "../../shared/ApplicationDetailsModal";
 
-const StudentApplications = () => {
+const StudentApplications = ({ onEditApplication }) => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showNewApplicationModal, setShowNewApplicationModal] = useState(false);
@@ -36,6 +39,9 @@ const StudentApplications = () => {
   const [uploadingReceipt, setUploadingReceipt] = useState(false);
   const [receiptFile, setReceiptFile] = useState(null);
   const [targetInstallmentNum, setTargetInstallmentNum] = useState(null);
+
+  // Shared "View Application" modal
+  const [viewingApplication, setViewingApplication] = useState(null);
 
   const courses = [
     "DMLT (Diploma in Medical Laboratory Technology)",
@@ -580,6 +586,12 @@ const StudentApplications = () => {
                             </button>
                           )}
                           <button
+                            onClick={() => setViewingApplication(application)}
+                            className="px-4 py-2 text-sm text-[#4A1D7A] dark:text-purple-100 border border-[#4A1D7A] hover:bg-[#F0E6FA] dark:hover:bg-[#351458]/60 rounded-lg font-medium"
+                          >
+                            View Application
+                          </button>
+                          <button
                             onClick={() => openApplicationPdf(application._id)}
                             className="px-4 py-2 text-sm text-white bg-[#4A1D7A] hover:bg-[#351458] rounded-lg"
                           >
@@ -803,6 +815,12 @@ const StudentApplications = () => {
                           </button>
                         )}
                         <button
+                          onClick={() => setViewingApplication(application)}
+                          className="px-3 py-1 text-sm text-[#4A1D7A] hover:bg-[#F0E6FA] rounded-lg font-medium"
+                        >
+                          View Application
+                        </button>
+                        <button
                           onClick={() => openApplicationPdf(application._id)}
                           className="px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 rounded-lg"
                         >
@@ -978,30 +996,37 @@ const StudentApplications = () => {
         </div>
       )}
 
+      {/* View Application Modal (shared across all dashboards) */}
+      {viewingApplication && (
+        <ApplicationDetailsModal
+          student={viewingApplication}
+          role={userRole}
+          onClose={() => setViewingApplication(null)}
+          onDocumentUploaded={(doc) => {
+            setViewingApplication(prev => mergeUploadedDocument(prev, doc));
+            setApplications(prev => prev.map(a => (a._id === viewingApplication._id ? mergeUploadedDocument(a, doc) : a)));
+          }}
+          onEdit={onEditApplication ? () => {
+            setViewingApplication(null);
+            onEditApplication();
+          } : undefined}
+        />
+      )}
+
       {/* Installments & Upload Receipt Modal */}
       {showInstallmentsModal && selectedAppForInstallments && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-[#231A2E] rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden flex flex-col"
-          >
-            <div className="p-4 border-b flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Payment Installments
-              </h3>
-              <button
-                onClick={() => setShowInstallmentsModal(false)}
-                className="text-gray-400 dark:text-gray-300 hover:text-gray-500 dark:text-gray-400"
-              >
-                <span className="sr-only">Close</span>
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="flex-1 overflow-auto p-6 bg-gray-50 dark:bg-[#1A1212]">
+        <PaymentModalShell
+          title="Payment Installments"
+          onClose={() => setShowInstallmentsModal(false)}
+          footer={
+            <button
+              onClick={() => setShowInstallmentsModal(false)}
+              className="px-4 py-2 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50"
+            >
+              Close
+            </button>
+          }
+        >
                 <div className="bg-white dark:bg-[#231A2E] rounded-lg border border-gray-200 overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50 dark:bg-[#1A1212]">
@@ -1102,18 +1127,7 @@ const StudentApplications = () => {
                         </button>
                     </motion.div>
                 )}
-            </div>
-            
-            <div className="p-4 border-t bg-gray-50 dark:bg-[#1A1212] flex justify-end">
-              <button
-                onClick={() => setShowInstallmentsModal(false)}
-                className="px-4 py-2 bg-white dark:bg-[#231A2E] border border-gray-300 rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:bg-[#1A1212]"
-              >
-                Close
-              </button>
-            </div>
-          </motion.div>
-        </div>
+        </PaymentModalShell>
       )}
     </div>
   );

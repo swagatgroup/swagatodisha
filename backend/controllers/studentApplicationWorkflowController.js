@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { canEditApplication, editLockedMessage } = require('../utils/applicationEditLock');
 const StudentApplication = require('../models/StudentApplication');
 const User = require('../models/User');
 const PDFGenerator = require('../utils/pdfGenerator');
@@ -30,6 +31,13 @@ const isInactiveCollegeSelection = async (newCollegeId, currentCollegeId) => {
     return !!college && college.isActive === false;
 };
 const INACTIVE_COLLEGE_MESSAGE = 'The selected institute is not accepting applications. Please choose another institute.';
+// Same rule for courses (stored on the application by name within the selected institute)
+const isInactiveCourseSelection = async (collegeId, courseName, currentCourseName) => {
+    if (!courseName || !collegeId || !mongoose.Types.ObjectId.isValid(collegeId)) return false;
+    if (currentCourseName && currentCourseName === courseName) return false;
+    return !!(await CollegeCourse.exists({ college: collegeId, courseName, isActive: false }));
+};
+const INACTIVE_COURSE_MESSAGE = 'The selected course is not accepting applications. Please choose another course.';
 
 const enrichCourseDetails = async (courseDetails) => {
     if (!courseDetails) return courseDetails;
@@ -68,6 +76,7 @@ const calculateTotalFees = async (courseDetails, category) => {
 // Document validation helper functions
 const validateDocumentRequirements = (documents, application) => {
     const errors = [];
+    const missing = []; // [{ key, label }] for UIs that let staff upload what's missing
     const warnings = [];
 
     // Base required documents
@@ -105,11 +114,13 @@ const validateDocumentRequirements = (documents, application) => {
             } else if (documents && typeof documents === 'object') {
                 uploadedDocsArr = Object.entries(documents).map(([key, doc]) => ({ documentType: key, filePath: doc.filePath || doc.url || doc.downloadUrl }));
             }
-            const hasPM = uploadedDocsArr.some(d => d && d.documentType === 'pm_kisan' && d.filePath);
-            const hasCM = uploadedDocsArr.some(d => d && d.documentType === 'cm_kisan' && d.filePath);
+            // Accept both the config keys (*_enrollment) and the older short keys
+            const hasPM = uploadedDocsArr.some(d => d && ['pm_kisan', 'pm_kisan_enrollment'].includes(d.documentType) && d.filePath);
+            const hasCM = uploadedDocsArr.some(d => d && ['cm_kisan', 'cm_kisan_enrollment'].includes(d.documentType) && d.filePath);
             
             if (!hasPM && !hasCM) {
                 errors.push(`Missing required document: EITHER PM Kisan OR CM Kisan Certificate is mandatory for Free Education (${cat})`);
+                missing.push({ key: 'pm_kisan_enrollment', label: 'PM Kisan or CM Kisan Certificate (either one)', anyOf: ['pm_kisan_enrollment', 'cm_kisan_enrollment'] });
             }
         }
     }
@@ -141,6 +152,7 @@ const validateDocumentRequirements = (documents, application) => {
 
         if (!uploadedDoc || !uploadedDoc.filePath) {
             errors.push(`Missing required document: ${reqDoc.label}`);
+            missing.push({ key: reqDoc.key, label: reqDoc.label });
         } else {
             // Validate file format
             const fileExtension = uploadedDoc.fileName?.split('.').pop()?.toLowerCase();
@@ -164,7 +176,7 @@ const validateDocumentRequirements = (documents, application) => {
         }
     });
 
-    return { errors, warnings };
+    return { errors, warnings, missing };
 };
 
 const calculateDocumentUploadStatus = (documents) => {
@@ -235,6 +247,9 @@ const createApplication = async (req, res) => {
 
         if (await isInactiveCollegeSelection(courseDetails?.selectedCollege)) {
             return res.status(400).json({ success: false, message: INACTIVE_COLLEGE_MESSAGE });
+        }
+        if (await isInactiveCourseSelection(courseDetails?.selectedCollege, courseDetails?.selectedCourse)) {
+            return res.status(400).json({ success: false, message: INACTIVE_COURSE_MESSAGE });
         }
 
         // Handle referral code if provided - search both User AND Admin models
@@ -622,6 +637,20 @@ const saveDraft = async (req, res) => {
             });
         }
 
+        // Edit lock: only Super Admin can edit once review has started
+        if (!canEditApplication(req.user.role, appDoc.status)) {
+            return res.status(403).json({
+                success: false,
+                message: editLockedMessage(appDoc.status),
+            });
+        }
+
+        // Status and fees are never set through a draft save (they have their own endpoints)
+        if (data && req.user.role !== 'super_admin') {
+            delete data.status;
+            delete data.financialStatus;
+        }
+
         // Update application data
         if (data) {
             // Convert date strings to Date objects for personalDetails
@@ -633,6 +662,9 @@ const saveDraft = async (req, res) => {
 
             if (data.courseDetails && await isInactiveCollegeSelection(data.courseDetails.selectedCollege, appDoc.courseDetails?.selectedCollege)) {
                 return res.status(400).json({ success: false, message: INACTIVE_COLLEGE_MESSAGE });
+            }
+            if (data.courseDetails && await isInactiveCourseSelection(data.courseDetails.selectedCollege || appDoc.courseDetails?.selectedCollege, data.courseDetails.selectedCourse, appDoc.courseDetails?.selectedCourse)) {
+                return res.status(400).json({ success: false, message: INACTIVE_COURSE_MESSAGE });
             }
 
             Object.keys(data).forEach((key) => {
@@ -2559,6 +2591,8 @@ const advanceWorkflowStep = async (req, res) => {
 // PDF upload/storage functions removed - PDFs are generated client-side only
 
 module.exports = {
+    validateDocumentRequirements,
+    calculateTotalFees,
     createApplication,
     updateApplication,
     saveDraft,
