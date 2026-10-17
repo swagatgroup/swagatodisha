@@ -227,7 +227,7 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
             setFilterSubmitterRole('all');
         }
     }, [agentId, staffId]);
-    const prevSortByRef = useRef('latest');
+    const prevFilterKeyRef = useRef(null);
 
     useEffect(() => {
         // Reset to page 1 when session changes (but not on initial mount)
@@ -311,32 +311,30 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
         
         console.log('🔄 StudentManagement: Fetching students for session:', selectedSession);
         
-        // Reset to page 1 when filters or sort changes
-        const hasFilterChanged = 
-            filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || 
-            filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || 
-            filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || 
-            filterCampus !== 'all' || filterSubmitterRole !== 'all' || debouncedSearchTerm !== '';
-        
-        // Check if sortBy has changed
-        const sortByChanged = prevSortByRef.current !== sortBy;
-        
-        if ((hasFilterChanged || sortByChanged) && currentPage !== 1) {
-            prevSortByRef.current = sortBy; // Update ref after detecting change
+        // Reset to page 1 only when a filter/sort/search actually changed since the last fetch.
+        // (Comparing against defaults instead kept snapping back to page 1 whenever any filter was set.)
+        const filterKey = JSON.stringify([
+            debouncedSearchTerm, filterStatus, filterCourse, filterCategory,
+            filterCollege, filterGender, filterDistrict, filterCity, filterState,
+            filterStream, filterCampus, filterAdmissionType, filterSubmitterRole,
+            selectedSession, sortBy, listType
+        ]);
+        const filtersChanged = prevFilterKeyRef.current !== null && prevFilterKeyRef.current !== filterKey;
+        prevFilterKeyRef.current = filterKey;
+
+        if (filtersChanged && currentPage !== 1) {
             setCurrentPage(1);
             return; // Will trigger another fetch when page resets
         }
-        
-        // Update ref for next comparison
-        prevSortByRef.current = sortBy;
+
         fetchStudents();
         fetchRejectionReasons();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-        debouncedSearchTerm, filterStatus, filterCourse, filterCategory, 
-        filterCollege, filterGender, filterDistrict, filterCity, filterState, 
-        filterStream, filterCampus, filterAdmissionType, filterSubmitterRole, selectedSession, 
-        sortBy, listType
+        debouncedSearchTerm, filterStatus, filterCourse, filterCategory,
+        filterCollege, filterGender, filterDistrict, filterCity, filterState,
+        filterStream, filterCampus, filterAdmissionType, filterSubmitterRole, selectedSession,
+        sortBy, listType, currentPage
     ]);
 
     const fetchRejectionReasons = async () => {
@@ -4351,7 +4349,9 @@ const StudentManagement = ({ initialFilter = 'all', listType = 'main', agentId =
                                                 referrerId = admins[0]?._id;
                                             }
 
-                                            if (!referrerId) throw new Error('Could not determine referrer ID');
+                                            // For Direct Students the backend resolves the student account itself
+                                            // (user may not be populated for staff/agent-submitted applications)
+                                            if (!referrerId && migrateRole !== 'student') throw new Error('Could not determine referrer ID');
 
                                             await api.put(`/api/admin/students/${migrateStudent._id}/migrate`, {
                                                 referrerId,

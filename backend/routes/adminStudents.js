@@ -2123,11 +2123,13 @@ module.exports = router;
 // by assigning a referrer (agent / staff / super_admin)
 // PUT /api/admin/students/:id/migrate
 // ========================================================
-router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) => {
+// Staff are included: the Migrate button is shown on the Staff dashboard's Our/Direct Students lists too
+router.put('/:id/migrate', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const { referrerId, referrerRole } = req.body;
 
-        if (!referrerId || !referrerRole) {
+        // referrerId is optional for 'student' (moving to Direct Students): the student is resolved below
+        if (!referrerRole || (!referrerId && referrerRole !== 'student')) {
             return res.status(400).json({
                 success: false,
                 message: 'referrerId and referrerRole are required'
@@ -2150,7 +2152,26 @@ router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) =
 
         // Find the referrer in User or Admin model
         let referrer = null;
-        if (referrerRole === 'agent' || referrerRole === 'student') {
+        if (referrerRole === 'student') {
+            // Moving to Direct Students: the "referrer" is the student themself. Don't trust the
+            // client-supplied id - for staff/agent-submitted applications `user` may be missing or
+            // point at the submitter (when auto-creating the student account failed).
+            const studentFields = '_id fullName name referralCode role';
+            const candidateIds = [application.user, referrerId].filter(Boolean);
+            for (const id of candidateIds) {
+                const u = await User.findById(id).select(studentFields).lean();
+                if (u && u.role === 'student') { referrer = u; break; }
+            }
+            if (!referrer) {
+                const email = application.contactDetails?.email?.toLowerCase()?.trim();
+                const phone = application.contactDetails?.primaryPhone?.trim();
+                if (email) referrer = await User.findOne({ email, role: 'student' }).select(studentFields).lean();
+                if (!referrer && phone) referrer = await User.findOne({ phoneNumber: phone, role: 'student' }).select(studentFields).lean();
+            }
+            if (referrer && (!application.user || application.user.toString() !== referrer._id.toString())) {
+                application.user = referrer._id;
+            }
+        } else if (referrerRole === 'agent') {
             referrer = await User.findById(referrerId).select('_id fullName name referralCode role').lean();
         } else {
             const Admin = require('../models/Admin');
@@ -2158,7 +2179,12 @@ router.put('/:id/migrate', protect, authorize('super_admin'), async (req, res) =
         }
 
         if (!referrer) {
-            return res.status(404).json({ success: false, message: 'User/Referrer not found' });
+            return res.status(404).json({
+                success: false,
+                message: referrerRole === 'student'
+                    ? 'No student account found for this application, so it cannot be moved to Direct Students'
+                    : 'User/Referrer not found'
+            });
         }
 
         const referrerName = referrer.fullName || referrer.name || 
