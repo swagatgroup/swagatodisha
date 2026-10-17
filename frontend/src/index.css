@@ -55,6 +55,25 @@
   box-sizing: border-box;
 }
 
+/* ── Dark mode form fields (site-wide) ──
+   Body text is near-white in dark mode and form fields inherit it, so any dropdown/input that
+   doesn't set its own dark colours rendered light text on a light box. Fields that already
+   have dark: classes keep their own styling. */
+.dark {
+  color-scheme: dark; /* native dropdown lists, date pickers and scrollbars follow dark mode */
+}
+.dark :is(select, textarea, input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="hidden"])):not([class*="dark:bg-"]):not(.bg-transparent) {
+  background-color: #2A2035;
+}
+.dark :is(select, textarea, input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"], [type="color"], [type="submit"], [type="button"], [type="reset"], [type="image"], [type="hidden"])):not([class*="dark:text-"]) {
+  color: #F3F4F6;
+}
+.dark select option,
+.dark select optgroup {
+  background-color: #231A2E;
+  color: #F3F4F6;
+}
+
 /* ── Base Typography ── */
 html {
   scroll-behavior: smooth;

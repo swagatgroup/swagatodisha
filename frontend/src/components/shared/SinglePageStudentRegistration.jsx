@@ -270,6 +270,20 @@ const SinglePageStudentRegistration = ({
         return selected.isPaidOnly || false;
     };
 
+    // Free admission: SC/ST, or General/OBC through PM Kisan / CM Kisan, and only when the course isn't paid-only
+    const isFreeAdmissionAllowed = () => {
+        const cat = formData.personalDetails.category;
+        return ['SC', 'ST', 'General', 'OBC'].includes(cat) && !isCoursePaidOnly();
+    };
+
+    // Category or course changed and Free no longer applies -> back to Paid (both Free/Paid pickers read this field)
+    useEffect(() => {
+        if (formData.courseDetails.admissionType === 'free' && !isFreeAdmissionAllowed()) {
+            setFormData(prev => ({ ...prev, courseDetails: { ...prev.courseDetails, admissionType: 'paid' } }));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [formData.personalDetails.category, formData.courseDetails.selectedCourse, formData.courseDetails.stream, formData.courseDetails.admissionType]);
+
     // Get campuses for selected college
     const getCampusesForCollege = () => {
         if (!formData.courseDetails.selectedCollege) {
@@ -1516,6 +1530,63 @@ const SinglePageStudentRegistration = ({
                             </p>
                         )}
                     </div>
+
+                    {/* Admission Type (Free/Paid): same field as the choice in Course Details, so both stay in sync */}
+                    {(() => {
+                        const cat = formData.personalDetails.category;
+                        const isScSt = ['SC', 'ST'].includes(cat);
+                        const freeAllowed = isFreeAdmissionAllowed();
+                        const currentAdmType = formData.courseDetails.admissionType || 'paid';
+                        const setAdmissionType = (type) => setFormData(prev => ({
+                            ...prev,
+                            courseDetails: { ...prev.courseDetails, admissionType: type }
+                        }));
+                        return (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Admission Type *
+                                </label>
+                                <div className="flex items-center gap-6 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input
+                                            type="radio"
+                                            name="admissionTypePersonal"
+                                            value="paid"
+                                            checked={currentAdmType === 'paid'}
+                                            onChange={() => setAdmissionType('paid')}
+                                            className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid Admission</span>
+                                    </label>
+                                    <label className={`flex items-center gap-2 ${freeAllowed ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+                                        <input
+                                            type="radio"
+                                            name="admissionTypePersonal"
+                                            value="free"
+                                            checked={currentAdmType === 'free'}
+                                            disabled={!freeAllowed}
+                                            onChange={() => setAdmissionType('free')}
+                                            className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]"
+                                        />
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                            {isScSt ? 'Free Admission' : 'Free (Kisan)'}
+                                        </span>
+                                    </label>
+                                </div>
+                                <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">
+                                    {!cat
+                                        ? 'Select a category to see if free admission applies'
+                                        : isCoursePaidOnly()
+                                            ? 'The selected course is paid only'
+                                            : isScSt
+                                                ? 'SC/ST students are eligible for free education'
+                                                : freeAllowed
+                                                    ? 'General/OBC students with PM Kisan & CM Kisan enrollment are eligible for free education'
+                                                    : 'Course fee as per selected course'}
+                                </p>
+                            </div>
+                        );
+                    })()}
                 </div>
             </motion.div>
 
