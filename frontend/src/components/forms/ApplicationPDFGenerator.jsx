@@ -90,7 +90,8 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 if (['SC', 'ST'].includes(category)) {
                     mandatoryDocuments.push("caste_certificate", "income_certificate", "resident_certificate");
                 } else {
-                    mandatoryDocuments.push("caste_certificate", "income_certificate", "resident_certificate", "pm_kisan", "cm_kisan");
+                    // PM/CM Kisan are numbers on the form (checked by form validation), not uploads
+                    mandatoryDocuments.push("caste_certificate", "income_certificate", "resident_certificate");
                 }
             }
             const missingMandatory = mandatoryDocuments.filter(

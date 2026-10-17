@@ -1364,6 +1364,12 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         }
 
         const updateData = req.body;
+        // Remember what decides the fee, so it can be recalculated if any of it changes
+        const feeKeyBefore = JSON.stringify([
+            String(application.courseDetails?.selectedCollege || ''),
+            application.courseDetails?.selectedCourse || '',
+            application.courseDetails?.admissionType || 'paid'
+        ]);
 
         // Update status (super admin can set any status, staff cannot change status via this route)
         if (updateData.status && isSuperAdmin) {
@@ -1474,29 +1480,30 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
                 }
             }
             
-            if (isSuperAdmin) {
-                // Super admin can update all course details
-                Object.keys(courseDetailsUpdate).forEach(key => {
-                    if (courseDetailsUpdate[key] !== undefined) {
-                        application.courseDetails[key] = courseDetailsUpdate[key];
-                    }
-                });
-            } else {
-                // Staff cannot update institute, course, stream, or campus
-                const restrictedFields = ['institutionName', 'selectedCollege', 'selectedCourse', 'courseName', 'stream', 'campus'];
-                
-                restrictedFields.forEach(field => {
-                    if (courseDetailsUpdate[field] !== undefined) {
-                        delete courseDetailsUpdate[field];
-                    }
-                });
-                
-                // Only update non-restricted fields
-                Object.keys(courseDetailsUpdate).forEach(key => {
-                    if (!restrictedFields.includes(key) && courseDetailsUpdate[key] !== undefined) {
-                        application.courseDetails[key] = courseDetailsUpdate[key];
-                    }
-                });
+            // Staff and super admin can update all course details (institute, course, stream, campus, admission type)
+            Object.keys(courseDetailsUpdate).forEach(key => {
+                if (courseDetailsUpdate[key] !== undefined) {
+                    application.courseDetails[key] = courseDetailsUpdate[key];
+                }
+            });
+
+            // Free admission: SC/ST, or General/OBC with a PM Kisan / CM Kisan number, and never on a paid-only course/stream
+            if (application.courseDetails.admissionType === 'free') {
+                const category = application.personalDetails?.category;
+                if (!['SC', 'ST', 'General', 'OBC'].includes(category)) {
+                    return res.status(400).json({ success: false, message: `Free admission is not available for category ${category || 'N/A'}` });
+                }
+                const CollegeCourse = require('../models/CollegeCourse');
+                const course = application.courseDetails.selectedCollege && application.courseDetails.selectedCourse
+                    ? await CollegeCourse.findOne({ college: application.courseDetails.selectedCollege, courseName: application.courseDetails.selectedCourse }).lean()
+                    : null;
+                const stream = course?.streams?.find(st => st.name === application.courseDetails.stream);
+                if (course?.isPaidOnly || stream?.isPaidOnly) {
+                    return res.status(400).json({ success: false, message: 'This course/stream is paid-only and cannot be free' });
+                }
+                if (['General', 'OBC'].includes(category) && !application.personalDetails?.pmKisanNumber && !application.personalDetails?.cmKisanNumber) {
+                    return res.status(400).json({ success: false, message: 'Enter either PM Kisan Number or CM Kisan Number for Free (Kisan) admission' });
+                }
             }
         }
 
@@ -1530,6 +1537,21 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         }
         if (updateData.guardianDetails) {
             application.markModified('guardianDetails');
+        }
+
+        // Course or admission type changed: recalculate fees; payments already made are kept
+        const feeKeyAfter = JSON.stringify([
+            String(application.courseDetails?.selectedCollege || ''),
+            application.courseDetails?.selectedCourse || '',
+            application.courseDetails?.admissionType || 'paid'
+        ]);
+        if (feeKeyAfter !== feeKeyBefore) {
+            const { calculateTotalFees } = require('../controllers/studentApplicationWorkflowController');
+            const fees = await calculateTotalFees(application.courseDetails, application.personalDetails?.category);
+            if (!application.financialStatus) application.financialStatus = {};
+            application.financialStatus.totalFees = fees;
+            application.financialStatus.dueAmount = Math.max(fees - (application.financialStatus.paidAmount || 0), 0);
+            application.markModified('financialStatus');
         }
 
         await application.save();
@@ -2154,10 +2176,16 @@ router.put('/:id/admission-type', protect, authorize('staff', 'super_admin'), as
                 return res.status(400).json({ success: false, message: 'This course/stream is paid-only and cannot be converted to free' });
             }
 
-            const { missing } = validateDocumentRequirements(application.documents || [], {
+            const { missing, missingKisanNumber } = validateDocumentRequirements(application.documents || [], {
                 courseDetails: { admissionType: 'free' },
                 personalDetails: application.personalDetails
             });
+            if (missingKisanNumber) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Add the PM Kisan or CM Kisan number on the application before converting to free'
+                });
+            }
             if (missing.length > 0) {
                 return res.status(400).json({
                     success: false,

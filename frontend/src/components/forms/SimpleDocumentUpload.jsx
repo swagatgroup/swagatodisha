@@ -82,9 +82,8 @@ const SimpleDocumentUpload = ({ onDocumentsChange, initialDocuments = {}, isRequ
             return { ...doc, isRequired: isReq };
         }).filter(doc => {
             const docIdentifier = doc.id || doc.key;
-            // Hide Kisan docs for non-Kisan students
-            if ((docIdentifier === 'pm_kisan' || docIdentifier === 'cm_kisan') && 
-                !(admissionType === 'free' && ['General', 'OBC'].includes(category))) {
+            // PM/CM Kisan are registration numbers entered on the form, not uploads
+            if (['pm_kisan', 'cm_kisan', 'pm_kisan_enrollment', 'cm_kisan_enrollment'].includes(docIdentifier)) {
                 return false;
             }
             return true;

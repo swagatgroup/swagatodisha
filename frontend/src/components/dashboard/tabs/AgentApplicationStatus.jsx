@@ -17,6 +17,7 @@ import { showSuccess, showError, showConfirm, showLoading, closeLoading } from '
 import { getDocumentUrl } from '../../../utils/documentUtils';
 import { useSession } from '../../../contexts/SessionContext';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../../shared/ApplicationDetailsModal';
+import DocumentPreviewModal from '../../shared/DocumentPreviewModal';
 import { canEditApplication, getApplicationStatusLabel } from '../../../utils/applicationStatuses';
 
 const AgentApplicationStatus = ({ initialTab = 'all' }) => {
@@ -25,6 +26,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
     const [allApplications, setAllApplications] = useState([]); // Store all applications for tab counts
     const [selectedApplication, setSelectedApplication] = useState(null);
     const [showFullDetails, setShowFullDetails] = useState(false);
+    const [previewDoc, setPreviewDoc] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState(initialTab);
     const [resubmitting, setResubmitting] = useState(false);
@@ -906,7 +908,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                                     url: documentUrl,
                                                                                     fileName: doc.fileName
                                                                                 });
-                                                                                window.open(documentUrl, '_blank', 'noopener,noreferrer');
+                                                                                setPreviewDoc({ url: documentUrl, title: doc.documentType, mimeType: doc.mimeType });
                                                                             }}
                                                                             className="text-sm font-medium text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA] dark:hover:text-blue-300 underline cursor-pointer"
                                                                             title={`Click to view ${doc.documentType}`}
@@ -1379,14 +1381,13 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                                             <span>Document uploaded</span>
                                                                         </div>
                                                                         {editData.documents[doc.key].url && (
-                                                                            <a
-                                                                                href={getDocumentUrl(editData.documents[doc.key].url)}
-                                                                                target="_blank"
-                                                                                rel="noopener noreferrer"
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setPreviewDoc({ url: getDocumentUrl(editData.documents[doc.key].url), title: doc.label || doc.key, mimeType: editData.documents[doc.key].mimeType })}
                                                                                 className="text-xs text-[#387B95] hover:underline mt-1 block"
                                                                             >
                                                                                 View document
-                                                                            </a>
+                                                                            </button>
                                                                         )}
                                                                     </div>
                                                                 ) : (
@@ -1467,6 +1468,7 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                     </div>
                 </div>
             )}
+            <DocumentPreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />
         </div>
     );
 };

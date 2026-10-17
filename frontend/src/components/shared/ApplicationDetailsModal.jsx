@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StaffDocumentUploader from './StaffDocumentUploader';
+import DocumentPreviewModal from './DocumentPreviewModal';
 import { canEditApplication, normalizeApplicationStatus, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 
 // One "View Application" used by all four dashboards. Content and layout are identical for every
@@ -97,6 +98,7 @@ const ApplicationDetailsModal = ({
     footerActions = null,
 }) => {
     const [app, setApp] = useState(student);
+    const [previewDoc, setPreviewDoc] = useState(null);
     useEffect(() => { setApp(student); }, [student]);
 
     if (!app) return null;
@@ -206,6 +208,12 @@ const ApplicationDetailsModal = ({
                                 <Field label="Date of Birth" value={app.personalDetails?.dateOfBirth ? formatDate(app.personalDetails.dateOfBirth) : 'N/A'} />
                                 <Field label="Aadhar Number" value={app.personalDetails?.aadharNumber || app.aadharNumber} />
                                 <Field label="Category" value={app.personalDetails?.category || app.personalDetails?.status || app.category} />
+                                {(app.personalDetails?.pmKisanNumber || app.personalDetails?.cmKisanNumber) && (
+                                    <>
+                                        <Field label="PM Kisan Number" value={app.personalDetails?.pmKisanNumber} />
+                                        <Field label="CM Kisan Number" value={app.personalDetails?.cmKisanNumber} />
+                                    </>
+                                )}
                             </div>
                         </Section>
 
@@ -308,12 +316,12 @@ const ApplicationDetailsModal = ({
                                                         <StaffDocumentUploader applicationId={app._id} replaceType={doc.documentType} onUploaded={handleUploaded} />
                                                     )}
                                                     {doc.filePath && (
-                                                        <a href={doc.filePath} target="_blank" rel="noopener noreferrer" className="text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]" title="View document">
+                                                        <button type="button" onClick={() => setPreviewDoc({ url: doc.filePath, title: doc.documentType || doc.fileName, mimeType: doc.mimeType })} className="text-[#387B95] hover:text-blue-800 dark:text-[#60A5FA]" title="View document">
                                                             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                             </svg>
-                                                        </a>
+                                                        </button>
                                                     )}
                                                 </div>
                                             </div>
@@ -432,6 +440,7 @@ const ApplicationDetailsModal = ({
                     </div>
                 </div>
             </div>
+            <DocumentPreviewModal doc={previewDoc} onClose={() => setPreviewDoc(null)} />
         </div>
     );
 };

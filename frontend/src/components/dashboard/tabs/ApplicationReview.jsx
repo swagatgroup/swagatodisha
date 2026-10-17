@@ -2042,7 +2042,12 @@ const ApplicationReview = ({ initialTab = 'all_submission', userRole }) => {
                                             </div>
                                             <div className="flex items-center space-x-2">
                                                 <button
-                                                    onClick={() => window.open(getDocumentUrl(selectedApplication.applicationPdfUrl), '_blank')}
+                                                    onClick={() => handleDocumentView({
+                                                        documentType: 'Application Form',
+                                                        fileName: 'PDF',
+                                                        filePath: getDocumentUrl(selectedApplication.applicationPdfUrl),
+                                                        mimeType: 'application/pdf'
+                                                    })}
                                                     className="flex items-center px-3 py-1 text-[#4A1D7A] hover:text-purple-800 dark:text-[#9B6FCC]"
                                                 >
                                                     <EyeIcon className="h-4 w-4 mr-1" />

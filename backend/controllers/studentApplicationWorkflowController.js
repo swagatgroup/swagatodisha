@@ -78,6 +78,7 @@ const validateDocumentRequirements = (documents, application) => {
     const errors = [];
     const missing = []; // [{ key, label }] for UIs that let staff upload what's missing
     const warnings = [];
+    let missingKisanNumber = false;
 
     // Base required documents
     const requiredDocs = [...documentRequirements.required];
@@ -106,7 +107,7 @@ const validateDocumentRequirements = (documents, application) => {
             const residentDoc = getOptionalDoc('resident_certificate');
             if (residentDoc) requiredDocs.push(residentDoc);
             
-            // For General/OBC, check if EITHER pm_kisan OR cm_kisan is uploaded
+            // For General/OBC, check if EITHER a PM Kisan OR CM Kisan number is given (older applications may have the certificate uploaded instead)
             let hasKisan = false;
             let uploadedDocsArr = [];
             if (Array.isArray(documents)) {
@@ -115,12 +116,12 @@ const validateDocumentRequirements = (documents, application) => {
                 uploadedDocsArr = Object.entries(documents).map(([key, doc]) => ({ documentType: key, filePath: doc.filePath || doc.url || doc.downloadUrl }));
             }
             // Accept both the config keys (*_enrollment) and the older short keys
-            const hasPM = uploadedDocsArr.some(d => d && ['pm_kisan', 'pm_kisan_enrollment'].includes(d.documentType) && d.filePath);
-            const hasCM = uploadedDocsArr.some(d => d && ['cm_kisan', 'cm_kisan_enrollment'].includes(d.documentType) && d.filePath);
+            const hasPM = !!application.personalDetails?.pmKisanNumber || uploadedDocsArr.some(d => d && ['pm_kisan', 'pm_kisan_enrollment'].includes(d.documentType) && d.filePath);
+            const hasCM = !!application.personalDetails?.cmKisanNumber || uploadedDocsArr.some(d => d && ['cm_kisan', 'cm_kisan_enrollment'].includes(d.documentType) && d.filePath);
             
             if (!hasPM && !hasCM) {
-                errors.push(`Missing required document: EITHER PM Kisan OR CM Kisan Certificate is mandatory for Free Education (${cat})`);
-                missing.push({ key: 'pm_kisan_enrollment', label: 'PM Kisan or CM Kisan Certificate (either one)', anyOf: ['pm_kisan_enrollment', 'cm_kisan_enrollment'] });
+                errors.push(`Missing required detail: EITHER PM Kisan Number OR CM Kisan Number is mandatory for Free Education (${cat})`);
+                missingKisanNumber = true;
             }
         }
     }
@@ -176,7 +177,7 @@ const validateDocumentRequirements = (documents, application) => {
         }
     });
 
-    return { errors, warnings, missing };
+    return { errors, warnings, missing, missingKisanNumber };
 };
 
 const calculateDocumentUploadStatus = (documents) => {

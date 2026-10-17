@@ -91,6 +91,19 @@ const studentApplicationSchema = new mongoose.Schema({
             type: String,
             trim: true
         },
+        // PM Kisan / CM Kisan registration numbers (General/OBC free admission needs either one)
+        pmKisanNumber: {
+            type: String,
+            trim: true,
+            uppercase: true,
+            match: [/^[A-Z0-9]{0,20}$/, 'PM Kisan number can have up to 20 capital letters and digits']
+        },
+        cmKisanNumber: {
+            type: String,
+            trim: true,
+            uppercase: true,
+            match: [/^[A-Z0-9]{0,20}$/, 'CM Kisan number can have up to 20 capital letters and digits']
+        },
         religion: {
             type: String,
             trim: true

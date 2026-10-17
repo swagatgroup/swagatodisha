@@ -933,6 +933,11 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
 
 
     const handleEdit = async () => {
+        if (editData.courseDetails?.admissionType === 'free' && ['General', 'OBC'].includes(editData.personalDetails?.category)
+            && !editData.personalDetails?.pmKisanNumber && !editData.personalDetails?.cmKisanNumber) {
+            showError('Enter either PM Kisan Number or CM Kisan Number for Free (Kisan) admission');
+            return;
+        }
         try {
             showLoading('Updating student...');
 
@@ -945,7 +950,9 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     dateOfBirth: editData.personalDetails?.dateOfBirth,
                     gender: editData.personalDetails?.gender,
                     aadharNumber: editData.personalDetails?.aadharNumber,
-                    category: editData.personalDetails?.category
+                    category: editData.personalDetails?.category,
+                    pmKisanNumber: editData.personalDetails?.pmKisanNumber || '',
+                    cmKisanNumber: editData.personalDetails?.cmKisanNumber || ''
                 },
                 contactDetails: {
                     email: editData.contactDetails?.email,
@@ -966,6 +973,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     customCourse: editData.courseDetails?.customCourse || '',
                     stream: editData.courseDetails?.stream || '',
                     campus: editData.courseDetails?.campus,
+                    admissionType: editData.courseDetails?.admissionType || 'paid',
                     institutionName: colleges.find(c => c._id === editData.courseDetails?.selectedCollege)?.name || ''
                 },
                 guardianDetails: {
@@ -1491,7 +1499,9 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     dateOfBirth: formatDateForInput(student.personalDetails?.dateOfBirth) || '',
                     gender: student.personalDetails?.gender || '',
                     aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
-                    category: student.personalDetails?.category || ''
+                    category: student.personalDetails?.category || '',
+                    pmKisanNumber: student.personalDetails?.pmKisanNumber || '',
+                    cmKisanNumber: student.personalDetails?.cmKisanNumber || ''
                 },
                 contactDetails: {
                     email: student.contactDetails?.email || student.email || '',
@@ -1512,7 +1522,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     selectedCourse: student.courseDetails?.selectedCourse || student.courseDetails?.courseName || '',
                     customCourse: student.courseDetails?.customCourse || '',
                     stream: student.courseDetails?.stream || '',
-                    campus: getCampusId(student.courseDetails?.campus) || ''
+                    campus: getCampusId(student.courseDetails?.campus) || '',
+                    admissionType: student.courseDetails?.admissionType === 'free' ? 'free' : 'paid'
                 },
                 guardianDetails: {
                     guardianName: student.guardianDetails?.guardianName || '',
@@ -3129,6 +3140,55 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                 <option value="PwD">PwD</option>
                                             </select>
                                         </div>
+                                        {/* Admission Type (Free/Paid): free only for SC/ST and General/OBC (Kisan), never for paid-only courses */}
+                                        {(() => {
+                                            const cat = editData.personalDetails?.category;
+                                            const course = getCoursesForCollege().find(c => c.courseName === editData.courseDetails?.selectedCourse);
+                                            const stream = (course?.streams || []).find(st => typeof st === 'object' && st.name === editData.courseDetails?.stream);
+                                            const freeAllowed = ['SC', 'ST', 'General', 'OBC'].includes(cat) && !course?.isPaidOnly && !stream?.isPaidOnly;
+                                            const admissionType = editData.courseDetails?.admissionType === 'free' && freeAllowed ? 'free' : 'paid';
+                                            const setAdmissionType = (type) => setEditData(prev => ({
+                                                ...prev,
+                                                courseDetails: { ...prev.courseDetails, admissionType: type }
+                                            }));
+                                            return (
+                                                <>
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                            Admission Type *
+                                                        </label>
+                                                        <div className="flex items-center gap-6 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md">
+                                                            <label className="flex items-center gap-2 cursor-pointer">
+                                                                <input type="radio" name="editAdmissionType" checked={admissionType === 'paid'} onChange={() => setAdmissionType('paid')} className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]" />
+                                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Paid</span>
+                                                            </label>
+                                                            <label className={`flex items-center gap-2 ${freeAllowed ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+                                                                <input type="radio" name="editAdmissionType" checked={admissionType === 'free'} disabled={!freeAllowed} onChange={() => setAdmissionType('free')} className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]" />
+                                                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{['SC', 'ST'].includes(cat) ? 'Free' : 'Free (Kisan)'}</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    {admissionType === 'free' && ['General', 'OBC'].includes(cat) && [['pmKisanNumber', 'PM Kisan Number'], ['cmKisanNumber', 'CM Kisan Number']].map(([field, label]) => (
+                                                        <div key={field}>
+                                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                                {label} <span className="text-xs text-gray-500 dark:text-gray-300">(either one)</span>
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={editData.personalDetails?.[field] || ''}
+                                                                onChange={(e) => setEditData(prev => ({
+                                                                    ...prev,
+                                                                    personalDetails: { ...prev.personalDetails, [field]: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) }
+                                                                }))}
+                                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                                                                placeholder="e.g. UP89G70308900G"
+                                                                maxLength="20"
+                                                            />
+                                                        </div>
+                                                    ))}
+                                                </>
+                                            );
+                                        })()}
                                     </div>
                                 </div>
 
@@ -3414,10 +3474,10 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                     </div>
                                 </div>
                                 
-                                {/* Education Details Section - RESTRICTED for Staff */}
+                                {/* Education Details Section */}
                                 <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
                                     <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                                        Education Details {!isSuperAdmin && <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(Read-only for Staff)</span>}
+                                        Education Details
                                     </h4>
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
@@ -3441,7 +3501,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                 }
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                                 required
-                                                disabled={!isSuperAdmin || loadingColleges}
+                                                disabled={loadingColleges}
                                             >
                                                 <option value="">{loadingColleges ? "Loading institutions..." : "Select Institution"}</option>
                                                 {colleges.map((college) => (
@@ -3470,7 +3530,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                 }
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                                 required
-                                                disabled={!isSuperAdmin || !editData.courseDetails?.selectedCollege || getCoursesForCollege().length === 0}
+                                                disabled={!editData.courseDetails?.selectedCollege || getCoursesForCollege().length === 0}
                                             >
                                                 <option value="">
                                                     {!editData.courseDetails?.selectedCollege
@@ -3509,7 +3569,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                             : 'border-yellow-300 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 text-gray-700 dark:text-gray-300'
                                                 }`}
                                                 required
-                                                disabled={!isSuperAdmin || !editData.courseDetails?.selectedCollege}
+                                                disabled={!editData.courseDetails?.selectedCollege}
                                             >
                                                 <option value="">
                                                     {!editData.courseDetails?.selectedCollege
@@ -3544,7 +3604,6 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                         },
                                                     }))
                                                 }
-                                                disabled={!isSuperAdmin}
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                             >
                                                 <option value="">Select Stream (Optional)</option>
@@ -3568,7 +3627,6 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                     ...editData,
                                                     courseDetails: { ...editData.courseDetails, customCourse: e.target.value }
                                                 })}
-                                                disabled={!isSuperAdmin}
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                                 placeholder="Enter custom course name if 'Other' is selected"
                                             />

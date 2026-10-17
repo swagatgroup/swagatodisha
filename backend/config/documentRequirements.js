@@ -111,29 +111,8 @@ const documentRequirements = {
             validation: {
                 required: false
             }
-        },
-        {
-            key: 'pm_kisan_enrollment',
-            label: 'PM Kisan Enrollment',
-            description: 'PM Kisan enrollment certificate (for OBC free education)',
-            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: 10 * 1024 * 1024, // 10MB
-            validation: {
-                required: false,
-                category: 'obc_benefit'
-            }
-        },
-        {
-            key: 'cm_kisan_enrollment',
-            label: 'CM Kisan Enrollment',
-            description: 'CM Kisan enrollment certificate (for OBC free education)',
-            allowedFormats: ['jpg', 'jpeg', 'png', 'pdf'],
-            maxSize: 10 * 1024 * 1024, // 10MB
-            validation: {
-                required: false,
-                category: 'obc_benefit'
-            }
         }
+        // PM Kisan / CM Kisan are registration numbers entered on the form, not uploads
     ],
 
     // Custom document upload
