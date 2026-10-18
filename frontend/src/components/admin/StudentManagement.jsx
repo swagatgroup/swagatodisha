@@ -2090,6 +2090,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 <span>Download Photos</span>
                             </button>
 
+                            {isSuperAdmin && (
                             <button
                                 onClick={() => {
                                     setMigrateStudent(null);
@@ -2104,6 +2105,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 <i className="fa-solid fa-arrow-right"></i>
                                 <span>Migrate</span>
                             </button>
+                            )}
                             
                             {isSuperAdmin && (
                                 <button
