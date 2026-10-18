@@ -177,6 +177,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     const [migrateMembers, setMigrateMembers] = useState([]);
     const [migrateSelectedId, setMigrateSelectedId] = useState('');
     const [migrateLoading, setMigrateLoading] = useState(false);
+    const [migrateBulkIds, setMigrateBulkIds] = useState([]); // For bulk migrate
     const [showApplicationPDF, setShowApplicationPDF] = useState(false);
     const [selectedStudentForPDF, setSelectedStudentForPDF] = useState(null);
     const [editData, setEditData] = useState({});
@@ -2088,6 +2089,21 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 <i className="fa-solid fa-download"></i>
                                 <span>Download Photos</span>
                             </button>
+
+                            <button
+                                onClick={() => {
+                                    setMigrateStudent(null);
+                                    setMigrateBulkIds([...selectedStudents]);
+                                    setMigrateRole('');
+                                    setMigrateMembers([]);
+                                    setMigrateSelectedId('');
+                                    setShowMigrateModal(true);
+                                }}
+                                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors flex items-center space-x-2 shadow-sm"
+                            >
+                                <i className="fa-solid fa-arrow-right"></i>
+                                <span>Migrate</span>
+                            </button>
                             
                             {isSuperAdmin && (
                                 <button
@@ -2289,6 +2305,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                 <button
                                                     onClick={() => {
                                                         setMigrateStudent(student);
+                                                        setMigrateBulkIds([]);
                                                         setMigrateRole('');
                                                         setMigrateMembers([]);
                                                         setMigrateSelectedId('');
@@ -3895,13 +3912,13 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 </div>
             )}
         {/* ===== MIGRATE STUDENT MODAL ===== */}
-            {showMigrateModal && migrateStudent && (
+            {showMigrateModal && (migrateStudent || migrateBulkIds.length > 0) && (
                 <div className="fixed inset-0 z-50 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen px-4">
                         <div className="fixed inset-0 bg-black bg-opacity-50" onClick={() => setShowMigrateModal(false)} />
                         <div className="relative bg-white dark:bg-[#231A2E] rounded-xl shadow-2xl w-full max-w-md p-6 z-10">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">Migrate Student</h3>
+                                <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">{migrateStudent ? 'Migrate Student' : `Migrate ${migrateBulkIds.length} Students`}</h3>
                                 <button onClick={() => setShowMigrateModal(false)} className="text-gray-400 dark:text-gray-300 hover:text-gray-600 dark:hover:text-gray-200">
                                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -3910,7 +3927,11 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             </div>
 
                             <p className="text-sm text-gray-500 dark:text-gray-300 mb-5">
-                                Student: <strong className="text-gray-800 dark:text-gray-200">{migrateStudent?.personalDetails?.fullName || 'Unknown'}</strong>
+                                {migrateStudent ? (
+                                    <>Student: <strong className="text-gray-800 dark:text-gray-200">{migrateStudent?.personalDetails?.fullName || 'Unknown'}</strong></>
+                                ) : (
+                                    <>Selected: <strong className="text-gray-800 dark:text-gray-200">{migrateBulkIds.length} student{migrateBulkIds.length > 1 ? 's' : ''}</strong></>
+                                )}
                                 <br />Select who referred / influenced this student, or move them to Direct Students.
                             </p>
 
@@ -4006,14 +4027,10 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                         setMigrateLoading(true);
                                         try {
                                             let referrerId = migrateSelectedId;
+                                            const targets = migrateStudent ? [migrateStudent] : students.filter(s => migrateBulkIds.includes(s._id));
                                             
-                                            // For student role (Direct Student)
-                                            if (migrateRole === 'student') {
-                                                // We use the student's own user ID as the submitter
-                                                referrerId = migrateStudent.user?._id || migrateStudent.user;
-                                            }
                                             // For super_admin: get admins list and pick first super_admin, or use a fixed ID
-                                            else if (migrateRole === 'super_admin') {
+                                            if (migrateRole === 'super_admin') {
                                                 const res = await api.get('/api/admin/staff?role=super_admin&limit=1');
                                                 const admins = res.data?.data?.staff || res.data?.staff || [];
                                                 referrerId = admins[0]?._id;
@@ -4023,15 +4040,34 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                             // (user may not be populated for staff/agent-submitted applications)
                                             if (!referrerId && migrateRole !== 'student') throw new Error('Could not determine referrer ID');
 
-                                            await api.put(`/api/admin/students/${migrateStudent._id}/migrate`, {
-                                                referrerId,
-                                                referrerRole: migrateRole
-                                            });
+                                            let failed = 0;
+                                            let lastError = null;
+                                            for (const target of targets) {
+                                                try {
+                                                    await api.put(`/api/admin/students/${target._id}/migrate`, {
+                                                        // For student role (Direct Student) we use the student's own user ID as the submitter
+                                                        referrerId: migrateRole === 'student' ? (target.user?._id || target.user) : referrerId,
+                                                        referrerRole: migrateRole
+                                                    });
+                                                } catch (e) {
+                                                    failed++;
+                                                    lastError = e;
+                                                }
+                                            }
+                                            if (failed === targets.length) throw lastError || new Error('Migration failed');
+
                                             setShowMigrateModal(false);
+                                            if (!migrateStudent) {
+                                                setMigrateBulkIds([]);
+                                                setSelectedStudents([]);
+                                            }
                                             // Refresh the student list
                                             fetchStudents();
-                                            const successMsg = migrateRole === 'student' ? 'Student moved to Direct Students list.' : 'Student moved to Our Students list.';
-                                            Swal.fire({ icon: 'success', title: 'Migrated!', text: successMsg, timer: 2000, showConfirmButton: false });
+                                            const listName = migrateRole === 'student' ? 'Direct Students' : 'Our Students';
+                                            const successMsg = targets.length === 1
+                                                ? `Student moved to ${listName} list.`
+                                                : `${targets.length - failed} of ${targets.length} students moved to ${listName} list.`;
+                                            Swal.fire({ icon: failed ? 'warning' : 'success', title: 'Migrated!', text: successMsg, timer: failed ? undefined : 2000, showConfirmButton: !!failed });
                                         } catch (err) {
                                             Swal.fire({ icon: 'error', title: 'Error', text: err.response?.data?.message || err.message });
                                         } finally {
