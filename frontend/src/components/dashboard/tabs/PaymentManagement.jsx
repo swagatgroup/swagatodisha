@@ -123,7 +123,8 @@ const PaymentManagement = () => {
                 page: loadStatsOnly ? 1 : currentPage,
                 limit: loadStatsOnly ? 1 : itemsPerPage,
                 sortBy: 'personalDetails.fullName',
-                sortOrder: 'asc'
+                sortOrder: 'asc',
+                listType: 'all' // backend defaults to 'main' (Our Students), which hides Direct students
             });
 
             if (debouncedSearch.trim()) {
@@ -826,7 +827,7 @@ const PaymentManagement = () => {
                                                     finStatus.paymentStatus === 'PARTIAL' ? 'bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-200' : 
                                                     finStatus.paymentStatus === 'OVERDUE' ? 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200' : 
                                                     'bg-gray-100 dark:bg-gray-800/60 text-gray-800 dark:text-gray-200'}`}>
-                                                    {finStatus.paymentStatus}
+                                                    {app.courseDetails?.admissionType === 'free' ? 'NO PAYMENT' : (finStatus.paymentStatus || 'PENDING')}
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

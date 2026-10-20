@@ -14,6 +14,7 @@ import {
 } from '../../utils/sweetAlert';
 import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 import StaffDocumentUploader from '../shared/StaffDocumentUploader';
+import AdmissionTypeFilter from '../shared/AdmissionTypeFilter';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../shared/ApplicationDetailsModal';
 import { APPLICATION_STATUS_OPTIONS, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 
@@ -1121,6 +1122,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     ...(filterState !== 'all' && { state: filterState }),
                     ...(filterStream !== 'all' && { stream: filterStream }),
                     ...(filterCampus !== 'all' && { campus: filterCampus }),
+                    ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
                     ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
                 };
 
@@ -1581,6 +1583,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 ...(filterState !== 'all' && { state: filterState }),
                 ...(filterStream !== 'all' && { stream: filterStream }),
                 ...(filterCampus !== 'all' && { campus: filterCampus }),
+                ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
             };
 
@@ -1891,15 +1894,11 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             <option key={gender} value={gender}>{gender}</option>
                         ))}
                     </select>
-                    <select
+                    <AdmissionTypeFilter
                         value={filterAdmissionType}
-                        onChange={(e) => setFilterAdmissionType(e.target.value)}
+                        onChange={setFilterAdmissionType}
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
-                    >
-                        <option value="all">All Adm. Types</option>
-                        <option value="paid">Paid</option>
-                        <option value="free">Free</option>
-                    </select>
+                    />
 
                     {/* Secondary Filters - Geographical */}
                     <select

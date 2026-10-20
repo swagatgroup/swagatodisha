@@ -254,7 +254,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                     const statusKey = item._id || 'PENDING';
                     if (statusKey === 'PARTIAL') paymentStats.PARTIAL = item.count;
                     else if (statusKey === 'OVERDUE') paymentStats.OVERDUE = item.count;
-                    else if (statusKey === 'COMPLETE') paymentStats.COMPLETED = item.count;
+                    else if (statusKey === 'COMPLETED') paymentStats.COMPLETED = item.count;
                     else {
                         paymentStats.PENDING += item.count;
                     }
@@ -402,20 +402,9 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             });
         }
 
-        // Filter by admissionType (free/paid)
-        if (admissionType) {
-            if (admissionType === 'paid') {
-                // Older records without this field are assumed paid
-                andConditions.push({
-                    $or: [
-                        { 'courseDetails.admissionType': 'paid' },
-                        { 'courseDetails.admissionType': { $exists: false } },
-                        { 'courseDetails.admissionType': null }
-                    ]
-                });
-            } else {
-                filter['courseDetails.admissionType'] = admissionType;
-            }
+        // Filter by admissionType (free/paid); records with no admission type only show under ALL
+        if (admissionType === 'paid' || admissionType === 'free') {
+            filter['courseDetails.admissionType'] = admissionType;
         }
 
         // Filter by referralType
@@ -2278,10 +2267,26 @@ router.put('/:id/migrate', protect, authorize('staff', 'super_admin'), async (re
 
         // Update the application
         if (referrerRole === 'student') {
-            // Convert back to direct student: remove referralInfo and reset submitter to student
+            // Convert back to direct student: drop every link to the previous agent. The agent's
+            // list, stats and installment routes match referredBy OR assignedAgent OR submittedBy.
+            const previousAgentId = application.assignedAgent
+                || (application.referralInfo?.referralType === 'agent' ? application.referralInfo.referredBy : null)
+                || (application.submitterRole === 'agent' ? application.submittedBy : null);
+            // Staff see their agents' students through the agent link, so keep that staff assigned
+            if (previousAgentId && !application.assignedStaff) {
+                const previousAgent = await User.findById(previousAgentId).select('assignedStaff').lean();
+                if (previousAgent?.assignedStaff) application.assignedStaff = previousAgent.assignedStaff;
+            }
             application.referralInfo = undefined;
-            if (referrer._id) application.submittedBy = referrer._id; // submittedBy is required; keep it if there's no account
+            application.assignedAgent = null;
+            // submittedBy is required; with no student account it goes to the admin doing the migration
+            application.submittedBy = referrer._id || req.user._id;
             application.submitterRole = 'student';
+            // Student accounts auto-created on an agent submission record the agent as createdBy
+            if (previousAgentId && referrer._id) {
+                await User.updateOne({ _id: referrer._id, createdBy: previousAgentId }, { $set: { createdBy: null } });
+            }
+            // Payments are untouched: installments live on the application and Payment docs key on the student
         } else {
             // Convert to Our Students: set referralInfo and change ownership
             application.referralInfo = {

@@ -278,7 +278,8 @@ router.get("/my-students", async (req, res) => {
       academicYear,
       session: sessionParam,
       sortBy = 'createdAt',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
+      admissionType
     } = req.query;
 
     console.log("🔍 Agent ID:", agentId);
@@ -311,6 +312,8 @@ router.get("/my-students", async (req, res) => {
 
     // Add status filter
     if (status) filter.status = status;
+    // Records with no admission type only show under ALL
+    if (admissionType === 'paid' || admissionType === 'free') filter['courseDetails.admissionType'] = admissionType;
     if (currentClass) filter.currentClass = currentClass;
     if (academicYear) filter.academicYear = academicYear;
 

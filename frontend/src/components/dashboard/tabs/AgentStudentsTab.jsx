@@ -15,6 +15,7 @@ import {
 } from "@heroicons/react/24/outline";
 import AgentStudentFinancialsModal from "./AgentStudentFinancialsModal";
 import TablePagination from "../../shared/TablePagination";
+import AdmissionTypeFilter from "../../shared/AdmissionTypeFilter";
 import ApplicationDetailsModal, { mergeUploadedDocument } from "../../shared/ApplicationDetailsModal";
 import { APPLICATION_STATUS_OPTIONS, normalizeApplicationStatus, getApplicationStatusLabel } from "../../../utils/applicationStatuses";
 import { getStatusBadgeClasses } from "../../../utils/statusColors";
@@ -205,6 +206,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
         ...(filters.search && { search: filters.search }),
         ...(statusForApi && { status: statusForApi }),
         ...(filters.course && { course: filters.course }),
+        ...(filters.admissionType && { admissionType: filters.admissionType }),
       };
 
       console.log('📤 Loading students with params:', params);
@@ -530,11 +532,10 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
       student.courseDetails?.selectedCourse === filters.course ||
       student.courseDetails?.courseName === filters.course;
 
-    // Admission Type filter
+    // Admission Type filter (also applied by the backend); no admission type only shows under ALL
     const matchesAdmissionType =
       !filters.admissionType ||
-      student.courseDetails?.admissionType === filters.admissionType ||
-      (filters.admissionType === 'paid' && !student.courseDetails?.admissionType); // Assume paid if undefined for older records
+      student.courseDetails?.admissionType === filters.admissionType;
 
     // Registered by me / Used my referral code
     const matchesListType =
@@ -779,17 +780,14 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Admission Type
             </label>
-            <select
+            <AdmissionTypeFilter
               value={filters.admissionType}
-              onChange={(e) =>
-                setFilters((prev) => ({ ...prev, admissionType: e.target.value }))
+              allValue=""
+              onChange={(value) =>
+                setFilters((prev) => ({ ...prev, admissionType: value }))
               }
               className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-            >
-              <option value="">All Types</option>
-              <option value="paid">Paid</option>
-              <option value="free">Free</option>
-            </select>
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
