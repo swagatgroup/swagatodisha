@@ -733,6 +733,7 @@ const saveDraft = async (req, res) => {
             data: appDoc,
         });
     } catch (error) {
+        if (error.code === "SEATS_FULL") return res.status(409).json({ success: false, message: error.message });
         console.error("Save draft error:", error);
         res.status(500).json({
             success: false,
@@ -857,6 +858,7 @@ const submitApplication = async (req, res) => {
             },
         });
     } catch (error) {
+        if (error.code === "SEATS_FULL") return res.status(409).json({ success: false, message: error.message });
         console.error("Submit application error:", error);
         res.status(500).json({
             success: false,

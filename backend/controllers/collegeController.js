@@ -246,12 +246,64 @@ const getCollegeCourses = asyncHandler(async (req, res) => {
     });
 });
 
+// BOARD courses need at least one session; UNIVERSITY courses need a whole number of semesters (min 1).
+// Returns { error } or the category fields to save (the other category's field is cleared).
+const parseCourseCategory = ({ category, sessions, semesters }) => {
+    if (!['BOARD', 'UNIVERSITY'].includes(category)) {
+        return { error: 'Category is required (BOARD or UNIVERSITY)' };
+    }
+    if (category === 'BOARD') {
+        const cleanSessions = [...new Set((Array.isArray(sessions) ? sessions : [])
+            .map(s => String(s).trim().toUpperCase())
+            .filter(Boolean))];
+        if (cleanSessions.length === 0) {
+            return { error: 'Add at least one session for a BOARD course' };
+        }
+        return { category, sessions: cleanSessions, semesters: null };
+    }
+    const semesterCount = Number(semesters);
+    if (semesters === '' || semesters === null || !Number.isInteger(semesterCount) || semesterCount < 1) {
+        return { error: 'Number of semesters must be a whole number of at least 1' };
+    }
+    return { category, sessions: [], semesters: semesterCount };
+};
+
+// Duration (whole years, min 1) and seats (LIMITED needs a seat count, min 1).
+// Returns { error } or the fields to save.
+const parseDurationAndSeats = ({ durationYears, seatType, seatLimit }) => {
+    const years = Number(durationYears);
+    if (durationYears === '' || durationYears === null || !Number.isInteger(years) || years < 1) {
+        return { error: 'Duration must be a whole number of years (at least 1)' };
+    }
+    if (!['LIMITED', 'UNLIMITED'].includes(seatType)) {
+        return { error: 'Seats must be LIMITED or UNLIMITED' };
+    }
+    if (seatType === 'UNLIMITED') {
+        return { durationYears: years, seatType, seatLimit: null };
+    }
+    const seats = Number(seatLimit);
+    if (seatLimit === '' || seatLimit === null || !Number.isInteger(seats) || seats < 1) {
+        return { error: 'Number of seats must be a whole number of at least 1' };
+    }
+    return { durationYears: years, seatType, seatLimit: seats };
+};
+
 // @desc    Create course for a college
 // @route   POST /api/admin/colleges/:collegeId/courses
 // @access  Private (Super Admin, Staff)
 const createCollegeCourse = asyncHandler(async (req, res) => {
     const { collegeId } = req.params;
     const { courseName, courseCode, streams, isActive, price, isPaidOnly } = req.body;
+
+    const categoryFields = parseCourseCategory(req.body);
+    const durationSeatFields = parseDurationAndSeats(req.body);
+    const fieldError = categoryFields.error || durationSeatFields.error;
+    if (fieldError) {
+        return res.status(400).json({
+            success: false,
+            message: fieldError
+        });
+    }
 
     // Check if college exists
     const college = await College.findById(collegeId);
@@ -292,6 +344,8 @@ const createCollegeCourse = asyncHandler(async (req, res) => {
         courseCode: courseCode ? courseCode.trim() : undefined,
         price: price !== undefined ? parseFloat(price) : 0,
         isPaidOnly: isPaidOnly === true || isPaidOnly === 'true',
+        ...categoryFields,
+        ...durationSeatFields,
         streams: processedStreams,
         isActive: isActive !== 'false' && isActive !== false,
         createdBy: req.user._id,
@@ -369,6 +423,30 @@ const updateCollegeCourse = asyncHandler(async (req, res) => {
         isActive: isActive !== undefined ? (isActive === 'true' || isActive === true) : course.isActive,
         updatedBy: req.user._id
     };
+
+    // Category is validated whenever it is sent (the edit form always sends it); the Active toggle
+    // sends only isActive, so it still works on older courses that have no category yet.
+    if (req.body.category !== undefined) {
+        const categoryFields = parseCourseCategory(req.body);
+        if (categoryFields.error) {
+            return res.status(400).json({
+                success: false,
+                message: categoryFields.error
+            });
+        }
+        Object.assign(updateData, categoryFields);
+    }
+    // Same for duration/seats: validated when sent (edit form), untouched by the Active toggle
+    if (req.body.durationYears !== undefined || req.body.seatType !== undefined) {
+        const durationSeatFields = parseDurationAndSeats(req.body);
+        if (durationSeatFields.error) {
+            return res.status(400).json({
+                success: false,
+                message: durationSeatFields.error
+            });
+        }
+        Object.assign(updateData, durationSeatFields);
+    }
 
     course = await CollegeCourse.findByIdAndUpdate(
         courseId,

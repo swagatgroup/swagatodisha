@@ -1043,6 +1043,9 @@ const initializeConnections = async () => {
         await connectDB();
         console.log('✅ MongoDB Connected Successfully');
 
+        // Session rollover (1 March): promote/complete students; checks now and every 6 hours
+        require('./utils/sessionRollover').startSessionRolloverScheduler();
+
         // One-time fix: drop stale aadharNumber index (missing sparse:true) so Mongoose recreates it correctly
         try {
             const mongoose = require('mongoose');

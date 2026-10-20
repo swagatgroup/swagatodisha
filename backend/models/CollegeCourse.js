@@ -24,6 +24,34 @@ const collegeCourseSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    // BOARD courses run in sessions, UNIVERSITY courses in semesters.
+    // Not schema-required: courses created before this field have no category until an admin sets it.
+    category: {
+        type: String,
+        enum: ['BOARD', 'UNIVERSITY']
+    },
+    sessions: [{
+        type: String,
+        trim: true
+    }],
+    semesters: {
+        type: Number,
+        min: 1
+    },
+    // Course length; the session rollover marks students COMPLETED after their final year
+    durationYears: {
+        type: Number,
+        min: 1
+    },
+    // Missing on older courses = UNLIMITED. seatLimit applies per batch (registration year).
+    seatType: {
+        type: String,
+        enum: ['LIMITED', 'UNLIMITED']
+    },
+    seatLimit: {
+        type: Number,
+        min: 1
+    },
     streams: [{
         name: {
             type: String,

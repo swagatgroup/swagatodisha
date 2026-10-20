@@ -160,6 +160,7 @@ router.post('/submit-application', protect, authorize('staff', 'super_admin'), a
             data: application,
         });
     } catch (error) {
+        if (error.code === 'SEATS_FULL') return res.status(409).json({ success: false, message: error.message });
         console.error("Submit application error:", error);
         res.status(500).json({
             success: false,

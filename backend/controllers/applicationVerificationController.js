@@ -314,6 +314,7 @@ const resubmitApplication = async (req, res) => {
             }
         });
     } catch (error) {
+        if (error.code === 'SEATS_FULL') return res.status(409).json({ success: false, message: error.message });
         console.error('Resubmit application error:', error);
         res.status(500).json({
             success: false,

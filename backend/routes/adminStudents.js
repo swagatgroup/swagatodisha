@@ -171,6 +171,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             admissionType,
             staffId,   // Super admin: filter to a specific staff's students (own + their agents)
             agentId,   // Super admin: filter to a specific agent's students
+            academicStatus, // ACTIVE / COMPLETED / DISCONTINUED (admitted students only)
+            yearOfStudy,
         } = req.query;
 
 
@@ -405,6 +407,13 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         // Filter by admissionType (free/paid); records with no admission type only show under ALL
         if (admissionType === 'paid' || admissionType === 'free') {
             filter['courseDetails.admissionType'] = admissionType;
+        }
+
+        if (['ACTIVE', 'COMPLETED', 'DISCONTINUED'].includes(academicStatus)) {
+            filter['academic.status'] = academicStatus;
+        }
+        if (yearOfStudy && Number.isInteger(Number(yearOfStudy))) {
+            filter['academic.yearOfStudy'] = Number(yearOfStudy);
         }
 
         // Filter by referralType
@@ -906,6 +915,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 guardianDetails: appObj.guardianDetails,
                 financialDetails: appObj.financialDetails,
                 financialStatus: appObj.financialStatus,
+                academic: appObj.academic,
                 documents: appObj.documents,
                 reviewInfo: appObj.reviewInfo,
                 reviewStatus: appObj.reviewStatus,
@@ -1077,6 +1087,36 @@ router.get('/rejection-reasons', protect, authorize('staff', 'super_admin'), asy
 // @desc    Get single student application details
 // @route   GET /api/admin/students/:id
 // @access  Private - Staff/Super Admin only
+// ========================================================
+// SESSION ROLLOVER: promote ACTIVE students to the next year, mark final-year students COMPLETED.
+// Also runs on a schedule (utils/sessionRollover.js); safe to run any number of times.
+// GET  /api/admin/students/session-rollover  - current session + last runs
+// POST /api/admin/students/session-rollover  - run now
+// ========================================================
+router.get('/session-rollover', protect, authorize('super_admin'), async (req, res) => {
+    try {
+        const SessionRollover = require('../models/SessionRollover');
+        const { getCurrentSession } = require('../utils/sessionRollover');
+        const runs = await SessionRollover.find().sort({ createdAt: -1 }).limit(10).lean();
+        res.json({ success: true, data: { currentSession: getCurrentSession(), runs } });
+    } catch (error) {
+        console.error('Session rollover status error:', error);
+        res.status(500).json({ success: false, message: 'Failed to load session rollover status' });
+    }
+});
+
+router.post('/session-rollover', protect, authorize('super_admin'), async (req, res) => {
+    try {
+        const { runSessionRollover } = require('../utils/sessionRollover');
+        const run = await runSessionRollover({ trigger: 'manual', runBy: req.user._id });
+        res.json({ success: true, message: `Session rollover to ${run.session} finished`, data: run });
+    } catch (error) {
+        if (error.code === 'ROLLOVER_RUNNING') return res.status(409).json({ success: false, message: error.message });
+        console.error('Session rollover error:', error);
+        res.status(500).json({ success: false, message: 'Session rollover failed' });
+    }
+});
+
 router.get('/:id', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const application = await StudentApplication.findById(req.params.id)
@@ -1322,6 +1362,7 @@ router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req
         });
 
     } catch (error) {
+        if (error.code === 'SEATS_FULL') return res.status(409).json({ success: false, message: error.message });
         console.error('Update student status error:', error);
         res.status(500).json({
             success: false,
@@ -1525,6 +1566,7 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         });
 
     } catch (error) {
+        if (error.code === 'SEATS_FULL') return res.status(409).json({ success: false, message: error.message });
         console.error('Update student application error:', error);
         res.status(500).json({
             success: false,
@@ -2029,6 +2071,7 @@ router.post('/:id/resubmit', protect, async (req, res) => {
         });
 
     } catch (error) {
+        if (error.code === 'SEATS_FULL') return res.status(409).json({ success: false, message: error.message });
         console.error('Resubmit application error:', error);
         res.status(500).json({
             success: false,
@@ -2322,5 +2365,50 @@ router.put('/:id/migrate', protect, authorize('staff', 'super_admin'), async (re
             message: 'Server error while migrating student',
             error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
         });
+    }
+});
+
+// ========================================================
+// ACADEMIC STATUS: mark an admitted student DISCONTINUED (kept, never deleted) or ACTIVE again.
+// PUT /api/admin/students/:id/academic-status  { status: 'DISCONTINUED' | 'ACTIVE', reason }
+// ========================================================
+router.put('/:id/academic-status', protect, authorize('staff', 'super_admin'), async (req, res) => {
+    try {
+        const { status, reason } = req.body;
+        if (!['DISCONTINUED', 'ACTIVE'].includes(status)) {
+            return res.status(400).json({ success: false, message: 'status must be DISCONTINUED or ACTIVE' });
+        }
+
+        const application = await StudentApplication.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+        if (!application.academic?.status) {
+            return res.status(400).json({ success: false, message: 'Only admitted (COMPLETE) students have an academic status' });
+        }
+        if (application.academic.status === 'COMPLETED') {
+            return res.status(400).json({ success: false, message: 'Student has already completed the course' });
+        }
+
+        const { getCurrentSession } = require('../utils/sessionRollover');
+        application.academic.status = status;
+        application.academic.statusChangedAt = new Date();
+        application.academic.statusChangedBy = req.user._id;
+        application.academic.discontinuedReason = status === 'DISCONTINUED' ? (reason || '') : undefined;
+        // Reactivated students resume their year in the current session (no catch-up for the years away)
+        if (status === 'ACTIVE') application.academic.currentSession = getCurrentSession();
+        application.academic.history = [...(application.academic.history || []), {
+            session: application.academic.currentSession,
+            yearOfStudy: application.academic.yearOfStudy,
+            status,
+            at: new Date(),
+            by: req.user._id
+        }];
+
+        await application.save({ validateModifiedOnly: true });
+        res.json({ success: true, message: `Student marked ${status}`, data: { academic: application.academic } });
+    } catch (error) {
+        console.error('Academic status update error:', error);
+        res.status(500).json({ success: false, message: 'Failed to update academic status' });
     }
 });

@@ -490,6 +490,28 @@ const studentApplicationSchema = new mongoose.Schema({
         }
     },
 
+    // Academic progress after admission (separate from the admission workflow `status`).
+    // Set once the application is COMPLETE; moved forward each session by utils/sessionRollover.js.
+    academic: {
+        admissionSession: Number, // batch start year, e.g. 2024; never changes
+        currentSession: Number,   // session the student is in now, e.g. 2025
+        yearOfStudy: Number,      // 1, 2, 3...
+        status: { type: String, enum: ['ACTIVE', 'COMPLETED', 'DISCONTINUED'] },
+        statusChangedAt: Date,
+        statusChangedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' },
+        discontinuedReason: String,
+        history: {
+            type: [{
+                session: Number,
+                yearOfStudy: Number,
+                status: String,
+                at: Date,
+                by: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin' }
+            }],
+            default: undefined
+        }
+    },
+
     // Payment & Financial Tracking
     financialStatus: {
         totalFees: { type: Number, default: 0 },
@@ -737,6 +759,36 @@ studentApplicationSchema.index(
         partialFilterExpression: { submitterRole: 'student' }
     }
 );
+
+// Remember the loaded status/course so the seat check only runs when an application starts taking a seat
+const seatCourseKey = (doc) => `${doc.courseDetails?.selectedCollege || ''}|${doc.courseDetails?.selectedCourse || ''}`;
+studentApplicationSchema.post('init', function () {
+    this.$locals.loadedStatus = this.status;
+    this.$locals.loadedCourse = seatCourseKey(this);
+});
+
+studentApplicationSchema.pre('save', async function () {
+    const { SEAT_FREE_STATUSES, batchYear, checkSeatAvailability } = require('../utils/courseSeats');
+
+    // Newly admitted: start the academic record (batch = registration year, 1st year)
+    if (this.status === 'COMPLETE' && !this.academic?.status) {
+        const batch = batchYear(this);
+        this.set('academic', { admissionSession: batch, currentSession: batch, yearOfStudy: 1, status: 'ACTIVE', statusChangedAt: new Date() });
+    }
+
+    // LIMITED seats: block when the application starts holding a seat (submitted, resubmitted, or moved to another course)
+    if (SEAT_FREE_STATUSES.includes(this.status) || this.academic?.status === 'DISCONTINUED') return;
+    const alreadyHoldsSeat = !this.isNew
+        && !SEAT_FREE_STATUSES.includes(this.$locals.loadedStatus)
+        && this.$locals.loadedCourse === seatCourseKey(this);
+    if (alreadyHoldsSeat) return;
+    const seatError = await checkSeatAvailability(this);
+    if (seatError) {
+        const error = new Error(seatError);
+        error.code = 'SEATS_FULL';
+        throw error;
+    }
+});
 
 studentApplicationSchema.plugin(require('../utils/uppercaseText'));
 

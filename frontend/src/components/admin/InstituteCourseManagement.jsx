@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import api from '../../utils/api';
 import { showSuccessToast, showErrorToast } from '../../utils/sweetAlert';
 
+// Pre-filled when a course is set to BOARD; admins can remove these or add more
+const DEFAULT_BOARD_SESSIONS = ['MARCH–MAY', 'JUNE–OCTOBER'];
+
 const InstituteCourseManagement = () => {
     const [colleges, setColleges] = useState([]);
     const [campuses, setCampuses] = useState([]);
@@ -27,6 +30,12 @@ const InstituteCourseManagement = () => {
         courseName: '',
         price: 0,
         isPaidOnly: false,
+        category: '',
+        sessions: [],
+        semesters: '',
+        durationYears: '',
+        seatType: 'UNLIMITED',
+        seatLimit: '',
         streams: [],
         isActive: true
     });
@@ -37,6 +46,7 @@ const InstituteCourseManagement = () => {
     });
 
     const [newStream, setNewStream] = useState('');
+    const [newSession, setNewSession] = useState('');
 
     useEffect(() => {
         fetchColleges();
@@ -207,8 +217,9 @@ const InstituteCourseManagement = () => {
                 );
                 setShowCourseForm(false);
                 setEditingCourse(null);
-                setCourseFormData({ courseName: '', price: 0, isPaidOnly: false, streams: [], isActive: true });
+                setCourseFormData({ courseName: '', price: 0, isPaidOnly: false, category: '', sessions: [], semesters: '', durationYears: '', seatType: 'UNLIMITED', seatLimit: '', streams: [], isActive: true });
                 setNewStream('');
+                setNewSession('');
                 fetchCourses(selectedCollege._id);
             }
         } catch (error) {
@@ -238,6 +249,12 @@ const InstituteCourseManagement = () => {
             courseName: course.courseName || '',
             price: course.price || 0,
             isPaidOnly: course.isPaidOnly || false,
+            category: course.category || '', // older courses have none; the admin picks it on save
+            sessions: course.sessions || [],
+            semesters: course.semesters || '',
+            durationYears: course.durationYears || '',
+            seatType: course.seatType || 'UNLIMITED', // older courses have none = unlimited
+            seatLimit: course.seatLimit || '',
             streams: course.streams ? course.streams.map(s => ({
                 name: s.name || s,
                 price: s.price || 0,
@@ -314,6 +331,29 @@ const InstituteCourseManagement = () => {
         setCourseFormData(prev => ({
             ...prev,
             streams: prev.streams.filter((_, i) => i !== index)
+        }));
+    };
+
+    const handleCategoryChange = (category) => {
+        setCourseFormData(prev => ({
+            ...prev,
+            category,
+            sessions: category === 'BOARD' && prev.sessions.length === 0 ? [...DEFAULT_BOARD_SESSIONS] : prev.sessions
+        }));
+    };
+
+    const addSession = () => {
+        const session = newSession.trim().toUpperCase();
+        if (session && !courseFormData.sessions.includes(session)) {
+            setCourseFormData(prev => ({ ...prev, sessions: [...prev.sessions, session] }));
+        }
+        setNewSession('');
+    };
+
+    const removeSession = (index) => {
+        setCourseFormData(prev => ({
+            ...prev,
+            sessions: prev.sessions.filter((_, i) => i !== index)
         }));
     };
 
@@ -535,6 +575,130 @@ const InstituteCourseManagement = () => {
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
                                         required
                                     />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Category *
+                                    </label>
+                                    <select
+                                        value={courseFormData.category}
+                                        onChange={(e) => handleCategoryChange(e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        required
+                                    >
+                                        <option value="">Select category</option>
+                                        <option value="BOARD">BOARD</option>
+                                        <option value="UNIVERSITY">UNIVERSITY</option>
+                                    </select>
+                                </div>
+                                {courseFormData.category === 'BOARD' && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Sessions * (at least one)
+                                        </label>
+                                        {courseFormData.sessions.length > 0 && (
+                                            <div className="flex flex-wrap gap-2 mb-2">
+                                                {courseFormData.sessions.map((session, index) => (
+                                                    <span key={session} className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded">
+                                                        {session}
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => removeSession(index)}
+                                                            className="text-red-600 hover:text-red-800 dark:text-red-400"
+                                                            aria-label={`Remove session ${session}`}
+                                                        >
+                                                            ×
+                                                        </button>
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        )}
+                                        <div className="flex space-x-2">
+                                            <input
+                                                type="text"
+                                                value={newSession}
+                                                onChange={(e) => setNewSession(e.target.value)}
+                                                onKeyPress={(e) => {
+                                                    if (e.key === 'Enter') {
+                                                        e.preventDefault();
+                                                        addSession();
+                                                    }
+                                                }}
+                                                placeholder="e.g. NOVEMBER–JANUARY"
+                                                className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={addSession}
+                                                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+                                            >
+                                                Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                                {courseFormData.category === 'UNIVERSITY' && (
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            Number of Semesters *
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            step="1"
+                                            value={courseFormData.semesters}
+                                            onChange={(e) => setCourseFormData(prev => ({ ...prev, semesters: e.target.value === '' ? '' : parseInt(e.target.value, 10) }))}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                            placeholder="e.g. 6"
+                                            required
+                                        />
+                                    </div>
+                                )}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Duration (years) *
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        step="1"
+                                        value={courseFormData.durationYears}
+                                        onChange={(e) => setCourseFormData(prev => ({ ...prev, durationYears: e.target.value === '' ? '' : parseInt(e.target.value, 10) }))}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                        placeholder="e.g. 4 for a 2024–2028 course"
+                                        required
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                        Seats *
+                                    </label>
+                                    <div className="flex items-center gap-6 mb-2">
+                                        {['UNLIMITED', 'LIMITED'].map(type => (
+                                            <label key={type} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                                <input
+                                                    type="radio"
+                                                    name="courseSeatType"
+                                                    checked={courseFormData.seatType === type}
+                                                    onChange={() => setCourseFormData(prev => ({ ...prev, seatType: type }))}
+                                                    className="w-4 h-4 text-[#4A1D7A] border-gray-300 focus:ring-[#4A1D7A]"
+                                                />
+                                                {type === 'LIMITED' ? 'Limited' : 'Unlimited'}
+                                            </label>
+                                        ))}
+                                    </div>
+                                    {courseFormData.seatType === 'LIMITED' && (
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            step="1"
+                                            value={courseFormData.seatLimit}
+                                            onChange={(e) => setCourseFormData(prev => ({ ...prev, seatLimit: e.target.value === '' ? '' : parseInt(e.target.value, 10) }))}
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent dark:bg-gray-700 dark:text-white"
+                                            placeholder="Seats per batch (year), e.g. 30"
+                                            required
+                                        />
+                                    )}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -869,8 +1033,9 @@ const InstituteCourseManagement = () => {
                                 onClick={() => {
                                     setShowCourseForm(true);
                                     setEditingCourse(null);
-                                    setCourseFormData({ courseName: '', streams: [], isActive: true });
+                                    setCourseFormData({ courseName: '', category: '', sessions: [], semesters: '', durationYears: '', seatType: 'UNLIMITED', seatLimit: '', streams: [], isActive: true });
                                     setNewStream('');
+                                    setNewSession('');
                                 }}
                                 className="px-3 py-1.5 bg-[#4A1D7A] text-white text-sm rounded-lg hover:bg-[#351458] transition-colors"
                             >
@@ -900,7 +1065,25 @@ const InstituteCourseManagement = () => {
                                                 <h4 className="font-medium text-gray-900 dark:text-gray-100">
                                                     {course.courseName}
                                                 </h4>
+                                                <span className={`px-2 py-0.5 text-xs font-medium rounded ${course.category ? 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-200' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300'}`}>
+                                                    {course.category || 'No category'}
+                                                </span>
                                             </div>
+                                            {course.category === 'BOARD' && course.sessions?.length > 0 && (
+                                                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+                                                    Sessions: {course.sessions.join(', ')}
+                                                </p>
+                                            )}
+                                            {course.category === 'UNIVERSITY' && course.semesters && (
+                                                <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+                                                    Semesters: {course.semesters}
+                                                </p>
+                                            )}
+                                            <p className="text-sm text-gray-500 dark:text-gray-300 mt-1">
+                                                Duration: {course.durationYears ? `${course.durationYears} year${course.durationYears > 1 ? 's' : ''}` : 'Not set'}
+                                                {' · '}
+                                                Seats: {course.seatType === 'LIMITED' ? `${course.seatLimit} per batch` : 'Unlimited'}
+                                            </p>
                                             <button
                                                 type="button"
                                                 role="switch"

@@ -223,6 +223,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     const [filterStream, setFilterStream] = useState('all');
     const [filterCampus, setFilterCampus] = useState('all');
     const [filterAdmissionType, setFilterAdmissionType] = useState('all');
+    const [filterAcademicStatus, setFilterAcademicStatus] = useState('all');
+    const [filterYearOfStudy, setFilterYearOfStudy] = useState('all');
     const [filterSubmitterRole, setFilterSubmitterRole] = useState(agentId || staffId || 'all');
 
     // Sync submitter role filter if agentId or staffId props change (e.g. from SuperAdmin Dashboard clicks)
@@ -324,7 +326,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
         const filterKey = JSON.stringify([
             debouncedSearchTerm, filterStatus, filterCourse, filterCategory,
             filterCollege, filterGender, filterDistrict, filterCity, filterState,
-            filterStream, filterCampus, filterAdmissionType, filterSubmitterRole,
+            filterStream, filterCampus, filterAdmissionType, filterAcademicStatus, filterYearOfStudy, filterSubmitterRole,
             selectedSession, sortBy, listType
         ]);
         const filtersChanged = prevFilterKeyRef.current !== null && prevFilterKeyRef.current !== filterKey;
@@ -341,7 +343,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     }, [
         debouncedSearchTerm, filterStatus, filterCourse, filterCategory,
         filterCollege, filterGender, filterDistrict, filterCity, filterState,
-        filterStream, filterCampus, filterAdmissionType, filterSubmitterRole, selectedSession,
+        filterStream, filterCampus, filterAdmissionType, filterAcademicStatus, filterYearOfStudy, filterSubmitterRole, selectedSession,
         sortBy, listType, currentPage
     ]);
 
@@ -671,6 +673,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 ...(filterStream !== 'all' && { stream: filterStream }),
                 ...(filterCampus !== 'all' && { campus: filterCampus }),
                 ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
+                ...(filterAcademicStatus !== 'all' && { academicStatus: filterAcademicStatus }),
+                ...(filterYearOfStudy !== 'all' && { yearOfStudy: filterYearOfStudy }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
                 listType: listType, // Add listType to params
                                             });
@@ -933,6 +937,65 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
         }
     };
 
+    // Promote ACTIVE students to the next year / mark final-year students COMPLETED.
+    // The backend only moves students not yet in the current session, so running it twice is harmless.
+    const handleSessionRollover = async () => {
+        try {
+            const statusRes = await api.get('/api/admin/students/session-rollover');
+            const { currentSession, runs = [] } = statusRes.data?.data || {};
+            const lastRun = runs[0];
+            const confirm = await Swal.fire({
+                title: 'Run Session Rollover?',
+                html: `Current session: <b>${currentSession}-${String(currentSession + 1).slice(-2)}</b> (sessions start 1 March).<br/>`
+                    + 'Active students from earlier sessions move up one year; final-year students are marked Completed. '
+                    + 'Discontinued students are skipped.'
+                    + (lastRun ? `<br/><br/><small>Last run: ${new Date(lastRun.createdAt).toLocaleString('en-IN')} (${lastRun.status})</small>` : ''),
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Run Rollover'
+            });
+            if (!confirm.isConfirmed) return;
+            showLoading('Running session rollover...');
+            const response = await api.post('/api/admin/students/session-rollover');
+            closeLoading();
+            const c = response.data?.data?.counts || {};
+            showSuccess(`Promoted: ${c.promoted || 0}, Completed: ${c.completed || 0}, Discontinued (skipped): ${c.skippedDiscontinued || 0}`
+                + (c.skippedNoDuration ? `, No course duration set (skipped): ${c.skippedNoDuration}` : '')
+                + (c.skippedStale ? `, Bad registration date (skipped): ${c.skippedStale}` : ''));
+            fetchStudents();
+        } catch (error) {
+            closeLoading();
+            handleApiError(error);
+        }
+    };
+
+    const handleAcademicStatus = async (student, status) => {
+        let reason = '';
+        if (status === 'DISCONTINUED') {
+            const result = await Swal.fire({
+                title: `Discontinue ${student.fullName}?`,
+                text: 'The record and payments are kept. Discontinued students are not promoted.',
+                input: 'text',
+                inputPlaceholder: 'Reason (optional)',
+                showCancelButton: true,
+                confirmButtonText: 'Discontinue',
+                confirmButtonColor: '#dc2626'
+            });
+            if (!result.isConfirmed) return;
+            reason = result.value || '';
+        }
+        try {
+            showLoading('Updating academic status...');
+            await api.put(`/api/admin/students/${student._id}/academic-status`, { status, reason });
+            closeLoading();
+            showSuccess(`${student.fullName} marked ${status === 'ACTIVE' ? 'Active' : 'Discontinued'}`);
+            fetchStudents();
+        } catch (error) {
+            closeLoading();
+            handleApiError(error);
+        }
+    };
+
 
     const handleEdit = async () => {
         if (editData.courseDetails?.admissionType === 'free' && ['General', 'OBC'].includes(editData.personalDetails?.category)
@@ -1123,6 +1186,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     ...(filterStream !== 'all' && { stream: filterStream }),
                     ...(filterCampus !== 'all' && { campus: filterCampus }),
                     ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
+                    ...(filterAcademicStatus !== 'all' && { academicStatus: filterAcademicStatus }),
+                    ...(filterYearOfStudy !== 'all' && { yearOfStudy: filterYearOfStudy }),
                     ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
                 };
 
@@ -1584,6 +1649,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 ...(filterStream !== 'all' && { stream: filterStream }),
                 ...(filterCampus !== 'all' && { campus: filterCampus }),
                 ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
+                ...(filterAcademicStatus !== 'all' && { academicStatus: filterAcademicStatus }),
+                ...(filterYearOfStudy !== 'all' && { yearOfStudy: filterYearOfStudy }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
             };
 
@@ -1780,6 +1847,16 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             : 'View and manage all verified student applications from agents, staff, and super admins')}
                     </p>
                 </div>
+                {isSuperAdmin && (
+                    <button
+                        onClick={handleSessionRollover}
+                        className="px-3 py-2 bg-[#4A1D7A] text-white text-sm rounded-md hover:bg-[#351458] transition-colors flex items-center space-x-2 shadow-sm"
+                        title="Promote active students to the next year (runs automatically from 1 March)"
+                    >
+                        <i className="fa-solid fa-forward"></i>
+                        <span>Run Session Rollover</span>
+                    </button>
+                )}
                 {showListTypeFilter && (
                     <select
                         value={listType}
@@ -1899,6 +1976,26 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                         onChange={setFilterAdmissionType}
                         className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                     />
+                    <select
+                        value={filterAcademicStatus}
+                        onChange={(e) => setFilterAcademicStatus(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                    >
+                        <option value="all">All Academic Status</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="COMPLETED">Completed</option>
+                        <option value="DISCONTINUED">Discontinued</option>
+                    </select>
+                    <select
+                        value={filterYearOfStudy}
+                        onChange={(e) => setFilterYearOfStudy(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
+                    >
+                        <option value="all">All Years</option>
+                        {[1, 2, 3, 4, 5, 6].map(year => (
+                            <option key={year} value={year}>Year {year}</option>
+                        ))}
+                    </select>
 
                     {/* Secondary Filters - Geographical */}
                     <select
@@ -2013,7 +2110,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                         </optgroup>
                         <option value="super_admin">By Super Admin</option>
                     </select>
-                    {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || filterCampus !== 'all' || filterSubmitterRole !== 'all') && (
+                    {(searchTerm || filterStatus !== 'all' || filterCourse !== 'all' || filterCategory !== 'all' || filterCollege !== 'all' || filterGender !== 'all' || filterDistrict !== 'all' || filterCity !== 'all' || filterState !== 'all' || filterStream !== 'all' || filterCampus !== 'all' || filterAdmissionType !== 'all' || filterAcademicStatus !== 'all' || filterYearOfStudy !== 'all' || filterSubmitterRole !== 'all') && (
                         <button
                             onClick={() => {
                                 setSearchTerm('');
@@ -2029,6 +2126,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 setFilterStream('all');
                                 setFilterCampus('all');
                                 setFilterAdmissionType('all');
+                                setFilterAcademicStatus('all');
+                                setFilterYearOfStudy('all');
                                 setFilterSubmitterRole('all');
                             }}
                             className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-sm"
@@ -2161,6 +2260,9 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 Status
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                Year / Academic
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Submitted By
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -2171,7 +2273,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {students.length === 0 ? (
                             <tr>
-                                <td colSpan="12" className="px-6 py-12 text-center">
+                                <td colSpan="13" className="px-6 py-12 text-center">
                                     <div className="flex flex-col items-center justify-center">
                                         <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -2265,6 +2367,21 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                 {getApplicationStatusLabel(student.status)}
                                             </span>
                                         </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                                            {student.academic?.status ? (
+                                                <div>
+                                                    <div className="text-gray-900 dark:text-gray-100">Year {student.academic.yearOfStudy}</div>
+                                                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                                        student.academic.status === 'ACTIVE' ? 'bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-200'
+                                                            : student.academic.status === 'COMPLETED' ? 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-200'
+                                                                : 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-200'}`}>
+                                                        {student.academic.status}
+                                                    </span>
+                                                </div>
+                                            ) : (
+                                                <span className="text-gray-400 dark:text-gray-400">-</span>
+                                            )}
+                                        </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             <div className="text-sm">
                                                 {(() => {
@@ -2320,6 +2437,25 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                     </svg>
                                                 </button>
 
+
+                                                {student.academic?.status === 'ACTIVE' && (
+                                                    <button
+                                                        onClick={() => handleAcademicStatus(student, 'DISCONTINUED')}
+                                                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 cursor-pointer"
+                                                        title="Mark Discontinued (record and payments are kept)"
+                                                    >
+                                                        <i className="fa-solid fa-user-slash"></i>
+                                                    </button>
+                                                )}
+                                                {student.academic?.status === 'DISCONTINUED' && (
+                                                    <button
+                                                        onClick={() => handleAcademicStatus(student, 'ACTIVE')}
+                                                        className="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 cursor-pointer"
+                                                        title="Reactivate (resumes the same year in the current session)"
+                                                    >
+                                                        <i className="fa-solid fa-user-check"></i>
+                                                    </button>
+                                                )}
 
                                                 {/* Step Progression (N -> N+1) Actions */}
                                                 {student.status === 'DRAFT' && (

@@ -817,6 +817,7 @@ router.post("/submit-application", async (req, res) => {
       data: application,
     });
   } catch (error) {
+    if (error.code === "SEATS_FULL") return res.status(409).json({ success: false, message: error.message });
     console.error("Submit application error:", error);
     res.status(500).json({
       success: false,

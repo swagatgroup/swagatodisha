@@ -250,6 +250,7 @@ router.post('/:applicationId/resubmit', protect, async (req, res) => {
             data: { status: application.status, applicationId: application.applicationId }
         });
     } catch (error) {
+        if (error.code === 'SEATS_FULL') return res.status(409).json({ success: false, message: error.message });
         console.error('Error resubmitting application:', error);
         res.status(500).json({ success: false, message: 'Failed to resubmit application' });
     }
