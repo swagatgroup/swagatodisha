@@ -1046,16 +1046,11 @@ const initializeConnections = async () => {
         // Session rollover (1 March): promote/complete students; checks now and every 6 hours
         require('./utils/sessionRollover').startSessionRolloverScheduler();
 
-        // One-time fix: drop stale aadharNumber index (missing sparse:true) so Mongoose recreates it correctly
-        try {
-            const mongoose = require('mongoose');
-            const col = mongoose.connection.collection('studentapplications');
-            await col.dropIndex('personalDetails.aadharNumber_1');
-            console.log('✅ Dropped stale aadharNumber index — will be recreated with sparse:true');
-        } catch (idxErr) {
-            // Index may not exist or already be correct — safe to ignore
-            console.log('ℹ️  aadharNumber index drop skipped:', idxErr.message);
-        }
+        // Mongoose builds indexes in the background; report when the unique Aadhaar index can't be built
+        // (two student applications already sharing an Aadhaar number stop the build until one is fixed)
+        require('./models/StudentApplication').init()
+            .then(() => console.log('✅ StudentApplication indexes ready'))
+            .catch(idxErr => console.error('❌ StudentApplication index build failed:', idxErr.message));
     } catch (error) {
         console.error('❌ Connection initialization failed:', error.message);
         // Don't exit the process, let the server run

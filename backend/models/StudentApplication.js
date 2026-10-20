@@ -755,8 +755,9 @@ studentApplicationSchema.index(
     { 'personalDetails.aadharNumber': 1 },
     {
         unique: true,
-        sparse: true,
-        partialFilterExpression: { submitterRole: 'student' }
+        // MongoDB rejects sparse together with partialFilterExpression (the index was never built);
+        // $gt: '' does the sparse part: drafts with no/empty Aadhaar are left out of the index
+        partialFilterExpression: { submitterRole: 'student', 'personalDetails.aadharNumber': { $gt: '' } }
     }
 );
 

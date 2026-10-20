@@ -2359,6 +2359,13 @@ router.put('/:id/migrate', protect, authorize('staff', 'super_admin'), async (re
         });
 
     } catch (error) {
+        // Unique Aadhaar index on student-submitted applications: moving to Direct makes this one student-submitted
+        if (error.code === 11000) {
+            return res.status(409).json({
+                success: false,
+                message: 'Another Direct student already has this Aadhaar number, so this student cannot be moved to Direct Students'
+            });
+        }
         console.error('Migrate student error:', error);
         res.status(500).json({
             success: false,
