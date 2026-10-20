@@ -352,6 +352,8 @@ userSchema.statics.findByEmail = function (email) {
     }).select('+password');
 };
 
+userSchema.plugin(require('../utils/uppercaseText'));
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

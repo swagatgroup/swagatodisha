@@ -738,4 +738,6 @@ studentApplicationSchema.index(
     }
 );
 
+studentApplicationSchema.plugin(require('../utils/uppercaseText'));
+
 module.exports = mongoose.model('StudentApplication', studentApplicationSchema, 'studentapplications');

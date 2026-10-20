@@ -45,5 +45,7 @@ collegeSchema.index({ isActive: 1 });
 // Index on feeType
 collegeSchema.index({ feeType: 1 });
 
+collegeSchema.plugin(require('../utils/uppercaseText'));
+
 module.exports = mongoose.model('College', collegeSchema);
 

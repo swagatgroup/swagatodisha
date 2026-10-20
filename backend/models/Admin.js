@@ -330,4 +330,6 @@ adminSchema.statics.findByEmail = function (email) {
     }).select('+password');
 };
 
+adminSchema.plugin(require('../utils/uppercaseText'));
+
 module.exports = mongoose.model('Admin', adminSchema);

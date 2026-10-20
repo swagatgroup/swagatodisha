@@ -540,4 +540,6 @@ studentSchema.index({ 'profileCompletionStatus.completionPercentage': 1 });
 studentSchema.index({ createdAt: -1 });
 studentSchema.index({ 'workflowStatus.priority': 1 });
 
+studentSchema.plugin(require('../utils/uppercaseText'));
+
 module.exports = mongoose.model('Student', studentSchema);

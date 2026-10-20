@@ -652,19 +652,19 @@ const ProfileCompletionModal = ({ isOpen, onClose, onComplete }) => {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#4A1D7A]"
                             >
                                 <option value="">Select Course</option>
-                                <option value="B.Tech Computer Science">B.Tech Computer Science</option>
-                                <option value="B.Tech Mechanical Engineering">B.Tech Mechanical Engineering</option>
-                                <option value="B.Tech Electrical Engineering">B.Tech Electrical Engineering</option>
-                                <option value="B.Tech Civil Engineering">B.Tech Civil Engineering</option>
+                                <option value="B.TECH COMPUTER SCIENCE">B.Tech Computer Science</option>
+                                <option value="B.TECH MECHANICAL ENGINEERING">B.Tech Mechanical Engineering</option>
+                                <option value="B.TECH ELECTRICAL ENGINEERING">B.Tech Electrical Engineering</option>
+                                <option value="B.TECH CIVIL ENGINEERING">B.Tech Civil Engineering</option>
                                 <option value="MBA">MBA</option>
                                 <option value="BCA">BCA</option>
                                 <option value="MCA">MCA</option>
-                                <option value="B.Com">B.Com</option>
-                                <option value="M.Com">M.Com</option>
+                                <option value="B.COM">B.Com</option>
+                                <option value="M.COM">M.Com</option>
                                 <option value="BA">BA</option>
-                                <option value="MA English">MA English</option>
-                                <option value="BSc Mathematics">BSc Mathematics</option>
-                                <option value="MSc Physics">MSc Physics</option>
+                                <option value="MA ENGLISH">MA English</option>
+                                <option value="BSC MATHEMATICS">BSc Mathematics</option>
+                                <option value="MSC PHYSICS">MSc Physics</option>
                             </select>
                         </div>
 

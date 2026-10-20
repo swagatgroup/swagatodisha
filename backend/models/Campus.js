@@ -59,5 +59,7 @@ campusSchema.index({ college: 1, isActive: 1 });
 // Ensure unique campus name per college
 campusSchema.index({ college: 1, name: 1 }, { unique: true });
 
+campusSchema.plugin(require('../utils/uppercaseText'));
+
 module.exports = mongoose.model('Campus', campusSchema);
 

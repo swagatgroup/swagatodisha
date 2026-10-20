@@ -66,5 +66,7 @@ collegeCourseSchema.index({ college: 1, isActive: 1 });
 // Ensure unique course name per college
 collegeCourseSchema.index({ college: 1, courseName: 1 }, { unique: true });
 
+collegeCourseSchema.plugin(require('../utils/uppercaseText'));
+
 module.exports = mongoose.model('CollegeCourse', collegeCourseSchema);
 

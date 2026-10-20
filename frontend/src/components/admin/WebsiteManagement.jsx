@@ -47,11 +47,11 @@ const WebsiteManagement = () => {
                 </div>
 
                 <div className="p-6">
-                    {activeTab === 'sliders' && <SliderManagement />}
-                    {activeTab === 'quick-access' && <SimpleQuickAccessManagement />}
-                    {activeTab === 'notifications' && <SimpleNotificationManagement />}
+                    {activeTab === 'sliders' && <div data-no-uppercase><SliderManagement /></div>}
+                    {activeTab === 'quick-access' && <div data-no-uppercase><SimpleQuickAccessManagement /></div>}
+                    {activeTab === 'notifications' && <div data-no-uppercase><SimpleNotificationManagement /></div>}
                     {activeTab === 'institutes-courses' && <InstituteCourseManagement />}
-                    {activeTab === 'website-content' && <WebsiteContentManagement />}
+                    {activeTab === 'website-content' && <div data-no-uppercase><WebsiteContentManagement /></div>}
                 </div>
             </div>
         </div>
