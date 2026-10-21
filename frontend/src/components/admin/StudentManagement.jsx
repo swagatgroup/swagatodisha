@@ -155,7 +155,7 @@ const compressImageToUnder50KB = async (photoUrl) => {
 
 // pageSize/showListTypeFilter/title let dashboards reuse this table (e.g. Recent Students: last 5, Our/Direct/Both)
 const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'main', agentId = null, staffId = null, pageSize = 20, showListTypeFilter = false, title = null, subtitle = null }) => {
-    const { selectedSession } = useSession();
+    const { selectedSession, courseFilterParams, courseFilterKey } = useSession();
     const { user } = useAuth();
     const [students, setStudents] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -327,7 +327,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
             debouncedSearchTerm, filterStatus, filterCourse, filterCategory,
             filterCollege, filterGender, filterDistrict, filterCity, filterState,
             filterStream, filterCampus, filterAdmissionType, filterAcademicStatus, filterYearOfStudy, filterSubmitterRole,
-            selectedSession, sortBy, listType
+            selectedSession, courseFilterKey, sortBy, listType
         ]);
         const filtersChanged = prevFilterKeyRef.current !== null && prevFilterKeyRef.current !== filterKey;
         prevFilterKeyRef.current = filterKey;
@@ -344,7 +344,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
         debouncedSearchTerm, filterStatus, filterCourse, filterCategory,
         filterCollege, filterGender, filterDistrict, filterCity, filterState,
         filterStream, filterCampus, filterAdmissionType, filterAcademicStatus, filterYearOfStudy, filterSubmitterRole, selectedSession,
-        sortBy, listType, currentPage
+        courseFilterKey, sortBy, listType, currentPage
     ]);
 
     // Paid <-> Free conversion. Paid -> Free is refused by the server until every document free
@@ -676,6 +676,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 ...(filterAcademicStatus !== 'all' && { academicStatus: filterAcademicStatus }),
                 ...(filterYearOfStudy !== 'all' && { yearOfStudy: filterYearOfStudy }),
                 ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
+                ...courseFilterParams,
                 listType: listType, // Add listType to params
                                             });
 
@@ -1073,6 +1074,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
         }
     };
 
+    useEffect(() => { setSelectedStudents([]); }, [currentPage]);
+
     // Bulk delete handlers (Super Admin only)
     const handleSelectAll = (checked) => {
         if (checked) {
@@ -1128,6 +1131,42 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
             console.error('Error bulk deleting students:', error);
             const errorMessage = error.response?.data?.message || error.message || 'Failed to delete students';
             showError(errorMessage);
+        }
+    };
+
+    // Bulk status: only UNDER_REVIEW -> APPROVED and APPROVED -> COMPLETE, all selected rows in the same status
+    const BULK_STATUS_TARGET = { UNDER_REVIEW: 'APPROVED', APPROVED: 'COMPLETE' };
+    const selectedStatuses = [...new Set(students.filter(s => selectedStudents.includes(s._id)).map(s => s.status))];
+    const bulkStatusTarget = selectedStatuses.length === 1 ? BULK_STATUS_TARGET[selectedStatuses[0]] : null;
+    const bulkStatusLabel = (status) => (status === 'COMPLETE' ? 'COMPLETED' : status.replace('_', ' '));
+    const bulkStatusBlockedMessage = selectedStatuses.length > 1
+        ? `MIXED STATUSES SELECTED (${selectedStatuses.map(bulkStatusLabel).join(', ')}). SELECT ONLY UNDER REVIEW OR ONLY APPROVED ROWS TO CHANGE STATUS.`
+        : 'STATUS CAN BE CHANGED IN BULK ONLY FOR UNDER REVIEW OR APPROVED ROWS.';
+
+    const handleBulkStatus = async () => {
+        if (!bulkStatusTarget) return;
+        const count = selectedStudents.length;
+        const confirmed = await showConfirm(
+            'Change Status',
+            `Move ${count} selected application${count > 1 ? 's' : ''} to ${bulkStatusLabel(bulkStatusTarget)}?`
+        );
+        if (!confirmed || !confirmed.isConfirmed) return;
+
+        try {
+            showLoading('Updating...', `Updating ${count} application${count > 1 ? 's' : ''}...`);
+            const response = await api.post('/api/admin/students/bulk-status', {
+                ids: selectedStudents.map(id => String(id)),
+                status: bulkStatusTarget
+            });
+            closeLoading();
+            const skippedReasons = (response.data.data?.results || []).filter(r => r.result === 'skipped')
+                .map(r => `${r.applicationId || r.id}: ${r.reason}`);
+            showSuccess(response.data.message, skippedReasons.join('; '));
+            setSelectedStudents([]);
+            fetchStudents();
+        } catch (error) {
+            closeLoading();
+            handleApiError(error);
         }
     };
 
@@ -1188,7 +1227,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
                     ...(filterAcademicStatus !== 'all' && { academicStatus: filterAcademicStatus }),
                     ...(filterYearOfStudy !== 'all' && { yearOfStudy: filterYearOfStudy }),
-                    ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                    ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
+                    ...courseFilterParams
                 };
 
                 // Fetch all pages until no more data
@@ -1651,7 +1691,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 ...(filterAdmissionType !== 'all' && { admissionType: filterAdmissionType }),
                 ...(filterAcademicStatus !== 'all' && { academicStatus: filterAcademicStatus }),
                 ...(filterYearOfStudy !== 'all' && { yearOfStudy: filterYearOfStudy }),
-                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole })
+                ...(filterSubmitterRole !== 'all' && { submitterRole: filterSubmitterRole }),
+                ...courseFilterParams
             };
 
             let allStudents = [];
@@ -2180,6 +2221,17 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             </span>
                         </div>
                         <div className="flex items-center space-x-3">
+                            {bulkStatusTarget ? (
+                                <button
+                                    onClick={handleBulkStatus}
+                                    className="px-4 py-2 bg-[#4A1D7A] text-white rounded-md hover:bg-[#351458] transition-colors flex items-center space-x-2 shadow-sm"
+                                >
+                                    <i className="fa-solid fa-circle-check"></i>
+                                    <span>Move {selectedStudents.length} selected to {bulkStatusLabel(bulkStatusTarget)}</span>
+                                </button>
+                            ) : (
+                                <span className="text-xs text-gray-600 dark:text-gray-300 max-w-xs">{bulkStatusBlockedMessage}</span>
+                            )}
                             <button
                                 onClick={handleBulkDownloadPhotos}
                                 className="px-4 py-2 bg-[#387B95] text-white rounded-md hover:bg-[#1D4B5E] transition-colors flex items-center space-x-2 shadow-sm"

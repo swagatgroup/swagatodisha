@@ -18,6 +18,7 @@ import { getDocumentUrl } from '../../../utils/documentUtils';
 import { useSession } from '../../../contexts/SessionContext';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../../shared/ApplicationDetailsModal';
 import DocumentPreviewModal from '../../shared/DocumentPreviewModal';
+import CourseCategoryDetails from '../../shared/CourseCategoryDetails';
 import { canEditApplication, getApplicationStatusLabel } from '../../../utils/applicationStatuses';
 
 const AgentApplicationStatus = ({ initialTab = 'all' }) => {
@@ -865,6 +866,9 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                             <p><span className="text-gray-600 dark:text-gray-300">Course:</span> {selectedApplication.courseDetails?.selectedCourse}</p>
                                             <p><span className="text-gray-600 dark:text-gray-300">Stream:</span> {selectedApplication.courseDetails?.stream || 'N/A'}</p>
                                             <p><span className="text-gray-600 dark:text-gray-300">Campus:</span> {selectedApplication.courseDetails?.campus?.name || (typeof selectedApplication.courseDetails?.campus === 'string' && !/^[0-9a-fA-F]{24}$/.test(selectedApplication.courseDetails.campus) ? selectedApplication.courseDetails.campus : 'N/A')}</p>
+                                            <div className="grid grid-cols-2 gap-2 pt-1">
+                                                <CourseCategoryDetails details={selectedApplication.courseDetails} />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

@@ -38,7 +38,7 @@ import api from '../../utils/api';
 const SuperAdminDashboard = () => {
     const { user } = useAuth();
     const { isDarkMode } = useDarkMode();
-    const { selectedSession } = useSession();
+    const { selectedSession, courseFilterKey, courseFilterParams } = useSession();
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
     const [loading, setLoading] = useState(true);
     const [studentView, setStudentView] = useState('combined'); // 'combined' | 'direct' | 'our'
@@ -167,7 +167,7 @@ const SuperAdminDashboard = () => {
         const fetchAdminData = async (session = selectedSession) => {
             try {
                 setLoading(true);
-                const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(session)}`);
+                const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(session)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
 
                 if (statsRes.data?.success) {
                     setStats(statsRes.data.data);
@@ -180,7 +180,7 @@ const SuperAdminDashboard = () => {
         };
 
         fetchAdminData(selectedSession);
-    }, [selectedSession]);
+    }, [selectedSession, courseFilterKey]);
 
     useEffect(() => {
         fetchColleges();
@@ -189,7 +189,7 @@ const SuperAdminDashboard = () => {
     // Reset to page 1 when session changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedSession]);
+    }, [selectedSession, courseFilterKey]);
 
     // Fetch students for the table
     useEffect(() => {
@@ -197,7 +197,7 @@ const SuperAdminDashboard = () => {
             fetchStudents();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterAgentId, filterStaffId, filterReferralType, sortBy, selectedSession, activeSidebarItem, studentView]);
+    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterAgentId, filterStaffId, filterReferralType, sortBy, selectedSession, courseFilterKey, activeSidebarItem, studentView]);
 
     const fetchStudents = async () => {
         try {
@@ -252,7 +252,8 @@ const SuperAdminDashboard = () => {
                 ...(filterStaffId && { staffId: filterStaffId }),
                 ...(filterReferralType !== 'all' && { referralType: filterReferralType }),
                 ...(studentView === 'our' && { listType: 'main' }),
-                ...(studentView === 'direct' && { listType: 'direct' })
+                ...(studentView === 'direct' && { listType: 'direct' }),
+                ...courseFilterParams
             });
 
             const response = await api.get(`/api/admin/students?${params}`);
@@ -326,7 +327,7 @@ const SuperAdminDashboard = () => {
             showSuccess(`${student.fullName}'s application has been approved!`);
             fetchStudents();
             // Refresh stats
-            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
             if (statsRes.data?.success) {
                 setStats(statsRes.data.data);
             }
@@ -346,7 +347,7 @@ const SuperAdminDashboard = () => {
             closeLoading();
             showSuccess(`${student.fullName}'s application has been moved to Submitted!`);
             fetchStudents();
-            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
             if (statsRes.data?.success) {
                 setStats(statsRes.data.data);
             }
@@ -366,7 +367,7 @@ const SuperAdminDashboard = () => {
             closeLoading();
             showSuccess(`${student.fullName}'s application has been marked as Complete!`);
             fetchStudents();
-            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
             if (statsRes.data?.success) {
                 setStats(statsRes.data.data);
             }
@@ -451,7 +452,7 @@ const SuperAdminDashboard = () => {
 
             fetchStudents(); // Refresh the list
             // Refresh stats
-            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
             if (statsRes.data?.success) {
                 setStats(statsRes.data.data);
             }
@@ -502,7 +503,7 @@ const SuperAdminDashboard = () => {
             // Refresh the student list
             await fetchStudents();
             // Refresh stats
-            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
             if (statsRes.data?.success) {
                 setStats(statsRes.data.data);
             }
@@ -522,7 +523,7 @@ const SuperAdminDashboard = () => {
             // Refresh stats
             const fetchAdminData = async () => {
                 try {
-                    const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}`);
+                    const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(selectedSession)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
                     if (statsRes.data?.success) {
                         setStats(statsRes.data.data);
                     }

@@ -24,19 +24,24 @@ const batchDateFilter = (year) => {
     };
 };
 
-// Returns an error message when the application's course has LIMITED seats and its batch is full, otherwise null.
+// The CollegeCourse an application points at, or null.
 // Native collection queries: course names are stored in mixed case and selectedCollege is an id string or ObjectId.
-const checkSeatAvailability = async (app) => {
+const findCollegeCourse = (app) => {
     const collegeId = app.courseDetails?.selectedCollege && String(app.courseDetails.selectedCollege);
     const courseName = app.courseDetails?.selectedCourse?.trim();
     if (!collegeId || !courseName || !mongoose.isValidObjectId(collegeId)) return null;
-
-    const nameMatch = { $regex: `^${escapeRegex(courseName)}$`, $options: 'i' };
-    const course = await require('../models/CollegeCourse').collection.findOne({
+    return require('../models/CollegeCourse').collection.findOne({
         college: new mongoose.Types.ObjectId(collegeId),
-        courseName: nameMatch
+        courseName: { $regex: `^${escapeRegex(courseName)}$`, $options: 'i' }
     });
+};
+
+// Returns an error message when the application's course has LIMITED seats and its batch is full, otherwise null.
+const checkSeatAvailability = async (app) => {
+    const course = await findCollegeCourse(app);
     if (!course || course.seatType !== 'LIMITED' || !course.seatLimit) return null;
+    const collegeId = String(app.courseDetails.selectedCollege);
+    const nameMatch = { $regex: `^${escapeRegex(app.courseDetails.selectedCourse.trim())}$`, $options: 'i' };
 
     const batch = batchYear(app);
     const used = await mongoose.model('StudentApplication').collection.countDocuments({
@@ -53,4 +58,4 @@ const checkSeatAvailability = async (app) => {
     return null;
 };
 
-module.exports = { SEAT_FREE_STATUSES, batchYear, checkSeatAvailability };
+module.exports = { SEAT_FREE_STATUSES, batchYear, checkSeatAvailability, findCollegeCourse };

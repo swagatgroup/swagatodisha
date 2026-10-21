@@ -46,7 +46,7 @@ exports.getDashboardStats = async (req, res) => {
 
         // Base query for session-based filtering
         // Match students where registrationDate year OR createdAt year equals session start year
-        const sessionQuery = {
+        const sessionDateQuery = {
             $or: [
                 // Match by registrationDate year (if registrationDate exists)
                 {
@@ -69,6 +69,10 @@ exports.getDashboardStats = async (req, res) => {
                 }
             ]
         };
+
+        // Dashboard course filters (category / session / semester) narrow every count below
+        const courseFilter = require('../utils/courseFilter').buildCourseFilter(req.query);
+        const sessionQuery = courseFilter ? { $and: [sessionDateQuery, courseFilter] } : sessionDateQuery;
 
         // Calculating dashboard stats
 

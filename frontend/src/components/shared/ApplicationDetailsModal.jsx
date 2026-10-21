@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import StaffDocumentUploader from './StaffDocumentUploader';
 import DocumentPreviewModal from './DocumentPreviewModal';
+import CourseCategoryDetails from './CourseCategoryDetails';
 import { canEditApplication, normalizeApplicationStatus, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 
 // One "View Application" used by all four dashboards. Content and layout are identical for every
@@ -257,6 +258,7 @@ const ApplicationDetailsModal = ({
                                 <Field label="Course Name" value={app.courseDetails?.selectedCourse || app.course} />
                                 <Field label="Stream" value={app.courseDetails?.stream} />
                                 <Field label="Campus" value={campusName} />
+                                <CourseCategoryDetails details={app.courseDetails} />
                             </div>
                         </Section>
 

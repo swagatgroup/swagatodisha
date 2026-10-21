@@ -30,7 +30,7 @@ import api from '../../utils/api';
 const EnhancedStaffDashboard = () => {
     const { user } = useAuth();
     const { isDarkMode } = useDarkMode();
-    const { selectedSession } = useSession();
+    const { selectedSession, courseFilterKey, courseFilterParams } = useSession();
     const [activeSidebarItem, setActiveSidebarItem] = useState('dashboard');
     const [loading, setLoading] = useState(true);
     const [studentView, setStudentView] = useState('combined');
@@ -103,7 +103,7 @@ const EnhancedStaffDashboard = () => {
     const fetchStats = async (session) => {
         try {
             setLoading(true);
-            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(session)}`);
+            const statsRes = await api.get(`/api/admin/dashboard/stats?session=${encodeURIComponent(session)}${courseFilterKey ? `&${courseFilterKey}` : ''}`);
             if (statsRes.data && statsRes.data.success) {
                 setStats(statsRes.data.data);
             }
@@ -116,16 +116,16 @@ const EnhancedStaffDashboard = () => {
 
     useEffect(() => {
         if (selectedSession) fetchStats(selectedSession);
-    }, [selectedSession]);
+    }, [selectedSession, courseFilterKey]);
 
-    useEffect(() => { setCurrentPage(1); }, [selectedSession]);
+    useEffect(() => { setCurrentPage(1); }, [selectedSession, courseFilterKey]);
 
     useEffect(() => {
         if (activeSidebarItem === 'dashboard') {
             fetchStudents();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterAgentId, filterReferralType, sortBy, selectedSession, activeSidebarItem, studentView]);
+    }, [currentPage, searchTerm, filterStatus, filterCourse, filterSubmitterRole, filterAgentId, filterReferralType, sortBy, selectedSession, courseFilterKey, activeSidebarItem, studentView]);
 
     useEffect(() => {
         if (activeSidebarItem === 'dashboard') {
@@ -160,6 +160,7 @@ const EnhancedStaffDashboard = () => {
             if (filterReferralType !== 'all') params.append('referralType', filterReferralType);
             if (studentView === 'our') params.append('listType', 'main');
             if (studentView === 'direct') params.append('listType', 'direct');
+            Object.entries(courseFilterParams).forEach(([k, v]) => params.append(k, v));
 
             const response = await api.get('/api/admin/students?' + params.toString());
             if (response.data.success) {

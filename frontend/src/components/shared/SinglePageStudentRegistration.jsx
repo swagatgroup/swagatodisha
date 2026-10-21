@@ -5,6 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import api from "../../utils/api";
 import SimpleDocumentUpload from "../forms/SimpleDocumentUpload";
 import ApplicationPDFGenerator from "../forms/ApplicationPDFGenerator";
+import CourseCategoryDetails from "./CourseCategoryDetails";
 import TermsAndConditions from "../legal/TermsAndConditions";
 import { showSuccessToast, showErrorToast, showLoading, closeLoading } from "../../utils/sweetAlert";
 import { formatDateForInput } from "../../utils/dateUtils";
@@ -212,6 +213,16 @@ const SinglePageStudentRegistration = ({
             (college) => college._id === formData.courseDetails.selectedCollege
         );
         return selectedCollegeData?.courses || [];
+    };
+
+    // Selected course record (category, sessions, semesters, duration come from here)
+    const getSelectedCourseData = () =>
+        getCoursesForCollege().find(c => c.courseName === formData.courseDetails.selectedCourse) || null;
+
+    // BOARD course with several sessions: the student picks one; with one session it is used automatically
+    const getSessionOptions = () => {
+        const course = getSelectedCourseData();
+        return course?.category === 'BOARD' ? (course.sessions || []) : [];
     };
 
     // Get streams for selected course
@@ -543,6 +554,9 @@ const SinglePageStudentRegistration = ({
         }
         if (!formData.courseDetails.campus) {
             newErrors["courseDetails.campus"] = "Campus selection is required";
+        }
+        if (getSessionOptions().length > 1 && !getSessionOptions().includes(formData.courseDetails.session)) {
+            newErrors["courseDetails.session"] = "Session selection is required";
         }
 
         // Guardian Details validation
@@ -930,6 +944,7 @@ const SinglePageStudentRegistration = ({
                                             selectedCourse: formData.courseDetails?.selectedCourse || '',
                                             stream: formData.courseDetails?.stream || '',
                                             campus: formData.courseDetails?.campus || '',
+                                            session: formData.courseDetails?.session || '',
                                             institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
                                             courseName: formData.courseDetails?.selectedCourse || ''
                                         },
@@ -1049,6 +1064,7 @@ const SinglePageStudentRegistration = ({
                             selectedCourse: formData.courseDetails?.selectedCourse || '',
                             stream: formData.courseDetails?.stream || '',
                             campus: formData.courseDetails?.campus || '',
+                            session: formData.courseDetails?.session || '',
                             institutionName: colleges.find(c => c._id === formData.courseDetails?.selectedCollege)?.name || '',
                             courseName: formData.courseDetails?.selectedCourse || '',
                             admissionType: formData.courseDetails?.admissionType || 'paid'
@@ -1966,6 +1982,7 @@ const SinglePageStudentRegistration = ({
                                         ...prev.courseDetails,
                                         selectedCollege: e.target.value,
                                         selectedCourse: "", // Reset course when college changes
+                                        session: "",
                                         stream: "", // Reset stream when college changes
                                         campus: "", // Reset campus when college changes
                                     },
@@ -2001,6 +2018,7 @@ const SinglePageStudentRegistration = ({
                                     courseDetails: {
                                         ...prev.courseDetails,
                                         selectedCourse: e.target.value,
+                                        session: "",
                                         stream: "", // Reset stream when course changes
                                     },
                                 }))
@@ -2082,6 +2100,21 @@ const SinglePageStudentRegistration = ({
                         )}
                     </div>
                 </div>
+
+                {/* Category / session / semesters / duration: read-only, from the selected course */}
+                {getSelectedCourseData() && (
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-4 rounded-lg bg-gray-50 dark:bg-[#1A1212]">
+                        <CourseCategoryDetails
+                            details={{
+                                ...getSelectedCourseData(),
+                                session: getSessionOptions().length === 1 ? getSessionOptions()[0] : formData.courseDetails.session
+                            }}
+                            sessionOptions={getSessionOptions()}
+                            onSessionChange={(session) => setFormData(prev => ({ ...prev, courseDetails: { ...prev.courseDetails, session } }))}
+                            sessionError={errors["courseDetails.session"]}
+                        />
+                    </div>
+                )}
 
                 {/* Stream Field - Below the three columns */}
                 {getStreamsForCourse().length > 0 && (

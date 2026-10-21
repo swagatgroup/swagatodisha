@@ -239,11 +239,14 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             };
             
             andConditions.push(sessionDateFilter);
+            // Dashboard course filters (category / session / semester); also narrow the payment counts
+            const courseFilter = require('../utils/courseFilter').buildCourseFilter(req.query);
+            if (courseFilter) andConditions.push(courseFilter);
 
             // Group and count applications by payment status for the session
             try {
                 const statsAggregation = await StudentApplication.aggregate([
-                    { $match: sessionDateFilter },
+                    { $match: courseFilter ? { $and: [sessionDateFilter, courseFilter] } : sessionDateFilter },
                     {
                         $group: {
                             _id: '$financialStatus.paymentStatus',
@@ -1220,6 +1223,120 @@ router.put('/:id/financial', protect, authorize('staff', 'super_admin'), async (
 // @desc    Update student application status
 // @route   PUT /api/admin/students/:id/status
 // @access  Private - Staff/Super Admin only
+// Non-reject status change shared by the single and bulk status endpoints (caller saves).
+// The model's pre-save hook does the rest: academic record on COMPLETE, seat check.
+const applyStatusChange = (application, status, user, notes) => {
+    application.status = status;
+    application.currentStage = status;
+
+    if (notes) {
+        if (!application.adminNotes) {
+            application.adminNotes = [];
+        }
+        application.adminNotes.push({
+            note: notes,
+            addedBy: user._id,
+            addedAt: new Date()
+        });
+    }
+
+    // Update timestamps based on status
+    if (status === 'APPROVED') {
+        application.approvedAt = new Date();
+        application.approvedBy = user._id;
+    }
+};
+
+// ========================================================
+// BULK STATUS: UNDER_REVIEW -> APPROVED or APPROVED -> COMPLETE for up to 100 applications.
+// POST /api/admin/students/bulk-status  { ids: [applicationObjectId], status: 'APPROVED' | 'COMPLETE' }
+// Every row is checked on the server; valid rows are updated in one transaction with an audit
+// entry each, the rest are skipped with a reason.
+// ========================================================
+const BULK_STATUS_FROM = { APPROVED: 'UNDER_REVIEW', COMPLETE: 'APPROVED' };
+const BULK_STATUS_LIMIT = 100;
+
+router.post('/bulk-status', protect, authorize('staff', 'super_admin'), async (req, res) => {
+    const status = req.body.status === 'COMPLETED' ? 'COMPLETE' : req.body.status;
+    const ids = [...new Set((Array.isArray(req.body.ids) ? req.body.ids : []).map(String))];
+
+    if (!BULK_STATUS_FROM[status]) {
+        return res.status(400).json({ success: false, message: 'Bulk status can only move applications to APPROVED or COMPLETE' });
+    }
+    if (ids.length === 0) {
+        return res.status(400).json({ success: false, message: 'Select at least one application' });
+    }
+    if (ids.length > BULK_STATUS_LIMIT) {
+        return res.status(400).json({ success: false, message: `At most ${BULK_STATUS_LIMIT} applications can be updated at once` });
+    }
+
+    const AuditLog = require('../models/AuditLog');
+    const session = await mongoose.startSession();
+    let results = [];
+    let failedRow = null;
+    try {
+        await session.withTransaction(async () => {
+            results = [];
+            failedRow = null;
+            const validIds = ids.filter(id => mongoose.isValidObjectId(id));
+            const applications = await StudentApplication.find({ _id: { $in: validIds } }).session(session);
+            const byId = new Map(applications.map(a => [String(a._id), a]));
+            const auditEntries = [];
+
+            for (const id of ids) {
+                const application = byId.get(id);
+                if (!application) {
+                    results.push({ id, result: 'skipped', reason: 'Application not found' });
+                    continue;
+                }
+                const from = application.status;
+                if (from !== BULK_STATUS_FROM[status]) {
+                    results.push({ id, applicationId: application.applicationId, result: 'skipped', reason: `Status is ${from}; only ${BULK_STATUS_FROM[status]} can move to ${status}` });
+                    continue;
+                }
+                applyStatusChange(application, status, req.user);
+                failedRow = { id, applicationId: application.applicationId };
+                await application.save({ session });
+                failedRow = null;
+                const at = new Date();
+                results.push({ id, applicationId: application.applicationId, result: 'updated', from, to: status });
+                auditEntries.push({
+                    action: 'STATUS_CHANGE',
+                    resourceType: 'StudentApplication',
+                    targetId: application._id,
+                    performedBy: { userId: req.user._id, email: req.user.email, role: req.user.role, fullName: req.user.fullName },
+                    requestDetails: { method: req.method, url: req.originalUrl, ip: req.ip, userAgent: req.get('User-Agent') },
+                    result: { success: true, message: `${from} -> ${status}` },
+                    metadata: { applicationId: application.applicationId, from, to: status, bulk: true },
+                    timestamp: at
+                });
+            }
+            if (auditEntries.length > 0) {
+                await AuditLog.insertMany(auditEntries, { session });
+            }
+        });
+    } catch (error) {
+        // Nothing was saved: the transaction rolled back every row
+        console.error('Bulk status update error:', error);
+        const statusCode = error.code === 'SEATS_FULL' ? 409 : 500;
+        return res.status(statusCode).json({
+            success: false,
+            message: failedRow
+                ? `No applications were updated: ${failedRow.applicationId || failedRow.id} failed (${error.message})`
+                : 'Bulk status update failed; no applications were updated'
+        });
+    } finally {
+        await session.endSession();
+    }
+
+    const updated = results.filter(r => r.result === 'updated').length;
+    res.json({
+        success: true,
+        message: `${updated} updated, ${results.length - updated} skipped`,
+        data: { updated, skipped: results.length - updated, results }
+    });
+});
+
 router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
         const {
@@ -1329,25 +1446,7 @@ router.put('/:id/status', protect, authorize('staff', 'super_admin'), async (req
         }
 
         // Handle other status updates
-        application.status = status;
-        application.currentStage = status;
-
-        if (notes) {
-            if (!application.adminNotes) {
-                application.adminNotes = [];
-            }
-            application.adminNotes.push({
-                note: notes,
-                addedBy: req.user._id,
-                addedAt: new Date()
-            });
-        }
-
-        // Update timestamps based on status
-        if (status === 'APPROVED') {
-            application.approvedAt = new Date();
-            application.approvedBy = req.user._id;
-        }
+        applyStatusChange(application, status, req.user, notes);
 
         await application.save();
 

@@ -12,6 +12,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import DarkModeToggle from '../shared/DarkModeToggle';
 import api from '../../utils/api';
 import AllRecentPaymentsModal from './AllRecentPaymentsModal';
+import CourseFilters from './components/CourseFilters';
 
 const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick, showSessionSelector = true }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -132,6 +133,12 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                     >
                                         {availableSessions.map(s => <option key={s} value={s}>{s}</option>)}
                                     </select>
+                                </div>
+                            )}
+                            {/* Course filters (category / session / semester) for the staff and super admin student views */}
+                            {(user?.role === 'super_admin' || user?.role === 'staff') && (
+                                <div className="hidden md:flex mr-4">
+                                    <CourseFilters />
                                 </div>
                             )}
 

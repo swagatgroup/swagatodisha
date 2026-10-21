@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 
 const SessionContext = createContext();
 
@@ -45,11 +46,48 @@ export const SessionProvider = ({ children }) => {
         localStorage.setItem('selectedSession', selectedSession);
     }, [selectedSession]);
 
+    // Course filters (category / BOARD session / UNIVERSITY semester) live in the URL so a refresh keeps them.
+    // Cascading: changing the category drops the session/semester of the other category.
+    const [searchParams, setSearchParams] = useSearchParams();
+    const courseCategory = ['BOARD', 'UNIVERSITY'].includes(searchParams.get('courseCategory')) ? searchParams.get('courseCategory') : 'ALL';
+    const courseFilters = {
+        courseCategory,
+        courseSession: courseCategory === 'BOARD' ? (searchParams.get('courseSession') || '') : '',
+        semester: courseCategory === 'UNIVERSITY' ? (searchParams.get('semester') || '') : ''
+    };
+    const setCourseFilters = (changes) => {
+        setSearchParams(prev => {
+            const next = new URLSearchParams(prev);
+            const merged = { ...courseFilters, ...changes };
+            if ('courseCategory' in changes && changes.courseCategory !== courseFilters.courseCategory) {
+                merged.courseSession = '';
+                merged.semester = '';
+            }
+            next.delete('courseCategory');
+            next.delete('courseSession');
+            next.delete('semester');
+            if (merged.courseCategory !== 'ALL') next.set('courseCategory', merged.courseCategory);
+            if (merged.courseCategory === 'BOARD' && merged.courseSession) next.set('courseSession', merged.courseSession);
+            if (merged.courseCategory === 'UNIVERSITY' && merged.semester) next.set('semester', merged.semester);
+            return next;
+        }, { replace: true });
+    };
+    const clearCourseFilters = () => setCourseFilters({ courseCategory: 'ALL' });
+    // Only the active filters, ready to spread into request params
+    const courseFilterParams = Object.fromEntries(Object.entries(courseFilters).filter(([k, v]) => v && !(k === 'courseCategory' && v === 'ALL')));
+    // Stable key for effect dependencies
+    const courseFilterKey = new URLSearchParams(courseFilterParams).toString();
+
     const value = {
         selectedSession,
         setSelectedSession,
         availableSessions,
-        getCurrentSession
+        getCurrentSession,
+        courseFilters,
+        setCourseFilters,
+        clearCourseFilters,
+        courseFilterParams,
+        courseFilterKey
     };
 
     return (

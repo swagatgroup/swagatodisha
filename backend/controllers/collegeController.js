@@ -510,7 +510,7 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                 isActive: { $ne: false }
             })
                 .sort({ courseName: 1 })
-                .select('courseName courseCode price isPaidOnly streams');
+                .select('courseName courseCode price isPaidOnly streams category sessions semesters durationYears');
 
             const campuses = await Campus.find({
                 college: college._id,
@@ -527,6 +527,10 @@ const getPublicColleges = asyncHandler(async (req, res) => {
                     courseName: c.courseName,
                     price: c.price,
                     isPaidOnly: c.isPaidOnly,
+                    category: c.category,
+                    sessions: c.sessions,
+                    semesters: c.semesters,
+                    durationYears: c.durationYears,
                     streams: c.streams ? c.streams.filter(s => s.isActive).map(s => ({
                         name: s.name,
                         price: s.price,

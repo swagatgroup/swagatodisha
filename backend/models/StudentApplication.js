@@ -197,7 +197,13 @@ const studentApplicationSchema = new mongoose.Schema({
             type: String,
             enum: ['free', 'paid'],
             default: 'paid'
-        }
+        },
+        // Copied from the course when it is chosen (pre-save below), so later course edits don't change it.
+        // Older applications don't have these.
+        category: { type: String, enum: ['BOARD', 'UNIVERSITY'] },
+        session: String,      // BOARD only, one of the course's sessions
+        semesters: Number,    // UNIVERSITY only
+        durationYears: Number
     },
 
     // Guardian Details
@@ -763,13 +769,40 @@ studentApplicationSchema.index(
 
 // Remember the loaded status/course so the seat check only runs when an application starts taking a seat
 const seatCourseKey = (doc) => `${doc.courseDetails?.selectedCollege || ''}|${doc.courseDetails?.selectedCourse || ''}`;
+const COURSE_SNAPSHOT_FIELDS = ['category', 'session', 'semesters', 'durationYears'];
 studentApplicationSchema.post('init', function () {
     this.$locals.loadedStatus = this.status;
     this.$locals.loadedCourse = seatCourseKey(this);
+    this.$locals.loadedCourseSnapshot = Object.fromEntries(COURSE_SNAPSHOT_FIELDS.map(f => [f, this.courseDetails?.[f]]));
 });
 
 studentApplicationSchema.pre('save', async function () {
-    const { SEAT_FREE_STATUSES, batchYear, checkSeatAvailability } = require('../utils/courseSeats');
+    const { SEAT_FREE_STATUSES, batchYear, checkSeatAvailability, findCollegeCourse } = require('../utils/courseSeats');
+
+    // Course snapshot: taken when a course is chosen (new application, course changed, or a draft without one).
+    // Otherwise the stored values are kept even if an edit form sends courseDetails without them;
+    // only the BOARD session may be changed, to another session of the same course.
+    const loadedSnapshot = this.$locals.loadedCourseSnapshot || {};
+    const requestedSession = this.courseDetails?.session;
+    const takeSnapshot = this.isNew
+        || this.$locals.loadedCourse !== seatCourseKey(this)
+        || (!loadedSnapshot.category && this.$locals.loadedStatus === 'DRAFT');
+    if (this.courseDetails && takeSnapshot) {
+        const course = await findCollegeCourse(this);
+        const sessions = course?.category === 'BOARD' ? (course.sessions || []) : [];
+        this.set('courseDetails.category', course?.category || undefined);
+        this.set('courseDetails.semesters', course?.category === 'UNIVERSITY' ? course.semesters : undefined);
+        this.set('courseDetails.durationYears', course?.durationYears || undefined);
+        this.set('courseDetails.session', sessions.find(s => s === String(requestedSession || '').toUpperCase())
+            || (sessions.length === 1 ? sessions[0] : undefined));
+    } else if (this.courseDetails) {
+        COURSE_SNAPSHOT_FIELDS.forEach(f => this.set(`courseDetails.${f}`, loadedSnapshot[f]));
+        if (loadedSnapshot.category === 'BOARD' && requestedSession && requestedSession !== loadedSnapshot.session) {
+            const course = await findCollegeCourse(this);
+            const session = (course?.sessions || []).find(s => s === String(requestedSession).toUpperCase());
+            if (session) this.set('courseDetails.session', session);
+        }
+    }
 
     // Newly admitted: start the academic record (batch = registration year, 1st year)
     if (this.status === 'COMPLETE' && !this.academic?.status) {

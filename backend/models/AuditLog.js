@@ -5,7 +5,7 @@ const auditLogSchema = new mongoose.Schema({
     action: {
         type: String,
         required: true,
-        enum: ['DELETE_ATTEMPT', 'DELETE_SUCCESS', 'DELETE_FAILED', 'BULK_DELETE_ATTEMPT', 'BULK_DELETE_SUCCESS', 'BULK_DELETE_FAILED'],
+        enum: ['DELETE_ATTEMPT', 'DELETE_SUCCESS', 'DELETE_FAILED', 'BULK_DELETE_ATTEMPT', 'BULK_DELETE_SUCCESS', 'BULK_DELETE_FAILED', 'STATUS_CHANGE'],
         index: true
     },
     
