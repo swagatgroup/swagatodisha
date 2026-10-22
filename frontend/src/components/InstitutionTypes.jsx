@@ -1937,10 +1937,15 @@ const InstitutionTypes = () => {
                                 </div>
                             </div>
                         )}
-                        <div className="mt-6 flex justify-end">
+                        <div className="mt-6 flex justify-end gap-3">
                             <Button variant="outline" size="sm" onClick={(event) => handleCloseButtonClick(event, 'sub')}>
                                 Close
                             </Button>
+                            {!selectedProgram.hasSubCategories && (
+                                <Button size="sm" to="/register">
+                                    Apply Now
+                                </Button>
+                            )}
                         </div>
                     </>
                 )}
@@ -1980,9 +1985,12 @@ const InstitutionTypes = () => {
                                 <li>• Modern infrastructure and equipment</li>
                             </ul>
                         </div>
-                        <div className="mt-6 flex justify-end">
+                        <div className="mt-6 flex justify-end gap-3">
                             <Button variant="outline" size="sm" onClick={(event) => handleCloseButtonClick(event, 'course')}>
                                 Close
+                            </Button>
+                            <Button size="sm" to="/register">
+                                Apply Now
                             </Button>
                         </div>
                     </>
