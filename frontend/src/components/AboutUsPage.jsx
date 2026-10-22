@@ -291,7 +291,7 @@ const AboutUsPage = () => {
                     </p>
                     <div className="flex flex-col justify-center gap-3 sm:flex-row">
                         <Button variant="inverse" size="lg" to="/register">Apply Now</Button>
-                        <Button variant="glass" size="lg" to="/#institutions">Learn More</Button>
+                        <Button variant="glass" size="lg" to="/#institutions">Learn More<span className="sr-only"> about our institutions</span></Button>
                     </div>
                 </Container>
             </Section>

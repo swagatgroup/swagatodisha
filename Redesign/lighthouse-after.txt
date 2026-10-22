@@ -1,0 +1,4 @@
+/ performance=63 accessibility=100 best-practices=96 seo=92 LCP=6.8 s CLS=0
+/about performance=65 accessibility=100 best-practices=96 seo=92 LCP=6.3 s CLS=0
+/contact performance=67 accessibility=100 best-practices=100 seo=92 LCP=5.6 s CLS=0
+/login-portal performance=69 accessibility=100 best-practices=100 seo=92 LCP=5.3 s CLS=0

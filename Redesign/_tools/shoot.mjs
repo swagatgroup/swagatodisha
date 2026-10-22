@@ -7,7 +7,6 @@ fs.mkdirSync(out, { recursive: true });
 
 const only = process.argv[4] ? process.argv[4].split(',') : null;
 const routes = [
-  ['gateway', '/'],
   ['home', '/', 'enter'],
   ['about', '/about'],
   ['gallery', '/gallery'],
@@ -38,7 +37,8 @@ for (const [w, h] of widths) {
     try {
       await page.goto(base + path, { waitUntil: 'load', timeout: 45000 });
       await page.waitForTimeout(2500);
-      if (action === 'enter') {
+      // Pre-redesign builds showed an entry screen on "/": click through it when present
+      if (action === 'enter' && await page.getByText('Choose your destination').isVisible().catch(() => false)) {
         await page.locator('h2', { hasText: 'Swagat Odisha' }).first().click();
         await page.waitForTimeout(3000);
       }
@@ -47,10 +47,6 @@ for (const [w, h] of widths) {
         for (let y = 0; y < document.body.scrollHeight; y += 400) { window.scrollTo(0, y); await new Promise(r => setTimeout(r, 200)); }
       });
       await page.waitForTimeout(4000);
-      if (name === 'gateway') {
-        const sh = await page.evaluate(() => document.querySelector('.fixed.inset-0')?.scrollHeight || 0);
-        if (sh > h) await page.setViewportSize({ width: w, height: sh });
-      }
       await page.screenshot({ path: `${out}/${name}@${w}.png`, fullPage: true });
       log.push(`${name}@${w}: ok final=${new URL(page.url()).pathname}${errors.length ? ' errors=' + errors.join(' | ') : ''}`);
     } catch (e) {

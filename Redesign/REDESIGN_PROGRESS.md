@@ -6,13 +6,19 @@ Branch: `redesign/ui-v2` (created from `main` @ `0e266e6`). All redesign work st
 
 | Phase | State | Notes |
 |---|---|---|
-| 0 Baseline | done | Build passes; lint has 351 pre-existing errors (don't fix, don't add); backend test not run (hits real Cloudinary/DB); baseline screenshots in `_baseline/` (git-ignored) |
+| 0 Baseline | done | Build passes; lint has 388 pre-existing problems; backend test not run (hits real Cloudinary/DB); baseline screenshots in `_baseline/` (git-ignored) |
 | 1 Audit | done | `REDESIGN_AUDIT.md` |
 | 2 Design system | done | `DESIGN_SYSTEM.md` |
 | Checkpoint 1 | approved 2026-10-22 | Decisions below |
 | 3 Foundations | done | Tokens, self-hosted fonts, `.site` scope, dark mode limited to dashboards |
-| 4 Primitives | done | `frontend/src/components/site/`: Layout (Container/Section/SectionHeader), Button, Card, Badge, Icon, Field (Input/Textarea/Select), Tabs, Accordion, Feedback (Skeleton/LoadingList/EmptyState), Modal (portal into `#sw-portal`), SmartImage, Decor. Dev-only preview at `/_design` (not in production builds) |
-| 5–9 | in progress | Owner asked to run 5–9 without checkpoints; stop only for backend changes or deleting real content |
+| 4 Primitives | done | `frontend/src/components/site/`; dev-only preview at `/_design` (not in production builds) |
+| 5 Layout shell | done | New header/footer on all marketing pages; entry screen removed; Institutions dropdown |
+| 6 Homepage | done | Hero, Explore Swagat, posters, approvals, institutions, campuses, contact |
+| 7 Other pages | done | About, Gallery, Contact, Send Message, legal, schools, auth, floating contact |
+| 8 Quality pass | done | No overflow at 7 widths; 44px touch targets; axe clean (one shared-component exception) |
+| 9 Verification | done | API requests identical before/after; links crawled; Lighthouse before/after; **see `REDESIGN_REPORT.md`** |
+
+Waiting on the owner: final review and merge; the 13 images from `IMAGE_BRIEF.md`; the two constants in `siteConfig.js`.
 
 ## Decisions (Checkpoint 1)
 
@@ -31,10 +37,10 @@ Branch: `redesign/ui-v2` (created from `main` @ `0e266e6`). All redesign work st
 - Mobile text minimum is **14px** (approved).
 - Don't fix existing lint errors; don't add new ones.
 
-### Still pending (the checkpoint reply left these as unfilled placeholders)
-- **Hero text:** own copy, or the Figma line "Unlock limitless learning / One place, Knowledge"? Needed by Phase 6.
-- **Coaching Centre URL:** a real URL, or remove the link for now? Needed by Phase 5.
-- **Images:** designer exports in `Redesign/assets/`, or NASA public-domain images? Needed by Phase 6.
+### Answered later (second checkpoint reply)
+- **Hero text:** owner's AIDA copy (see report).
+- **Coaching Centre URL:** `/` for now, in `COACHING_CENTRE_URL`.
+- **Images:** education/Odisha subjects via `IMAGE_BRIEF.md`; gradient placeholders until files exist.
 - **Copyright:** answered (see Decisions).
 
 ## Phase 3 notes (what exists now)
@@ -59,4 +65,4 @@ Branch: `redesign/ui-v2` (created from `main` @ `0e266e6`). All redesign work st
 
 ## Next
 
-Phase 4: component primitives + dev-only `/_design` preview route.
+Owner review of `REDESIGN_REPORT.md`, then merge `redesign/ui-v2` into `main`.
