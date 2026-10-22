@@ -1,6 +1,6 @@
 # Design System (Phase 2), extracted from the Figma exports
 
-Sources: `Redesign/Desktop.png` (1440 x 6909) and `Redesign/Moblie.png` (402 x 3492). Colours were sampled pixel by pixel. Type sizes were fitted by rendering Montserrat and Inter at candidate sizes and matching the measured ink width of real strings in the screenshots, so they are usually accurate to ±1px.
+Sources: `Redesign/Desktop.png` (1440 x 6909) and `Redesign/Mobile.png` (402 x 3492). Colours were sampled pixel by pixel. Type sizes were fitted by rendering Montserrat and Inter at candidate sizes and matching the measured ink width of real strings in the screenshots, so they are usually accurate to ±1px.
 
 **Character in one line:** monochrome, high-contrast "space" aesthetic. Pure black hero, cards and footer on a white page; dark glass pills; soft blurred-gradient tiles; planet photography as the only real colour; pastel badges as the only UI colour.
 

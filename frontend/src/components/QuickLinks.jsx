@@ -1,4 +1,5 @@
 import {useEffect, useRef, useState} from 'react';
+import { useLocation } from 'react-router-dom'
 import { CONTACT_INFO } from '../utils/constants'
 import api from '../utils/api'
 import {
@@ -50,6 +51,13 @@ const QuickLinks = () => {
     const [pdfViewer, setPdfViewer] = useState({ isOpen: false, file: null, name: null })
     const [isUserScrolling, setIsUserScrolling] = useState(false)
     const [careerModal, setCareerModal] = useState({ isOpen: false })
+    // Footer "Career Guidance" opens the roadmap: /?explore=career#explore
+    const { search, key: locationKey } = useLocation()
+    useEffect(() => {
+        if (new URLSearchParams(search).get('explore') === 'career') {
+            setCareerModal({ isOpen: true })
+        }
+    }, [search, locationKey])
     const [expandedBranches, setExpandedBranches] = useState(new Set())
     const [expandedPaths, setExpandedPaths] = useState(new Set())
     const [showAllCareers, setShowAllCareers] = useState(new Set())

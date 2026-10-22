@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import Swal from 'sweetalert2'
+import { Link } from 'react-router-dom'
 import { LuLoaderCircle } from 'react-icons/lu'
 import { DESIGNER_CREDIT } from './site/siteConfig'
 import Icon from './site/Icon'
@@ -11,37 +12,24 @@ const Footer = () => {
 
     const footerData = {
         quickLinks: [
-            { name: "About Us", url: "#about" },
-            { name: "Programs", url: "#programs" },
-            { name: "Admissions", url: "#admissions" },
-            { name: "Gallery", url: "#gallery" },
-            { name: "Contact", url: "#contact" }
+            { name: "About Us", url: "/about" },
+            { name: "Programs", url: "/#institutions" },
+            { name: "Admissions", url: "/register" },
+            { name: "Gallery", url: "/gallery" },
+            { name: "Contact", url: "/contact" }
         ],
+        // Each opens that institution's programs on the homepage
         programs: [
-            { name: "School Education", url: "#" },
-            { name: "Higher Secondary", url: "#" },
-            { name: "Degree College", url: "#" },
-            { name: "Engineering", url: "#" },
-            { name: "Management", url: "#" }
+            { name: "School Education", url: "/?institution=school#institutions" },
+            { name: "Higher Secondary", url: "/?institution=higher-secondary#institutions" },
+            { name: "Degree College", url: "/?institution=degree-college#institutions" },
+            { name: "Engineering", url: "/?institution=engineering#institutions" },
+            { name: "Management", url: "/?institution=management-school#institutions" }
         ],
         support: [
-            { name: "Student Portal", url: "#" },
-            { name: "Parent Portal", url: "#" },
-            { name: "Career Guidance", url: "#" },
-            { name: "Scholarships", url: "#" },
-            { name: "FAQs", url: "#" }
-        ],
-        contact: {
-            address: "Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, 767039",
-            phone: "+91 7855959544", // Sargiguda main number
-            email: "contact@swagatodisha.com"
-        },
-        socialLinks: [
-            { name: "Facebook", icon: "fa-brands fa-facebook-f", url: "#" },
-            { name: "Twitter", icon: "fa-brands fa-twitter", url: "#" },
-            { name: "LinkedIn", icon: "fa-brands fa-linkedin-in", url: "#" },
-            { name: "Instagram", icon: "fa-brands fa-instagram", url: "#" },
-            { name: "YouTube", icon: "fa-brands fa-youtube", url: "#" }
+            { name: "Student Portal", url: "/login/student" },
+            { name: "Parent Portal", url: "/login-portal" },
+            { name: "Career Guidance", url: "/?explore=career#explore" }
         ]
     }
 
@@ -134,9 +122,9 @@ const Footer = () => {
                             <ul className="space-y-0 lg:space-y-1">
                                 {column.links.map((link, index) => (
                                     <li key={index}>
-                                        <a href={link.url} className={linkClass}>
+                                        <Link to={link.url} className={linkClass}>
                                             {link.name}
-                                        </a>
+                                        </Link>
                                     </li>
                                 ))}
                             </ul>
@@ -180,9 +168,8 @@ const Footer = () => {
                 {/* Bottom Bar */}
                 <div className="mt-14 flex flex-col items-center gap-3 border-t border-sw-white/10 pt-8 text-center">
                     <div className="flex flex-wrap items-center justify-center gap-x-6 text-sw-caption text-sw-text-on-dark-secondary">
-                        <a href="#" className="inline-flex min-h-11 items-center hover:text-sw-white">Privacy Policy</a>
-                        <a href="#" className="inline-flex min-h-11 items-center hover:text-sw-white">Terms of Service</a>
-                        <a href="#" className="inline-flex min-h-11 items-center hover:text-sw-white">Cookie Policy</a>
+                        <Link to="/privacy-policy" className="inline-flex min-h-11 items-center hover:text-sw-white">Privacy Policy</Link>
+                        <Link to="/terms-and-conditions" className="inline-flex min-h-11 items-center hover:text-sw-white">Terms of Service</Link>
                     </div>
                     <p className="text-sw-caption text-sw-white">
                         © {currentYear} Swagat Odisha. All rights reserved.

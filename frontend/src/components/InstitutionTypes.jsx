@@ -1,5 +1,5 @@
 import {useState, useCallback, useEffect} from 'react';
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import {
     RiSchoolLine,
     RiGraduationCapLine,
@@ -1656,6 +1656,19 @@ const InstitutionTypes = () => {
             ]
         }
     ]
+
+    // Footer program links open the matching institution: /?institution=<id>#institutions
+    const { search, key: locationKey } = useLocation()
+    useEffect(() => {
+        const requested = new URLSearchParams(search).get('institution')
+        const match = institutions.find((institution) => institution.id === requested)
+        if (match) {
+            setSelectedInstitution(match)
+            setIsModalOpen(true)
+        }
+        // institutions is static data; re-run only when the URL changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [search, locationKey])
 
     // COMPLETELY REWRITTEN MODAL LOGIC FROM SCRATCH
     const handleInstitutionCardClick = useCallback((event, institution) => {

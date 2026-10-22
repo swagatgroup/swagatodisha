@@ -1,12 +1,12 @@
 # Image Brief
 
-Every photo slot in the redesign is already wired to a file in `frontend/public/images/redesign/`. Until a file exists, the slot shows a dark gradient placeholder. Drop a file in with the exact name below and it appears on the next deploy, with no code changes.
+Every photo slot in the redesign is already wired to a filename in `frontend/src/assets/images/redesign/`. Until a file exists, the slot shows a dark gradient placeholder and the browser requests nothing, so there are no errors. Drop a file in with the exact name below and it appears on the next build or deploy (and immediately in `npm run dev`), with no code changes. The build gives each file a fingerprinted name, so updated photos are never stuck in visitors' caches.
 
 **13 files in total.** The desktop hero is the only image that loads eagerly; everything else below the fold is lazy-loaded.
 
 ## Rules for every file
 
-- **Format:** WebP (`.webp`), quality 75–80. Keep each file under the size listed.
+- **Format:** WebP (`.webp`), quality 75–80. Keep each file under the size listed. (AVIF, JPG and PNG also work with the same base name, but WebP gives the best size/quality balance.)
 - **Exact pixel size** as listed (these are 2x the displayed size, for sharp screens). Crop to the stated aspect ratio before exporting.
 - **No text, logos, watermarks or UI** in the image. Headlines are drawn by the page on top.
 - **People:** AI-generated or stock models only. Don't use photos of real students or staff unless you have their written consent.
@@ -114,7 +114,7 @@ Vertical shot of two children with school bags walking down a village road in ru
 
 ## Checklist when dropping files in
 
-1. Save each file with the exact filename into `frontend/public/images/redesign/`.
+1. Save each file with the exact filename into `frontend/src/assets/images/redesign/`.
 2. Check the pixel size and that it's under the size limit.
 3. Run the site and look at the homepage, one school page, and the homepage on a phone-sized window.
 4. Commit the images and deploy.

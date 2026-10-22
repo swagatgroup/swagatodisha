@@ -1,5 +1,6 @@
 import React from 'react';
 import PageHero from '../site/PageHero';
+import { CONTACT_INFO } from '../../utils/constants';
 
 const PrivacyPolicy = () => {
     return (
@@ -197,13 +198,13 @@ const PrivacyPolicy = () => {
                             Swagat Group of Institutions
                         </p>
                         <p className="mb-2">
-                            Email: privacy@swagatgroup.edu.in
+                            Email: <a href={`mailto:${CONTACT_INFO.email}`} className="sw-tap inline-flex items-center font-semibold text-sw-text underline underline-offset-4">{CONTACT_INFO.email}</a>
                         </p>
                         <p className="mb-2">
-                            Phone: [Contact Number]
+                            Phone: <a href={`tel:${CONTACT_INFO.phone}`} className="sw-tap inline-flex items-center font-semibold text-sw-text underline underline-offset-4">{CONTACT_INFO.phone}</a>
                         </p>
                         <p>
-                            Address: [Institution Address]
+                            Address: Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039
                         </p>
                     </div>
                 </section>

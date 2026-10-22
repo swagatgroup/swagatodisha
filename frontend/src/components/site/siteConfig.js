@@ -1,8 +1,9 @@
 // Site-wide links for the public shell (header dropdown, mobile menu, footer).
 
-// TODO: replace with the Coaching Centre's real page once it exists.
-// It previously pointed at /SwagatCoachingCentre_Bhawanipatna, which has no route.
-export const COACHING_CENTRE_URL = '/'
+// Set to the Coaching Centre's page (e.g. '/SwagatCoachingCentre_Bhawanipatna' once that route
+// exists, or an external https:// address) and it appears in the Institutions menu automatically.
+// While it's null the entry is hidden, so visitors never land on a link that goes nowhere.
+export const COACHING_CENTRE_URL = null
 
 // Studio credit shown in the footer
 export const DESIGNER_CREDIT = {
@@ -16,8 +17,10 @@ export const INSTITUTION_SITES = [
     { name: 'Public School', detail: 'Ghantiguda', to: '/SwagatPublicSchool_Ghantiguda' },
     { name: 'Public School', detail: 'Sargiguda', to: '/SwagatPublicSchool_Sargiguda' },
     { name: 'Public School', detail: 'Lakhna', to: '/SwagatPublicSchool_Lakhna' },
-    { name: 'Coaching Centre', detail: 'Bhawanipatna', to: COACHING_CENTRE_URL },
-]
+    COACHING_CENTRE_URL && (/^https?:\/\//.test(COACHING_CENTRE_URL)
+        ? { name: 'Coaching Centre', detail: 'Bhawanipatna', href: COACHING_CENTRE_URL, external: true }
+        : { name: 'Coaching Centre', detail: 'Bhawanipatna', to: COACHING_CENTRE_URL }),
+].filter(Boolean)
 
 export const LOGO_WHITE = '/images/brand/swagat-logo-white.webp'
 export const LOGO_COLOR = '/images/brand/swagat-logo.webp'

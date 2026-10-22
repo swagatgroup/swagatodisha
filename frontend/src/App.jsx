@@ -1,20 +1,13 @@
 import { useEffect, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SessionProvider } from './contexts/SessionContext'
 import { DarkModeProvider } from './contexts/DarkModeContextSimple'
 import Hero from './components/home/Hero'
 import PosterCarousel from './components/home/PosterCarousel'
-import AboutUs from './components/AboutUs'
 import InstitutionTypes from './components/InstitutionTypes'
-import Admissions from './components/Admissions'
-// import Milestone from './components/Milestone'
-// import Gallery from './components/Gallery'
 import QuickLinks from './components/QuickLinks'
-import ChairmanMessage from './components/ChairmanMessage'
-import Management from './components/Management'
 import Location from './components/Location'
 import ContactUs from './components/ContactUs'
 import FloatingContact from './components/FloatingContact'
@@ -22,15 +15,10 @@ import Login from './components/auth/Login'
 import LoginPortal from './components/auth/LoginPortal'
 import Register from './components/auth/Register'
 import ResetPassword from './components/auth/ResetPassword'
-import StudentDashboard from './components/dashboard/StudentDashboard'
-import AgentDashboard from './components/dashboard/AgentDashboard'
-import StaffDashboard from './components/dashboard/StaffDashboard'
-import SuperAdminDashboard from './components/dashboard/SuperAdminDashboard'
 import AboutUsPage from './components/AboutUsPage'
 import ApprovalsRecognitions from './components/ApprovalsRecognitions'
 import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
-import ApplicationStatusSearch from './components/ApplicationStatusSearch'
 import SendMessage from './components/SendMessage'
 import TermsPage from './components/legal/TermsPage'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
@@ -38,6 +26,18 @@ import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoo
 import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
 import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
 import SiteRoot from './components/site/SiteRoot'
+
+// Dashboards load on demand, so public visitors never download dashboard code
+const StudentDashboard = lazy(() => import('./components/dashboard/StudentDashboard'))
+const AgentDashboard = lazy(() => import('./components/dashboard/AgentDashboard'))
+const StaffDashboard = lazy(() => import('./components/dashboard/StaffDashboard'))
+const SuperAdminDashboard = lazy(() => import('./components/dashboard/SuperAdminDashboard'))
+
+const DashboardLoading = () => (
+    <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+    </div>
+)
 
 // Design-system preview: dev server only, never part of a production build
 const DesignPreview = import.meta.env.DEV ? lazy(() => import('./components/site/DesignPreview')) : null
@@ -114,7 +114,7 @@ const AppContent = () => {
             <Hero />
 
             {/* 2. Explore Swagat (quick access: timetables, career roadmap, notifications, results) */}
-            <section aria-label="Explore Swagat">
+            <section id="explore" aria-label="Explore Swagat" className="scroll-mt-sw-header">
                 <QuickLinks />
             </section>
 
@@ -148,6 +148,7 @@ function App() {
             <AuthProvider>
                 <Router>
                     <DarkModeProvider>
+                        <Suspense fallback={<DashboardLoading />}>
                         <Routes>
                             {/* Public site (redesign v2): marketing pages with the shared header/footer */}
                             <Route element={<SiteRoot chrome />}>
@@ -227,6 +228,7 @@ function App() {
                             {/* Catch all route */}
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
+                        </Suspense>
                         <FloatingContact />
                     </DarkModeProvider>
                 </Router>
