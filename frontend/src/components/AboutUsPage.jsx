@@ -1,5 +1,25 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import {
+    LuBuilding2,
+    LuEye,
+    LuGraduationCap,
+    LuLaptop,
+    LuLightbulb,
+    LuShieldCheck,
+    LuSprout,
+    LuStar,
+    LuTarget,
+    LuTrophy,
+    LuUsers,
+} from 'react-icons/lu'
+import PageHero from './site/PageHero'
+import { Container, Section, SectionHeader } from './site/Layout'
+import Badge from './site/Badge'
+import Button from './site/Button'
+import Card from './site/Card'
+import Icon from './site/Icon'
+import { cx } from './site/cx'
 
 const AboutUsPage = () => {
     const [staffProfiles, setStaffProfiles] = useState([]);
@@ -94,283 +114,213 @@ const AboutUsPage = () => {
         }
     ]
 
+    // Font Awesome class names in the data above → Lucide glyphs
+    const ICONS = {
+        'fa-solid fa-seedling': LuSprout,
+        'fa-solid fa-building': LuBuilding2,
+        'fa-solid fa-trophy': LuTrophy,
+        'fa-solid fa-lightbulb': LuLightbulb,
+        'fa-solid fa-star': LuStar,
+        'fa-solid fa-shield-check': LuShieldCheck,
+        'fa-solid fa-users': LuUsers,
+    }
+
     return (
-        <div className="min-h-screen bg-[#FAF7F2]">
-
+        <div>
             {/* Hero Section */}
-            <section className="relative py-20 overflow-hidden">
-                <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl"></div>
-                </div>
-
-                <div className="relative z-10 container mx-auto px-6 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
-                        <i className="fa-solid fa-info-circle text-white text-3xl"></i>
-                    </div>
-
-                    <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                        About <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Us</span>
-                    </h1>
-
-                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                        Swagat Group of Institutions is a premier educational organization committed to providing
-                        quality education and fostering innovation in learning. We believe in empowering students
-                        to achieve their dreams through comprehensive education and personal development.
-                    </p>
-                </div>
-            </section>
+            <PageHero
+                title="About Us"
+                intro="Swagat Group of Institutions is a premier educational organization committed to providing quality education and fostering innovation in learning. We believe in empowering students to achieve their dreams through comprehensive education and personal development."
+            />
 
             {/* Mission & Vision Section */}
-            <section className="py-20 bg-white dark:bg-[#1A1212]">
-                <div className="container mx-auto px-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto">
-                        <div className="bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0] rounded-3xl p-8 border border-[#F0E6FA]">
-                            <div className="w-16 h-16 bg-[#4A1D7A] rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <i className="fa-solid fa-bullseye text-white text-2xl"></i>
-                            </div>
-                            <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">Our Mission</h2>
-                            <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                                To provide world-class education that empowers students with knowledge, skills, and values
-                                necessary to become responsible global citizens and successful professionals.
-                            </p>
-                        </div>
-
-                        <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-8 border border-blue-100">
-                            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                                <i className="fa-solid fa-eye text-white text-2xl"></i>
-                            </div>
-                            <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">Our Vision</h2>
-                            <p className="text-gray-600 dark:text-gray-300 text-center leading-relaxed">
-                                To be a leading educational institution recognized for academic excellence, innovation,
-                                and commitment to student success, shaping the future of education in India.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <Section>
+                <Container className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:gap-10">
+                    <Card className="p-6 lg:p-8">
+                        <span className="sw-pane sw-pane-career mb-5 flex h-14 w-14 items-center justify-center rounded-sw-sm">
+                            <Icon icon={LuTarget} size="md" />
+                        </span>
+                        <h2 className="mb-3 text-sw-h2 font-bold">Our Mission</h2>
+                        <p className="text-sw-body text-sw-text-on-dark-secondary">
+                            To provide world-class education that empowers students with knowledge, skills, and values
+                            necessary to become responsible global citizens and successful professionals.
+                        </p>
+                    </Card>
+                    <Card className="p-6 lg:p-8">
+                        <span className="sw-pane sw-pane-timetable mb-5 flex h-14 w-14 items-center justify-center rounded-sw-sm">
+                            <Icon icon={LuEye} size="md" />
+                        </span>
+                        <h2 className="mb-3 text-sw-h2 font-bold">Our Vision</h2>
+                        <p className="text-sw-body text-sw-text-on-dark-secondary">
+                            To be a leading educational institution recognized for academic excellence, innovation,
+                            and commitment to student success, shaping the future of education in India.
+                        </p>
+                    </Card>
+                </Container>
+            </Section>
 
             {/* Values Section */}
-            <section className="py-20 bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0]">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Values</span>
-                        </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                            The core principles that guide our institution and shape our educational approach.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+            <Section tone="muted">
+                <Container>
+                    <SectionHeader title="Our Values" subtitle="The core principles that guide our institution and shape our educational approach." />
+                    <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                         {values.map((value, index) => (
-                            <div key={index} className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                                <div className={`w-16 h-16 bg-gradient-to-r ${value.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
-                                    <i className={`${value.icon} text-white text-2xl`}></i>
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3 text-center">{value.title}</h3>
-                                <p className="text-gray-600 dark:text-gray-300 text-center text-sm leading-relaxed">{value.description}</p>
-                            </div>
+                            <li key={index}>
+                                <Card variant="outline" className="h-full p-5">
+                                    <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white">
+                                        <Icon icon={ICONS[value.icon] || LuStar} size="sm" />
+                                    </span>
+                                    <h3 className="mb-2 text-sw-h3 font-bold">{value.title}</h3>
+                                    <p className="text-sw-body text-sw-text-secondary">{value.description}</p>
+                                </Card>
+                            </li>
                         ))}
-                    </div>
-                </div>
-            </section>
+                    </ul>
+                </Container>
+            </Section>
 
             {/* Milestones Section */}
-            <section className="py-20 bg-white dark:bg-[#1A1212]">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                            Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Journey</span>
-                        </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                            Key milestones that mark our growth and success in the field of education.
-                        </p>
-                    </div>
-
-                    <div className="max-w-6xl mx-auto">
-                        <div className="relative">
-                            {/* Timeline Line */}
-                            <div className="absolute left-1/2 transform -translate-x-1/2 w-1 h-full bg-gradient-to-b from-[#4A1D7A] to-[#351458]"></div>
-
-                            <div className="space-y-12">
-                                {milestones.map((milestone, index) => (
-                                    <div key={index} className={`flex items-center ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
-                                        <div className="w-1/2 px-8">
-                                            <div className={`bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
-                                                <div className="inline-flex items-center justify-center w-12 h-12 bg-[#4A1D7A] rounded-xl mb-3">
-                                                    <i className={`${milestone.icon} text-white text-lg`}></i>
-                                                </div>
-                                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">{milestone.title}</h3>
-                                                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">{milestone.description}</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="w-8 h-8 bg-[#4A1D7A] rounded-full flex items-center justify-center z-10 relative">
-                                            <span className="text-white font-bold text-sm">{milestone.year}</span>
-                                        </div>
-
-                                        <div className="w-1/2 px-8"></div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <Section>
+                <Container>
+                    <SectionHeader title="Our Journey" subtitle="Key milestones that mark our growth and success in the field of education." />
+                    <ol className="relative ml-3 space-y-8 border-l-[3px] border-sw-black pl-8 md:ml-0 md:border-l-0 md:pl-0">
+                        {/* Centre line on wider screens */}
+                        <span aria-hidden="true" className="absolute bottom-0 left-1/2 top-0 hidden w-[3px] -translate-x-1/2 bg-sw-black md:block" />
+                        {milestones.map((milestone, index) => (
+                            <li key={index} className={cx('relative md:flex md:items-center', index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse')}>
+                                <div className="md:w-1/2 md:px-10">
+                                    <Card variant="outline" className={cx('p-5', index % 2 === 0 ? 'md:text-right' : 'md:text-left')}>
+                                        <span className={cx('mb-3 inline-flex h-11 w-11 items-center justify-center rounded-sw-sm bg-sw-black text-sw-white')}>
+                                            <Icon icon={ICONS[milestone.icon] || LuStar} size="sm" />
+                                        </span>
+                                        <h3 className="mb-1 text-sw-h3 font-bold">{milestone.title}</h3>
+                                        <p className="text-sw-body text-sw-text-secondary">{milestone.description}</p>
+                                    </Card>
+                                </div>
+                                <span className="absolute -left-[52px] top-5 z-10 flex h-10 w-10 items-center justify-center rounded-sw-pill bg-sw-black text-sw-caption font-bold text-sw-white ring-4 ring-sw-white md:static md:h-14 md:w-14 md:shrink-0">
+                                    {milestone.year}
+                                </span>
+                                <div className="hidden md:block md:w-1/2" />
+                            </li>
+                        ))}
+                    </ol>
+                </Container>
+            </Section>
 
             {/* Team Section */}
-            <section className="py-20 bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0]">
-                <div className="container mx-auto px-6">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                            Leadership <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Team</span>
-                        </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                            Meet the dedicated leaders who guide our institution towards excellence.
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Section tone="muted">
+                <Container>
+                    <SectionHeader title="Leadership Team" subtitle="Meet the dedicated leaders who guide our institution towards excellence." />
+                    <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                         {team.map((member, index) => (
-                            <div key={index} className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                                <div className="w-24 h-24 bg-[#4A1D7A] rounded-full flex items-center justify-center mx-auto mb-4 overflow-hidden">
-                                    <img
-                                        src={member.image}
-                                        alt={member.name}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 text-center">{member.name}</h3>
-                                <p className="text-[#4A1D7A] font-semibold text-center mb-3">{member.position}</p>
-                                <p className="text-gray-600 dark:text-gray-300 text-center text-sm leading-relaxed">{member.description}</p>
-                            </div>
+                            <li key={index}>
+                                <Card className="h-full p-6 text-center">
+                                    <span className="sw-ph-night mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-sw-pill text-sw-h2 font-bold before:content-[attr(data-initial)]">
+                                        <img
+                                            src={member.image}
+                                            alt={member.name}
+                                            loading="lazy"
+                                            className="h-full w-full object-cover"
+                                            onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.dataset.initial = member.name.replace(/^(Mrs|Mr|Ms|Dr)\.?\s*/, '').charAt(0); }}
+                                        />
+                                    </span>
+                                    <h3 className="mb-1 text-sw-h3 font-bold">{member.name}</h3>
+                                    <p className="mb-3"><Badge tone="dark">{member.position}</Badge></p>
+                                    <p className="text-sw-body text-sw-text-on-dark-secondary">{member.description}</p>
+                                </Card>
+                            </li>
                         ))}
-                    </div>
-                </div>
-            </section>
+                    </ul>
+                </Container>
+            </Section>
 
             {/* Why Choose Us Section */}
-            <section className="py-20 bg-white dark:bg-[#1A1212]">
-                <div className="container mx-auto px-6">
-                    <div className="max-w-6xl mx-auto">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                            <div>
-                                <h2 className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                    Why Choose <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Us</span>
-                                </h2>
-
-                                <div className="space-y-6">
-                                    <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                            <i className="fa-solid fa-graduation-cap text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Quality Education</h3>
-                                            <p className="text-gray-600 dark:text-gray-300">We provide world-class education with modern curriculum and experienced faculty.</p>
-                                        </div>
+            <Section>
+                <Container className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
+                    <div>
+                        <h2 className="mb-8 font-sw-display text-sw-display-alt font-bold">Why Choose Us</h2>
+                        <ul className="space-y-6">
+                            {[
+                                { icon: LuGraduationCap, title: 'Quality Education', text: 'We provide world-class education with modern curriculum and experienced faculty.' },
+                                { icon: LuUsers, title: 'Personal Attention', text: 'Small class sizes ensure individual attention and personalized learning experiences.' },
+                                { icon: LuLaptop, title: 'Modern Facilities', text: 'State-of-the-art infrastructure with latest technology and learning resources.' },
+                            ].map((item) => (
+                                <li key={item.title} className="flex items-start gap-4">
+                                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white">
+                                        <Icon icon={item.icon} size="sm" />
+                                    </span>
+                                    <div>
+                                        <h3 className="mb-1 text-sw-h3 font-bold">{item.title}</h3>
+                                        <p className="text-sw-body text-sw-text-secondary">{item.text}</p>
                                     </div>
-
-                                    <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                            <i className="fa-solid fa-users text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Personal Attention</h3>
-                                            <p className="text-gray-600 dark:text-gray-300">Small class sizes ensure individual attention and personalized learning experiences.</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="flex items-start">
-                                        <div className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center mr-4 flex-shrink-0">
-                                            <i className="fa-solid fa-laptop text-white text-xl"></i>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2">Modern Facilities</h3>
-                                            <p className="text-gray-600 dark:text-gray-300">State-of-the-art infrastructure with latest technology and learning resources.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0] rounded-3xl p-8 border border-[#F0E6FA]">
-                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Our Achievements</h3>
-
-                                <div className="space-y-4">
-                                    <div className="flex items-center p-4 bg-white dark:bg-[#231A2E] rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-trophy text-[#4A1D7A] text-xl mr-4"></i>
-                                        <div>
-                                            <h5 className="font-semibold text-gray-800 dark:text-gray-100">Multiple Awards</h5>
-                                            <p className="text-gray-600 dark:text-gray-300 text-sm">Recognized for excellence in education</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center p-4 bg-white dark:bg-[#231A2E] rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-users text-[#387B95] text-xl mr-4"></i>
-                                        <div>
-                                            <h5 className="font-semibold text-gray-800 dark:text-gray-100">1000+ Students</h5>
-                                            <p className="text-gray-600 dark:text-gray-300 text-sm">Successfully educated students</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center p-4 bg-white dark:bg-[#231A2E] rounded-xl shadow-sm">
-                                        <i className="fa-solid fa-star text-green-600 text-xl mr-4"></i>
-                                        <div>
-                                            <h5 className="font-semibold text-gray-800 dark:text-gray-100">High Satisfaction</h5>
-                                            <p className="text-gray-600 dark:text-gray-300 text-sm">95% student satisfaction rate</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
-                </div>
-            </section>
+
+                    <Card variant="panel" className="p-6 lg:p-8">
+                        <h3 className="mb-5 text-sw-h3 font-bold">Our Achievements</h3>
+                        <ul className="space-y-3">
+                            {[
+                                { icon: LuTrophy, tone: 'peach', title: 'Multiple Awards', text: 'Recognized for excellence in education' },
+                                { icon: LuUsers, tone: 'blue', title: '1000+ Students', text: 'Successfully educated students' },
+                                { icon: LuStar, tone: 'lavender', title: 'High Satisfaction', text: '95% student satisfaction rate' },
+                            ].map((item) => (
+                                <li key={item.title} className="flex items-center gap-4 rounded-sw-sm bg-sw-white p-4 shadow-sw-input">
+                                    <Badge tone={item.tone} className="h-11 w-11 shrink-0 justify-center p-0">
+                                        <Icon icon={item.icon} size="sm" />
+                                    </Badge>
+                                    <div>
+                                        <h4 className="font-semibold">{item.title}</h4>
+                                        <p className="text-sw-small font-normal text-sw-text-secondary">{item.text}</p>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </Card>
+                </Container>
+            </Section>
 
             {/* CTA Section */}
-            <section className="py-20 bg-[#4A1D7A]">
-                <div className="container mx-auto px-6 text-center">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                        Join Our <span className="text-yellow-300">Educational</span> Journey
-                    </h2>
-                    <p className="text-xl text-purple-100 max-w-3xl mx-auto mb-8">
+            <Section tone="dark">
+                <Container className="text-center">
+                    <h2 className="text-sw-display font-bold">Join Our Educational Journey</h2>
+                    <p className="mx-auto mb-8 mt-4 max-w-3xl text-sw-subtitle text-sw-text-on-dark-secondary">
                         Be part of an institution that values excellence, innovation, and student success.
                         Start your educational journey with us today.
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="px-8 py-4 bg-white dark:bg-[#231A2E] text-[#4A1D7A] rounded-xl font-bold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl">
-                            Apply Now
-                        </button>
-                        <button className="px-8 py-4 border-2 border-white text-white rounded-xl font-bold text-lg hover:bg-white dark:bg-[#231A2E] hover:text-[#4A1D7A] transition-all duration-300">
-                            Learn More
-                        </button>
+                    <div className="flex flex-col justify-center gap-3 sm:flex-row">
+                        <Button variant="inverse" size="lg" to="/register">Apply Now</Button>
+                        <Button variant="glass" size="lg" to="/#institutions">Learn More</Button>
                     </div>
-                </div>
-            </section>
+                </Container>
+            </Section>
 
             {/* Staff Profiles Section */}
             {staffProfiles.length > 0 && (
-                <div className="py-20 bg-white dark:bg-[#1A1212] relative z-10">
-                    <div className="container mx-auto px-4 md:px-6">
-                        <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">Our Team</h2>
-                            <div className="w-24 h-1 bg-[#4A1D7A] mx-auto rounded-full"></div>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 max-w-6xl mx-auto">
+                <Section>
+                    <Container>
+                        <SectionHeader title="Our Team" />
+                        <ul className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-5">
                             {staffProfiles.map((staff, idx) => (
-                                <div key={idx} className="bg-gray-50 dark:bg-[#231A2E] rounded-2xl p-6 text-center shadow-md hover:shadow-xl transition duration-300">
-                                    <img 
-                                        src={staff.image || '/Swagat_Favicon.png'} 
-                                        alt={staff.name}
-                                        className="w-24 h-24 rounded-full mx-auto object-cover border-4 border-white dark:border-[#1A1212] shadow-lg mb-4"
-                                    />
-                                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{staff.name}</h3>
-                                    <p className="text-sm text-[#4A1D7A] dark:text-[#9B6FCC] font-medium">{staff.designation}</p>
-                                </div>
+                                <li key={idx}>
+                                    <Card variant="soft" className="h-full p-5 text-center">
+                                        <img
+                                            src={staff.image || '/Swagat_Favicon.png'}
+                                            alt={staff.name}
+                                            loading="lazy"
+                                            className="mx-auto mb-4 h-24 w-24 rounded-sw-pill object-cover ring-4 ring-sw-gray-50"
+                                        />
+                                        <h3 className="mb-1 text-sw-label font-bold">{staff.name}</h3>
+                                        <p className="text-sw-small font-normal text-sw-text-muted">{staff.designation}</p>
+                                    </Card>
+                                </li>
                             ))}
-                        </div>
-                    </div>
-                </div>
+                        </ul>
+                    </Container>
+                </Section>
             )}
-            </div>
+        </div>
     )
 }
 
