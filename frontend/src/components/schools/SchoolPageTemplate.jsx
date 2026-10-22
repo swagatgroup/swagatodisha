@@ -1,7 +1,12 @@
 import {useEffect} from 'react';
-import { RiCheckLine, RiSchoolLine } from '@remixicon/react';
-import { motion } from 'framer-motion'
+import { LuCheck, LuMapPin } from 'react-icons/lu'
 import { Helmet } from 'react-helmet-async'
+import { Container, Section, SectionHeader } from '../site/Layout'
+import Badge from '../site/Badge'
+import Button from '../site/Button'
+import Card from '../site/Card'
+import Icon from '../site/Icon'
+import SmartImage from '../site/SmartImage'
 
 const SchoolPageTemplate = ({
     schoolName,
@@ -40,249 +45,148 @@ const SchoolPageTemplate = ({
                 </script>
             </Helmet>
 
-            <div className="min-h-screen bg-white">
+            <div>
                 {/* Hero Section */}
-                <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-                    {/* Background Elements */}
-                    <div className="absolute inset-0">
-                        <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-[#F0E6FA]/30 to-[#D0E8F0]/30 rounded-full blur-3xl"></div>
-                        <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-100/30 to-purple-100/30 rounded-full blur-3xl"></div>
-                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#F0E6FA]/20 to-[#D0E8F0]/20 rounded-full blur-3xl"></div>
-                    </div>
+                <section className="relative isolate overflow-hidden bg-sw-ink text-sw-white">
+                    <SmartImage
+                        src="/images/redesign/school-hero-desktop.webp"
+                        mobileSrc="/images/redesign/school-hero-mobile.webp"
+                        alt=""
+                        width={2880}
+                        height={1600}
+                        priority
+                        placeholder="night"
+                        className="absolute inset-0 -z-20"
+                    />
+                    <div aria-hidden="true" className="absolute inset-0 -z-10 bg-sw-black/55" />
+                    <div className="sw-container flex min-h-[560px] flex-col items-center justify-center pb-16 pt-[calc(var(--sw-header-h)+3rem)] text-center lg:min-h-[720px]">
+                        <Badge tone="dark" className="mb-5">
+                            <Icon icon={LuMapPin} size="xs" />
+                            {location}
+                        </Badge>
 
-                    <div className="relative z-10 container mx-auto px-6 text-center">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                        >
-                            <div className="inline-flex items-center justify-center w-24 h-24 bg-[#4A1D7A] rounded-3xl mb-8 shadow-2xl">
-                                <RiSchoolLine className="text-white w-10 h-10" />
-                            </div>
+                        <h1 className="text-sw-display font-bold">
+                            {schoolName}
+                        </h1>
 
-                            <h1 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                {schoolName}
-                            </h1>
+                        <p className="mx-auto mt-5 max-w-3xl text-sw-subtitle text-sw-white/85">
+                            {description}
+                        </p>
 
-                            <p className="text-2xl text-gray-600 dark:text-gray-300 mb-4">
-                                📍 {location}
-                            </p>
-
-                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed mb-12">
-                                {description}
-                            </p>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: 0.3 }}
-                                className="flex flex-wrap justify-center gap-4"
-                            >
-                                <a
-                                    href="#programs"
-                                    className="px-8 py-4 bg-[#4A1D7A] text-white rounded-xl font-semibold text-lg hover:bg-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                    Explore Programs
-                                </a>
-                                <a
-                                    href="#contact"
-                                    className="px-8 py-4 bg-white dark:bg-[#231A2E] text-[#4A1D7A] rounded-xl font-semibold text-lg border-2 border-[#4A1D7A] hover:bg-[#F0E6FA] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                    Contact Us
-                                </a>
-                            </motion.div>
-                        </motion.div>
+                        <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row">
+                            <Button variant="frost" size="lg" href="#programs">
+                                Explore Programs
+                            </Button>
+                            <Button variant="glass" size="lg" href="#contact">
+                                Contact Us
+                            </Button>
+                        </div>
                     </div>
                 </section>
 
                 {/* Features Section */}
-                <section className="py-20 bg-gray-50">
-                    <div className="container mx-auto px-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="text-center mb-16"
-                        >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                Why Choose <span className="text-transparent bg-clip-text bg-[#4A1D7A]">{schoolName}</span>?
-                            </h2>
-                        </motion.div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <Section tone="muted">
+                    <Container>
+                        <SectionHeader title={`Why Choose ${schoolName}?`} />
+                        <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {features.map((feature, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
-                                >
-                                    <div className="text-4xl mb-4">{feature.icon}</div>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{feature.title}</h3>
-                                    <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
-                                </motion.div>
+                                <li key={index}>
+                                    <Card variant="outline" className="h-full p-6">
+                                        <span aria-hidden="true" className="mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm bg-sw-black text-sw-h3">{feature.icon}</span>
+                                        <h3 className="mb-2 text-sw-h3 font-bold">{feature.title}</h3>
+                                        <p className="text-sw-body text-sw-text-secondary">{feature.description}</p>
+                                    </Card>
+                                </li>
                             ))}
-                        </div>
-                    </div>
-                </section>
+                        </ul>
+                    </Container>
+                </Section>
 
                 {/* Programs Section */}
-                <section id="programs" className="py-20 bg-white">
-                    <div className="container mx-auto px-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="text-center mb-16"
-                        >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Programs</span>
-                            </h2>
-                            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                                Comprehensive educational programs designed to nurture young minds and prepare them for the future
-                            </p>
-                        </motion.div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <Section id="programs" className="scroll-mt-sw-header">
+                    <Container>
+                        <SectionHeader
+                            title="Our Programs"
+                            subtitle="Comprehensive educational programs designed to nurture young minds and prepare them for the future"
+                        />
+                        <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {programs.map((program, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
-                                >
-                                    <div className="text-3xl mb-4">{program.icon}</div>
-                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4">{program.name}</h3>
-                                    <p className="text-gray-600 dark:text-gray-300 mb-4">{program.description}</p>
-                                    <ul className="space-y-2">
-                                        {program.subjects.map((subject, subIndex) => (
-                                            <li key={subIndex} className="flex items-center text-gray-600 dark:text-gray-300">
-                                                <RiCheckLine className="text-[#4A1D7A] w-5 h-5 mr-2" />
-                                                {subject}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </motion.div>
+                                <li key={index}>
+                                    <Card className="h-full p-6">
+                                        <span aria-hidden="true" className="sw-pane sw-pane-career mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm text-sw-h3">{program.icon}</span>
+                                        <h3 className="mb-2 text-sw-h3 font-bold">{program.name}</h3>
+                                        <p className="mb-4 text-sw-body text-sw-text-on-dark-secondary">{program.description}</p>
+                                        <ul className="space-y-2">
+                                            {program.subjects.map((subject, subIndex) => (
+                                                <li key={subIndex} className="flex items-center gap-2 text-sw-body">
+                                                    <Icon icon={LuCheck} size="xs" className="shrink-0" />
+                                                    {subject}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </Card>
+                                </li>
                             ))}
-                        </div>
-                    </div>
-                </section>
+                        </ul>
+                    </Container>
+                </Section>
 
                 {/* Facilities Section */}
-                <section className="py-20 bg-gray-50">
-                    <div className="container mx-auto px-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="text-center mb-16"
-                        >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                World-Class <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Facilities</span>
-                            </h2>
-                        </motion.div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <Section tone="muted">
+                    <Container>
+                        <SectionHeader title="World-Class Facilities" />
+                        <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             {facilities.map((facility, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    whileInView={{ opacity: 1, scale: 1 }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 text-center"
-                                >
-                                    <div className="text-4xl mb-4">{facility.icon}</div>
-                                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">{facility.name}</h3>
-                                    <p className="text-gray-600 dark:text-gray-300 text-sm">{facility.description}</p>
-                                </motion.div>
+                                <li key={index}>
+                                    <Card variant="outline" className="h-full p-5 text-center">
+                                        <span aria-hidden="true" className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sw-pill bg-sw-black text-sw-h3">{facility.icon}</span>
+                                        <h3 className="mb-1 text-sw-label font-bold">{facility.name}</h3>
+                                        <p className="text-sw-small font-normal text-sw-text-secondary">{facility.description}</p>
+                                    </Card>
+                                </li>
                             ))}
-                        </div>
-                    </div>
-                </section>
+                        </ul>
+                    </Container>
+                </Section>
 
                 {/* Achievements Section */}
-                <section className="py-20 bg-white">
-                    <div className="container mx-auto px-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="text-center mb-16"
-                        >
-                            <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Achievements</span>
-                            </h2>
-                        </motion.div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <Section>
+                    <Container>
+                        <SectionHeader title="Our Achievements" />
+                        <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {achievements.map((achievement, index) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 30 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                                    className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
-                                >
-                                    <div className="text-4xl mb-4">{achievement.icon}</div>
-                                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">{achievement.title}</h3>
-                                    <p className="text-gray-600 dark:text-gray-300">{achievement.description}</p>
-                                </motion.div>
+                                <li key={index}>
+                                    <Card variant="panel" className="h-full p-6">
+                                        <span aria-hidden="true" className="mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm bg-sw-badge-peach text-sw-h3">{achievement.icon}</span>
+                                        <h3 className="mb-2 text-sw-h3 font-bold">{achievement.title}</h3>
+                                        <p className="text-sw-body text-sw-text-secondary">{achievement.description}</p>
+                                    </Card>
+                                </li>
                             ))}
-                        </div>
-                    </div>
-                </section>
+                        </ul>
+                    </Container>
+                </Section>
 
                 {/* Contact Section */}
-                <section id="contact" className="py-20 bg-[#4A1D7A]">
-                    <div className="container mx-auto px-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="text-center text-white"
-                        >
-                            <h2 className="text-4xl md:text-6xl font-bold mb-6">
-                                Get In Touch
-                            </h2>
-                            <p className="text-xl mb-12 max-w-3xl mx-auto">
-                                Ready to join our educational community? Contact us today!
-                            </p>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-                                {contactInfo.map((info, index) => (
-                                    <motion.div
-                                        key={index}
-                                        initial={{ opacity: 0, y: 30 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.6, delay: index * 0.1 }}
-                                        className="text-center"
-                                    >
-                                        <div className="text-4xl mb-4">{info.icon}</div>
-                                        <h3 className="text-xl font-bold mb-2">{info.title}</h3>
-                                        <p className="text-lg">{info.value}</p>
-                                    </motion.div>
-                                ))}
-                            </div>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.8, delay: 0.3 }}
-                                className="mt-12"
-                            >
-                                <a
-                                    href="/"
-                                    className="inline-block px-8 py-4 bg-white dark:bg-[#231A2E] text-[#4A1D7A] rounded-xl font-semibold text-lg hover:bg-gray-100 dark:bg-gray-800 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                    Visit Main Website
-                                </a>
-                            </motion.div>
-                        </motion.div>
-                    </div>
-                </section>
-
+                <Section id="contact" tone="dark" className="scroll-mt-sw-header">
+                    <Container className="text-center">
+                        <SectionHeader tone="dark" title="Get In Touch" subtitle="Ready to join our educational community? Contact us today!" />
+                        <ul className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">
+                            {contactInfo.map((info, index) => (
+                                <li key={index} className="rounded-sw-md bg-sw-white/5 p-6 ring-1 ring-sw-white/10">
+                                    <span aria-hidden="true" className="mb-3 block text-sw-h2">{info.icon}</span>
+                                    <h3 className="mb-1 text-sw-label font-bold">{info.title}</h3>
+                                    <p className="break-words text-sw-body text-sw-text-on-dark-secondary">{info.value}</p>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="mt-12">
+                            <Button variant="inverse" size="lg" href="/">
+                                Visit Main Website
+                            </Button>
+                        </div>
+                    </Container>
+                </Section>
             </div>
         </>
     )
