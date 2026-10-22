@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import {
     showSuccess,
@@ -11,6 +10,26 @@ import {
 import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 import { CONTACT_INFO } from '../utils/constants';
+import {
+    LuArrowLeft,
+    LuClock,
+    LuFileText,
+    LuHeadset,
+    LuLightbulb,
+    LuMail,
+    LuPhone,
+    LuSend,
+    LuShieldCheck,
+    LuTriangleAlert,
+    LuUpload,
+} from 'react-icons/lu';
+import PageHero from './site/PageHero';
+import { Container, Section } from './site/Layout';
+import Badge from './site/Badge';
+import Button from './site/Button';
+import Card from './site/Card';
+import Icon from './site/Icon';
+import { Input, Textarea } from './site/Field';
 
 const SendMessage = () => {
     const navigate = useNavigate();
@@ -416,436 +435,198 @@ const SendMessage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-purple-50/30 dark:bg-[#1A1212] relative overflow-hidden">
-            {/* Navigation Buttons */}
-            {isAuthenticated && user ? (
-                <>
-                    {/* Back to Dashboard - Top Left */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="fixed top-6 left-6 z-50"
-                    >
-                        <button
-                            onClick={() => navigate(getDashboardRoute())}
-                            className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-lg bg-[#4A1D7A] text-white hover:bg-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl group"
-                        >
-                            <motion.div
-                                whileHover={{ x: -3 }}
-                                transition={{ duration: 0.2 }}
-                                className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full"
-                            >
-                                <i className="fa-solid fa-arrow-left text-sm"></i>
-                            </motion.div>
-                            <motion.span
-                                initial={{ opacity: 0, x: -10 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3, delay: 0.1 }}
-                                className="hidden sm:block"
-                            >
-                                Back to Dashboard
-                            </motion.span>
-                            <motion.div
-                                whileHover={{ x: 3 }}
-                                transition={{ duration: 0.2 }}
-                                className="flex items-center justify-center w-8 h-8 bg-white/20 rounded-full"
-                            >
-                                <i className="fa-solid fa-gauge-high text-sm"></i>
-                            </motion.div>
-                        </button>
-                    </motion.div>
-                </>
-            ) : null}
-            
-            {/* Enhanced Background Elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-[#F0E6FA]/40 to-transparent dark:from-[#4A1D7A]/30 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-gradient-to-tl from-blue-200/40 to-transparent dark:from-blue-900/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-to-r from-[#F0E6FA]/20 via-[#D0E8F0]/20 to-[#F0E6FA]/20 dark:from-[#4A1D7A]/10 dark:via-[#1D4B5E]/10 dark:to-[#4A1D7A]/10 rounded-full blur-3xl"></div>
-                {/* Grid Pattern Overlay */}
-                <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] dark:opacity-20"></div>
-            </div>
-            
-            <section className="relative py-12 md:py-20 lg:py-24 overflow-hidden">
-                {/* Section Header */}
-                <div className="relative z-10 text-center mb-12 md:mb-16 container mx-auto px-6">
-                    <motion.div
-                        initial={{ opacity: 0, y: -30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.7, ease: "easeOut" }}
-                    >
-                        {/* Icon Badge */}
-                        <motion.div
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-[#4A1D7A] via-[#1D4B5E] to-[#351458] rounded-3xl mb-6 shadow-2xl shadow-[#4A1D7A]/30 relative"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-3xl"></div>
-                            <i className="fa-solid fa-paper-plane text-white text-4xl relative z-10"></i>
-                            <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-4 border-white dark:border-gray-900 animate-pulse"></div>
-                        </motion.div>
-                        
-                        {/* Title */}
-                        <motion.h1
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.3, duration: 0.6 }}
-                            className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-gray-900 dark:text-gray-100 mb-4 md:mb-6 leading-tight"
-                        >
-                            Send Us a{' '}
-                            <span className="relative inline-block">
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4A1D7A] via-[#1D4B5E] to-[#4A1D7A] animate-gradient bg-[length:200%_auto]">
-                                    Message
+        <div>
+            <PageHero
+                title="Send Us a Message"
+                intro="Have a question or need assistance? We're here to help! Fill out the form below and we'll get back to you as soon as possible."
+                eyebrow={isAuthenticated && user ? (
+                    // Back to Dashboard (signed-in users)
+                    <Button variant="glass" size="sm" iconLeft={LuArrowLeft} onClick={() => navigate(getDashboardRoute())}>
+                        Back to Dashboard
+                    </Button>
+                ) : null}
+            >
+                {/* Trust Badges */}
+                <ul className="mt-6 flex flex-wrap items-center justify-center gap-2">
+                    <li><Badge tone="blue"><Icon icon={LuShieldCheck} size="xs" />Secure</Badge></li>
+                    <li><Badge tone="lavender"><Icon icon={LuClock} size="xs" />Quick Response</Badge></li>
+                    <li><Badge tone="peach"><Icon icon={LuHeadset} size="xs" />24/7 Support</Badge></li>
+                </ul>
+            </PageHero>
+
+            <Section>
+                <Container wide className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
+                    {/* Left Side - Contact Info Card */}
+                    <Card className="h-full p-6 lg:col-span-1">
+                        <h2 className="mb-6 text-sw-h3 font-bold">Quick Contact</h2>
+                        <ul className="mb-6 space-y-4">
+                            <li className="flex items-start gap-3">
+                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sw-pill bg-sw-white/10">
+                                    <Icon icon={LuPhone} size="sm" />
                                 </span>
-                                <span className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-[#4A1D7A] via-[#1D4B5E] to-[#4A1D7A] rounded-full opacity-30"></span>
-                            </span>
-                        </motion.h1>
-                        
-                        {/* Description */}
-                        <motion.p
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4, duration: 0.6 }}
-                            className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed"
-                        >
-                            Have a question or need assistance? We're here to help! Fill out the form below and we'll get back to you as soon as possible.
-                        </motion.p>
-                        
-                        {/* Trust Badges */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5, duration: 0.6 }}
-                            className="flex flex-wrap items-center justify-center gap-4 mt-8"
-                        >
-                            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-sm rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
-                                <i className="fa-solid fa-shield-check text-green-600"></i>
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Secure</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-sm rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
-                                <i className="fa-solid fa-clock text-[#387B95]"></i>
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Quick Response</span>
-                            </div>
-                            <div className="flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-sm rounded-full shadow-sm border border-gray-200 dark:border-gray-700">
-                                <i className="fa-solid fa-headset text-[#4A1D7A]"></i>
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">24/7 Support</span>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                </div>
+                                <span>
+                                    <span className="block text-sw-caption uppercase tracking-wide text-sw-text-on-dark-muted">Phone</span>
+                                    <a href={`tel:${CONTACT_INFO.phone}`} className="font-semibold underline-offset-4 hover:underline">
+                                        {CONTACT_INFO.phone}
+                                    </a>
+                                </span>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sw-pill bg-sw-white/10">
+                                    <Icon icon={LuMail} size="sm" />
+                                </span>
+                                <span className="min-w-0">
+                                    <span className="block text-sw-caption uppercase tracking-wide text-sw-text-on-dark-muted">Email</span>
+                                    <a href={`mailto:${CONTACT_INFO.email}`} className="break-all font-semibold underline-offset-4 hover:underline">
+                                        {CONTACT_INFO.email}
+                                    </a>
+                                </span>
+                            </li>
+                        </ul>
+                        <p className="border-t border-sw-white/10 pt-6 text-sw-small font-normal text-sw-text-on-dark-secondary">
+                            <Icon icon={LuLightbulb} size="xs" className="mr-2 inline" />
+                            <strong className="text-sw-white">Tip:</strong> Include as much detail as possible in your message to help us assist you better.
+                        </p>
+                    </Card>
 
-                {/* Main Content */}
-                <div className="relative z-10 container mx-auto px-6">
-                    <div className="max-w-4xl mx-auto">
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                            {/* Left Side - Contact Info Card */}
-                            <motion.div
-                                initial={{ opacity: 0, x: -30 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.6, delay: 0.3 }}
-                                className="lg:col-span-1"
-                            >
-                                <div className="bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-xl rounded-2xl p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50 h-full">
-                                    <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 flex items-center gap-2">
-                                        <i className="fa-solid fa-info-circle text-[#4A1D7A]"></i>
-                                        Quick Contact
-                                    </h3>
-                                    
-                                    <div className="space-y-4 mb-6">
-                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] dark:from-[#4A1D7A]/20 dark:to-[#1D4B5E]/20 border border-[#F0E6FA] dark:border-[#4A1D7A]/50">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#4A1D7A] flex items-center justify-center shadow-lg">
-                                                <i className="fa-solid fa-phone text-white text-sm"></i>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-1">Phone</p>
-                                                <a
-                                                    href={`tel:${CONTACT_INFO.phone}`}
-                                                    className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-[#4A1D7A] dark:hover:text-purple-400 transition-colors"
-                                                >
-                                                    {CONTACT_INFO.phone}
-                                                </a>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex items-start gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-100 dark:border-blue-800/50">
-                                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
-                                                <i className="fa-solid fa-envelope text-white text-sm"></i>
-                                            </div>
-                                            <div className="flex-1">
-                                                <p className="text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wide mb-1">Email</p>
-                                                <a
-                                                    href={`mailto:${CONTACT_INFO.email}`}
-                                                    className="text-sm font-semibold text-gray-900 dark:text-gray-100 hover:text-[#387B95] dark:hover:text-blue-400 transition-colors break-all"
-                                                >
-                                                    {CONTACT_INFO.email}
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
-                                        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                                            <i className="fa-solid fa-lightbulb text-yellow-500 mr-2"></i>
-                                            <strong>Tip:</strong> Include as much detail as possible in your message to help us assist you better.
-                                        </p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                            
-                            {/* Right Side - Form Card */}
-                            <motion.div
-                                initial={{ opacity: 0, x: 30 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.6, delay: 0.4 }}
-                                className="lg:col-span-2"
-                            >
-                                <div className="bg-white/80 dark:bg-[#231A2E]/80 backdrop-blur-xl rounded-2xl p-6 md:p-8 lg:p-10 shadow-xl border border-gray-200/50 dark:border-gray-700/50">
-                                    <div className="mb-6">
-                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Get in Touch</h2>
-                                        <p className="text-sm text-gray-600 dark:text-gray-300">Fill out the form below and we'll respond promptly</p>
-                                    </div>
-                            
-                            <form onSubmit={handleSubmit} className="space-y-5" encType="multipart/form-data">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.5 }}
-                                    >
-                                        <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                                            <i className="fa-solid fa-user text-[#4A1D7A] text-xs"></i>
-                                            Full Name <span className="text-red-500">*</span>
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="text"
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleInputChange}
-                                                className="w-full px-4 py-3 pl-11 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-[#4A1D7A] transition-all duration-300 bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                                                placeholder="John Doe"
-                                                required
-                                            />
-                                            <i className="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
-                                        </div>
-                                    </motion.div>
-
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: 0.6 }}
-                                    >
-                                        <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                                            <i className="fa-solid fa-envelope text-[#387B95] text-xs"></i>
-                                            Email Address <span className="text-red-500">*</span>
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                                className="w-full px-4 py-3 pl-11 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#387B95] focus:border-blue-500 transition-all duration-300 bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                                                placeholder="john@example.com"
-                                                required
-                                            />
-                                            <i className="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
-                                        </div>
-                                    </motion.div>
-                                </div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.7 }}
-                                >
-                                    <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                                        <i className="fa-solid fa-phone text-green-600 text-xs"></i>
-                                        Phone Number <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            type="tel"
-                                            id="phone"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 pl-11 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                                            placeholder="9876543210"
-                                            maxLength="10"
-                                            pattern="[6-9]\d{9}"
-                                            required
-                                        />
-                                        <i className="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
-                                    </div>
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.8 }}
-                                >
-                                    <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                                        <i className="fa-solid fa-tag text-orange-600 text-xs"></i>
-                                        Subject <span className="text-red-500">*</span>
-                                    </label>
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            id="subject"
-                                            name="subject"
-                                            value={formData.subject}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 pl-11 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-300 bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500"
-                                            placeholder="What is this about?"
-                                            required
-                                        />
-                                        <i className="fa-solid fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-300 text-sm"></i>
-                                    </div>
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.9 }}
-                                >
-                                    <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                                        <i className="fa-solid fa-message text-[#4A1D7A] text-xs"></i>
-                                        Message <span className="text-red-500">*</span>
-                                        <span className="ml-auto text-xs font-normal text-gray-500 dark:text-gray-300">
-                                            {formData.message.trim().length}/5000
-                                        </span>
-                                    </label>
-                                    <div className="relative">
-                                        <textarea
-                                            id="message"
-                                            name="message"
-                                            rows="6"
-                                            value={formData.message}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 pl-11 pt-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-[#4A1D7A] transition-all duration-300 bg-white dark:bg-[#231A2E] text-gray-900 dark:text-gray-100 resize-none placeholder-gray-400 dark:placeholder-gray-500"
-                                            placeholder="Tell us more about your inquiry... (Minimum 10 characters)"
-                                            required
-                                        ></textarea>
-                                        <i className="fa-solid fa-message absolute left-4 top-4 text-gray-400 dark:text-gray-300 text-sm"></i>
-                                    </div>
-                                    {formData.message.trim().length > 0 && formData.message.trim().length < 10 && (
-                                        <p className="mt-1 text-xs text-orange-600 flex items-center gap-1">
-                                            <i className="fa-solid fa-exclamation-triangle"></i>
-                                            Message must be at least 10 characters
-                                        </p>
-                                    )}
-                                </motion.div>
-
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 1.0 }}
-                                >
-                                    <label htmlFor="documents" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
-                                        <i className="fa-solid fa-paperclip text-[#4A1D7A] text-xs"></i>
-                                        Upload Documents <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(Optional)</span>
-                                    </label>
-                                    <div className="relative">
-                                        <div className="relative border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 hover:border-[#4A1D7A] dark:hover:border-[#4A1D7A] transition-all duration-300 bg-gray-50/50 dark:bg-[#1A1212]/50">
-                                            <input
-                                                type="file"
-                                                id="documents"
-                                                name="documents"
-                                                onChange={handleFileChange}
-                                                multiple
-                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                                            />
-                                            <div className="text-center">
-                                                <i className="fa-solid fa-cloud-arrow-up text-3xl text-gray-400 dark:text-gray-400 mb-2"></i>
-                                                <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                                                    Click to upload or drag and drop
-                                                </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-300">
-                                                    PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file, up to 5 files)
-                                                </p>
-                                            </div>
-                                        </div>
-                                        {formData.documents && formData.documents.length > 0 && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                className="mt-4 space-y-2"
-                                            >
-                                                {Array.from(formData.documents).map((file, index) => (
-                                                    <motion.div
-                                                        key={index}
-                                                        initial={{ opacity: 0, x: -10 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        className="flex items-center justify-between p-3 bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] dark:from-[#4A1D7A]/20 dark:to-[#1D4B5E]/20 rounded-lg border border-[#D0E8F0] dark:border-[#4A1D7A]/50"
-                                                    >
-                                                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                            <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-[#4A1D7A] flex items-center justify-center">
-                                                                <i className="fa-solid fa-file text-white text-sm"></i>
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{file.name}</p>
-                                                                <p className="text-xs text-gray-500 dark:text-gray-300">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
-                                                            </div>
-                                                        </div>
-                                                    </motion.div>
-                                                ))}
-                                            </motion.div>
-                                        )}
-                                    </div>
-                                </motion.div>
-
-                                {/* Honeypot field */}
-                                <div style={{ display: 'none', visibility: 'hidden', position: 'absolute', left: '-9999px' }}>
-                                    <label htmlFor="website_url">Website URL (Leave empty)</label>
-                                    <input
-                                        type="text"
-                                        id="website_url"
-                                        name="website_url"
-                                        tabIndex="-1"
-                                        autoComplete="off"
-                                        aria-hidden="true"
-                                    />
-                                </div>
-
-                                <motion.button
-                                    type="submit"
-                                    disabled={isSubmitting}
-                                    whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
-                                    whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                                    className="w-full py-4 bg-gradient-to-r from-[#4A1D7A] via-[#1D4B5E] to-[#4A1D7A] bg-[length:200%_auto] text-white rounded-xl font-bold text-lg hover:shadow-2xl hover:shadow-[#4A1D7A]/50 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden group"
-                                >
-                                    <span className="absolute inset-0 bg-gradient-to-r from-[#351458] via-[#133A4A] to-[#351458] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                                    <span className="relative z-10 flex items-center justify-center gap-2">
-                                        {isSubmitting ? (
-                                            <>
-                                                <i className="fa-solid fa-spinner fa-spin"></i>
-                                                Sending Message...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <i className="fa-solid fa-paper-plane"></i>
-                                                Send Message
-                                                <i className="fa-solid fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
-                                            </>
-                                        )}
-                                    </span>
-                                </motion.button>
-                            </form>
-                                </div>
-                            </motion.div>
+                    {/* Right Side - Form Card */}
+                    <Card variant="panel" className="p-5 md:p-8 lg:col-span-2">
+                        <div className="mb-6">
+                            <h2 className="mb-1 text-sw-h3 font-bold">Get in Touch</h2>
+                            <p className="text-sw-body text-sw-text-secondary">Fill out the form below and we'll respond promptly</p>
                         </div>
-                    </div>
-                </div>
-            </section>
+
+                        <form onSubmit={handleSubmit} className="space-y-5" encType="multipart/form-data">
+                            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                                <Input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    label="Full Name"
+                                    value={formData.name}
+                                    onChange={handleInputChange}
+                                    placeholder="John Doe"
+                                    required
+                                />
+                                <Input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    label="Email Address"
+                                    value={formData.email}
+                                    onChange={handleInputChange}
+                                    placeholder="john@example.com"
+                                    required
+                                />
+                            </div>
+
+                            <Input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                label="Phone Number"
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                placeholder="9876543210"
+                                maxLength="10"
+                                pattern="[6-9]\d{9}"
+                                required
+                            />
+
+                            <Input
+                                type="text"
+                                id="subject"
+                                name="subject"
+                                label="Subject"
+                                value={formData.subject}
+                                onChange={handleInputChange}
+                                placeholder="What is this about?"
+                                required
+                            />
+
+                            <div>
+                                <Textarea
+                                    id="message"
+                                    name="message"
+                                    label="Message"
+                                    rows="6"
+                                    value={formData.message}
+                                    onChange={handleInputChange}
+                                    placeholder="Tell us more about your inquiry... (Minimum 10 characters)"
+                                    required
+                                    hint={`${formData.message.trim().length}/5000`}
+                                />
+                                {formData.message.trim().length > 0 && formData.message.trim().length < 10 && (
+                                    <p className="mt-1 flex items-center gap-1 text-sw-small font-normal text-sw-warning">
+                                        <Icon icon={LuTriangleAlert} size="xs" />
+                                        Message must be at least 10 characters
+                                    </p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label htmlFor="documents" className="mb-1.5 block text-sw-small font-semibold">
+                                    Upload Documents <span className="font-normal text-sw-text-muted">(Optional)</span>
+                                </label>
+                                <div className="relative rounded-sw-sm border-2 border-dashed border-sw-gray-300 bg-sw-white p-6 transition-colors duration-sw-fast focus-within:border-sw-focus hover:border-sw-black">
+                                    <input
+                                        type="file"
+                                        id="documents"
+                                        name="documents"
+                                        onChange={handleFileChange}
+                                        multiple
+                                        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                                        className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+                                    />
+                                    <div className="text-center">
+                                        <Icon icon={LuUpload} size="lg" strokeWidth={1.5} className="mx-auto mb-2 text-sw-text-muted" />
+                                        <p className="mb-1 text-sw-small font-semibold">
+                                            Click to upload or drag and drop
+                                        </p>
+                                        <p className="text-sw-caption text-sw-text-muted">
+                                            PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file, up to 5 files)
+                                        </p>
+                                    </div>
+                                </div>
+                                {formData.documents && formData.documents.length > 0 && (
+                                    <ul className="mt-4 space-y-2">
+                                        {Array.from(formData.documents).map((file, index) => (
+                                            <li key={index} className="flex items-center gap-3 rounded-sw-sm bg-sw-white p-3 shadow-sw-input">
+                                                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sw-sm bg-sw-black text-sw-white">
+                                                    <Icon icon={LuFileText} size="xs" />
+                                                </span>
+                                                <span className="min-w-0 flex-1">
+                                                    <span className="block truncate text-sw-small font-semibold">{file.name}</span>
+                                                    <span className="block text-sw-caption text-sw-text-muted">{(file.size / 1024 / 1024).toFixed(2)} MB</span>
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </div>
+
+                            {/* Honeypot field */}
+                            <div style={{ display: 'none', visibility: 'hidden', position: 'absolute', left: '-9999px' }}>
+                                <label htmlFor="website_url">Website URL (Leave empty)</label>
+                                <input
+                                    type="text"
+                                    id="website_url"
+                                    name="website_url"
+                                    tabIndex="-1"
+                                    autoComplete="off"
+                                    aria-hidden="true"
+                                />
+                            </div>
+
+                            <Button type="submit" shape="rounded" size="lg" fullWidth loading={isSubmitting} iconLeft={LuSend}>
+                                {isSubmitting ? 'Sending Message...' : 'Send Message'}
+                            </Button>
+                        </form>
+                    </Card>
+                </Container>
+            </Section>
         </div>
     );
 };
 
 export default SendMessage;
-
