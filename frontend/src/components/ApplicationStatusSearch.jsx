@@ -49,12 +49,12 @@ const ApplicationStatusSearch = () => {
         
         if (status === 'REJECTED') {
             return (
-                <div className="mt-8 bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-                    <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <RiCloseLine className="text-3xl" />
+                <div className="mt-8 rounded-sw-md bg-sw-error-bg p-6 text-center">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-sw-pill bg-sw-white text-sw-error">
+                        <RiCloseLine size={28} aria-hidden="true" />
                     </div>
-                    <h3 className="text-xl font-bold text-red-700">Application Rejected</h3>
-                    <p className="text-red-600 mt-2">Please contact our administration office for further details.</p>
+                    <h3 className="text-sw-h3 font-bold text-sw-error">Application Rejected</h3>
+                    <p className="mt-2 text-sw-body text-sw-error">Please contact our administration office for further details.</p>
                 </div>
             );
         }
@@ -79,19 +79,19 @@ const ApplicationStatusSearch = () => {
                                 <div key={index} className="flex flex-col items-center w-1/5 relative">
                                     {/* Connecting Line */}
                                     {index < steps.length - 1 && (
-                                        <div className={`absolute top-6 left-1/2 w-full h-1 -z-10 ${index < activeStep ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                                        <div className={`absolute left-1/2 top-6 -z-10 h-1 w-full ${index < activeStep ? 'bg-sw-black' : 'bg-sw-gray-200'}`}></div>
                                     )}
                                     
                                     {/* Step Circle */}
-                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg shadow-md transition-all duration-300
-                                        ${isCompleted ? 'bg-gradient-to-r from-green-400 to-green-600 text-white transform scale-110' : 'bg-white text-gray-400 border-2 border-gray-200'}
-                                        ${isCurrent ? 'ring-4 ring-green-100' : ''}
+                                    <div className={`flex h-12 w-12 items-center justify-center rounded-sw-pill transition-all duration-sw
+                                        ${isCompleted ? 'bg-sw-black text-sw-white' : 'bg-sw-white text-sw-text-muted ring-2 ring-inset ring-sw-gray-200'}
+                                        ${isCurrent ? 'ring-4 ring-sw-badge-blue' : ''}
                                     `}>
                                         <step.icon size={20} />
                                     </div>
                                     
                                     {/* Step Label */}
-                                    <p className={`mt-3 text-xs md:text-sm font-semibold text-center ${isCompleted ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 dark:text-gray-300'}`}>
+                                    <p className={`mt-3 text-center text-sw-caption font-semibold ${isCompleted ? 'text-sw-text' : 'text-sw-text-muted'}`}>
                                         {step.label}
                                     </p>
                                 </div>
@@ -104,95 +104,91 @@ const ApplicationStatusSearch = () => {
     };
 
     return (
-        <div className="w-full max-w-5xl mx-auto py-12 px-4 sm:px-6 relative z-10">
-            <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/20 overflow-hidden">
-                <div className="px-8 py-10 md:p-12">
-                    <div className="text-center mb-8">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl mb-4 shadow-inner">
-                            <RiMapPin2Line className="text-2xl text-[#4A1D7A]" />
-                        </div>
-                        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Track Your Application</h2>
-                        <p className="text-gray-500 dark:text-gray-300 max-w-xl mx-auto">
-                            Enter your Application ID, Mobile Number, or Aadhar Number to securely check the real-time status of your admission process.
-                        </p>
-                    </div>
-
-                    <form onSubmit={handleSearch} className="max-w-2xl mx-auto relative">
-                        <div className="relative flex items-center shadow-sm rounded-2xl bg-white focus-within:shadow-md transition-all">
-                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                <RiBankCardLine className="text-gray-400 dark:text-gray-300" />
-                            </div>
-                            <input
-                                type="text"
-                                className="block w-full pl-11 pr-32 py-4 bg-transparent border-2 border-gray-100 rounded-2xl text-gray-900 dark:text-gray-100 focus:ring-0 focus:border-indigo-400 transition-all duration-300 outline-none text-lg"
-                                placeholder="Application ID, Mobile, or Aadhar..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                required
-                            />
-                            <button
-                                type="submit"
-                                disabled={loading || !query.trim()}
-                                className="absolute right-2 top-2 bottom-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-6 rounded-xl hover:shadow-lg hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-70 flex items-center"
-                            >
-                                {loading ? (
-                                    <RiLoader4Line className="animate-spin mr-2" />
-                                ) : (
-                                    <RiArrowRightLine className="mr-2" />
-                                )}
-                                <span className="hidden sm:inline">Track</span>
-                            </button>
-                        </div>
-                    </form>
-
-                    <AnimatePresence>
-                        {error && (
-                            <motion.div
-                                initial={{ opacity: 0, y: -10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                className="max-w-2xl mx-auto mt-6 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg"
-                            >
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <RiErrorWarningLine className="text-red-500" />
-                                    </div>
-                                    <div className="ml-3">
-                                        <p className="text-sm text-red-700 font-medium">{error}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-
-                        {result && !error && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mt-10 border-t border-gray-100 pt-8"
-                            >
-                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-gray-50 rounded-2xl p-6 mb-2 border border-gray-100">
-                                    <div>
-                                        <p className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Application ID</p>
-                                        <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{result.applicationId}</p>
-                                    </div>
-                                    <div className="mt-4 md:mt-0 md:text-right">
-                                        <p className="text-xs text-gray-500 dark:text-gray-300 uppercase tracking-wider font-semibold mb-1">Course Applied</p>
-                                        <p className="text-lg font-semibold text-[#351458]">{result.course}</p>
-                                    </div>
-                                </div>
-                                
-                                {renderStepper(result.status)}
-                                
-                                <div className="mt-12 text-center text-xs text-gray-400 dark:text-gray-300 flex items-center justify-center">
-                                    <RiShieldKeyholeLine className="mr-2" />
-                                    Status metadata securely updated on {new Date(result.updatedAt).toLocaleDateString()}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+        <section aria-labelledby="track-title" className="w-full">
+            <div className="rounded-sw-md bg-sw-white p-6 shadow-sw-soft ring-1 ring-sw-border-light md:p-10">
+                <div className="mb-8 text-center">
+                    <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white">
+                        <RiMapPin2Line size={24} aria-hidden="true" />
+                    </span>
+                    <h2 id="track-title" className="mb-2 text-sw-h2 font-bold">Track Your Application</h2>
+                    <p className="mx-auto max-w-xl text-sw-body text-sw-text-secondary">
+                        Enter your Application ID, Mobile Number, or Aadhar Number to securely check the real-time status of your admission process.
+                    </p>
                 </div>
+
+                <form onSubmit={handleSearch} className="relative mx-auto max-w-2xl">
+                    <label htmlFor="application-status-query" className="sr-only">Application ID, Mobile, or Aadhar</label>
+                    <div className="relative flex items-center rounded-sw-sm bg-sw-white shadow-sw-input ring-1 ring-inset ring-sw-border-light focus-within:ring-2 focus-within:ring-sw-focus">
+                        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                            <RiBankCardLine className="text-sw-text-muted" aria-hidden="true" />
+                        </div>
+                        <input
+                            id="application-status-query"
+                            type="text"
+                            className="block min-h-14 w-full rounded-sw-sm bg-transparent pl-11 pr-28 text-sw-body text-sw-text outline-none"
+                            placeholder="Application ID, Mobile, or Aadhar..."
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            required
+                        />
+                        <button
+                            type="submit"
+                            disabled={loading || !query.trim()}
+                            className="absolute bottom-1.5 right-1.5 top-1.5 flex items-center gap-2 rounded-sw-sm bg-sw-black px-4 font-semibold text-sw-white transition-colors duration-sw-fast hover:bg-sw-gray-800 disabled:opacity-60"
+                        >
+                            {loading ? (
+                                <RiLoader4Line className="animate-spin" aria-hidden="true" />
+                            ) : (
+                                <RiArrowRightLine aria-hidden="true" />
+                            )}
+                            <span className="hidden sm:inline">Track</span>
+                            <span className="sr-only sm:hidden">Track</span>
+                        </button>
+                    </div>
+                </form>
+
+                <AnimatePresence>
+                    {error && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            role="alert"
+                            className="mx-auto mt-6 flex max-w-2xl items-center gap-3 rounded-sw-sm bg-sw-error-bg p-4"
+                        >
+                            <RiErrorWarningLine className="shrink-0 text-sw-error" aria-hidden="true" />
+                            <p className="text-sw-small font-semibold text-sw-error">{error}</p>
+                        </motion.div>
+                    )}
+
+                    {result && !error && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-10 border-t border-sw-border-light pt-8"
+                        >
+                            <div className="mb-2 flex flex-col items-start justify-between rounded-sw-sm bg-sw-surface-muted p-6 md:flex-row md:items-center">
+                                <div>
+                                    <p className="mb-1 text-sw-caption font-semibold uppercase tracking-wider text-sw-text-muted">Application ID</p>
+                                    <p className="text-sw-h2 font-bold">{result.applicationId}</p>
+                                </div>
+                                <div className="mt-4 md:mt-0 md:text-right">
+                                    <p className="mb-1 text-sw-caption font-semibold uppercase tracking-wider text-sw-text-muted">Course Applied</p>
+                                    <p className="text-sw-label font-semibold">{result.course}</p>
+                                </div>
+                            </div>
+
+                            {renderStepper(result.status)}
+
+                            <div className="mt-12 flex items-center justify-center text-center text-sw-caption text-sw-text-muted">
+                                <RiShieldKeyholeLine className="mr-2" aria-hidden="true" />
+                                Status metadata securely updated on {new Date(result.updatedAt).toLocaleDateString()}
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-        </div>
+        </section>
     );
 };
 

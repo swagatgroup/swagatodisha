@@ -1,11 +1,18 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 import { Link, useNavigate, Navigate } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import ForgotPassword from './ForgotPassword';
 import Swal from 'sweetalert2';
+import { LuArrowLeft, LuLoaderCircle, LuUserRound } from 'react-icons/lu';
+import AuthShell from '../site/AuthShell';
+import Badge from '../site/Badge';
+import Button from '../site/Button';
+import Card from '../site/Card';
+import Icon from '../site/Icon';
+import Modal from '../site/Modal';
+import { Input } from '../site/Field';
 
 const Login = ({ title }) => {
     const [formData, setFormData] = useState({
@@ -23,8 +30,9 @@ const Login = ({ title }) => {
     // Prevent login form from flashing if user hits the back button while authenticated
     if (authLoading || (token && !user)) {
         return (
-            <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+            <div className="flex min-h-screen items-center justify-center bg-sw-surface-muted" role="status" aria-live="polite">
+                <Icon icon={LuLoaderCircle} size="lg" className="animate-spin" />
+                <span className="sr-only">Loading</span>
             </div>
         );
     }
@@ -173,72 +181,37 @@ const Login = ({ title }) => {
     };
 
     return (
-        <div className="min-h-screen bg-[#FAF7F2] dark:bg-[#1A1212] pattern-bg dark:pattern-bg-dark flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative z-0">
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="max-w-md w-full space-y-8 bg-white dark:bg-[#231A2E] rounded-2xl shadow-2xl p-8 border border-gray-200 dark:border-gray-700"
-            >
+        <AuthShell backLink={false}>
+            <Card variant="soft" className="h-fit w-full max-w-md p-6 sm:p-8">
                 {/* Header */}
                 <div className="text-center">
-                    <motion.div
-                        initial={{ scale: 0.8 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="mx-auto h-20 w-20 bg-[#4A1D7A] rounded-full flex items-center justify-center mb-6"
-                    >
-                        <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                    </motion.div>
-
-                    <motion.h2
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                        className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2"
-                    >
+                    <span className="sw-pane sw-pane-career mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-sw-md text-sw-white">
+                        <Icon icon={LuUserRound} size="lg" strokeWidth={1.5} />
+                    </span>
+                    {title && <Badge tone="neutral" className="mb-3">{title}</Badge>}
+                    <h1 className="text-sw-h2 font-bold">
                         Welcome Back
-                    </motion.h2>
-
-                    <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
-                        className="text-gray-600 dark:text-gray-300"
-                    >
+                    </h1>
+                    <p className="mt-1 text-sw-body text-sw-text-secondary">
                         Sign in to your account
-                    </motion.p>
+                    </p>
                 </div>
 
                 {/* Form */}
-                <motion.form
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                    className="mt-8 space-y-6"
-                    onSubmit={handleSubmit}
-                >
-
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-4">
                         {/* Email Field */}
-                        <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Email Address
-                            </label>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                autoComplete="email"
-                                required
-                                value={formData.email}
-                                onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                placeholder="Enter your email"
-                            />
-                        </div>
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            label="Email Address"
+                            autoComplete="email"
+                            required
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="Enter your email"
+                        />
 
                         {/* Password Field */}
                         <PasswordInput
@@ -254,83 +227,48 @@ const Login = ({ title }) => {
                     </div>
 
                     {/* Submit Button */}
-                    <motion.button
-                        type="submit"
-                        disabled={loading}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="w-full bg-[#4A1D7A] text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {loading ? (
-                            <div className="flex items-center justify-center">
-                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                                Signing in...
-                            </div>
-                        ) : (
-                            'Sign In'
-                        )}
-                    </motion.button>
+                    <Button type="submit" shape="rounded" size="lg" fullWidth loading={loading}>
+                        {loading ? 'Signing in...' : 'Sign In'}
+                    </Button>
 
                     {/* Links */}
-                    <div className="text-center space-y-3">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.6 }}
-                        >
+                    <div className="space-y-1 text-center">
+                        <div>
                             <button
+                                type="button"
                                 onClick={() => setShowForgotPassword(true)}
-                                className="text-sm text-[#4A1D7A] dark:text-[#9B6FCC] hover:text-[#351458] dark:hover:text-purple-300 font-medium transition-colors duration-200"
+                                className="inline-flex min-h-11 items-center text-sw-small font-semibold underline-offset-4 hover:underline"
                             >
                                 Forgot your password?
                             </button>
-                        </motion.div>
+                        </div>
 
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.7 }}
-                            className="text-sm text-gray-600 dark:text-gray-300"
-                        >
+                        <p className="text-sw-small font-normal text-sw-text-secondary">
                             Don't have an account?{' '}
-                            <Link
-                                to="/register"
-                                className="text-[#4A1D7A] dark:text-[#9B6FCC] hover:text-[#351458] dark:hover:text-purple-300 font-medium transition-colors duration-200"
-                            >
+                            <Link to="/register" className="inline-flex min-h-11 items-center font-semibold text-sw-text underline underline-offset-4">
                                 Sign up here
                             </Link>
-                        </motion.div>
+                        </p>
                     </div>
-                </motion.form>
+                </form>
 
                 {/* Back to Home */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.8 }}
-                    className="text-center"
-                >
+                <div className="mt-4 border-t border-sw-border-light pt-4 text-center">
                     <Link
                         to="/"
-                        className="text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 flex items-center justify-center"
+                        className="inline-flex min-h-11 items-center gap-1 text-sw-small font-normal text-sw-text-muted hover:text-sw-text"
                     >
-                        <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
+                        <Icon icon={LuArrowLeft} size="xs" />
                         Back to Home
                     </Link>
-                </motion.div>
-            </motion.div>
+                </div>
+            </Card>
 
             {/* Forgot Password Modal */}
-            {showForgotPassword && (
-                <div className="fixed inset-0 bg-gray-600 dark:bg-[#1A1212] bg-opacity-50 dark:bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-                    <div className="relative p-5 w-full max-w-md">
-                        <ForgotPassword onBackToLogin={() => setShowForgotPassword(false)} />
-                    </div>
-                </div>
-            )}
-        </div>
+            <Modal open={showForgotPassword} onClose={() => setShowForgotPassword(false)} size="sm">
+                <ForgotPassword onBackToLogin={() => setShowForgotPassword(false)} />
+            </Modal>
+        </AuthShell>
     );
 };
 

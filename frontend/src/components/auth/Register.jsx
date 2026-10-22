@@ -1,11 +1,16 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
-import { useDarkMode } from '../../contexts/DarkModeContextSimple';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import PasswordInput from './PasswordInput';
 import Swal from 'sweetalert2';
 import api from '../../utils/api';
+import { LuArrowLeft, LuCheck, LuCircleAlert, LuCircleCheck, LuLoaderCircle, LuUserPlus } from 'react-icons/lu';
+import AuthShell from '../site/AuthShell';
+import Button from '../site/Button';
+import Card from '../site/Card';
+import Icon from '../site/Icon';
+import { Input } from '../site/Field';
+import { LOGO_COLOR, LOGO_SIZE } from '../site/siteConfig';
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -27,7 +32,6 @@ const Register = () => {
     const [checkingSettings, setCheckingSettings] = useState(true);
 
     const { register } = useAuth();
-    const { isDarkMode } = useDarkMode();
     const navigate = useNavigate();
     const location = useLocation();
     const dropdownRef = useRef(null);
@@ -269,278 +273,199 @@ const Register = () => {
 
     if (checkingSettings) {
         return (
-            <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4A1D7A]"></div>
+            <div className="flex min-h-screen items-center justify-center bg-sw-surface-muted" role="status" aria-live="polite">
+                <Icon icon={LuLoaderCircle} size="lg" className="animate-spin" />
+                <span className="sr-only">Loading</span>
             </div>
         );
     }
 
     if (!allowRegistration) {
         return (
-            <div className={`min-h-screen flex flex-col justify-center items-center py-12 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200`}>
-                <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-                    <img className="mx-auto h-20 w-auto" src="/swagat-logo.png" alt="Swagat Group" />
-                    <h2 className={`mt-6 text-3xl font-extrabold ${isDarkMode ? 'text-white' : 'text-gray-900 dark:text-gray-100'}`}>
+            <AuthShell backLink={false}>
+                <Card variant="soft" className="h-fit w-full max-w-md p-8 text-center">
+                    <img className="mx-auto h-16 w-auto" src={LOGO_COLOR} width={LOGO_SIZE.width} height={LOGO_SIZE.height} alt="Swagat Group" />
+                    <h1 className="mt-6 text-sw-h2 font-bold">
                         Registrations Closed
-                    </h2>
-                    <p className={`mt-4 text-lg ${isDarkMode ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}`}>
+                    </h1>
+                    <p className="mt-3 text-sw-body text-sw-text-secondary">
                         Currently we are not taking new registrations. Admissions are closed for this season.
                     </p>
                     <div className="mt-8">
-                        <Link to="/" className="text-[#4A1D7A] hover:text-indigo-500 dark:text-[#9B6FCC] dark:hover:text-indigo-300 font-medium">
+                        <Button to="/" variant="outline">
                             Return to Homepage
-                        </Link>
+                        </Button>
                     </div>
-                </div>
-            </div>
+                </Card>
+            </AuthShell>
         );
     }
 
     return (
-        <div className={`min-h-screen flex flex-col justify-center py-12 sm:px-6 lg:px-8 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} transition-colors duration-200`}>
-            <div className="max-w-2xl mx-auto">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="bg-white dark:bg-[#231A2E] rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700"
-                >
-                    {/* Header */}
-                    <div className="text-center mb-8">
-                        <motion.div
-                            initial={{ scale: 0.8 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.5, delay: 0.2 }}
-                            className="mx-auto h-20 w-20 bg-[#4A1D7A] rounded-full flex items-center justify-center mb-6"
-                        >
-                            <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                            </svg>
-                        </motion.div>
+        <AuthShell backLink={false}>
+            <Card variant="soft" className="h-fit w-full max-w-2xl p-6 sm:p-8">
+                {/* Header */}
+                <div className="mb-8 text-center">
+                    <span className="sw-pane sw-pane-notice mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-sw-md text-sw-white">
+                        <Icon icon={LuUserPlus} size="lg" strokeWidth={1.5} />
+                    </span>
+                    <h1 className="text-sw-h2 font-bold">
+                        Create Your Account
+                    </h1>
+                    <p className="mt-1 text-sw-body text-sw-text-secondary">
+                        Join Swagat Group of Institutions
+                    </p>
+                </div>
 
-                        <motion.h2
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.3 }}
-                            className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2"
-                        >
-                            Create Your Account
-                        </motion.h2>
+                {/* Form */}
+                <form className="space-y-6" onSubmit={handleSubmit}>
+                    {/* Personal Information */}
+                    <Input
+                        id="fullName"
+                        name="fullName"
+                        type="text"
+                        label="Full Name"
+                        required
+                        autoComplete="name"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        placeholder="Enter your full name"
+                    />
 
-                        <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.5, delay: 0.4 }}
-                            className="text-gray-600 dark:text-gray-300"
-                        >
-                            Join Swagat Group of Institutions
-                        </motion.p>
+                    {/* Contact Information */}
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <Input
+                            id="email"
+                            name="email"
+                            type="email"
+                            label="Email Address"
+                            required
+                            autoComplete="username email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="Enter email address"
+                        />
+                        <Input
+                            id="phoneNumber"
+                            name="phoneNumber"
+                            type="tel"
+                            label="Phone Number"
+                            required
+                            autoComplete="tel"
+                            value={formData.phoneNumber}
+                            onChange={(e) => handleChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
+                            placeholder="Enter 10-digit mobile number"
+                            maxLength="10"
+                        />
                     </div>
 
-                    {/* Form */}
-                    <motion.form
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5, delay: 0.5 }}
-                        className="space-y-6"
-                        onSubmit={handleSubmit}
-                    >
-
-                        {/* Personal Information */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="md:col-span-2">
-                                <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Full Name *
-                                </label>
-                                <input
-                                    id="fullName"
-                                    name="fullName"
-                                    type="text"
-                                    required
-                                    autoComplete="name"
-                                    value={formData.fullName}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                    placeholder="Enter your full name"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Contact Information */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Email Address *
-                                </label>
-                                <input
-                                    id="email"
-                                    name="email"
-                                    type="email"
-                                    required
-                                    autoComplete="username email"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                    placeholder="Enter email address"
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Phone Number *
-                                </label>
-                                <input
-                                    id="phoneNumber"
-                                    name="phoneNumber"
-                                    type="tel"
-                                    required
-                                    autoComplete="tel"
-                                    value={formData.phoneNumber}
-                                    onChange={(e) => handleChange({ target: { name: 'phoneNumber', value: e.target.value.replace(/\D/g, '').slice(0, 10) } })}
-                                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                    placeholder="Enter 10-digit mobile number"
-                                    maxLength="10"
-                                />
-                            </div>
-                        </div>
-
-                        {/* Password Fields */}
-                        <div className="space-y-6">
-                            <div className="flex flex-col">
-                                <PasswordInput
-                                    id="password"
-                                    name="password"
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    placeholder="Leave blank for auto-generated password"
-                                    autoComplete="new-password"
-                                    label="Password (Optional)"
-                                    showStrengthIndicator={true}
-                                />
-                                <span className="text-xs text-gray-500 dark:text-gray-300 mt-1">
-                                    If left blank, a secure default password will be emailed to you.
-                                </span>
-                            </div>
-
+                    {/* Password Fields */}
+                    <div className="space-y-6">
+                        <div className="flex flex-col">
                             <PasswordInput
-                                id="confirmPassword"
-                                name="confirmPassword"
-                                value={formData.confirmPassword}
+                                id="password"
+                                name="password"
+                                value={formData.password}
                                 onChange={handleChange}
-                                placeholder="Confirm your password"
+                                placeholder="Leave blank for auto-generated password"
                                 autoComplete="new-password"
-                                label="Confirm Password (Optional)"
+                                label="Password (Optional)"
+                                showStrengthIndicator={true}
                             />
+                            <span className="mt-1 text-sw-caption text-sw-text-muted">
+                                If left blank, a secure default password will be emailed to you.
+                            </span>
                         </div>
 
-                        {/* Course selection removed */}
+                        <PasswordInput
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            value={formData.confirmPassword}
+                            onChange={handleChange}
+                            placeholder="Confirm your password"
+                            autoComplete="new-password"
+                            label="Confirm Password (Optional)"
+                        />
+                    </div>
 
-                        {/* Referral Code (Optional) */}
-                        <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-xl border border-gray-200 dark:border-gray-700">
-                            <label htmlFor="referralCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                Referral Code (Optional)
-                            </label>
-                            <div className="flex space-x-2">
-                                <input
-                                    id="referralCode"
-                                    name="referralCode"
-                                    type="text"
-                                    value={formData.referralCode}
-                                    onChange={(e) => {
-                                        handleChange(e);
-                                        setReferralVerified(false);
-                                        setReferrerName('');
-                                        setReferralError('');
-                                    }}
-                                    className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-200 placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                    placeholder="Enter referral code"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={handleVerifyReferral}
-                                    disabled={!formData.referralCode || verifyingReferral || referralVerified}
-                                    className="px-6 py-3 bg-[#4A1D7A] hover:bg-[#351458] text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center whitespace-nowrap"
-                                >
-                                    {verifyingReferral ? (
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                    ) : referralVerified ? (
-                                        <><svg className="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg> Verified</>
-                                    ) : (
-                                        'Verify'
-                                    )}
-                                </button>
-                            </div>
-                            
-                            {/* Referral Status Messages */}
-                            {referralError && (
-                                <p className="mt-2 text-sm text-red-600 dark:text-red-400 flex items-center">
-                                    <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    {referralError}
-                                </p>
-                            )}
-                            {referralVerified && referrerName && (
-                                <p className="mt-2 text-sm text-green-600 dark:text-green-400 flex items-center font-medium">
-                                    <svg className="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    Valid Code! Referred by: {referrerName}
-                                </p>
-                            )}
-                            <p className="mt-2 text-xs text-gray-500 dark:text-gray-300">
-                                Enter a valid referral code and verify it to apply the referral to your account.
+                    {/* Course selection removed */}
+
+                    {/* Referral Code (Optional) */}
+                    <div className="rounded-sw-sm bg-sw-surface-muted p-4">
+                        <label htmlFor="referralCode" className="mb-1.5 block text-sw-small font-semibold">
+                            Referral Code (Optional)
+                        </label>
+                        <div className="flex gap-2">
+                            <input
+                                id="referralCode"
+                                name="referralCode"
+                                type="text"
+                                value={formData.referralCode}
+                                onChange={(e) => {
+                                    handleChange(e);
+                                    setReferralVerified(false);
+                                    setReferrerName('');
+                                    setReferralError('');
+                                }}
+                                className="block min-h-11 min-w-0 flex-1 rounded-sw-sm bg-sw-white px-4 text-sw-body shadow-sw-input focus:outline-none focus-visible:ring-2 focus-visible:ring-sw-focus"
+                                placeholder="Enter referral code"
+                            />
+                            <Button
+                                type="button"
+                                shape="rounded"
+                                onClick={handleVerifyReferral}
+                                disabled={!formData.referralCode || verifyingReferral || referralVerified}
+                                loading={verifyingReferral}
+                                iconLeft={referralVerified ? LuCheck : undefined}
+                            >
+                                {referralVerified ? 'Verified' : 'Verify'}
+                            </Button>
+                        </div>
+
+                        {/* Referral Status Messages */}
+                        {referralError && (
+                            <p className="mt-2 flex items-center gap-1 text-sw-small font-normal text-sw-error">
+                                <Icon icon={LuCircleAlert} size="xs" />
+                                {referralError}
                             </p>
-                        </div>
-
-                        {/* Submit Button */}
-                        <motion.button
-                            type="submit"
-                            disabled={loading}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="w-full bg-[#4A1D7A] text-white py-3 px-4 rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {loading ? (
-                                <div className="flex items-center justify-center">
-                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                                    Creating Account...
-                                </div>
-                            ) : (
-                                'Create Account'
-                            )}
-                        </motion.button>
-
-                        {/* Login Link */}
-                        <div className="text-center">
-                            <p className="text-sm text-gray-600 dark:text-gray-300">
-                                Already have an account?{' '}
-                                <Link
-                                    to="/login"
-                                    className="text-[#4A1D7A] dark:text-[#9B6FCC] hover:text-[#351458] dark:hover:text-purple-300 font-medium transition-colors duration-200"
-                                >
-                                    Sign in here
-                                </Link>
+                        )}
+                        {referralVerified && referrerName && (
+                            <p className="mt-2 flex items-center gap-1 text-sw-small font-semibold text-sw-success">
+                                <Icon icon={LuCircleCheck} size="xs" />
+                                Valid Code! Referred by: {referrerName}
                             </p>
-                        </div>
-                    </motion.form>
+                        )}
+                        <p className="mt-2 text-sw-caption text-sw-text-muted">
+                            Enter a valid referral code and verify it to apply the referral to your account.
+                        </p>
+                    </div>
 
-                    {/* Back to Home */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.5, delay: 0.8 }}
-                        className="text-center mt-8"
-                    >
-                        <Link
-                            to="/"
-                            className="text-sm text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-300 transition-colors duration-200 flex items-center justify-center"
-                        >
-                            <svg className="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            Back to Home
+                    {/* Submit Button */}
+                    <Button type="submit" shape="rounded" size="lg" fullWidth loading={loading}>
+                        {loading ? 'Creating Account...' : 'Create Account'}
+                    </Button>
+
+                    {/* Login Link */}
+                    <p className="text-center text-sw-small font-normal text-sw-text-secondary">
+                        Already have an account?{' '}
+                        <Link to="/login" className="inline-flex min-h-11 items-center font-semibold text-sw-text underline underline-offset-4">
+                            Sign in here
                         </Link>
-                    </motion.div>
-                </motion.div>
-            </div>
-        </div>
+                    </p>
+                </form>
+
+                {/* Back to Home */}
+                <div className="mt-4 border-t border-sw-border-light pt-4 text-center">
+                    <Link
+                        to="/"
+                        className="inline-flex min-h-11 items-center gap-1 text-sw-small font-normal text-sw-text-muted hover:text-sw-text"
+                    >
+                        <Icon icon={LuArrowLeft} size="xs" />
+                        Back to Home
+                    </Link>
+                </div>
+            </Card>
+        </AuthShell>
     );
 };
 
