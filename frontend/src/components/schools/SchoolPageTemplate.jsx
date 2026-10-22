@@ -2,8 +2,6 @@ import {useEffect} from 'react';
 import { RiCheckLine, RiSchoolLine } from '@remixicon/react';
 import { motion } from 'framer-motion'
 import { Helmet } from 'react-helmet-async'
-import Header from '../Header'
-import Footer from '../Footer'
 
 const SchoolPageTemplate = ({
     schoolName,
@@ -43,8 +41,6 @@ const SchoolPageTemplate = ({
             </Helmet>
 
             <div className="min-h-screen bg-white">
-                <Header />
-
                 {/* Hero Section */}
                 <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
                     {/* Background Elements */}
@@ -287,7 +283,6 @@ const SchoolPageTemplate = ({
                     </div>
                 </section>
 
-                <Footer />
             </div>
         </>
     )

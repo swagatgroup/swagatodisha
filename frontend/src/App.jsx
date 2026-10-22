@@ -1,11 +1,10 @@
-import { useState, lazy, Suspense } from 'react'
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
+import { useEffect, lazy, Suspense } from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SessionProvider } from './contexts/SessionContext'
 import { DarkModeProvider } from './contexts/DarkModeContextSimple'
-import Header from './components/Header'
 import HeroCarousel from './components/HeroCarousel'
 import AboutUs from './components/AboutUs'
 import InstitutionTypes from './components/InstitutionTypes'
@@ -17,7 +16,6 @@ import ChairmanMessage from './components/ChairmanMessage'
 import Management from './components/Management'
 import Location from './components/Location'
 import ContactUs from './components/ContactUs'
-import Footer from './components/Footer'
 import FloatingContact from './components/FloatingContact'
 import Login from './components/auth/Login'
 import LoginPortal from './components/auth/LoginPortal'
@@ -37,7 +35,6 @@ import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoolGhantiguda'
 import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
 import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
-import GatewayLoader from './components/GatewayLoader'
 import SiteRoot from './components/site/SiteRoot'
 
 // Design-system preview: dev server only, never part of a production build
@@ -98,38 +95,31 @@ const DashboardRouter = () => {
     }
 };
 
-// Main App Component
+// Homepage
 const AppContent = () => {
-    const [isNavOpen, setIsNavOpen] = useState(false)
-    const [showGateway, setShowGateway] = useState(true)
+    const { hash } = useLocation()
 
-    if (showGateway) {
-        return <GatewayLoader onEnterMainSite={() => setShowGateway(false)} />
-    }
+    // Header links to homepage sections from other pages arrive as /#section
+    useEffect(() => {
+        if (!hash) return
+        const section = document.getElementById(hash.substring(1))
+        if (section) section.scrollIntoView()
+    }, [hash])
 
     return (
-        <div className="App relative m-0 p-0 bg-white dark:bg-[#1A1212]">
-            {/* Premium Floating Elements - Global Animation Layer */}
-
-            <Header isNavOpen={isNavOpen} setIsNavOpen={setIsNavOpen} />
-
+        <div className="App relative m-0 p-0 bg-white">
             {/* 1. Slider */}
             <section id="home" className="m-0 p-0">
                 <HeroCarousel />
             </section>
 
-            {/* Application Status Search */}
-            <section className="bg-gray-50 border-b border-gray-200">
-                
-            </section>
-
             {/* 2. Quick Access */}
-            <section className="bg-white dark:bg-[#231A2E]">
+            <section className="bg-white">
                 <QuickLinks />
             </section>
 
             {/* 3. Approval and Recognitions */}
-            <section id="approvals" className="bg-white dark:bg-[#1A1212]">
+            <section id="approvals" className="bg-white">
                 <ApprovalsRecognitions />
             </section>
 
@@ -142,13 +132,8 @@ const AppContent = () => {
             <Location />
 
             {/* 6. Contact Form */}
-            <section id="contact" className="bg-white dark:bg-[#1A1212]">
+            <section id="contact" className="bg-white">
                 <ContactUs />
-            </section>
-
-            {/* Footer */}
-            <section className="bg-criss-cross">
-                <Footer />
             </section>
         </div>
     )
@@ -161,8 +146,8 @@ function App() {
                 <Router>
                     <DarkModeProvider>
                         <Routes>
-                            {/* Public site (redesign v2 styles) */}
-                            <Route element={<SiteRoot />}>
+                            {/* Public site (redesign v2): marketing pages with the shared header/footer */}
+                            <Route element={<SiteRoot chrome />}>
                                 <Route path="/" element={<AppContent />} />
                                 <Route path="/about" element={<AboutUsPage />} />
                                 <Route path="/gallery" element={<Gallery />} />
@@ -175,14 +160,18 @@ function App() {
                                 <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
                                 <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
                                 <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
+                                {DesignPreview && (
+                                    <Route path="/_design" element={<Suspense fallback={null}><DesignPreview /></Suspense>} />
+                                )}
+                            </Route>
+
+                            {/* Public site (redesign v2): login and registration */}
+                            <Route element={<SiteRoot />}>
                                 <Route path="/login-portal" element={<LoginPortal />} />
                                 <Route path="/login/student" element={<Login title="Student Login" />} />
                                 <Route path="/login/agent" element={<Login title="Agent Login" />} />
                                 <Route path="/login/staff" element={<Login title="Staff Login" />} />
                                 <Route path="/register" element={<Register />} />
-                                {DesignPreview && (
-                                    <Route path="/_design" element={<Suspense fallback={null}><DesignPreview /></Suspense>} />
-                                )}
                             </Route>
                             <Route path="/login" element={<Navigate to="/login-portal" replace />} />
 

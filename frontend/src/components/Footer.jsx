@@ -1,21 +1,8 @@
 import {useState} from 'react';
 import Swal from 'sweetalert2'
-import { 
-    RiLinkM,
-    RiMailSendLine,
-    RiLoader4Line,
-    RiFacebookBoxFill,
-    RiTwitterXFill,
-    RiInstagramFill,
-    RiLinkedinBoxFill,
-    RiYoutubeFill,
-    RiPhoneFill,
-    RiMailFill,
-    RiMapPin2Fill,
-    RiHeartFill,
-    RiGraduationCapLine,
-    RiCustomerService2Line
-} from '@remixicon/react';
+import { LuLoaderCircle } from 'react-icons/lu'
+import { DESIGNER_CREDIT } from './site/siteConfig'
+import Icon from './site/Icon'
 
 const Footer = () => {
     const currentYear = new Date().getFullYear()
@@ -129,133 +116,91 @@ const Footer = () => {
         }
     }
 
+    const columns = [
+        { title: 'Our Programs', links: footerData.programs },
+        { title: 'Quick Links', links: footerData.quickLinks },
+        { title: 'Support', links: footerData.support },
+    ]
+
+    const linkClass = 'inline-flex min-h-11 items-center text-sw-body-lg text-sw-white transition-colors duration-sw-fast hover:text-sw-text-on-dark-secondary hover:underline underline-offset-4 lg:min-h-0'
+
     return (
-        <footer className="relative bg-[#1D4B5E] overflow-hidden pattern-bg-dark">
-            {/* Main Footer Content */}
-            <div className="relative z-10 pt-16 pb-8">
-                <div className="container mx-auto px-6">
-                    {/* Links Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                        {/* Quick Links */}
-                        <div>
-                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
-                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <RiLinkM size={16} className="text-[#FAF7F2]" />
-                                </div>
-                                Quick Links
-                            </h4>
-                            <ul className="space-y-3">
-                                {footerData.quickLinks.map((link, index) => (
+        <footer className="relative overflow-hidden bg-sw-black text-sw-text-on-dark">
+            <div className="sw-container-wide pt-16 lg:pt-20">
+                <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+                    {columns.map((column) => (
+                        <nav key={column.title} aria-label={column.title}>
+                            <h2 className="mb-4 text-sw-h2 font-bold lg:mb-5">{column.title}</h2>
+                            <ul className="space-y-0 lg:space-y-1">
+                                {column.links.map((link, index) => (
                                     <li key={index}>
-                                        <a
-                                            href={link.url}
-                                            className="text-[#D0E8F0] hover:text-[#E8A817] transition-colors duration-300 flex items-center group font-lato text-sm"
-                                        >
-                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#E8A817] transition-colors duration-300"></div>
+                                        <a href={link.url} className={linkClass}>
                                             {link.name}
                                         </a>
                                     </li>
                                 ))}
                             </ul>
-                        </div>
+                        </nav>
+                    ))}
 
-                        {/* Programs */}
-                        <div>
-                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
-                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <RiGraduationCapLine size={16} className="text-[#FAF7F2]" />
-                                </div>
-                                Our Programs
-                            </h4>
-                            <ul className="space-y-3">
-                                {footerData.programs.map((program, index) => (
-                                    <li key={index}>
-                                        <a
-                                            href={program.url}
-                                            className="text-[#D0E8F0] hover:text-[#E8A817] transition-colors duration-300 flex items-center group font-lato text-sm"
-                                        >
-                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#E8A817] transition-colors duration-300"></div>
-                                            {program.name}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Support */}
-                        <div>
-                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
-                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <RiCustomerService2Line size={16} className="text-[#FAF7F2]" />
-                                </div>
-                                Support
-                            </h4>
-                            <ul className="space-y-3">
-                                {footerData.support.map((item, index) => (
-                                    <li key={index}>
-                                        <a
-                                            href={item.url}
-                                            className="text-[#D0E8F0] hover:text-[#E8A817] transition-colors duration-300 flex items-center group font-lato text-sm"
-                                        >
-                                            <div className="w-1.5 h-1.5 bg-[#387B95] rounded-full mr-3 group-hover:bg-[#E8A817] transition-colors duration-300"></div>
-                                            {item.name}
-                                        </a>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        {/* Subscribe */}
-                        <div>
-                            <h4 className="text-xl font-baloo font-bold text-[#FAF7F2] mb-6 flex items-center">
-                                <div className="w-8 h-8 bg-[#387B95] rounded-xl flex items-center justify-center mr-3 shadow-sm border border-white/10">
-                                    <RiMailSendLine size={16} className="text-[#FAF7F2]" />
-                                </div>
-                                Stay Updated
-                            </h4>
-                            <p className="text-[#D0E8F0] mb-5 font-lato text-sm">
-                                Subscribe to our newsletter for the latest updates, events, and educational insights.
-                            </p>
-                            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
-                                <input
-                                    type="email"
-                                    value={newsletterEmail}
-                                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                                    placeholder="Enter your email"
-                                    className="w-full px-4 py-2.5 bg-[#1A3545]/60 border border-white/10 rounded-xl text-[#FAF7F2] placeholder-[#387B95] focus:outline-none focus:ring-2 focus:ring-[#E8A817] focus:border-transparent transition-all duration-300 text-sm font-lato"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={isSubscribing}
-                                    className="w-full px-4 py-2.5 bg-[#E8A817] text-[#1A1A1A] rounded-xl font-baloo font-bold hover:bg-[#C48D0F] transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                >
-                                    {isSubscribing ? (
-                                        <span className="flex items-center justify-center">
-                                            <RiLoader4Line size={16} className="animate-spin mr-2 inline" />
-                                            Subscribing...
-                                        </span>
-                                    ) : (
-                                        'Subscribe'
-                                    )}
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    {/* Bottom Bar */}
-                    <div className="border-t border-white/10 pt-8 mt-4">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                            <div className="text-[#387B95] text-sm text-center md:text-left font-lato">
-                                © {currentYear} Swagat Group of Institutions. All rights reserved.
-                            </div>
-                            <div className="flex items-center space-x-6 text-sm text-[#387B95] font-lato">
-                                <a href="#" className="hover:text-[#E8A817] transition-colors duration-300">Privacy Policy</a>
-                                <a href="#" className="hover:text-[#E8A817] transition-colors duration-300">Terms of Service</a>
-                                <a href="#" className="hover:text-[#E8A817] transition-colors duration-300">Cookie Policy</a>
-                            </div>
-                        </div>
+                    {/* Stay Updated (newsletter) */}
+                    <div className="col-span-2 lg:col-span-1">
+                        <h2 className="mb-4 text-sw-h2 font-bold lg:mb-5">Stay Updated</h2>
+                        <p className="mb-5 text-sw-body text-sw-text-on-dark-secondary">
+                            Subscribe to our newsletter for the latest updates, events, and educational insights.
+                        </p>
+                        <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+                            <label htmlFor="footer-newsletter-email" className="sr-only">Email address</label>
+                            <input
+                                id="footer-newsletter-email"
+                                type="email"
+                                value={newsletterEmail}
+                                onChange={(e) => setNewsletterEmail(e.target.value)}
+                                placeholder="Enter your email"
+                                className="block min-h-11 w-full rounded-sw-sm bg-sw-white/10 px-4 text-sw-body text-sw-white ring-1 ring-inset ring-sw-white/20 placeholder:text-sw-text-on-dark-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-sw-focus"
+                            />
+                            <button
+                                type="submit"
+                                disabled={isSubscribing}
+                                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-sw-sm bg-sw-white px-4 text-sw-label font-semibold text-sw-black transition-colors duration-sw-fast hover:bg-sw-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            >
+                                {isSubscribing ? (
+                                    <>
+                                        <Icon icon={LuLoaderCircle} size="xs" className="animate-spin" />
+                                        Subscribing...
+                                    </>
+                                ) : (
+                                    'Subscribe'
+                                )}
+                            </button>
+                        </form>
                     </div>
                 </div>
+
+                {/* Bottom Bar */}
+                <div className="mt-14 flex flex-col items-center gap-3 border-t border-sw-white/10 pt-8 text-center">
+                    <div className="flex flex-wrap items-center justify-center gap-x-6 text-sw-caption text-sw-text-on-dark-secondary">
+                        <a href="#" className="inline-flex min-h-11 items-center hover:text-sw-white">Privacy Policy</a>
+                        <a href="#" className="inline-flex min-h-11 items-center hover:text-sw-white">Terms of Service</a>
+                        <a href="#" className="inline-flex min-h-11 items-center hover:text-sw-white">Cookie Policy</a>
+                    </div>
+                    <p className="text-sw-caption text-sw-white">
+                        © {currentYear} Swagat Odisha. All rights reserved.
+                    </p>
+                    <a
+                        href={DESIGNER_CREDIT.url}
+                        target="_blank"
+                        rel="noopener"
+                        className="inline-flex min-h-11 items-center text-sw-caption text-sw-text-on-dark-muted transition-colors duration-sw-fast hover:text-sw-text-on-dark-secondary"
+                    >
+                        {DESIGNER_CREDIT.label}
+                    </a>
+                </div>
+            </div>
+
+            {/* Brand watermark, clipped by the bottom edge like the Figma */}
+            <div aria-hidden="true" className="mt-6 flex h-[0.62em] select-none justify-center overflow-hidden font-sw-display text-sw-display-xl font-extrabold leading-none text-sw-watermark">
+                <span className="shrink-0 whitespace-nowrap">Swagat Odisha</span>
             </div>
         </footer>
     )

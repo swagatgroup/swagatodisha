@@ -9,7 +9,6 @@ import {
     handleApiError
 } from '../utils/sweetAlert';
 import api from '../utils/api';
-import BackToMainWebsite from './BackToMainWebsite';
 import { useAuth } from '../contexts/AuthContext';
 import { CONTACT_INFO } from '../utils/constants';
 
@@ -456,12 +455,8 @@ const SendMessage = () => {
                             </motion.div>
                         </button>
                     </motion.div>
-                    {/* Back to Main Website - Top Right */}
-                    <BackToMainWebsite variant="floating" position="top-right" />
                 </>
-            ) : (
-                <BackToMainWebsite variant="floating" position="top-right" />
-            )}
+            ) : null}
             
             {/* Enhanced Background Elements */}
             <div className="absolute inset-0 overflow-hidden">

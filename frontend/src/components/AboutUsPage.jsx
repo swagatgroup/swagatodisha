@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import BackToMainWebsite from './BackToMainWebsite'
 
 const AboutUsPage = () => {
     const [staffProfiles, setStaffProfiles] = useState([]);
@@ -97,7 +96,6 @@ const AboutUsPage = () => {
 
     return (
         <div className="min-h-screen bg-[#FAF7F2]">
-            <BackToMainWebsite variant="floating" />
 
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">

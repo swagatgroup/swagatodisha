@@ -12,7 +12,6 @@ import {
     RiTeamLine,
     RiZoomInLine
 } from '@remixicon/react';
-import BackToMainWebsite from './BackToMainWebsite'
 
 const Gallery = () => {
     const [selectedCategory, setSelectedCategory] = useState('all')
@@ -72,7 +71,6 @@ const Gallery = () => {
     if (loading) return <div className="min-h-[50vh] flex items-center justify-center text-purple-600"><RiLoader4Line className="animate-spin text-3xl" /></div>;
     return (
         <div className="min-h-screen bg-[#FAF7F2]">
-            <BackToMainWebsite variant="floating" />
 
             {/* Hero Section */}
             <section className="relative py-20 overflow-hidden">
