@@ -8,6 +8,8 @@ const SiteRoot = () => (
     <MotionConfig reducedMotion="user">
         <div className="site">
             <Outlet />
+            {/* Dialogs render here so they stay inside the .site scope */}
+            <div id="sw-portal" />
         </div>
     </MotionConfig>
 )

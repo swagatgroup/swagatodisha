@@ -1,0 +1,52 @@
+{
+  "/ @1440": [
+    "GET localhost:5000/api/website-content",
+    "GET swagat-odisha-backend.onrender.com/api/admin/quick-access/public",
+    "GET swagat-odisha-backend.onrender.com/api/sliders/public?sliderType=horizontal"
+  ],
+  "/about @1440": [
+    "GET localhost:5000/api/website-content"
+  ],
+  "/gallery @1440": [
+    "GET localhost:5000/api/gallery/public?limit=100"
+  ],
+  "/contact @1440": [],
+  "/send-message @1440": [],
+  "/terms-and-conditions @1440": [],
+  "/privacy-policy @1440": [],
+  "/SwagatPublicSchool_Ghantiguda @1440": [],
+  "/SwagatPublicSchool_Sargiguda @1440": [],
+  "/SwagatPublicSchool_Lakhna @1440": [],
+  "/login-portal @1440": [],
+  "/login/student @1440": [],
+  "/login/agent @1440": [],
+  "/login/staff @1440": [],
+  "/register @1440": [
+    "GET swagat-odisha-backend.onrender.com/api/public-settings"
+  ],
+  "/ @390": [
+    "GET localhost:5000/api/website-content",
+    "GET swagat-odisha-backend.onrender.com/api/admin/quick-access/public",
+    "GET swagat-odisha-backend.onrender.com/api/sliders/public?sliderType=vertical"
+  ],
+  "/about @390": [
+    "GET localhost:5000/api/website-content"
+  ],
+  "/gallery @390": [
+    "GET localhost:5000/api/gallery/public?limit=100"
+  ],
+  "/contact @390": [],
+  "/send-message @390": [],
+  "/terms-and-conditions @390": [],
+  "/privacy-policy @390": [],
+  "/SwagatPublicSchool_Ghantiguda @390": [],
+  "/SwagatPublicSchool_Sargiguda @390": [],
+  "/SwagatPublicSchool_Lakhna @390": [],
+  "/login-portal @390": [],
+  "/login/student @390": [],
+  "/login/agent @390": [],
+  "/login/staff @390": [],
+  "/register @390": [
+    "GET swagat-odisha-backend.onrender.com/api/public-settings"
+  ]
+}

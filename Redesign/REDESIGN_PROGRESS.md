@@ -11,8 +11,8 @@ Branch: `redesign/ui-v2` (created from `main` @ `0e266e6`). All redesign work st
 | 2 Design system | done | `DESIGN_SYSTEM.md` |
 | Checkpoint 1 | approved 2026-10-22 | Decisions below |
 | 3 Foundations | done | Tokens, self-hosted fonts, `.site` scope, dark mode limited to dashboards |
-| 4 Primitives | next | |
-| 5–9 | not started | |
+| 4 Primitives | done | `frontend/src/components/site/`: Layout (Container/Section/SectionHeader), Button, Card, Badge, Icon, Field (Input/Textarea/Select), Tabs, Accordion, Feedback (Skeleton/LoadingList/EmptyState), Modal (portal into `#sw-portal`), SmartImage, Decor. Dev-only preview at `/_design` (not in production builds) |
+| 5–9 | in progress | Owner asked to run 5–9 without checkpoints; stop only for backend changes or deleting real content |
 
 ## Decisions (Checkpoint 1)
 
@@ -35,7 +35,7 @@ Branch: `redesign/ui-v2` (created from `main` @ `0e266e6`). All redesign work st
 - **Hero text:** own copy, or the Figma line "Unlock limitless learning / One place, Knowledge"? Needed by Phase 6.
 - **Coaching Centre URL:** a real URL, or remove the link for now? Needed by Phase 5.
 - **Images:** designer exports in `Redesign/assets/`, or NASA public-domain images? Needed by Phase 6.
-- **Copyright:** keep the Swagat text, or keep it and add "Designed by Codeyouridea"? Needed by Phase 5.
+- **Copyright:** answered (see Decisions).
 
 ## Phase 3 notes (what exists now)
 

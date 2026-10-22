@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import { HelmetProvider } from 'react-helmet-async'
@@ -39,6 +39,9 @@ import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchool
 import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
 import GatewayLoader from './components/GatewayLoader'
 import SiteRoot from './components/site/SiteRoot'
+
+// Design-system preview: dev server only, never part of a production build
+const DesignPreview = import.meta.env.DEV ? lazy(() => import('./components/site/DesignPreview')) : null
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -177,6 +180,9 @@ function App() {
                                 <Route path="/login/agent" element={<Login title="Agent Login" />} />
                                 <Route path="/login/staff" element={<Login title="Staff Login" />} />
                                 <Route path="/register" element={<Register />} />
+                                {DesignPreview && (
+                                    <Route path="/_design" element={<Suspense fallback={null}><DesignPreview /></Suspense>} />
+                                )}
                             </Route>
                             <Route path="/login" element={<Navigate to="/login-portal" replace />} />
 

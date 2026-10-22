@@ -117,6 +117,15 @@
   /* Focus ring: readable on both white and black surfaces */
   --sw-focus: 37 99 235;
 
+  /* Decorative pastels for the blurred Explore tiles */
+  --sw-pane-cream: 240 234 214;
+  --sw-pane-lilac: 190 198 245;
+  --sw-pane-rose: 243 186 196;
+  --sw-pane-coral: 226 120 104;
+  --sw-pane-peach: 238 170 120;
+  --sw-pane-steel: 120 122 136;
+  --sw-pane-plum: 92 70 110;
+
   /* Typography */
   --sw-font-sans: 'Montserrat', 'Montserrat Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
   --sw-font-display: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
@@ -276,6 +285,71 @@ html:has(.site) body {
 
 :where(.sw-section) {
   padding-block: var(--sw-section-y);
+}
+
+/* ── Decorative surfaces ── */
+
+/* Image-slot placeholders: dark, near-monochrome gradients shown until the photo exists */
+:where(.sw-ph-night) {
+  background-color: rgb(var(--sw-black));
+  background-image:
+    radial-gradient(90% 70% at 75% 30%, rgb(var(--sw-gray-700) / 0.55) 0%, transparent 60%),
+    radial-gradient(70% 60% at 15% 90%, rgb(var(--sw-gray-800) / 0.9) 0%, transparent 70%);
+}
+:where(.sw-ph-dusk) {
+  background-color: rgb(var(--sw-gray-850));
+  background-image:
+    radial-gradient(80% 60% at 50% 100%, rgb(var(--sw-pane-peach) / 0.28) 0%, transparent 65%),
+    radial-gradient(70% 70% at 80% 10%, rgb(var(--sw-gray-600) / 0.45) 0%, transparent 60%);
+}
+:where(.sw-ph-paper) {
+  background-color: rgb(var(--sw-gray-800));
+  background-image:
+    radial-gradient(70% 70% at 30% 30%, rgb(var(--sw-gray-500) / 0.5) 0%, transparent 65%),
+    radial-gradient(60% 60% at 85% 85%, rgb(var(--sw-black) / 0.9) 0%, transparent 70%);
+}
+:where(.sw-ph-map) {
+  background-color: rgb(var(--sw-gray-200));
+  background-image:
+    linear-gradient(135deg, rgb(var(--sw-gray-100)) 0%, rgb(var(--sw-gray-300)) 100%);
+}
+
+/* Blurred pastel panes inside the Explore tiles (no image assets needed) */
+:where(.sw-pane) {
+  background-color: rgb(var(--sw-pane-steel));
+  background-image:
+    radial-gradient(60% 55% at var(--a-x, 70%) var(--a-y, 15%), rgb(var(--a)) 0%, transparent 70%),
+    radial-gradient(70% 60% at var(--b-x, 30%) var(--b-y, 95%), rgb(var(--b)) 0%, transparent 70%),
+    radial-gradient(80% 80% at 10% 40%, rgb(var(--c)) 0%, transparent 75%);
+  transition: background-position var(--sw-dur-slow) var(--sw-ease);
+}
+:where(.sw-pane-timetable) { --a: var(--sw-pane-cream); --b: var(--sw-pane-steel); --c: var(--sw-gray-300); }
+:where(.sw-pane-career)    { --a: var(--sw-pane-lilac); --b: var(--sw-pane-peach); --c: var(--sw-pane-plum); --a-x: 60%; --b-x: 55%; }
+:where(.sw-pane-notice)    { --a: var(--sw-pane-rose);  --b: var(--sw-pane-coral); --c: var(--sw-pane-plum); }
+:where(.sw-pane-result)    { --a: var(--sw-pane-cream); --b: var(--sw-gray-100); --c: var(--sw-pane-steel); --b-x: 70%; }
+
+/* Dot clusters (campus section) */
+:where(.sw-dot-field) {
+  background-image: radial-gradient(circle, rgb(var(--sw-dot)) 6.5px, transparent 7px);
+  background-size: 24px 24px;
+  -webkit-mask-image:
+    radial-gradient(28% 34% at 22% 30%, #000 60%, transparent 62%),
+    radial-gradient(18% 30% at 52% 55%, #000 60%, transparent 62%),
+    radial-gradient(22% 22% at 80% 78%, #000 60%, transparent 62%),
+    radial-gradient(12% 16% at 90% 20%, #000 60%, transparent 62%);
+  mask-image:
+    radial-gradient(28% 34% at 22% 30%, #000 60%, transparent 62%),
+    radial-gradient(18% 30% at 52% 55%, #000 60%, transparent 62%),
+    radial-gradient(22% 22% at 80% 78%, #000 60%, transparent 62%),
+    radial-gradient(12% 16% at 90% 20%, #000 60%, transparent 62%);
+}
+
+/* Grey-to-white gradient fill used for titles on black cards */
+:where(.sw-text-gradient) {
+  background-image: linear-gradient(90deg, rgb(var(--sw-text-on-dark-muted)) 0%, rgb(var(--sw-white)) 55%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
