@@ -4,10 +4,10 @@
 // It previously pointed at /SwagatCoachingCentre_Bhawanipatna, which has no route.
 export const COACHING_CENTRE_URL = '/'
 
-// TODO: confirm the studio domain. A domain can't end with a hyphen, so "code-.in" won't resolve.
+// Studio credit shown in the footer
 export const DESIGNER_CREDIT = {
-    label: 'Designed & developed by Code-',
-    url: 'https://www.code-.in',
+    label: 'Designed & developed by Code Hyphen',
+    url: 'https://www.codehyphen.in/',
 }
 
 // The destinations from the former entry screen ("Choose your destination")

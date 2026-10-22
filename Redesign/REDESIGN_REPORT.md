@@ -31,12 +31,12 @@ Branch `redesign/ui-v2`, ready for review. It hasn't been merged or pushed. Scop
 
 The three screenshot folders are git-ignored, as requested. They exist on this machine only.
 
-## Two constants to correct
+## Constants to check
 
 Both are in `frontend/src/components/site/siteConfig.js`, each with a TODO comment:
 
 - `COACHING_CENTRE_URL = '/'`: the old link pointed at a page that never existed. Replace it once the Coaching Centre page is live.
-- `DESIGNER_CREDIT.url = 'https://www.code-.in'`: **a domain can't end with a hyphen, so this link won't open.** Correct the spelling there (the label is next to it).
+- `DESIGNER_CREDIT`: "Designed & developed by Code Hyphen" → `https://www.codehyphen.in/` (confirmed by the owner).
 
 ## Lighthouse (mobile, local production build)
 
@@ -141,7 +141,7 @@ Marketing copy follows the AIDA rules now in `CLAUDE.md`. Factual and data conte
 | Contact form card heading | Send Us a Message | kept, but visually hidden (the Figma has no heading there) |
 | Contact form labels | Full Name *, Email Address *, … | same text, visually hidden (the Figma shows placeholders only); still read by screen readers |
 | Footer copyright | © {year} Swagat Group of Institutions. All rights reserved. | © {year} Swagat Odisha. All rights reserved. |
-| Footer credit (new) | — | Designed & developed by Code- |
+| Footer credit (new) | — | Designed & developed by Code Hyphen |
 | Header auth | "Login" and "Register" buttons | one pill: Login / Register |
 | Institutions dropdown (new) | — | All institutions · Institution websites *(my microcopy)*, then the gateway's own names: RCTI / Swagat Odisha, Public School / Ghantiguda, … |
 | Entry screen | Welcome to Swagat Odisha / Choose your destination to continue | *(removed with the screen)* |
@@ -208,7 +208,7 @@ Headings that were split into coloured spans (e.g. "Our <span>Values</span>") ke
 | Static map images | Live Google Maps embed (as before) with a grey placeholder behind | Keep existing behaviour |
 | "Get Direction" | "Get Directions" | Existing label |
 | Contact: "Send", placeholder-only fields | "Send Message"; labels kept but visually hidden; upload field kept | Existing label; accessibility; content kept |
-| Footer: 3 columns, placeholder agency copyright | 4 columns (Stay Updated added), legal links row, Swagat copyright + Code- credit | Existing content; your decision |
+| Footer: 3 columns, placeholder agency copyright | 4 columns (Stay Updated added), legal links row, Swagat copyright + Code Hyphen credit | Existing content; your decision |
 | Muted grey `#808080`, placeholder `#8F8F8F` | `#6B6B6B` / `#767676` | WCAG AA contrast |
 | No visible focus style | Blue 2px focus ring | Keyboard accessibility |
 | Footer links 29px apart | 44px tall on touch devices; Figma spacing on desktop | Tap-target rule |
@@ -222,7 +222,7 @@ Headings that were split into coloured spans (e.g. "Our <span>Values</span>") ke
 **Content / data:**
 
 3. Approvals, About "Our Team" and Gallery fetch from `VITE_API_URL || 'http://localhost:5000'`. Unless `VITE_API_URL` is set on Vercel, those sections can never load on the live site. Fix it by setting that env var, or by switching those three calls to the shared `api` client (a code change; I didn't make it).
-4. The two constants above: the Coaching Centre URL and the `code-.in` domain.
+4. The Coaching Centre URL constant (above).
 5. Footer links that go nowhere today (unchanged): Quick Links `#about`, `#programs`, `#admissions`, `#gallery`; all Programs and Support links `#`; Privacy / Terms / Cookie `#`. Privacy and Terms could point to `/privacy-policy` and `/terms-and-conditions`.
 6. **Privacy Policy placeholders:** it shows "[Contact Number]" and "[Institution Address]", and an email on a different domain (`privacy@swagatgroup.edu.in`).
 7. **Missing leadership photos:** `/chairman.jpg`, `/chairman_rk.jpg` and `/mnt_003.jpg` aren't in `public/`, so initials show instead.
