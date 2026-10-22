@@ -4,6 +4,7 @@ import App from './App.jsx'
 // Icon font for the `fa-solid ...` classes used across the app (was never loaded, so those icons rendered blank)
 import '@fortawesome/fontawesome-free/css/all.min.css'
 import './index.css'
+import './styles/site.css'
 import './utils/uppercaseInputs'
 
 // Error Boundary Component

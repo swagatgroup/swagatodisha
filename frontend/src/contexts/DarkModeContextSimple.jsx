@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const DarkModeContext = createContext();
 
@@ -11,12 +12,19 @@ export const useDarkMode = () => {
 };
 
 export const DarkModeProvider = ({ children }) => {
-    // Initialize synchronously from DOM (which was set by index.html script)
+    // Dark mode only applies to the dashboards; the public site is always light
+    const { pathname } = useLocation();
+    const isDashboard = pathname.startsWith('/dashboard');
+
+    // Initialize from the saved preference (same rule as the index.html script)
     const [isDarkMode, setIsDarkMode] = useState(() => {
-        if (typeof document !== 'undefined') {
-            return document.documentElement.classList.contains('dark');
+        try {
+            const saved = localStorage.getItem('darkMode');
+            if (saved !== null) return saved === 'true';
+            return window.matchMedia('(prefers-color-scheme: dark)').matches;
+        } catch {
+            return false;
         }
-        return false;
     });
 
     useEffect(() => {
@@ -26,7 +34,7 @@ export const DarkModeProvider = ({ children }) => {
                 localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
 
                 // Update DOM class
-                if (isDarkMode) {
+                if (isDarkMode && isDashboard) {
                     document.documentElement.classList.add('dark');
                 } else {
                     document.documentElement.classList.remove('dark');
@@ -35,7 +43,7 @@ export const DarkModeProvider = ({ children }) => {
         } catch (error) {
             console.warn('Error updating dark mode:', error);
         }
-    }, [isDarkMode]);
+    }, [isDarkMode, isDashboard]);
 
     const toggleDarkMode = () => {
         setIsDarkMode(prev => !prev);

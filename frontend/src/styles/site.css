@@ -1,0 +1,294 @@
+/* ─────────────────────────────────────────────────────────────
+   Public-site design system (redesign v2)
+   Tokens live on :root under the --sw-* namespace so they never
+   collide with the dashboard palette in index.css. Base styles
+   only apply inside a `.site` root, so dashboards are unaffected.
+   Colour tokens are "R G B" channels: use rgb(var(--sw-x)) or the
+   Tailwind `sw-*` colours (which support /opacity modifiers).
+   ───────────────────────────────────────────────────────────── */
+
+/* ── Fonts (self-hosted, variable, latin + latin-ext subsets) ── */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/montserrat-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 800;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* Metric-matched fallbacks so the swap doesn't shift layout */
+@font-face {
+  font-family: 'Montserrat Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+  size-adjust: 111.06%;
+  ascent-override: 87.16%;
+  descent-override: 22.6%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+  size-adjust: 106.62%;
+  ascent-override: 90.88%;
+  descent-override: 22.7%;
+  line-gap-override: 0%;
+}
+
+/* ── Tokens ── */
+:root {
+  /* Colour: core */
+  --sw-black: 0 0 0;
+  --sw-ink: 1 1 1;
+  --sw-white: 255 255 255;
+  --sw-glass: 58 58 58;
+  --sw-glass-hover: 74 74 74;
+  --sw-glass-rim: 73 73 73;
+  --sw-surface-muted: 248 248 248;
+  --sw-surface-pill: 249 249 249;
+  --sw-border-dark: 51 51 51;
+  --sw-border-light: 229 229 229;
+  --sw-dot: 234 234 234;
+  --sw-watermark: 19 21 22;
+
+  /* Colour: neutral scale (0 = white) */
+  --sw-gray-25: 249 249 249;
+  --sw-gray-50: 248 248 248;
+  --sw-gray-100: 234 234 234;
+  --sw-gray-200: 223 223 223;
+  --sw-gray-300: 191 191 191;
+  --sw-gray-400: 159 159 159;
+  --sw-gray-500: 128 128 128;
+  --sw-gray-600: 96 96 96;
+  --sw-gray-700: 64 64 64;
+  --sw-gray-750: 58 58 58;
+  --sw-gray-800: 32 32 32;
+  --sw-gray-850: 19 21 22;
+  --sw-gray-900: 0 0 0;
+
+  /* Colour: text. Muted values are darkened from the Figma samples to pass WCAG AA */
+  --sw-text: 0 0 0;
+  --sw-text-secondary: 64 64 64;
+  --sw-text-muted: 107 107 107;
+  --sw-placeholder: 118 118 118;
+  --sw-text-on-dark: 255 255 255;
+  --sw-text-on-dark-secondary: 191 191 191;
+  --sw-text-on-dark-muted: 138 138 138;
+
+  /* Colour: badges */
+  --sw-badge-blue: 208 233 251;
+  --sw-badge-lavender: 217 223 255;
+  --sw-badge-peach: 255 231 195;
+
+  /* Colour: states (text on tint) */
+  --sw-success: 30 122 70;
+  --sw-success-bg: 215 245 227;
+  --sw-warning: 138 90 0;
+  --sw-warning-bg: 255 231 195;
+  --sw-error: 180 35 24;
+  --sw-error-bg: 253 226 225;
+  --sw-info: 11 92 173;
+  --sw-info-bg: 208 233 251;
+
+  /* Focus ring: readable on both white and black surfaces */
+  --sw-focus: 37 99 235;
+
+  /* Typography */
+  --sw-font-sans: 'Montserrat', 'Montserrat Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --sw-font-display: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+
+  /* Type scale: mobile values (14px floor), overridden at 768 / 1024 */
+  --sw-fs-display-xl: 64px;   --sw-lh-display-xl: 1;    --sw-ls-display-xl: -0.02em;
+  --sw-fs-display: 24px;      --sw-lh-display: 1.3;     --sw-ls-display: 0;
+  --sw-fs-display-alt: 32px;  --sw-lh-display-alt: 1.05; --sw-ls-display-alt: -0.01em;
+  --sw-fs-h2: 24px;           --sw-lh-h2: 1.2;          --sw-ls-h2: 0;
+  --sw-fs-subtitle: 16px;     --sw-lh-subtitle: 1.3;    --sw-ls-subtitle: 0;
+  --sw-fs-h3: 18px;           --sw-lh-h3: 1.2;          --sw-ls-h3: -0.01em;
+  --sw-fs-body-lg: 16px;      --sw-lh-body-lg: 1.25;    --sw-ls-body-lg: 0;
+  --sw-fs-body: 14px;         --sw-lh-body: 1.5;        --sw-ls-body: 0;
+  --sw-fs-label: 14px;        --sw-lh-label: 1.2;       --sw-ls-label: 0;
+  --sw-fs-small: 14px;        --sw-lh-small: 1.2;       --sw-ls-small: 0;
+  --sw-fs-tile: 14px;         --sw-lh-tile: 1.3;        --sw-ls-tile: -0.02em;
+  --sw-fs-caption: 14px;      --sw-lh-caption: 1.4;     --sw-ls-caption: 0;
+
+  /* Layout */
+  --sw-container: 992px;
+  --sw-container-wide: 1044px;
+  --sw-gutter: 16px;
+  --sw-section-y: 48px;
+  --sw-header-h: 64px;
+
+  /* Shape */
+  --sw-r-sm: 8px;
+  --sw-r-md: 10px;
+  --sw-r-pill: 9999px;
+
+  /* Depth */
+  --sw-shadow-input: 0 4px 4px rgb(0 0 0 / 0.25);
+  --sw-shadow-offset: 4px 4px 6px rgb(0 0 0 / 0.25);
+  --sw-shadow-soft: 0 4px 16px rgb(0 0 0 / 0.10);
+  --sw-shadow-glass: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --sw-blur-glass: 12px;
+
+  /* Motion */
+  --sw-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --sw-dur-fast: 150ms;
+  --sw-dur: 250ms;
+  --sw-dur-slow: 400ms;
+
+  /* Stacking */
+  --sw-z-header: 50;
+  --sw-z-overlay: 60;
+  --sw-z-modal: 70;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --sw-fs-display-xl: 120px;
+    --sw-fs-display: 40px;
+    --sw-fs-display-alt: 44px;
+    --sw-fs-h2: 28px;
+    --sw-fs-subtitle: 20px;
+    --sw-fs-h3: 20px;
+    --sw-fs-body-lg: 20px;
+    --sw-fs-body: 16px;
+    --sw-fs-label: 16px;
+    --sw-fs-tile: 18px;
+    --sw-gutter: 24px;
+    --sw-section-y: 64px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --sw-fs-display-xl: 180px;
+    --sw-fs-display: 64px;
+    --sw-fs-display-alt: 60px;
+    --sw-fs-h2: 32px;
+    --sw-fs-subtitle: 24px;
+    --sw-fs-h3: 24px;
+    --sw-fs-body-lg: 24px;
+    --sw-lh-body-lg: 1.1;
+    --sw-fs-label: 20px;
+    --sw-fs-small: 16px;
+    --sw-fs-tile: 22px;
+    --sw-lh-tile: 1.4;
+    --sw-fs-caption: 16px;
+    --sw-gutter: 32px;
+    --sw-section-y: 80px;
+    --sw-header-h: 100px;
+  }
+}
+
+/* ── Base (scoped to the public site) ──
+   `:where(.site) el` has element-level specificity, so it beats the
+   legacy element rules in index.css (loaded earlier) while any
+   Tailwind utility on the element still wins. */
+html:has(.site) body {
+  background-color: rgb(var(--sw-white));
+}
+
+.site {
+  font-family: var(--sw-font-sans);
+  font-size: var(--sw-fs-body);
+  line-height: var(--sw-lh-body);
+  color: rgb(var(--sw-text));
+  background-color: rgb(var(--sw-white));
+  color-scheme: light;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:where(.site) :is(h1, h2, h3, h4, h5, h6) {
+  font-family: inherit;
+  font-weight: 700;
+  color: inherit;
+  text-wrap: balance;
+}
+
+:where(.site) p {
+  text-wrap: pretty;
+}
+
+:where(.site) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(.site) :is(button, [role='button']) {
+  cursor: pointer;
+}
+
+:where(.site) :is(input, textarea, select)::placeholder {
+  color: rgb(var(--sw-placeholder));
+  opacity: 1;
+}
+
+:where(.site) :focus-visible {
+  outline: 2px solid rgb(var(--sw-focus));
+  outline-offset: 2px;
+}
+
+:where(.site) ::selection {
+  background-color: rgb(var(--sw-badge-blue));
+  color: rgb(var(--sw-black));
+}
+
+/* Container: 992px measure plus responsive gutters */
+:where(.sw-container) {
+  width: 100%;
+  max-width: calc(var(--sw-container) + 2 * var(--sw-gutter));
+  margin-inline: auto;
+  padding-inline: var(--sw-gutter);
+}
+
+:where(.sw-container-wide) {
+  width: 100%;
+  max-width: calc(var(--sw-container-wide) + 2 * var(--sw-gutter));
+  margin-inline: auto;
+  padding-inline: var(--sw-gutter);
+}
+
+:where(.sw-section) {
+  padding-block: var(--sw-section-y);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.site) {
+    scroll-behavior: auto;
+  }
+
+  :where(.site) *,
+  :where(.site) *::before,
+  :where(.site) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -38,6 +38,7 @@ import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoo
 import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
 import SwagatPublicSchoolLakhna from './components/schools/SwagatPublicSchoolLakhna'
 import GatewayLoader from './components/GatewayLoader'
+import SiteRoot from './components/site/SiteRoot'
 
 // Protected Route Component
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
@@ -154,27 +155,30 @@ function App() {
     return (
         <HelmetProvider>
             <AuthProvider>
-                <DarkModeProvider>
-                    <Router>
+                <Router>
+                    <DarkModeProvider>
                         <Routes>
-                            <Route path="/" element={<AppContent />} />
-                            <Route path="/about" element={<AboutUsPage />} />
-                            <Route path="/gallery" element={<Gallery />} />
-                            <Route path="/contact" element={<ContactPage />} />
-                            <Route path="/send-message" element={<SendMessage />} />
-                            <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-                            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                            {/* Public site (redesign v2 styles) */}
+                            <Route element={<SiteRoot />}>
+                                <Route path="/" element={<AppContent />} />
+                                <Route path="/about" element={<AboutUsPage />} />
+                                <Route path="/gallery" element={<Gallery />} />
+                                <Route path="/contact" element={<ContactPage />} />
+                                <Route path="/send-message" element={<SendMessage />} />
+                                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
-                            {/* School Pages */}
-                            <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
-                            <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
-                            <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
-                            <Route path="/login-portal" element={<LoginPortal />} />
-                            <Route path="/login/student" element={<Login title="Student Login" />} />
-                            <Route path="/login/agent" element={<Login title="Agent Login" />} />
-                            <Route path="/login/staff" element={<Login title="Staff Login" />} />
+                                {/* School Pages */}
+                                <Route path="/SwagatPublicSchool_Ghantiguda" element={<SwagatPublicSchoolGhantiguda />} />
+                                <Route path="/SwagatPublicSchool_Sargiguda" element={<SwagatPublicSchoolSargiguda />} />
+                                <Route path="/SwagatPublicSchool_Lakhna" element={<SwagatPublicSchoolLakhna />} />
+                                <Route path="/login-portal" element={<LoginPortal />} />
+                                <Route path="/login/student" element={<Login title="Student Login" />} />
+                                <Route path="/login/agent" element={<Login title="Agent Login" />} />
+                                <Route path="/login/staff" element={<Login title="Staff Login" />} />
+                                <Route path="/register" element={<Register />} />
+                            </Route>
                             <Route path="/login" element={<Navigate to="/login-portal" replace />} />
-                            <Route path="/register" element={<Register />} />
 
                             {/* General Dashboard Route - redirects to role-specific dashboard */}
                             <Route path="/dashboard" element={<DashboardRouter />} />
@@ -225,8 +229,8 @@ function App() {
                             <Route path="*" element={<Navigate to="/" replace />} />
                         </Routes>
                         <FloatingContact />
-                    </Router>
-                </DarkModeProvider>
+                    </DarkModeProvider>
+                </Router>
             </AuthProvider>
         </HelmetProvider>
     )

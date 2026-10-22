@@ -9,12 +9,15 @@
   <link rel="icon" type="image/x-icon" href="/Swagat_Favicon.png">
   <link rel="manifest" href="/manifest.json">
   <link rel="modulepreload" href="/src/main.jsx" crossorigin>
+  <link rel="preload" href="/fonts/montserrat-latin.woff2" as="font" type="font/woff2" crossorigin>
   <script>
     (function() {
       try {
+        // Dark mode only exists in the dashboards; the public site is always light
+        var isDashboard = window.location.pathname.indexOf('/dashboard') === 0;
         var saved = localStorage.getItem('darkMode');
         var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (saved === 'true' || (saved === null && prefersDark)) {
+        if (isDashboard && (saved === 'true' || (saved === null && prefersDark))) {
           document.documentElement.classList.add('dark');
         } else {
           document.documentElement.classList.remove('dark');
