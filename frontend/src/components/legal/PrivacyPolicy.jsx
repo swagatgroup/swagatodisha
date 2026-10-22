@@ -1,19 +1,16 @@
 import React from 'react';
+import PageHero from '../site/PageHero';
 
 const PrivacyPolicy = () => {
     return (
-        <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-[#231A2E] text-gray-800 dark:text-gray-200">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-8">
-                Privacy Policy
-            </h1>
+        <div>
+            <PageHero title="Privacy Policy" intro={`Last updated: ${new Date().toLocaleDateString()}`} />
 
-            <div className="prose prose-lg max-w-none dark:prose-invert">
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-8">
-                    Last updated: {new Date().toLocaleDateString()}
-                </p>
+            <div className="sw-container sw-section">
+            <div className="mx-auto max-w-3xl text-sw-body text-sw-text-secondary">
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         1. Introduction
                     </h2>
                     <p className="mb-4">
@@ -22,16 +19,16 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         2. Information We Collect
                     </h2>
                     <div className="space-y-4">
                         <div>
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                            <h3 className="mb-2 text-sw-label font-semibold text-sw-text">
                                 2.1 Personal Information
                             </h3>
                             <p className="mb-2">We may collect the following personal information:</p>
-                            <ul className="list-disc list-inside space-y-1 ml-4">
+                            <ul className="ml-4 list-inside list-disc space-y-1">
                                 <li>Name, email address, phone number, and contact details</li>
                                 <li>Date of birth, gender, and demographic information</li>
                                 <li>Academic records and educational background</li>
@@ -43,11 +40,11 @@ const PrivacyPolicy = () => {
                         </div>
 
                         <div>
-                            <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                            <h3 className="mb-2 text-sw-label font-semibold text-sw-text">
                                 2.2 Technical Information
                             </h3>
                             <p className="mb-2">We may automatically collect:</p>
-                            <ul className="list-disc list-inside space-y-1 ml-4">
+                            <ul className="ml-4 list-inside list-disc space-y-1">
                                 <li>IP address and device information</li>
                                 <li>Browser type and version</li>
                                 <li>Operating system</li>
@@ -59,12 +56,12 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         3. How We Use Your Information
                     </h2>
                     <div className="space-y-4">
                         <p>We use your information for the following purposes:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-4">
+                        <ul className="ml-4 list-inside list-disc space-y-1">
                             <li>Processing and evaluating your application</li>
                             <li>Communicating with you about your application status</li>
                             <li>Providing academic and administrative services</li>
@@ -78,12 +75,12 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         4. Information Sharing and Disclosure
                     </h2>
                     <div className="space-y-4">
                         <p>We may share your information in the following circumstances:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-4">
+                        <ul className="ml-4 list-inside list-disc space-y-1">
                             <li><strong>With your consent:</strong> When you explicitly agree to share your information</li>
                             <li><strong>Service providers:</strong> With trusted third parties who assist us in operating our services</li>
                             <li><strong>Legal requirements:</strong> When required by law or to protect our rights</li>
@@ -94,12 +91,12 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         5. Data Security
                     </h2>
                     <div className="space-y-4">
                         <p>We implement appropriate security measures to protect your information:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-4">
+                        <ul className="ml-4 list-inside list-disc space-y-1">
                             <li>Encryption of sensitive data during transmission and storage</li>
                             <li>Regular security audits and assessments</li>
                             <li>Access controls and authentication mechanisms</li>
@@ -110,7 +107,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         6. Data Retention
                     </h2>
                     <p className="mb-4">
@@ -119,12 +116,12 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         7. Your Rights
                     </h2>
                     <div className="space-y-4">
                         <p>You have the following rights regarding your personal information:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-4">
+                        <ul className="ml-4 list-inside list-disc space-y-1">
                             <li><strong>Access:</strong> Request access to your personal information</li>
                             <li><strong>Correction:</strong> Request correction of inaccurate information</li>
                             <li><strong>Deletion:</strong> Request deletion of your personal information (subject to legal requirements)</li>
@@ -136,12 +133,12 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         8. Cookies and Tracking Technologies
                     </h2>
                     <div className="space-y-4">
                         <p>We use cookies and similar technologies to:</p>
-                        <ul className="list-disc list-inside space-y-1 ml-4">
+                        <ul className="ml-4 list-inside list-disc space-y-1">
                             <li>Remember your preferences and settings</li>
                             <li>Analyze website traffic and usage patterns</li>
                             <li>Improve website functionality and user experience</li>
@@ -152,7 +149,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         9. Third-Party Links
                     </h2>
                     <p className="mb-4">
@@ -161,7 +158,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         10. Children's Privacy
                     </h2>
                     <p className="mb-4">
@@ -170,7 +167,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         11. International Data Transfers
                     </h2>
                     <p className="mb-4">
@@ -179,7 +176,7 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         12. Changes to This Privacy Policy
                     </h2>
                     <p className="mb-4">
@@ -188,10 +185,10 @@ const PrivacyPolicy = () => {
                 </section>
 
                 <section className="mb-8">
-                    <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                    <h2 className="mb-4 text-sw-h3 font-bold text-sw-text">
                         13. Contact Us
                     </h2>
-                    <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg">
+                    <div className="rounded-sw-sm bg-sw-surface-muted p-6">
                         <p className="mb-2">
                             If you have any questions about this Privacy Policy or our data practices, please contact us:
                         </p>
@@ -211,11 +208,12 @@ const PrivacyPolicy = () => {
                     </div>
                 </section>
 
-                <div className="mt-12 p-6 bg-[#D0E8F0] dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                <div className="mt-12 rounded-sw-sm bg-sw-badge-blue p-6">
+                    <p className="text-sw-small font-normal text-sw-text">
                         This Privacy Policy is effective as of the date listed above and will remain in effect except with respect to any changes in its provisions in the future, which will be in effect immediately after being posted on this page.
                     </p>
                 </div>
+            </div>
             </div>
         </div>
     );

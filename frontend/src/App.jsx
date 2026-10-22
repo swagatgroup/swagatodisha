@@ -31,7 +31,7 @@ import Gallery from './components/Gallery'
 import ContactPage from './components/ContactPage'
 import ApplicationStatusSearch from './components/ApplicationStatusSearch'
 import SendMessage from './components/SendMessage'
-import TermsAndConditions from './components/legal/TermsAndConditions'
+import TermsPage from './components/legal/TermsPage'
 import PrivacyPolicy from './components/legal/PrivacyPolicy'
 import SwagatPublicSchoolGhantiguda from './components/schools/SwagatPublicSchoolGhantiguda'
 import SwagatPublicSchoolSargiguda from './components/schools/SwagatPublicSchoolSargiguda'
@@ -155,7 +155,7 @@ function App() {
                                 <Route path="/gallery" element={<Gallery />} />
                                 <Route path="/contact" element={<ContactPage />} />
                                 <Route path="/send-message" element={<SendMessage />} />
-                                <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+                                <Route path="/terms-and-conditions" element={<TermsPage />} />
                                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
                                 {/* School Pages */}
