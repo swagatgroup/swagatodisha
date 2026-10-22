@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/User');
 const { protect, rateLimit } = require('../middleware/auth');
+const { passwordResetRateLimit } = require('../middleware/security');
 const { sendEmail: sendResendEmail } = require('../utils/resend');
 
 const router = express.Router();
@@ -432,71 +433,73 @@ router.put('/change-password', [
     }
 });
 
-// @desc    Forgot password - Admin call functionality
+// Password reset links are single use and expire after this many minutes
+const RESET_TOKEN_TTL_MINUTES = 30;
+
+const hashResetToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
+
+const escapeHtml = (value = '') => String(value).replace(/[&<>"']/g, (c) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', '\'': '&#39;'
+}[c]));
+
+// Students/agents live in User, staff/super admins in Admin
+const findAccountBy = async (filter) => {
+    const user = await User.findOne(filter);
+    if (user) return user;
+    const Admin = require('../models/Admin');
+    return Admin.findOne(filter);
+};
+
+// @desc    Forgot password - email a single-use reset link
 // @route   POST /api/auth/forgot-password
 // @access  Public
-router.post('/forgot-password', [
+router.post('/forgot-password', passwordResetRateLimit, [
     body('email').isEmail().normalizeEmail().withMessage('Please provide a valid email')
 ], async (req, res) => {
+    // Same answer whether or not the account exists, so emails can't be probed
+    const genericResponse = {
+        success: true,
+        message: 'If an account exists for this email, we\'ve sent a link to reset the password. ' +
+            `The link expires in ${RESET_TOKEN_TTL_MINUTES} minutes.`
+    };
+
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: 'Validation errors',
+                message: 'Please provide a valid email',
                 errors: errors.array()
             });
         }
 
-        const { email } = req.body;
-
-        // Check both User and Admin models
-        let user = await User.findOne({ email });
-        let userType = 'user';
-
-        if (!user) {
-            const Admin = require('../models/Admin');
-            user = await Admin.findOne({ email });
-            userType = 'admin';
+        const account = await findAccountBy({ email: req.body.email });
+        if (!account || account.isActive === false) {
+            return res.json(genericResponse);
         }
 
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found with this email'
-            });
-        }
+        // Only the hash is stored; the raw token travels in the emailed link
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        account.passwordResetToken = hashResetToken(resetToken);
+        account.passwordResetExpires = new Date(Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000);
+        await account.save({ validateBeforeSave: false });
 
-        // Set default passwords based on role
-        const defaultPasswords = {
-            'student': 'SG@99student',
-            'agent': 'SG@99agent',
-            'staff': 'SG@99staff',
-            'super_admin': 'SG@99admin'
-        };
+        const frontendUrl = (process.env.FRONTEND_URL || 'https://www.swagatodisha.com').replace(/\/+$/, '');
+        const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
 
-        const defaultPassword = defaultPasswords[user.role] || 'SG@99user';
-
-        // Update password to default
-        user.password = defaultPassword;
-        user.passwordChangedAt = new Date();
-        await user.save();
-
-        // Return admin contact information for password reset
-        res.json({
-            success: true,
-            message: 'Password reset to default. Please contact admin to change your password.',
-            data: {
-                adminContact: {
-                    phone: '+91-9876543210', // Placeholder - should be from environment
-                    email: 'admin@swagatodisha.com',
-                    message: 'Your password has been reset to default. Please contact admin to change it.'
-                },
-                defaultPassword: process.env.NODE_ENV === 'development' ? defaultPassword : undefined
-            }
+        const result = await sendResendEmail('passwordReset', {
+            email: account.email,
+            name: escapeHtml(account.fullName),
+            resetUrl,
+            expiresInMinutes: RESET_TOKEN_TTL_MINUTES
         });
+        if (!result || result.success === false) {
+            console.error('forgot-password email failed:', result && result.error);
+        }
 
+        res.json(genericResponse);
     } catch (error) {
+        console.error('forgot-password error:', error.message);
         res.status(500).json({
             success: false,
             message: 'Server error while processing forgot password request'
@@ -504,18 +507,21 @@ router.post('/forgot-password', [
     }
 });
 
-// @desc    Reset password
+// @desc    Reset password with an emailed token
 // @route   PUT /api/auth/reset-password/:resetToken
 // @access  Public
 router.put('/reset-password/:resetToken', [
-    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
+    body('newPassword')
+        .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')
+        .matches(/[A-Za-z]/).withMessage('Password must include a letter')
+        .matches(/\d/).withMessage('Password must include a number')
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json({
                 success: false,
-                message: 'Validation errors',
+                message: errors.array()[0].msg,
                 errors: errors.array()
             });
         }
@@ -523,40 +529,44 @@ router.put('/reset-password/:resetToken', [
         const { resetToken } = req.params;
         const { newPassword } = req.body;
 
-        // Hash the token
-        const hashedToken = crypto
-            .createHash('sha256')
-            .update(resetToken)
-            .digest('hex');
-
-        // Find user with valid reset token
-        const user = await User.findOne({
-            passwordResetToken: hashedToken,
-            passwordResetExpires: { $gt: Date.now() }
-        });
-
-        if (!user) {
+        if (!/^[a-f0-9]{64}$/.test(resetToken)) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid or expired reset token'
+                message: 'This reset link is invalid or has expired'
             });
         }
 
-        // Update password
-        user.password = newPassword;
-        user.passwordResetToken = undefined;
-        user.passwordResetExpires = undefined;
-        user.passwordChangedAt = Date.now();
+        // Find the account (User or Admin) with a matching, unexpired token
+        const account = await findAccountBy({
+            passwordResetToken: hashResetToken(resetToken),
+            passwordResetExpires: { $gt: Date.now() }
+        });
 
-        await user.save();
+        if (!account) {
+            return res.status(400).json({
+                success: false,
+                message: 'This reset link is invalid or has expired'
+            });
+        }
+
+        // Update password (hashed by the model's pre-save hook); the token can't be reused
+        account.password = newPassword;
+        account.passwordResetToken = undefined;
+        account.passwordResetExpires = undefined;
+        // A second in the past so a login right after the reset isn't treated as an older token
+        account.passwordChangedAt = new Date(Date.now() - 1000);
+        account.loginAttempts = 0;
+        account.lockUntil = undefined;
+
+        await account.save({ validateBeforeSave: false });
 
         res.json({
             success: true,
-            message: 'Password reset successfully'
+            message: 'Your password has been reset. You can now sign in with your new password.'
         });
 
     } catch (error) {
-        console.error('admin-reset-password error:', error.message);
+        console.error('reset-password error:', error.message);
         res.status(500).json({
             success: false,
             message: 'Server error while resetting password',

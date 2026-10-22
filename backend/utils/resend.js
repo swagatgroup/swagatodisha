@@ -258,7 +258,40 @@ const emailTemplates = {
   </table>
 </body>
 </html>`
-    })
+    }),
+
+    // Password reset link (single use, short expiry)
+    passwordReset: (data) => {
+        const button = 'display: inline-block; background: #000000; color: #ffffff; text-decoration: none; ' +
+            'font-weight: 600; padding: 14px 28px; border-radius: 8px;';
+        const small = 'font-size: 13px; color: #4b5563;';
+        return {
+            from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+            to: data.email,
+            subject: 'Reset your Swagat Odisha password',
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto; color: #111827;">
+                    <h2 style="margin: 0 0 16px;">Reset your password</h2>
+                    <p>Hello ${data.name || 'there'},</p>
+                    <p>We received a request to reset the password for your Swagat Odisha account.
+                    Use the button below to choose a new password.</p>
+                    <p style="margin: 28px 0; text-align: center;">
+                        <a href="${data.resetUrl}" style="${button}">Choose a new password</a>
+                    </p>
+                    <p style="${small}">This link works once and expires in ${data.expiresInMinutes} minutes.
+                    If the button doesn't work, copy this address into your browser:</p>
+                    <p style="font-size: 13px; word-break: break-all;">
+                        <a href="${data.resetUrl}">${data.resetUrl}</a>
+                    </p>
+                    <p style="${small}">If you didn't ask to reset your password, you can ignore this email.
+                    Your password won't change.</p>
+                    <p style="color: #6b7280; font-size: 12px; margin-top: 32px;">
+                        Swagat Odisha · This is an automated email. Please do not reply.
+                    </p>
+                </div>
+            `
+        };
+    }
 };
 
 // Send email function using Resend
