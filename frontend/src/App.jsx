@@ -21,6 +21,7 @@ import FloatingContact from './components/FloatingContact'
 import Login from './components/auth/Login'
 import LoginPortal from './components/auth/LoginPortal'
 import Register from './components/auth/Register'
+import ResetPassword from './components/auth/ResetPassword'
 import StudentDashboard from './components/dashboard/StudentDashboard'
 import AgentDashboard from './components/dashboard/AgentDashboard'
 import StaffDashboard from './components/dashboard/StaffDashboard'
@@ -174,6 +175,7 @@ function App() {
                                 <Route path="/login/agent" element={<Login title="Agent Login" />} />
                                 <Route path="/login/staff" element={<Login title="Staff Login" />} />
                                 <Route path="/register" element={<Register />} />
+                                <Route path="/reset-password/:token" element={<ResetPassword />} />
                             </Route>
                             <Route path="/login" element={<Navigate to="/login-portal" replace />} />
 

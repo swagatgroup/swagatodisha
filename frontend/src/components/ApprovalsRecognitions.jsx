@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
-import axios from 'axios';
+import api from '../utils/api';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import Icon from './site/Icon'
 
@@ -12,10 +12,8 @@ const ApprovalsRecognitions = () => {
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                // Using standard API endpoint for public content if available, else standard backend endpoint
-                // Assuming /api/website-content is available (we can use axios directly)
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                const res = await axios.get(`${API_URL}/api/website-content`);
+                // Shared API client: relative /api in dev (Vite proxy), production backend in builds
+                const res = await api.get('/api/website-content');
                 if (res.data && res.data.data && res.data.data.approvalsRecognitions) {
                     const activeApprovals = res.data.data.approvalsRecognitions
                         .filter(u => u.isActive !== false)

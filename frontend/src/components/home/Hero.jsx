@@ -3,6 +3,7 @@ import { CONTACT_INFO } from '../../utils/constants'
 import Badge from '../site/Badge'
 import Button from '../site/Button'
 import SmartImage from '../site/SmartImage'
+import { redesignImage } from '../site/redesignImages'
 
 const BENEFITS = [
     { label: 'Affordable fees', tone: 'blue' },
@@ -19,8 +20,8 @@ const Hero = () => {
     return (
         <section id="home" aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-sw-ink text-sw-white">
             <SmartImage
-                src="/images/redesign/hero-desktop.webp"
-                mobileSrc="/images/redesign/hero-mobile.webp"
+                src={redesignImage('hero-desktop')}
+                mobileSrc={redesignImage('hero-mobile')}
                 alt=""
                 width={2880}
                 height={2048}
@@ -40,7 +41,7 @@ const Hero = () => {
                         aria-hidden="true"
                         className="mx-2 inline-block h-[0.7em] w-[1.4em] translate-y-[0.06em] overflow-hidden rounded-sw-pill align-baseline md:mx-3"
                     >
-                        <SmartImage as="span" src="/images/redesign/hero-pill.webp" alt="" width={360} height={180} priority placeholder="dusk" className="h-full w-full" />
+                        <SmartImage as="span" src={redesignImage('hero-pill')} alt="" width={360} height={180} priority placeholder="dusk" className="h-full w-full" />
                     </span>
                     <br />
                     start to finish.

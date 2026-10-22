@@ -17,6 +17,7 @@ import Button from './site/Button'
 import Icon from './site/Icon'
 import Modal from './site/Modal'
 import SmartImage from './site/SmartImage'
+import { redesignImage } from './site/redesignImages'
 
 // Map of old FA icon strings → Remix Icon components
 const ICON_MAP = {
@@ -1785,7 +1786,7 @@ const InstitutionTypes = () => {
                         <li key={institution.id}>
                             <article className="group relative flex gap-4 rounded-sw-md bg-sw-black p-4 text-sw-text-on-dark transition-transform duration-sw ease-sw motion-safe:hover:-translate-y-1">
                                 <SmartImage
-                                    src={`/images/redesign/institution-${institution.id}.webp`}
+                                    src={redesignImage(`institution-${institution.id}`)}
                                     alt=""
                                     width={400}
                                     height={400}

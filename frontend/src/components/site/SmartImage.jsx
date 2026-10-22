@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { cx } from './cx'
 
-// Image slot for the redesign photography (public/images/redesign/).
-// Shows a dark gradient placeholder until the file exists, then the image
-// fades in. Desktop + optional mobile art direction via <picture>.
+// Image slot for the redesign photography (see redesignImages.js).
+// Shows a dark gradient placeholder when there's no file (src is null), and
+// fades the image in once loaded. Desktop + optional mobile art direction via <picture>.
 const SmartImage = ({
     as = 'div',
     src,
@@ -19,6 +19,9 @@ const SmartImage = ({
 }) => {
     const [status, setStatus] = useState('loading')
     const Tag = as
+    // Fall back to whichever variant exists
+    const desktop = src || mobileSrc
+    const mobile = src ? mobileSrc : null
 
     return (
         <Tag
@@ -30,11 +33,11 @@ const SmartImage = ({
                 className
             )}
         >
-            {status !== 'error' && (
+            {desktop && status !== 'error' && (
                 <picture>
-                    {mobileSrc && <source media="(max-width: 767px)" srcSet={mobileSrc} type="image/webp" />}
+                    {mobile && <source media="(max-width: 767px)" srcSet={mobile} />}
                     <img
-                        src={src}
+                        src={desktop}
                         alt={alt}
                         width={width}
                         height={height}

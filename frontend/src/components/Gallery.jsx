@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import api from '../utils/api';
 import {
     RiBuildingLine,
     RiCalendarLine,
@@ -26,9 +27,8 @@ const Gallery = () => {
     useEffect(() => {
         const fetchGallery = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                const res = await fetch(`${API_URL}/api/gallery/public?limit=100`);
-                const json = await res.json();
+                const res = await api.get('/api/gallery/public?limit=100');
+                const json = res.data;
                 if (json.success) {
                     // Map backend schema to frontend schema
                     const mapped = json.data.map(img => ({

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import axios from 'axios';
+import api from '../utils/api';
+import chairmanPhoto from '../assets/images/chairman.jpg';
+import trusteePhoto from '../assets/images/chairman-rk.jpg';
+import principalPhoto from '../assets/images/mnt_003.jpg';
 import {
     LuBuilding2,
     LuEye,
@@ -27,8 +30,7 @@ const AboutUsPage = () => {
     useEffect(() => {
         const fetchContent = async () => {
             try {
-                const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-                const res = await axios.get(`${API_URL}/api/website-content`);
+                const res = await api.get('/api/website-content');
                 if (res.data && res.data.data && res.data.data.staffProfiles) {
                     setStaffProfiles(res.data.data.staffProfiles.filter(s => s.isActive !== false).sort((a, b) => (a.order || 0) - (b.order || 0)));
                 }
@@ -97,19 +99,19 @@ const AboutUsPage = () => {
         {
             name: 'Mr. G. Meher',
             position: 'Chairman',
-            image: '/chairman.jpg',
+            image: chairmanPhoto,
             description: 'Visionary leader with over 20 years of experience in education'
         },
         {
             name: 'Mr. R.K. Meher',
             position: 'Trustee',
-            image: '/chairman_rk.jpg',
+            image: trusteePhoto,
             description: 'Dedicated trustee committed to educational excellence'
         },
         {
             name: 'Mrs. Manjula Meher',
             position: 'Principal',
-            image: '/mnt_003.jpg',
+            image: principalPhoto,
             description: 'Experienced educator focused on student success'
         }
     ]

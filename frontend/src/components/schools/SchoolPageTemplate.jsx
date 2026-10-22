@@ -7,6 +7,7 @@ import Button from '../site/Button'
 import Card from '../site/Card'
 import Icon from '../site/Icon'
 import SmartImage from '../site/SmartImage'
+import { redesignImage } from '../site/redesignImages'
 
 const SchoolPageTemplate = ({
     schoolName,
@@ -49,8 +50,8 @@ const SchoolPageTemplate = ({
                 {/* Hero Section */}
                 <section className="relative isolate overflow-hidden bg-sw-ink text-sw-white">
                     <SmartImage
-                        src="/images/redesign/school-hero-desktop.webp"
-                        mobileSrc="/images/redesign/school-hero-mobile.webp"
+                        src={redesignImage('school-hero-desktop')}
+                        mobileSrc={redesignImage('school-hero-mobile')}
                         alt=""
                         width={2880}
                         height={1600}

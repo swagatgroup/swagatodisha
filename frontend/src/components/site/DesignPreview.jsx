@@ -213,7 +213,7 @@ const DesignPreview = () => {
                 <Block title="Image slots, panes and decoration">
                     <div className="grid gap-4 md:grid-cols-4">
                         {['night', 'dusk', 'paper', 'map'].map((p) => (
-                            <SmartImage key={p} src={`/images/redesign/_missing-${p}.webp`} placeholder={p} className="aspect-[4/3] rounded-sw-sm" />
+                            <SmartImage key={p} src={null} placeholder={p} className="aspect-[4/3] rounded-sw-sm" />
                         ))}
                         {['timetable', 'career', 'notice', 'result'].map((p) => (
                             <div key={p} className={`sw-pane sw-pane-${p} aspect-square rounded-sw-sm`} />
