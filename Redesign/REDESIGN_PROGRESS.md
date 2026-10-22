@@ -18,7 +18,9 @@ Branch: `redesign/ui-v2` (created from `main` @ `0e266e6`). All redesign work st
 | 8 Quality pass | done | No overflow at 7 widths; 44px touch targets; axe clean (one shared-component exception) |
 | 9 Verification | done | API requests identical before/after; links crawled; Lighthouse before/after; **see `REDESIGN_REPORT.md`** |
 
-Waiting on the owner: final review and merge; the 13 images from `IMAGE_BRIEF.md`; the two constants in `siteConfig.js`.
+| Review fixes | done | Secure password reset (backend + `/reset-password/:token`), live API for public content, real footer links, privacy contacts, leadership photos, lazy dashboards, WebP posters. See "Fixed after review" in `REDESIGN_REPORT.md` |
+
+Waiting on the owner: final review and merge (deploy backend first, check `FRONTEND_URL` and Resend keys on Render); the 13 images from `IMAGE_BRIEF.md`; `COACHING_CENTRE_URL` when the page exists.
 
 ## Decisions (Checkpoint 1)
 

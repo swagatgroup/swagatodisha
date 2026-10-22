@@ -1,15 +1,16 @@
 # Redesign Report
 
-Branch `redesign/ui-v2`, ready for review. It hasn't been merged or pushed. Scope: public site plus login/registration. The dashboards are untouched.
+Branch `redesign/ui-v2`, ready for review. It hasn't been merged or pushed. Scope: public site plus login/registration, plus the password-reset security fix (backend). Dashboard screens are untouched; they now load on demand.
 
 ## At a glance
 
 | Check | Result |
 |---|---|
 | Production build | ✅ passes |
-| Lint (`npm run lint`) | ✅ no new problems. 375 remain, all pre-existing (baseline was 388); no file has more than before |
-| Type-check / tests | none configured for the frontend; backend untouched and not run (it writes to real Cloudinary/DB) |
-| API requests per page (before vs after) | ✅ **identical on all 30 route × width combinations** (`api-requests-before.json` vs `api-requests-after.json`) |
+| Lint (`npm run lint`) | ✅ no new problems. 374 remain, all pre-existing (baseline was 388); no file has more than before. Changed backend files also have fewer problems than before |
+| Type-check / tests | none configured for the frontend. The new password-reset flow passed 10/10 end-to-end checks against an in-memory database with email stubbed (details below). The existing backend upload test was not run (it writes to real Cloudinary/DB) |
+| API requests per page (before vs after) | ✅ **24 of 30 identical; the other 6 are the intended fix**: Approvals (home), About and Gallery call the same endpoint and query, now on the real backend instead of `localhost:5000` |
+| Console errors, page errors, failed requests | ✅ **zero on every public page** at 390 and 1440 (18 URLs including the reset page and footer deep links) |
 | Internal links | ✅ every internal link on every public page resolves to its own route |
 | Horizontal overflow at 360 / 390 / 768 / 1024 / 1280 / 1440 / 1920 | ✅ none on any route |
 | Tap targets ≥ 44px on touch devices | ✅ all, except the dashboard-shared password-visibility toggle (see Follow-ups) |
@@ -29,29 +30,60 @@ Branch `redesign/ui-v2`, ready for review. It hasn't been merged or pushed. Scop
 | Design system / audit / progress | `Redesign/DESIGN_SYSTEM.md`, `REDESIGN_AUDIT.md`, `REDESIGN_PROGRESS.md` |
 | Re-run tools | `Redesign/_tools/shoot.mjs` (screenshots), `Redesign/_tools/api-requests.mjs` (API record) |
 
-The three screenshot folders are git-ignored, as requested. They exist on this machine only.
+The three screenshot folders are git-ignored, since they're generated and large. They exist on this machine only. The Figma source files (`Redesign/Desktop.png`, `Redesign/Mobile.png`, renamed from `Moblie.png`) are committed so the design reference lives with the code; the `Redesign/` folder isn't part of the deployed site.
 
 ## Constants to check
 
-Both are in `frontend/src/components/site/siteConfig.js`, each with a TODO comment:
+Both are in `frontend/src/components/site/siteConfig.js`:
 
-- `COACHING_CENTRE_URL = '/'`: the old link pointed at a page that never existed. Replace it once the Coaching Centre page is live.
-- `DESIGNER_CREDIT`: "Designed & developed by Code Hyphen" → `https://www.codehyphen.in/` (confirmed by the owner).
+- `COACHING_CENTRE_URL = null`: while it's `null`, the Coaching Centre is **hidden** from the Institutions menu, so nobody lands on a link that goes nowhere. Set it to the page path (or an `https://` address) and it reappears automatically.
+- `DESIGNER_CREDIT`: "Designed & developed by Code Hyphen" → `https://www.codehyphen.in/`.
+
+## Before you deploy
+
+1. **Deploy the backend first** (Render), then the frontend (Vercel). The new reset-password page needs the updated backend route.
+2. On Render, check that **`FRONTEND_URL`** is your live address (e.g. `https://www.swagatodisha.com`). The reset email builds its link from it.
+3. Check that the **Resend** keys (`RESEND_API_KEY`, `RESEND_FROM_EMAIL`) work in production, since reset links are sent by email. If sending fails, users still see the same "check your email" message (so accounts can't be probed), and the server logs the error.
+
+## Fixed after review
+
+1. **Password reset (security).** The old flow reset any account to a printed default password. Now:
+   - "Forgot password" emails a **single-use link that expires in 30 minutes**. Only a SHA-256 hash of the token is stored.
+   - The answer is the same whether or not the email has an account, so emails can't be probed.
+   - Requests are limited to 3 per hour per visitor. Proxy trust is already set, so this counts real visitor IPs.
+   - It works for students and agents (`User`) and for staff and super admins (`Admin`).
+   - A new page at `/reset-password/:token` sets the new password: at least 8 characters, with a letter and a number. It clears any login lockout and invalidates older sessions.
+   - The default passwords no longer appear anywhere in the UI.
+   - **Verified** with the real route code against an in-memory database, with email stubbed so nothing was sent or written to live data. All 10 checks passed: unknown email, student, staff, rate limit, malformed link, weak password, valid reset, reuse blocked, expired link blocked, and only the hash stored.
+2. **Approvals, About "Our Team" and Gallery** now use the shared API client, so they load from the real backend on the live site instead of `localhost:5000`.
+3. **Footer links all go somewhere:**
+   - Quick Links: About Us → `/about`, Programs → institutions section, Admissions → `/register`, Gallery → `/gallery`, Contact → `/contact`.
+   - Each program link opens that institution's programs (`/?institution=…`).
+   - Support: Student Portal → student login, Parent Portal → portal page with application tracking, Career Guidance → opens the Career Roadmap (`/?explore=career`).
+   - Legal: Privacy Policy and Terms of Service → their pages.
+   - **Removed:** "Scholarships", "FAQs" and "Cookie Policy", because no such pages exist. Add them back when there's content.
+4. **Privacy Policy contact block:** the "[Contact Number]" and "[Institution Address]" placeholders, and the unused-domain email (`privacy@swagatgroup.edu.in`), are replaced with the site's official phone, address and email (`contact@swagatodisha.com`).
+5. **Leadership photos restored** on About. Two were already in the project; `mnt_003.jpg` was recovered from git history. They're now bundled, so they can't go missing again.
+6. **No 404s for missing photos:** image slots only request files that exist. Photos now go in `frontend/src/assets/images/redesign/` and get fingerprinted names, so they're cache-safe.
+7. **Performance:**
+   - The four dashboards load on demand. The main JavaScript bundle went from 2.2 MB to 388 kB (108 kB gzipped).
+   - The fallback admission posters are now right-sized WebP: 7.6 MB → 0.5 MB, with text still crisp.
+   - Homepage page weight went from 8.9 MB to 1.7 MB.
 
 ## Lighthouse (mobile, local production build)
 
 | Page | Performance | Accessibility | Best practices | SEO | LCP |
 |---|---|---|---|---|---|
-| `/` | 46 → **63** | 100 → 100 | 100 → 96* | 91 → 92 | 6.7 s → 6.8 s |
+| `/` | 46 → **59–63** | 100 → 100 | 100 → **100** | 91 → 92 | 6.7 s → 6.8–7.2 s |
 | `/about` | 42 → **65** | 88 → **100** | 96 → 96 | 92 → 92 | 7.2 s → 6.3 s |
 | `/contact` | 57 → **67** | 93 → **100** | 100 → 100 | 92 → 92 | 7.8 s → 5.6 s |
 | `/login-portal` | 59 → **69** | 84 → **100** | 100 → 100 | 91 → 92 | 7.3 s → 5.3 s |
 
 CLS is 0 everywhere, before and after.
 
-\* **Not a regression of the redesign.** The "before" score for `/` measured the old entry screen, which never loaded the homepage. Now the homepage loads directly, and its pre-existing Approvals request to `localhost:5000` (see Follow-ups #3) logs a console error. That request is byte-for-byte the same as before. I didn't change it because it is data-fetching code.
+Homepage page weight: **8.9 MB → 1.7 MB.** The score varies ±4 between runs.
 
-LCP stays high because the whole app, dashboards included, ships as one 2.2 MB JavaScript file. Splitting the dashboard routes out would be the biggest win (Follow-ups #11).
+LCP stays around 7 s in Lighthouse's simulated slow-4G test because this is a fully client-rendered app: nothing paints until the JavaScript runs. Lazy-loading the dashboards and shrinking images removed most of the weight. The next real step is pre-rendering the public pages (see Follow-ups).
 
 ## Entry screen: removed, destinations relocated
 
@@ -60,7 +92,7 @@ LCP stays high because the whole app, dashboards included, ships as one 2.2 MB J
   - "Swagat Odisha": this is now simply the homepage.
   - RCTI (external, opens in a new tab).
   - Public School Ghantiguda, Sargiguda, Lakhna. These now use relative links to the same pages, instead of hard-coded `https://www.swagatodisha.com/...`, so they also work on preview deployments.
-  - Coaching Centre (→ `COACHING_CENTRE_URL`).
+  - Coaching Centre: hidden until `COACHING_CENTRE_URL` is set (see above).
 - The three school pages are also still linked from the School card's modal, as before.
 
 ## What changed, page by page
@@ -152,6 +184,13 @@ Marketing copy follows the AIDA rules now in `CLAUDE.md`. Factual and data conte
 | About, "Learn More" button | Learn More | Learn More + screen-reader-only " about our institutions" (for link-text accessibility) |
 | Skip link (new) | — | Skip to content |
 | Carousel controls (new labels) | — | Previous poster / Next poster, Previous / Next (approvals) |
+| Forgot password, intro | Enter your email address and we'll reset your password to the default value. | Enter the email you registered with and we'll send you a secure link to choose a new password. |
+| Forgot password, button | Reset Password | Send reset link |
+| Forgot password, result | Password Reset Initiated / Your password has been reset to the default value… + admin contact box + "Important Note" listing the default passwords | Check your email / (server message: "If an account exists for this email, we've sent a link… expires in 30 minutes.") / Didn't get it? Check your spam folder, or call us on +91 7855959544. |
+| Reset password page (new) | — | Choose a new password / Use at least 8 characters, with a letter and a number. / Reset password → Password updated / Go to Login |
+| Footer Support | Student Portal, Parent Portal, Career Guidance, Scholarships, FAQs | Student Portal, Parent Portal, Career Guidance (Scholarships and FAQs removed: no pages exist) |
+| Footer legal row | Privacy Policy, Terms of Service, Cookie Policy | Privacy Policy, Terms of Service (Cookie Policy removed: no page exists) |
+| Privacy Policy contact | Email: privacy@swagatgroup.edu.in / Phone: [Contact Number] / Address: [Institution Address] | Email: contact@swagatodisha.com / Phone: +91 7855959544 / Address: Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039 |
 
 Headings that were split into coloured spans (e.g. "Our <span>Values</span>") keep exactly the same words.
 
@@ -188,7 +227,7 @@ Headings that were split into coloured spans (e.g. "Our <span>Values</span>") ke
 - The logo, tagline and "Get In Touch Directly" in the contact panel.
 - The newsletter ("Stay Updated").
 - "Career Guidance" in Support.
-- The Privacy / Terms / Cookie links.
+- The Privacy and Terms links (now pointing at their pages).
 - The floating contact button.
 - All of the About, Gallery, school, legal and auth content.
 
@@ -215,27 +254,22 @@ Headings that were split into coloured spans (e.g. "Our <span>Values</span>") ke
 
 ## Follow-ups
 
-**Security (outside this re-skin, please read):**
-1. **Password reset is an account-takeover risk.** "Forgot password" resets *any* account to a default password that's printed on the page (`SG@99student`, `SG@99agent`, `SG@99staff`). Anyone who knows a user's email can reset it and log in. This needs a backend change: an emailed reset link.
-2. The production API returns full stack traces on errors. `/api/website-content` is public and includes a `paymentSettings` object.
+**Security (backend, not changed):**
+1. The production API returns full stack traces on errors. `/api/website-content` is public and includes a `paymentSettings` object. Both are worth a backend review.
 
-**Content / data:**
+**Content:**
 
-3. Approvals, About "Our Team" and Gallery fetch from `VITE_API_URL || 'http://localhost:5000'`. Unless `VITE_API_URL` is set on Vercel, those sections can never load on the live site. Fix it by setting that env var, or by switching those three calls to the shared `api` client (a code change; I didn't make it).
-4. The Coaching Centre URL constant (above).
-5. Footer links that go nowhere today (unchanged): Quick Links `#about`, `#programs`, `#admissions`, `#gallery`; all Programs and Support links `#`; Privacy / Terms / Cookie `#`. Privacy and Terms could point to `/privacy-policy` and `/terms-and-conditions`.
-6. **Privacy Policy placeholders:** it shows "[Contact Number]" and "[Institution Address]", and an email on a different domain (`privacy@swagatgroup.edu.in`).
-7. **Missing leadership photos:** `/chairman.jpg`, `/chairman_rk.jpg` and `/mnt_003.jpg` aren't in `public/`, so initials show instead.
-8. **About claims:** it states "1000+ Students" and "95% student satisfaction rate". These are existing content; please confirm they're accurate (brand rule: never claim what can't be backed).
-9. **Images:** add the 13 files from `IMAGE_BRIEF.md`. Until then, the image slots show gradients, and the browser console logs a 404 for each missing file.
+2. **About claims:** it states "1000+ Students" and "95% student satisfaction rate". These are existing content; please confirm they're accurate (brand rule: never claim what can't be backed).
+3. **Images:** add the 13 files from `IMAGE_BRIEF.md`. Until then, the slots show gradients, with no errors.
+4. **Footer:** add Scholarships / FAQs / Cookie Policy back once those pages exist.
 
-**Code health (not changed, to keep the re-skin safe):**
+**Code health:**
 
-10. **Dashboard-shared components:** `PasswordInput`'s show/hide toggle is 32px wide, below the 44px touch target. The Terms component uses `h5` headings directly under the page `h1`. Fix both when the dashboards are restyled.
-11. **Bundle:** one 2.2 MB JavaScript file holds every dashboard, three.js, Spline and recharts. Lazy-loading the dashboard routes would cut public-page load time sharply.
-12. **Now-unused code and packages:** `gsap`, `@gsap/react`, `components/Card.jsx`, `Button.jsx`, `ArrowUp.jsx`, `AboutUs.jsx`, `Admissions.jsx`, `ChairmanMessage.jsx`, `Management.jsx`, `Milestone.jsx` and `contexts/DarkModeContext.jsx`. A few unused `iconBg`/`color` data fields still hold old purple hex values.
-13. **Service worker:** `public/sw.js` pre-caches `/` and `/index.html`. Make sure it isn't registered in production, or visitors may keep seeing the old homepage.
-14. Lint: 375 pre-existing problems remain (none added).
+5. **Performance:** pre-render the public pages (e.g. a static pre-render step for `/`, `/about`, `/gallery`, `/contact`, the school pages). This is the remaining big LCP win; it's an architecture change, so I didn't do it here.
+6. **Dashboard-shared components (dashboards were out of scope):** `PasswordInput`'s show/hide toggle is 32px (below the 44px touch target), and the Terms component uses `h5` headings under the page `h1`. The admin `StudentManagement` screen still uses the `VITE_API_URL || localhost:5000` pattern.
+7. **Now-unused code and packages:** `gsap`, `@gsap/react`, `components/Card.jsx`, `Button.jsx`, `ArrowUp.jsx`, `AboutUs.jsx`, `Admissions.jsx`, `ChairmanMessage.jsx`, `Management.jsx`, `Milestone.jsx` and `contexts/DarkModeContext.jsx`. A few unused `iconBg`/`color` data fields still hold old purple hex values.
+8. **Service worker:** `public/sw.js` pre-caches `/` and `/index.html`. Make sure it isn't registered in production, or visitors may keep seeing the old homepage.
+9. **Lint:** 374 pre-existing problems remain (none added).
 
 ## Commits (`redesign/ui-v2`, oldest first)
 
@@ -258,5 +292,13 @@ Headings that were split into coloured spans (e.g. "Our <span>Values</span>") ke
 4. **Quality and report:**
    - fix(ui): quality pass - accessibility, tap targets, token sweep, non-blocking fonts, image slots
    - docs(redesign): final report, image brief, verification records
+5. **Fixes after review:**
+   - fix(ui): footer credit links to Code Hyphen
+   - fix(auth): replace default-password reset with emailed single-use reset links
+   - fix(ui): reset-password page, live API for public content, image manifest, leadership photos
+   - fix(ui): real footer links, privacy contacts, hide unlinked coaching centre, lazy-load dashboards
+   - docs(redesign): update API request record
+   - perf(ui): serve fallback posters as sized WebP (7.6 MB to 0.5 MB)
+   - docs(redesign): report update after review fixes
 
 `CLAUDE.md` (Brand & Copy rules) was updated locally but isn't committed: your global git-ignore excludes it.
