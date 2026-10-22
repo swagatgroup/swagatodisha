@@ -1,14 +1,14 @@
 {
   "/ @1440": [
-    "GET localhost:5000/api/website-content",
     "GET swagat-odisha-backend.onrender.com/api/admin/quick-access/public",
-    "GET swagat-odisha-backend.onrender.com/api/sliders/public?sliderType=horizontal"
+    "GET swagat-odisha-backend.onrender.com/api/sliders/public?sliderType=horizontal",
+    "GET swagat-odisha-backend.onrender.com/api/website-content"
   ],
   "/about @1440": [
-    "GET localhost:5000/api/website-content"
+    "GET swagat-odisha-backend.onrender.com/api/website-content"
   ],
   "/gallery @1440": [
-    "GET localhost:5000/api/gallery/public?limit=100"
+    "GET swagat-odisha-backend.onrender.com/api/gallery/public?limit=100"
   ],
   "/contact @1440": [],
   "/send-message @1440": [],
@@ -25,15 +25,15 @@
     "GET swagat-odisha-backend.onrender.com/api/public-settings"
   ],
   "/ @390": [
-    "GET localhost:5000/api/website-content",
     "GET swagat-odisha-backend.onrender.com/api/admin/quick-access/public",
-    "GET swagat-odisha-backend.onrender.com/api/sliders/public?sliderType=vertical"
+    "GET swagat-odisha-backend.onrender.com/api/sliders/public?sliderType=vertical",
+    "GET swagat-odisha-backend.onrender.com/api/website-content"
   ],
   "/about @390": [
-    "GET localhost:5000/api/website-content"
+    "GET swagat-odisha-backend.onrender.com/api/website-content"
   ],
   "/gallery @390": [
-    "GET localhost:5000/api/gallery/public?limit=100"
+    "GET swagat-odisha-backend.onrender.com/api/gallery/public?limit=100"
   ],
   "/contact @390": [],
   "/send-message @390": [],
