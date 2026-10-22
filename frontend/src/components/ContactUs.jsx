@@ -1,17 +1,13 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion'
-import { 
-    RiMailSendFill, 
-    RiPhoneFill, 
-    RiMailFill, 
-    RiFileList3Fill, 
-    RiLoader4Line,
+import {
+    RiMailFill,
     RiFacebookBoxFill,
     RiTwitterXFill,
     RiInstagramFill,
     RiLinkedinBoxFill,
     RiYoutubeFill
 } from '@remixicon/react';
+import { LuMail, LuPaperclip, LuPhone } from 'react-icons/lu'
 import { SOCIAL_LINKS, CONTACT_INFO } from '../utils/constants'
 import {
     showSuccess,
@@ -21,6 +17,12 @@ import {
     handleApiError
 } from '../utils/sweetAlert'
 import api from '../utils/api'
+import { Container, SectionHeader } from './site/Layout'
+import Button from './site/Button'
+import Card from './site/Card'
+import Icon from './site/Icon'
+import { Input, Textarea } from './site/Field'
+import { LOGO_COLOR, LOGO_SIZE } from './site/siteConfig'
 
 const ContactUs = () => {
     const [formData, setFormData] = useState({
@@ -341,283 +343,212 @@ const ContactUs = () => {
         }
     }
 
+    const SOCIAL_ICON_MAP = {
+        'Facebook': RiFacebookBoxFill,
+        'Twitter': RiTwitterXFill,
+        'Instagram': RiInstagramFill,
+        'YouTube': RiYoutubeFill,
+        'LinkedIn': RiLinkedinBoxFill
+    };
+
     return (
-        <section id="contact" className="relative py-20 overflow-hidden">
-            {/* Background Elements */}
-            <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 dark:bg-[#231A2E]/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#F0E6FA]/20 to-[#D0E8F0]/20 dark:from-[#4A1D7A]/10 dark:to-[#1D4B5E]/10 rounded-full blur-3xl"></div>
-            </div>
+        <div className="sw-section relative">
+            <Container>
+                <SectionHeader
+                    title="Get in touch with us"
+                    subtitle="Have a question about a course or admission? Send us a message and our team will guide you, step by step."
+                />
+            </Container>
 
-            {/* Section Header */}
-            <div className="relative z-10 text-center mb-16">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
-                    <RiMailSendFill size={32} className="text-white" />
-                </div>
-                <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                    Get In <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Touch</span>
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-                    We're here to help and answer any questions you might have. We look forward to hearing from you.
-                </p>
-            </div>
+            <Container wide>
+                <Card variant="panel" className="grid grid-cols-1 gap-10 p-5 md:p-6 lg:grid-cols-[minmax(0,368px)_minmax(0,1fr)] lg:gap-24">
+                    {/* Contact Form */}
+                    <div>
+                        <h3 className="sr-only">Send Us a Message</h3>
+                        <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
+                            <Input
+                                type="text"
+                                id="name"
+                                name="name"
+                                label="Full Name *"
+                                hideLabel
+                                value={formData.name}
+                                onChange={handleInputChange}
+                                placeholder="Enter your full name"
+                            />
+                            <Input
+                                type="email"
+                                id="email"
+                                name="email"
+                                label="Email Address *"
+                                hideLabel
+                                value={formData.email}
+                                onChange={handleInputChange}
+                                placeholder="Enter your email address"
+                            />
+                            <Input
+                                type="tel"
+                                id="phone"
+                                name="phone"
+                                label="Phone Number *"
+                                hideLabel
+                                value={formData.phone}
+                                onChange={handleInputChange}
+                                placeholder="Enter your phone number"
+                                maxLength="10"
+                                pattern="[6-9]\d{9}"
+                                required
+                            />
+                            <Input
+                                type="text"
+                                id="subject"
+                                name="subject"
+                                label="Subject *"
+                                hideLabel
+                                value={formData.subject}
+                                onChange={handleInputChange}
+                                placeholder="What is this about?"
+                            />
+                            <Textarea
+                                id="message"
+                                name="message"
+                                label="Message *"
+                                hideLabel
+                                rows="5"
+                                value={formData.message}
+                                onChange={handleInputChange}
+                                placeholder="Tell us more about your inquiry..."
+                            />
 
-            {/* Main Content */}
-            <div className="relative z-10 container mx-auto px-6">
-                <div className="max-w-7xl mx-auto">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                        {/* Left Side - Contact Information */}
-                        <div>
-                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                                Let's Start a Conversation
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-8">
-                                Ready to take the next step in your educational journey? We're here to guide you through every process, from admissions to career guidance. Our team of experts is committed to providing you with the information and support you need.
-                            </p>
-                            <p className="text-gray-600 dark:text-gray-300 text-lg leading-relaxed mb-12">
-                                Whether you have questions about our programs, want to schedule a campus visit, or need assistance with the application process, don't hesitate to reach out. We believe in building lasting relationships with our students and their families.
-                            </p>
-
-                            {/* Logo & Company Info */}
-                            <div className="lg:col-span-1">
-                                <div className="text-center lg:text-left">
-                                    <div className="inline-flex items-center justify-center mb-4">
-                                        <img
-                                            src="/Swagat_Logo.png"
-                                            alt="Swagat Group of Institutions"
-                                            className="w-48 h-auto object-contain dark:brightness-0 dark:invert"
-                                        />
-                                    </div>
-                                    <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed mb-4">
-                                        Empowering students with quality education, innovative learning methods, and holistic development.
-                                    </p>
-                                </div>
-                            </div>
-
-
-
-                            {/* Direct Contact Information */}
-                            <div className="mb-8">
-                                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Get In Touch Directly</h4>
-                                <div className="space-y-3">
-                                    {/* Phone Contact */}
-                                    <div className="flex items-center">
-                                        <RiPhoneFill size={20} className="text-[#4A1D7A] mr-3 flex-shrink-0" />
-                                        <div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-300">Call Us</p>
-                                            <a
-                                                href={`tel:${CONTACT_INFO.phone}`}
-                                                className="text-lg font-semibold text-transparent bg-clip-text bg-[#4A1D7A] hover:text-[#351458] transition-all duration-300"
-                                            >
-                                                {CONTACT_INFO.phone}
-                                            </a>
-                                        </div>
-                                    </div>
-
-                                    {/* Email Contact */}
-                                    <div className="flex items-center">
-                                        <RiMailFill size={20} className="text-[#4A1D7A] mr-3 flex-shrink-0" />
-                                        <div>
-                                            <p className="text-sm text-gray-600 dark:text-gray-300">Email Us</p>
-                                            <a
-                                                href={`mailto:${CONTACT_INFO.email}`}
-                                                className="text-lg font-semibold text-transparent bg-clip-text bg-[#4A1D7A] hover:text-[#351458] transition-all duration-300"
-                                            >
-                                                {CONTACT_INFO.email}
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Social Media */}
                             <div>
-                                <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4">Connect With Us</h4>
-                                <div className="flex gap-4">
-                                    {SOCIAL_LINKS.map((social, index) => {
-                                        const SOCIAL_ICON_MAP = {
-                                            'Facebook': RiFacebookBoxFill,
-                                            'Twitter': RiTwitterXFill,
-                                            'Instagram': RiInstagramFill,
-                                            'YouTube': RiYoutubeFill,
-                                            'LinkedIn': RiLinkedinBoxFill
-                                        };
-                                        const SocialIcon = SOCIAL_ICON_MAP[social.name] || RiMailFill;
-                                        
-                                        return (
-                                            <a
-                                                key={index}
-                                                href={social.url}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-12 h-12 bg-[#4A1D7A] rounded-xl flex items-center justify-center text-white hover:bg-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl"
-                                                title={social.name}
-                                            >
-                                                <SocialIcon size={24} />
-                                            </a>
-                                        );
-                                    })}
-                                </div>
+                                <label htmlFor="documents" className="mb-1.5 block text-sw-small font-semibold">
+                                    Upload Documents (Optional)
+                                </label>
+                                <input
+                                    type="file"
+                                    id="documents"
+                                    name="documents"
+                                    onChange={handleFileChange}
+                                    multiple
+                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                                    className="block min-h-11 w-full rounded-sw-sm bg-sw-white px-2 py-2 text-sw-small text-sw-text shadow-sw-input file:mr-3 file:min-h-9 file:rounded-sw-pill file:border-0 file:bg-sw-black file:px-4 file:text-sw-small file:font-semibold file:text-sw-white hover:file:bg-sw-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-sw-focus"
+                                />
+                                <p className="mt-2 text-sw-caption text-sw-text-muted">
+                                    Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file)
+                                </p>
+                                {formData.documents && formData.documents.length > 0 && (
+                                    <div className="mt-2">
+                                        <p className="mb-1 text-sw-small font-normal text-sw-text-secondary">Selected files:</p>
+                                        <ul className="space-y-1 text-sw-caption text-sw-text-muted">
+                                            {Array.from(formData.documents).map((file, index) => (
+                                                <li key={index} className="flex items-center">
+                                                    <Icon icon={LuPaperclip} size="xs" className="mr-2 shrink-0" />
+                                                    {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
-                        </div>
 
-                        {/* Right Side - Contact Form */}
-                        <div>
-                            <div className="bg-white dark:bg-[#231A2E] rounded-3xl p-8 shadow-2xl border dark:border-gray-700">
-                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">
-                                    Send Us a Message
-                                </h3>
-
-                                <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label htmlFor="name" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                                Full Name *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                id="name"
-                                                name="name"
-                                                value={formData.name}
-                                                onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                                placeholder="Enter your full name"
-                                            />
-                                        </div>
-
-                                        <div>
-                                            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                                Email Address *
-                                            </label>
-                                            <input
-                                                type="email"
-                                                id="email"
-                                                name="email"
-                                                value={formData.email}
-                                                onChange={handleInputChange}
-                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                                placeholder="Enter your email address"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                            Phone Number *
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            id="phone"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            placeholder="Enter your phone number"
-                                            maxLength="10"
-                                            pattern="[6-9]\d{9}"
-                                            required
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="subject" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                            Subject *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="subject"
-                                            name="subject"
-                                            value={formData.subject}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                            placeholder="What is this about?"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="message" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                            Message *
-                                        </label>
-                                        <textarea
-                                            id="message"
-                                            name="message"
-                                            rows="5"
-                                            value={formData.message}
-                                            onChange={handleInputChange}
-                                            className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 resize-none"
-                                            placeholder="Tell us more about your inquiry..."
-                                        ></textarea>
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="documents" className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                                            Upload Documents (Optional)
-                                        </label>
-                                        <div className="relative">
-                                            <input
-                                                type="file"
-                                                id="documents"
-                                                name="documents"
-                                                onChange={handleFileChange}
-                                                multiple
-                                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
-                                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent transition-all duration-300 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#F0E6FA] file:text-[#351458] hover:file:bg-[#F0E6FA]"
-                                            />
-                                            <div className="mt-2 text-xs text-gray-500 dark:text-gray-300">
-                                                Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT (Max 10MB per file)
-                                            </div>
-                                            {formData.documents && formData.documents.length > 0 && (
-                                                <div className="mt-2">
-                                                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Selected files:</p>
-                                                    <ul className="text-xs text-gray-500 dark:text-gray-300 space-y-1">
-                                                        {Array.from(formData.documents).map((file, index) => (
-                                                            <li key={index} className="flex items-center">
-                                                                <RiFileList3Fill size={16} className="text-[#4A1D7A] mr-2 flex-shrink-0 inline" />
-                                                                {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
-                                                            </li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Honeypot field - hidden from users but bots will fill it */}
-                                    <div style={{ display: 'none', visibility: 'hidden', position: 'absolute', left: '-9999px' }}>
-                                        <label htmlFor="website_url">Website URL (Leave empty)</label>
-                                        <input
-                                            type="text"
-                                            id="website_url"
-                                            name="website_url"
-                                            tabIndex="-1"
-                                            autoComplete="off"
-                                            aria-hidden="true"
-                                        />
-                                    </div>
-
-
-                                    <button
-                                        type="submit"
-                                        disabled={isSubmitting}
-                                        className="w-full py-4 bg-[#4A1D7A] text-white rounded-xl font-semibold text-lg hover:text-[#351458] transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {isSubmitting ? (
-                                            <span className="flex items-center justify-center">
-                                                <RiLoader4Line size={20} className="animate-spin mr-2 inline" />
-                                                Sending Message...
-                                            </span>
-                                        ) : (
-                                            'Send Message'
-                                        )}
-                                    </button>
-                                </form>
+                            {/* Honeypot field - hidden from users but bots will fill it */}
+                            <div style={{ display: 'none', visibility: 'hidden', position: 'absolute', left: '-9999px' }}>
+                                <label htmlFor="website_url">Website URL (Leave empty)</label>
+                                <input
+                                    type="text"
+                                    id="website_url"
+                                    name="website_url"
+                                    tabIndex="-1"
+                                    autoComplete="off"
+                                    aria-hidden="true"
+                                />
                             </div>
-                        </div>
+
+                            <Button type="submit" shape="rounded" fullWidth loading={isSubmitting}>
+                                {isSubmitting ? 'Sending Message...' : 'Send Message'}
+                            </Button>
+                        </form>
                     </div>
-                </div>
-            </div>
-        </section>
+
+                    {/* Contact Information */}
+                    <div className="text-sw-body">
+                        <h3 className="mb-4 text-sw-label font-semibold lg:text-sw-small">
+                            Let&apos;s Start a Conversation
+                        </h3>
+                        <p className="mb-6">
+                            Ready to take the next step in your educational journey? We're here to guide you through every process, from admissions to career guidance. Our team of experts is committed to providing you with the information and support you need.
+                        </p>
+                        <p className="mb-8">
+                            Whether you have questions about our programs, want to schedule a campus visit, or need assistance with the application process, don't hesitate to reach out. We believe in building lasting relationships with our students and their families.
+                        </p>
+
+                        {/* Logo & Company Info */}
+                        <img
+                            src={LOGO_COLOR}
+                            alt="Swagat Group of Institutions"
+                            width={LOGO_SIZE.width}
+                            height={LOGO_SIZE.height}
+                            loading="lazy"
+                            className="mb-3 h-12 w-auto"
+                        />
+                        <p className="mb-8 text-sw-small font-normal text-sw-text-secondary">
+                            Empowering students with quality education, innovative learning methods, and holistic development.
+                        </p>
+
+                        {/* Direct Contact Information */}
+                        <h4 className="mb-3 font-semibold">Get In Touch Directly</h4>
+                        <ul className="space-y-3">
+                            <li className="flex items-center gap-3">
+                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white">
+                                    <Icon icon={LuPhone} size="sm" />
+                                </span>
+                                <span>
+                                    <span className="block text-sw-small font-normal text-sw-text-muted">Call Us</span>
+                                    <a href={`tel:${CONTACT_INFO.phone}`} className="font-semibold underline-offset-4 hover:underline">
+                                        {CONTACT_INFO.phone}
+                                    </a>
+                                </span>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white">
+                                    <Icon icon={LuMail} size="sm" />
+                                </span>
+                                <span className="min-w-0">
+                                    <span className="block text-sw-small font-normal text-sw-text-muted">Email Us</span>
+                                    <a href={`mailto:${CONTACT_INFO.email}`} className="break-all font-semibold underline-offset-4 hover:underline">
+                                        {CONTACT_INFO.email}
+                                    </a>
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
+                </Card>
+            </Container>
+
+            {/* Social Media */}
+            <Container className="mt-10 text-center md:text-left">
+                <h3 className="mb-4 text-sw-h3 font-semibold">Connect With Us</h3>
+                <ul className="flex flex-wrap justify-center gap-4 md:justify-start">
+                    {SOCIAL_LINKS.map((social, index) => {
+                        const SocialIcon = SOCIAL_ICON_MAP[social.name] || RiMailFill;
+                        return (
+                            <li key={index}>
+                                <a
+                                    href={social.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`sw-social-${social.name.toLowerCase()} flex h-[54px] w-[54px] items-center justify-center rounded-sw-md shadow-sw-soft ring-1 ring-sw-border-light transition-transform duration-sw-fast motion-safe:hover:-translate-y-0.5`}
+                                    title={social.name}
+                                    aria-label={social.name}
+                                >
+                                    <SocialIcon size={30} aria-hidden="true" />
+                                </a>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </Container>
+        </div>
     )
 }
 

@@ -5,7 +5,8 @@ import { HelmetProvider } from 'react-helmet-async'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import { SessionProvider } from './contexts/SessionContext'
 import { DarkModeProvider } from './contexts/DarkModeContextSimple'
-import HeroCarousel from './components/HeroCarousel'
+import Hero from './components/home/Hero'
+import PosterCarousel from './components/home/PosterCarousel'
 import AboutUs from './components/AboutUs'
 import InstitutionTypes from './components/InstitutionTypes'
 import Admissions from './components/Admissions'
@@ -107,32 +108,33 @@ const AppContent = () => {
     }, [hash])
 
     return (
-        <div className="App relative m-0 p-0 bg-white">
-            {/* 1. Slider */}
-            <section id="home" className="m-0 p-0">
-                <HeroCarousel />
-            </section>
+        <div className="App relative m-0 p-0">
+            {/* 1. Hero */}
+            <Hero />
 
-            {/* 2. Quick Access */}
-            <section className="bg-white">
+            {/* 2. Explore Swagat (quick access: timetables, career roadmap, notifications, results) */}
+            <section aria-label="Explore Swagat">
                 <QuickLinks />
             </section>
 
-            {/* 3. Approval and Recognitions */}
-            <section id="approvals" className="bg-white">
+            {/* 3. Admissions posters (admin sliders) */}
+            <PosterCarousel />
+
+            {/* 4. Approval and Recognitions */}
+            <section id="approvals" aria-label="Approvals and recognitions">
                 <ApprovalsRecognitions />
             </section>
 
-            {/* 4. Our Institutions */}
-            <section id="institutions" className="bg-criss-cross">
+            {/* 5. Our Institutions */}
+            <section id="institutions" aria-labelledby="institutions-title" className="scroll-mt-sw-header">
                 <InstitutionTypes />
             </section>
 
-            {/* 5. Location Section */}
+            {/* 6. Campuses and why choose us */}
             <Location />
 
-            {/* 6. Contact Form */}
-            <section id="contact" className="bg-white">
+            {/* 7. Contact Form */}
+            <section id="contact" aria-label="Contact" className="scroll-mt-sw-header">
                 <ContactUs />
             </section>
         </div>

@@ -9,13 +9,14 @@ import {
     RiSettings3Line,
     RiTeamLine,
     RiComputerLine,
-    RiBuildingFill,
-    RiCloseLine,
-    RiStackLine,
-    RiGlobalLine,
-    RiArrowRightSLine,
-    RiExternalLinkLine,
 } from '@remixicon/react'
+import { LuChevronRight, LuExternalLink, LuGlobe, LuLayers, LuPlus } from 'react-icons/lu'
+import { Container, SectionHeader } from './site/Layout'
+import Badge from './site/Badge'
+import Button from './site/Button'
+import Icon from './site/Icon'
+import Modal from './site/Modal'
+import SmartImage from './site/SmartImage'
 
 // Map of old FA icon strings → Remix Icon components
 const ICON_MAP = {
@@ -1769,330 +1770,225 @@ const InstitutionTypes = () => {
         }
     }, [])
 
+    const programCard =
+        'flex w-full items-start justify-between gap-4 rounded-sw-sm bg-sw-white p-4 text-left ring-1 ring-sw-border-light shadow-sw-soft transition-[box-shadow,transform] duration-sw-fast ease-sw hover:shadow-sw-offset motion-safe:hover:-translate-y-0.5'
+    const formatFeeKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
+
     return (
-        <section className="relative py-20 overflow-hidden">
-            {/* Background Elements */}
-            <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 dark:bg-[#231A2E]/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#F0E6FA]/20 to-[#D0E8F0]/20 dark:from-[#4A1D7A]/10 dark:to-[#1D4B5E]/10 rounded-full blur-3xl"></div>
-            </div>
+        <div className="sw-section">
+            <Container>
+                <SectionHeader id="institutions-title" title="Our Institutions" subtitle="Diverse pathways to academic excellence." />
 
-            {/* Section Header */}
-            <div className="relative z-10 text-center mb-16">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
-                    <RiBuildingFill size={32} className="text-white" />
-                </div>
-                <h2 className="text-5xl md:text-7xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                    Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Institution Types</span>
-                </h2>
-                <p className="text-xl text-gray-600 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                    Discover our comprehensive range of educational institutions, each designed to provide specialized learning experiences and prepare students for successful careers.
-                </p>
-            </div>
-
-            {/* Institutions Grid */}
-            <div className="relative z-10 container mx-auto px-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {institutions.map((institution, index) => (
-                        <div
-                            key={institution.id}
-                            onClick={(event) => handleInstitutionCardClick(event, institution)}
-                            className="group cursor-pointer bg-white dark:bg-[#231A2E] rounded-3xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 active:scale-95"
-                        >
-                            {/* Icon Container */}
-                            <div className={`w-16 h-16 bg-gradient-to-r ${institution.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                                {ICON_MAP[institution.icon] || <RiBuildingLine size={24} className="text-white" />}
-                            </div>
-
-                            {/* Content */}
-                            <div className="text-center">
-                                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-2 group-hover:text-[#4A1D7A] transition-colors duration-300">
-                                    {institution.name}
-                                </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 font-medium">
-                                    {institution.subtitle}
-                                </p>
-                                <p className="text-sm text-gray-500 dark:text-gray-300 leading-relaxed mb-4">
-                                    {institution.description}
-                                </p>
-                            </div>
-
-                            {/* REMOVED PROBLEMATIC HOVER EFFECT DIV */}
-                        </div>
+                {/* Institutions list: black slabs, image left (desktop) / right (mobile) */}
+                <ul className="space-y-6 lg:space-y-12">
+                    {institutions.map((institution) => (
+                        <li key={institution.id}>
+                            <article className="group relative flex gap-4 rounded-sw-md bg-sw-black p-4 text-sw-text-on-dark transition-transform duration-sw ease-sw motion-safe:hover:-translate-y-1">
+                                <SmartImage
+                                    src={`/images/redesign/institution-${institution.id}.webp`}
+                                    alt=""
+                                    width={400}
+                                    height={400}
+                                    className="order-2 h-16 w-16 shrink-0 rounded-sw-sm md:order-none md:h-48 md:w-48"
+                                />
+                                <div className="min-w-0 flex-1 pb-10 md:pr-12">
+                                    <h3 className="sw-text-gradient text-sw-h3 font-medium">{institution.name}</h3>
+                                    <p className="sw-text-gradient text-sw-small font-normal">{institution.subtitle}</p>
+                                    <p className="mt-4 max-w-2xl text-sw-body text-sw-white lg:mt-8">{institution.description}</p>
+                                </div>
+                                {/* The button covers the whole card, so the card stays one click target */}
+                                <button
+                                    type="button"
+                                    onClick={(event) => handleInstitutionCardClick(event, institution)}
+                                    aria-label={`${institution.name}: view programs`}
+                                    className="absolute inset-0 rounded-sw-md"
+                                >
+                                    <span className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center text-sw-white">
+                                        <Icon icon={LuPlus} size="lg" strokeWidth={2.75} className="transition-transform duration-sw ease-sw group-hover:rotate-90" />
+                                    </span>
+                                </button>
+                            </article>
+                        </li>
                     ))}
-                </div>
-            </div>
+                </ul>
+            </Container>
 
-            {/* MAIN MODAL - COMPLETELY REWRITTEN */}
-            {isModalOpen && selectedInstitution && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                    onClick={handleMainModalClose}
-                >
-                    {/* Modal Content - This prevents event bubbling */}
-                    <div
-                        className="bg-white dark:bg-[#231A2E] rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        {/* Modal Header */}
-                        <div className="p-6 border-b border-gray-100 dark:border-gray-700">
-                            <div className="flex items-center justify-between mb-4">
-                                <div className="flex items-center space-x-4">
-                                    <div className={`w-12 h-12 bg-gradient-to-r ${selectedInstitution.iconBg} rounded-xl flex items-center justify-center`}>
-                                        {ICON_MAP[selectedInstitution.icon] || <RiBuildingLine size={20} className="text-white" />}
-                                    </div>
-                                    <div>
-                                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedInstitution.name}</h3>
-                                        <p className="text-gray-600 dark:text-gray-300">{selectedInstitution.subtitle}</p>
-                                    </div>
-                                </div>
+            {/* MAIN MODAL: programs of the selected institution */}
+            <Modal
+                open={isModalOpen && !!selectedInstitution}
+                onClose={(event) => handleCloseButtonClick(event, 'main')}
+                onBackdropClick={handleMainModalClose}
+                zIndex="z-sw-overlay"
+                size="lg"
+                title={selectedInstitution?.name}
+                description={selectedInstitution?.subtitle}
+                headerExtra={
+                    selectedInstitution && (
+                        <span className="mb-3 flex h-12 w-12 items-center justify-center rounded-sw-sm bg-sw-black">
+                            {ICON_MAP[selectedInstitution.icon] || <RiBuildingLine size={20} className="text-white" />}
+                        </span>
+                    )
+                }
+            >
+                {selectedInstitution && (
+                    <>
+                        <p className="text-sw-body text-sw-text-secondary">{selectedInstitution.description}</p>
+                        <h4 className="mb-4 mt-6 text-sw-h3 font-semibold">Available Programs</h4>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                            {selectedInstitution.programs.map((program, index) => (
                                 <button
-                                    onClick={(event) => handleCloseButtonClick(event, 'main')}
-                                    className="w-10 h-10 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors duration-200"
+                                    type="button"
+                                    key={index}
+                                    className={programCard}
+                                    onClick={(event) => {
+                                        if (program.hasWebsite) {
+                                            event.preventDefault()
+                                            event.stopPropagation()
+                                            navigate(program.websiteUrl)
+                                        } else {
+                                            handleProgramCardClick(event, program)
+                                        }
+                                    }}
                                 >
-                                    <RiCloseLine size={20} />
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block font-semibold">{program.name}</span>
+                                        <span className="mt-1 block text-sw-small text-sw-text-secondary">{program.type}</span>
+                                        <span className="mt-1 block text-sw-caption text-sw-text-muted">{program.details}</span>
+                                        <span className="mt-3 flex flex-wrap gap-2">
+                                            {program.hasSubCategories && (
+                                                <Badge tone="lavender">
+                                                    <Icon icon={LuLayers} size="xs" />
+                                                    Has Sub-Categories
+                                                </Badge>
+                                            )}
+                                            {program.hasWebsite && (
+                                                <Badge tone="blue">
+                                                    <Icon icon={LuGlobe} size="xs" />
+                                                    Visit Website
+                                                </Badge>
+                                            )}
+                                        </span>
+                                    </span>
+                                    <Icon icon={program.hasWebsite ? LuExternalLink : LuChevronRight} size="sm" className="mt-0.5 shrink-0" />
                                 </button>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedInstitution.description}</p>
+                            ))}
                         </div>
+                    </>
+                )}
+            </Modal>
 
-                        {/* Modal Body - Programs List */}
-                        <div className="p-6">
-                            <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Available Programs</h4>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {selectedInstitution.programs.map((program, index) => (
-                                    <div
-                                        key={index}
-                                        className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-[#4A1D7A]"
-                                        onClick={(event) => {
-                                            if (program.hasWebsite) {
-                                                event.preventDefault()
-                                                event.stopPropagation()
-                                                navigate(program.websiteUrl)
-                                            } else {
-                                                handleProgramCardClick(event, program)
-                                            }
-                                        }}
-                                    >
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <h5 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{program.name}</h5>
-                                                <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{program.type}</p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-300">{program.details}</p>
-                                                <div className="mt-2 flex flex-wrap gap-2">
-                                                    {program.hasSubCategories && (
-                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-[#F0E6FA] dark:bg-[#231A2E] text-purple-800 dark:text-purple-200">
-                                                            <RiStackLine size={14} className="inline mr-1" />
-                                                            Has Sub-Categories
-                                                        </span>
-                                                    )}
-                                                    {program.hasWebsite && (
-                                                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
-                                                            <RiGlobalLine size={14} className="inline mr-1" />
-                                                            Visit Website
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            <div className="ml-4">
-                                                {program.hasWebsite
-                                                    ? <RiExternalLinkLine size={16} className="text-[#4A1D7A] dark:text-[#9B6FCC]" />
-                                                    : <RiArrowRightSLine size={16} className="text-[#4A1D7A] dark:text-[#9B6FCC]" />
-                                                }
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* SUB MODAL - COMPLETELY REWRITTEN */}
-            {isSubModalOpen && selectedProgram && (
-                <div
-                    className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                    onClick={handleSubModalClose}
-                >
-                    {/* Sub Modal Content - This prevents event bubbling */}
-                    <div
-                        className="bg-white dark:bg-[#231A2E] rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        {/* Sub Modal Header */}
-                        <div className="p-6 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] dark:from-[#4A1D7A]/20 dark:to-[#1D4B5E]/20">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedProgram.name}</h3>
-                                    <p className="text-[#4A1D7A] dark:text-[#9B6FCC] font-medium">{selectedProgram.type}</p>
-                                </div>
-                                <button
-                                    onClick={(event) => handleCloseButtonClick(event, 'sub')}
-                                    className="w-10 h-10 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm"
-                                >
-                                    <RiCloseLine size={20} />
-                                </button>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedProgram.details}</p>
-                        </div>
-
-                        {/* Sub Modal Body - Show sub-categories if they exist, otherwise show fee structure */}
-                        <div className="p-6">
-                            {selectedProgram.hasSubCategories ? (
-                                // Show sub-categories (for Engineering)
-                                <div>
-                                    <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Available Courses</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        {selectedProgram.subCategories.map((course, index) => (
-                                            <div
-                                                key={index}
-                                                className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-[#4A1D7A]"
-                                                onClick={(event) => handleCourseCardClick(event, course)}
-                                            >
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex-1">
-                                                        <h5 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">{course.name}</h5>
-                                                        <p className="text-sm text-gray-600 dark:text-gray-300 mb-2">{course.duration}</p>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-300">{course.details}</p>
-                                                    </div>
-                                                    <div className="ml-4">
-                                                        <RiArrowRightSLine size={16} className="text-[#4A1D7A] dark:text-[#9B6FCC]" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                // Show fee structure (for other programs)
-                                <div>
-                                    <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Fee Structure</h4>
-                                    <div className="space-y-4">
-                                        {Object.entries(selectedProgram.feeStructure).map(([key, value]) => (
-                                            <div key={key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                                <div className="flex items-center">
-                                                    <div className="w-3 h-3 bg-[#4A1D7A] rounded-full mr-3"></div>
-                                                    <span className="text-gray-700 dark:text-gray-300 font-medium capitalize">
-                                                        {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                                                    </span>
-                                                </div>
-                                                <span className="text-lg font-bold text-[#4A1D7A] dark:text-[#9B6FCC]">{value}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Additional Information */}
-                                    <div className="mt-8 p-4 bg-[#D0E8F0] dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                                        <h5 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Important Notes:</h5>
-                                        <ul className="text-sm text-[#1D4B5E] dark:text-blue-300 space-y-1">
-                                            <li>• Fees are subject to change as per institution policy</li>
-                                            <li>• Additional charges may apply for practical sessions</li>
-                                            <li>• Scholarships available for meritorious students</li>
-                                            <li>• Installment payment options available</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Sub Modal Footer */}
-                        <div className="p-6 border-t border-gray-100">
-                            <div className="flex justify-end space-x-3">
-                                <button
-                                    onClick={(event) => handleCloseButtonClick(event, 'sub')}
-                                    className="px-6 py-2 bg-gray-100 text-gray-700 dark:text-gray-200 rounded-lg font-medium hover:bg-gray-200 transition-colors duration-200"
-                                >
-                                    Close
-                                </button>
-                                {!selectedProgram.hasSubCategories && (
-                                    <button className="px-6 py-2 bg-[#4A1D7A] text-white rounded-lg font-medium hover:bg-[#351458] transition-all duration-200">
-                                        Apply Now
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* COURSE MODAL - NEW THIRD LEVEL */}
-            {isCourseModalOpen && selectedCourse && (
-                <div
-                    className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
-                    onClick={handleCourseModalClose}
-                >
-                    {/* Course Modal Content - This prevents event bubbling */}
-                    <div
-                        className="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
-                        onClick={(event) => event.stopPropagation()}
-                    >
-                        {/* Course Modal Header */}
-                        <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-[#D0E8F0] to-[#FAF7F2]">
-                            <div className="flex items-center justify-between mb-4">
-                                <div>
-                                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">{selectedCourse.name}</h3>
-                                    <p className="text-green-600 font-medium">{selectedCourse.duration}</p>
-                                </div>
-                                <button
-                                    onClick={(event) => handleCloseButtonClick(event, 'course')}
-                                    className="w-10 h-10 bg-white hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors duration-200 shadow-sm"
-                                >
-                                    <RiCloseLine size={20} />
-                                </button>
-                            </div>
-                            <p className="text-gray-600 dark:text-gray-300 leading-relaxed">{selectedCourse.details}</p>
-                        </div>
-
-                        {/* Course Modal Body - Individual Course Fee Structure */}
-                        <div className="p-6">
-                            <h4 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-6">Course Fee Structure</h4>
-                            <div className="space-y-4">
-                                {Object.entries(selectedCourse.feeStructure).map(([key, value]) => (
-                                    <div key={key} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                                        <div className="flex items-center">
-                                            <div className="w-3 h-3 bg-gradient-to-r from-[#1D4B5E] to-[#387B95] rounded-full mr-3"></div>
-                                            <span className="text-gray-700 dark:text-gray-300 font-medium capitalize">
-                                                {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+            {/* SUB MODAL: courses or fee structure of the selected program */}
+            <Modal
+                open={isSubModalOpen && !!selectedProgram}
+                onClose={(event) => handleCloseButtonClick(event, 'sub')}
+                onBackdropClick={handleSubModalClose}
+                zIndex="z-sw-modal"
+                size="lg"
+                title={selectedProgram?.name}
+                description={selectedProgram?.type}
+            >
+                {selectedProgram && (
+                    <>
+                        <p className="text-sw-body text-sw-text-secondary">{selectedProgram.details}</p>
+                        {selectedProgram.hasSubCategories ? (
+                            // Show sub-categories (for Engineering)
+                            <div>
+                                <h4 className="mb-4 mt-6 text-sw-h3 font-semibold">Available Courses</h4>
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    {selectedProgram.subCategories.map((course, index) => (
+                                        <button
+                                            type="button"
+                                            key={index}
+                                            className={programCard}
+                                            onClick={(event) => handleCourseCardClick(event, course)}
+                                        >
+                                            <span className="min-w-0 flex-1">
+                                                <span className="block font-semibold">{course.name}</span>
+                                                <span className="mt-1 block text-sw-small text-sw-text-secondary">{course.duration}</span>
+                                                <span className="mt-1 block text-sw-caption text-sw-text-muted">{course.details}</span>
                                             </span>
+                                            <Icon icon={LuChevronRight} size="sm" className="mt-0.5 shrink-0" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        ) : (
+                            // Show fee structure (for other programs)
+                            <div>
+                                <h4 className="mb-4 mt-6 text-sw-h3 font-semibold">Fee Structure</h4>
+                                <dl className="divide-y divide-sw-border-light rounded-sw-sm ring-1 ring-sw-border-light">
+                                    {Object.entries(selectedProgram.feeStructure).map(([key, value]) => (
+                                        <div key={key} className="flex items-center justify-between gap-4 px-4 py-3">
+                                            <dt className="capitalize text-sw-text-secondary">{formatFeeKey(key)}</dt>
+                                            <dd className="text-sw-label font-bold">{value}</dd>
                                         </div>
-                                        <span className="text-lg font-bold text-green-600 dark:text-green-400">{value}</span>
-                                    </div>
-                                ))}
-                            </div>
+                                    ))}
+                                </dl>
 
-                            {/* Course Highlights */}
-                            <div className="mt-8 p-4 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-200 dark:border-green-800">
-                                <h5 className="font-semibold text-green-800 dark:text-green-200 mb-2">Course Highlights:</h5>
-                                <ul className="text-sm text-green-700 dark:text-green-300 space-y-1">
-                                    <li>• Industry-aligned curriculum with latest technology</li>
-                                    <li>• Practical laboratory sessions and workshops</li>
-                                    <li>• Industry internships and project work</li>
-                                    <li>• Placement assistance and career guidance</li>
-                                    <li>• Modern infrastructure and equipment</li>
-                                </ul>
+                                {/* Additional Information */}
+                                <div className="mt-6 rounded-sw-sm bg-sw-badge-blue p-4">
+                                    <h5 className="mb-2 font-semibold">Important Notes:</h5>
+                                    <ul className="space-y-1 text-sw-small font-normal">
+                                        <li>• Fees are subject to change as per institution policy</li>
+                                        <li>• Additional charges may apply for practical sessions</li>
+                                        <li>• Scholarships available for meritorious students</li>
+                                        <li>• Installment payment options available</li>
+                                    </ul>
+                                </div>
                             </div>
+                        )}
+                        <div className="mt-6 flex justify-end">
+                            <Button variant="outline" size="sm" onClick={(event) => handleCloseButtonClick(event, 'sub')}>
+                                Close
+                            </Button>
                         </div>
+                    </>
+                )}
+            </Modal>
 
-                        {/* Course Modal Footer */}
-                        <div className="p-6 border-t border-gray-100 dark:border-gray-700">
-                            <div className="flex justify-end space-x-3">
-                                <button
-                                    onClick={(event) => handleCloseButtonClick(event, 'course')}
-                                    className="px-6 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200"
-                                >
-                                    Close
-                                </button>
-                                <button className="px-6 py-2 bg-gradient-to-r from-[#1D4B5E] to-[#387B95] text-white rounded-lg font-medium hover:from-[#387B95] hover:to-[#1D4B5E] transition-all duration-200">
-                                    Apply Now
-                                </button>
-                            </div>
+            {/* COURSE MODAL: third level, fee structure of one course */}
+            <Modal
+                open={isCourseModalOpen && !!selectedCourse}
+                onClose={(event) => handleCloseButtonClick(event, 'course')}
+                onBackdropClick={handleCourseModalClose}
+                zIndex="z-sw-modal-top"
+                size="md"
+                title={selectedCourse?.name}
+                description={selectedCourse?.duration}
+            >
+                {selectedCourse && (
+                    <>
+                        <p className="text-sw-body text-sw-text-secondary">{selectedCourse.details}</p>
+                        <h4 className="mb-4 mt-6 text-sw-h3 font-semibold">Course Fee Structure</h4>
+                        <dl className="divide-y divide-sw-border-light rounded-sw-sm ring-1 ring-sw-border-light">
+                            {Object.entries(selectedCourse.feeStructure).map(([key, value]) => (
+                                <div key={key} className="flex items-center justify-between gap-4 px-4 py-3">
+                                    <dt className="capitalize text-sw-text-secondary">{formatFeeKey(key)}</dt>
+                                    <dd className="text-sw-label font-bold">{value}</dd>
+                                </div>
+                            ))}
+                        </dl>
+
+                        {/* Course Highlights */}
+                        <div className="mt-6 rounded-sw-sm bg-sw-badge-lavender p-4">
+                            <h5 className="mb-2 font-semibold">Course Highlights:</h5>
+                            <ul className="space-y-1 text-sw-small font-normal">
+                                <li>• Industry-aligned curriculum with latest technology</li>
+                                <li>• Practical laboratory sessions and workshops</li>
+                                <li>• Industry internships and project work</li>
+                                <li>• Placement assistance and career guidance</li>
+                                <li>• Modern infrastructure and equipment</li>
+                            </ul>
                         </div>
-                    </div>
-                </div>
-            )}
-        </section>
+                        <div className="mt-6 flex justify-end">
+                            <Button variant="outline" size="sm" onClick={(event) => handleCloseButtonClick(event, 'course')}>
+                                Close
+                            </Button>
+                        </div>
+                    </>
+                )}
+            </Modal>
+        </div>
     )
 }
 

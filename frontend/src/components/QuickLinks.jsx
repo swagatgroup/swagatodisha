@@ -1,49 +1,50 @@
 import {useEffect, useRef, useState} from 'react';
-import { motion, AnimatePresence } from 'framer-motion'
-import { gsap } from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { CONTACT_INFO } from '../utils/constants'
 import api from '../utils/api'
 import {
-    RiArrowDownSLine,
-    RiArrowRightSLine,
-    RiArrowUpSLine,
     RiAtomLine,
-    RiBarChartLine,
     RiBookLine,
     RiBriefcaseLine,
     RiBrushLine,
-    RiCalendarScheduleLine,
-    RiCloseLine,
     RiCoinsLine,
     RiComputerLine,
-    RiDownloadLine,
-    RiFilePdf2Line,
     RiFlaskLine,
-    RiGraduationCapLine,
     RiGroupLine,
     RiHammerLine,
     RiHeartPulseLine,
-    RiImageLine,
     RiLineChartLine,
     RiMegaphoneLine,
-    RiNotification3Line,
     RiPaletteLine,
-    RiPhoneLine,
-    RiRoadMapLine,
     RiSettings3Line,
     RiStethoscopeLine,
     RiToolsLine
 } from '@remixicon/react'
-
-// Register ScrollTrigger only on client side
-if (typeof window !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger)
-}
+import {
+    LuArrowDown,
+    LuArrowUpRight,
+    LuBellRing,
+    LuCalendarDays,
+    LuChevronDown,
+    LuChevronRight,
+    LuCompass,
+    LuDownload,
+    LuFileMinus,
+    LuFileText,
+    LuGraduationCap,
+    LuImage,
+    LuInbox,
+    LuPhone,
+} from 'react-icons/lu'
+import { Container, SectionHeader } from './site/Layout'
+import Badge from './site/Badge'
+import Button from './site/Button'
+import Icon from './site/Icon'
+import Modal from './site/Modal'
+import { EmptyState, LoadingList } from './site/Feedback'
+import { cx } from './site/cx'
 
 const QuickLinks = () => {
     const containerRef = useRef(null)
-    const cardsRef = useRef([])
     const [activeOverlay, setActiveOverlay] = useState(null)
     const [blinkingLinks, setBlinkingLinks] = useState(new Set())
     const [pdfViewer, setPdfViewer] = useState({ isOpen: false, file: null, name: null })
@@ -430,184 +431,169 @@ const QuickLinks = () => {
         }
     }
 
+    // Explore tiles. Mobile order follows the Figma mobile frame; `overlayAlign`
+    // keeps each document panel inside the viewport for its grid column.
     const quickLinks = [
         {
             id: 1,
             title: "Time Tables",
             description: "View schedules from different universities",
-            icon: <RiCalendarScheduleLine size={28} className="text-white" />,
-            bgStyle: { background: "linear-gradient(135deg, #4A1D7A 0%, #351458 100%)" },
+            icon: LuCalendarDays,
+            pane: "sw-pane-timetable",
+            order: "order-3 lg:order-none",
+            overlayAlign: "left-0",
             category: "timetable"
         },
         {
             id: 2,
             title: "Career Roadmaps",
             description: "Explore career paths and opportunities",
-            icon: <RiRoadMapLine size={28} className="text-white" />,
-            bgStyle: { background: "linear-gradient(135deg, #E8A817 0%, #C48D0F 100%)" },
+            icon: LuCompass,
+            pane: "sw-pane-career",
+            order: "order-4 lg:order-none",
+            overlayAlign: "right-0 lg:left-0 lg:right-auto",
             category: "career"
         },
         {
             id: 3,
             title: "Notifications",
             description: "Stay updated with latest news",
-            icon: <RiNotification3Line size={28} className="text-white" />,
-            bgStyle: { background: "linear-gradient(135deg, #1D4B5E 0%, #387B95 100%)" },
+            icon: LuBellRing,
+            pane: "sw-pane-notice",
+            order: "order-1 lg:order-none",
+            overlayAlign: "left-0 lg:left-auto lg:right-0",
             category: "notifications"
         },
         {
             id: 4,
             title: "Results",
             description: "Check academic performance",
-            icon: <RiBarChartLine size={28} className="text-white" />,
-            bgStyle: { background: "linear-gradient(135deg, #4A1D7A 0%, #1D4B5E 100%)" },
+            icon: LuFileMinus,
+            pane: "sw-pane-result",
+            order: "order-2 lg:order-none",
+            overlayAlign: "right-0",
             category: "results"
         }
     ]
 
+    // Touch and keyboard: close an open document panel with Esc or a tap outside
+    const tilesRef = useRef(null)
     useEffect(() => {
-        // Ensure we're on the client side and DOM is available
-        if (typeof window === 'undefined' || !document) return
-
-        try {
-            // GSAP animations for cards
-            cardsRef.current.forEach((card, index) => {
-                if (card) {
-                    gsap.fromTo(card,
-                        {
-                            y: 60,
-                            opacity: 0,
-                            scale: 0.9
-                        },
-                        {
-                            y: 0,
-                            opacity: 1,
-                            scale: 1,
-                            duration: 0.6,
-                            ease: "back.out(1.7)",
-                            delay: index * 0.1,
-                            scrollTrigger: {
-                                trigger: card,
-                                start: "top 85%",
-                                end: "bottom 15%",
-                                toggleActions: "play none none reverse"
-                            }
-                        }
-                    )
-                }
-            })
-        } catch (error) {
-            console.error('GSAP animation error:', error)
+        if (!activeOverlay) return undefined
+        const onKeyDown = (event) => {
+            if (event.key === 'Escape') setActiveOverlay(null)
         }
-
-        // Cleanup function to kill ScrollTrigger instances
+        const onPointerDown = (event) => {
+            if (tilesRef.current && !tilesRef.current.contains(event.target)) setActiveOverlay(null)
+        }
+        document.addEventListener('keydown', onKeyDown)
+        document.addEventListener('pointerdown', onPointerDown)
         return () => {
-            try {
-                ScrollTrigger.getAll().forEach(trigger => trigger.kill())
-            } catch (error) {
-                console.error('ScrollTrigger cleanup error:', error)
-            }
+            document.removeEventListener('keydown', onKeyDown)
+            document.removeEventListener('pointerdown', onPointerDown)
         }
-    }, [])
+    }, [activeOverlay])
+
+    const renderDocument = (doc, docIndex, keySuffix = '') => (
+        <div key={`${doc.name}${keySuffix}`} className="group">
+            <button
+                type="button"
+                onClick={() => handleDocumentClick(doc.name, doc.file)}
+                onMouseEnter={() => handleDocumentHover(doc.name)}
+                disabled={loadingDocuments}
+                className={cx(
+                    'flex w-full items-center gap-3 rounded-sw-sm p-2 text-left transition-colors duration-sw-fast',
+                    blinkingLinks.has(doc.name)
+                        ? 'bg-sw-white text-sw-black'
+                        : 'bg-sw-white/5 text-sw-white hover:bg-sw-white/10',
+                    loadingDocuments && 'cursor-not-allowed opacity-50'
+                )}
+            >
+                <span className={cx(
+                    'flex h-9 w-9 shrink-0 items-center justify-center rounded-sw-sm',
+                    blinkingLinks.has(doc.name) ? 'bg-sw-black text-sw-white' : 'bg-sw-white/10'
+                )}>
+                    <Icon icon={doc.type === 'pdf' ? LuFileText : LuImage} size="xs" />
+                </span>
+                <span className="min-w-0 flex-1">
+                    <span className={cx('block text-sw-small font-semibold', blinkingLinks.has(doc.name) && 'motion-safe:animate-pulse')}>
+                        {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
+                    </span>
+                    <span className={cx('mt-0.5 block truncate text-sw-caption', blinkingLinks.has(doc.name) ? 'text-sw-text-secondary' : 'text-sw-text-on-dark-muted')}>
+                        {doc.description}
+                    </span>
+                </span>
+                <Icon
+                    icon={LuArrowDown}
+                    size="xs"
+                    className={cx('shrink-0', blinkingLinks.has(doc.name) ? 'motion-safe:animate-bounce' : 'text-sw-text-on-dark-muted group-hover:text-sw-white')}
+                />
+            </button>
+        </div>
+    )
 
     return (
-        <section className="relative py-20 overflow-hidden">
-            {/* Subtle background elements */}
-            <div className="absolute inset-0">
-                <div className="absolute top-0 left-0 w-64 h-64 bg-[#F0E6FA]/30 dark:bg-[#231A2E]/20 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-64 h-64 bg-blue-100/30 dark:bg-blue-900/20 rounded-full blur-3xl"></div>
-            </div>
+        <div className="relative pb-sw-section pt-12 md:pt-16">
+            <Container>
+                <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." />
 
-            <div className="container mx-auto px-6 relative z-10">
-                {/* Section Header */}
-                <motion.div
-                    className="text-center mb-16"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6 }}
-                >
-                    <motion.h2
-                        className="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 mb-4"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                    >
-                        Quick <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Access</span>
-                    </motion.h2>
+                {/* Tiles */}
+                <ul ref={tilesRef} className="mx-auto grid max-w-sm grid-cols-2 gap-x-6 gap-y-8 sm:max-w-md sm:gap-x-10 lg:max-w-none lg:grid-cols-4 lg:gap-16">
+                    {quickLinks.map((link) => (
+                        <li key={link.id} className={cx('relative', link.order)}>
+                            <div
+                                className="group relative h-full"
+                                onMouseEnter={() => {
+                                    if (link.category && link.category !== 'career') {
+                                        setActiveOverlay(link.category)
+                                    }
+                                }}
+                                onMouseLeave={() => setActiveOverlay(null)}
+                            >
+                                {/* Card */}
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        if (link.category === 'career') {
+                                            setCareerModal({ isOpen: true })
+                                        } else {
+                                            setActiveOverlay(link.category)
+                                        }
+                                    }}
+                                    aria-expanded={link.category === 'career' ? undefined : activeOverlay === link.category}
+                                    aria-haspopup={link.category === 'career' ? 'dialog' : undefined}
+                                    className="flex h-full w-full flex-col rounded-sw-md bg-sw-black p-3 text-left text-sw-white ring-2 ring-inset ring-sw-border-dark transition-transform duration-sw ease-sw motion-safe:group-hover:-translate-y-1 lg:p-4"
+                                >
+                                    <span className={cx('sw-pane flex aspect-square w-full items-center justify-center rounded-sw-sm', link.pane)}>
+                                        <Icon icon={link.icon} size="xl" strokeWidth={1.25} className="text-sw-white/90" />
+                                    </span>
+                                    <span className="mt-3 flex items-end justify-between gap-2">
+                                        <span className="sw-text-gradient font-sw-display text-sw-tile">{link.title}</span>
+                                        <Icon
+                                            icon={LuArrowUpRight}
+                                            size="md"
+                                            strokeWidth={2.75}
+                                            className="mb-1 shrink-0 text-sw-gray-300 transition-transform duration-sw-fast motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5"
+                                        />
+                                    </span>
+                                    <span className="mt-1 text-sw-caption text-sw-text-on-dark-muted">{link.description}</span>
+                                </button>
 
-                    <motion.p
-                        className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                    >
-                        Hover over cards to see available documents with blinking links
-                    </motion.p>
-                </motion.div>
-
-                {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {quickLinks.map((link, index) => (
-                        <div
-                            key={link.id}
-                            ref={el => cardsRef.current[index] = el}
-                            className="group cursor-pointer relative transition-transform duration-300 ease-out hover:-translate-y-2"
-                            onMouseEnter={() => {
-                                if (link.category && link.category !== 'career') {
-                                    setActiveOverlay(link.category)
-                                }
-                            }}
-                            onMouseLeave={() => setActiveOverlay(null)}
-                            onClick={() => {
-                                if (link.category === 'career') {
-                                    setCareerModal({ isOpen: true })
-                                }
-                            }}
-                        >
-                            {/* Card */}
-                            <div className="relative h-48 bg-white dark:bg-[#231A2E] rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden group-hover:shadow-2xl transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-600">
-                                {/* Icon Container */}
-                                <div className="absolute top-6 left-1/2 transform -translate-x-1/2">
-                                    <div
-                                        className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300"
-                                        style={link.bgStyle}
-                                    >
-                                        {link.icon}
-                                    </div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="absolute bottom-6 left-0 right-0 text-center px-4">
-                                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
-                                        {link.title}
-                                    </h3>
-
-                                    <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                                        {link.description}
-                                    </p>
-                                </div>
-
-                                {/* Hover Effect */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                            </div>
-
-                            {/* Overlay - Absolute positioned, appears on hover */}
-                            <AnimatePresence>
+                                {/* Document panel: appears over the card on hover (or tap / Enter) */}
                                 {activeOverlay === link.category && documentSections[link.category] && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        exit={{ opacity: 0, y: 20, scale: 0.95 }}
-                                        transition={{ duration: 0.3, ease: "easeOut" }}
-                                        className="absolute top-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#231A2E]/95 backdrop-blur-md rounded-2xl shadow-2xl border border-[#D0E8F0] dark:border-gray-700 overflow-hidden"
+                                    <div
+                                        className={cx(
+                                            'absolute top-0 z-30 flex w-[min(20rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-sw-md bg-sw-black text-sw-white shadow-2xl ring-1 ring-sw-white/15',
+                                            link.overlayAlign
+                                        )}
                                         style={{ height: '400px' }}
                                     >
                                         {/* Overlay Header */}
-                                        <div className="p-4 bg-[#4A1D7A] text-white">
-                                            <h4 className="font-bold text-lg">
+                                        <div className="border-b border-sw-white/10 p-4">
+                                            <h3 className="text-sw-label font-bold">
                                                 {documentSections[link.category].title}
-                                            </h4>
-                                            <p className="text-sm opacity-90">
+                                            </h3>
+                                            <p className="mt-1 text-sw-caption text-sw-text-on-dark-secondary">
                                                 {documentSections[link.category].description}
                                             </p>
                                         </div>
@@ -615,9 +601,8 @@ const QuickLinks = () => {
                                         {/* Auto-scrolling Content - Negative Y scroll in loop */}
                                         <div
                                             ref={scrollContainerRef}
-                                            className="p-4 overflow-y-auto h-full relative scrollbar-hide"
+                                            className="scrollbar-hide relative min-h-0 flex-1 overflow-y-auto p-3"
                                             style={{
-                                                height: 'calc(100% - 80px)',
                                                 scrollbarWidth: 'none',
                                                 msOverflowStyle: 'none'
                                             }}
@@ -627,485 +612,225 @@ const QuickLinks = () => {
                                         >
                                             {/* Auto-scrolling container */}
                                             <div
-                                                className={`space-y-2 ${!isUserScrolling ? 'animate-scroll-up' : ''}`}
+                                                className={`space-y-2 ${!isUserScrolling ? 'motion-safe:animate-scroll-up' : ''}`}
                                                 style={{
                                                     animationDuration: '15s',
                                                     animationPlayState: isUserScrolling ? 'paused' : 'running'
                                                 }}
                                             >
                                                 {loadingDocuments ? (
-                                                    <div className="text-center py-8 text-gray-500 dark:text-gray-300">
-                                                        <svg className="animate-spin w-6 h-6 mx-auto mb-2 text-[#4A1D7A]" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/></svg>
-                                                        <p className="text-sm">Loading documents...</p>
-                                                    </div>
+                                                    <LoadingList rows={4} tone="dark" label="Loading documents..." />
                                                 ) : documentSections[link.category].documents.length === 0 ? (
-                                                    <div className="text-center py-8 text-gray-500 dark:text-gray-300">
-                                                        <svg className="w-6 h-6 mx-auto mb-2 text-[#4A1D7A]/40" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z"/><polyline points="14 2 14 8 20 8"/></svg>
-                                                        <p className="text-sm">No documents available</p>
-                                                    </div>
+                                                    <EmptyState icon={LuInbox} tone="dark" title="No documents available" />
                                                 ) : (
                                                     <>
                                                         {/* First set of documents */}
-                                                        {documentSections[link.category].documents.map((doc, docIndex) => (
-                                                    <motion.div
-                                                        key={doc.name}
-                                                        initial={{ opacity: 0, x: -20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: docIndex * 0.1 }}
-                                                        className="group"
-                                                    >
-                                                        <motion.button
-                                                            onClick={() => handleDocumentClick(doc.name, doc.file)}
-                                                            onMouseEnter={() => handleDocumentHover(doc.name)}
-                                                            disabled={loadingDocuments}
-                                                            className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
-                                                                ? 'border-[#4A1D7A] bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] shadow-lg'
-                                                                : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                                                                } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                            whileHover={loadingDocuments ? {} : { scale: 1.02 }}
-                                                            whileTap={loadingDocuments ? {} : { scale: 0.98 }}
-                                                        >
-                                                            <div className="flex items-center">
-                                                                <div className="w-8 h-8 bg-[#4A1D7A] rounded-md flex items-center justify-center mr-2">
-                                                                    {doc.type === 'pdf' ? <RiFilePdf2Line size={16} className="text-white" /> : <RiImageLine size={16} className="text-white" />}
-                                                                </div>
-                                                                <div className="flex-1">
-                                                                    <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
-                                                                        ? 'text-[#351458] animate-pulse'
-                                                                        : 'text-gray-800'
-                                                                        }`}>
-                                                                        {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
-                                                                    </h5>
-                                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5 line-clamp-1">
-                                                                        {doc.description}
-                                                                    </p>
-                                                                </div>
-                                                                <div className={`text-lg ${blinkingLinks.has(doc.name)
-                                                                    ? 'animate-bounce text-[#4A1D7A]'
-                                                                    : 'text-gray-400 group-hover:text-[#4A1D7A]'
-                                                                    }`}>
-                                                                    ↓
-                                                                </div>
-                                                            </div>
-                                                        </motion.button>
-                                                    </motion.div>
-                                                ))}
+                                                        {documentSections[link.category].documents.map((doc, docIndex) => renderDocument(doc, docIndex))}
 
                                                         {/* Duplicate set for seamless loop - only show if there are multiple items */}
-                                                        {documentSections[link.category].documents.length > 1 && documentSections[link.category].documents.map((doc, docIndex) => (
-                                                    <motion.div
-                                                        key={`${doc.name}-duplicate`}
-                                                        initial={{ opacity: 0, x: -20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: docIndex * 0.1 }}
-                                                        className="group"
-                                                    >
-                                                        <motion.button
-                                                            onClick={() => handleDocumentClick(doc.name, doc.file)}
-                                                            onMouseEnter={() => handleDocumentHover(doc.name)}
-                                                            disabled={loadingDocuments}
-                                                            className={`w-full p-2 rounded-lg border-2 transition-all duration-300 text-left ${blinkingLinks.has(doc.name)
-                                                                ? 'border-[#4A1D7A] bg-gradient-to-r from-[#F0E6FA] to-[#D0E8F0] shadow-lg'
-                                                                : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
-                                                                } ${loadingDocuments ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                                            whileHover={loadingDocuments ? {} : { scale: 1.02 }}
-                                                            whileTap={loadingDocuments ? {} : { scale: 0.98 }}
-                                                        >
-                                                            <div className="flex items-center">
-                                                                <div className="w-8 h-8 bg-[#4A1D7A] rounded-md flex items-center justify-center mr-2">
-                                                                    {doc.type === 'pdf' ? <RiFilePdf2Line size={16} className="text-white" /> : <RiImageLine size={16} className="text-white" />}
-                                                                </div>
-                                                                <div className="flex-1">
-                                                                    <h5 className={`font-semibold text-xs ${blinkingLinks.has(doc.name)
-                                                                        ? 'text-[#351458] animate-pulse'
-                                                                        : 'text-gray-800'
-                                                                        }`}>
-                                                                        {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
-                                                                    </h5>
-                                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5 line-clamp-1">
-                                                                        {doc.description}
-                                                                    </p>
-                                                                </div>
-                                                                <div className={`text-lg ${blinkingLinks.has(doc.name)
-                                                                    ? 'animate-bounce text-[#4A1D7A]'
-                                                                    : 'text-gray-400 group-hover:text-[#4A1D7A]'
-                                                                    }`}>
-                                                                    ↓
-                                                                </div>
-                                                            </div>
-                                                        </motion.button>
-                                                    </motion.div>
-                                                ))}
+                                                        {documentSections[link.category].documents.length > 1 && documentSections[link.category].documents.map((doc, docIndex) => renderDocument(doc, docIndex, '-duplicate'))}
                                                     </>
                                                 )}
                                             </div>
                                         </div>
-                                    </motion.div>
+                                    </div>
                                 )}
-                            </AnimatePresence>
-                        </div>
+                            </div>
+                        </li>
                     ))}
+                </ul>
+            </Container>
+
+            {/* Career Roadmap Modal: stepped timeline of streams → paths → careers */}
+            <Modal
+                open={careerModal.isOpen}
+                onClose={() => setCareerModal({ isOpen: false })}
+                title="🎯 Career Roadmap After 10th"
+                description="Explore diverse career paths and opportunities"
+                size="xl"
+            >
+                {/* Root Node */}
+                <div className="flex items-center gap-4 rounded-sw-md bg-sw-black p-5 text-sw-white">
+                    <span className="sw-pane sw-pane-career flex h-14 w-14 shrink-0 items-center justify-center rounded-sw-sm">
+                        <Icon icon={LuGraduationCap} size="lg" strokeWidth={1.5} />
+                    </span>
+                    <div>
+                        <h3 className="text-sw-h3 font-bold">Career Tree</h3>
+                        <p className="text-sw-body text-sw-text-on-dark-secondary">Choose Your Path After 10th</p>
+                    </div>
                 </div>
 
-                {/* Call to Action */}
-                <motion.div
-                    className="text-center mt-16"
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.3 }}
-                >
-                    <motion.button
-                        className="px-8 py-4 bg-[#4A1D7A] text-white rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                        whileHover={{ scale: 1.02, y: -2 }}
-                        whileTap={{ scale: 0.98 }}
-                    >
-                        View All Resources
-                    </motion.button>
-                </motion.div>
-            </div>
-
-            {/* Career Roadmap Modal */}
-            <AnimatePresence>
-                {careerModal.isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                        onClick={() => setCareerModal({ isOpen: false })}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.8, opacity: 0 }}
-                            className="bg-white rounded-2xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {/* Modal Header */}
-                            <div className="p-6 bg-[#4A1D7A] text-white">
-                                <div className="flex items-center justify-between">
-                                    <div>
-                                        <h3 className="text-2xl font-bold">🎯 Career Roadmap After 10th</h3>
-                                        <p className="text-sm opacity-90">Explore diverse career paths and opportunities</p>
-                                    </div>
-                                    <motion.button
-                                        onClick={() => setCareerModal({ isOpen: false })}
-                                        className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors duration-300"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <RiCloseLine size={24} />
-                                    </motion.button>
-                                </div>
-                            </div>
-
-                            {/* Tree Diagram Content */}
-                            <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-                                <div className="relative">
-                                    {/* Root Node */}
-                                    <div className="flex justify-center mb-8">
-                                        <motion.div
-                                            initial={{ scale: 0 }}
-                                            animate={{ scale: 1 }}
-                                            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                                            className="bg-[#4A1D7A] text-white rounded-2xl p-6 shadow-2xl border-4 border-white"
-                                        >
-                                            <div className="text-center">
-                                                <RiGraduationCapLine className="w-10 h-10 mb-3" />
-                                                <h3 className="text-2xl font-bold">Career Tree</h3>
-                                                <p className="text-sm opacity-90">Choose Your Path After 10th</p>
-                                            </div>
-                                        </motion.div>
-                                    </div>
-
-                                    {/* Main Branches */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                        {Object.entries(careerOptions).map(([key, stream], streamIndex) => (
-                                            <motion.div
-                                                key={key}
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 0.3 + (streamIndex * 0.1) }}
-                                                className="relative"
-                                            >
-                                                {/* Branch Line */}
-                                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-gradient-to-b from-[#4A1D7A] to-transparent"></div>
-
-                                                {/* Main Branch Node */}
-                                                <motion.div
-                                                    whileHover={{ scale: 1.05 }}
-                                                    whileTap={{ scale: 0.95 }}
-                                                    onClick={() => toggleBranch(key)}
-                                                    className={`relative cursor-pointer bg-gradient-to-br ${stream.color} text-white rounded-2xl p-6 shadow-xl border-4 border-white hover:shadow-2xl transition-all duration-300 ${expandedBranches.has(key) ? 'ring-4 ring-yellow-300 ring-opacity-50' : ''
-                                                        }`}
-                                                >
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex items-center">
-                                                            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mr-4">
-                                                                <i className={`${stream.icon} text-white text-2xl`}></i>
-                                                            </div>
-                                                            <div>
-                                                                <h4 className="text-xl font-bold">{stream.title}</h4>
-                                                                <p className="text-sm opacity-90">{stream.description}</p>
-                                                            </div>
-                                                        </div>
-                                                        <motion.div
-                                                            animate={{ rotate: expandedBranches.has(key) ? 180 : 0 }}
-                                                            transition={{ duration: 0.3 }}
-                                                            className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center"
-                                                        >
-                                                            <RiArrowDownSLine className="text-white" />
-                                                        </motion.div>
-                                                    </div>
-                                                </motion.div>
-
-                                                {/* Sub-branches (Paths) */}
-                                                <AnimatePresence>
-                                                    {expandedBranches.has(key) && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, height: 0 }}
-                                                            animate={{ opacity: 1, height: "auto" }}
-                                                            exit={{ opacity: 0, height: 0 }}
-                                                            transition={{ duration: 0.3 }}
-                                                            className="mt-6 space-y-4"
-                                                        >
-                                                            {/* Branch Lines */}
-                                                            <div className="absolute top-20 left-1/2 transform -translate-x-1/2 w-1 h-16 bg-gradient-to-b from-transparent via-gray-300 to-transparent"></div>
-
-                                                            {stream.paths.map((path, pathIndex) => (
-                                                                <motion.div
-                                                                    key={pathIndex}
-                                                                    initial={{ opacity: 0, x: -20 }}
-                                                                    animate={{ opacity: 1, x: 0 }}
-                                                                    transition={{ delay: pathIndex * 0.1 }}
-                                                                    className="relative ml-8"
-                                                                >
-                                                                    {/* Path Line */}
-                                                                    <div className="absolute -left-8 top-6 w-6 h-1 bg-gray-300"></div>
-                                                                    <div className="absolute -left-8 top-5 w-2 h-2 bg-gray-400 rounded-full"></div>
-
-                                                                    {/* Path Node */}
-                                                                    <motion.div
-                                                                        whileHover={{ scale: 1.02 }}
-                                                                        whileTap={{ scale: 0.98 }}
-                                                                        onClick={() => togglePath(`${key}-${pathIndex}`)}
-                                                                        className={`cursor-pointer bg-white rounded-xl p-4 border-2 border-gray-200 hover:border-blue-300 hover:shadow-lg transition-all duration-300 ${expandedPaths.has(`${key}-${pathIndex}`) ? 'border-blue-400 bg-[#D0E8F0]' : ''
-                                                                            }`}
-                                                                    >
-                                                                        <div className="flex items-center justify-between">
-                                                                            <div className="flex items-center">
-                                                                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center mr-3">
-                                                                                    <i className={`${path.icon} text-white text-sm`}></i>
-                                                                                </div>
-                                                                                <div>
-                                                                                    <h5 className="font-semibold text-gray-800 dark:text-gray-100">{path.name}</h5>
-                                                                                    <p className="text-xs text-gray-600 dark:text-gray-300">{path.description}</p>
-                                                                                </div>
-                                                                            </div>
-                                                                            <motion.div
-                                                                                animate={{ rotate: expandedPaths.has(`${key}-${pathIndex}`) ? 90 : 0 }}
-                                                                                transition={{ duration: 0.3 }}
-                                                                                className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center"
-                                                                            >
-                                                                                <RiArrowRightSLine className="text-gray-600 dark:text-gray-300 w-3 h-3" />
-                                                                            </motion.div>
-                                                                        </div>
-                                                                    </motion.div>
-
-                                                                    {/* Career Options (Leaves) */}
-                                                                    <AnimatePresence>
-                                                                        {expandedPaths.has(`${key}-${pathIndex}`) && (
-                                                                            <motion.div
-                                                                                initial={{ opacity: 0, height: 0 }}
-                                                                                animate={{ opacity: 1, height: "auto" }}
-                                                                                exit={{ opacity: 0, height: 0 }}
-                                                                                transition={{ duration: 0.3 }}
-                                                                                className="mt-3 ml-4 space-y-2"
-                                                                            >
-                                                                                {(showAllCareers.has(`${key}-${pathIndex}`) ? path.careers : path.careers.slice(0, 3)).map((career, careerIndex) => (
-                                                                                    <motion.div
-                                                                                        key={careerIndex}
-                                                                                        initial={{ opacity: 0, x: -10 }}
-                                                                                        animate={{ opacity: 1, x: 0 }}
-                                                                                        transition={{ delay: careerIndex * 0.05 }}
-                                                                                        className="relative"
-                                                                                    >
-                                                                                        {/* Leaf Line */}
-                                                                                        <div className="absolute -left-4 top-3 w-3 h-1 bg-gray-200"></div>
-                                                                                        <div className="absolute -left-4 top-2 w-1 h-1 bg-gray-300 rounded-full"></div>
-
-                                                                                        {/* Career Leaf */}
-                                                                                        <motion.div
-                                                                                            whileHover={{ scale: 1.02, x: 5 }}
-                                                                                            className="bg-gradient-to-r from-gray-50 to-white rounded-lg p-3 border border-gray-100 hover:border-green-300 hover:shadow-md transition-all duration-300"
-                                                                                        >
-                                                                                            <div className="flex items-center justify-between">
-                                                                                                <div className="flex-1">
-                                                                                                    <h6 className="font-medium text-sm text-gray-800 dark:text-gray-100">{career.name}</h6>
-                                                                                                    <p className="text-xs text-gray-600 dark:text-gray-300 mt-1">{career.scope}</p>
-                                                                                                </div>
-                                                                                                <div className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded-full">
-                                                                                                    {career.duration}
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </motion.div>
-                                                                                    </motion.div>
-                                                                                ))}
-
-                                                                                {/* View More Button */}
-                                                                                {path.careers.length > 3 && (
-                                                                                    <motion.div
-                                                                                        initial={{ opacity: 0 }}
-                                                                                        animate={{ opacity: 1 }}
-                                                                                        transition={{ delay: 0.2 }}
-                                                                                        className="mt-3 ml-4"
-                                                                                    >
-                                                                                        <motion.button
-                                                                                            onClick={() => toggleShowAllCareers(`${key}-${pathIndex}`)}
-                                                                                            className="flex items-center text-sm text-[#387B95] hover:text-blue-800 transition-colors duration-300"
-                                                                                            whileHover={{ scale: 1.05 }}
-                                                                                            whileTap={{ scale: 0.95 }}
-                                                                                        >
-                                                                                            {showAllCareers.has(`${key}-${pathIndex}`) ? <RiArrowUpSLine className="mr-2" /> : <RiArrowDownSLine className="mr-2" />}
-                                                                                            {showAllCareers.has(`${key}-${pathIndex}`)
-                                                                                                ? 'Show Less'
-                                                                                                : `View ${path.careers.length - 3} More Options`
-                                                                                            }
-                                                                                        </motion.button>
-                                                                                    </motion.div>
-                                                                                )}
-                                                                            </motion.div>
-                                                                        )}
-                                                                    </AnimatePresence>
-                                                                </motion.div>
-                                                            ))}
-                                                        </motion.div>
-                                                    )}
-                                                </AnimatePresence>
-                                            </motion.div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Call to Action */}
-                                <motion.div
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: 0.5 }}
-                                    className="mt-8 text-center"
+                {/* Main Branches */}
+                <ol className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    {Object.entries(careerOptions).map(([key, stream]) => {
+                        const StreamIcon = stream.icon
+                        const branchOpen = expandedBranches.has(key)
+                        return (
+                            <li key={key}>
+                                {/* Main Branch Node */}
+                                <button
+                                    type="button"
+                                    onClick={() => toggleBranch(key)}
+                                    aria-expanded={branchOpen}
+                                    className={cx(
+                                        'flex w-full items-center gap-4 rounded-sw-md bg-sw-black p-4 text-left text-sw-white transition-shadow duration-sw-fast',
+                                        branchOpen ? 'shadow-sw-offset' : 'hover:shadow-sw-soft'
+                                    )}
                                 >
-                                    <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
-                                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">Need Career Guidance?</h4>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm mb-4">Our counselors are here to help you choose the right path</p>
-                                        <motion.button
-                                            onClick={handleCareerCounselingCall}
-                                            className="px-6 py-3 bg-[#4A1D7A] text-white rounded-xl font-semibold hover:shadow-lg transition-all duration-300"
-                                            whileHover={{ scale: 1.05 }}
-                                            whileTap={{ scale: 0.95 }}
-                                        >
-                                            <RiPhoneLine className="mr-2" />
-                                            Call for Career Counseling
-                                        </motion.button>
-                                    </div>
-                                </motion.div>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                                    <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-sw-sm bg-sw-white/10">
+                                        <StreamIcon size={24} />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block text-sw-label font-bold">{stream.title}</span>
+                                        <span className="block text-sw-small font-normal text-sw-text-on-dark-secondary">{stream.description}</span>
+                                    </span>
+                                    <Icon icon={LuChevronDown} size="sm" className={cx('shrink-0 transition-transform duration-sw', branchOpen && 'rotate-180')} />
+                                </button>
+
+                                {/* Sub-branches (Paths) */}
+                                {branchOpen && (
+                                    <ol className="ml-6 mt-4 space-y-4 border-l-2 border-sw-black pl-6">
+                                        {stream.paths.map((path, pathIndex) => {
+                                            const PathIcon = path.icon
+                                            const pathKey = `${key}-${pathIndex}`
+                                            const pathOpen = expandedPaths.has(pathKey)
+                                            return (
+                                                <li key={pathIndex} className="relative">
+                                                    <span aria-hidden="true" className="absolute -left-[33px] top-5 h-4 w-4 rounded-sw-pill bg-sw-black ring-4 ring-sw-white" />
+                                                    {/* Path Node */}
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => togglePath(pathKey)}
+                                                        aria-expanded={pathOpen}
+                                                        className={cx(
+                                                            'flex w-full items-center gap-3 rounded-sw-sm bg-sw-white p-3 text-left ring-1 transition-shadow duration-sw-fast',
+                                                            pathOpen ? 'ring-sw-black shadow-sw-offset' : 'ring-sw-border-light hover:shadow-sw-soft'
+                                                        )}
+                                                    >
+                                                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-sw-sm bg-sw-black text-sw-white">
+                                                            <PathIcon size={18} />
+                                                        </span>
+                                                        <span className="min-w-0 flex-1">
+                                                            <span className="block font-semibold">{path.name}</span>
+                                                            <span className="block text-sw-caption text-sw-text-muted">{path.description}</span>
+                                                        </span>
+                                                        <Icon icon={LuChevronRight} size="sm" className={cx('shrink-0 transition-transform duration-sw', pathOpen && 'rotate-90')} />
+                                                    </button>
+
+                                                    {/* Career Options (Leaves) */}
+                                                    {pathOpen && (
+                                                        <ul className="mt-3 space-y-2">
+                                                            {(showAllCareers.has(pathKey) ? path.careers : path.careers.slice(0, 3)).map((career, careerIndex) => (
+                                                                <li key={careerIndex} className="flex items-start justify-between gap-3 rounded-sw-sm bg-sw-surface-muted p-3">
+                                                                    <span className="min-w-0">
+                                                                        <span className="block text-sw-small font-semibold">{career.name}</span>
+                                                                        <span className="mt-1 block text-sw-caption text-sw-text-muted">{career.scope}</span>
+                                                                    </span>
+                                                                    <Badge tone="blue" className="shrink-0 whitespace-nowrap">{career.duration}</Badge>
+                                                                </li>
+                                                            ))}
+
+                                                            {/* View More Button */}
+                                                            {path.careers.length > 3 && (
+                                                                <li>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => toggleShowAllCareers(pathKey)}
+                                                                        className="inline-flex min-h-11 items-center gap-2 text-sw-small font-semibold underline-offset-4 hover:underline"
+                                                                    >
+                                                                        <Icon icon={LuChevronDown} size="xs" className={cx('transition-transform', showAllCareers.has(pathKey) && 'rotate-180')} />
+                                                                        {showAllCareers.has(pathKey)
+                                                                            ? 'Show Less'
+                                                                            : `View ${path.careers.length - 3} More Options`
+                                                                        }
+                                                                    </button>
+                                                                </li>
+                                                            )}
+                                                        </ul>
+                                                    )}
+                                                </li>
+                                            )
+                                        })}
+                                    </ol>
+                                )}
+                            </li>
+                        )
+                    })}
+                </ol>
+
+                {/* Call to Action */}
+                <div className="mt-8 rounded-sw-md bg-sw-surface-muted p-6 text-center">
+                    <h4 className="text-sw-h3 font-bold">Need Career Guidance?</h4>
+                    <p className="mb-4 mt-1 text-sw-body text-sw-text-secondary">Our counselors are here to help you choose the right path</p>
+                    <Button onClick={handleCareerCounselingCall} iconLeft={LuPhone}>
+                        Call for Career Counseling
+                    </Button>
+                </div>
+            </Modal>
 
             {/* PDF Viewer Modal */}
-            <AnimatePresence>
-                {pdfViewer.isOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-                        onClick={() => setPdfViewer({ isOpen: false, file: null, name: null })}
+            <Modal
+                open={pdfViewer.isOpen}
+                onClose={() => setPdfViewer({ isOpen: false, file: null, name: null })}
+                title={pdfViewer.name}
+                description="Document Viewer"
+                size="xl"
+                bodyClassName="p-0 sm:p-0"
+            >
+                <div className="flex justify-end border-b border-sw-border-light px-5 py-3">
+                    {/* Download Button */}
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        iconLeft={LuDownload}
+                        onClick={() => {
+                            const fileUrl = pdfViewer.file
+                            const link = document.createElement('a')
+                            link.href = fileUrl
+                            link.download = pdfViewer.name || 'document'
+                            link.target = '_blank'
+                            link.style.display = 'none'
+                            document.body.appendChild(link)
+                            link.click()
+                            document.body.removeChild(link)
+                        }}
                     >
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.8, opacity: 0 }}
-                            className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {/* PDF Viewer Header */}
-                            <div className="flex items-center justify-between p-6 bg-[#4A1D7A] text-white">
-                                <div>
-                                    <h3 className="text-xl font-bold">{pdfViewer.name}</h3>
-                                    <p className="text-sm opacity-90">Document Viewer</p>
-                                </div>
-                                <div className="flex items-center space-x-3">
-                                    {/* Download Button */}
-                                    <motion.button
-                                        onClick={() => {
-                                            const fileUrl = pdfViewer.file
-                                            const link = document.createElement('a')
-                                            link.href = fileUrl
-                                            link.download = pdfViewer.name || 'document'
-                                            link.target = '_blank'
-                                            link.style.display = 'none'
-                                            document.body.appendChild(link)
-                                            link.click()
-                                            document.body.removeChild(link)
-                                        }}
-                                        className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors duration-300"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <RiDownloadLine className="mr-2" />
-                                        Download
-                                    </motion.button>
+                        Download
+                    </Button>
+                </div>
 
-                                    {/* Close Button */}
-                                    <motion.button
-                                        onClick={() => setPdfViewer({ isOpen: false, file: null, name: null })}
-                                        className="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-colors duration-300"
-                                        whileHover={{ scale: 1.05 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        <RiCloseLine size={24} />
-                                    </motion.button>
-                                </div>
-                            </div>
-
-                            {/* PDF Content */}
-                            <div className="h-[calc(90vh-120px)] overflow-hidden">
-                                {pdfViewer.file?.endsWith('.pdf') || pdfViewer.file?.includes('.pdf') || pdfViewer.file?.match(/\.pdf(\?|$)/i) ? (
-                                    <iframe
-                                        src={`${pdfViewer.file}#toolbar=1&navpanes=1&scrollbar=1`}
-                                        className="w-full h-full border-0"
-                                        title={pdfViewer.name}
-                                        onError={(e) => {
-                                            console.error('PDF loading error:', e)
-                                        }}
-                                        onLoad={() => {
-                                            // PDF loaded successfully
-                                        }}
-                                    />
-                                ) : (
-                                    <div className="w-full h-full flex items-center justify-center">
-                                        <img
-                                            src={pdfViewer.file}
-                                            alt={pdfViewer.name}
-                                            className="max-w-full max-h-full object-contain"
-                                            onError={(e) => {
-                                                console.error('Image loading error:', e)
-                                            }}
-                                            onLoad={() => {
-                                                // Image loaded successfully
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </section>
+                {/* PDF Content */}
+                <div className="h-[70vh] overflow-hidden">
+                    {pdfViewer.file?.endsWith('.pdf') || pdfViewer.file?.includes('.pdf') || pdfViewer.file?.match(/\.pdf(\?|$)/i) ? (
+                        <iframe
+                            src={`${pdfViewer.file}#toolbar=1&navpanes=1&scrollbar=1`}
+                            className="h-full w-full border-0"
+                            title={pdfViewer.name}
+                            onError={(e) => {
+                                console.error('PDF loading error:', e)
+                            }}
+                            onLoad={() => {
+                                // PDF loaded successfully
+                            }}
+                        />
+                    ) : (
+                        <div className="flex h-full w-full items-center justify-center">
+                            <img
+                                src={pdfViewer.file}
+                                alt={pdfViewer.name}
+                                className="max-h-full max-w-full object-contain"
+                                onError={(e) => {
+                                    console.error('Image loading error:', e)
+                                }}
+                                onLoad={() => {
+                                    // Image loaded successfully
+                                }}
+                            />
+                        </div>
+                    )}
+                </div>
+            </Modal>
+        </div>
     )
 }
 

@@ -1,6 +1,8 @@
 import {useState, useEffect} from 'react';
 import { motion, AnimatePresence } from 'framer-motion'
 import axios from 'axios';
+import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
+import Icon from './site/Icon'
 
 const ApprovalsRecognitions = () => {
     const [currentSlide, setCurrentSlide] = useState(0)
@@ -70,63 +72,60 @@ const ApprovalsRecognitions = () => {
     if (loading) return null;
     if (universities.length === 0) return null; // Don't render section if no approvals
 
+    const arrowClass = 'absolute top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-sw-pill bg-sw-glass/90 text-sw-white ring-1 ring-inset ring-sw-white/10 transition-colors duration-sw-fast hover:bg-sw-glass-hover'
+
     return (
-        <div
-            className="py-4 md:py-8"
-            style={{ background: "linear-gradient(135deg, #4A1D7A 0%, #1D4B5E 100%)" }}
-        >
-            <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="sw-section bg-sw-black text-sw-text-on-dark">
+            <div className="sw-container relative">
                 {/* Card Slider */}
-                <div className="relative max-w-6xl mx-auto">
+                <div className="relative mx-auto px-12 md:px-16">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentSlide}
-                            initial={{ x: 300, opacity: 0 }}
+                            initial={{ x: 60, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            exit={{ x: -300, opacity: 0 }}
-                            transition={{ duration: 0.8, ease: "easeInOut" }}
-                            className="backdrop-blur-sm rounded-2xl md:rounded-3xl shadow-2xl p-4 md:p-8 bg-white/5 border border-white/10"
+                            exit={{ x: -60, opacity: 0 }}
+                            transition={{ duration: 0.5, ease: "easeInOut" }}
+                            className="rounded-sw-md bg-sw-white/5 p-5 ring-1 ring-sw-white/10 md:p-8"
                         >
                             {/* University Name */}
-                            <div className="text-center mb-3 md:mb-6">
-                                <h3 className="text-lg md:text-3xl font-bold text-white mb-1 md:mb-2">
+                            <div className="mb-6 text-center">
+                                <h3 className="text-sw-h2 font-bold">
                                     {universities[currentSlide].name}
                                 </h3>
-                                <h2 className="text-sm md:text-lg font-bold text-white mb-2 md:mb-3">
+                                <h2 className="mt-1 text-sw-subtitle text-sw-text-on-dark-secondary">
                                     Approvals & Recognitions
                                 </h2>
-                                <div className="w-20 md:w-32 h-0.5 md:h-1 bg-white/50 border border-white/10 mx-auto rounded-full"></div>
                             </div>
 
                             {/* Approvals Grid */}
-                            <div className="flex flex-wrap justify-center gap-3 md:gap-6">
+                            <div className="flex flex-wrap justify-center gap-4 md:gap-6">
                                 {(universities[currentSlide].approvals || []).map((approval, index) => (
-                                    <div
+                                    <button
+                                        type="button"
                                         key={index}
-                                        className="group cursor-pointer flex flex-col items-center"
+                                        className="group flex w-24 flex-col items-center"
                                         onClick={() => handleApprovalClick(approval)}
                                         title={`Click to download ${approval.name} approval PDF`}
                                     >
-                                        <div className="bg-white/10 hover:bg-white/20 rounded-full p-2 md:p-3 shadow-lg transition-all duration-300 group-hover:scale-105 border border-white/20 w-12 h-12 md:w-20 md:h-20 flex items-center justify-center overflow-hidden">
+                                        <span className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-sw-pill bg-sw-white p-2 transition-transform duration-sw-fast group-hover:scale-105 md:h-20 md:w-20">
                                             <img
                                                 src={approval.logo}
                                                 alt={approval.name}
-                                                className="w-8 h-8 md:w-12 md:h-12 object-contain rounded-full"
+                                                loading="lazy"
+                                                className="h-full w-full rounded-sw-pill object-contain"
                                                 onError={(e) => { e.target.src = '/Swagat_Favicon.png'; }}
                                             />
-                                        </div>
-                                        {/* Fixed height container for consistent vertical spacing */}
-                                        <div className="h-10 md:h-12 flex items-center justify-center mt-2 w-20 md:w-24">
-                                            <p className="text-[8px] md:text-[10px] font-semibold text-white/90 text-center leading-tight group-hover:text-[#E8A817] transition-colors duration-300">
-                                                {approval.name ? approval.name.split(' ').map((word, wordIndex) => (
-                                                    <span key={wordIndex}>
-                                                        {word}
-                                                        {wordIndex < approval.name.split(' ').length - 1 && <br />}
-                                                    </span>
-                                                )) : 'Approval'}
-                                            </p>
-                                        </div>
-                                    </div>
+                                        </span>
+                                        <span className="mt-2 text-center text-sw-caption font-semibold leading-tight text-sw-text-on-dark-secondary group-hover:text-sw-white">
+                                            {approval.name ? approval.name.split(' ').map((word, wordIndex) => (
+                                                <span key={wordIndex}>
+                                                    {word}
+                                                    {wordIndex < approval.name.split(' ').length - 1 && <br />}
+                                                </span>
+                                            )) : 'Approval'}
+                                        </span>
+                                    </button>
                                 ))}
                             </div>
                         </motion.div>
@@ -135,48 +134,37 @@ const ApprovalsRecognitions = () => {
                     {/* Navigation Arrows */}
                     {universities.length > 1 && (
                         <>
-                            <button
-                                onClick={prevSlide}
-                                className="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#231A2E]/20 hover:bg-white dark:bg-[#231A2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
-                            >
-                                <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                                </svg>
+                            <button type="button" onClick={prevSlide} aria-label="Previous" className={`${arrowClass} left-0`}>
+                                <Icon icon={LuChevronLeft} size="sm" />
                             </button>
-
-                            <button
-                                onClick={nextSlide}
-                                className="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-white dark:bg-[#231A2E]/20 hover:bg-white dark:bg-[#231A2E]/30 text-white p-2 md:p-3 rounded-full backdrop-blur-sm transition-all duration-300 hover:scale-110 z-20"
-                            >
-                                <svg className="w-4 h-4 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                </svg>
+                            <button type="button" onClick={nextSlide} aria-label="Next" className={`${arrowClass} right-0`}>
+                                <Icon icon={LuChevronRight} size="sm" />
                             </button>
                         </>
                     )}
 
                     {/* Slide Indicators */}
                     {universities.length > 1 && (
-                        <div className="flex justify-center mt-3 md:mt-6 space-x-2 md:space-x-3">
+                        <div className="mt-4 flex justify-center">
                             {universities.map((_, index) => (
                                 <button
+                                    type="button"
                                     key={index}
                                     onClick={() => goToSlide(index)}
-                                    className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                                        ? 'bg-white scale-125'
-                                        : 'bg-white/50 hover:bg-white/75'
-                                        }`}
-                                />
+                                    aria-label={`Go to slide ${index + 1}`}
+                                    aria-current={index === currentSlide ? 'true' : undefined}
+                                    className="flex h-11 w-8 items-center justify-center"
+                                >
+                                    <span className={`block h-2 rounded-sw-pill transition-all duration-sw ${index === currentSlide ? 'w-6 bg-sw-white' : 'w-2 bg-sw-white/40'}`} />
+                                </button>
                             ))}
                         </div>
                     )}
 
                     {/* Slide Counter */}
                     {universities.length > 1 && (
-                        <div className="text-center mt-2 md:mt-3 text-white/80">
-                            <span className="text-sm md:text-lg font-medium">
-                                {currentSlide + 1} of {universities.length}
-                            </span>
+                        <div className="text-center text-sw-small font-normal text-sw-text-on-dark-muted">
+                            {currentSlide + 1} of {universities.length}
                         </div>
                     )}
                 </div>

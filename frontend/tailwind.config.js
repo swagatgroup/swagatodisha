@@ -156,6 +156,7 @@ export default {
         'sw-header':  'var(--sw-z-header)',
         'sw-overlay': 'var(--sw-z-overlay)',
         'sw-modal':   'var(--sw-z-modal)',
+        'sw-modal-top': 'var(--sw-z-modal-top)',
       },
       animation: {
         'float':       'float 6s ease-in-out infinite',

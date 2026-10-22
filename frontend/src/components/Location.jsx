@@ -1,13 +1,9 @@
-import {useState} from 'react';
-import { 
-    RiMapPin2Fill, 
-    RiPhoneFill, 
-    RiMailFill, 
-    RiCheckLine,
-    RiBusFill,
-    RiCarFill,
-    RiTrainFill
-} from '@remixicon/react';
+import { LuBus, LuCar, LuMail, LuMap, LuMapPin, LuPhone, LuTrainFront } from 'react-icons/lu'
+import { Container, SectionHeader } from './site/Layout'
+import Badge from './site/Badge'
+import Card from './site/Card'
+import Icon from './site/Icon'
+import { DotField, PointerDoodle } from './site/Decor'
 
 const Location = () => {
     const locationData = [
@@ -27,153 +23,136 @@ const Location = () => {
         }
     ]
 
+    const reasons = [
+        { title: "Strategic Locations", tone: "blue", text: "Located in Sargiguda, Kantabanji and Ghantiguda, Sinapali with easy access to major transportation routes" },
+        { title: "Modern Infrastructure", tone: "lavender", text: "State-of-the-art facilities with the latest technology and amenities" },
+        { title: "Safe Environment", tone: "peach", text: "Secure campus with 24/7 security and a peaceful learning environment" },
+    ]
+
+    const visitOptions = [
+        { title: "By Bus", text: "Kantabanji Bus Stand - 15 minutes drive", icon: LuBus },
+        { title: "By Car", text: "NH 26 via Kantabanji - Easy access", icon: LuCar },
+        { title: "By Train", text: "Kantabanji Station - 20 minutes drive", icon: LuTrainFront },
+    ]
+
     return (
-        <section id="location" className="relative w-full py-20 overflow-hidden bg-white dark:bg-[#1A1212]">
-            {/* Background Elements */}
-            <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-0 left-0 w-96 h-96 bg-[#F0E6FA]/30 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#D0E8F0]/30 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-[#F0E6FA]/20 to-[#D0E8F0]/20 rounded-full blur-3xl"></div>
-            </div>
+        <section id="location" aria-labelledby="campuses-title" className="relative w-full overflow-hidden bg-sw-white">
+            {/* Our Campuses */}
+            <div className="sw-section relative">
+                <DotField className="inset-x-0 top-24 h-[640px]" />
+                <Container className="relative">
+                    <SectionHeader id="campuses-title" title="Our Campuses" subtitle="Inspiring spaces across Odisha." />
 
-            <div className="relative z-10 pb-12">
-                <div className="container mx-auto px-6 text-center">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-[#4A1D7A] rounded-3xl mb-6 shadow-2xl">
-                        <RiMapPin2Fill size={36} className="text-white" />
-                    </div>
-
-                    <h2 className="text-4xl md:text-6xl font-bold text-gray-800 dark:text-gray-100 mb-6">
-                        Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Locations</span>
-                    </h2>
-
-                    <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed mb-12">
-                        Visit us at our state-of-the-art campuses in Sargiguda, Kantabanji, Balangir and Ghantiguda, Sinapali, Nuapada, Odisha
-                    </p>
-
-                    {/* Maps Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:gap-[108px]">
                         {locationData.map((location, index) => (
-                            <div key={index} className="bg-white dark:bg-[#231A2E] rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 text-left hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 text-center">{location.name}</h3>
-
-                                <div className="relative w-full h-64 mb-6 rounded-xl overflow-hidden shadow-inner">
-                                    <iframe
-                                        src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${location.coordinates.lat},${location.coordinates.lng}&zoom=15&maptype=roadmap`}
-                                        width="100%"
-                                        height="100%"
-                                        style={{ border: 0 }}
-                                        allowFullScreen=""
-                                        loading="lazy"
-                                        referrerPolicy="no-referrer-when-downgrade"
-                                        title={`${location.name} Location`}
-                                    ></iframe>
+                            <article
+                                key={index}
+                                className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] items-start gap-4 md:block md:rounded-sw-md md:bg-sw-black md:p-4 md:text-sw-text-on-dark"
+                            >
+                                {/* Map card (on mobile the details sit beside it, as in the Figma) */}
+                                <div className="rounded-sw-md bg-sw-black p-2 md:rounded-none md:bg-transparent md:p-0">
+                                    <div className="sw-ph-map relative aspect-[410/388] overflow-hidden rounded-sw-sm">
+                                        <iframe
+                                            src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&center=${location.coordinates.lat},${location.coordinates.lng}&zoom=15&maptype=roadmap`}
+                                            width="100%"
+                                            height="100%"
+                                            style={{ border: 0 }}
+                                            allowFullScreen=""
+                                            loading="lazy"
+                                            referrerPolicy="no-referrer-when-downgrade"
+                                            title={`${location.name} Location`}
+                                            className="absolute inset-0 grayscale-[35%]"
+                                        ></iframe>
+                                        <h3 className="pointer-events-none absolute inset-x-0 top-0 hidden bg-gradient-to-b from-sw-black/70 to-transparent p-4 pb-10 text-sw-h3 font-semibold text-sw-white md:block">
+                                            {location.name}
+                                        </h3>
+                                    </div>
+                                    <div className="mt-2 flex justify-center md:mt-4">
+                                        <a
+                                            href={`https://www.google.com/maps/dir/?api=1&destination=${location.coordinates.lat},${location.coordinates.lng}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-sw-pill bg-sw-glass/90 px-3 text-sw-small font-semibold text-sw-white ring-1 ring-inset ring-sw-white/10 transition-colors duration-sw-fast hover:bg-sw-glass-hover md:px-5 md:text-sw-label md:font-medium"
+                                        >
+                                            Get Directions
+                                            <Icon icon={LuMapPin} size="sm" className="hidden md:block" />
+                                        </a>
+                                    </div>
                                 </div>
 
-                                <div className="space-y-3 px-2">
-                                    <div className="flex items-start gap-3">
-                                        <RiMapPin2Fill size={20} className="text-[#4A1D7A] dark:text-[#9B6FCC] flex-shrink-0 mt-1" />
-                                        <span className="text-gray-700 dark:text-gray-200 leading-relaxed">{location.address}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <RiPhoneFill size={20} className="text-[#4A1D7A] dark:text-[#9B6FCC] flex-shrink-0" />
-                                        <span className="text-gray-700 dark:text-gray-200">{location.phone}</span>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <RiMailFill size={20} className="text-[#4A1D7A] dark:text-[#9B6FCC] flex-shrink-0" />
-                                        <span className="text-gray-700 dark:text-gray-200">{location.email}</span>
-                                    </div>
+                                {/* Details */}
+                                <div className="md:mt-5 md:px-1">
+                                    <h3 className="mb-3 text-sw-label font-semibold md:hidden">{location.name}</h3>
+                                    <ul className="space-y-3 text-sw-body">
+                                        <li className="flex items-start gap-3">
+                                            <Icon icon={LuMap} size="sm" className="mt-0.5 shrink-0" />
+                                            <span className="min-w-0 break-words">{location.address}</span>
+                                        </li>
+                                        <li className="flex items-center gap-3">
+                                            <Icon icon={LuPhone} size="sm" className="shrink-0" />
+                                            <span>{location.phone}</span>
+                                        </li>
+                                        <li className="flex items-start gap-3">
+                                            <Icon icon={LuMail} size="sm" className="mt-0.5 shrink-0" />
+                                            <span className="min-w-0 break-all">{location.email}</span>
+                                        </li>
+                                    </ul>
                                 </div>
-
-                                <div className="mt-6 text-center">
-                                    <a
-                                        href={`https://www.google.com/maps/dir/?api=1&destination=${location.coordinates.lat},${location.coordinates.lng}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-block w-full py-3 bg-[#4A1D7A] text-white rounded-xl font-bold hover:bg-[#351458] transition-all duration-300 shadow-md hover:shadow-lg"
-                                    >
-                                        Get Directions
-                                    </a>
-                                </div>
-                            </div>
+                            </article>
                         ))}
                     </div>
+                </Container>
+            </div>
 
-                    {/* Additional Information Section */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-20 max-w-6xl mx-auto text-left">
-                        <div>
-                            <h3 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-8">
-                                Why Choose Our <span className="text-transparent bg-clip-text bg-[#4A1D7A]">Location</span>
-                            </h3>
-                            <div className="space-y-6">
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 bg-[#4A1D7A] rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                                        <RiCheckLine size={24} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">Strategic Locations</h4>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Located in Sargiguda, Kantabanji and Ghantiguda, Sinapali with easy access to major transportation routes</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 bg-[#E8A817] rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                                        <RiCheckLine size={24} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">Modern Infrastructure</h4>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">State-of-the-art facilities with the latest technology and amenities</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-start gap-4">
-                                    <div className="w-10 h-10 bg-[#1D4B5E] rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                                        <RiCheckLine size={24} className="text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-1">Safe Environment</h4>
-                                        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">Secure campus with 24/7 security and a peaceful learning environment</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+            {/* Why choose + Plan your visit */}
+            <div className="pb-sw-section">
+                <Container className="grid grid-cols-1 gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-16">
+                    <div>
+                        <h2 className="relative inline-block pr-14 font-sw-display text-sw-display-alt font-bold">
+                            Why Choose Our Location
+                            <PointerDoodle className="absolute -bottom-2 right-0 h-10 w-10 lg:h-14 lg:w-14" />
+                        </h2>
 
-                        <div className="bg-gradient-to-br from-[#F0E6FA] to-[#D0E8F0] dark:from-[#4A1D7A]/10 dark:to-[#1D4B5E]/10 rounded-3xl p-8 border border-white/40 dark:border-white/5 shadow-xl">
-                            <h4 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 text-center">Plan Your Visit</h4>
-
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-5 p-4 bg-white/70 dark:bg-[#231A2E]/70 backdrop-blur-sm rounded-xl shadow-sm border border-white/50 dark:border-gray-700">
-                                    <div className="w-12 h-12 bg-[#4A1D7A]/10 dark:bg-[#9B6FCC]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <RiBusFill size={24} className="text-[#4A1D7A] dark:text-[#9B6FCC]" />
-                                    </div>
-                                    <div>
-                                        <h5 className="font-bold text-gray-800 dark:text-gray-100">By Bus</h5>
-                                        <p className="text-gray-600 dark:text-gray-400 text-sm">Kantabanji Bus Stand - 15 minutes drive</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-5 p-4 bg-white/70 dark:bg-[#231A2E]/70 backdrop-blur-sm rounded-xl shadow-sm border border-white/50 dark:border-gray-700">
-                                    <div className="w-12 h-12 bg-[#1D4B5E]/10 dark:bg-[#387B95]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <RiCarFill size={24} className="text-[#1D4B5E] dark:text-[#387B95]" />
-                                    </div>
-                                    <div>
-                                        <h5 className="font-bold text-gray-800 dark:text-gray-100">By Car</h5>
-                                        <p className="text-gray-600 dark:text-gray-400 text-sm">NH 26 via Kantabanji - Easy access</p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-5 p-4 bg-white/70 dark:bg-[#231A2E]/70 backdrop-blur-sm rounded-xl shadow-sm border border-white/50 dark:border-gray-700">
-                                    <div className="w-12 h-12 bg-[#E8A817]/10 dark:bg-[#E8A817]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                                        <RiTrainFill size={24} className="text-[#E8A817]" />
-                                    </div>
-                                    <div>
-                                        <h5 className="font-bold text-gray-800 dark:text-gray-100">By Train</h5>
-                                        <p className="text-gray-600 dark:text-gray-400 text-sm">Kantabanji Station - 20 minutes drive</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Timeline */}
+                        <ol className="relative ml-3 mt-8 space-y-8 border-l-[3px] border-sw-black pb-2 pl-10 pt-6 lg:ml-6 lg:mt-10 lg:space-y-12 lg:pt-16">
+                            {reasons.map((reason, index) => (
+                                <li key={reason.title} className="relative">
+                                    <span aria-hidden="true" className="absolute -left-10 top-1/2 h-[3px] w-9 bg-sw-black" />
+                                    <Card variant="outline" className="p-3 lg:max-w-[36rem] lg:p-4">
+                                        <Badge tone={reason.tone} as="h3">{reason.title}</Badge>
+                                        <p className="mt-3 text-sw-body-lg">{reason.text}</p>
+                                    </Card>
+                                    {index === reasons.length - 1 && (
+                                        <PointerDoodle className="absolute -bottom-4 right-2 hidden h-10 w-10 lg:block" />
+                                    )}
+                                </li>
+                            ))}
+                        </ol>
                     </div>
-                </div>
+
+                    {/* Plan Your Visit */}
+                    <div className="lg:pt-24">
+                        <Card variant="panel" className="p-6 lg:p-8">
+                            <h3 className="mb-5 text-sw-h3 font-bold">Plan Your Visit</h3>
+                            <ul className="space-y-3">
+                                {visitOptions.map((option) => (
+                                    <li key={option.title} className="flex items-center gap-4 rounded-sw-sm bg-sw-white p-4 shadow-sw-input">
+                                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white">
+                                            <Icon icon={option.icon} size="sm" />
+                                        </span>
+                                        <span>
+                                            <span className="block font-bold">{option.title}</span>
+                                            <span className="block text-sw-small font-normal text-sw-text-secondary">{option.text}</span>
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </Card>
+                    </div>
+                </Container>
             </div>
         </section>
     )
 }
 
 export default Location
-

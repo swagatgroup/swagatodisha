@@ -5,6 +5,7 @@ import { cx } from './cx'
 // Shows a dark gradient placeholder until the file exists, then the image
 // fades in. Desktop + optional mobile art direction via <picture>.
 const SmartImage = ({
+    as = 'div',
     src,
     mobileSrc,
     alt = '',
@@ -17,9 +18,18 @@ const SmartImage = ({
     sizes,
 }) => {
     const [status, setStatus] = useState('loading')
+    const Tag = as
 
     return (
-        <div className={cx('relative overflow-hidden', `sw-ph-${placeholder}`, className)}>
+        <Tag
+            className={cx(
+                // positioned for the absolute <img>, unless the caller already positions the slot
+                !/\b(absolute|fixed)\b/.test(className || '') && 'relative',
+                'block overflow-hidden',
+                `sw-ph-${placeholder}`,
+                className
+            )}
+        >
             {status !== 'error' && (
                 <picture>
                     {mobileSrc && <source media="(max-width: 767px)" srcSet={mobileSrc} type="image/webp" />}
@@ -42,7 +52,7 @@ const SmartImage = ({
                     />
                 </picture>
             )}
-        </div>
+        </Tag>
     )
 }
 
