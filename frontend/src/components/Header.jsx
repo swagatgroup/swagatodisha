@@ -131,7 +131,7 @@ const Header = () => {
           <Link
             to="/"
             onClick={closeMenus}
-            className="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0"
+            className="absolute left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center lg:static lg:translate-x-0"
           >
             <img
               src={LOGO_WHITE}
@@ -198,7 +198,7 @@ const Header = () => {
                         isInstitutionsOpen ? "visible opacity-100" : "invisible opacity-0"
                       )}
                     >
-                      <div className="rounded-sw-md bg-sw-black/95 p-2 text-sw-body text-sw-white shadow-2xl ring-1 ring-sw-white/10 backdrop-blur-sw-glass">
+                      <div className="rounded-sw-md bg-sw-black/95 p-2 text-sw-body text-sw-white shadow-sw-overlay ring-1 ring-sw-white/10 backdrop-blur-sw-glass">
                         <button
                           type="button"
                           onClick={() => handleNavClick(item.href)}

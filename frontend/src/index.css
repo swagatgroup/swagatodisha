@@ -1,5 +1,4 @@
-/* ── Google Fonts: Baloo 2 (headings) + Lato (body) ── */
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Lato:wght@400;700;900&display=swap');
+/* ── Google Fonts: Baloo 2 (headings) + Lato (body) are loaded non-blocking from index.html ── */
 
 @tailwind base;
 @tailwind components;

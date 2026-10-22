@@ -91,7 +91,7 @@ const Modal = ({
                 aria-describedby={description ? descId : undefined}
                 tabIndex={-1}
                 className={cx(
-                    'flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-sw-md shadow-2xl focus:outline-none sm:rounded-sw-md',
+                    'flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-sw-md shadow-sw-overlay focus:outline-none sm:rounded-sw-md',
                     dark ? 'bg-sw-black text-sw-text-on-dark ring-1 ring-sw-white/10' : 'bg-sw-white text-sw-text',
                     SIZES[size],
                     className

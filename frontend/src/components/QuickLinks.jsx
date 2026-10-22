@@ -583,7 +583,7 @@ const QuickLinks = () => {
                                 {activeOverlay === link.category && documentSections[link.category] && (
                                     <div
                                         className={cx(
-                                            'absolute top-0 z-30 flex w-[min(20rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-sw-md bg-sw-black text-sw-white shadow-2xl ring-1 ring-sw-white/15',
+                                            'absolute top-0 z-30 flex w-[min(20rem,calc(100vw-2rem))] flex-col overflow-hidden rounded-sw-md bg-sw-black text-sw-white shadow-sw-overlay ring-1 ring-sw-white/15',
                                             link.overlayAlign
                                         )}
                                         style={{ height: '400px' }}

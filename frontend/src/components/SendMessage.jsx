@@ -466,7 +466,7 @@ const SendMessage = () => {
                                 </span>
                                 <span>
                                     <span className="block text-sw-caption uppercase tracking-wide text-sw-text-on-dark-muted">Phone</span>
-                                    <a href={`tel:${CONTACT_INFO.phone}`} className="font-semibold underline-offset-4 hover:underline">
+                                    <a href={`tel:${CONTACT_INFO.phone}`} className="sw-tap inline-flex items-center font-semibold underline-offset-4 hover:underline">
                                         {CONTACT_INFO.phone}
                                     </a>
                                 </span>
@@ -477,7 +477,7 @@ const SendMessage = () => {
                                 </span>
                                 <span className="min-w-0">
                                     <span className="block text-sw-caption uppercase tracking-wide text-sw-text-on-dark-muted">Email</span>
-                                    <a href={`mailto:${CONTACT_INFO.email}`} className="break-all font-semibold underline-offset-4 hover:underline">
+                                    <a href={`mailto:${CONTACT_INFO.email}`} className="sw-tap inline-flex items-center break-all font-semibold underline-offset-4 hover:underline">
                                         {CONTACT_INFO.email}
                                     </a>
                                 </span>

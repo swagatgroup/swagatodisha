@@ -217,6 +217,7 @@ export default {
         'sw-offset': 'var(--sw-shadow-offset)',
         'sw-soft':   'var(--sw-shadow-soft)',
         'sw-glass':  'var(--sw-shadow-glass)',
+        'sw-overlay': 'var(--sw-shadow-overlay)',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

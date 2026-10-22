@@ -246,7 +246,7 @@ const PosterCarousel = () => {
                                     onClick={() => goToSlide(index)}
                                     aria-label={`Go to slide ${index + 1}`}
                                     aria-current={index === currentSlide ? 'true' : undefined}
-                                    className="flex h-11 w-8 items-center justify-center"
+                                    className="flex h-11 w-11 items-center justify-center"
                                 >
                                     <span
                                         className={cx(

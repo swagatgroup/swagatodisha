@@ -153,7 +153,7 @@ const ApprovalsRecognitions = () => {
                                     onClick={() => goToSlide(index)}
                                     aria-label={`Go to slide ${index + 1}`}
                                     aria-current={index === currentSlide ? 'true' : undefined}
-                                    className="flex h-11 w-8 items-center justify-center"
+                                    className="flex h-11 w-11 items-center justify-center"
                                 >
                                     <span className={`block h-2 rounded-sw-pill transition-all duration-sw ${index === currentSlide ? 'w-6 bg-sw-white' : 'w-2 bg-sw-white/40'}`} />
                                 </button>

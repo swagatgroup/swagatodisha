@@ -8,7 +8,7 @@ const VARIANTS = {
     // Solid black (form submit, primary actions on light surfaces)
     primary: 'bg-sw-black text-sw-white hover:bg-sw-gray-800 disabled:bg-sw-gray-500',
     // White pill with soft shadow ("See all resources")
-    light: 'bg-sw-surface-pill text-sw-black shadow-sw-soft hover:bg-sw-white hover:shadow-md disabled:text-sw-text-muted',
+    light: 'bg-sw-surface-pill text-sw-black shadow-sw-soft hover:bg-sw-white hover:shadow-sw-input disabled:text-sw-text-muted',
     // Dark glass pill (nav, Login, Get Direction)
     glass: 'bg-sw-glass/90 text-sw-white shadow-sw-glass backdrop-blur-sw-glass ring-1 ring-inset ring-sw-white/10 hover:bg-sw-glass-hover disabled:text-sw-text-on-dark-muted',
     // Frosted pill over photography (hero CTA)

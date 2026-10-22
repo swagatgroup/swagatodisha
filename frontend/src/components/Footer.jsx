@@ -51,7 +51,7 @@ const Footer = () => {
                 icon: 'error',
                 title: 'Email Required',
                 text: 'Please enter your email address',
-                confirmButtonColor: '#4A1D7A'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             })
             return false
         }
@@ -60,7 +60,7 @@ const Footer = () => {
                 icon: 'error',
                 title: 'Invalid Email',
                 text: 'Please enter a valid email address',
-                confirmButtonColor: '#4A1D7A'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             })
             return false
         }
@@ -95,7 +95,7 @@ const Footer = () => {
                     icon: 'success',
                     title: 'Successfully Subscribed!',
                     text: 'Thank you for subscribing to our newsletter. You will receive updates about our latest news, events, and educational insights!',
-                    confirmButtonColor: '#4A1D7A',
+                    confirmButtonColor: 'rgb(var(--sw-black))',
                     confirmButtonText: 'Great!'
                 })
 
@@ -109,7 +109,7 @@ const Footer = () => {
                 icon: 'error',
                 title: 'Oops...',
                 text: 'Something went wrong! Please try again later.',
-                confirmButtonColor: '#4A1D7A'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             })
         } finally {
             setIsSubscribing(false)
@@ -122,7 +122,7 @@ const Footer = () => {
         { title: 'Support', links: footerData.support },
     ]
 
-    const linkClass = 'inline-flex min-h-11 items-center text-sw-body-lg text-sw-white transition-colors duration-sw-fast hover:text-sw-text-on-dark-secondary hover:underline underline-offset-4 lg:min-h-0'
+    const linkClass = 'sw-tap inline-flex min-h-11 items-center text-sw-body-lg text-sw-white transition-colors duration-sw-fast hover:text-sw-text-on-dark-secondary hover:underline underline-offset-4 lg:min-h-0'
 
     return (
         <footer className="relative overflow-hidden bg-sw-black text-sw-text-on-dark">
@@ -200,7 +200,7 @@ const Footer = () => {
 
             {/* Brand watermark, clipped by the bottom edge like the Figma */}
             <div aria-hidden="true" className="mt-6 flex h-[0.62em] select-none justify-center overflow-hidden font-sw-display text-sw-display-xl font-extrabold leading-none text-sw-watermark">
-                <span className="shrink-0 whitespace-nowrap">Swagat Odisha</span>
+                <span className="sw-decor-text shrink-0 whitespace-nowrap" data-text="Swagat Odisha" />
             </div>
         </footer>
     )

@@ -504,7 +504,7 @@ const ContactUs = () => {
                                 </span>
                                 <span>
                                     <span className="block text-sw-small font-normal text-sw-text-muted">Call Us</span>
-                                    <a href={`tel:${CONTACT_INFO.phone}`} className="font-semibold underline-offset-4 hover:underline">
+                                    <a href={`tel:${CONTACT_INFO.phone}`} className="sw-tap inline-flex items-center font-semibold underline-offset-4 hover:underline">
                                         {CONTACT_INFO.phone}
                                     </a>
                                 </span>
@@ -515,7 +515,7 @@ const ContactUs = () => {
                                 </span>
                                 <span className="min-w-0">
                                     <span className="block text-sw-small font-normal text-sw-text-muted">Email Us</span>
-                                    <a href={`mailto:${CONTACT_INFO.email}`} className="break-all font-semibold underline-offset-4 hover:underline">
+                                    <a href={`mailto:${CONTACT_INFO.email}`} className="sw-tap inline-flex items-center break-all font-semibold underline-offset-4 hover:underline">
                                         {CONTACT_INFO.email}
                                     </a>
                                 </span>

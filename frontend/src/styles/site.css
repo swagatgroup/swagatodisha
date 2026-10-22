@@ -170,6 +170,7 @@
   --sw-shadow-offset: 4px 4px 6px rgb(0 0 0 / 0.25);
   --sw-shadow-soft: 0 4px 16px rgb(0 0 0 / 0.10);
   --sw-shadow-glass: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --sw-shadow-overlay: 0 24px 48px rgb(0 0 0 / 0.35);
   --sw-blur-glass: 12px;
 
   /* Motion */
@@ -370,6 +371,19 @@ html:has(.site) body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/* Touch devices: 44px minimum tap height for inline/text links that are compact on desktop */
+@media (pointer: coarse) {
+  .sw-tap {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Decorative text rendered from an attribute so it isn't read or contrast-checked as content */
+:where(.sw-decor-text)::before {
+  content: attr(data-text);
 }
 
 @media (prefers-reduced-motion: reduce) {

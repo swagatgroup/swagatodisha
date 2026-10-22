@@ -65,7 +65,7 @@ const Login = ({ title }) => {
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'Please enter your email address',
-                confirmButtonColor: '#7c3aed'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             });
             return false;
         }
@@ -74,7 +74,7 @@ const Login = ({ title }) => {
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'Please enter a valid email address',
-                confirmButtonColor: '#7c3aed'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             });
             return false;
         }
@@ -85,7 +85,7 @@ const Login = ({ title }) => {
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'Please enter your password',
-                confirmButtonColor: '#7c3aed'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             });
             return false;
         }
@@ -128,7 +128,7 @@ const Login = ({ title }) => {
                     icon: 'success',
                     title: 'Login Successful!',
                     text: `Welcome back, ${userName}!`,
-                    confirmButtonColor: '#7c3aed',
+                    confirmButtonColor: 'rgb(var(--sw-black))',
                     confirmButtonText: 'Continue',
                     timer: 2000,
                     timerProgressBar: true
@@ -160,7 +160,7 @@ const Login = ({ title }) => {
                     icon: 'error',
                     title: 'Login Failed',
                     text: result.message || 'Invalid credentials. Please try again.',
-                    confirmButtonColor: '#7c3aed',
+                    confirmButtonColor: 'rgb(var(--sw-black))',
                     confirmButtonText: 'Try Again'
                 });
             }
@@ -172,7 +172,7 @@ const Login = ({ title }) => {
                 icon: 'error',
                 title: 'Login Error',
                 text: err.response?.data?.message || err.message || 'An unexpected error occurred. Please try again.',
-                confirmButtonColor: '#7c3aed',
+                confirmButtonColor: 'rgb(var(--sw-black))',
                 confirmButtonText: 'Try Again'
             });
         } finally {

@@ -114,7 +114,7 @@ const Register = () => {
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'Full name must be at least 2 characters',
-                confirmButtonColor: '#7c3aed'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             });
             return false;
         }
@@ -123,7 +123,7 @@ const Register = () => {
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'Full name can only contain alphabets and spaces',
-                confirmButtonColor: '#7c3aed'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             });
             return false;
         }
@@ -136,7 +136,7 @@ const Register = () => {
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'Phone number must be a valid 10-digit Indian mobile number',
-                confirmButtonColor: '#7c3aed'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             });
             return false;
         }
@@ -147,7 +147,7 @@ const Register = () => {
                 icon: 'error',
                 title: 'Validation Error',
                 text: 'Please enter a valid email address',
-                confirmButtonColor: '#7c3aed'
+                confirmButtonColor: 'rgb(var(--sw-black))'
             });
             return false;
         }
@@ -161,7 +161,7 @@ const Register = () => {
                     icon: 'error',
                     title: 'Validation Error',
                     text: 'Password must be at least 8 characters',
-                    confirmButtonColor: '#7c3aed'
+                    confirmButtonColor: 'rgb(var(--sw-black))'
                 });
                 return false;
             }
@@ -170,7 +170,7 @@ const Register = () => {
                     icon: 'error',
                     title: 'Validation Error',
                     text: 'Password must contain at least 1 uppercase, 1 lowercase, 1 number, and 1 special character',
-                    confirmButtonColor: '#7c3aed'
+                    confirmButtonColor: 'rgb(var(--sw-black))'
                 });
                 return false;
             }
@@ -181,7 +181,7 @@ const Register = () => {
                     icon: 'error',
                     title: 'Validation Error',
                     text: 'Passwords do not match',
-                    confirmButtonColor: '#7c3aed'
+                    confirmButtonColor: 'rgb(var(--sw-black))'
                 });
                 return false;
             }
@@ -230,7 +230,7 @@ const Register = () => {
                     icon: 'success',
                     title: 'Registration Successful!',
                     text: `Welcome ${formData.fullName}! Your account has been created successfully. Please log in to continue.`,
-                    confirmButtonColor: '#7c3aed',
+                    confirmButtonColor: 'rgb(var(--sw-black))',
                     confirmButtonText: 'Go to Login',
                     timer: 5000,
                     timerProgressBar: true
@@ -251,7 +251,7 @@ const Register = () => {
                     icon: 'error',
                     title: 'Registration Failed',
                     text: result.error || 'Registration failed. Please try again.',
-                    confirmButtonColor: '#7c3aed',
+                    confirmButtonColor: 'rgb(var(--sw-black))',
                     confirmButtonText: 'Try Again'
                 });
             }
@@ -263,7 +263,7 @@ const Register = () => {
                 icon: 'error',
                 title: 'Registration Error',
                 text: 'An unexpected error occurred. Please try again.',
-                confirmButtonColor: '#7c3aed',
+                confirmButtonColor: 'rgb(var(--sw-black))',
                 confirmButtonText: 'Try Again'
             });
         } finally {
@@ -340,7 +340,7 @@ const Register = () => {
                             type="email"
                             label="Email Address"
                             required
-                            autoComplete="username email"
+                            autoComplete="email"
                             value={formData.email}
                             onChange={handleChange}
                             placeholder="Enter email address"
