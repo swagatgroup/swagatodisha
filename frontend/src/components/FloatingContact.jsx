@@ -24,7 +24,7 @@ const FloatingContact = () => {
 
     return (
         <div 
-            className="fixed bottom-6 right-6 z-50 flex flex-col items-end"
+            className="fixed bottom-4 right-4 z-40 flex flex-col items-end font-sw-sans sm:bottom-6 sm:right-6"
             style={{ 
                 transform: 'translateZ(0)',
                 WebkitTransform: 'translateZ(0)'
@@ -42,11 +42,12 @@ const FloatingContact = () => {
                         {/* Call Button */}
                         <a 
                             href={`tel:${cleanPhone}`}
-                            className="flex items-center gap-2 bg-white dark:bg-[#231A2E] p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
+                            className="group flex items-center gap-2 rounded-sw-pill bg-sw-black/90 p-1.5 text-sw-white shadow-sw-soft ring-1 ring-sw-white/15 backdrop-blur-sw-glass transition-colors duration-sw-fast hover:bg-sw-glass"
                             title="Call Us"
+                            aria-label="Call Us"
                         >
-                            <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">Call Us</span>
-                            <div className="w-10 h-10 flex items-center justify-center bg-blue-100 text-[#387B95] dark:bg-blue-900/30 dark:text-[#60A5FA] rounded-full group-hover:scale-110 transition-transform">
+                            <span className="hidden px-2 text-sw-small font-semibold sm:block">Call Us</span>
+                            <div className="flex h-11 w-11 items-center justify-center rounded-sw-pill bg-sw-white/10">
                                 <RiPhoneFill />
                             </div>
                         </a>
@@ -56,11 +57,12 @@ const FloatingContact = () => {
                             href={whatsappChannelUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 bg-white dark:bg-[#231A2E] p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
+                            className="group flex items-center gap-2 rounded-sw-pill bg-sw-black/90 p-1.5 text-sw-white shadow-sw-soft ring-1 ring-sw-white/15 backdrop-blur-sw-glass transition-colors duration-sw-fast hover:bg-sw-glass"
                             title="WhatsApp Channel"
+                            aria-label="Join Channel"
                         >
-                            <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">Join Channel</span>
-                            <div className="w-10 h-10 flex items-center justify-center bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-full group-hover:scale-110 transition-transform">
+                            <span className="hidden px-2 text-sw-small font-semibold sm:block">Join Channel</span>
+                            <div className="flex h-11 w-11 items-center justify-center rounded-sw-pill bg-sw-white/10">
                                 <RiMegaphoneFill />
                             </div>
                         </a>
@@ -70,11 +72,12 @@ const FloatingContact = () => {
                             href={whatsappDmUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 bg-white dark:bg-[#231A2E] p-2 rounded-full shadow-lg hover:shadow-xl transition-all border border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 group"
+                            className="group flex items-center gap-2 rounded-sw-pill bg-sw-black/90 p-1.5 text-sw-white shadow-sw-soft ring-1 ring-sw-white/15 backdrop-blur-sw-glass transition-colors duration-sw-fast hover:bg-sw-glass"
                             title="Chat on WhatsApp"
+                            aria-label="WhatsApp Chat"
                         >
-                            <span className="font-medium text-sm pr-2 pl-2 hidden sm:block text-gray-700 dark:text-gray-300">WhatsApp Chat</span>
-                            <div className="w-10 h-10 flex items-center justify-center bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400 rounded-full group-hover:scale-110 transition-transform">
+                            <span className="hidden px-2 text-sw-small font-semibold sm:block">WhatsApp Chat</span>
+                            <div className="flex h-11 w-11 items-center justify-center rounded-sw-pill bg-sw-white/10">
                                 <RiWhatsappFill className="text-xl" />
                             </div>
                         </a>
@@ -85,7 +88,9 @@ const FloatingContact = () => {
             {/* Main Toggle Button */}
             <button
                 onClick={toggleOpen}
-                className="w-14 h-14 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-transform hover:scale-110 focus:outline-none"
+                aria-expanded={isOpen}
+                aria-label="Contact Us"
+                className="flex h-14 w-14 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white shadow-sw-soft ring-2 ring-sw-white/80 transition-transform duration-sw-fast motion-safe:hover:scale-105 focus:outline-none focus-visible:ring-4 focus-visible:ring-sw-focus"
                 style={{ transform: 'translateZ(0)' }}
                 title="Contact Us"
             >
