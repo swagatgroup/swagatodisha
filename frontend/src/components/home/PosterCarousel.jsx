@@ -5,10 +5,10 @@ import { normalizeImageUrl } from '../../utils/imageUtils';
 import { Container, SectionHeader } from '../site/Layout';
 import Icon from '../site/Icon';
 import { cx } from '../site/cx';
-// Import vertical slider images
-import verticalSlider1 from '../../assets/images/vertical slider.png';
-import verticalSlider2 from '../../assets/images/vertical slider 2.png';
-import verticalSlider3 from '../../assets/images/vertical slider 3.png';
+// Fallback vertical slider images (WebP, sized for the poster frame)
+import verticalSlider1 from '../../assets/images/poster-fallback-1.webp';
+import verticalSlider2 from '../../assets/images/poster-fallback-2.webp';
+import verticalSlider3 from '../../assets/images/poster-fallback-3.webp';
 
 // Default vertical slider images
 const DEFAULT_VERTICAL_SLIDES = [
