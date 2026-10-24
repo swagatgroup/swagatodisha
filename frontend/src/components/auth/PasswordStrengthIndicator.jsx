@@ -1,4 +1,5 @@
 import React from 'react';
+// eslint-disable-next-line no-unused-vars -- used as <motion.div>; config has no JSX usage rule
 import { motion } from 'framer-motion';
 import { LuCheck, LuX } from 'react-icons/lu';
 

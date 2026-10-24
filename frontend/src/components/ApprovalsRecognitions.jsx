@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+// eslint-disable-next-line no-unused-vars -- used as <motion.div>; config has no JSX usage rule
 import { motion, AnimatePresence } from 'framer-motion'
 import api from '../utils/api';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'

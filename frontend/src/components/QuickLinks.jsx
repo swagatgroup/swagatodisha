@@ -46,7 +46,6 @@ import { EmptyState, LoadingList } from './site/Feedback'
 import { cx } from './site/cx'
 
 const QuickLinks = () => {
-    const containerRef = useRef(null)
     const [activeOverlay, setActiveOverlay] = useState(null)
     const [blinkingLinks, setBlinkingLinks] = useState(new Set())
     const [pdfViewer, setPdfViewer] = useState({ isOpen: false, file: null, name: null })
