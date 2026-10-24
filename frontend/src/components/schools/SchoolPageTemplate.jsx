@@ -93,7 +93,7 @@ const SchoolPageTemplate = ({
                             {features.map((feature, index) => (
                                 <li key={index}>
                                     <Card variant="outline" className="h-full p-6">
-                                        <span aria-hidden="true" className="mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm bg-sw-black text-sw-h3">{feature.icon}</span>
+                                        <span aria-hidden="true" className="mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm bg-sw-black text-sw-white"><Icon icon={feature.icon} size="md" /></span>
                                         <h3 className="mb-2 text-sw-h3 font-bold">{feature.title}</h3>
                                         <p className="text-sw-body text-sw-text-secondary">{feature.description}</p>
                                     </Card>
@@ -114,7 +114,7 @@ const SchoolPageTemplate = ({
                             {programs.map((program, index) => (
                                 <li key={index}>
                                     <Card className="h-full p-6">
-                                        <span aria-hidden="true" className="sw-pane sw-pane-career mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm text-sw-h3">{program.icon}</span>
+                                        <span aria-hidden="true" className="sw-pane sw-pane-career mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm text-sw-black"><Icon icon={program.icon} size="md" /></span>
                                         <h3 className="mb-2 text-sw-h3 font-bold">{program.name}</h3>
                                         <p className="mb-4 text-sw-body text-sw-text-on-dark-secondary">{program.description}</p>
                                         <ul className="space-y-2">
@@ -140,7 +140,7 @@ const SchoolPageTemplate = ({
                             {facilities.map((facility, index) => (
                                 <li key={index}>
                                     <Card variant="outline" className="h-full p-5 text-center">
-                                        <span aria-hidden="true" className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sw-pill bg-sw-black text-sw-h3">{facility.icon}</span>
+                                        <span aria-hidden="true" className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white"><Icon icon={facility.icon} size="md" /></span>
                                         <h3 className="mb-1 text-sw-label font-bold">{facility.name}</h3>
                                         <p className="text-sw-small font-normal text-sw-text-secondary">{facility.description}</p>
                                     </Card>
@@ -158,7 +158,7 @@ const SchoolPageTemplate = ({
                             {achievements.map((achievement, index) => (
                                 <li key={index}>
                                     <Card variant="panel" className="h-full p-6">
-                                        <span aria-hidden="true" className="mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm bg-sw-badge-peach text-sw-h3">{achievement.icon}</span>
+                                        <span aria-hidden="true" className="mb-4 flex h-12 w-12 items-center justify-center rounded-sw-sm bg-sw-badge-peach text-sw-black"><Icon icon={achievement.icon} size="md" /></span>
                                         <h3 className="mb-2 text-sw-h3 font-bold">{achievement.title}</h3>
                                         <p className="text-sw-body text-sw-text-secondary">{achievement.description}</p>
                                     </Card>
@@ -175,7 +175,7 @@ const SchoolPageTemplate = ({
                         <ul className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-3">
                             {contactInfo.map((info, index) => (
                                 <li key={index} className="rounded-sw-md bg-sw-white/5 p-6 ring-1 ring-sw-white/10">
-                                    <span aria-hidden="true" className="mb-3 block text-sw-h2">{info.icon}</span>
+                                    <span aria-hidden="true" className="mb-3 flex justify-center text-sw-white"><Icon icon={info.icon} size="lg" /></span>
                                     <h3 className="mb-1 text-sw-label font-bold">{info.title}</h3>
                                     <p className="break-words text-sw-body text-sw-text-on-dark-secondary">{info.value}</p>
                                 </li>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { LuApple, LuAward, LuBookOpen, LuBus, LuDrama, LuFlaskConical, LuGlobe, LuGraduationCap, LuHandshake, LuLibrary, LuLightbulb, LuMail, LuMapPin, LuMedal, LuMonitor, LuPersonStanding, LuPhone, LuSchool, LuSprout, LuStar, LuTarget, LuTrendingUp, LuTrophy, LuUsers } from 'react-icons/lu'
 import SchoolPageTemplate from './SchoolPageTemplate'
 
 const SwagatPublicSchoolLakhna = () => {
@@ -9,32 +10,32 @@ const SwagatPublicSchoolLakhna = () => {
 
         features: [
             {
-                icon: "🌍",
+                icon: LuGlobe,
                 title: "Holistic Development",
                 description: "Comprehensive approach to education focusing on academic excellence, character building, and life skills development."
             },
             {
-                icon: "👨‍🏫",
+                icon: LuUsers,
                 title: "Expert Faculty",
                 description: "Highly qualified and experienced teachers who are committed to student success and personal growth."
             },
             {
-                icon: "📚",
+                icon: LuLibrary,
                 title: "Modern Curriculum",
                 description: "Complete CBSE curriculum from Class 1 to 10, integrated with modern teaching methodologies and technology."
             },
             {
-                icon: "🎯",
+                icon: LuTarget,
                 title: "Goal-Oriented Learning",
                 description: "Focus on setting and achieving academic and personal goals, preparing students for future challenges."
             },
             {
-                icon: "🤝",
+                icon: LuHandshake,
                 title: "Community Partnership",
                 description: "Strong collaboration with local community, parents, and organizations for comprehensive student support."
             },
             {
-                icon: "💡",
+                icon: LuLightbulb,
                 title: "Innovation Focus",
                 description: "Encouraging creative thinking, problem-solving, and innovative approaches to learning and development."
             }
@@ -42,19 +43,19 @@ const SwagatPublicSchoolLakhna = () => {
 
         programs: [
             {
-                icon: "🌱",
+                icon: LuSprout,
                 name: "Primary Education (Class 1-5)",
                 description: "Foundation years focusing on basic literacy, numeracy, and social skills with creative learning approaches.",
                 subjects: ["English", "Hindi", "Mathematics", "Environmental Studies", "Art & Craft", "Physical Education"]
             },
             {
-                icon: "📖",
+                icon: LuBookOpen,
                 name: "Middle School (Class 6-8)",
                 description: "Comprehensive curriculum with emphasis on critical thinking, problem-solving, and practical applications.",
                 subjects: ["English", "Hindi", "Mathematics", "Science", "Social Science", "Computer Science"]
             },
             {
-                icon: "🎯",
+                icon: LuTarget,
                 name: "Secondary (Class 9-10)",
                 description: "CBSE curriculum with intensive preparation for board examinations and career guidance.",
                 subjects: ["English", "Hindi", "Mathematics", "Science", "Social Science", "Computer Applications"]
@@ -63,42 +64,42 @@ const SwagatPublicSchoolLakhna = () => {
 
         facilities: [
             {
-                icon: "🏫",
+                icon: LuSchool,
                 name: "Modern Classrooms",
                 description: "Well-equipped classrooms with modern teaching aids and comfortable learning environment."
             },
             {
-                icon: "💻",
+                icon: LuMonitor,
                 name: "Computer Laboratory",
                 description: "State-of-the-art computer lab with high-speed internet and educational software."
             },
             {
-                icon: "🔬",
+                icon: LuFlaskConical,
                 name: "Science Laboratories",
                 description: "Well-equipped physics, chemistry, and biology labs for practical learning and experiments."
             },
             {
-                icon: "📚",
+                icon: LuLibrary,
                 name: "Digital Library",
                 description: "Comprehensive library with books, e-books, and digital learning resources."
             },
             {
-                icon: "🏃",
+                icon: LuPersonStanding,
                 name: "Sports Complex",
                 description: "Multi-purpose sports facility with equipment for various indoor and outdoor games."
             },
             {
-                icon: "🎭",
+                icon: LuDrama,
                 name: "Cultural Hall",
                 description: "Spacious hall for cultural events, assemblies, and community gatherings."
             },
             {
-                icon: "🍎",
+                icon: LuApple,
                 name: "Health Center",
                 description: "Well-equipped medical room with qualified healthcare professionals."
             },
             {
-                icon: "🚌",
+                icon: LuBus,
                 name: "Transport Network",
                 description: "Comprehensive bus service covering nearby villages and areas."
             }
@@ -106,32 +107,32 @@ const SwagatPublicSchoolLakhna = () => {
 
         achievements: [
             {
-                icon: "🏆",
+                icon: LuTrophy,
                 title: "Academic Excellence",
                 description: "Consistently achieving excellent results in CBSE board examinations with many students scoring above 85%."
             },
             {
-                icon: "🌟",
+                icon: LuStar,
                 title: "Regional Leadership",
                 description: "Recognized as a leading educational institution in the Nuapada district."
             },
             {
-                icon: "🎓",
+                icon: LuGraduationCap,
                 title: "Student Success",
                 description: "Students have successfully pursued higher education in reputed institutions across India."
             },
             {
-                icon: "🏅",
+                icon: LuMedal,
                 title: "Sports Achievements",
                 description: "Students have represented the district in various state-level sports competitions."
             },
             {
-                icon: "📈",
+                icon: LuTrendingUp,
                 title: "Infrastructure Development",
                 description: "Continuous improvement in school infrastructure and learning facilities."
             },
             {
-                icon: "🎖️",
+                icon: LuAward,
                 title: "Teacher Recognition",
                 description: "Several teachers have received recognition for their innovative teaching methods."
             }
@@ -139,17 +140,17 @@ const SwagatPublicSchoolLakhna = () => {
 
         contactInfo: [
             {
-                icon: "📍",
+                icon: LuMapPin,
                 title: "Address",
                 value: "Swagat Public School, Lakhna, Nuapada, Odisha - 766108"
             },
             {
-                icon: "📞",
+                icon: LuPhone,
                 title: "Call Us",
                 value: "+91 7855959544"
             },
             {
-                icon: "✉️",
+                icon: LuMail,
                 title: "Email Us",
                 value: "contact@swagatodisha.com"
             }

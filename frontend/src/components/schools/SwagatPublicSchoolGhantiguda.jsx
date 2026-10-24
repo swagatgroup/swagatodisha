@@ -1,4 +1,5 @@
 import React from 'react'
+import { LuBaby, LuBackpack, LuBus, LuFlaskConical, LuGraduationCap, LuHandshake, LuHeartPulse, LuLibrary, LuLightbulb, LuMail, LuMapPin, LuMedal, LuMonitor, LuPersonStanding, LuPhone, LuSchool, LuStar, LuTarget, LuTrendingUp, LuTrophy, LuUsers, LuUtensils, LuWheat } from 'react-icons/lu'
 import SchoolPageTemplate from './SchoolPageTemplate'
 
 const SwagatPublicSchoolGhantiguda = () => {
@@ -9,32 +10,32 @@ const SwagatPublicSchoolGhantiguda = () => {
 
         features: [
             {
-                icon: "🌾",
+                icon: LuWheat,
                 title: "Rural Education Excellence",
                 description: "Dedicated to providing quality education in rural areas, bridging the urban-rural education gap with modern teaching methods."
             },
             {
-                icon: "👨‍🏫",
+                icon: LuUsers,
                 title: "Experienced Faculty",
                 description: "Qualified and experienced teachers who understand the unique needs of rural students and provide personalized attention."
             },
             {
-                icon: "📚",
+                icon: LuLibrary,
                 title: "CBSE Curriculum",
                 description: "Complete CBSE curriculum from Class 1 to 10, ensuring students receive nationally recognized education."
             },
             {
-                icon: "🏫",
+                icon: LuSchool,
                 title: "Modern Infrastructure",
                 description: "Well-equipped classrooms, laboratories, and facilities despite being in a rural setting."
             },
             {
-                icon: "🤝",
+                icon: LuHandshake,
                 title: "Community Focus",
                 description: "Strong community engagement and support, working closely with local families and organizations."
             },
             {
-                icon: "💡",
+                icon: LuLightbulb,
                 title: "Holistic Development",
                 description: "Focus on overall personality development, character building, and life skills alongside academics."
             }
@@ -42,19 +43,19 @@ const SwagatPublicSchoolGhantiguda = () => {
 
         programs: [
             {
-                icon: "👶",
+                icon: LuBaby,
                 name: "Primary Education (Class 1-5)",
                 description: "Foundation years focusing on basic literacy, numeracy, and social skills development.",
                 subjects: ["English", "Hindi", "Mathematics", "Environmental Studies", "Art & Craft", "Physical Education"]
             },
             {
-                icon: "🎒",
+                icon: LuBackpack,
                 name: "Middle School (Class 6-8)",
                 description: "Comprehensive curriculum with emphasis on critical thinking and practical learning.",
                 subjects: ["English", "Hindi", "Mathematics", "Science", "Social Science", "Computer Science"]
             },
             {
-                icon: "🎯",
+                icon: LuTarget,
                 name: "Secondary (Class 9-10)",
                 description: "CBSE curriculum with focus on board examination preparation and career guidance.",
                 subjects: ["English", "Hindi", "Mathematics", "Science", "Social Science", "Computer Applications"]
@@ -63,42 +64,42 @@ const SwagatPublicSchoolGhantiguda = () => {
 
         facilities: [
             {
-                icon: "🏫",
+                icon: LuSchool,
                 name: "Modern Classrooms",
                 description: "Well-ventilated, spacious classrooms with comfortable seating and learning aids."
             },
             {
-                icon: "💻",
+                icon: LuMonitor,
                 name: "Computer Lab",
                 description: "Fully equipped computer laboratory with internet connectivity for digital learning."
             },
             {
-                icon: "🔬",
+                icon: LuFlaskConical,
                 name: "Science Lab",
                 description: "Well-equipped science laboratory for practical learning and experiments."
             },
             {
-                icon: "📚",
+                icon: LuLibrary,
                 name: "Library",
                 description: "Extensive library with books, reference materials, and reading space."
             },
             {
-                icon: "🏃",
+                icon: LuPersonStanding,
                 name: "Playground",
                 description: "Spacious playground for sports and physical activities."
             },
             {
-                icon: "🍽️",
+                icon: LuUtensils,
                 name: "Cafeteria",
                 description: "Clean and hygienic cafeteria serving nutritious meals."
             },
             {
-                icon: "🚌",
+                icon: LuBus,
                 name: "Transport",
                 description: "School bus service covering nearby villages and areas."
             },
             {
-                icon: "🏥",
+                icon: LuHeartPulse,
                 name: "Health Center",
                 description: "Basic medical facilities and regular health check-ups."
             }
@@ -106,32 +107,32 @@ const SwagatPublicSchoolGhantiguda = () => {
 
         achievements: [
             {
-                icon: "🏆",
+                icon: LuTrophy,
                 title: "Academic Excellence",
                 description: "Consistent good results in CBSE board examinations with many students scoring above 80%."
             },
             {
-                icon: "🌟",
+                icon: LuStar,
                 title: "Rural Education Impact",
                 description: "Significant contribution to improving education standards in rural Odisha."
             },
             {
-                icon: "🎓",
+                icon: LuGraduationCap,
                 title: "Student Success",
                 description: "Many students have successfully pursued higher education in reputed institutions."
             },
             {
-                icon: "🤝",
+                icon: LuHandshake,
                 title: "Community Recognition",
                 description: "Highly regarded by local community for quality education and student welfare."
             },
             {
-                icon: "📈",
+                icon: LuTrendingUp,
                 title: "Growth & Development",
                 description: "Continuous improvement in infrastructure and educational facilities."
             },
             {
-                icon: "🏅",
+                icon: LuMedal,
                 title: "Teacher Excellence",
                 description: "Dedicated teachers recognized for their commitment to rural education."
             }
@@ -139,17 +140,17 @@ const SwagatPublicSchoolGhantiguda = () => {
 
         contactInfo: [
             {
-                icon: "📍",
+                icon: LuMapPin,
                 title: "Address",
                 value: "Swagat Public School, Ghantiguda, Sinapali, Odisha - 766108"
             },
             {
-                icon: "📞",
+                icon: LuPhone,
                 title: "Call Us",
                 value: "+91 7855959544"
             },
             {
-                icon: "✉️",
+                icon: LuMail,
                 title: "Email Us",
                 value: "contact@swagatodisha.com"
             }

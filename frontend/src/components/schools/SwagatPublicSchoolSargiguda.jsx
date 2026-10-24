@@ -1,4 +1,5 @@
 import React from 'react'
+import { LuApple, LuBookOpen, LuBus, LuDrama, LuDumbbell, LuFlaskConical, LuGraduationCap, LuHandshake, LuLandmark, LuLibrary, LuMail, LuMapPin, LuMedal, LuMonitor, LuPalette, LuPersonStanding, LuPhone, LuSchool, LuSprout, LuStar, LuTarget, LuTrendingUp, LuTrophy, LuUsers } from 'react-icons/lu'
 import SchoolPageTemplate from './SchoolPageTemplate'
 
 const SwagatPublicSchoolSargiguda = () => {
@@ -9,32 +10,32 @@ const SwagatPublicSchoolSargiguda = () => {
 
         features: [
             {
-                icon: "🏛️",
+                icon: LuLandmark,
                 title: "Community-Centered Education",
                 description: "Deeply rooted in the local community, providing education that respects and incorporates local values and culture."
             },
             {
-                icon: "👩‍🏫",
+                icon: LuUsers,
                 title: "Qualified Teachers",
                 description: "Experienced and qualified faculty members who are passionate about teaching and student development."
             },
             {
-                icon: "📖",
+                icon: LuBookOpen,
                 title: "Comprehensive Curriculum",
                 description: "Complete CBSE curriculum from Class 1 to 10, ensuring students receive quality education at par with urban schools."
             },
             {
-                icon: "🎨",
+                icon: LuPalette,
                 title: "Cultural Integration",
                 description: "Integration of local culture and traditions with modern education, creating a unique learning experience."
             },
             {
-                icon: "🤝",
+                icon: LuHandshake,
                 title: "Parent Partnership",
                 description: "Strong collaboration with parents and guardians to ensure holistic development of every child."
             },
             {
-                icon: "💪",
+                icon: LuDumbbell,
                 title: "Character Building",
                 description: "Focus on moral values, discipline, and character development alongside academic excellence."
             }
@@ -42,19 +43,19 @@ const SwagatPublicSchoolSargiguda = () => {
 
         programs: [
             {
-                icon: "🌱",
+                icon: LuSprout,
                 name: "Primary Education (Class 1-5)",
                 description: "Foundation years focusing on basic skills, creativity, and social development.",
                 subjects: ["English", "Hindi", "Mathematics", "Environmental Studies", "Art & Craft", "Music"]
             },
             {
-                icon: "📚",
+                icon: LuLibrary,
                 name: "Middle School (Class 6-8)",
                 description: "Comprehensive curriculum with emphasis on analytical thinking and practical applications.",
                 subjects: ["English", "Hindi", "Mathematics", "Science", "Social Science", "Computer Science"]
             },
             {
-                icon: "🎯",
+                icon: LuTarget,
                 name: "Secondary (Class 9-10)",
                 description: "CBSE curriculum with intensive preparation for board examinations and future studies.",
                 subjects: ["English", "Hindi", "Mathematics", "Science", "Social Science", "Computer Applications"]
@@ -63,42 +64,42 @@ const SwagatPublicSchoolSargiguda = () => {
 
         facilities: [
             {
-                icon: "🏫",
+                icon: LuSchool,
                 name: "Spacious Classrooms",
                 description: "Well-designed classrooms with proper ventilation and comfortable learning environment."
             },
             {
-                icon: "💻",
+                icon: LuMonitor,
                 name: "Computer Laboratory",
                 description: "Modern computer lab with internet connectivity and educational software."
             },
             {
-                icon: "🔬",
+                icon: LuFlaskConical,
                 name: "Science Laboratory",
                 description: "Well-equipped science lab for hands-on learning and experiments."
             },
             {
-                icon: "📖",
+                icon: LuBookOpen,
                 name: "Resource Library",
                 description: "Comprehensive library with books, journals, and digital learning resources."
             },
             {
-                icon: "🏃",
+                icon: LuPersonStanding,
                 name: "Sports Facilities",
                 description: "Playground and sports equipment for physical education and recreation."
             },
             {
-                icon: "🎭",
+                icon: LuDrama,
                 name: "Cultural Center",
                 description: "Space for cultural activities, drama, and community events."
             },
             {
-                icon: "🍎",
+                icon: LuApple,
                 name: "Health Services",
                 description: "Basic medical facilities and regular health monitoring for students."
             },
             {
-                icon: "🚌",
+                icon: LuBus,
                 name: "Transportation",
                 description: "School bus service for safe and convenient transportation."
             }
@@ -106,32 +107,32 @@ const SwagatPublicSchoolSargiguda = () => {
 
         achievements: [
             {
-                icon: "🏆",
+                icon: LuTrophy,
                 title: "Academic Success",
                 description: "Consistent good performance in CBSE board examinations with improving results year by year."
             },
             {
-                icon: "🌟",
+                icon: LuStar,
                 title: "Community Impact",
                 description: "Significant positive impact on education standards in the Kantabanji region."
             },
             {
-                icon: "🎓",
+                icon: LuGraduationCap,
                 title: "Student Achievements",
                 description: "Students have successfully pursued higher education and professional careers."
             },
             {
-                icon: "🤝",
+                icon: LuHandshake,
                 title: "Community Recognition",
                 description: "Highly appreciated by local community for quality education and student care."
             },
             {
-                icon: "📈",
+                icon: LuTrendingUp,
                 title: "Infrastructure Growth",
                 description: "Continuous improvement in school infrastructure and learning facilities."
             },
             {
-                icon: "🏅",
+                icon: LuMedal,
                 title: "Teacher Dedication",
                 description: "Teachers recognized for their dedication and innovative teaching methods."
             }
@@ -139,17 +140,17 @@ const SwagatPublicSchoolSargiguda = () => {
 
         contactInfo: [
             {
-                icon: "📍",
+                icon: LuMapPin,
                 title: "Address",
                 value: "Swagat Public School, Sargiguda, Kantabanji, Odisha - 767039"
             },
             {
-                icon: "📞",
+                icon: LuPhone,
                 title: "Call Us",
                 value: "+91 7855959544"
             },
             {
-                icon: "✉️",
+                icon: LuMail,
                 title: "Email Us",
                 value: "contact@swagatodisha.com"
             }

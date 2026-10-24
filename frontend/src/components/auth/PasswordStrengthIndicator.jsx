@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { LuCheck, LuX } from 'react-icons/lu';
 
 const PasswordStrengthIndicator = ({ password }) => {
     const calculateStrength = (password) => {
@@ -78,23 +79,23 @@ const PasswordStrengthIndicator = ({ password }) => {
             {/* Requirements Checklist */}
             <div className="text-xs space-y-1">
                 <div className={`flex items-center ${requirements.length ? 'text-green-600' : 'text-red-500'}`}>
-                    <span className="mr-2">{requirements.length ? '✓' : '✗'}</span>
+                    <span className="mr-2">{requirements.length ? <LuCheck size={14} aria-hidden="true" /> : <LuX size={14} aria-hidden="true" />}</span>
                     At least 8 characters
                 </div>
                 <div className={`flex items-center ${requirements.lowercase ? 'text-green-600' : 'text-red-500'}`}>
-                    <span className="mr-2">{requirements.lowercase ? '✓' : '✗'}</span>
+                    <span className="mr-2">{requirements.lowercase ? <LuCheck size={14} aria-hidden="true" /> : <LuX size={14} aria-hidden="true" />}</span>
                     One lowercase letter
                 </div>
                 <div className={`flex items-center ${requirements.uppercase ? 'text-green-600' : 'text-red-500'}`}>
-                    <span className="mr-2">{requirements.uppercase ? '✓' : '✗'}</span>
+                    <span className="mr-2">{requirements.uppercase ? <LuCheck size={14} aria-hidden="true" /> : <LuX size={14} aria-hidden="true" />}</span>
                     One uppercase letter
                 </div>
                 <div className={`flex items-center ${requirements.number ? 'text-green-600' : 'text-red-500'}`}>
-                    <span className="mr-2">{requirements.number ? '✓' : '✗'}</span>
+                    <span className="mr-2">{requirements.number ? <LuCheck size={14} aria-hidden="true" /> : <LuX size={14} aria-hidden="true" />}</span>
                     One number
                 </div>
                 <div className={`flex items-center ${requirements.special ? 'text-green-600' : 'text-red-500'}`}>
-                    <span className="mr-2">{requirements.special ? '✓' : '✗'}</span>
+                    <span className="mr-2">{requirements.special ? <LuCheck size={14} aria-hidden="true" /> : <LuX size={14} aria-hidden="true" />}</span>
                     One special character (@$!%*?&)
                 </div>
             </div>

@@ -34,6 +34,7 @@ import {
     LuGraduationCap,
     LuImage,
     LuInbox,
+    LuLink,
     LuPhone,
 } from 'react-icons/lu'
 import { Container, SectionHeader } from './site/Layout'
@@ -88,7 +89,7 @@ const QuickLinks = () => {
     // Organize documents by type
     const documentSections = {
         timetable: {
-            title: "📅 Time Tables & Schedules",
+            title: "Time Tables & Schedules",
             description: "Academic schedules from different universities",
             documents: documents
                 .filter(doc => doc.type === 'timetable' && doc.isActive)
@@ -109,7 +110,7 @@ const QuickLinks = () => {
                 })
         },
         notifications: {
-            title: "📢 Important Notifications",
+            title: "Important Notifications",
             description: "Latest updates and announcements",
             documents: documents
                 .filter(doc => doc.type === 'notification' && doc.isActive)
@@ -130,7 +131,7 @@ const QuickLinks = () => {
                 })
         },
         results: {
-            title: "📊 Results & Admissions",
+            title: "Results & Admissions",
             description: "Academic results and admission information",
             documents: documents
                 .filter(doc => doc.type === 'result' && doc.isActive)
@@ -242,7 +243,7 @@ const QuickLinks = () => {
     // Comprehensive Career Options After 10th
     const careerOptions = {
         science: {
-            title: "🔬 Science Stream",
+            title: "Science Stream",
             description: "Explore the world of science and technology",
             icon: RiFlaskLine,
             color: "from-blue-500 to-cyan-500",
@@ -301,7 +302,7 @@ const QuickLinks = () => {
             ]
         },
         commerce: {
-            title: "💼 Commerce Stream",
+            title: "Commerce Stream",
             description: "Master the world of business and finance",
             icon: RiLineChartLine,
             color: "from-green-500 to-emerald-500",
@@ -350,7 +351,7 @@ const QuickLinks = () => {
             ]
         },
         arts: {
-            title: "🎨 Arts & Humanities",
+            title: "Arts & Humanities",
             description: "Express creativity and understand society",
             icon: RiPaletteLine,
             color: "from-[#4A1D7A] to-[#6B3F99]",
@@ -394,7 +395,7 @@ const QuickLinks = () => {
             ]
         },
         vocational: {
-            title: "🔧 Vocational & Technical",
+            title: "Vocational & Technical",
             description: "Learn practical skills for immediate employment",
             icon: RiToolsLine,
             color: "from-orange-500 to-red-500",
@@ -525,7 +526,7 @@ const QuickLinks = () => {
                 </span>
                 <span className="min-w-0 flex-1">
                     <span className={cx('block text-sw-small font-semibold', blinkingLinks.has(doc.name) && 'motion-safe:animate-pulse')}>
-                        {blinkingLinks.has(doc.name) ? '🔗 ' : ''}{doc.name}
+                        {blinkingLinks.has(doc.name) && <Icon icon={LuLink} size={14} className="mr-1 inline-block align-[-2px]" />}{doc.name}
                     </span>
                     <span className={cx('mt-0.5 block truncate text-sw-caption', blinkingLinks.has(doc.name) ? 'text-sw-text-secondary' : 'text-sw-text-on-dark-muted')}>
                         {doc.description}
@@ -653,7 +654,7 @@ const QuickLinks = () => {
             <Modal
                 open={careerModal.isOpen}
                 onClose={() => setCareerModal({ isOpen: false })}
-                title="🎯 Career Roadmap After 10th"
+                title="Career Roadmap After 10th"
                 description="Explore diverse career paths and opportunities"
                 size="xl"
             >

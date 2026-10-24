@@ -190,6 +190,9 @@ Marketing copy follows the AIDA rules now in `CLAUDE.md`. Factual and data conte
 | Reset password page (new) | — | Choose a new password / Use at least 8 characters, with a letter and a number. / Reset password → Password updated / Go to Login |
 | Footer Support | Student Portal, Parent Portal, Career Guidance, Scholarships, FAQs | Student Portal, Parent Portal, Career Guidance (Scholarships and FAQs removed: no pages exist) |
 | Footer legal row | Privacy Policy, Terms of Service, Cookie Policy | Privacy Policy, Terms of Service (Cookie Policy removed: no page exists) |
+| Explore section headings | 📅 Time Tables & Schedules / 📢 Important Notifications / 📊 Results & Admissions / 🎯 Career Roadmap After 10th | Same words, emoji removed |
+| Career stream headings | 🔬 Science Stream / 💼 Commerce Stream / 🎨 Arts & Humanities / 🔧 Vocational & Technical | Same words, emoji removed (each stream already shows its own icon) |
+| School pages, card icons | Emoji (🌍 👨‍🏫 📚 🏫 🏆 📍 …) | Line icons; no text changed |
 | Privacy Policy contact | Email: privacy@swagatgroup.edu.in / Phone: [Contact Number] / Address: [Institution Address] | Email: contact@swagatodisha.com / Phone: +91 7855959544 / Address: Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039 |
 
 Headings that were split into coloured spans (e.g. "Our <span>Values</span>") keep exactly the same words.
