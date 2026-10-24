@@ -4,9 +4,122 @@ import api from '../utils/api';
 import { LuChevronLeft, LuChevronRight } from 'react-icons/lu'
 import Icon from './site/Icon'
 
+// Fallback shown when the admin-managed list is empty (restored from the earlier static version).
+// Approval PDFs from that version are no longer in the repo, so badges here are not downloadable.
+const FALLBACK_APPROVALS = [
+    {
+        id: 1,
+        name: "Kalinga University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "nursing", name: "Nursing Council", logo: "/sikkim-nursing-council.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" },
+            { id: "govt", name: "Govt Approval", logo: "/Govt-of-Sikkim.png" }
+        ]
+    },
+    {
+        id: 2,
+        name: "Utkal University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" },
+            { id: "govt", name: "Govt Approval", logo: "/Govt-of-Sikkim.png" }
+        ]
+    },
+    {
+        id: 3,
+        name: "Sikkim Alpine University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "nursing", name: "Nursing Council", logo: "/sikkim-nursing-council.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" },
+            { id: "govt", name: "Govt Approval", logo: "/Govt-of-Sikkim.png" }
+        ]
+    },
+    {
+        id: 4,
+        name: "Sikkim Professional University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "nursing", name: "Nursing Council", logo: "/sikkim-nursing-council.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" },
+            { id: "govt", name: "Govt Approval", logo: "/Govt-of-Sikkim.png" }
+        ]
+    },
+    {
+        id: 5,
+        name: "Sikkim Skill University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" }
+        ]
+    },
+    {
+        id: 6,
+        name: "Asian International University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "nursing", name: "Nursing Council", logo: "/sikkim-nursing-council.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" },
+            { id: "govt", name: "Govt Approval", logo: "/Govt-of-Sikkim.png" }
+        ]
+    },
+    {
+        id: 7,
+        name: "MATS University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" },
+            { id: "govt", name: "Govt Approval", logo: "/Govt-of-Sikkim.png" }
+        ]
+    },
+    {
+        id: 8,
+        name: "Capital University",
+        approvals: [
+            { id: "ugc", name: "UGC", logo: "/UGC.png" },
+            { id: "aicte", name: "AICTE", logo: "/AICTE.png" },
+            { id: "bar", name: "Bar Council", logo: "/bar-council-of-india.png" },
+            { id: "pharmacy", name: "Pharmacy Council", logo: "/Pharmacy-Council-of-India.jpg" },
+            { id: "rci", name: "RCI", logo: "/RCI.png" },
+            { id: "nursing", name: "Nursing Council", logo: "/sikkim-nursing-council.png" },
+            { id: "aiu", name: "AIU", logo: "/association-of-indian-universities.png" },
+            { id: "govt", name: "Govt Approval", logo: "/Govt-of-Sikkim.png" }
+        ]
+    }
+]
+
 const ApprovalsRecognitions = () => {
     const [currentSlide, setCurrentSlide] = useState(0)
-    const [universities, setUniversities] = useState([]);
+    const [universities, setUniversities] = useState(FALLBACK_APPROVALS);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -18,7 +131,7 @@ const ApprovalsRecognitions = () => {
                     const activeApprovals = res.data.data.approvalsRecognitions
                         .filter(u => u.isActive !== false)
                         .sort((a, b) => (a.order || 0) - (b.order || 0));
-                    setUniversities(activeApprovals);
+                    if (activeApprovals.length) setUniversities(activeApprovals);
                 }
             } catch (error) {
                 console.error("Error fetching approvals:", error);
