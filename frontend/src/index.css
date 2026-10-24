@@ -250,11 +250,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ── Scrollbar ── */
-html { scrollbar-width: thin; scrollbar-color: rgb(var(--sw-gray-400)) transparent; }
+html { scrollbar-width: thin; scrollbar-color: rgb(var(--sw-glass)) transparent; }
 ::-webkit-scrollbar        { width: 7px; height: 7px; }
 ::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgb(var(--sw-gray-400)); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgb(var(--sw-gray-600)); }
+::-webkit-scrollbar-thumb  { background: rgb(var(--sw-glass)); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--sw-black)); }
 
 /* ── Selection ── */
 ::selection      { background: #F5A623; color: #1A1A1A; }

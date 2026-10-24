@@ -62,18 +62,18 @@
 /* ── Tokens ── */
 :root {
   /* Colour: core */
-  --sw-black: 0 0 0;
-  --sw-ink: 1 1 1;
+  --sw-black: 92 45 128;   /* brand purple #5C2D80 (name kept so existing classes still apply) */
+  --sw-ink: 74 35 104;
   --sw-white: 255 255 255;
-  --sw-glass: 58 58 58;
-  --sw-glass-hover: 74 74 74;
-  --sw-glass-rim: 73 73 73;
+  --sw-glass: 123 63 160;
+  --sw-glass-hover: 139 79 176;
+  --sw-glass-rim: 150 100 185;
   --sw-surface-muted: 248 248 248;
   --sw-surface-pill: 249 249 249;
-  --sw-border-dark: 51 51 51;
+  --sw-border-dark: 110 70 140;
   --sw-border-light: 229 229 229;
   --sw-dot: 234 234 234;
-  --sw-watermark: 19 21 22;
+  --sw-watermark: 84 40 118;
 
   /* Colour: neutral scale (0 = white) */
   --sw-gray-25: 249 249 249;
@@ -86,8 +86,8 @@
   --sw-gray-600: 96 96 96;
   --sw-gray-700: 64 64 64;
   --sw-gray-750: 58 58 58;
-  --sw-gray-800: 32 32 32;
-  --sw-gray-850: 19 21 22;
+  --sw-gray-800: 74 35 104;
+  --sw-gray-850: 61 29 87;
   --sw-gray-900: 0 0 0;
 
   /* Colour: text. Muted values are darkened from the Figma samples to pass WCAG AA */
@@ -96,8 +96,8 @@
   --sw-text-muted: 107 107 107;
   --sw-placeholder: 118 118 118;
   --sw-text-on-dark: 255 255 255;
-  --sw-text-on-dark-secondary: 191 191 191;
-  --sw-text-on-dark-muted: 138 138 138;
+  --sw-text-on-dark-secondary: 220 205 235;
+  --sw-text-on-dark-muted: 196 177 217;
 
   /* Colour: badges */
   --sw-badge-blue: 208 233 251;
