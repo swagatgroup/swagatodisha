@@ -352,7 +352,7 @@ const ContactUs = () => {
     };
 
     return (
-        <div className="sw-section relative">
+        <div className="sw-section sw-deco-light relative">
             <Container>
                 <SectionHeader
                     title="Get in touch with us"

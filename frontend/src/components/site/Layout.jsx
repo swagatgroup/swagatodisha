@@ -3,7 +3,7 @@ import { cx } from './cx'
 const SECTION_TONES = {
     light: 'bg-sw-white text-sw-text',
     muted: 'bg-sw-surface-muted text-sw-text',
-    dark: 'bg-sw-black text-sw-text-on-dark',
+    dark: 'sw-deco-navy bg-sw-black text-sw-text-on-dark',
 }
 
 // 992px measure with responsive gutters (`wide` = 1044px panel width)
@@ -39,6 +39,7 @@ export const SectionHeader = ({
     const Heading = as
     return (
         <header className={cx('mb-10 md:mb-14 lg:mb-16', align === 'center' ? 'text-center' : 'text-left', className)}>
+            <span aria-hidden="true" className={cx('sw-accent-bar mb-4 block h-1 w-12 rounded-sw-pill', align === 'center' && 'mx-auto')} />
             <Heading id={id} className="text-sw-h2 font-bold">
                 {title}
             </Heading>

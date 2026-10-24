@@ -187,7 +187,7 @@ const ApprovalsRecognitions = () => {
     const arrowClass = 'absolute top-1/2 z-20 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-sw-pill bg-sw-glass/90 text-sw-white ring-1 ring-inset ring-sw-white/10 transition-colors duration-sw-fast hover:bg-sw-glass-hover'
 
     return (
-        <div className="sw-section bg-sw-black text-sw-text-on-dark">
+        <div className="sw-section sw-deco-navy bg-sw-black text-sw-text-on-dark">
             <div className="sw-container relative">
                 {/* Card Slider */}
                 <div className="relative mx-auto px-12 md:px-16">

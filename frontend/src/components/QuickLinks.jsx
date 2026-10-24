@@ -541,7 +541,7 @@ const QuickLinks = () => {
     )
 
     return (
-        <div className="relative pb-sw-section pt-12 md:pt-16">
+        <div className="sw-deco-light relative pb-sw-section pt-12 md:pt-16">
             <Container>
                 <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." />
 
@@ -570,7 +570,7 @@ const QuickLinks = () => {
                                     }}
                                     aria-expanded={link.category === 'career' ? undefined : activeOverlay === link.category}
                                     aria-haspopup={link.category === 'career' ? 'dialog' : undefined}
-                                    className="flex h-full w-full flex-col rounded-sw-md bg-sw-black p-3 text-left text-sw-white ring-2 ring-inset ring-sw-border-dark transition-transform duration-sw ease-sw motion-safe:group-hover:-translate-y-1 lg:p-4"
+                                    className="sw-deco-card flex h-full w-full flex-col rounded-sw-md bg-sw-black p-3 text-left text-sw-white ring-2 ring-inset ring-sw-border-dark transition-transform duration-sw ease-sw motion-safe:group-hover:-translate-y-1 lg:p-4"
                                 >
                                     <span className={cx('sw-pane flex aspect-square w-full items-center justify-center rounded-sw-sm', link.pane)}>
                                         <Icon icon={link.icon} size="xl" strokeWidth={1.25} className="text-sw-white/90" />

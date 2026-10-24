@@ -1789,7 +1789,7 @@ const InstitutionTypes = () => {
     const formatFeeKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
 
     return (
-        <div className="sw-section">
+        <div className="sw-section sw-deco-light">
             <Container>
                 <SectionHeader id="institutions-title" title="Our Institutions" subtitle="Diverse pathways to academic excellence." />
 
@@ -1797,7 +1797,7 @@ const InstitutionTypes = () => {
                 <ul className="space-y-6 lg:space-y-12">
                     {institutions.map((institution) => (
                         <li key={institution.id}>
-                            <article className="group relative flex gap-4 rounded-sw-md bg-sw-black p-4 text-sw-text-on-dark transition-transform duration-sw ease-sw motion-safe:hover:-translate-y-1">
+                            <article className="sw-deco-card group relative flex gap-4 rounded-sw-md bg-sw-black p-4 text-sw-text-on-dark transition-transform duration-sw ease-sw motion-safe:hover:-translate-y-1">
                                 <SmartImage
                                     src={redesignImage(`institution-${institution.id}`)}
                                     alt=""

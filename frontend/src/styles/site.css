@@ -117,6 +117,10 @@
   /* Focus ring: readable on both white and black surfaces */
   --sw-focus: 37 99 235;
 
+  /* Brand accents (FC Barcelona-style blue and garnet) */
+  --sw-accent-blue: 0 77 152;
+  --sw-accent-garnet: 165 0 68;
+
   /* Social brand colours (Connect with us tiles) */
   --sw-brand-facebook: 24 119 242;
   --sw-brand-x: 0 0 0;
@@ -353,6 +357,43 @@ html:has(.site) body {
     radial-gradient(18% 30% at 52% 55%, #000 60%, transparent 62%),
     radial-gradient(22% 22% at 80% 78%, #000 60%, transparent 62%),
     radial-gradient(12% 16% at 90% 20%, #000 60%, transparent 62%);
+}
+
+/* Navy surfaces: fine diagonal pinstripes with soft blue and garnet light */
+:where(.sw-deco-navy) {
+  background-image:
+    repeating-linear-gradient(135deg, rgb(var(--sw-white) / 0.035) 0 1px, transparent 1px 14px),
+    radial-gradient(55% 70% at 0% 0%, rgb(var(--sw-accent-blue) / 0.45) 0%, transparent 70%),
+    radial-gradient(45% 60% at 100% 100%, rgb(var(--sw-accent-garnet) / 0.22) 0%, transparent 70%);
+}
+
+/* Navy cards: a single blue glow from the top corner */
+:where(.sw-deco-card) {
+  background-image: radial-gradient(90% 80% at 100% 0%, rgb(var(--sw-accent-blue) / 0.4) 0%, transparent 65%);
+}
+
+/* White sections: faint dot grid fading in and out near the top, with a soft blue wash */
+:where(.sw-deco-light) {
+  position: relative;
+  isolation: isolate;
+}
+:where(.sw-deco-light)::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgb(var(--sw-accent-blue) / 0.14) 1.2px, transparent 1.6px),
+    radial-gradient(60% 45% at 50% 0%, rgb(var(--sw-accent-blue) / 0.07) 0%, transparent 70%);
+  background-size: 22px 22px, 100% 100%;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, transparent 60%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, transparent 60%);
+}
+
+/* Short blue-to-garnet bar above section titles */
+:where(.sw-accent-bar) {
+  background-image: linear-gradient(90deg, rgb(var(--sw-accent-blue)) 0 50%, rgb(var(--sw-accent-garnet)) 50% 100%);
 }
 
 /* Social brand tiles (class specificity so they beat the `.site a` colour reset) */

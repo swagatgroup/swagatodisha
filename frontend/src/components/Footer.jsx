@@ -113,7 +113,7 @@ const Footer = () => {
     const linkClass = 'sw-tap inline-flex min-h-11 items-center text-sw-body-lg text-sw-white transition-colors duration-sw-fast hover:text-sw-text-on-dark-secondary hover:underline underline-offset-4 lg:min-h-0'
 
     return (
-        <footer className="relative overflow-hidden bg-sw-black text-sw-text-on-dark">
+        <footer className="sw-deco-navy relative overflow-hidden bg-sw-black text-sw-text-on-dark">
             <div className="sw-container-wide pt-16 lg:pt-20">
                 <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
                     {columns.map((column) => (

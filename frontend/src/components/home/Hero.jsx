@@ -31,6 +31,7 @@ const Hero = () => {
             />
             {/* Keeps the copy readable over any photo */}
             <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(70%_60%_at_50%_45%,rgb(var(--sw-black)/0.65)_0%,rgb(var(--sw-black)/0.25)_70%,rgb(var(--sw-black)/0.55)_100%)]" />
+            <div aria-hidden="true" className="sw-deco-navy absolute inset-0 -z-10" />
 
             <div className="sw-container flex min-h-[640px] flex-col items-center justify-center pb-16 pt-[calc(var(--sw-header-h)+3rem)] text-center md:min-h-[760px] lg:min-h-[min(100svh,1024px)] lg:pb-24">
                 <Badge tone="dark" className="mb-5">Distance education for Odisha</Badge>
