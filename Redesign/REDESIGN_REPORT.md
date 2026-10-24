@@ -263,7 +263,7 @@ Headings that were split into coloured spans (e.g. "Our <span>Values</span>") ke
 **Content:**
 
 2. **About claims:** it states "1000+ Students" and "95% student satisfaction rate". These are existing content; please confirm they're accurate (brand rule: never claim what can't be backed).
-3. **Images:** add the 13 files from `IMAGE_BRIEF.md`. Until then, the slots show gradients, with no errors.
+3. **Images:** add the remaining files from `IMAGE_BRIEF.md`. Until then, the slots show gradients, with no errors. `hero-desktop`, `hero-mobile` and `hero-pill` are filled from a stock photo: "man holding his graduation cap" by Muhammad Rizwan on Unsplash (https://unsplash.com/photos/VnydpKiCDaY, Unsplash License: free for commercial use, no attribution required). It is cropped and navy-graded. Swap it for a real Swagat graduate photo when one is available.
 4. **Footer:** add Scholarships / FAQs / Cookie Policy back once those pages exist.
 
 **Code health:**
