@@ -14,13 +14,26 @@ import api from '../../utils/api';
 import AllRecentPaymentsModal from './AllRecentPaymentsModal';
 import CourseFilters from './components/CourseFilters';
 
+const SEEN_PAYMENTS_KEY = 'sw_seen_payment_ids';
+const RECENT_PAYMENTS_REFRESH_MS = 60000;
+
+const readSeenPayments = () => {
+    try {
+        return JSON.parse(localStorage.getItem(SEEN_PAYMENTS_KEY)) || [];
+    } catch {
+        return [];
+    }
+};
+
+const paymentKey = (item) => item.installment?._id || `${item._id}-${item.installment?.installmentNumber}`;
+
 const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClick, showSessionSelector = true }) => {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
     const [paymentsOpen, setPaymentsOpen] = useState(false);
     const [recentPayments, setRecentPayments] = useState([]);
-    const [paymentsLoading, setPaymentsLoading] = useState(false);
+    const [seenPaymentIds, setSeenPaymentIds] = useState(readSeenPayments);
     const [showAllPaymentsModal, setShowAllPaymentsModal] = useState(false);
 
     // Completely new logout function — decoupled from the cursed dropdown
@@ -63,6 +76,37 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
+
+    // Recent payments for the bell (Super Admin); refreshed so new payments appear without a reload
+    useEffect(() => {
+        if (user?.role !== 'super_admin') return undefined;
+        const loadRecentPayments = async () => {
+            try {
+                const res = await api.get('/api/admin/students/recent-payments?page=1&limit=10');
+                if (res.data?.success) setRecentPayments(res.data.data || []);
+            } catch (error) {
+                console.error('Error fetching recent payments:', error);
+            }
+        };
+        loadRecentPayments();
+        const interval = setInterval(loadRecentPayments, RECENT_PAYMENTS_REFRESH_MS);
+        return () => clearInterval(interval);
+    }, [user?.role]);
+
+    const unseenPayments = recentPayments.filter((item) => !seenPaymentIds.includes(paymentKey(item))).length;
+
+    const togglePayments = () => {
+        if (!paymentsOpen) {
+            const seen = recentPayments.map(paymentKey);
+            setSeenPaymentIds(seen);
+            try {
+                localStorage.setItem(SEEN_PAYMENTS_KEY, JSON.stringify(seen));
+            } catch {
+                // Only the unread count depends on this
+            }
+        }
+        setPaymentsOpen(!paymentsOpen);
+    };
 
     const getRoleDisplayName = (role) => {
         switch (role) {
@@ -159,21 +203,21 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                             {user?.role === 'super_admin' && (
                                 <div className="relative" ref={paymentsRef}>
                                     <button
-                                        onClick={() => setPaymentsOpen(!paymentsOpen)}
+                                        onClick={togglePayments}
                                         className="p-2 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none transition-colors relative"
                                         aria-label="Recent Payments"
                                     >
                                         <BellIcon className="w-5 h-5" />
-                                        {recentPayments.length > 0 && (
-                                            <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-[#231A2E]">
-                                                {recentPayments.length}
+                                        {unseenPayments > 0 && (
+                                            <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-0.5 text-[10px] font-bold text-white bg-red-500 rounded-full border-2 border-white dark:border-[#231A2E]">
+                                                {unseenPayments > 9 ? '9+' : unseenPayments}
                                             </span>
                                         )}
                                     </button>
 
                                     {/* Payments Dropdown Menu */}
                                     {paymentsOpen && (
-                                        <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-[#231A2E] rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 z-50">
+                                        <div className="fixed inset-x-2 top-16 sm:absolute sm:inset-x-auto sm:top-auto sm:right-0 sm:mt-2 sm:w-80 bg-white dark:bg-[#231A2E] rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 dark:divide-gray-700 z-50">
                                             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#231A2E]/50 rounded-t-lg">
                                                 <div className="flex items-center justify-between">
                                                     <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">Recent Payments</h3>
@@ -183,9 +227,19 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
                                                 {recentPayments.length === 0 ? (
                                                     <div className="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-300">No recent payments found.</div>
                                                 ) : (
-                                                    recentPayments.map((item, idx) => (
-                                                        <div key={idx} className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
-                                                            <p className="text-xs font-medium text-gray-900 dark:text-gray-100">{item.studentName}</p>
+                                                    recentPayments.map((item) => (
+                                                        <div key={paymentKey(item)} className="px-4 py-3 border-b border-gray-100 dark:border-gray-700">
+                                                            <div className="flex items-start justify-between gap-3">
+                                                                <p className="min-w-0 truncate text-xs font-medium text-gray-900 dark:text-gray-100">{item.studentName || item.applicationId}</p>
+                                                                <p className="shrink-0 text-xs font-semibold text-gray-900 dark:text-gray-100">₹{Number(item.installment?.amount || 0).toLocaleString('en-IN')}</p>
+                                                            </div>
+                                                            <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-300">
+                                                                {item.installment?.date ? new Date(item.installment.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : 'No date'}
+                                                                {' · '}
+                                                                <span className={item.installment?.status === 'VERIFIED' ? 'text-green-600 dark:text-green-400' : item.installment?.status === 'REJECTED' ? 'text-red-600 dark:text-red-400' : 'text-amber-600 dark:text-amber-400'}>
+                                                                    {item.installment?.status || 'PENDING'}
+                                                                </span>
+                                                            </p>
                                                         </div>
                                                     ))
                                                 )}
