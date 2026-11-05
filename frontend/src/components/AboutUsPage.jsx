@@ -1,8 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import api from '../utils/api';
-import chairmanPhoto from '../assets/images/chairman.jpg';
-import trusteePhoto from '../assets/images/chairman-rk.jpg';
-import principalPhoto from '../assets/images/mnt_003.jpg';
+import React from 'react'
 import {
     LuBuilding2,
     LuEye,
@@ -25,22 +21,6 @@ import Icon from './site/Icon'
 import { cx } from './site/cx'
 
 const AboutUsPage = () => {
-    const [staffProfiles, setStaffProfiles] = useState([]);
-
-    useEffect(() => {
-        const fetchContent = async () => {
-            try {
-                const res = await api.get('/api/website-content');
-                if (res.data && res.data.data && res.data.data.staffProfiles) {
-                    setStaffProfiles(res.data.data.staffProfiles.filter(s => s.isActive !== false).sort((a, b) => (a.order || 0) - (b.order || 0)));
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        };
-        fetchContent();
-    }, []);
-
     const milestones = [
         {
             year: '2021',
@@ -92,27 +72,6 @@ const AboutUsPage = () => {
             description: 'Building strong relationships with students, parents, and the community',
             icon: 'fa-solid fa-users',
             color: 'from-[#4A1D7A] to-[#6B3F99]'
-        }
-    ]
-
-    const team = [
-        {
-            name: 'Mr. G. Meher',
-            position: 'Chairman',
-            image: chairmanPhoto,
-            description: 'Visionary leader with over 20 years of experience in education'
-        },
-        {
-            name: 'Mr. R.K. Meher',
-            position: 'Trustee',
-            image: trusteePhoto,
-            description: 'Dedicated trustee committed to educational excellence'
-        },
-        {
-            name: 'Mrs. Manjula Meher',
-            position: 'Principal',
-            image: principalPhoto,
-            description: 'Experienced educator focused on student success'
         }
     ]
 
@@ -209,33 +168,6 @@ const AboutUsPage = () => {
                 </Container>
             </Section>
 
-            {/* Team Section */}
-            <Section tone="muted">
-                <Container>
-                    <SectionHeader title="Leadership Team" subtitle="Meet the dedicated leaders who guide our institution towards excellence." />
-                    <ul className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                        {team.map((member, index) => (
-                            <li key={index}>
-                                <Card className="h-full p-6 text-center">
-                                    <span className="sw-ph-night mx-auto mb-4 flex h-24 w-24 items-center justify-center overflow-hidden rounded-sw-pill text-sw-h2 font-bold before:content-[attr(data-initial)]">
-                                        <img
-                                            src={member.image}
-                                            alt={member.name}
-                                            loading="lazy"
-                                            className="h-full w-full object-cover"
-                                            onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.parentElement.dataset.initial = member.name.replace(/^(Mrs|Mr|Ms|Dr)\.?\s*/, '').charAt(0); }}
-                                        />
-                                    </span>
-                                    <h3 className="mb-1 text-sw-h3 font-bold">{member.name}</h3>
-                                    <p className="mb-3"><Badge tone="dark">{member.position}</Badge></p>
-                                    <p className="text-sw-body text-sw-text-on-dark-secondary">{member.description}</p>
-                                </Card>
-                            </li>
-                        ))}
-                    </ul>
-                </Container>
-            </Section>
-
             {/* Why Choose Us Section */}
             <Section>
                 <Container className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
@@ -298,30 +230,6 @@ const AboutUsPage = () => {
                 </Container>
             </Section>
 
-            {/* Staff Profiles Section */}
-            {staffProfiles.length > 0 && (
-                <Section>
-                    <Container>
-                        <SectionHeader title="Our Team" />
-                        <ul className="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-5">
-                            {staffProfiles.map((staff, idx) => (
-                                <li key={idx}>
-                                    <Card variant="soft" className="h-full p-5 text-center">
-                                        <img
-                                            src={staff.image || '/Swagat_Favicon.png'}
-                                            alt={staff.name}
-                                            loading="lazy"
-                                            className="mx-auto mb-4 h-24 w-24 rounded-sw-pill object-cover ring-4 ring-sw-gray-50"
-                                        />
-                                        <h3 className="mb-1 text-sw-label font-bold">{staff.name}</h3>
-                                        <p className="text-sw-small font-normal text-sw-text-muted">{staff.designation}</p>
-                                    </Card>
-                                </li>
-                            ))}
-                        </ul>
-                    </Container>
-                </Section>
-            )}
         </div>
     )
 }

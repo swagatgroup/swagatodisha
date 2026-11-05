@@ -1,13 +1,30 @@
+const jwt = require('jsonwebtoken');
 const WebsiteContent = require('../models/WebsiteContent');
 
 // Get website content
+const isSignedIn = (req) => {
+    try {
+        jwt.verify((req.headers.authorization || '').split(' ')[1], process.env.JWT_SECRET);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 const getWebsiteContent = async (req, res) => {
     try {
         const content = await WebsiteContent.getContent();
 
+        // Leadership and staff details are not published on the website
+        let data = content;
+        if (!isSignedIn(req)) {
+            const { staffProfiles, chairmanMessage, ...publicContent } = content.toObject ? content.toObject() : content;
+            data = publicContent;
+        }
+
         res.status(200).json({
             success: true,
-            data: content
+            data
         });
     } catch (error) {
         console.error('Get website content error:', error);

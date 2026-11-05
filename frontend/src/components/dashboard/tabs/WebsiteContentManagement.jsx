@@ -20,12 +20,10 @@ const WebsiteContentManagement = () => {
         { id: 'navigation', name: 'Navigation', icon: '🧭' },
         { id: 'quicklinks', name: 'Quick Links', icon: '🔗' },
         { id: 'management', name: 'Management Team', icon: '👥' },
-        { id: 'chairman', name: 'Chairman Message', icon: '💬' },
         { id: 'milestone', name: 'Milestone', icon: '🏆' },
         { id: 'footer', name: 'Footer Content', icon: '📄' },
         { id: 'seo', name: 'SEO Settings', icon: '🔍' },
         { id: 'approvals', name: 'Approvals & Recognitions', icon: '🏅' },
-        { id: 'staff', name: 'Staff Profiles', icon: '👨‍💼' },
         { id: 'gallery', name: 'Gallery Management', icon: '🖼️' }
     ];
 

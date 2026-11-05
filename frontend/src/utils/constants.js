@@ -128,55 +128,6 @@ export const SOCIAL_LINKS = [
     { name: 'LinkedIn', icon: 'fa-brands fa-linkedin-in', url: 'https://Linkedin.com/in/SwagatOdisha' }
 ]
 
-// Management team
-export const MANAGEMENT_TEAM = [
-    {
-        id: 1,
-        name: 'Mr. G. Meher',
-        position: 'Chairman',
-        image: '/chairman.jpg'
-    },
-    {
-        id: 2,
-        name: 'Mr. R.K. Meher',
-        position: 'Trustee',
-        image: '/mnt_006.jpg'
-    },
-    {
-        id: 3,
-        name: 'Mr. S.K. Meher',
-        position: 'Trustee',
-        image: '/mnt_006.jpg'
-    },
-    {
-        id: 4,
-        name: 'Mrs. Manjula Meher',
-        position: 'Principal',
-        image: '/mnt_003.jpg'
-    },
-    {
-        id: 5,
-        name: 'Mr. Sushanta Bhoi',
-        position: 'Managing Director',
-        image: '/mnt_002.jpg'
-    },
-    {
-        id: 6,
-        name: 'Mr. S. Patel',
-        position: 'Marketing Director',
-        image: '/mnt_004.jpg'
-    }
-]
-
-
-// Chairman message
-export const CHAIRMAN_MESSAGE = {
-    name: 'Mr. G. Meher',
-    position: 'Chairman',
-    image: '/chairman.jpg',
-    message: `"There were various obstacles to make the empire of Swagat group of Institutions stand. However the real challenge was in giving shape to it and maintaining quality services. But with the consistent efforts of our team, now it is possible to bring a revolution. The overwhelming response of students, parents and well-wishers is the only way to judge our progress throughout the years. I would like to thank all for your immense love and support".`
-}
-
 // Milestone
 export const MILESTONE = {
     year: '2021',
