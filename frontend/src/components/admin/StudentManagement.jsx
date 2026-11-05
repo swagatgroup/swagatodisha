@@ -1074,12 +1074,17 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
         }
     };
 
-    useEffect(() => { setSelectedStudents([]); }, [currentPage]);
+    // Selection survives page changes and searches, so remember every student loaded so far
+    const loadedStudentsRef = useRef(new Map());
+    students.forEach(student => loadedStudentsRef.current.set(student._id, student));
+    const getStudentsByIds = (ids) => ids.map(id => loadedStudentsRef.current.get(id)).filter(Boolean);
+
+    useEffect(() => { setSelectedStudents([]); }, [selectedSession, listType]);
 
     // Bulk delete handlers (Super Admin only)
     const handleSelectAll = (checked) => {
         if (checked) {
-            setSelectedStudents(students.map(student => student._id));
+            setSelectedStudents([...new Set([...selectedStudents, ...students.map(student => student._id)])]);
         } else {
             setSelectedStudents([]);
         }
@@ -1136,7 +1141,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
 
     // Bulk status: only UNDER_REVIEW -> APPROVED and APPROVED -> COMPLETE, all selected rows in the same status
     const BULK_STATUS_TARGET = { UNDER_REVIEW: 'APPROVED', APPROVED: 'COMPLETE' };
-    const selectedStatuses = [...new Set(students.filter(s => selectedStudents.includes(s._id)).map(s => s.status))];
+    const selectedStatuses = [...new Set(getStudentsByIds(selectedStudents).map(s => s.status))];
     const bulkStatusTarget = selectedStatuses.length === 1 ? BULK_STATUS_TARGET[selectedStatuses[0]] : null;
     const bulkStatusLabel = (status) => (status === 'COMPLETE' ? 'COMPLETED' : status.replace('_', ' '));
     const bulkStatusBlockedMessage = selectedStatuses.length > 1
@@ -1185,9 +1190,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
             if (selectedStudents.length > 0) {
                 showLoading('Preparing export...', `Exporting ${selectedStudents.length} selected student(s)...`);
                 
-                // Filter current page students to only include selected ones
-                const selectedIds = selectedStudents.map(id => id?.toString());
-                allStudents = students.filter(student => selectedIds.includes(student._id?.toString()));
+                allStudents = getStudentsByIds(selectedStudents);
                 closeLoading();
                 
                 if (allStudents.length === 0) {
@@ -1805,7 +1808,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     const handleBulkDownloadPhotos = async () => {
         if (selectedStudents.length === 0) return;
         
-        const studentsToDownload = students.filter(s => selectedStudents.includes(s._id));
+        const studentsToDownload = getStudentsByIds(selectedStudents);
         
         Swal.fire({
             title: 'Preparing Photos...',
@@ -2279,7 +2282,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 <input
                                     type="checkbox"
-                                    checked={selectedStudents.length === students.length && students.length > 0}
+                                    checked={students.length > 0 && students.every(s => selectedStudents.includes(s._id))}
                                     onChange={(e) => handleSelectAll(e.target.checked)}
                                     className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                 />
@@ -4216,7 +4219,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                         setMigrateLoading(true);
                                         try {
                                             let referrerId = migrateSelectedId;
-                                            const targets = migrateStudent ? [migrateStudent] : students.filter(s => migrateBulkIds.includes(s._id));
+                                            const targets = migrateStudent ? [migrateStudent] : getStudentsByIds(migrateBulkIds);
                                             
                                             // For super_admin: get admins list and pick first super_admin, or use a fixed ID
                                             if (migrateRole === 'super_admin') {
