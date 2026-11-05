@@ -361,11 +361,11 @@ const ContactUs = () => {
             </Container>
 
             <Container wide>
-                <Card variant="panel" className="grid grid-cols-1 gap-10 p-5 md:p-6 lg:grid-cols-[minmax(0,368px)_minmax(0,1fr)] lg:gap-24">
+                <Card variant="panel" className="grid grid-cols-1 gap-6 p-4 md:p-5 min-[900px]:grid-cols-2 min-[900px]:gap-10">
                     {/* Contact Form */}
                     <div>
                         <h3 className="sr-only">Send Us a Message</h3>
-                        <form onSubmit={handleSubmit} className="space-y-6" encType="multipart/form-data">
+                        <form onSubmit={handleSubmit} className="space-y-3" encType="multipart/form-data">
                             <Input
                                 type="text"
                                 id="name"
@@ -414,7 +414,7 @@ const ContactUs = () => {
                                 name="message"
                                 label="Message *"
                                 hideLabel
-                                rows="5"
+                                rows="3"
                                 value={formData.message}
                                 onChange={handleInputChange}
                                 placeholder="Tell us more about your inquiry..."
@@ -472,32 +472,34 @@ const ContactUs = () => {
 
                     {/* Contact Information */}
                     <div className="text-sw-body">
-                        <h3 className="mb-4 text-sw-label font-semibold lg:text-sw-small">
+                        <h3 className="mb-2 text-sw-label font-semibold">
                             Let&apos;s Start a Conversation
                         </h3>
-                        <p className="mb-6">
+                        <p className="mb-2">
                             Ready to take the next step in your educational journey? We're here to guide you through every process, from admissions to career guidance. Our team of experts is committed to providing you with the information and support you need.
                         </p>
-                        <p className="mb-8">
+                        <p className="mb-3">
                             Whether you have questions about our programs, want to schedule a campus visit, or need assistance with the application process, don't hesitate to reach out. We believe in building lasting relationships with our students and their families.
                         </p>
 
                         {/* Logo & Company Info */}
-                        <img
-                            src={LOGO_COLOR}
-                            alt="Swagat Group of Institutions"
-                            width={LOGO_SIZE.width}
-                            height={LOGO_SIZE.height}
-                            loading="lazy"
-                            className="mb-3 h-12 w-auto"
-                        />
-                        <p className="mb-8 text-sw-small font-normal text-sw-text-secondary">
-                            Empowering students with quality education, innovative learning methods, and holistic development.
-                        </p>
+                        <div className="mb-3 flex items-center gap-3">
+                            <img
+                                src={LOGO_COLOR}
+                                alt="Swagat Group of Institutions"
+                                width={LOGO_SIZE.width}
+                                height={LOGO_SIZE.height}
+                                loading="lazy"
+                                className="h-10 w-auto shrink-0"
+                            />
+                            <p className="text-sw-small font-normal text-sw-text-secondary">
+                                Empowering students with quality education, innovative learning methods, and holistic development.
+                            </p>
+                        </div>
 
                         {/* Direct Contact Information */}
-                        <h4 className="mb-3 font-semibold">Get In Touch Directly</h4>
-                        <ul className="space-y-3">
+                        <h4 className="mb-2 font-semibold">Get In Touch Directly</h4>
+                        <ul className="grid grid-cols-1 gap-x-5 gap-y-2 sm:grid-cols-[auto_minmax(0,1fr)] min-[900px]:grid-cols-1">
                             <li className="flex items-center gap-3">
                                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-sw-pill bg-sw-black text-sw-white">
                                     <Icon icon={LuPhone} size="sm" />
@@ -521,14 +523,10 @@ const ContactUs = () => {
                                 </span>
                             </li>
                         </ul>
-                    </div>
-                </Card>
-            </Container>
 
-            {/* Social Media */}
-            <Container className="mt-10 text-center md:text-left">
-                <h3 className="mb-4 text-sw-h3 font-semibold">Connect With Us</h3>
-                <ul className="flex flex-wrap justify-center gap-4 md:justify-start">
+                        {/* Social Media */}
+                        <h4 className="mb-2 mt-3 font-semibold">Connect With Us</h4>
+                        <ul className="flex flex-wrap gap-2">
                     {SOCIAL_LINKS.map((social, index) => {
                         const SocialIcon = SOCIAL_ICON_MAP[social.name] || RiMailFill;
                         return (
@@ -537,17 +535,20 @@ const ContactUs = () => {
                                     href={social.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className={`sw-social-${social.name.toLowerCase()} flex h-[54px] w-[54px] items-center justify-center rounded-sw-md shadow-sw-soft ring-1 ring-sw-border-light transition-transform duration-sw-fast motion-safe:hover:-translate-y-0.5`}
+                                    className={`sw-social-${social.name.toLowerCase()} flex h-11 w-11 items-center justify-center rounded-sw-md shadow-sw-soft ring-1 ring-sw-border-light transition-transform duration-sw-fast motion-safe:hover:-translate-y-0.5`}
                                     title={social.name}
                                     aria-label={social.name}
                                 >
-                                    <SocialIcon size={30} aria-hidden="true" />
+                                    <SocialIcon size={24} aria-hidden="true" />
                                 </a>
                             </li>
                         );
                     })}
                 </ul>
+                    </div>
+                </Card>
             </Container>
+
         </div>
     )
 }

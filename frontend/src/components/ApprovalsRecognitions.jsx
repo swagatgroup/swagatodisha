@@ -198,10 +198,10 @@ const ApprovalsRecognitions = () => {
                             animate={{ x: 0, opacity: 1 }}
                             exit={{ x: -60, opacity: 0 }}
                             transition={{ duration: 0.5, ease: "easeInOut" }}
-                            className="rounded-sw-md bg-sw-white/5 p-5 ring-1 ring-sw-white/10 md:p-8"
+                            className="rounded-sw-md bg-sw-white/5 p-5 ring-1 ring-sw-white/10 md:p-5"
                         >
                             {/* University Name */}
-                            <div className="mb-6 text-center">
+                            <div className="mb-4 text-center">
                                 <h3 className="text-sw-h2 font-bold">
                                     {universities[currentSlide].name}
                                 </h3>
@@ -257,7 +257,7 @@ const ApprovalsRecognitions = () => {
 
                     {/* Slide Indicators */}
                     {universities.length > 1 && (
-                        <div className="mt-4 flex justify-center">
+                        <div className="mt-1 flex justify-center">
                             {universities.map((_, index) => (
                                 <button
                                     type="button"

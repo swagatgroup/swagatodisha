@@ -34,11 +34,12 @@ export const SectionHeader = ({
     tone = 'light',
     id,
     className,
+    subtitleClassName,
     children,
 }) => {
     const Heading = as
     return (
-        <header className={cx('mb-10 md:mb-14 lg:mb-16', align === 'center' ? 'text-center' : 'text-left', className)}>
+        <header className={cx('mb-6 md:mb-8', align === 'center' ? 'text-center' : 'text-left', className)}>
             <span aria-hidden="true" className={cx('sw-accent-bar mb-4 block h-1 w-12 rounded-sw-pill', align === 'center' && 'mx-auto')} />
             <Heading id={id} className="text-sw-h2 font-bold">
                 {title}
@@ -47,6 +48,7 @@ export const SectionHeader = ({
                 <p
                     className={cx(
                         'text-sw-subtitle font-normal',
+                        subtitleClassName,
                         align === 'center' && 'mx-auto max-w-[42rem]',
                         tone === 'dark' ? 'text-sw-text-on-dark-secondary' : 'text-sw-text'
                     )}

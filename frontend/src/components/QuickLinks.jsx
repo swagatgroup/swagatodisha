@@ -554,10 +554,10 @@ const QuickLinks = () => {
 
     return (
         <div className="flex h-full flex-col">
-                <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." className="min-[900px]:!mb-8" />
+                <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." className="min-[900px]:!mb-5" subtitleClassName="min-[900px]:!text-sw-body" />
 
                 {/* Tiles */}
-                <ul ref={tilesRef} className="mx-auto grid w-full max-w-sm flex-1 grid-cols-2 gap-x-6 gap-y-8 sm:max-w-md sm:gap-x-10 min-[900px]:max-w-none min-[900px]:gap-5">
+                <ul ref={tilesRef} className="mx-auto grid w-full max-w-sm flex-1 grid-cols-2 gap-x-6 gap-y-8 sm:max-w-md sm:gap-x-10 min-[900px]:max-w-none min-[900px]:gap-3 lg:gap-4">
                     {quickLinks.map((link) => {
                         const recentCount = documentSections[link.category]?.documents.filter((doc) => doc.isRecent).length || 0
                         return (
@@ -596,12 +596,12 @@ const QuickLinks = () => {
                                         )}
                                     </span>
                                     <span className="mt-3 flex items-end justify-between gap-2">
-                                        <span className="sw-text-gradient font-sw-display text-sw-tile">{link.title}</span>
+                                        <span className="sw-text-gradient min-w-0 font-sw-display text-sw-tile min-[900px]:text-sw-label">{link.title}</span>
                                         <Icon
                                             icon={LuArrowUpRight}
                                             size="md"
                                             strokeWidth={2.75}
-                                            className="mb-1 shrink-0 text-sw-gray-300 transition-transform duration-sw-fast motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5"
+                                            className="mb-1 shrink-0 text-sw-gray-300 min-[900px]:max-xl:hidden transition-transform duration-sw-fast motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:translate-x-0.5"
                                         />
                                     </span>
                                     <span className="mt-1 text-sw-caption text-sw-text-on-dark-muted">{link.description}</span>

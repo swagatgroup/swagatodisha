@@ -190,7 +190,8 @@ const PosterCarousel = () => {
                 id="posters-title"
                 title="Admissions & updates"
                 subtitle="Latest openings and announcements."
-                className="min-[900px]:!mb-8"
+                className="min-[900px]:!mb-5"
+                subtitleClassName="min-[900px]:!text-sw-body"
             />
 
             <div

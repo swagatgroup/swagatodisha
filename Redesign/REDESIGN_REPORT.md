@@ -240,6 +240,23 @@ The live posters were replaced by 7 posters in landscape and portrait, built fro
 - The site used the same coordinates for Sargiguda and Ghantiguda. They show the Sinapali–Dharamgarh Road, so they now belong to Ghantiguda and Sargiguda is found by name.
 - The Bangomunda, Kantabanji and Titilagarh names come from the old posters ("City Office", "Institutes"). Kantabanji and Titilagarh have no street address on the site.
 
+### Regular and distance, campuses and leadership removal (old → new)
+
+| Where | Old | New |
+|---|---|---|
+| Hero, eyebrow | Distance education for Odisha | Regular & distance education |
+| Hero, intro | Affordable distance courses for students across Odisha, with real support from the day you enrol to the day you complete your course. | Affordable regular and distance courses across Odisha, with real support from the day you enrol to the day you complete. |
+| Our Campuses | Sargiguda, Ghantiguda, Lakhna, Bangomunda, Kantabanji, Titilagarh | Kantabanji, Bangomunda, Titilagarh, Sinapali / Bhawanipatna, Ghantiguda, Sargiguda (Main Campus) |
+| Why Choose Our Location, Strategic Locations | Located in Sargiguda, Kantabanji and Ghantiguda, Sinapali with easy access to major transportation routes | Located in Sargiguda, Kantabanji, Bangomunda, Titilagarh, Sinapali, Bhawanipatna and Ghantiguda with easy access to major transportation routes |
+| Plan Your Visit, other campuses (new) | — | Route to [campus] on Google Maps |
+| Contact card | Connect With Us sat below the card | Connect With Us moved inside the card |
+| About page | Leadership Team and Our Team sections | Removed, with their names, positions, descriptions and photos |
+
+**Check before relying on these:**
+- Plan Your Visit travel times exist for Sargiguda only. Other campuses link to Google Maps instead of showing an invented time.
+- Sinapali, Bhawanipatna, Kantabanji and Titilagarh have no street address on the site, so they show the town and district only.
+- Lakhna is off the map, but its school page and links remain until the client decides.
+
 ## Behaviour and link changes (please review)
 
 1. **Dead buttons now go somewhere.** These had no action before:

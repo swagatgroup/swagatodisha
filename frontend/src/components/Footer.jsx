@@ -110,16 +110,16 @@ const Footer = () => {
         { title: 'Support', links: footerData.support },
     ]
 
-    const linkClass = 'sw-tap inline-flex min-h-11 items-center text-sw-body-lg text-sw-white transition-colors duration-sw-fast hover:text-sw-text-on-dark-secondary hover:underline underline-offset-4 lg:min-h-0'
+    const linkClass = 'inline-flex min-h-8 items-center text-sw-small text-sw-white transition-colors duration-sw-fast hover:text-sw-text-on-dark-secondary hover:underline underline-offset-4'
 
     return (
         <footer className="sw-deco-navy relative overflow-hidden bg-sw-black text-sw-text-on-dark">
-            <div className="sw-container-wide pt-16 lg:pt-20">
-                <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-8">
+            <div className="sw-container-wide pt-8">
+                <div className="grid grid-cols-3 gap-x-4 gap-y-6 min-[900px]:grid-cols-[1fr_1fr_1fr_1.6fr] min-[900px]:gap-x-8">
                     {columns.map((column) => (
                         <nav key={column.title} aria-label={column.title}>
-                            <h2 className="mb-4 text-sw-h2 font-bold lg:mb-5">{column.title}</h2>
-                            <ul className="space-y-0 lg:space-y-1">
+                            <h2 className="mb-2 text-sw-label font-bold">{column.title}</h2>
+                            <ul>
                                 {column.links.map((link, index) => (
                                     <li key={index}>
                                         <Link to={link.url} className={linkClass}>
@@ -132,12 +132,12 @@ const Footer = () => {
                     ))}
 
                     {/* Stay Updated (newsletter) */}
-                    <div className="col-span-2 lg:col-span-1">
-                        <h2 className="mb-4 text-sw-h2 font-bold lg:mb-5">Stay Updated</h2>
-                        <p className="mb-5 text-sw-body text-sw-text-on-dark-secondary">
+                    <div className="col-span-3 min-[900px]:col-span-1">
+                        <h2 className="mb-2 text-sw-label font-bold">Stay Updated</h2>
+                        <p className="mb-3 text-sw-small text-sw-text-on-dark-secondary">
                             Subscribe to our newsletter for the latest updates, events, and educational insights.
                         </p>
-                        <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+                        <form onSubmit={handleNewsletterSubmit} className="flex gap-2">
                             <label htmlFor="footer-newsletter-email" className="sr-only">Email address</label>
                             <input
                                 id="footer-newsletter-email"
@@ -145,12 +145,12 @@ const Footer = () => {
                                 value={newsletterEmail}
                                 onChange={(e) => setNewsletterEmail(e.target.value)}
                                 placeholder="Enter your email"
-                                className="block min-h-11 w-full rounded-sw-sm bg-sw-white/10 px-4 text-sw-body text-sw-white ring-1 ring-inset ring-sw-white/20 placeholder:text-sw-text-on-dark-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-sw-focus"
+                                className="block min-h-11 w-full min-w-0 flex-1 rounded-sw-sm bg-sw-white/10 px-4 text-sw-body text-sw-white ring-1 ring-inset ring-sw-white/20 placeholder:text-sw-text-on-dark-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-sw-focus"
                             />
                             <button
                                 type="submit"
                                 disabled={isSubscribing}
-                                className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-sw-sm bg-sw-white px-4 text-sw-label font-semibold text-sw-black transition-colors duration-sw-fast hover:bg-sw-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-sw-sm bg-sw-white px-4 text-sw-label font-semibold text-sw-black transition-colors duration-sw-fast hover:bg-sw-gray-100 disabled:cursor-not-allowed disabled:opacity-60"
                             >
                                 {isSubscribing ? (
                                     <>
@@ -166,7 +166,7 @@ const Footer = () => {
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="mt-14 flex flex-col items-center gap-3 border-t border-sw-white/10 pt-8 text-center">
+                <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 border-t border-sw-white/10 pt-2 text-center">
                     <div className="flex flex-wrap items-center justify-center gap-x-6 text-sw-caption text-sw-text-on-dark-secondary">
                         <Link to="/privacy-policy" className="inline-flex min-h-11 items-center hover:text-sw-white">Privacy Policy</Link>
                         <Link to="/terms-and-conditions" className="inline-flex min-h-11 items-center hover:text-sw-white">Terms of Service</Link>
@@ -186,7 +186,7 @@ const Footer = () => {
             </div>
 
             {/* Brand watermark, clipped by the bottom edge like the Figma */}
-            <div aria-hidden="true" className="mt-6 flex h-[0.62em] select-none justify-center overflow-hidden font-sw-display text-sw-display-xl font-extrabold leading-none text-sw-watermark">
+            <div aria-hidden="true" className="mt-2 flex h-[0.62em] select-none justify-center overflow-hidden font-sw-display text-[clamp(3rem,11vw,8rem)] font-extrabold leading-none text-sw-watermark">
                 <span className="sw-decor-text shrink-0 whitespace-nowrap" data-text="Swagat Odisha" />
             </div>
         </footer>

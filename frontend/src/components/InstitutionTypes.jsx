@@ -1789,12 +1789,12 @@ const InstitutionTypes = () => {
     const formatFeeKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
 
     return (
-        <div className="sw-deco-light flex min-h-[calc(100svh-var(--sw-header-h))] flex-col justify-center py-5 md:py-8">
+        <div className="sw-deco-light flex min-h-[min(calc(100svh-var(--sw-header-h)),660px)] flex-col justify-center py-5 md:py-6">
             <Container className="flex w-full flex-1 flex-col justify-center">
                 <SectionHeader id="institutions-title" title="Our Institutions" subtitle="Diverse pathways to academic excellence." className="!mb-4 md:!mb-6" />
 
                 {/* All eight fit one screen: 2 x 4 on phones, 4 x 2 from 900px */}
-                <ul className="grid max-h-[620px] flex-1 auto-rows-fr grid-cols-2 gap-3 sm:gap-4 min-[900px]:grid-cols-4 lg:gap-5">
+                <ul className="grid max-h-[540px] flex-1 auto-rows-fr grid-cols-2 gap-3 sm:gap-4 min-[900px]:grid-cols-4 lg:gap-5">
                     {institutions.map((institution, index) => (
                         <li key={institution.id} className="min-h-0">
                             <button

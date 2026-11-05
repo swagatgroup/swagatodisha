@@ -161,7 +161,7 @@
   --sw-container: 992px;
   --sw-container-wide: 1044px;
   --sw-gutter: 16px;
-  --sw-section-y: 48px;
+  --sw-section-y: 32px;
   --sw-header-h: 64px;
 
   /* Shape */
@@ -203,7 +203,7 @@
     --sw-fs-label: 16px;
     --sw-fs-tile: 18px;
     --sw-gutter: 24px;
-    --sw-section-y: 64px;
+    --sw-section-y: 40px;
   }
 }
 
@@ -223,7 +223,7 @@
     --sw-lh-tile: 1.4;
     --sw-fs-caption: 16px;
     --sw-gutter: 32px;
-    --sw-section-y: 80px;
+    --sw-section-y: 56px;
     --sw-header-h: 100px;
   }
 }

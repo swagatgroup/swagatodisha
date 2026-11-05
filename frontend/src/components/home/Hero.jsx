@@ -33,8 +33,8 @@ const Hero = () => {
             <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(70%_60%_at_50%_45%,rgb(var(--sw-black)/0.65)_0%,rgb(var(--sw-black)/0.25)_70%,rgb(var(--sw-black)/0.55)_100%)]" />
             <div aria-hidden="true" className="sw-deco-navy absolute inset-0 -z-10 opacity-40" />
 
-            <div className="sw-container flex min-h-[640px] flex-col items-center justify-center pb-16 pt-[calc(var(--sw-header-h)+3rem)] text-center md:min-h-[760px] lg:min-h-[min(100svh,1024px)] lg:pb-24">
-                <Badge tone="dark" className="mb-5">Distance education for Odisha</Badge>
+            <div className="sw-container flex min-h-[600px] flex-col items-center justify-center pb-10 pt-[calc(var(--sw-header-h)+2rem)] text-center md:min-h-[540px] lg:min-h-[min(100svh,820px)] lg:pb-16">
+                <Badge tone="dark" className="mb-5">Regular &amp; distance education</Badge>
 
                 <h1 id="hero-title" className="text-sw-display font-bold">
                     Your degree,
@@ -49,7 +49,7 @@ const Hero = () => {
                 </h1>
 
                 <p className="mt-5 max-w-2xl text-sw-subtitle text-sw-white/85">
-                    Affordable distance courses for students across Odisha, with real support from the day you enrol to the day you complete your course.
+                    Affordable regular and distance courses across Odisha, with real support from the day you enrol to the day you complete.
                 </p>
 
                 <ul aria-label="Why students choose Swagat" className="mt-6 flex flex-wrap justify-center gap-2">
