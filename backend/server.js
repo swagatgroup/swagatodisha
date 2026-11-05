@@ -936,6 +936,8 @@ app.get('/api/debug/applications-count', async (req, res) => {
 });
 
 // API Routes
+// Records successful changes for the Super Admin's Recent Activity page
+app.use(require('./middleware/activityLogger'));
 app.use('/api/auth', authRateLimit, authRoutes);
 app.use('/api/admin-auth', authRateLimit, adminAuthRoutes);
 app.use('/api/students', apiRateLimit, studentRoutes);

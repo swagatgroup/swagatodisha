@@ -4,6 +4,66 @@ const AuditLog = require('../models/AuditLog');
 const { protect, authorize } = require('../middleware/auth');
 const mongoose = require('mongoose');
 
+const ACTIVITY_ACTIONS = ['ACTIVITY', 'STATUS_CHANGE'];
+const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+// @desc    Everything changed on the website, newest first (Recent Activity page)
+// @route   GET /api/audit-logs/activity
+// @access  Private - Super Admin only
+router.get('/activity', protect, authorize('super_admin'), async (req, res) => {
+    try {
+        const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+        const limit = Math.min(parseInt(req.query.limit, 10) || 30, 100);
+        const { role, section, search } = req.query;
+
+        const query = { action: { $in: ACTIVITY_ACTIONS } };
+        if (role) query['performedBy.role'] = role === 'student' ? { $in: ['student', 'user'] } : String(role);
+        // Bulk status entries are stored without a section and always concern students
+        if (section) query.$and = [section === 'Students'
+            ? { $or: [{ 'metadata.section': 'Students' }, { action: 'STATUS_CHANGE' }] }
+            : { 'metadata.section': String(section) }];
+        if (search) {
+            const pattern = new RegExp(escapeRegex(String(search).slice(0, 100)), 'i');
+            query.$or = [
+                { 'performedBy.fullName': pattern },
+                { 'performedBy.email': pattern },
+                { 'metadata.summary': pattern },
+                { 'metadata.target': pattern },
+                { 'metadata.applicationId': pattern },
+            ];
+        }
+
+        const [logs, total, sections] = await Promise.all([
+            AuditLog.find(query)
+                .select('action performedBy result metadata timestamp')
+                .sort({ timestamp: -1, _id: -1 })
+                .skip((page - 1) * limit)
+                .limit(limit)
+                .lean(),
+            AuditLog.countDocuments(query),
+            AuditLog.distinct('metadata.section', { action: 'ACTIVITY' }),
+        ]);
+
+        res.json({
+            success: true,
+            pagination: { page, limit, total, pages: Math.max(Math.ceil(total / limit), 1) },
+            sections: sections.filter(Boolean).sort(),
+            data: logs.map((log) => ({
+                id: log._id,
+                at: log.timestamp,
+                who: log.performedBy?.fullName || log.performedBy?.email || 'Unknown',
+                role: log.performedBy?.role,
+                section: log.metadata?.section || 'Students',
+                summary: log.metadata?.summary || `Changed application status (${log.result?.message || 'bulk'})`,
+                target: log.metadata?.target || log.metadata?.applicationId,
+            })),
+        });
+    } catch (error) {
+        console.error('Error fetching activity:', error);
+        res.status(500).json({ success: false, message: 'Failed to fetch activity' });
+    }
+});
+
 // @desc    Get recent delete attempts (for investigation)
 // @route   GET /api/audit-logs/recent
 // @access  Private - Staff/Super Admin only

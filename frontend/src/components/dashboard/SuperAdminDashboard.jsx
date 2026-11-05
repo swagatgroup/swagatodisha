@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from 'recharts';
 
-import { Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, Squares2X2Icon, UsersIcon, UserGroupIcon, UserIcon, UserPlusIcon, ClipboardDocumentCheckIcon, GlobeAltIcon, CreditCardIcon, MegaphoneIcon, KeyIcon, DocumentTextIcon, HeartIcon, CurrencyRupeeIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../contexts/AuthContext';
 import { useDarkMode } from '../../contexts/DarkModeContextSimple';
@@ -17,6 +17,7 @@ import ErrorBoundary from '../common/ErrorBoundary';
 import StudentRegistrationWorkflow from './tabs/StudentRegistrationWorkflow';
 import ApplicationReview from './tabs/ApplicationReview';
 import PaymentManagement from './tabs/PaymentManagement';
+import RecentActivity from './tabs/RecentActivity';
 import ReferralDashboard from './tabs/ReferralDashboard';
 import AccessControl from './tabs/AccessControl';
 import ProgressPieChart from './ProgressPieChart';
@@ -110,6 +111,7 @@ const SuperAdminDashboard = () => {
         { id: 'application-review', name: 'Application Review', icon: <ClipboardDocumentCheckIcon className="mr-3 h-5 w-5" /> },
         { id: 'website-management', name: 'Website Management', icon: <GlobeAltIcon className="mr-3 h-5 w-5" /> },
         { id: 'payment-management', name: 'Payments', icon: <CreditCardIcon className="mr-3 h-5 w-5" /> },
+        { id: 'recent-activity', name: 'Recent Activity', icon: <ClockIcon className="mr-3 h-5 w-5" /> },
         { id: 'referrals', name: 'Refer & Earn', icon: <MegaphoneIcon className="mr-3 h-5 w-5" /> },
         { id: 'student-password-reset', name: 'Student Password Reset', icon: <KeyIcon className="mr-3 h-5 w-5" /> }
     ];
@@ -873,6 +875,10 @@ const SuperAdminDashboard = () => {
                             )}
                         </div>
 
+                        <ErrorBoundary>
+                            <RecentActivity compact onViewAll={() => setActiveSidebarItem('recent-activity')} />
+                        </ErrorBoundary>
+
                         {/* Recent Students - reuses the Our/Direct Students table */}
                         <ErrorBoundary>
                             <StudentManagement
@@ -969,6 +975,8 @@ const SuperAdminDashboard = () => {
                 return <ApplicationReview userRole="super_admin" />;
             case 'payment-management':
                 return <PaymentManagement />;
+            case 'recent-activity':
+                return <RecentActivity />;
             case 'referrals':
                 return <ReferralDashboard />;
             case 'website-management':
