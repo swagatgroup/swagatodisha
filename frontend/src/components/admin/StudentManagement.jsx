@@ -16,6 +16,7 @@ import ApplicationPDFGenerator from '../forms/ApplicationPDFGenerator';
 import StaffDocumentUploader from '../shared/StaffDocumentUploader';
 import AdmissionTypeFilter from '../shared/AdmissionTypeFilter';
 import ApplicationDetailsModal, { mergeUploadedDocument } from '../shared/ApplicationDetailsModal';
+import PaymentManageModal from '../dashboard/components/PaymentManageModal';
 import { APPLICATION_STATUS_OPTIONS, getApplicationStatusLabel } from '../../utils/applicationStatuses';
 
 // Helper function to convert and compress image to under 50KB JPG
@@ -153,6 +154,10 @@ const compressImageToUnder50KB = async (photoUrl) => {
 };
 
 
+// View all: rows are fetched in batches and drawn in steps, so hundreds of students stay responsive
+const VIEW_ALL_BATCH_SIZE = 100;
+const VIEW_ALL_RENDER_STEP = 60;
+
 // pageSize/showListTypeFilter/title let dashboards reuse this table (e.g. Recent Students: last 5, Our/Direct/Both)
 const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'main', agentId = null, staffId = null, pageSize = 20, showListTypeFilter = false, title = null, subtitle = null }) => {
     const { selectedSession, courseFilterParams, courseFilterKey } = useSession();
@@ -207,6 +212,13 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     const [generationType, setGenerationType] = useState(null); // 'pdf' or 'zip'
     const [generating, setGenerating] = useState(false);
     const [selectedStudents, setSelectedStudents] = useState([]); // For bulk delete
+    const [paymentStudent, setPaymentStudent] = useState(null); // Student whose payments modal is open
+    const [viewAll, setViewAll] = useState(false); // Show every matching student instead of one page
+    const [allProgress, setAllProgress] = useState(null); // { loaded, total } while view-all batches arrive
+    const [visibleCount, setVisibleCount] = useState(VIEW_ALL_RENDER_STEP); // Rows drawn so far in view-all
+    const fetchRunRef = useRef(0); // Ignores responses from a fetch that has since been replaced
+    const moreRowsRef = useRef(null);
+    const viewAllRowCache = useRef(new WeakMap()); // View all: unchanged rows reuse their element, so React skips them
     const [colleges, setColleges] = useState([]);
     const [loadingColleges, setLoadingColleges] = useState(false);
     const isSuperAdmin = user?.role === 'super_admin';
@@ -344,8 +356,24 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
         debouncedSearchTerm, filterStatus, filterCourse, filterCategory,
         filterCollege, filterGender, filterDistrict, filterCity, filterState,
         filterStream, filterCampus, filterAdmissionType, filterAcademicStatus, filterYearOfStudy, filterSubmitterRole, selectedSession,
-        courseFilterKey, sortBy, listType, currentPage
+        courseFilterKey, sortBy, listType, currentPage, viewAll
     ]);
+
+    // View all: draw more rows as the bottom of the table comes into view
+    useEffect(() => {
+        const marker = moreRowsRef.current;
+        if (!viewAll || !marker) return undefined;
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) setVisibleCount((count) => count + VIEW_ALL_RENDER_STEP);
+        });
+        observer.observe(marker);
+        return () => observer.disconnect();
+    }, [viewAll, visibleCount, students.length]);
+
+    const toggleViewAll = () => {
+        setCurrentPage(1);
+        setViewAll(!viewAll);
+    };
 
     // Paid <-> Free conversion. Paid -> Free is refused by the server until every document free
     // admission needs is uploaded; the missing list is shown with uploaders in the student view.
@@ -598,8 +626,10 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     };
 
     const fetchStudents = async () => {
+        const runId = ++fetchRunRef.current;
         try {
             setLoading(true);
+            setAllProgress(null);
             showLoading('Loading students...');
 
             // Fetching real data from server
@@ -680,11 +710,37 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 listType: listType, // Add listType to params
                                             });
 
-            console.log('🔍 Fetching students from:', `/api/admin/students?${params}`);
+            if (viewAll) {
+                // The filter options from the normal page view stay in place; only rows are fetched here
+                params.set('lite', '1');
+                params.set('limit', VIEW_ALL_BATCH_SIZE);
+                let loaded = [];
+                let batch = 1;
+                let batches = 1;
+                setVisibleCount(VIEW_ALL_RENDER_STEP);
+                do {
+                    params.set('page', batch);
+                    const batchResponse = await api.get(`/api/admin/students?${params}`);
+                    if (runId !== fetchRunRef.current) return;
+                    const { students: batchStudents = [], pagination = {} } = batchResponse.data.data || {};
+                    loaded = loaded.concat(batchStudents);
+                    batches = pagination.totalPages || 1;
+                    setStudents(loaded);
+                    setTotalPages(1);
+                    setTotalItems(pagination.totalItems || loaded.length);
+                    setAllProgress(batch < batches ? { loaded: loaded.length, total: pagination.totalItems || loaded.length } : null);
+                    if (batch === 1) {
+                        // The table is usable as soon as the first batch arrives; the rest fill in behind it
+                        setLoading(false);
+                        closeLoading();
+                    }
+                    batch += 1;
+                } while (batch <= batches);
+                return;
+            }
+
             const response = await api.get(`/api/admin/students?${params}`);
-            console.log('📊 Students response:', response.data);
-            console.log('📊 Students data structure:', response.data.data);
-            console.log('📊 Filters from API:', response.data.data?.filters);
+            if (runId !== fetchRunRef.current) return;
 
             if (response.data.success) {
                 let studentsData = response.data.data.students || [];
@@ -701,13 +757,13 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     categories: [],
                     submitters: []
                 });
-                console.log('✅ Real data loaded:', response.data.data.students?.length || 0, 'students');
             } else {
                 throw new Error(response.data.message || 'Failed to fetch students');
             }
 
             closeLoading();
         } catch (error) {
+            if (runId !== fetchRunRef.current) return;
             console.error('❌ Error fetching students:', error);
             console.error('❌ Error response:', error.response?.data);
             closeLoading();
@@ -721,9 +777,10 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
             setTotalPages(1);
             setTotalItems(0);
             setItemsPerPage(20);
+            setAllProgress(null);
 
         } finally {
-            setLoading(false);
+            if (runId === fetchRunRef.current) setLoading(false);
         }
     };
 
@@ -1078,6 +1135,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
     const loadedStudentsRef = useRef(new Map());
     students.forEach(student => loadedStudentsRef.current.set(student._id, student));
     const getStudentsByIds = (ids) => ids.map(id => loadedStudentsRef.current.get(id)).filter(Boolean);
+
+    const selectedIdSet = new Set(selectedStudents);
 
     useEffect(() => { setSelectedStudents([]); }, [selectedSession, listType]);
 
@@ -2274,6 +2333,34 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 )}
             </div>
 
+            {paymentStudent && (
+                <PaymentManageModal
+                    app={paymentStudent}
+                    onClose={() => setPaymentStudent(null)}
+                    onSaved={(updated) => setStudents((prev) => prev.map((s) => (s._id === updated._id ? { ...s, financialStatus: updated.financialStatus } : s)))}
+                />
+            )}
+
+            {/* View all students / back to pages */}
+            {pageSize >= 20 && (viewAll || totalPages > 1) && (
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/40 px-4 py-2">
+                    <p className="text-sm text-gray-700 dark:text-gray-200" aria-live="polite">
+                        {!viewAll
+                            ? `Showing one page of ${totalItems} students.`
+                            : allProgress
+                                ? `Loading all students: ${allProgress.loaded} of ${allProgress.total}. You can keep working while the rest arrive.`
+                                : `Showing all ${totalItems} students.`}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={toggleViewAll}
+                        className="px-3 py-1.5 bg-[#4A1D7A] text-white text-sm rounded-md hover:bg-[#351458] transition-colors"
+                    >
+                        {viewAll ? 'Back to pages' : `View all ${totalItems} students`}
+                    </button>
+                </div>
+            )}
+
             {/* Students Table */}
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -2282,7 +2369,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 <input
                                     type="checkbox"
-                                    checked={students.length > 0 && students.every(s => selectedStudents.includes(s._id))}
+                                    checked={students.length > 0 && students.every(s => selectedIdSet.has(s._id))}
                                     onChange={(e) => handleSelectAll(e.target.checked)}
                                     className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                 />
@@ -2347,26 +2434,29 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 </td>
                             </tr>
                         ) : (
-                            students.map((student, index) => {
+                            (viewAll ? students.slice(0, visibleCount) : students).map((student, index) => {
                                 // Calculate serial number based on current page
                                 const serialNumber = ((currentPage - 1) * itemsPerPage) + index + 1;
-                                return (
+                                const isSelected = selectedIdSet.has(student._id);
+                                // A fresh fetch brings new student objects, so a cached row can never outlive its data
+                                const cachedRow = viewAll ? viewAllRowCache.current.get(student) : null;
+                                if (cachedRow && cachedRow.isSelected === isSelected && cachedRow.serialNumber === serialNumber) {
+                                    return cachedRow.element;
+                                }
+                                const rowElement = (
                                     <motion.tr
                                         key={student._id}
-                                        initial={{ opacity: 0 }}
+                                        initial={viewAll ? false : { opacity: 0 }}
                                         animate={{ opacity: 1 }}
                                         className="hover:bg-gray-50 dark:hover:bg-gray-700"
                                     >
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <input
                                                 type="checkbox"
-                                                checked={selectedStudents.includes(student._id)}
+                                                checked={isSelected}
                                                 onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedStudents([...selectedStudents, student._id]);
-                                                    } else {
-                                                        setSelectedStudents(selectedStudents.filter(id => id !== student._id));
-                                                    }
+                                                    const { checked } = e.target;
+                                                    setSelectedStudents((current) => (checked ? [...current, student._id] : current.filter(id => id !== student._id)));
                                                 }}
                                                 className="h-4 w-4 text-[#4A1D7A] focus:ring-[#4A1D7A] border-gray-300 rounded"
                                             />
@@ -2471,6 +2561,18 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    </svg>
+                                                </button>
+
+                                                {/* Manage payments */}
+                                                <button
+                                                    onClick={() => setPaymentStudent(student)}
+                                                    className="text-green-700 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300"
+                                                    title="Manage Payments"
+                                                    aria-label={`Manage payments for ${student.personalDetails?.fullName || student.fullName || 'student'}`}
+                                                >
+                                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 5h12M6 9h12M9 5c3.5 0 5 2 5 4s-1.500 4-5 4H6l8 7" />
                                                     </svg>
                                                 </button>
 
@@ -2680,11 +2782,19 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                         </td>
                                     </motion.tr>
                                 );
+                                if (viewAll) viewAllRowCache.current.set(student, { element: rowElement, isSelected, serialNumber });
+                                return rowElement;
                             })
                         )}
                     </tbody>
                 </table>
             </div>
+
+            {viewAll && visibleCount < students.length && (
+                <div ref={moreRowsRef} className="py-4 text-center text-sm text-gray-500 dark:text-gray-300">
+                    Showing {visibleCount} of {students.length}. Scroll for more.
+                </div>
+            )}
 
             {/* Pagination */}
             {totalPages > 1 && (

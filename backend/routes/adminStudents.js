@@ -140,12 +140,8 @@ router.get('/recent-payments', protect, authorize('staff', 'super_admin'), async
 // @access  Private - Staff/Super Admin only
 router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => {
     try {
-        console.log('👤 Request user:', req.user?.email, 'Role:', req.user?.role);
-
-        // Test database connection
-        console.log('🔍 Testing MongoDB connection...');
-        const dbStatus = await StudentApplication.db.readyState;
-        console.log('📊 Database state:', dbStatus === 1 ? 'Connected' : 'Disconnected/Connecting');
+        // lite=1 (view all students): only the rows and pagination, without the page's filter options and stats
+        const lite = req.query.lite === '1';
 
         const {
             page = 1,
@@ -244,7 +240,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             if (courseFilter) andConditions.push(courseFilter);
 
             // Group and count applications by payment status for the session
-            try {
+            if (!lite) try {
                 const statsAggregation = await StudentApplication.aggregate([
                     { $match: courseFilter ? { $and: [sessionDateFilter, courseFilter] } : sessionDateFilter },
                     {
@@ -479,9 +475,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         // Build sort query
         const sort = {};
         sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
-
-        // Debug filter
-        console.log('🔍 Query filter:', JSON.stringify(finalFilter, null, 2));
+        // Tie-break so a record can't appear on two pages when many share the same sort value
+        if (sortBy !== '_id') sort._id = sort[sortBy];
 
         // Execute query with pagination - don't populate submittedBy yet as it might be Admin
         const applications = await StudentApplication.find(finalFilter)
@@ -495,19 +490,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             .lean(false) // Keep as Mongoose documents to access raw _doc
             .exec();
 
-        console.log(`📊 Found ${applications.length} applications`);;
-
         // Get total count for pagination
         const total = await StudentApplication.countDocuments(finalFilter);
-        const totalInCollection = await StudentApplication.countDocuments({});
-
-        console.log(`📊 Total with filter: ${total}, Total in collection: ${totalInCollection}`);
-
-        // Debug: Check first few documents to verify structure
-        if (totalInCollection > 0) {
-            const sampleDocs = await StudentApplication.find({}).limit(2).lean();
-            console.log('📊 Sample documents:', JSON.stringify(sampleDocs, null, 2));
-        }
 
         // Get filter options with error handling
         let filterOptions = {
@@ -524,7 +508,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             submitters: []
         };
 
-        try {
+        if (!lite) try {
             filterOptions.courses = await StudentApplication.distinct('courseDetails.selectedCourse');
             filterOptions.categories = await StudentApplication.distinct('personalDetails.category');
             filterOptions.genders = await StudentApplication.distinct('personalDetails.gender');
@@ -718,6 +702,13 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
         }
 
         // Transform data for frontend (include ALL details for modal view)
+        // Each person is looked up once per request, however many students share them
+        const lookups = new Map();
+        const lookupOnce = (key, load) => {
+            if (!lookups.has(key)) lookups.set(key, load());
+            return lookups.get(key);
+        };
+
         const transformedStudents = await Promise.all(applications.map(async (app) => {
             // Extract submitter name properly - User model uses fullName, not firstName/lastName
             let submitterName = 'Direct';
@@ -753,15 +744,7 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
             // Store submitter details for response object
             let submitterDetails = null;
 
-            // Debug logging
-            console.log('🔍 Processing app:', appObj._id);
-            console.log('   submittedBy type:', typeof appObj.submittedBy);
-            console.log('   submittedBy value:', appObj.submittedBy ? (appObj.submittedBy.toString ? appObj.submittedBy.toString() : JSON.stringify(appObj.submittedBy)) : 'null');
-            console.log('   submitterRole:', appObj.submitterRole);
-            console.log('   Raw _doc.submittedBy:', app._doc ? (app._doc.submittedBy ? app._doc.submittedBy.toString() : 'null') : 'no _doc');
-            console.log('   submitterId extracted:', submitterId);
-            console.log('   submittedByObj:', submittedByObj);
-
+    
             // If we have a populated object with fullName, use it
             if (submittedByObj && submittedByObj.fullName) {
                 // Already populated and has fullName (from User model)
@@ -772,7 +755,6 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                     email: submittedByObj.email || '',
                     phoneNumber: submittedByObj.phoneNumber || ''
                 };
-                console.log('   ✅ Found fullName from populated User:', submitterName);
             } else if (submitterId) {
                 // Not populated but we have an ID - fetch from User model first
                 try {
@@ -783,12 +765,11 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                     // Ensure submitterId is a valid ObjectId
                     let validId = submitterId;
                     if (!ObjectId.isValid(submitterId)) {
-                        console.log('   ⚠️ Invalid ObjectId:', submitterId);
                     } else {
                         validId = new ObjectId(submitterId);
                     }
 
-                    let submitter = await User.findById(validId).select('fullName name firstName lastName email phoneNumber referralCode').lean();
+                    let submitter = await lookupOnce(`submitter-user:${validId}`, () => User.findById(validId).select('fullName name firstName lastName email phoneNumber referralCode').lean().exec());
 
                     if (submitter) {
                         if (submitter.fullName) {
@@ -807,12 +788,11 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                                 phoneNumber: submitter.phoneNumber || '',
                                 referralCode: submitter.referralCode || ''
                             };
-                            console.log('   ✅ Fetched name from User model:', submitterName);
                         }
                     } else {
                         // If not found in User model, try Admin model (staff might be in Admin model)
                         const Admin = require('../models/Admin');
-                        const adminSubmitter = await Admin.findById(validId).select('firstName lastName email phone').lean();
+                        const adminSubmitter = await lookupOnce(`submitter-admin:${validId}`, () => Admin.findById(validId).select('firstName lastName email phone').lean().exec());
 
                         if (adminSubmitter && (!submitterName || submitterName === 'Unknown')) {
                             submitterName = `${adminSubmitter.firstName || ''} ${adminSubmitter.lastName || ''}`.trim();
@@ -822,17 +802,12 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                                 email: adminSubmitter.email || '',
                                 phoneNumber: adminSubmitter.phone || ''
                             };
-                            console.log('   ✅ Fetched name from Admin model:', submitterName);
-                        } else {
-                            console.log('   ⚠️ Submitter not found in User or Admin models with ID:', submitterId);
                         }
                     }
                 } catch (fetchError) {
                     console.error('   ❌ Error fetching submitter:', fetchError.message);
                     console.error('   Stack:', fetchError.stack);
                 }
-            } else {
-                console.log('   ⚠️ submittedBy is null/undefined - no ID to fetch');
             }
 
             // Don't override if we have a valid name and it's not a student
@@ -845,7 +820,6 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 }
             }
 
-            console.log('   📝 Final submitterName:', submitterName, 'Role:', appObj.submitterRole);
 
             // --- Fetch Approver/Reviewer Name ---
             let reviewerName = 'N/A';
@@ -858,14 +832,14 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                     
                     if (mongoose.Types.ObjectId.isValid(validReviewerId)) {
                         const User = require('../models/User');
-                        const reviewerUser = await User.findById(validReviewerId).select('firstName lastName role').lean();
+                        const reviewerUser = await lookupOnce(`reviewer-user:${validReviewerId}`, () => User.findById(validReviewerId).select('firstName lastName role').lean().exec());
                         
                         if (reviewerUser) {
                             reviewerName = `${reviewerUser.firstName || ''} ${reviewerUser.lastName || ''}`.trim();
                             reviewerRole = reviewerUser.role;
                         } else {
                             const Admin = require('../models/Admin');
-                            const reviewerAdmin = await Admin.findById(validReviewerId).select('firstName lastName role').lean();
+                            const reviewerAdmin = await lookupOnce(`reviewer-admin:${validReviewerId}`, () => Admin.findById(validReviewerId).select('firstName lastName role').lean().exec());
                             
                             if (reviewerAdmin) {
                                 reviewerName = `${reviewerAdmin.firstName || ''} ${reviewerAdmin.lastName || ''}`.trim();
