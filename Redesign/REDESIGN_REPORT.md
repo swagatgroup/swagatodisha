@@ -197,6 +197,30 @@ Marketing copy follows the AIDA rules now in `CLAUDE.md`. Factual and data conte
 
 Headings that were split into coloured spans (e.g. "Our <span>Values</span>") keep exactly the same words.
 
+### Homepage posters, rebuilt in the site theme (old → new)
+
+The live posters were replaced by 7 posters in landscape and portrait, built from real type by `Redesign/_tools/posters/render.mjs`. Their wording is kept from the old posters except for the items below. Please confirm the items marked **check**.
+
+| Where | Old | New |
+|---|---|---|
+| Posters section, subtitle | The latest admission openings and announcements from Swagat, all in one place. | Latest openings and announcements. |
+| Posters section, hint (new) | — | Tap a poster to see it full screen |
+| Full-screen view, title (new) | — | Poster 1 of 7 |
+| Admission Open BBA/BCA/BSW/BHM/BTM, phone | 785595544 (9 digits) | +91 78559 59544 |
+| Courses Offered, phone | 78559595444 (11 digits) | +91 78559 59544 |
+| OSBME 2026–27, label | Adress | Address |
+| Bangomunda poster, spelling | Swagat Group of Institution; Dist-Bolangir | Swagat Group of Institutions; Dist – Balangir |
+| Bangomunda poster, contact (added) | no phone number | +91 78559 59544, from the site's contact details |
+| OSBME April 2027, address | PS-Sinalali | PS – Sinapali, matching the campus address on the site |
+| 10th & +2 2027–28, Arts / Humanities | History, Political Science, Science, Economics | History, Political Science, Economics. **Check:** "Science" looked like an error |
+| OSBME April 2027 | One crowded poster | Split into two: the OSBME offer, and "Other Courses" with the scholarship and special support details |
+| OSBME April 2027, board seal | Madrasa board seal image | Removed: no clean copy of the seal exists in the project |
+
+**Check before relying on these, all copied unchanged from the old posters:**
+- Three different sessions are advertised: 2026–27, April 2027 and 2027–28.
+- The April 2027 and Other Courses posters use Call 9403891555; every other poster and the site use 7855959544.
+- Fees of ₹7,000 with no hidden charges, the SC / ST / OBC scholarship, Placement Assistance and Government of Odisha recognition.
+
 ## Behaviour and link changes (please review)
 
 1. **Dead buttons now go somewhere.** These had no action before:

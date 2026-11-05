@@ -113,15 +113,17 @@ const AppContent = () => {
             {/* 1. Hero */}
             <Hero />
 
-            {/* 2. Explore Swagat (quick access: timetables, career roadmap, notifications, results) */}
-            <section id="explore" aria-label="Explore Swagat" className="scroll-mt-sw-header">
-                <QuickLinks />
-            </section>
+            {/* 2. Admissions posters, then Explore Swagat: stacked on mobile, side by side from lg */}
+            <div className="sw-deco-light relative pb-sw-section pt-12 md:pt-16">
+                <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-12 px-[var(--sw-gutter)] lg:grid-cols-2 lg:gap-10">
+                    <PosterCarousel />
+                    <section id="explore" aria-label="Explore Swagat" className="scroll-mt-sw-header">
+                        <QuickLinks />
+                    </section>
+                </div>
+            </div>
 
-            {/* 3. Admissions posters (admin sliders) */}
-            <PosterCarousel />
-
-            {/* 4. Approval and Recognitions */}
+            {/* 3. Approval and Recognitions */}
             <section id="approvals" aria-label="Approvals and recognitions">
                 <ApprovalsRecognitions />
             </section>

@@ -29,6 +29,7 @@ const Modal = ({
     tone = 'light',
     zIndex = 'z-sw-modal',
     closeLabel = 'Close',
+    fullScreen = false,
     className,
     bodyClassName,
     children,
@@ -80,7 +81,7 @@ const Modal = ({
     const dark = tone === 'dark'
     const dialog = (
         <div
-            className={cx('fixed inset-0 flex items-end justify-center bg-sw-black/70 p-0 backdrop-blur-sm sm:items-center sm:p-4', zIndex)}
+            className={cx('fixed inset-0 flex items-end justify-center bg-sw-black/70 p-0 backdrop-blur-sm', !fullScreen && 'sm:items-center sm:p-4', zIndex)}
             onClick={onBackdropClick || ((event) => event.target === event.currentTarget && onClose?.(event))}
         >
             <div
@@ -91,9 +92,9 @@ const Modal = ({
                 aria-describedby={description ? descId : undefined}
                 tabIndex={-1}
                 className={cx(
-                    'flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-sw-md shadow-sw-overlay focus:outline-none sm:rounded-sw-md',
+                    'flex w-full flex-col overflow-hidden shadow-sw-overlay focus:outline-none',
+                    fullScreen ? 'h-[100dvh]' : cx('max-h-[92vh] rounded-t-sw-md sm:rounded-sw-md', SIZES[size]),
                     dark ? 'bg-sw-black text-sw-text-on-dark ring-1 ring-sw-white/10' : 'bg-sw-white text-sw-text',
-                    SIZES[size],
                     className
                 )}
                 onClick={(event) => event.stopPropagation()}

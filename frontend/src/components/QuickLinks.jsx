@@ -37,7 +37,7 @@ import {
     LuLink,
     LuPhone,
 } from 'react-icons/lu'
-import { Container, SectionHeader } from './site/Layout'
+import { SectionHeader } from './site/Layout'
 import Badge from './site/Badge'
 import Button from './site/Button'
 import Icon from './site/Icon'
@@ -459,7 +459,7 @@ const QuickLinks = () => {
             icon: LuCompass,
             pane: "sw-pane-career",
             order: "order-4 lg:order-none",
-            overlayAlign: "right-0 lg:left-0 lg:right-auto",
+            overlayAlign: "right-0",
             category: "career"
         },
         {
@@ -469,7 +469,7 @@ const QuickLinks = () => {
             icon: LuBellRing,
             pane: "sw-pane-notice",
             order: "order-1 lg:order-none",
-            overlayAlign: "left-0 lg:left-auto lg:right-0",
+            overlayAlign: "left-0",
             category: "notifications"
         },
         {
@@ -541,12 +541,11 @@ const QuickLinks = () => {
     )
 
     return (
-        <div className="sw-deco-light relative pb-sw-section pt-12 md:pt-16">
-            <Container>
-                <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." />
+        <div className="flex h-full flex-col">
+                <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." className="lg:!mb-8" />
 
                 {/* Tiles */}
-                <ul ref={tilesRef} className="mx-auto grid max-w-sm grid-cols-2 gap-x-6 gap-y-8 sm:max-w-md sm:gap-x-10 lg:max-w-none lg:grid-cols-4 lg:gap-16">
+                <ul ref={tilesRef} className="mx-auto grid w-full max-w-sm flex-1 grid-cols-2 gap-x-6 gap-y-8 sm:max-w-md sm:gap-x-10 lg:max-w-none lg:gap-6">
                     {quickLinks.map((link) => (
                         <li key={link.id} className={cx('relative', link.order)}>
                             <div
@@ -572,7 +571,7 @@ const QuickLinks = () => {
                                     aria-haspopup={link.category === 'career' ? 'dialog' : undefined}
                                     className="sw-deco-card flex h-full w-full flex-col rounded-sw-md bg-sw-black p-3 text-left text-sw-white ring-2 ring-inset ring-sw-border-dark transition-transform duration-sw ease-sw motion-safe:group-hover:-translate-y-1 lg:p-4"
                                 >
-                                    <span className={cx('sw-pane flex aspect-square w-full items-center justify-center rounded-sw-sm', link.pane)}>
+                                    <span className={cx('sw-pane flex aspect-square w-full items-center justify-center rounded-sw-sm lg:aspect-[2/1] lg:flex-1', link.pane)}>
                                         <Icon icon={link.icon} size="xl" strokeWidth={1.25} className="text-sw-white/90" />
                                     </span>
                                     <span className="mt-3 flex items-end justify-between gap-2">
@@ -647,7 +646,6 @@ const QuickLinks = () => {
                         </li>
                     ))}
                 </ul>
-            </Container>
 
             {/* Career Roadmap Modal: stepped timeline of streams → paths → careers */}
             <Modal
