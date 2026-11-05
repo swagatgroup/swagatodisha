@@ -113,9 +113,9 @@ const AppContent = () => {
             {/* 1. Hero */}
             <Hero />
 
-            {/* 2. Admissions posters, then Explore Swagat: stacked on mobile, side by side from lg */}
+            {/* 2. Admissions posters, then Explore Swagat: stacked on mobile, side by side from 900px, which also covers a phone's desktop mode (about 980px wide) */}
             <div className="sw-deco-light relative pb-sw-section pt-12 md:pt-16">
-                <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-12 px-[var(--sw-gutter)] lg:grid-cols-2 lg:gap-10">
+                <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-12 px-[var(--sw-gutter)] min-[900px]:grid-cols-2 min-[900px]:gap-8 lg:gap-10">
                     <PosterCarousel />
                     <section id="explore" aria-label="Explore Swagat" className="scroll-mt-sw-header">
                         <QuickLinks />

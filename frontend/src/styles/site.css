@@ -395,6 +395,20 @@ html:has(.site) body {
   mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, transparent 60%);
 }
 
+/* Bell on Explore tiles with recent uploads: a short shake, then a pause */
+@keyframes sw-bell-shake {
+  0%, 60%, 100% { transform: rotate(0); }
+  8%, 24%, 40% { transform: rotate(16deg); }
+  16%, 32%, 48% { transform: rotate(-16deg); }
+}
+.sw-bell-shake {
+  transform-origin: 50% 10%;
+  animation: sw-bell-shake 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-bell-shake { animation: none; }
+}
+
 /* Short blue-to-garnet bar above section titles */
 :where(.sw-accent-bar) {
   background-image: linear-gradient(90deg, rgb(var(--sw-accent-blue)) 0 50%, rgb(var(--sw-accent-garnet)) 50% 100%);

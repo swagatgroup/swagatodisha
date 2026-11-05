@@ -16,8 +16,6 @@ import Badge from './site/Badge'
 import Button from './site/Button'
 import Icon from './site/Icon'
 import Modal from './site/Modal'
-import SmartImage from './site/SmartImage'
-import { redesignImage } from './site/redesignImages'
 
 // Map of old FA icon strings → Remix Icon components
 const ICON_MAP = {
@@ -30,6 +28,8 @@ const ICON_MAP = {
     'fa-solid fa-chalkboard-teacher':   <RiTeamLine size={24} className="text-white" />,
     'fa-solid fa-laptop-code':          <RiComputerLine size={24} className="text-white" />,
 }
+
+const INSTITUTION_PANES = ['sw-pane-timetable', 'sw-pane-career', 'sw-pane-notice', 'sw-pane-result']
 
 const InstitutionTypes = () => {
     const navigate = useNavigate()
@@ -1789,39 +1789,27 @@ const InstitutionTypes = () => {
     const formatFeeKey = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())
 
     return (
-        <div className="sw-section sw-deco-light">
-            <Container>
-                <SectionHeader id="institutions-title" title="Our Institutions" subtitle="Diverse pathways to academic excellence." />
+        <div className="sw-deco-light flex min-h-[calc(100svh-var(--sw-header-h))] flex-col justify-center py-5 md:py-8">
+            <Container className="flex w-full flex-1 flex-col justify-center">
+                <SectionHeader id="institutions-title" title="Our Institutions" subtitle="Diverse pathways to academic excellence." className="!mb-4 md:!mb-6" />
 
-                {/* Institutions list: black slabs, image left (desktop) / right (mobile) */}
-                <ul className="space-y-6 lg:space-y-12">
-                    {institutions.map((institution) => (
-                        <li key={institution.id}>
-                            <article className="sw-deco-card group relative flex gap-4 rounded-sw-md bg-sw-black p-4 text-sw-text-on-dark transition-transform duration-sw ease-sw motion-safe:hover:-translate-y-1">
-                                <SmartImage
-                                    src={redesignImage(`institution-${institution.id}`)}
-                                    alt=""
-                                    width={400}
-                                    height={400}
-                                    className="order-2 h-16 w-16 shrink-0 rounded-sw-sm md:order-none md:h-48 md:w-48"
-                                />
-                                <div className="min-w-0 flex-1 pb-10 md:pr-12">
-                                    <h3 className="sw-text-gradient text-sw-h3 font-medium">{institution.name}</h3>
-                                    <p className="sw-text-gradient text-sw-small font-normal">{institution.subtitle}</p>
-                                    <p className="mt-4 max-w-2xl text-sw-body text-sw-white lg:mt-8">{institution.description}</p>
-                                </div>
-                                {/* The button covers the whole card, so the card stays one click target */}
-                                <button
-                                    type="button"
-                                    onClick={(event) => handleInstitutionCardClick(event, institution)}
-                                    aria-label={`${institution.name}: view programs`}
-                                    className="absolute inset-0 rounded-sw-md"
-                                >
-                                    <span className="absolute bottom-2 right-2 flex h-11 w-11 items-center justify-center text-sw-white">
-                                        <Icon icon={LuPlus} size="lg" strokeWidth={2.75} className="transition-transform duration-sw ease-sw group-hover:rotate-90" />
-                                    </span>
-                                </button>
-                            </article>
+                {/* All eight fit one screen: 2 x 4 on phones, 4 x 2 from 900px */}
+                <ul className="grid max-h-[620px] flex-1 auto-rows-fr grid-cols-2 gap-3 sm:gap-4 min-[900px]:grid-cols-4 lg:gap-5">
+                    {institutions.map((institution, index) => (
+                        <li key={institution.id} className="min-h-0">
+                            <button
+                                type="button"
+                                onClick={(event) => handleInstitutionCardClick(event, institution)}
+                                aria-label={`${institution.name}: view programs`}
+                                className="sw-deco-card group flex h-full w-full flex-col rounded-sw-md bg-sw-black p-2 text-left [@media(max-height:600px)]:flex-row [@media(max-height:600px)]:items-center [@media(max-height:600px)]:gap-2 text-sw-text-on-dark ring-2 ring-inset ring-sw-border-dark transition-transform duration-sw ease-sw motion-safe:hover:-translate-y-1 sm:p-3"
+                            >
+                                <span className={`sw-pane relative flex min-h-0 w-full flex-1 items-center justify-center rounded-sw-sm [@media(max-height:600px)]:h-9 [@media(max-height:600px)]:w-9 [@media(max-height:600px)]:flex-none ${INSTITUTION_PANES[index % INSTITUTION_PANES.length]}`}>
+                                    {ICON_MAP[institution.icon]}
+                                    <Icon icon={LuPlus} size="sm" strokeWidth={2.75} className="absolute right-1.5 top-1.5 text-sw-white transition-transform duration-sw ease-sw group-hover:rotate-90 [@media(max-height:600px)]:hidden" />
+                                </span>
+                                <span className="mt-1.5 block text-sw-small font-semibold leading-tight text-sw-white sm:mt-2 sm:text-sw-label min-[900px]:min-h-[2.5em] [@media(max-height:600px)]:mt-0 [@media(max-height:600px)]:min-h-0">{institution.name}</span>
+                                <span className="mt-0.5 hidden text-sw-caption leading-tight text-sw-text-on-dark-muted min-[900px]:min-h-[2.5em] [@media(min-height:700px)]:block">{institution.subtitle}</span>
+                            </button>
                         </li>
                     ))}
                 </ul>

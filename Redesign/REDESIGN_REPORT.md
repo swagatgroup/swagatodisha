@@ -221,6 +221,25 @@ The live posters were replaced by 7 posters in landscape and portrait, built fro
 - The April 2027 and Other Courses posters use Call 9403891555; every other poster and the site use 7855959544.
 - Fees of ₹7,000 with no hidden charges, the SC / ST / OBC scholarship, Placement Assistance and Government of Odisha recognition.
 
+### Homepage, campuses and dashboards, November update (old → new)
+
+| Where | Old | New |
+|---|---|---|
+| Posters section, subtitle | The latest openings and announcements. | Latest openings and announcements. |
+| Our Institutions tiles | Name, subtitle and description | Name and subtitle. The unchanged description still shows when a tile is opened |
+| Explore tiles (new) | — | Bell with a count of uploads from the last 60 days; "New" tag in the document panel |
+| Our Campuses, Sargiguda card (new line) | — | Includes Swagat Public School, Sargiguda |
+| Our Campuses, Ghantiguda card (new line) | — | Includes Swagat Public School, Ghantiguda |
+| Our Campuses, new cards | — | Swagat Public School, Lakhna / Swagat City Office, Bangomunda / Swagat Institute, Kantabanji / Swagat Institute, Titilagarh |
+| Our Campuses, phone and email | Repeated on every card | Shown once below the cards |
+| Student table (new labels) | — | View all N students / Back to pages / Showing one page of N students. / Showing all N students. / Loading all students: X of N. You can keep working while the rest arrive. |
+| Dashboard (new) | — | Recent Activity, with its filter and empty-state labels |
+
+**Check before relying on these:**
+- Map pins other than Ghantiguda come from a Google search of the place name, so they are approximate. Exact Google Maps locations from the client can replace `mapQuery` in `frontend/src/components/Location.jsx`.
+- The site used the same coordinates for Sargiguda and Ghantiguda. They show the Sinapali–Dharamgarh Road, so they now belong to Ghantiguda and Sargiguda is found by name.
+- The Bangomunda, Kantabanji and Titilagarh names come from the old posters ("City Office", "Institutes"). Kantabanji and Titilagarh have no street address on the site.
+
 ## Behaviour and link changes (please review)
 
 1. **Dead buttons now go somewhere.** These had no action before:

@@ -45,6 +45,14 @@ import Modal from './site/Modal'
 import { EmptyState, LoadingList } from './site/Feedback'
 import { cx } from './site/cx'
 
+// Anything uploaded in the last 60 days counts as recent
+const RECENT_DAYS = 60
+const isRecent = (date) => {
+    if (!date) return false
+    const age = Date.now() - new Date(date).getTime()
+    return age >= 0 && age <= RECENT_DAYS * 24 * 60 * 60 * 1000
+}
+
 const QuickLinks = () => {
     const [activeOverlay, setActiveOverlay] = useState(null)
     const [blinkingLinks, setBlinkingLinks] = useState(new Set())
@@ -104,7 +112,8 @@ const QuickLinks = () => {
                         name: doc.title,
                         file: doc.file,
                         type: isPDF ? 'pdf' : (isImage ? 'image' : 'pdf'), // Default to PDF if uncertain
-                        description: doc.description || doc.title
+                        description: doc.description || doc.title,
+                        isRecent: isRecent(doc.publishDate || doc.createdAt)
                     };
                 })
         },
@@ -125,7 +134,8 @@ const QuickLinks = () => {
                         name: doc.title,
                         file: doc.file,
                         type: isPDF ? 'pdf' : (isImage ? 'image' : 'pdf'), // Default to PDF if uncertain
-                        description: doc.description || doc.title
+                        description: doc.description || doc.title,
+                        isRecent: isRecent(doc.publishDate || doc.createdAt)
                     };
                 })
         },
@@ -146,7 +156,8 @@ const QuickLinks = () => {
                         name: doc.title,
                         file: doc.file,
                         type: isPDF ? 'pdf' : (isImage ? 'image' : 'pdf'), // Default to PDF if uncertain
-                        description: doc.description || doc.title
+                        description: doc.description || doc.title,
+                        isRecent: isRecent(doc.publishDate || doc.createdAt)
                     };
                 })
         }
@@ -448,7 +459,7 @@ const QuickLinks = () => {
             description: "View schedules from different universities",
             icon: LuCalendarDays,
             pane: "sw-pane-timetable",
-            order: "order-3 lg:order-none",
+            order: "order-3 min-[900px]:order-none",
             overlayAlign: "left-0",
             category: "timetable"
         },
@@ -458,7 +469,7 @@ const QuickLinks = () => {
             description: "Explore career paths and opportunities",
             icon: LuCompass,
             pane: "sw-pane-career",
-            order: "order-4 lg:order-none",
+            order: "order-4 min-[900px]:order-none",
             overlayAlign: "right-0",
             category: "career"
         },
@@ -468,7 +479,7 @@ const QuickLinks = () => {
             description: "Stay updated with latest news",
             icon: LuBellRing,
             pane: "sw-pane-notice",
-            order: "order-1 lg:order-none",
+            order: "order-1 min-[900px]:order-none",
             overlayAlign: "left-0",
             category: "notifications"
         },
@@ -478,7 +489,7 @@ const QuickLinks = () => {
             description: "Check academic performance",
             icon: LuFileMinus,
             pane: "sw-pane-result",
-            order: "order-2 lg:order-none",
+            order: "order-2 min-[900px]:order-none",
             overlayAlign: "right-0",
             category: "results"
         }
@@ -526,6 +537,7 @@ const QuickLinks = () => {
                 <span className="min-w-0 flex-1">
                     <span className={cx('block text-sw-small font-semibold', blinkingLinks.has(doc.name) && 'motion-safe:animate-pulse')}>
                         {blinkingLinks.has(doc.name) && <Icon icon={LuLink} size={14} className="mr-1 inline-block align-[-2px]" />}{doc.name}
+                        {doc.isRecent && <span className="ml-2 inline-block rounded-sw-pill bg-[rgb(var(--sw-accent-garnet))] px-1.5 align-[1px] text-[10px] font-bold text-sw-white">New</span>}
                     </span>
                     <span className={cx('mt-0.5 block truncate text-sw-caption', blinkingLinks.has(doc.name) ? 'text-sw-text-secondary' : 'text-sw-text-on-dark-muted')}>
                         {doc.description}
@@ -542,11 +554,13 @@ const QuickLinks = () => {
 
     return (
         <div className="flex h-full flex-col">
-                <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." className="lg:!mb-8" />
+                <SectionHeader title="Explore Swagat" subtitle="Everything you need, one click away." className="min-[900px]:!mb-8" />
 
                 {/* Tiles */}
-                <ul ref={tilesRef} className="mx-auto grid w-full max-w-sm flex-1 grid-cols-2 gap-x-6 gap-y-8 sm:max-w-md sm:gap-x-10 lg:max-w-none lg:gap-6">
-                    {quickLinks.map((link) => (
+                <ul ref={tilesRef} className="mx-auto grid w-full max-w-sm flex-1 grid-cols-2 gap-x-6 gap-y-8 sm:max-w-md sm:gap-x-10 min-[900px]:max-w-none min-[900px]:gap-5">
+                    {quickLinks.map((link) => {
+                        const recentCount = documentSections[link.category]?.documents.filter((doc) => doc.isRecent).length || 0
+                        return (
                         <li key={link.id} className={cx('relative', link.order)}>
                             <div
                                 className="group relative h-full"
@@ -569,10 +583,17 @@ const QuickLinks = () => {
                                     }}
                                     aria-expanded={link.category === 'career' ? undefined : activeOverlay === link.category}
                                     aria-haspopup={link.category === 'career' ? 'dialog' : undefined}
+                                    aria-label={recentCount > 0 ? `${link.title}: ${recentCount} new in the last ${RECENT_DAYS} days` : undefined}
                                     className="sw-deco-card flex h-full w-full flex-col rounded-sw-md bg-sw-black p-3 text-left text-sw-white ring-2 ring-inset ring-sw-border-dark transition-transform duration-sw ease-sw motion-safe:group-hover:-translate-y-1 lg:p-4"
                                 >
-                                    <span className={cx('sw-pane flex aspect-square w-full items-center justify-center rounded-sw-sm lg:aspect-[2/1] lg:flex-1', link.pane)}>
+                                    <span className={cx('sw-pane relative flex aspect-square w-full items-center justify-center rounded-sw-sm min-[900px]:aspect-[2/1] min-[900px]:flex-1', link.pane)}>
                                         <Icon icon={link.icon} size="xl" strokeWidth={1.25} className="text-sw-white/90" />
+                                        {recentCount > 0 && (
+                                            <span className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-sw-pill bg-[rgb(var(--sw-accent-garnet))] px-2 py-1 text-sw-caption font-bold leading-none text-sw-white shadow-sw-soft">
+                                                <Icon icon={LuBellRing} size={14} className="sw-bell-shake" />
+                                                {recentCount}
+                                            </span>
+                                        )}
                                     </span>
                                     <span className="mt-3 flex items-end justify-between gap-2">
                                         <span className="sw-text-gradient font-sw-display text-sw-tile">{link.title}</span>
@@ -644,7 +665,8 @@ const QuickLinks = () => {
                                 )}
                             </div>
                         </li>
-                    ))}
+                        )
+                    })}
                 </ul>
 
             {/* Career Roadmap Modal: stepped timeline of streams → paths → careers */}

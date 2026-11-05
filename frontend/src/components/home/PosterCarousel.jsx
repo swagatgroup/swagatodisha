@@ -40,7 +40,8 @@ const DEFAULT_SLIDES = {
     vertical: withAlt([boardsPortrait, osbmeAprilPortrait, otherCoursesPortrait, degreesPortrait, coursesPortrait, bangomundaPortrait, osbmePortrait]),
 };
 
-const getSliderType = (width) => (width > 1000 ? 'horizontal' : 'vertical');
+// 900px matches the side-by-side layout, including a phone's desktop mode (about 980px wide)
+const getSliderType = (width) => (width >= 900 ? 'horizontal' : 'vertical');
 const sameSlides = (a, b) => a.length === b.length && a.every((slide, index) => slide.src === b[index].src);
 const SWIPE_DISTANCE = 50;
 
@@ -189,11 +190,11 @@ const PosterCarousel = () => {
                 id="posters-title"
                 title="Admissions & updates"
                 subtitle="Latest openings and announcements."
-                className="lg:!mb-8"
+                className="min-[900px]:!mb-8"
             />
 
             <div
-                className={cx('relative mx-auto flex w-full flex-1 flex-col rounded-sw-md bg-sw-black p-3 md:p-4', isVertical ? 'max-w-sm' : 'max-w-xl lg:max-w-none')}
+                className={cx('relative mx-auto flex w-full flex-1 flex-col rounded-sw-md bg-sw-black p-3 md:p-4', isVertical ? 'max-w-sm' : 'max-w-none')}
                 onMouseEnter={stopAutoplay}
                 onMouseLeave={startAutoplay}
                 onFocus={stopAutoplay}
