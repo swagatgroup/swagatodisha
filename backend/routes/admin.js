@@ -46,7 +46,7 @@ router.get('/dashboard/stats', protect, authorize('staff', 'super_admin'), getDa
 // IMPORTANT: Bulk routes must come before parameterized routes to avoid route conflicts
 // The bulk delete route is handled in adminStudentsRoutes at /api/admin/students/bulk
 router.put('/students/:studentId', protect, authorize('staff', 'super_admin'), updateStudent);
-router.delete('/students/:studentId', protect, authorize('staff', 'super_admin'), deleteStudent); // Staff can now delete
+router.delete('/students/:studentId', protect, authorize('super_admin'), deleteStudent);
 
 // Agent Management
 router.get('/agents', protect, authorize('staff', 'super_admin'), getAllAgents);

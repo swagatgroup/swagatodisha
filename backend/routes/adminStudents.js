@@ -1508,12 +1508,7 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
         // Update personal details
         if (updateData.personalDetails) {
             const personalDetailsUpdate = { ...updateData.personalDetails };
-            
-            // Staff cannot update Aadhar number
-            if (!isSuperAdmin && personalDetailsUpdate.aadharNumber !== undefined) {
-                delete personalDetailsUpdate.aadharNumber;
-            }
-            
+
             // Ensure personalDetails object exists
             if (!application.personalDetails) {
                 application.personalDetails = {};
@@ -1666,6 +1661,8 @@ router.put('/:id', protect, authorize('staff', 'super_admin'), async (req, res) 
 
     } catch (error) {
         if (error.code === 'SEATS_FULL') return res.status(409).json({ success: false, message: error.message });
+        if (error.code === 11000) return res.status(409).json({ success: false, message: 'This Aadhar number is already registered for another student' });
+        if (error.name === 'ValidationError') return res.status(400).json({ success: false, message: Object.values(error.errors).map(e => e.message).join(', ') });
         console.error('Update student application error:', error);
         res.status(500).json({
             success: false,
@@ -1917,7 +1914,7 @@ router.delete('/bulk', protect, authorize('super_admin'), async (req, res, next)
 // @desc    Delete student application
 // @route   DELETE /api/admin/students/:id
 // @access  Private - Staff/Super Admin only  
-router.delete('/:id', protect, authorize('staff', 'super_admin'), async (req, res) => {
+router.delete('/:id', protect, authorize('super_admin'), async (req, res) => {
     let auditLogId = null;
     try {
         // Log delete attempt
