@@ -121,7 +121,7 @@ const DashboardLayout = ({ children, title, sidebarItems, activeItem, onItemClic
     return (
         <div className="h-screen flex flex-col bg-[#FAF7F2] dark:bg-[#1A1212] pattern-bg dark:pattern-bg-dark overflow-hidden">
             {/* Top Navigation Bar */}
-            <nav className="flex-none bg-white dark:bg-[#231A2E]/80 dark:bg-[#231A2E]/80 backdrop-blur-md shadow-sm border-b border-[#4A1D7A]/10 dark:border-white/10 z-20 relative">
+            <nav className={`flex-none bg-white dark:bg-[#231A2E]/80 dark:bg-[#231A2E]/80 backdrop-blur-md shadow-sm border-b border-[#4A1D7A]/10 dark:border-white/10 relative ${paymentsOpen || userMenuOpen ? '!z-40' : 'z-20'}`}>
                 <div className="max-w-full mx-auto px-2 sm:px-4 lg:px-6">
                     <div className="flex justify-between items-center h-16">
                         {/* Left side - Logo and Menu Button */}
