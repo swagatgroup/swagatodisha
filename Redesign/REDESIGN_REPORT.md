@@ -221,6 +221,24 @@ The live posters were replaced by 7 posters in landscape and portrait, built fro
 - The April 2027 and Other Courses posters use Call 9403891555; every other poster and the site use 7855959544.
 - Fees of ₹7,000 with no hidden charges, the SC / ST / OBC scholarship, Placement Assistance and Government of Odisha recognition.
 
+### Client poster pack, 10 posters at upload sizes (old → new)
+
+Files for upload through Super Admin → Sliders: horizontal 1920×820 and vertical 1200×1680. The same 10 posters replace the built-in homepage posters, which show when a slider section has no active uploads. Their alt text in `PosterCarousel.jsx` was rewritten to match: the fee now reads 12,000 rupees, three new alt texts cover the new posters, and "Build your future with us" is now "Build your future".
+
+| Where | Old | New |
+|---|---|---|
+| OSBME April 2027, fee | Fees Complete ₹7,000/- Only | 10th & +2 Course Fee ₹12,000/- Only |
+| OSBME April 2027, features | Six key features | Distance Mode and Flexible Learning; the vertical version also keeps Equivalence with NIOS, CHSE, CBSE & HSC |
+| University poster (new) | — | Your University Degree / From Maharaja Sriram Chandra Bhanja Deo University / BBA, BCA, Hotel Management, Tourism Management. **Check:** spelling of the university name |
+| Undergraduate free poster (new) | — | Study Free, + DCA Free / All Regular Courses / BSc Computer Science, BSc ITM, BSW, BLib / + DCA Absolutely Free, distance mode, university certificate / For SC, ST, OBC / General with PM-KISAN or CM-KISAN |
+| Postgraduate free poster (new) | — | Study Free, + PGDCA Free / All Regular Courses / MFC, PMIR, MSW, MA in Yoga / + PGDCA Absolutely Free, distance mode, university certificate / For SC, ST, OBC / General with PM-KISAN or CM-KISAN |
+| Both free posters, fine print (new) | — | Free for eligible students. Eligibility and document verification apply. Vertical: Eligibility and document verification apply. **Check:** wording based on the live "100% Free Education" ads |
+| 10th & +2 2027–28 | Stream subject lists | Removed to keep the text readable; streams stay as Arts, Science, Commerce |
+| Other Courses | Four special support points | Horizontal: removed. Vertical: 1–2 Failed Subjects Accepted and Fast Course Completion. Vertical badge shortened to Limited Seats |
+| Admission Open 2026–27 | Full campus addresses | Horizontal: Main Campus: Sargiguda / City Office: Bangomunda. Vertical keeps the addresses, shortened |
+| Courses Offered, horizontal | Build your future with us! | Build Your Future / Courses Offered; full course names shortened, for example Business Administration |
+| OSBME 2026–27 | Four courses, five Why Choose Us points and full address | Horizontal: four points, address removed. Vertical: four points, address kept; badge shortened to Session 2026–27 |
+
 ### Homepage, campuses and dashboards, November update (old → new)
 
 | Where | Old | New |

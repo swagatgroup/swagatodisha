@@ -7,27 +7,36 @@ import Icon from '../site/Icon';
 import Modal from '../site/Modal';
 import { cx } from '../site/cx';
 // Bundled posters, built by Redesign/_tools/posters/render.mjs
-import boardsLandscape from '../../assets/images/posters/boards-2027-28-landscape.webp';
-import boardsPortrait from '../../assets/images/posters/boards-2027-28-portrait.webp';
-import osbmeAprilLandscape from '../../assets/images/posters/osbme-april-2027-landscape.webp';
-import osbmeAprilPortrait from '../../assets/images/posters/osbme-april-2027-portrait.webp';
-import otherCoursesLandscape from '../../assets/images/posters/other-courses-landscape.webp';
-import otherCoursesPortrait from '../../assets/images/posters/other-courses-portrait.webp';
-import degreesLandscape from '../../assets/images/posters/degrees-2026-27-landscape.webp';
-import degreesPortrait from '../../assets/images/posters/degrees-2026-27-portrait.webp';
-import coursesLandscape from '../../assets/images/posters/courses-landscape.webp';
-import coursesPortrait from '../../assets/images/posters/courses-portrait.webp';
-import bangomundaLandscape from '../../assets/images/posters/bangomunda-landscape.webp';
-import bangomundaPortrait from '../../assets/images/posters/bangomunda-portrait.webp';
-import osbmeLandscape from '../../assets/images/posters/osbme-2026-27-landscape.webp';
-import osbmePortrait from '../../assets/images/posters/osbme-2026-27-portrait.webp';
+import osbmeFeeHorizontal from '../../assets/images/posters/osbme-fee-12000-horizontal.webp';
+import osbmeFeeVertical from '../../assets/images/posters/osbme-fee-12000-vertical.webp';
+import universityHorizontal from '../../assets/images/posters/university-courses-horizontal.webp';
+import universityVertical from '../../assets/images/posters/university-courses-vertical.webp';
+import freeUgHorizontal from '../../assets/images/posters/free-regular-ug-horizontal.webp';
+import freeUgVertical from '../../assets/images/posters/free-regular-ug-vertical.webp';
+import freePgHorizontal from '../../assets/images/posters/free-regular-pg-horizontal.webp';
+import freePgVertical from '../../assets/images/posters/free-regular-pg-vertical.webp';
+import boardsHorizontal from '../../assets/images/posters/boards-2027-28-horizontal.webp';
+import boardsVertical from '../../assets/images/posters/boards-2027-28-vertical.webp';
+import otherCoursesHorizontal from '../../assets/images/posters/other-courses-horizontal.webp';
+import otherCoursesVertical from '../../assets/images/posters/other-courses-vertical.webp';
+import degreesHorizontal from '../../assets/images/posters/degrees-2026-27-horizontal.webp';
+import degreesVertical from '../../assets/images/posters/degrees-2026-27-vertical.webp';
+import coursesHorizontal from '../../assets/images/posters/courses-horizontal.webp';
+import coursesVertical from '../../assets/images/posters/courses-vertical.webp';
+import bangomundaHorizontal from '../../assets/images/posters/bangomunda-horizontal.webp';
+import bangomundaVertical from '../../assets/images/posters/bangomunda-vertical.webp';
+import osbmeHorizontal from '../../assets/images/posters/osbme-2026-27-horizontal.webp';
+import osbmeVertical from '../../assets/images/posters/osbme-2026-27-vertical.webp';
 
 const POSTER_ALT = [
+    'OSBME admission open, April session 2027: 10th and +2 course fee 12,000 rupees only, no hidden charges. Call 9403891555.',
+    'Your university degree: BBA, BCA, Hotel Management and Tourism Management from Maharaja Sriram Chandra Bhanja Deo University. Call +91 78559 59544.',
+    'Study free with a free DCA: BSc Computer Science, BSc ITM, BSW and BLib regular courses, for SC, ST, and OBC or General students with PM-KISAN or CM-KISAN. Call +91 78559 59544.',
+    'Study free with a free PGDCA: MFC, PMIR, MSW and MA in Yoga regular courses, for SC, ST, and OBC or General students with PM-KISAN or CM-KISAN. Call +91 78559 59544.',
     'Admissions open, session 2027 to 2028: 10th and +2 through NIOS, BOSSE and OSBME. Call +91 78559 59544.',
-    'OSBME admission open, April session 2027: complete fees 7,000 rupees only, no hidden charges. Call 9403891555.',
     'Other courses: BBA, BCA, BSW, BHM, BTM, B.Sc Computer Science, B.Sc ITM, B.Lib, MFC, PMIR, MSW and PGDCA. Call 9403891555.',
     'Admission open, session 2026 to 27: BBA, BCA, BSW, BHM and BTM. Call +91 78559 59544.',
-    'Build your future with us: BBA, BCA, BHM, BTM and MFC. Call +91 78559 59544.',
+    'Build your future: BBA, BCA, BHM, BTM and MFC. Call +91 78559 59544.',
     'Shaping your future at Bangomunda: BBA, BSW and B.Sc. Computer Science. Call +91 78559 59544.',
     'Admissions open, academic session 2026 to 27: 10th and +2 through OSBME. Call +91 78559 59544.',
 ];
@@ -36,8 +45,8 @@ const withAlt = (images) => images.map((src, index) => ({ src, alt: POSTER_ALT[i
 
 // Shown whenever Super Admin → Sliders has no active poster for this screen size
 const DEFAULT_SLIDES = {
-    horizontal: withAlt([boardsLandscape, osbmeAprilLandscape, otherCoursesLandscape, degreesLandscape, coursesLandscape, bangomundaLandscape, osbmeLandscape]),
-    vertical: withAlt([boardsPortrait, osbmeAprilPortrait, otherCoursesPortrait, degreesPortrait, coursesPortrait, bangomundaPortrait, osbmePortrait]),
+    horizontal: withAlt([osbmeFeeHorizontal, universityHorizontal, freeUgHorizontal, freePgHorizontal, boardsHorizontal, otherCoursesHorizontal, degreesHorizontal, coursesHorizontal, bangomundaHorizontal, osbmeHorizontal]),
+    vertical: withAlt([osbmeFeeVertical, universityVertical, freeUgVertical, freePgVertical, boardsVertical, otherCoursesVertical, degreesVertical, coursesVertical, bangomundaVertical, osbmeVertical]),
 };
 
 // 900px matches the side-by-side layout, including a phone's desktop mode (about 980px wide)
@@ -53,7 +62,7 @@ const SliderControls = ({ count, current, onSelect, tone }) => {
             <button type="button" onClick={() => onSelect((current - 1 + count) % count)} aria-label="Previous poster" className={arrowClass}>
                 <Icon icon={LuChevronLeft} size="sm" />
             </button>
-            <div className="flex min-w-0 flex-wrap justify-center">
+            <div className="flex min-w-0 justify-center">
                 {Array.from({ length: count }, (_, index) => (
                     <button
                         type="button"
@@ -61,11 +70,11 @@ const SliderControls = ({ count, current, onSelect, tone }) => {
                         onClick={() => onSelect(index)}
                         aria-label={`Go to poster ${index + 1}`}
                         aria-current={index === current ? 'true' : undefined}
-                        className="flex h-11 w-6 items-center justify-center"
+                        className="flex h-11 w-6 min-w-0 items-center justify-center"
                     >
                         <span
                             className={cx(
-                                'block h-2 rounded-sw-pill transition-all duration-sw',
+                                'block h-2 max-w-full rounded-sw-pill transition-all duration-sw',
                                 index === current ? 'w-5 bg-sw-white' : 'w-2 bg-sw-white/40 hover:bg-sw-white/70'
                             )}
                         />
