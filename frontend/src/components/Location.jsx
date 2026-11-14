@@ -12,13 +12,13 @@ const MAP_EMBED_URL = 'https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0
 
 // `mapQuery` is what the map searches for. Pins found from a place name are approximate.
 const LOCATIONS = [
-    { name: 'Kantabanji', address: 'Kantabanji, Balangir, Odisha', mapQuery: 'Kantabanji, Balangir, Odisha' },
-    { name: 'Bangomunda', address: 'At/PO - Bangomunda, Dist - Balangir, Odisha, Pin-767040', mapQuery: 'Bangomunda, Balangir, Odisha 767040' },
+    { name: 'Kantabanji', address: 'Kantabanji, Balangir, Odisha', mapQuery: '20.4674184,82.9223575' },
+    { name: 'Bangomunda', address: 'At/PO - Bangomunda, Dist - Balangir, Odisha, Pin-767040', mapQuery: '20.3404536,82.9074352' },
     { name: 'Titilagarh', address: 'Titilagarh, Balangir, Odisha', mapQuery: 'Titilagarh, Balangir, Odisha' },
     { name: 'Sinapali', address: 'Sinapali, Nuapada, Odisha', mapQuery: 'Sinapali, Nuapada, Odisha' },
     { name: 'Bhawanipatna', address: 'Bhawanipatna, Kalahandi, Odisha', mapQuery: 'Bhawanipatna, Kalahandi, Odisha' },
     { name: 'Ghantiguda', address: 'Ghantiguda, PO - Chalna, PS - Sinapali, Nuapada, Odisha, Pin-766108', mapQuery: '20.099885,82.677498' },
-    { name: 'Sargiguda', isMain: true, address: 'Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039', mapQuery: 'Sargiguda, Kantabanji, Balangir, Odisha 767039' },
+    { name: 'Sargiguda', isMain: true, address: 'Sargiguda, PO - Sargul, PS - Kantabanji, Balangir, Odisha, Pin-767039', mapQuery: '20.4094937,82.9106225' },
 ]
 const MAIN_CAMPUS = LOCATIONS.findIndex((location) => location.isMain)
 

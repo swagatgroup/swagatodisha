@@ -158,8 +158,9 @@
   --sw-fs-caption: 14px;      --sw-lh-caption: 1.4;     --sw-ls-caption: 0;
 
   /* Layout */
-  --sw-container: 992px;
-  --sw-container-wide: 1044px;
+  /* 90% of the viewport on wide screens, never narrower than the original measure */
+  --sw-container: max(992px, min(90vw, 1728px));
+  --sw-container-wide: max(1044px, min(90vw, 1728px));
   --sw-gutter: 16px;
   --sw-section-y: 32px;
   --sw-header-h: 64px;
@@ -407,6 +408,32 @@ html:has(.site) body {
 }
 @media (prefers-reduced-motion: reduce) {
   .sw-bell-shake { animation: none; }
+}
+
+/* Latest-updates strip: two identical groups slide left by one group width, so the loop is seamless */
+@keyframes sw-marquee {
+  to { transform: translateX(-100%); }
+}
+.sw-marquee {
+  display: flex;
+  overflow: hidden;
+}
+.sw-marquee-group {
+  display: flex;
+  flex-shrink: 0;
+  min-width: 100%;
+  align-items: center;
+  justify-content: space-around;
+  animation: sw-marquee var(--sw-marquee-duration, 30s) linear infinite;
+}
+.sw-marquee:hover .sw-marquee-group,
+.sw-marquee:focus-within .sw-marquee-group {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sw-marquee { overflow-x: auto; }
+  .sw-marquee-group { animation: none; }
+  .sw-marquee-group[aria-hidden="true"] { display: none; }
 }
 
 /* Short blue-to-garnet bar above section titles */

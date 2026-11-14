@@ -383,3 +383,10 @@ Files for upload through Super Admin → Sliders: horizontal 1920×820 and verti
    - docs(redesign): report update after review fixes
 
 `CLAUDE.md` (Brand & Copy rules) was updated locally but isn't committed: your global git-ignore excludes it.
+
+## Copy added on 2026-11-15
+
+- Homepage updates strip (new): label "New"; type tags "Time Table", "Notification", "Result". Item titles come from the uploaded documents.
+- Page title: "Swagat Group of Institutions" → "Swagat Group of Institutions | Regular & Distance Courses in Kantabanji, Balangir, Odisha"
+- Meta description: "Swagat Odisha the best Institute for education, Education, Innovation, Revolution" → "Swagat Group of Institutions offers affordable regular and distance courses in Odisha, with campuses at Sargiguda (Kantabanji), Bangomunda, Titilagarh, Sinapali, Ghantiguda and Bhawanipatna. Call +91 78559 59544."
+- `llms.txt` / `llms-full.txt` (new): organisation summary, campus addresses, contact details and three factual questions and answers.

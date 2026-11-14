@@ -19,14 +19,14 @@ import Modal from './site/Modal'
 
 // Map of old FA icon strings → Remix Icon components
 const ICON_MAP = {
-    'fa-solid fa-school':               <RiSchoolLine size={24} className="text-white" />,
-    'fa-solid fa-graduation-cap':       <RiGraduationCapLine size={24} className="text-white" />,
-    'fa-solid fa-university':           <RiBuildingLine size={24} className="text-white" />,
-    'fa-solid fa-briefcase':            <RiBriefcaseLine size={24} className="text-white" />,
-    'fa-solid fa-heart-pulse':          <RiHospitalLine size={24} className="text-white" />,
-    'fa-solid fa-cogs':                 <RiSettings3Line size={24} className="text-white" />,
-    'fa-solid fa-chalkboard-teacher':   <RiTeamLine size={24} className="text-white" />,
-    'fa-solid fa-laptop-code':          <RiComputerLine size={24} className="text-white" />,
+    'fa-solid fa-school':               <RiSchoolLine size={44} className="text-white" />,
+    'fa-solid fa-graduation-cap':       <RiGraduationCapLine size={44} className="text-white" />,
+    'fa-solid fa-university':           <RiBuildingLine size={44} className="text-white" />,
+    'fa-solid fa-briefcase':            <RiBriefcaseLine size={44} className="text-white" />,
+    'fa-solid fa-heart-pulse':          <RiHospitalLine size={44} className="text-white" />,
+    'fa-solid fa-cogs':                 <RiSettings3Line size={44} className="text-white" />,
+    'fa-solid fa-chalkboard-teacher':   <RiTeamLine size={44} className="text-white" />,
+    'fa-solid fa-laptop-code':          <RiComputerLine size={44} className="text-white" />,
 }
 
 const INSTITUTION_PANES = ['sw-pane-timetable', 'sw-pane-career', 'sw-pane-notice', 'sw-pane-result']

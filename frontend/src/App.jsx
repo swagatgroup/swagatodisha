@@ -6,6 +6,7 @@ import { SessionProvider } from './contexts/SessionContext'
 import { DarkModeProvider } from './contexts/DarkModeContextSimple'
 import Hero from './components/home/Hero'
 import PosterCarousel from './components/home/PosterCarousel'
+import UpdatesMarquee from './components/home/UpdatesMarquee'
 import InstitutionTypes from './components/InstitutionTypes'
 import QuickLinks from './components/QuickLinks'
 import Location from './components/Location'
@@ -113,9 +114,12 @@ const AppContent = () => {
             {/* 1. Hero */}
             <Hero />
 
+            {/* Uploads from the last 60 days, scrolling */}
+            <UpdatesMarquee />
+
             {/* 2. Admissions posters, then Explore Swagat: stacked on mobile, 65-35 side by side from 900px, which also covers a phone's desktop mode (about 980px wide) */}
             <div className="sw-deco-light relative pb-sw-section pt-8 md:pt-10">
-                <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-8 px-[var(--sw-gutter)] min-[900px]:grid-cols-[65fr_35fr] min-[900px]:gap-6 lg:gap-8">
+                <div className="mx-auto grid w-full max-w-[max(1200px,calc(var(--sw-container)+2*var(--sw-gutter)))] grid-cols-1 gap-8 px-[var(--sw-gutter)] min-[900px]:grid-cols-[65fr_35fr] min-[900px]:gap-6 lg:gap-8">
                     <PosterCarousel />
                     <section id="explore" aria-label="Explore Swagat" className="scroll-mt-sw-header">
                         <QuickLinks />

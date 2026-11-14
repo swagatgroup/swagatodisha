@@ -587,7 +587,7 @@ const QuickLinks = () => {
                                     className="sw-deco-card flex h-full w-full flex-col rounded-sw-md bg-sw-black p-3 text-left text-sw-white ring-2 ring-inset ring-sw-border-dark transition-transform duration-sw ease-sw motion-safe:group-hover:-translate-y-1 lg:p-4"
                                 >
                                     <span className={cx('sw-pane relative flex aspect-square w-full items-center justify-center rounded-sw-sm min-[900px]:aspect-[2/1] min-[900px]:flex-1', link.pane)}>
-                                        <Icon icon={link.icon} size="xl" strokeWidth={1.25} className="text-sw-white/90" />
+                                        <Icon icon={link.icon} size={72} strokeWidth={1.25} className="text-sw-white/90" />
                                         {recentCount > 0 && (
                                             <span className="absolute right-1.5 top-1.5 flex items-center gap-1 rounded-sw-pill bg-[rgb(var(--sw-accent-garnet))] px-2 py-1 text-sw-caption font-bold leading-none text-sw-white shadow-sw-soft">
                                                 <Icon icon={LuBellRing} size={14} className="sw-bell-shake" />
@@ -596,7 +596,7 @@ const QuickLinks = () => {
                                         )}
                                     </span>
                                     <span className="mt-3 flex items-end justify-between gap-2">
-                                        <span className="sw-text-gradient min-w-0 font-sw-display text-sw-tile min-[900px]:text-sw-label">{link.title}</span>
+                                        <span className="sw-text-gradient min-w-0 font-sw-display text-sw-tile min-[900px]:text-sw-label xl:text-sw-h3">{link.title}</span>
                                         <Icon
                                             icon={LuArrowUpRight}
                                             size="md"
