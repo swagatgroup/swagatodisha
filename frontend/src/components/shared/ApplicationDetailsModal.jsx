@@ -208,6 +208,8 @@ const ApplicationDetailsModal = ({
                                 <Field label="Gender" value={app.personalDetails?.gender} />
                                 <Field label="Date of Birth" value={app.personalDetails?.dateOfBirth ? formatDate(app.personalDetails.dateOfBirth) : 'N/A'} />
                                 <Field label="Aadhar Number" value={app.personalDetails?.aadharNumber || app.aadharNumber} />
+                                <Field label="OTR Number" value={app.personalDetails?.otrNumber || app.otrNumber || 'Not Available'} />
+                                <Field label="APAAR ID" value={app.personalDetails?.apaarId || app.apaarId || 'Not Available'} />
                                 <Field label="Category" value={app.personalDetails?.category || app.personalDetails?.status || app.category} />
                                 {(app.personalDetails?.pmKisanNumber || app.personalDetails?.cmKisanNumber) && (
                                     <>

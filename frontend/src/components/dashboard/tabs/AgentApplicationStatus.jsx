@@ -280,6 +280,8 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                 gender: application.personalDetails?.gender || '',
                 dateOfBirth: application.personalDetails?.dateOfBirth || '',
                 aadharNumber: application.personalDetails?.aadharNumber || '',
+                otrNumber: application.personalDetails?.otrNumber || '',
+                apaarId: application.personalDetails?.apaarId || '',
                 category: application.personalDetails?.category || ''
             },
             contactDetails: {
@@ -857,6 +859,8 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                             <p><span className="text-gray-600 dark:text-gray-300">Phone:</span> {selectedApplication.contactDetails?.primaryPhone}</p>
                                             <p><span className="text-gray-600 dark:text-gray-300">Email:</span> {selectedApplication.contactDetails?.email}</p>
                                             <p><span className="text-gray-600 dark:text-gray-300">Aadhar:</span> {selectedApplication.personalDetails?.aadharNumber}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">OTR Number:</span> {selectedApplication.personalDetails?.otrNumber || 'Not Available'}</p>
+                                            <p><span className="text-gray-600 dark:text-gray-300">APAAR ID:</span> {selectedApplication.personalDetails?.apaarId || 'Not Available'}</p>
                                         </div>
                                     </div>
 
@@ -1146,6 +1150,38 @@ const AgentApplicationStatus = ({ initialTab = 'all' }) => {
                                                     ...editData,
                                                     personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value }
                                                 })}
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                OTR Number
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.otrNumber || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, otrNumber: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) }
+                                                })}
+                                                maxLength="20"
+                                                placeholder="Not Available"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                APAAR ID
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.apaarId || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, apaarId: e.target.value.replace(/\D/g, '').slice(0, 12) }
+                                                })}
+                                                maxLength="12"
+                                                placeholder="Not Available"
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95] dark:bg-gray-700 dark:text-gray-100"
                                             />
                                         </div>

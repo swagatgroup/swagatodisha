@@ -787,6 +787,14 @@ const submitApplication = async (req, res) => {
             });
         }
 
+        // OTR number is mandatory for free admission
+        if (application.courseDetails?.admissionType === 'free' && !application.personalDetails?.otrNumber) {
+            return res.status(400).json({
+                success: false,
+                message: 'OTR Number is mandatory for free admission',
+            });
+        }
+
         // Normalize documents to array format if needed
         let documentsArray = application.documents || [];
         if (!Array.isArray(documentsArray) && typeof documentsArray === 'object') {

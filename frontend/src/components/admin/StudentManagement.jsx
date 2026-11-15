@@ -1073,6 +1073,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     dateOfBirth: editData.personalDetails?.dateOfBirth,
                     gender: editData.personalDetails?.gender,
                     aadharNumber: editData.personalDetails?.aadharNumber,
+                    otrNumber: editData.personalDetails?.otrNumber || '',
+                    apaarId: editData.personalDetails?.apaarId || '',
                     category: editData.personalDetails?.category,
                     pmKisanNumber: editData.personalDetails?.pmKisanNumber || '',
                     cmKisanNumber: editData.personalDetails?.cmKisanNumber || ''
@@ -1439,6 +1441,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                 'Date of Birth',
                 'Gender',
                 'Aadhar Number',
+                'OTR Number',
+                'APAAR ID',
                 'Category/Status',
                 // Contact Details
                 'Email',
@@ -1518,6 +1522,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     formatDate(student.personalDetails?.dateOfBirth),
                     escapeCSV(student.personalDetails?.gender),
                     formatAsText(student.personalDetails?.aadharNumber),
+                    formatAsText(student.personalDetails?.otrNumber || 'Not Available'),
+                    formatAsText(student.personalDetails?.apaarId || 'Not Available'),
                     escapeCSV(student.personalDetails?.status || student.personalDetails?.category),
                     // Contact Details
                     escapeCSV(student.contactDetails?.email),
@@ -1669,6 +1675,8 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     dateOfBirth: formatDateForInput(student.personalDetails?.dateOfBirth) || '',
                     gender: student.personalDetails?.gender || '',
                     aadharNumber: student.personalDetails?.aadharNumber || student.aadharNumber || '',
+                    otrNumber: student.personalDetails?.otrNumber || '',
+                    apaarId: student.personalDetails?.apaarId || '',
                     category: student.personalDetails?.category || '',
                     pmKisanNumber: student.personalDetails?.pmKisanNumber || '',
                     cmKisanNumber: student.personalDetails?.cmKisanNumber || ''
@@ -2387,6 +2395,12 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                 Aadhar
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                OTR No.
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                APAAR ID
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                 Phone
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -2415,7 +2429,7 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                     <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
                         {students.length === 0 ? (
                             <tr>
-                                <td colSpan="13" className="px-6 py-12 text-center">
+                                <td colSpan="15" className="px-6 py-12 text-center">
                                     <div className="flex flex-col items-center justify-center">
                                         <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -2488,6 +2502,12 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
                                             {student.aadharNumber}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
+                                            {student.personalDetails?.otrNumber || student.otrNumber || 'Not Available'}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
+                                            {student.personalDetails?.apaarId || student.apaarId || 'Not Available'}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                             {student.phone}
@@ -3434,6 +3454,38 @@ const StudentManagement = ({ initialFilter = 'all', listType: listTypeProp = 'ma
                                                     personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12) }
                                                 })}
                                                 maxLength="12"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                OTR Number
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.otrNumber || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, otrNumber: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) }
+                                                })}
+                                                maxLength="20"
+                                                placeholder="Not Available"
+                                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                                APAAR ID
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={editData.personalDetails?.apaarId || ''}
+                                                onChange={(e) => setEditData({
+                                                    ...editData,
+                                                    personalDetails: { ...editData.personalDetails, apaarId: e.target.value.replace(/\D/g, '').slice(0, 12) }
+                                                })}
+                                                maxLength="12"
+                                                placeholder="Not Available"
                                                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#4A1D7A] disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed disabled:text-gray-500 dark:disabled:text-gray-400"
                                             />
                                         </div>

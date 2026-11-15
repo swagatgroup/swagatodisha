@@ -13,7 +13,7 @@ import { canEditApplication } from "../../utils/applicationStatuses";
 import Swal from 'sweetalert2';
 
 const BLANK_FORM = {
-    personalDetails: { fullName: '', fathersName: '', mothersName: '', dateOfBirth: '', aadharNumber: '', gender: '', category: '' },
+    personalDetails: { fullName: '', fathersName: '', mothersName: '', dateOfBirth: '', aadharNumber: '', otrNumber: '', apaarId: '', gender: '', category: '' },
     contactDetails: {
         email: '', primaryPhone: '', whatsappNumber: '',
         currentAddress: { street: '', city: '', state: '', pincode: '', country: 'India' },
@@ -148,6 +148,8 @@ const SinglePageStudentRegistration = ({
             dateOfBirth: "",
             
             aadharNumber: "",
+            otrNumber: "",
+            apaarId: "",
             gender: "",
             category: "",
         },
@@ -519,6 +521,13 @@ const SinglePageStudentRegistration = ({
             && !formData.personalDetails.pmKisanNumber && !formData.personalDetails.cmKisanNumber) {
             newErrors["personalDetails.kisanNumber"] = "Enter either PM Kisan Number or CM Kisan Number";
         }
+        // OTR number is mandatory for free admission; APAAR ID is optional
+        if (formData.courseDetails.admissionType === 'free' && !formData.personalDetails.otrNumber) {
+            newErrors["personalDetails.otrNumber"] = "OTR Number is required for free admission";
+        }
+        if (formData.personalDetails.apaarId && formData.personalDetails.apaarId.length !== 12) {
+            newErrors["personalDetails.apaarId"] = "APAAR ID must be 12 digits";
+        }
 
         // Contact Details validation
         if (!formData.contactDetails.email.trim()) {
@@ -807,6 +816,7 @@ const SinglePageStudentRegistration = ({
                 
                 gender: getRandomElement(genders),
                 aadharNumber: getRandomAadhar(),
+                otrNumber: getRandomAadhar(),
                 category: getRandomElement(categories),
                 fathersName: fatherName,
                 mothersName: motherName,
@@ -1638,6 +1648,58 @@ const SinglePageStudentRegistration = ({
                                 )}
                             </div>
                         ))}
+
+                    {/* OTR number: mandatory for free admission. APAAR ID: optional */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            OTR Number {formData.courseDetails.admissionType === 'free'
+                                ? '*'
+                                : <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(optional, mandatory for free admission)</span>}
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.personalDetails.otrNumber || ''}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    personalDetails: {
+                                        ...prev.personalDetails,
+                                        otrNumber: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20),
+                                    },
+                                }))
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
+                            placeholder="Enter OTR (One Time Registration) number"
+                            maxLength="20"
+                        />
+                        {errors["personalDetails.otrNumber"] && (
+                            <p className="text-red-500 text-sm mt-1">{errors["personalDetails.otrNumber"]}</p>
+                        )}
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                            APAAR ID <span className="text-xs font-normal text-gray-500 dark:text-gray-300">(optional)</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={formData.personalDetails.apaarId || ''}
+                            onChange={(e) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    personalDetails: {
+                                        ...prev.personalDetails,
+                                        apaarId: e.target.value.replace(/\D/g, '').slice(0, 12),
+                                    },
+                                }))
+                            }
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#4A1D7A] focus:border-transparent"
+                            placeholder="Enter 12-digit APAAR ID"
+                            maxLength="12"
+                        />
+                        {errors["personalDetails.apaarId"] && (
+                            <p className="text-red-500 text-sm mt-1">{errors["personalDetails.apaarId"]}</p>
+                        )}
+                    </div>
                 </div>
             </motion.div>
 

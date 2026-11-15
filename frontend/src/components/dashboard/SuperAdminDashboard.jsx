@@ -1064,6 +1064,14 @@ const SuperAdminDashboard = () => {
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.aadharNumber || selectedStudent.personalDetails?.aadharNumber || 'N/A'}</p>
                                         </div>
                                         <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">OTR Number</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.otrNumber || selectedStudent.otrNumber || 'Not Available'}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-xs font-medium text-gray-500 dark:text-gray-300">APAAR ID</label>
+                                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.apaarId || selectedStudent.apaarId || 'Not Available'}</p>
+                                        </div>
+                                        <div>
                                             <label className="text-xs font-medium text-gray-500 dark:text-gray-300">Category</label>
                                             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{selectedStudent.personalDetails?.category || selectedStudent.personalDetails?.status || selectedStudent.category || 'N/A'}</p>
                                         </div>
@@ -1621,6 +1629,38 @@ const SuperAdminDashboard = () => {
                                                 personalDetails: { ...editData.personalDetails, aadharNumber: e.target.value.replace(/\D/g, '').slice(0, 12) }
                                             })}
                                             maxLength="12"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            OTR Number
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.otrNumber || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, otrNumber: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) }
+                                            })}
+                                            maxLength="20"
+                                            placeholder="Not Available"
+                                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                            APAAR ID
+                                        </label>
+                                        <input
+                                            type="text"
+                                            value={editData.personalDetails?.apaarId || ''}
+                                            onChange={(e) => setEditData({
+                                                ...editData,
+                                                personalDetails: { ...editData.personalDetails, apaarId: e.target.value.replace(/\D/g, '').slice(0, 12) }
+                                            })}
+                                            maxLength="12"
+                                            placeholder="Not Available"
                                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         />
                                     </div>

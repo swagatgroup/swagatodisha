@@ -871,6 +871,8 @@ router.get('/', protect, authorize('staff', 'super_admin'), async (req, res) => 
                 email: appObj.contactDetails?.email || appObj.user?.email || 'N/A',
                 phone: appObj.contactDetails?.primaryPhone || appObj.user?.phoneNumber || 'N/A',
                 aadharNumber: appObj.personalDetails?.aadharNumber || 'N/A',
+                otrNumber: appObj.personalDetails?.otrNumber || '',
+                apaarId: appObj.personalDetails?.apaarId || '',
                 course: appObj.courseDetails?.selectedCourse || 'N/A',
                 category: appObj.personalDetails?.status || 'N/A',
                 status: appObj.status,
@@ -2249,6 +2251,13 @@ router.put('/:id/admission-type', protect, authorize('staff', 'super_admin'), as
             const stream = course?.streams?.find(s => s.name === application.courseDetails?.stream);
             if (course?.isPaidOnly || stream?.isPaidOnly) {
                 return res.status(400).json({ success: false, message: 'This course/stream is paid-only and cannot be converted to free' });
+            }
+
+            if (!application.personalDetails?.otrNumber) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Add the OTR number on the application before converting to free'
+                });
             }
 
             const { missing, missingKisanNumber } = validateDocumentRequirements(application.documents || [], {

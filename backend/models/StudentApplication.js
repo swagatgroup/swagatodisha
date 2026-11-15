@@ -104,6 +104,19 @@ const studentApplicationSchema = new mongoose.Schema({
             uppercase: true,
             match: [/^[A-Z0-9]{0,20}$/, 'CM Kisan number can have up to 20 capital letters and digits']
         },
+        // OTR (One Time Registration) number: mandatory for free admission on new registrations, older applications may not have it
+        otrNumber: {
+            type: String,
+            trim: true,
+            uppercase: true,
+            match: [/^[A-Z0-9]{0,20}$/, 'OTR number can have up to 20 capital letters and digits']
+        },
+        // APAAR ID: optional for everyone
+        apaarId: {
+            type: String,
+            trim: true,
+            match: [/^(\d{12})?$/, 'APAAR ID must be 12 digits']
+        },
         religion: {
             type: String,
             trim: true

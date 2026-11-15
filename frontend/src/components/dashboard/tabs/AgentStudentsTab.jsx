@@ -276,6 +276,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
         gender: student.personalDetails?.gender || '',
         dateOfBirth: student.personalDetails?.dateOfBirth || '',
         aadharNumber: student.personalDetails?.aadharNumber || '',
+        otrNumber: student.personalDetails?.otrNumber || '',
+        apaarId: student.personalDetails?.apaarId || '',
         category: student.personalDetails?.category || '',
         pmKisanNumber: student.personalDetails?.pmKisanNumber || '',
         cmKisanNumber: student.personalDetails?.cmKisanNumber || ''
@@ -354,6 +356,8 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
           gender: editData.personalDetails?.gender,
           category: editData.personalDetails?.category,
           aadharNumber: editData.personalDetails?.aadharNumber,
+          otrNumber: editData.personalDetails?.otrNumber || '',
+          apaarId: editData.personalDetails?.apaarId || '',
           pmKisanNumber: editData.personalDetails?.pmKisanNumber || '',
           cmKisanNumber: editData.personalDetails?.cmKisanNumber || ''
         },
@@ -872,6 +876,12 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                   Aadhar
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  OTR No.
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  APAAR ID
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Contact
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
@@ -894,7 +904,7 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
             <tbody className="bg-white dark:bg-[#231A2E] divide-y divide-gray-200 dark:divide-gray-700">
               {filteredStudents.length === 0 ? (
                 <tr>
-                  <td colSpan="10" className="px-6 py-12 text-center">
+                  <td colSpan="12" className="px-6 py-12 text-center">
                     <div className="flex flex-col items-center justify-center">
                       <svg className="h-12 w-12 text-gray-400 dark:text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13.5 4a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -949,6 +959,12 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
                     {student.personalDetails?.aadharNumber || "N/A"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
+                    {student.personalDetails?.otrNumber || "Not Available"}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 font-mono">
+                    {student.personalDetails?.apaarId || "Not Available"}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900 dark:text-gray-100">
@@ -1267,6 +1283,38 @@ const AgentStudentsTab = ({ initialFilter = 'all', onStudentUpdate, mode = 'main
                         })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
                       />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                            OTR Number
+                        </label>
+                        <input
+                            type="text"
+                            value={editData.personalDetails?.otrNumber || ''}
+                            onChange={(e) => setEditData({
+                                ...editData,
+                                personalDetails: { ...editData.personalDetails, otrNumber: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 20) }
+                            })}
+                            maxLength="20"
+                            placeholder="Not Available"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                            APAAR ID
+                        </label>
+                        <input
+                            type="text"
+                            value={editData.personalDetails?.apaarId || ''}
+                            onChange={(e) => setEditData({
+                                ...editData,
+                                personalDetails: { ...editData.personalDetails, apaarId: e.target.value.replace(/\D/g, '').slice(0, 12) }
+                            })}
+                            maxLength="12"
+                            placeholder="Not Available"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#387B95]"
+                        />
                     </div>
                   </div>
                 </div>

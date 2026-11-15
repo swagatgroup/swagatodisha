@@ -334,6 +334,8 @@ class PDFGenerator {
             { label: 'Registration Date', value: application.submittedAt ? new Date(application.submittedAt).toLocaleDateString() : (personalDetails.registrationDate ? new Date(personalDetails.registrationDate).toLocaleDateString() : 'N/A') },
             { label: 'Gender', value: personalDetails.gender || 'N/A' },
             { label: 'Aadhar Number', value: personalDetails.aadharNumber || 'N/A' },
+            { label: 'OTR Number', value: personalDetails.otrNumber || 'Not Available' },
+            { label: 'APAAR ID', value: personalDetails.apaarId || 'Not Available' },
             { label: 'Address', value: personalDetails.address || 'N/A' }
         ];
 

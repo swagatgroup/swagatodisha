@@ -348,6 +348,10 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
             drawBoxedField('Category', pdfContent.personalDetails.category || pdfContent.personalDetails.status, leftColX, currentY, thirdW);
             drawBoxedField('Email Id', pdfContent.contactDetails.email, leftColX + thirdW + 5, currentY, thirdW * 2 + 5);
             currentY += 16;
+
+            drawBoxedField('OTR Number', pdfContent.personalDetails.otrNumber || 'Not Available', leftColX, currentY, halfW);
+            drawBoxedField('APAAR ID', pdfContent.personalDetails.apaarId || 'Not Available', leftColX + halfW + 5, currentY, halfW);
+            currentY += 16;
             
             drawBoxedField('Phone Number', pdfContent.contactDetails.primaryPhone, leftColX, currentY, halfW);
             drawBoxedField('Guardian Phone', pdfContent.guardianDetails.guardianPhone, leftColX + halfW + 5, currentY, halfW);
@@ -755,6 +759,14 @@ const ApplicationPDFGenerator = ({ formData, application, onPDFGenerated, onCanc
                 <div class="field-row">
                     <span class="field-label">Aadhar No:</span>
                     <span class="field-value">${content.personalDetails.aadharNumber || 'N/A'}</span>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">OTR Number:</span>
+                    <span class="field-value">${content.personalDetails.otrNumber || 'Not Available'}</span>
+                </div>
+                <div class="field-row">
+                    <span class="field-label">APAAR ID:</span>
+                    <span class="field-value">${content.personalDetails.apaarId || 'Not Available'}</span>
                 </div>
                 <div class="field-row">
                     <span class="field-label">Category:</span>

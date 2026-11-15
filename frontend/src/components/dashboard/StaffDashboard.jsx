@@ -669,6 +669,8 @@ const EnhancedStaffDashboard = () => {
                                 <div><span className="font-medium text-gray-500 dark:text-gray-400">Phone:</span><p className="text-gray-900 dark:text-gray-100 mt-1">{selectedStudent.phone}</p></div>
                                 <div><span className="font-medium text-gray-500 dark:text-gray-400">Course:</span><p className="text-gray-900 dark:text-gray-100 mt-1">{selectedStudent.course || (selectedStudent.courseDetails && selectedStudent.courseDetails.selectedCourse) || 'N/A'}</p></div>
                                 <div><span className="font-medium text-gray-500 dark:text-gray-400">Aadhar:</span><p className="text-gray-900 dark:text-gray-100 mt-1 font-mono">{selectedStudent.aadharNumber}</p></div>
+                                <div><span className="font-medium text-gray-500 dark:text-gray-400">OTR Number:</span><p className="text-gray-900 dark:text-gray-100 mt-1 font-mono">{(selectedStudent.personalDetails && selectedStudent.personalDetails.otrNumber) || selectedStudent.otrNumber || 'Not Available'}</p></div>
+                                <div><span className="font-medium text-gray-500 dark:text-gray-400">APAAR ID:</span><p className="text-gray-900 dark:text-gray-100 mt-1 font-mono">{(selectedStudent.personalDetails && selectedStudent.personalDetails.apaarId) || selectedStudent.apaarId || 'Not Available'}</p></div>
                                 <div><span className="font-medium text-gray-500 dark:text-gray-400">Status:</span><p className="mt-1"><span className={'inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ' + getStatusColor(selectedStudent.status)}>{getApplicationStatusLabel(selectedStudent.status)}</span></p></div>
                             </div>
                             <div className="mt-6 flex flex-wrap gap-2 justify-between items-center border-t border-gray-200 dark:border-gray-700 pt-4">
@@ -997,7 +999,7 @@ const EnhancedStaffDashboard = () => {
                                 <div>
                                     <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-2">Personal Details</h4>
                                     <div className="grid grid-cols-2 gap-3">
-                                        {[['fullName','Full Name'],['fathersName',"Father's Name"],['mothersName',"Mother's Name"],['gender','Gender'],['aadharNumber','Aadhar Number']].map(function(item) {
+                                        {[['fullName','Full Name'],['fathersName',"Father's Name"],['mothersName',"Mother's Name"],['gender','Gender'],['aadharNumber','Aadhar Number'],['otrNumber','OTR Number'],['apaarId','APAAR ID']].map(function(item) {
                                             var field = item[0]; var label = item[1];
                                             return (
                                                 <div key={field}>
