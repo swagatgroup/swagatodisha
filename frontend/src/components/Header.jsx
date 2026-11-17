@@ -138,7 +138,7 @@ const Header = () => {
               alt="Swagat Group of Institutions"
               width={LOGO_SIZE.width}
               height={LOGO_SIZE.height}
-              className="h-9 w-auto lg:h-12"
+              className="h-[45px] w-auto lg:h-12"
             />
           </Link>
 

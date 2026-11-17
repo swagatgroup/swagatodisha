@@ -77,8 +77,8 @@
       if (!loader) return;
       if (!root.classList.contains('sw-boot')) { loader.remove(); return; }
       // Stays only as long as the page is actually loading: until the homepage has rendered and the
-      // page's files have loaded, after at least one page-turn cycle, and never longer than 8 seconds
-      var MIN_MS = 1500, MAX_MS = 8000;
+      // page's files have loaded, for at least 3 seconds so the animation is seen, and never longer than 8 seconds
+      var MIN_MS = 3000, MAX_MS = 8000;
       var appReady = false, pageLoaded = document.readyState === 'complete', hidden = false;
       function hide() {
         if (hidden) return;
